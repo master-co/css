@@ -7,14 +7,16 @@ export const packageTrees = {
       { name: 'projects', children: [
         { name: 'admin', children: [
           { name: 'package.json', description: 'Declares Master CSS dependencies' },
+          { name: 'eslint.config.js', description: 'App lint configuration' },
           { name: 'index.css', description: 'Admin entry and local overrides' }
         ] },
         { name: 'shop', children: [
           { name: 'package.json', description: 'Declares Master CSS dependencies' },
+          { name: 'eslint.config.js', description: 'App lint configuration' },
           { name: 'index.css', description: 'Shop entry' }
         ] }
       ] },
-      { name: 'index.css', description: 'Shared tokens and components' },
+      { name: 'styles', children: [{ name: 'shared.css', description: 'Shared definitions, not a full app entry' }] },
       { name: 'package.json', description: 'Repository scripts and workspace tooling' }
     ],
     caption: 'Each app has a project root. Both import the same shared CSS source.'

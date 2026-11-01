@@ -1,3 +1,4 @@
+import TypeIllustration from './components/TypeIllustration'
 import Class2CSS from '~/site/components/Class2CSS'
 import { FoundationTypography, FoundationTypeComparison } from '~/site/components/demo/FoundationTypeMotion'
 
@@ -8,21 +9,23 @@ Use `text-<token>` for a complete type treatment: font size, line height and let
 <FoundationTypography />
 
 ```html
-<!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-semibold -->
-<p class="text-xs font-medium fg-text-blue">Field notes / 024</p>
-<h2 class="text-2xl font-semibold fg-text-strong">Make room for the details.</h2>
+<!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-regular -->
+<p class="text-xs font-regular fg-text-muted">Field notes / 024</p>
+<h2 class="text-2xl font-regular fg-text-strong">Make room for the details.</h2>
 <p class="text-sm">A consistent type scale helps readers move from the main idea to the supporting detail.</p>
 ```
 
-<Class2CSS>{['text-2xl', 'font-semibold']}</Class2CSS>
+<Class2CSS>{['text-2xl', 'font-regular']}</Class2CSS>
 
-See [Text](/reference/tokens/text) for every treatment and how to add one.
+This hierarchy uses size, spacing and text roles while keeping regular weight. Add emphasis only where the content calls for it; a heading does not need a heavier weight by default. See [Text](/reference/tokens/text) for every treatment and how to add one.
 
 ---
 
 ## Text treatments and font sizes \{#without-vs-with-text-token\}
 
 `font-<token>` changes only the font size and keeps the inherited line height and letter spacing. `text-<token>` sets all three. Compare the same size in both forms:
+
+<TypeIllustration />
 
 <FoundationTypeComparison />
 
@@ -58,3 +61,9 @@ Set the app typeface once in `@theme`. The preset base layer applies it to the d
 ```
 
 The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp` and `pre`. The `--font-feature-*` tokens are optional and fall back to `normal`; form controls inherit the surrounding font. Load the font files with `@font-face` or a provider stylesheet. For a single element, use a class such as `font-mono` instead.
+
+## Verify with real text
+
+Check a short heading, a long heading and a full paragraph at the actual content width. Repeat with narrow screens and larger text. Watch line breaks and clipped accents or descenders, not only the computed font size.
+
+A declared font family is a request, not proof that its font file loaded or contains every glyph. Inspect the rendered fonts, especially when Latin and CJK text share a line. Keep containers free to grow with the text; do not set a card height just to preserve one English sample's line count.

@@ -1,18 +1,13 @@
+import TransitionIllustration from './components/TransitionIllustration'
 import Class2CSS from '~/site/components/Class2CSS'
 import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
 
 ## Overview [sr-only]
-The [View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) animates between two visual states of a page; MDN's [Using the View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) explains `startViewTransition()`, snapshot naming, cross-document navigation and fallbacks. Master CSS covers the CSS side: name and group snapshots with classes, and style the transition pseudo-elements with selector suffixes on `html`.
+Help readers follow an article from its collection card into a detail view. The View Transition API captures the old and new visual states around a DOM update; matching snapshot names let the image, heading and date move between layouts. Master CSS supplies classes for those native CSS properties and pseudo-elements.
 
-| Class syntax | Use |
-| --- | --- |
-| `(view-transition-name:…)` | Names an element snapshot so it can animate apart from the root. |
-| `(view-transition-class:…)` | Groups named snapshots for shared pseudo-element styling. |
-| `…::view-transition` | Targets the root view-transition pseudo-element tree. |
-| `…::view-transition-group()` | Styles the group box for a named snapshot or `.class`. |
-| `…::view-transition-image-pair()` | Styles the wrapper around the old and new snapshot images. |
-| `…::view-transition-old()` | Styles the outgoing snapshot image. |
-| `…::view-transition-new()` | Styles the incoming snapshot image. |
+The DOM update remains your application's responsibility. A transition enhances that update; it does not provide routing, data loading or focus management. The [CSS View Transitions specification](https://www.w3.org/TR/css-view-transitions-1/#intro) explains how captures are separate from DOM changes.
+
+<TransitionIllustration />
 
 ---
 
@@ -22,7 +17,7 @@ A common use case is moving from an article feed to an article detail page. The 
 (click) Open an article, then return to the collection. Keyboard focus follows the selected article and returns to its button.
 <DemoViewTransition example="articles" />
 
-In the list view, every article gets unique names for its shared elements. Use an image from your own project at the example path:
+In the list view, every article gets unique names for its shared elements. The code below implements one selectable article; the live demo extends the same pattern to two. Use an image from your own project at the example path:
 
 ```html name=article-list.html
 <section data-articles>
@@ -116,6 +111,8 @@ Apply the shared timing to the document root:
 ---
 
 ## Styling transition pseudo-elements
+Use `view-transition-name` for one matched capture and `view-transition-class` for a group of captures that share styling. The class does not replace each capture's unique name.
+
 Write the pseudo-element after the declaration, and put these classes on the `html` element: the pseudo-element tree is generated from the document root, so a class on an ordinary descendant generates CSS that never matches.
 
 ```html
@@ -150,3 +147,9 @@ Scope custom transition timing with `@motion-safe`, which maps to `@media (prefe
 </Class2CSS>
 
 This condition controls only your duration override; it does not disable the browser's default transition. The article example also skips `startViewTransition()` when reduced motion is requested.
+
+## Verify the complete interaction
+
+Open the detail with a pointer and with the keyboard, then return. Focus should move to the detail heading and back to the selected article's button. Repeat with reduced motion enabled and with `startViewTransition` unavailable: the content change must still work immediately.
+
+If the view updates without animation, check for duplicate snapshot names in the rendered state, then inspect the transition pseudo-elements and the classes on `html`. A skipped animation should not leave the app between views. See [Using the View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) for cross-document navigation and additional lifecycle patterns.

@@ -1,0 +1,9 @@
+import DocumentIllustration from '~/site/components/DocumentIllustration'
+import light from '../../../../assets/images/colors/local-roles-light.png'
+import dark from '../../../../assets/images/colors/local-roles-dark.png'
+import { colorIllustration as figure } from '../illustration'
+export default function ColorIllustration() {
+  return <DocumentIllustration title={figure.title} alt={figure.alt} images={{ light, dark }} caption={figure.caption}>
+    <ol>{figure.description.map(item => <li key={item.title}><strong>{item.title}.</strong> {item.text}</li>)}</ol>
+  </DocumentIllustration>
+}

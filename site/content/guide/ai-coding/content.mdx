@@ -1,4 +1,8 @@
-Give your coding agent the same styling context you use: the CSS entry, theme tokens, component classes and the project's checks. Connect the Master CSS MCP server so it can inspect that context, preview fixes and compare the impact of a change before you review the result in a browser.
+import AIIllustration from './components/AIIllustration'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+
+## Overview [sr-only]
+Give your coding agent the same styling context you use: the CSS entry, theme tokens, component classes and the project's checks. Connect the Master CSS MCP server, ask for a scoped UI change, and require evidence from the final source and the rendered result. This guide takes you from project setup through a first repair and a later change to a shared definition.
 
 ---
 
@@ -35,7 +39,7 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
 ---
 
 ## Connect the MCP server \{#connect-the-mcp-server\}
-The MCP server runs locally over stdio and reads the workspace passed to `--root`. Clients that accept `mcpServers` JSON, such as Claude Desktop, Cursor, Windsurf, Gemini CLI and Cline, use this shape in their own configuration file:
+The MCP server runs locally over stdio and reads the workspace passed to `--root`. For a client that accepts `mcpServers` JSON, add this entry to its MCP configuration file:
 
 ```json name=mcp-client-config.json
 {
@@ -64,7 +68,7 @@ The [MCP tool catalog](/reference/tools/mcp) lists every tool, the built-in prom
 
 ---
 
-## Give the agent useful context
+## Ask for one observable change
 The official `master-css` skill provides a workflow for building, editing and
 debugging UI with project tokens, utilities and native CSS. Install it from your
 project directory and choose your coding agent:
@@ -79,9 +83,11 @@ against the installed Master CSS version. The skill reads relevant references
 as needed; it does not install Master CSS or register an MCP server for you.
 The installer's `--ai` option prints this command without running it.
 
-Ask the agent to inspect the project before it edits, then make one focused change. Use a prompt like this from the project root:
+Ask the agent to inspect the project before it edits, then make one focused change. For example, ask it to refine an existing card and describe the result you expect:
 
 ```text
+Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
+
 You are working in a Master CSS project.
 
 Read the installed package/language/binding versions and project manifest first. Use documentation that matches those versions.
@@ -92,13 +98,106 @@ Before editing, inspect the framework, package manager, CSS entry, theme tokens,
 When styling markup:
 - use valid Master CSS syntax
 - prefer existing theme tokens and component classes
-- use full native property names for direct declarations and canonical token families for project vocabulary
+- prefer fixed utilities and numeric functions, such as flex and p(16), over equivalent native declarations
+- use canonical token families for project values and full native property names when a native declaration is needed
 - do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
 - keep semantic HTML and accessibility behavior unchanged
 - explain any value that should become a shared token
 
-Work in a small batch. After editing, show the changed files, explain the styling decisions, and run the relevant formatter, lint, type-check, test, or build command when available.
+After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.
 ```
+
+
+---
+
+## Verify a repair \{#verify-a-repair\}
+Ask the agent to preserve the current working behavior and show what evidence
+supports its repair. Keep a source snapshot before editing, then inspect and
+rebuild the final files, including after lint autofixes. A rejected proposal is
+useful evidence, but it is not the source to start the next repair from.
+
+Different checks answer different questions:
+
+| Evidence | What to check |
+| --- | --- |
+| Lint report | Read `coverage.checkedFiles` and the enabled rules. `summary.checkedFiles` counts checked inputs; `summary.filesWithDiagnostics` counts those with diagnostics. Empty diagnostic `files` does not mean nothing ran. |
+| Class inspection | Check the final markup against the loaded project stylesheets. Distinguish generated utilities, native CSS selector hooks and unresolved spellings. |
+| Browser verification | Compare computed values and matched rules in the affected states, including previously working states. A generated rule does not establish which declaration wins. |
+
+### A generated rule can still lose
+
+Both classes in this example reach valid CSS. The preset's `p-md` generates 1rem of padding, but `.notice` sets 8px in an **unlayered** native rule. For normal declarations, that rule wins over the layered utility:
+
+<AIIllustration />
+
+<DemoConfiguredExample name="agent-cascade-check" title="Inspect the padding that wins" source={`.notice {
+  padding: 8px;
+}`} html={'<p class="w-fit m(0) p-md r-md text-sm bg-surface-raised fg-text-strong notice">Saved locally</p>'} caption="The notice has 8px of padding on every side. Inspect it in the browser, then compare the native rule with p-md in Generated CSS. Both rules exist; only one supplies the computed padding." />
+
+Generating another `p-md` rule would not fix this result. If the notice should follow the shared spacing, remove the competing padding declaration, or intentionally place the component rule in `@layer components`. Check other notices before changing a shared rule. See [CSS layer ordering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description).
+
+### Read inspection coverage
+
+Default lint permits unknown authored CSS names, so a clean lint result does not
+prove every class is a registered utility. CLI inspection can report a native
+selector in both `discovered.invalid` and `discovered.usedNative`: it does not
+generate a utility, but its stylesheet rule can still be present. For an explicit
+`inspect --classes` request, read the `missingCSS` presence reasons alongside the
+markup and native rules. An empty `missingCSS.checked` list is not a completed
+class check. The [CLI catalog](/reference/tools/cli#inspect) documents inspection.
+
+When a native rule and a utility affect the same property, check the emitted CSS
+and the project's actual layer order. Master CSS's base stylesheet declares
+`theme, base, defaults, components, utilities`; normal declarations in `utilities`
+outrank normal declarations in `components`, even when the latter selector is more
+specific. Reopening `components` later does not change that order. Important
+declarations follow different precedence; see [CSS layer ordering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description).
+
+A conflict warning also needs review when both class names are recognized. Using
+a registered utility as a native hover selector hook does not restrict its
+separate generated rule to hover. Check the resting state, hover condition,
+keyboard focus, disabled state and touch behavior that the component supports.
+Rerun the project's relevant checks after the last edit; preserve checks that
+passed before the repair rather than accepting a new failure elsewhere.
+
+### Report the result and its limits \{#verification-limits\}
+Ask for a short final report identifying changed behavior, retained native CSS
+and dependencies, the files and states actually checked, and unresolved diagnostics.
+If lint fails on three files but passes on a narrower selection, both results
+belong in the report. Informational unknown-value diagnostics should remain
+visible without being described as invalid values. Separate static expectations
+from browser-observed results, and say when browser verification is outstanding.
+
+The skill supplies instructions; it does not automatically run a browser or enforce
+a repair rollback. Your agent and project checks must provide those operations.
+Dynamic class construction, runtime changes and untested environments can remain
+outside static inspection. A successful build, an empty diagnostic list or one
+passing visual state does not guarantee a complete repair. Keep any incomplete
+repair explicit and stop at the agreed scope and validation budget.
+
+---
+
+## Review a tool-generated fix \{#safe-write-previews\}
+Read-only tools never write files. A fix goes through two calls, so the agent can show you the diff first:
+
+1. `mastercss_preview_fixes` or `mastercss_preview_directive_format` returns a diff and a confirmation token without touching the workspace.
+2. Once the diff is accepted under your project’s review workflow, `mastercss_apply_preview` writes it, but only if the token is valid, every path stays inside the workspace and each file still matches the hash it had at preview time.
+
+For example, a class-order preview for one file:
+
+```json name=mastercss_preview_fixes
+{
+  "mode": "lint-fixes",
+  "patterns": ["src/button.html"],
+  "rules": "sort-classes"
+}
+```
+
+If a file changes after the preview, applying it fails instead of overwriting newer work. Tokens belong to one running server and expire after `--preview-ttl` milliseconds (300000 by default); a restart or an applied preview requires a new one.
+
+---
+
+## Translate a declaration when the class is unclear
 
 When reading an MCP class inspection, check `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately: an unknown value is not a failed match, and `not-checked` browser support is not verified support.
 
@@ -138,80 +237,7 @@ declaration check does not verify surrounding styles or browser rendering.
 
 ---
 
-## Verify a repair \{#verify-a-repair\}
-Ask the agent to preserve the current working behavior and show what evidence
-supports its repair. Keep a source snapshot before editing, then inspect and
-rebuild the final files, including after lint autofixes. A rejected proposal is
-useful evidence, but it is not the source to start the next repair from.
-
-Different checks answer different questions:
-
-| Evidence | What to check |
-| --- | --- |
-| Lint report | Read `coverage.checkedFiles` and the enabled rules. `summary.checkedFiles` counts checked inputs; `summary.filesWithDiagnostics` counts those with diagnostics. Empty diagnostic `files` does not mean nothing ran. |
-| Class inspection | Check the final markup against the loaded project stylesheets. Distinguish generated utilities, native CSS selector hooks and unresolved spellings. |
-| Browser verification | Compare computed values and matched rules in the affected states, including previously working states. A generated rule does not establish which declaration wins. |
-
-Default lint permits unknown authored CSS names, so a clean lint result does not
-prove every class is a registered utility. CLI inspection can report a native
-selector in both `discovered.invalid` and `discovered.usedNative`: it does not
-generate a utility, but its stylesheet rule can still be present. For an explicit
-`inspect --classes` request, read the `missingCSS` presence reasons alongside the
-markup and native rules. An empty `missingCSS.checked` list is not a completed
-class check. The [CLI catalog](/reference/tools/cli#inspect) documents inspection.
-
-When a native rule and a utility affect the same property, check the emitted CSS
-and the project's actual layer order. Master CSS's base stylesheet declares
-`theme, base, defaults, components, utilities`; normal declarations in `utilities`
-outrank normal declarations in `components`, even when the latter selector is more
-specific. Reopening `components` later does not change that order. Important
-declarations follow different precedence; see [CSS layer ordering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description).
-
-A conflict warning also needs review when both class names are recognized. Using
-a registered utility as a native hover selector hook does not restrict its
-separate generated rule to hover. Check the resting state, hover condition,
-keyboard focus, disabled state and touch behavior that the component supports.
-Rerun the project's relevant checks after the last edit; preserve checks that
-passed before the repair rather than accepting a new failure elsewhere.
-
-## Read the result and its limits \{#verification-limits\}
-Ask for a short final report identifying changed behavior, retained native CSS
-and dependencies, the files and states actually checked, and unresolved diagnostics.
-If lint fails on three files but passes on a narrower selection, both results
-belong in the report. Informational unknown-value diagnostics should remain
-visible without being described as invalid values. Separate static expectations
-from browser-observed results, and say when browser verification is outstanding.
-
-The skill supplies instructions; it does not automatically run a browser or enforce
-a repair rollback. Your agent and project checks must provide those operations.
-Dynamic class construction, runtime changes and untested environments can remain
-outside static inspection. A successful build, an empty diagnostic list or one
-passing visual state does not guarantee a complete repair. Keep any incomplete
-repair explicit and stop at the agreed scope and validation budget.
-
----
-
-## Preview fixes safely \{#safe-write-previews\}
-Read-only tools never write files. A fix goes through two calls, so the agent can show you the diff first:
-
-1. `mastercss_preview_fixes` or `mastercss_preview_directive_format` returns a diff and a confirmation token without touching the workspace.
-2. After you review the diff, `mastercss_apply_preview` writes it, but only if the token is valid, every path stays inside the workspace and each file still matches the hash it had at preview time.
-
-For example, a class-order preview for one file:
-
-```json name=mastercss_preview_fixes
-{
-  "mode": "lint-fixes",
-  "patterns": ["src/button.html"],
-  "rules": "sort-classes"
-}
-```
-
-If a file changes after the preview, applying it fails instead of overwriting newer work. Tokens belong to one running server and expire after `--preview-ttl` milliseconds (300000 by default); a restart or an applied preview requires a new one.
-
----
-
-## Review the second change
+## Check the reach of a shared change \{#review-the-second-change\}
 A first draft that looks right does not show what the next edit will affect. Before changing a shared definition such as `--color-brand`, save a project snapshot, then compare after editing, even when markup has not changed:
 
 ```bash

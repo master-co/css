@@ -56,7 +56,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
         static styles = [unsafeCSS(masterCSSStyles)]
 
         render() {
-          return html`<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">Hello Lit</p>`
+          return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
         }
       }
       ```
@@ -80,7 +80,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
     name="lit-shadow-check"
     title="Check styles inside a shadow root"
     source=""
-    html={'<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">Hello Lit</p>'}
+    html={'<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>'}
     caption="The preview loads the generated stylesheet inside a real shadow root, alongside the paragraph."
     shadow
     code={false}
@@ -131,7 +131,7 @@ export class MyElement extends LitElement {
   }
 
   render() {
-    return html`<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">Hello Lit</p>`
+    return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
   }
 }
 ```

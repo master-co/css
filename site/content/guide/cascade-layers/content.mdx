@@ -1,4 +1,10 @@
+import CascadeIllustration from './components/CascadeIllustration'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+
+## Overview [sr-only]
+Make a one-off adjustment without increasing selector specificity. Put shared component rules in the `components` layer and let an instance's utilities override the properties that need to change.
+
+<CascadeIllustration />
 
 ## Override a component locally \{#override-a-component-locally\}
 
@@ -7,10 +13,11 @@ CSS cascade layers give groups of declarations an order before selector specific
 <DemoConfiguredExample name="layer-local-override" title="A shared component, a local adjustment" source={`@layer components {
   .collection-card {
     padding: 1.5rem;
+    border: 1px solid var(--color-line-divider);
     border-radius: var(--radius-lg);
     background-color: var(--color-surface-raised);
   }
-}`} html={'<div class="grid-cols(1) gap-lg wrap-anywhere"><article class="collection-card"><h2 class="m(0) text-lg font-medium">Component padding</h2><p class="mt-xs mb(0) text-sm fg-text-muted">The component supplies 1.5rem.</p></article><article class="collection-card p-sm"><h2 class="m(0) text-lg font-medium">Local utility padding</h2><p class="mt-xs mb(0) text-sm fg-text-muted">p-sm overrides the padding on this instance.</p></article></div>'} caption="Both cards share the same component class. Only the second adds p-sm; its utility declaration wins over normal component-layer padding." />
+}`} html={'<div class="grid-cols(1) gap-lg wrap-anywhere"><article class="collection-card"><h2 class="m(0) text-lg font-regular">Release notes</h2><p class="mt-xs mb(0) text-sm fg-text-muted">Updates for your workspace.</p></article><article class="collection-card p-sm"><h2 class="m(0) text-lg font-regular">Release notes</h2><p class="mt-xs mb(0) text-sm fg-text-muted">Updates for your workspace.</p></article></div>'} caption="Both cards have the same content and component class. The first has 24px padding; the second adds p-sm and has 12px padding at the preview’s 16px root font size. Its radius, border and surface stay the same." />
 
 The preset establishes this order for normal declarations:
 
@@ -20,11 +27,31 @@ The preset establishes this order for normal declarations:
 
 The `p-sm` utility takes precedence over the component's padding declaration, regardless of where the class appears in the HTML attribute. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
 
+The utility changes only padding. It does not replace the component or remove its other declarations. This makes a small local adjustment possible without another component variant or an `!important` declaration.
+
+## Keep native rules in the intended layer
+
+A normal rule outside every layer takes precedence over normal rules inside named layers. If a utility compiles but appears to do nothing, look for an unlayered component rule:
+
+```css
+/* This normal rule wins over a layered padding utility. */
+.collection-card {
+  padding: 1.5rem;
+}
+```
+
+Move that shared rule into `@layer components` when it should permit utility overrides. Avoid adding `!important` just to compensate for an unintended layer boundary.
+
+Layers do not replace the rest of the cascade. Importance is considered before normal layer precedence, and `!important` reverses the order between layers. Inline declarations, animations and transitions have their own precedence. See the [CSS cascade specification](https://www.w3.org/TR/css-cascade-5/#layer-order) for those rules and the [Master CSS layer contract](/reference/rules/layers#how-layers-control-the-cascade) for the preset order.
+
 ## Diagnose a competing declaration \{#diagnose-a-competing-declaration\}
 
-1. Confirm both rules target the element and their conditions match.
-2. Check which layer owns each declaration, including native CSS outside layers.
-3. Keep broad defaults in their intended layer before adding local overrides.
-4. Inspect importance and the native cascade when layer order alone does not explain the result.
+1. Select the element in browser DevTools and find the property in Computed styles. Follow it to the winning declaration.
+2. Confirm both rules target the element and their conditions match.
+3. Check which layer owns each declaration, including native CSS outside layers.
+4. Keep broad defaults in their intended layer before adding local overrides.
+5. Inspect importance and the native cascade when layer order alone does not explain the result.
 
 Load the base stylesheet through the normal Master CSS entry. Generated rules contain their layer blocks; they do not add the base layer statement themselves.
+
+Reversing `collection-card p-sm` to `p-sm collection-card` is not a fix: HTML class order does not control the cascade. If two utilities in the same condition overlap, use [Code linting](/guide/code-linting#no-conflicting-classes) to find the conflict, then inspect which declaration you want to keep.

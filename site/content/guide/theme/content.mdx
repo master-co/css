@@ -1,16 +1,33 @@
+import ThemeIllustration from './components/ThemeIllustration'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import DemoDialogEntrance from './components/DemoDialogEntrance'
 
 ## Overview [sr-only]
-Define a token when several elements should share a design value. Put it in `@theme` after the existing `@import '@master/css'` in your app stylesheet, then use the matching class in markup.
+Define a token when several elements should change together: card spacing, an action color or the width of a reading column. Put it in `@theme` after the existing `@import '@master/css'` in your app stylesheet, then use the matching class in markup.
 
 <DemoConfiguredExample name="theme-first-card" title="Three shared values, one card" source={`@theme {
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
-  --radius-card: 1rem;
-}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><h2 class="m(0) text-xl font-regular">Field notes</h2><p class="mt-sm mb-md text-sm fg-text-muted">Keep the details that matter.</p><button type="button" class="px-md py-sm r-md bg-brand fg-white">New collection</button></article>'} caption="p-card, r-card and bg-brand read project tokens. The preview uses the same theme and markup as the source below; the button does not create data." />
+  --radius-card: 0.5rem;
+}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><p class="flex items-center gap-xs m(0) text-xs fg-text-muted"><span aria-hidden="true" class="h(8) w(8) pill bg-brand"></span>Brand color</p><h2 class="mt-sm mb-xs text-lg font-regular">Field notes</h2><p class="m(0) text-sm fg-text-muted">Keep the details that matter.</p></article>'} caption="p-card and r-card set the shared padding and radius. The small marker uses bg-brand to make the color token visible without changing the card's neutral surface." />
 
 `p-card` generates `padding: var(--spacing-card)`; the browser resolves the custom property on the card. Change the token when every consumer should change together, and use a local value when the change belongs to one element.
+
+## Change one value across its consumers
+
+`--spacing-card` can supply both a card's padding and a list's gap. Change its value from `1.5rem` to `2rem`, and both uses change without editing their markup:
+
+```html
+<article class="p-card">Field notes</article>
+<ul class="flex gap-card">
+  <li>Draft</li>
+  <li>Ready</li>
+</ul>
+```
+
+<ThemeIllustration />
+
+This coupling is a design decision. If cards should become roomier while list spacing stays the same, give those decisions separate tokens. Sharing a number today does not mean two parts of the interface should always change together.
 
 ---
 
@@ -32,7 +49,7 @@ Only `@theme` declarations register class tokens; a native custom property elsew
 
 ## Alias and override tokens
 
-Use `var()` when one token should follow another. Aliases resolve where they are declared: if `--color-text-action` is declared at the root, overriding `--color-brand` in a descendant does not rebind the inherited alias. Redeclare the alias in that scope.
+Use `var()` when one token should follow another. [Aliases resolve before inheritance](https://www.w3.org/TR/css-variables-1/#cycles): if `--color-text-action` is declared at the root, overriding `--color-brand` in a descendant does not rebind the inherited alias. Redeclare the alias in that scope.
 
 <DemoConfiguredExample name="theme-local-alias" title="A local brand and an inherited alias" source={`@theme {
   --color-brand: light-dark(#1d4ed8, #93c5fd);
@@ -46,7 +63,7 @@ Use `var()` when one token should follow another. Aliases resolve where they are
   [data-rebind-action] {
     --color-text-action: var(--color-brand);
   }
-}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-regular fg-brand">Plum brand scope</h2><p class="mt-md mb(0) font-medium fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) font-medium fg-text-action">Rebound action: plum</p></section>'} theme caption="Both action labels use fg-text-action. The first inherits the alias computed at the root; the second redeclares it where --color-brand is plum." />
+}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-regular fg-brand">Plum brand scope</h2><p class="mt-md mb(0) text-sm font-regular fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) text-sm font-regular fg-text-action">Rebound action: plum</p></section>'} caption="Both action labels use fg-text-action. The first inherits the alias computed at the root; the second redeclares it where --color-brand is plum." />
 
 For a color that follows light and dark modes, give the token a `light-dark()` value and keep its name mode-neutral, such as `--color-surface-card`. See [Color](/guide/colors#native-color-scheme-and-manual-themes) for activating modes.
 
@@ -55,7 +72,15 @@ For a color that follows light and dark modes, give the token a `light-dark()` v
 <a id="use-inline-and-static-tokens" />
 
 ## Choose token delivery and value substitution
-Ordinary tokens are emitted on demand, and classes reference their custom properties. Use `static` for values that integrations read without a class:
+The two modifiers answer different questions:
+
+| Need | Choose | Result |
+| --- | --- | --- |
+| Emit values when the project uses them | Ordinary `@theme` | On-demand declarations; classes keep token references. |
+| Keep values even without a discovered consumer | `@theme static` | Token declarations remain available, for example to an external integration. |
+| Resolve a referenced variable on each styled element | `@theme inline` | Generated declarations substitute the token value once. |
+
+Use `static` for a value read by an integration that static discovery cannot see:
 
 ```css
 @theme static { --color-integration-brand: #4f46e5; }
@@ -69,7 +94,15 @@ Use `inline` to bridge a native variable that should resolve on the element usin
 [data-theme="ocean"] { --app-brand: #0369a1; }
 ```
 
-`bg-brand` emits `background-color: var(--app-brand)`. Combine both with `@theme static inline`. Inline substitution applies to classes and `@apply`; handwritten native CSS keeps its authored references. See the [theme contract](/reference/directives/theme#theme-static).
+```html
+<section data-theme="ocean">
+  <div class="bg-brand">Ocean background</div>
+</section>
+```
+
+Here `bg-brand` emits `background-color: var(--app-brand)`, so the inner element reads the ocean value inherited from its section. The substitution removes the intermediate `--color-brand` reference; it does not copy a fixed color into every element.
+
+Combine the modifiers with `@theme static inline` when you need both behaviors. Inline substitution applies to classes and `@apply`; handwritten native CSS keeps its authored references. See the [theme contract](/reference/directives/theme#theme-static).
 
 ---
 

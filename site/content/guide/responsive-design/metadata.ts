@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Responsive design',
-  description: 'Adapt pages with viewport breakpoints from custom media and components with container queries.',
+  description: 'Choose the right responsive boundary, adapt page columns and reusable summaries, and verify the widths where their layout changes.',
   category: 'Design Foundations',
   fileURL: import.meta.url
 })

@@ -1,14 +1,17 @@
+import PackageIllustration from './components/PackageIllustration'
 import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample'
 
 ## Overview [sr-only]
-An authoring package is the smallest way to share a Master CSS styling vocabulary across projects. It is just a package with a CSS source entry, so another project can import its tokens, utilities, mixins, custom media, and native component classes from the app's normal CSS entry.
+Share a stable styling vocabulary by publishing its CSS source. Each consuming app imports that source into its own Master CSS entry and compiles the tokens, utilities and native components it needs. Start here after the vocabulary works inside one app; [Reusing styles](/guide/reusing-styles) covers that first step.
 
-Use an authoring package for shared design-system vocabulary. Do not ship compiled generated CSS or a generated manifest unless your package has a separate runtime integration reason. Let each consuming project compile the source with its own Master CSS entry graph.
+For this package shape, publish source definitions rather than an app’s generated stylesheet or manifest. Apps can then choose their own class usage, token overrides and delivery mode. A package that also provides a runtime integration has a separate artifact contract.
+
+<PackageIllustration />
 
 ---
 
 ## Create a package
-Start with a package name chosen by your project or organization. The internal stylesheet can be named `master.css`; users import the package name, not the internal file path.
+This example uses `@acme/ui-theme`; replace the scope with one you own before publishing. Consumers import the package name. Its exported CSS file is `master.css`.
 
 ```txt
 my-master-theme/
@@ -21,8 +24,9 @@ Point the package root to `master.css`:
 
 ```json name=package.json
 {
-  "name": "<package-name>",
+  "name": "@acme/ui-theme",
   "version": "0.1.0",
+  "files": ["master.css"],
   "style": "./master.css",
   "exports": {
     ".": {
@@ -43,7 +47,9 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 
 <PackageAuthoringExample part="source" />
 
-Good package vocabulary is stable and reusable:
+The example provides a color marker, a native `.btn` component, an on-demand `content-auto` utility and a named `theme-motion` condition. The component owns its shared states; the app chooses whether to request a transition. Native component CSS is included by default, while the utility generates a rule only when used.
+
+Choose the smallest public vocabulary the consumers need:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, and container tokens.
 - Use `@custom-media` for media names and `@mixin` with `@contents` for other reusable wrappers.
@@ -55,11 +61,11 @@ See [Theme tokens](/guide/theme) for naming tokens, [CSS directives](/reference#
 ---
 
 ## Use the package
-Install the package in the consuming project, then import the package from the app CSS entry:
+After installing the package, import it after the default Master CSS entry:
 
 ```css name=app.css
 @import '@master/css';
-@import '<package-name>';
+@import '@acme/ui-theme';
 ```
 
 The imported source becomes part of the project CSS entry graph. Project markup can use the shared vocabulary as utility and native CSS classes:
@@ -69,7 +75,7 @@ The imported source becomes part of the project CSS entry graph. Project markup 
 Packages imported by a project entry are already available to local stylesheets. To add a package only to one stylesheet's compile-time context, use `@reference`:
 
 ```css name=components/Button.module.css
-@reference '<package-name>';
+@reference '@acme/ui-theme';
 
 .button {
   padding-inline: var(--spacing-action-x);
@@ -81,6 +87,21 @@ Packages imported by a project entry are already available to local stylesheets.
 The local `.button` consumes the package's spacing, radius and brand tokens. `@reference` supplies their definitions while compiling this stylesheet, and the output includes the required theme resources. It does not copy the package's native `.btn` rule or generated utility classes. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
 
 ---
+
+## Override a public value in the consumer
+
+Keep app-specific choices after the package import. For example, this app makes the shared action wider without copying its component CSS:
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+
+@theme {
+  --spacing-action-x: 1.5rem;
+}
+```
+
+`.btn` still reads `var(--spacing-action-x)`. The app changes its horizontal padding from 1rem to 1.5rem; other apps keep their own values. Document the token names, component selectors and utility names consumers may rely on. Renaming one of those public names affects their markup or stylesheets, even when the package contains no JavaScript.
 
 ## Keep app policy in the app
 A reusable authoring package should not decide how one application scans, filters, or ships its source files.
@@ -97,4 +118,21 @@ Use the package for shared vocabulary. Use the app CSS entry for local source bo
 ---
 
 ## Validate with an example
-Before publishing, run `npm pack` and install the resulting `.tgz` in a small consuming project. Import it from the consumer's CSS entry, use a few of its classes, and inspect the production build's CSS for the expected tokens and classes. Standalone CLI inspection does not compile package-backed entries, so an empty report does not prove the vocabulary was included.
+Pack the source from the package directory. `npm pack` creates a local archive; it does not publish to the registry:
+
+```bash
+npm pack
+```
+
+With the example name and version, the archive is `acme-ui-theme-0.1.0.tgz`. Check that it contains `master.css` and the expected `package.json` export. The `files` list keeps unrelated source and build artifacts out of the package; npm also includes its standard metadata files.
+
+Install that archive in a small consuming app with Master CSS already integrated:
+
+```bash
+npm install ../my-master-theme/acme-ui-theme-0.1.0.tgz
+npm run build
+```
+
+Use the markup above in a scanned source file. In the production output, check the native `.btn` rule, the requested `content-auto` utility and the theme resources they need. Then open the app, inspect the button's computed padding, and repeat with the local override. Verify hover, keyboard focus and reduced motion as well as the resting state.
+
+Use the framework integration's build to verify package resolution. In the current standalone CLI, inspection can load the app entry while leaving a third-party bare package import outside its stylesheet graph. Check the listed stylesheet dependencies: an inspection that omits the package's `master.css` has not verified that vocabulary. The production consumer also verifies files and export paths that a local source-only preview cannot check.

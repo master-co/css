@@ -49,7 +49,7 @@ export function drawing(theme: Theme) {
   /** Omit dimensions for intrinsic content sizing; an anchor keeps positioning independent of the resulting width. */
   const sheet = (x: number, y: number, width: number | undefined, height: number | undefined, content: string, anchor: Align = 'start') =>
     `<div class="sheet${anchor === 'start' ? '' : ` anchor-${anchor}`}" style="${box(x, y, width, height)}">${content}</div>`
-  const chip = (x: number, y: number, width: number, name: IconName, value: string) =>
+  const chip = (x: number, y: number, width: number | undefined, name: IconName, value: string) =>
     `<div class="chip" style="${box(x, y, width)}">${icon(name)}<span data-label>${escapeHtml(value)}</span></div>`
   const mark = (x: number, y: number, name: IconName, value: string, align: Align = 'start') =>
     `<div class="mark${align === 'start' ? '' : ` ${align}`}" style="${box(x, y)}">${icon(name)}${label(value)}</div>`

@@ -1,7 +1,11 @@
+import LintIllustration from './components/LintIllustration'
+
 ## Overview [sr-only]
 Catch invalid classes, conflicting declarations and inconsistent syntax as you edit. The ESLint integration uses your project's theme and custom definitions, so diagnostics reflect the classes your project can generate.
 
-Start with the recommended config below, or use the [installation integrations](/guide/installation#integrations) to add it with your framework setup.
+Start with the recommended config below, or use the [installation integrations](/guide/installation#integrations) to add it with your framework setup. Linting checks class authoring; use the browser to verify layout, contrast and interaction. A clean lint result is not a design review.
+
+<LintIllustration />
 
 ---
 
@@ -23,7 +27,19 @@ export default defineConfig([
 ])
 ```
 
-It enables the four rules below; see the [rule defaults and fixes](/reference/packages#eslint-config-css).
+It enables the four rules below; see the [rule defaults and fixes](/reference/packages#eslint-config-css). Run the check from the app root so it can find the project CSS entry:
+
+```bash
+npx eslint .
+```
+
+Review automatic edits locally before adopting them across the project:
+
+```bash
+npx eslint . --fix
+```
+
+Sorting, duplicate removal and fully overridden classes can be fixed automatically. Invalid values and design-policy warnings can still require a decision after the command finishes. Keep the non-fixing command in CI so failures remain visible.
 
 ---
 
@@ -102,7 +118,7 @@ Partial declaration overlaps need review. For example, the top border override b
 b-solid bt-dashed
 ```
 
-Use the generated CSS preview to decide whether the override is intentional before changing it.
+Compare the generated declarations and inspect the element in the browser before removing an intentional override.
 
 ---
 
@@ -215,7 +231,7 @@ States of the element itself, relative selectors inside `:has()` or `:is()`, and
 To check token references in native CSS, run [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change) and pass route stylesheets imported from JavaScript as source paths; ESLint checks class lists only.
 
 ## Editor feedback
-For diagnostics and sort-on-save while editing, follow [Language service](/guide/language-service).
+For class completion and hover information, follow [Language service](/guide/language-service). ESLint owns the lint rules and sort-on-save configuration; both tools can use the same project definitions.
 
 ## Lint from scripts and AI tools
 Keep `eslint .` in development and CI scripts; for JSON diagnostics without an ESLint parser, use [`master-css lint`](/reference/tools/cli#lint), and for agents, [`mastercss_lint_project`](/reference/tools/mcp#mastercss_lint_project).

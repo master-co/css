@@ -42,6 +42,9 @@ export async function verifyDeliveryExamples() {
 
   const css = await routeStyles()
   assert.doesNotMatch(css, /@reference|@compose|@variant/)
+  assert.match(css, /\.campaign-banner/)
+  assert.match(css, /--color-campaign/)
+  assert.doesNotMatch(css, /\.campaign-root/)
 
   const rendering = deliveryFences(deliverySource('rendering-modes'))
   const html = rendering.find(f => f.name === 'index.html')!.text

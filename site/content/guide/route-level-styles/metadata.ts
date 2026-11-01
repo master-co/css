@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Route-level Styles',
-  description: 'Write route, page and component CSS that uses your project tokens, mixins and custom media.',
+  description: 'Keep route CSS locally delivered while using shared definitions; distinguish reference context, native rules and selector scope.',
   category: 'Authoring',
   order: 3,
   fileURL: import.meta.url

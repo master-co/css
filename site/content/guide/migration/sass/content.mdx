@@ -1,37 +1,27 @@
+import SassIllustration from './components/SassIllustration'
+
 Sass and Master CSS can coexist. Keep Sass for vendor imports, generated selectors, complex nesting, and styles that read better as CSS. Move repeated visual values and markup-owned component styles into Master CSS when the result is easier to maintain.
 
 This guide covers `.scss` and `.sass` projects that use variables, maps, mixins, functions, placeholders, partials, and nested selectors.
 
 ---
 
-CSS `@mixin` and Sass `@mixin` share a keyword. Keep Master CSS definitions in `.css` files, or use the [SCSS interpolation pattern](/reference/directives/definitions#sass-interoperability) when emitting them from Sass. Current Sass rejects a direct `@mixin --name` declaration.
+CSS `@mixin` and Sass `@mixin` share a keyword. Keep Master CSS definitions in `.css` files, or use the [SCSS interpolation pattern](/reference/directives/definitions#sass-interoperability) when emitting them from Sass. The [Sass mixin grammar](https://sass-lang.com/documentation/at-rules/mixin/) rejects mixin names beginning with `--`; a Master CSS definition must reach the Master compiler without being interpreted as a Sass mixin.
 
 ## Migration strategy
-Start from the Sass entry files your app already builds.
+Start from the Sass entry files the app already builds. Follow the [shared migration workflow](/guide/migration#migration-strategy), and separate compile-time work from values the browser should receive.
 
-1. Import Master CSS from the app CSS entry while Sass continues to compile.
-2. Audit Sass variables, maps, mixins, functions, placeholders, partials, and generated selectors.
-3. Move shared design values into Master CSS `@theme`.
-4. Convert local visual rules to markup classes when the markup stays readable.
-5. Convert reusable Sass patterns to native CSS in `@layer components`, or to `@mixin` when they are reusable primitives.
-6. Keep vendor imports, generated CSS, complex animation CSS, and hard-to-read selectors in Sass or regular CSS.
-7. Remove Sass only after converted screens no longer depend on it.
+| Existing Sass responsibility | Keep or move |
+| --- | --- |
+| Product colors, spacing and radii | Move shared values to `@theme` when their consumers are ready. |
+| Loops, generated selectors, vendor imports and functions | Keep Sass as their compiler until there is a deliberate replacement. |
+| A repeated declaration group | Use native component CSS or a Master CSS mixin, depending on where it is consumed. |
+| Local visual rules | Use markup classes when the result is easier to read. |
+| Structural nesting, print rules and complex animations | Keep useful native CSS. |
 
-Do not translate every Sass rule. The goal is clearer ownership, not fewer file extensions.
+A Sass variable is resolved during preprocessing; a CSS custom property participates in the browser’s cascade. Moving a value between them changes when and where it can vary, so inspect every use before replacing it.
 
----
-
-## Audit checklist
-Inspect the Sass surface before changing files.
-
-| Area | What to look for | Migration decision |
-| --- | --- | --- |
-| Entry files | `.scss` and `.sass` entries, partials, `@use`, `@forward`, and app imports | Add Master CSS beside the current entry first. |
-| Variables and maps | Colors, spacing, radius, typography, shadows, breakpoints, and z-index scales | Move product-owned values into `@theme`. |
-| Mixins and functions | Responsive helpers, fluid calculations, color helpers, and repeated declarations | Replace with utilities, tokens, native CSS functions, or keep in CSS when clearer. |
-| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@layer components`; convert primitives to `@mixin`. |
-| Nesting | Component states, descendant selectors, media queries, and structural selectors | Move simple states into classes; keep complex selectors as CSS. |
-| Generated CSS | Loops, maps, vendor output, icon fonts, and theme packages | Keep generated output until a deliberate replacement exists. |
+<SassIllustration />
 
 ---
 
@@ -43,7 +33,7 @@ Import Master CSS from the stylesheet your app already loads. Keep Sass compilat
 @import "./legacy.css";
 ```
 
-Compile the existing Sass entry to `legacy.css` before Master CSS resolves this import graph. Keep Sass syntax in its own input; the imported result must be ordinary CSS.
+Compile the existing Sass entry to `legacy.css` before Master CSS resolves this import graph. Keep Sass syntax in its own input; the imported result must be ordinary CSS. In a watch setup, keep that ordering too: a Sass edit must update `legacy.css` before the app CSS is rebuilt. Do not edit the generated file by hand.
 
 Default source discovery is enough for ordinary app files. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
 
@@ -140,14 +130,14 @@ Use `@layer components` for product roles. Keep the `@theme` values from the pre
     padding-inline: var(--spacing-md);
     background-color: var(--color-primary);
     color: oklch(100% 0 none);
-    height: 2.5rem;
+    min-height: 2.5rem;
   }
 }
 ```
 
 ```html
 <article class="card">...</article>
-<button class="btn">Save</button>
+<button type="button" class="btn">Save</button>
 ```
 
 Use `@utility` for reusable class recipes; use `@mixin` when declarations need reuse inside CSS rules:

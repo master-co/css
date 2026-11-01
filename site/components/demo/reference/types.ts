@@ -14,6 +14,8 @@ export interface DemoScene {
   /** Trusted resources and body classes from authored whole-document examples. */
   head?: string
   bodyClass?: string
+  /** Supporting interface only; taught class examples must remain independent of private ui-* styles. */
+  systemButtons?: boolean
   caption: string
   height?: number
   maxWidth?: number

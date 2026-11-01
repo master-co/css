@@ -2,13 +2,13 @@ import { configuredExampleCSS, configuredMarkupClasses } from '../reference/conf
 
 export const authoringSource = `@theme {
   --color-brand: #4f46e5;
-  --color-text-action: light-dark(var(--color-brand), #a5b4fc);
-  --color-focus-action: light-dark(#4f46e5, #a5b4fc);
+  --color-text-action: var(--color-text-strong);
+  --color-focus-action: var(--color-text-strong);
   --spacing-action-x: 1rem;
-  --radius-action: 0.5rem;
+  --radius-action: 0.375rem;
 }
 
-@custom-media --motion-safe (prefers-reduced-motion: no-preference);
+@custom-media --theme-motion (prefers-reduced-motion: no-preference);
 
 @utility content-auto {
   content-visibility: auto;
@@ -21,15 +21,25 @@ export const authoringSource = `@theme {
     align-items: center;
     justify-content: center;
     gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-action-x);
+    min-height: 2.375rem;
+    max-width: 100%;
+    padding: .5rem var(--spacing-action-x);
+    border: 1px solid var(--color-line-divider);
     border-radius: var(--radius-action);
     font-size: var(--font-size-sm);
-    font-weight: 500;
-    background-color: var(--color-brand);
-    color: var(--color-white);
+    font-weight: 400;
+    line-height: 1.2;
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-action);
+    box-shadow: var(--shadow-sm);
 
     &:hover {
-      background-color: color-mix(in oklab, var(--color-brand) 85%, transparent);
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      background-color: var(--color-surface-inset);
+      box-shadow: none;
     }
 
     &:focus-visible {
@@ -39,7 +49,12 @@ export const authoringSource = `@theme {
   }
 }`
 
-export const authoringHTML = "<article class=\"p-lg b(1) b-solid b-line-divider r-lg content-auto\">\n  <h2 class=\"m(0) font-lg font-semibold\">Project settings</h2>\n  <p class=\"my-md fg-text-muted\">Shared tokens keep actions consistent across apps.</p>\n  <button type=\"button\" class=\"btn (transition-property:background-color)@motion-safe (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))@motion-safe\">Save changes</button>\n</article>"
+export const authoringHTML = `<article class="p-lg b-solid b(1) b-line-divider r-lg content-auto">
+  <p class="flex items-center gap-xs m(0) text-xs fg-text-muted"><span aria-hidden="true" class="h(8) w(8) pill bg-brand"></span>Package brand</p>
+  <h2 class="mb-xs mt-sm text-lg font-regular">Shared vocabulary</h2>
+  <p class="mt(0) mb-md text-sm fg-text-muted">The app supplies the markup; the package supplies the shared action.</p>
+  <button type="button" class="btn (transition-property:box-shadow,background-color)@theme-motion (transition-duration:var(--duration-fast))@theme-motion (transition-timing-function:var(--easing-smooth))@theme-motion">Preview action</button>
+</article>`
 
 export function authoringCSS() {
   return configuredExampleCSS(authoringSource, configuredMarkupClasses(authoringHTML))

@@ -158,13 +158,15 @@ export function verifyInstallationExamples() {
       return css + [...css.matchAll(/@import "\.\/([^"?#]+)"/g)].map(([, path]) => readGraph(decodeURIComponent(path))).join('\n')
     }
     const css = readGraph('master.css')
-    for (const declaration of ['font-style:italic', 'font-size:var(--font-size-5xl)', 'font-weight:var(--font-weight-heavy)', 'margin:var(--spacing-2xl)']) assert.ok(css.includes(declaration), declaration)
+    for (const declaration of ['padding:var(--spacing-md)', 'border-width:calc(1 * 1px)', 'border-radius:var(--radius-md)', 'font-size:var(--text-sm)', 'font-weight:var(--font-weight-regular)']) assert.ok(css.includes(declaration), declaration)
     assert.doesNotMatch(css, /@compose|@master|@theme/)
   } finally { rmSync(root, { recursive: true, force: true }) }
 
   const settings = JSON.parse(deliveryFences(deliverySection('language-service', 'Set up VS Code \\{#set-up-vs-code\\}')).find(f => f.name === '.vscode/settings.json')!.text)
   assert.equal(settings['editor.quickSuggestions'].strings, true)
-  assert.deepEqual(settings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
+  const saveSettings = JSON.parse(deliveryFences(deliverySection('language-service', 'Add class sorting on save')).find(f => f.name === '.vscode/settings.json')!.text)
+  assert.equal(saveSettings['editor.codeActionsOnSave']['source.fixAll.eslint'], 'explicit')
+  assert.deepEqual(saveSettings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
   const cdn = installationSection('', 'cdn')
   assert.equal(deliveryFences(cdn).length, 0, 'Unavailable CDN delivery must not advertise a runnable installation')
   assert.match(cdn, /not available yet/)

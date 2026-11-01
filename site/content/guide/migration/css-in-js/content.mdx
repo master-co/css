@@ -1,3 +1,5 @@
+import CSSInJSIllustration from './components/CSSInJSIllustration'
+
 CSS-in-JS migrations are most successful when static visual styles move first and runtime behavior moves last. Styled Components and Emotion can stay in the project while Master CSS takes over class-based styling one component family at a time.
 
 This guide covers `styled-components`, `@emotion/react`, and `@emotion/styled`. It does not require deleting CSS-in-JS from components that still need runtime-generated selectors or values.
@@ -5,31 +7,18 @@ This guide covers `styled-components`, `@emotion/react`, and `@emotion/styled`. 
 ---
 
 ## Migration strategy
-Run both systems during migration.
+Use the [shared migration workflow](/guide/migration#migration-strategy) to establish a baseline, then separate the jobs currently mixed into each styled wrapper:
 
-1. Add Master CSS to the app CSS entry and choose a rendering mode.
-2. Audit styled wrappers, `css` helpers, object styles, global styles, theme providers, and variant props.
-3. Move project-owned theme values into Master CSS `@theme`.
-4. Convert static styles to class strings or `@layer components`.
-5. Convert variant props to complete class maps.
-6. Pass truly dynamic values through CSS variables.
-7. Remove CSS-in-JS packages only after no converted surface depends on their runtime.
-
-Do not start with a global codemod. CSS-in-JS often mixes layout, visual styling, variants, element selection, animation, and runtime state in the same component.
-
----
-
-## Audit checklist
-Inspect the CSS-in-JS surface before changing files.
-
-| Area | What to look for | Migration decision |
+| Input | Destination | What stays in the component |
 | --- | --- | --- |
-| Styled wrappers | `styled.div`, `styled(Component)`, `as`, transient props, and polymorphic components | Convert pure visual wrappers first; keep wrappers that encode behavior or DOM choice. |
-| Emotion `css` | `css` prop, `css()` helper, object styles, arrays, and conditional fragments | Replace static fragments with class strings or class maps. |
-| Themes | `ThemeProvider`, `DefaultTheme`, palette, spacing, radius, typography, breakpoints, and modes | Move shared design values into `@theme`; keep non-CSS app config in the JS theme. |
-| Global styles | `createGlobalStyle`, Emotion `Global`, resets, font faces, and base element rules | Move app-owned CSS to the CSS entry; keep third-party resets that still matter. |
-| Variants | Props such as `tone`, `size`, `selected`, `dense`, and `disabled` | Use complete class maps so static rendering can see every class. |
-| Runtime values | Measurements, user colors, drag positions, progress, and live layout values | Use CSS variables or keep the CSS-in-JS rule until there is a clearer replacement. |
+| Static declarations | Complete markup classes or `@layer components` | DOM structure and event handlers |
+| A finite visual variant | A map of complete class strings | The public variant prop and its default |
+| A continuously changing value | A CSS custom property passed through `style` | Measurement, validation and state |
+| Generated selectors or keyframes | Existing CSS-in-JS until a clear replacement exists | The runtime logic that creates them |
+
+Inspect `as`, refs, prop filtering and SSR setup before replacing a wrapper. A component with a small style block can still have a large public contract.
+
+<CSSInJSIllustration />
 
 ---
 
@@ -121,9 +110,9 @@ const toneClasses = {
 }
 
 const sizeClasses = {
-  sm: '(height:2rem) px-sm font-sm',
-  md: '(height:2.5rem) px-md font-sm',
-  lg: '(height:3rem) px-lg font-md'
+  sm: '(min-height:2rem) px-sm font-sm',
+  md: '(min-height:2.5rem) px-md font-sm',
+  lg: '(min-height:3rem) px-lg font-md'
 }
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -131,7 +120,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: keyof typeof sizeClasses
 }
 
-export function Button({ tone = 'primary', size = 'md', className, type = 'button', ...props }: ButtonProps) {
+export function Button({ tone = 'neutral', size = 'md', className, type = 'button', ...props }: ButtonProps) {
   return (
     <button
       className={['inline-flex items-center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
@@ -142,29 +131,33 @@ export function Button({ tone = 'primary', size = 'md', className, type = 'butto
 }
 ```
 
-When a variant controls more than visual styles, keep the prop and only migrate the visual declarations.
+The wrapper consumes `tone` and `size` before spreading the remaining native props. Preserve this filtering when replacing styled-components [transient props or `shouldForwardProp`](https://styled-components.com/docs/api): style-only props should not leak onto a native element. If the old public API uses `$tone`, retain that spelling until call sites are deliberately migrated.
+
+When a variant controls more than visual styles, keep the prop and only migrate the visual declarations. Minimum heights let labels wrap or enlarge without forcing the control into a fixed-height box.
 
 Appending `className` preserves the caller's classes; it does not make them win over conflicting utilities. HTML class order does not decide the [cascade](/guide/cascade-layers). Use the variant props to select one value, or put overridable defaults in `@layer components` so caller utilities can override them.
 
 ---
 
 ## Use CSS variables for dynamic values
-Runtime values should not become generated class names. Keep the class static and pass the changing value through a CSS variable.
+Runtime values should not become generated class names. Keep the class static and pass the changing value through a CSS variable. This follows the same separation described in [Emotion’s guidance for dynamic styles](https://emotion.sh/docs/best-practices#use-the-style-prop-for-dynamic-styles): the changing value belongs to the element, while the reusable declaration stays stable.
 
 ```tsx
 export function Meter({ value }: { value: number }) {
   const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
   return (
     <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
-      className="overflow-hidden (height:0.5rem) (border-radius:100%) bg-gray-10">
+      className="overflow-hidden (height:0.5rem) pill bg-surface-inset">
       <div
-        className="h-full (width:var(--value)) bg-green-60 (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        className="h-full (width:var(--value)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
         style={{ '--value': `${percent}%` } as React.CSSProperties}
       />
     </div>
   )
 }
 ```
+
+At 25% and 75%, the inner element still uses `(width:var(--value))`; only `--value` changes. The clamped number also feeds `aria-valuenow`, so the visual and accessible values agree.
 
 Keep CSS-in-JS for cases where the component must create selectors, keyframes, or style blocks from runtime data that cannot be represented clearly with CSS variables.
 

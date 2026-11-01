@@ -21,17 +21,25 @@ export function FoundationMedia() {
 }
 
 export function FoundationContainerGrid() {
-  return <DemoContainer title="One card, two available widths" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The preset's 28rem --md container condition is independent of container tokens and viewport breakpoints.">
-      <section className="container-inline">
-        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container(--md) ui-sheet" data-elevation="1">
-          <DemoMedia tone="blue" className="h-auto w-full (aspect-ratio:3/2) r-sm" aria-label="Blue mountain illustration" />
-          <div className="min-w(0)">
-            <DemoLabel>Asset library</DemoLabel>
-            <h3 className="mb(0) mx(0) mt-xs text-md font-semibold">Space to compose</h3>
-            <p className="mb(0) mx(0) mt-xs text-sm fg-text-muted">A single column stays readable in a sidebar. A wider container gives the image its own track.</p>
+  return <DemoContainer title="A summary follows its container" data-foundation="container-grid" caption="Change the ancestor's width. The summary and status share a row from 28rem; the page viewport stays unchanged.">
+    <section className="container-inline">
+      <article className="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
+        <div className="min-w(0)">
+          <h3 className="m(0) text-md font-regular fg-text-strong">Release notes</h3>
+          <p className="mb(0) mt-xs text-sm fg-text-muted">Review the changes before publishing.</p>
+        </div>
+        <dl className="grid gap-xs m(0) text-sm">
+          <div>
+            <dt className="fg-text-muted">Status</dt>
+            <dd className="m(0) fg-text-strong">Draft ready</dd>
           </div>
-        </article>
-      </section>
+          <div>
+            <dt className="fg-text-muted">Next step</dt>
+            <dd className="m(0) fg-text-strong">Editorial review</dd>
+          </div>
+        </dl>
+      </article>
+    </section>
   </DemoContainer>
 }
 

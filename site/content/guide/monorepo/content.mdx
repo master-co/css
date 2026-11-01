@@ -1,9 +1,12 @@
+import MonorepoIllustration from './components/MonorepoIllustration'
 import ExplorerView from '~/site/docs-shell/components/ExplorerView'
 
 ## Overview [sr-only]
 Give each application its own project boundary, then share CSS vocabulary through imports. The [Language Service](/guide/language-service), [code linting](/guide/code-linting), and build integrations can use the same app-specific project context.
 
-A project CSS entry importing `@master/css` or a package declaring Master CSS dependencies identifies a workspace. These boundaries are independent of the package manager's workspace list. Start each app's build from its project directory and keep its CSS entry there.
+A project CSS entry importing `@master/css` or a package declaring Master CSS dependencies identifies a workspace. These boundaries are independent of the package manager's workspace list. Start each app's build from its project directory and keep its CSS entry there. Package-manager workspace membership alone does not create a shared Master CSS configuration.
+
+<MonorepoIllustration />
 
 ---
 
@@ -27,25 +30,25 @@ For independent applications, use separate package projects such as `projects/ad
     ]}
   ]},
   { name: 'package.json' },
-  { name: 'index.css' }
+  { name: 'styles', children: [{ name: 'shared.css' }] }
 ]}
 </ExplorerView>
 
 Complete the appropriate [framework setup](/guide/installation#integrations) in each application. Start its development server and production build from that app's directory. This keeps generated CSS, source scanning, diagnostics and editor state aligned with its project root.
 
-Keep shared definitions in the root stylesheet. In this example it supplies tokens, while each application imports the full Master CSS entry itself:
+Keep shared definitions in a dedicated source file. In this example it supplies tokens, while each application imports the full Master CSS entry itself:
 
-```css name=index.css
+```css name=styles/shared.css
 @theme {
   --color-primary: #123456;
 }
 ```
 
-### Share the project manifest source
+### Share CSS definitions
 In each workspace, import shared project CSS files and add workspace-specific definitions after them.
 ```css name=projects/admin/index.css
 @import '@master/css';
-@import '../../index.css';
+@import '../../styles/shared.css';
 
 @theme {
   --color-primary: #4f46e5;
@@ -64,7 +67,7 @@ The shop imports the same shared source and makes its own color choice:
 
 ```css name=projects/shop/index.css
 @import '@master/css';
-@import '../../index.css';
+@import '../../styles/shared.css';
 
 @theme {
   --color-primary: #0f766e;
@@ -74,7 +77,10 @@ The shop imports the same shared source and makes its own color choice:
 Both applications can use the same class:
 
 ```html
-<button type="button" class="px-md py-sm r-md bg-primary fg-white">Save changes</button>
+<p class="flex items-center gap-xs text-sm">
+  <span aria-hidden="true" class="h(8) w(8) pill bg-primary"></span>
+  Workspace
+</p>
 ```
 
 The admin build emits its `#4f46e5` primary value; the shop build emits `#0f766e`. Changing the admin override should not change the shop output. Build both apps and inspect `--color-primary` in each generated stylesheet to check that the boundary is working.
@@ -90,3 +96,11 @@ A shared CSS import supplies definitions. Class strings inside a shared componen
 If components live in `packages/ui`, add `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";` to each consuming app's CSS entry. This explicit path includes the shared source in the app's build. It is relative to the CSS file that declares it, so adjust the path when the entry moves.
 
 Installed dependency directories are excluded from automatic scanning. A packaged component library may need a narrow `@source` pattern targeting its distributed source files. Check a class that appears only in that package against the app's production output. See [source boundaries](/reference/rules/extraction#source-boundaries) for exclusions and other source types.
+
+## Verify the boundary before sharing more
+
+From each application's directory, run its production build. Check both outputs after changing one local override: the admin value should change only in admin. Then add a complete class used only by a shared component and confirm the consuming app emits its rule.
+
+If a token is missing, check the CSS import graph. If the definition is available but a shared component's utility is absent, check source selection. These are separate inputs: importing the shared CSS does not automatically include every sibling component file.
+
+Use [Authoring packages](/guide/authoring-packages) when this vocabulary needs a versioned package contract. Use [Scanning and pruning](/guide/scanning-and-pruning) to narrow the files each app scans and the native rules it keeps.

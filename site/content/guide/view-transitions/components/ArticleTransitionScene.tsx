@@ -53,7 +53,7 @@ export default function ArticleTransitionScene() {
         className={clsx(selected.imageTransition, shared, 'block h-auto w-full (aspect-ratio:16/9) object-cover')} />
       <div className="p-lg">
         <time dateTime={selected.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(selected.dateTransition, shared, 'text-xs fg-text-muted')}>{selected.date}</time>
-        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mb(0) mt-sm text-2xl font-medium outline-solid:focus-visible outline(2):focus-visible outline-text-link:focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
+        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mb(0) mt-sm text-2xl font-regular outline-solid:focus-visible outline(2):focus-visible outline-text-link:focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
         <p className="mb(0) mt-md text-sm fg-text-muted">{selected.description} The image, title and date keep their names in both views. Each snapshot can move to its new bounds while surrounding content fades.</p>
         <button type="button" className="mt-lg ui-button" onClick={() => run(() => setSelectedId(undefined), () => buttons.current.get(selected.id) ?? null)}>
           <IconArrowLeft aria-hidden="true" />Back to collection
@@ -65,7 +65,7 @@ export default function ArticleTransitionScene() {
           className={clsx(article.imageTransition, shared, 'block h-auto w-full (aspect-ratio:16/10) object-cover')} />
         <article className="flex flex-col (flex:1) p-md">
           <time dateTime={article.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(article.dateTransition, shared, 'text-xs fg-text-muted')}>{article.date}</time>
-          <h2 className={clsx(article.titleTransition, shared, 'mb(0) mt-xs text-lg font-medium')}>{article.title}</h2>
+          <h2 className={clsx(article.titleTransition, shared, 'mb(0) mt-xs text-lg font-regular')}>{article.title}</h2>
           <p className="mb-md mt-sm text-sm fg-text-muted">{article.description}</p>
           <button ref={element => { if (element) buttons.current.set(article.id, element); else buttons.current.delete(article.id) }}
             type="button" className="self-start mt-auto ui-button" aria-label={`Read ${article.title}`}

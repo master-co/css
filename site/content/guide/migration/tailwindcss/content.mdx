@@ -1,4 +1,6 @@
-Tailwind CSS v4 and Master CSS both generate CSS from class names and CSS directives, but they are not drop-in replacements for each other. Treat the migration as a product styling change: install Master CSS beside Tailwind, convert one route or component family at a time, and remove Tailwind only after the migrated surfaces build and visually match the intended design.
+import TailwindIllustration from './components/TailwindIllustration'
+
+Tailwind CSS v4 and Master CSS both generate CSS from class names and CSS directives, but they are not drop-in replacements for each other. Treat the migration as a change of styling implementation: install Master CSS beside Tailwind, convert one route or component family at a time, and remove Tailwind only after the migrated surfaces build and visually match the intended design.
 
 This guide focuses on Tailwind CSS v4's CSS-first workflow: `@import "tailwindcss"`, `@theme`, `@utility`, `@variant`, `@custom-variant`, `@source`, and `@apply`. For Tailwind behavior, use the official references for [functions and directives](https://tailwindcss.com/docs/functions-and-directives), [theme variables](https://tailwindcss.com/docs/theme), [detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files), and [states and variants](https://tailwindcss.com/docs/hover-focus-and-other-states).
 
@@ -25,34 +27,19 @@ only the pseudo-class changes its behavior. `mastercss_css_compare` compares
 Master outputs; use the browser to compare the original component with its
 converted result.
 
-Run both systems while you migrate. Tailwind can keep styling existing screens while Master CSS takes over one reviewed slice at a time.
+Use the [shared migration workflow](/guide/migration#migration-strategy) for coexistence, baseline captures and removal checks. During the first batch, inventory these Tailwind-specific contracts:
 
-1. Add Master CSS to the project without removing Tailwind.
-2. Keep the Tailwind CSS entry loaded until converted screens no longer depend on it.
-3. Move shared design values into Master CSS `@theme` tokens.
-4. Convert markup classes where the class list stays readable.
-5. Replace `@apply` with native declarations and selectors, or move utilities directly into markup.
-6. Run project checks and compare important screens before deleting Tailwind.
+| Contract | What to preserve or replace |
+| --- | --- |
+| Compiler input | Keep Tailwind directives with Tailwind’s compiler; import ordinary generated CSS into the Master entry. |
+| Theme and variants | Resolve actual token values and conditions before choosing Master classes. |
+| Preflight, plugins and global CSS | Retain the rules that untouched screens still need. |
+| Class processing | Replace Tailwind-specific merging and fragment assembly with deliberate class maps. |
+| Component internals | Keep vendor CSS and complex selectors until the component itself is migrated. |
 
-Avoid global search-and-replace. Tailwind class names encode a different vocabulary, default theme, Preflight reset, container model, ring model, and variant syntax. A reviewable migration preserves intent instead of preserving spelling.
+Avoid global search-and-replace. The two systems have different resets, scales, ring models and directive contracts. Even an identical keyword can mean a different operation.
 
----
-
-## Audit checklist
-Inspect the Tailwind surface before changing files.
-
-| Area | What to look for | Migration decision |
-| --- | --- | --- |
-| CSS entry | `@import "tailwindcss"` and any imported theme files | Compile Tailwind separately; load its ordinary CSS beside the Master CSS entry. |
-| Theme | Tailwind `@theme`, `@theme inline`, and `@theme static` blocks | Move shared tokens into Master CSS `@theme` blocks. |
-| Custom utilities | Tailwind `@utility` blocks | Recreate class recipes with Master CSS `@utility`; use `@mixin` when declarations need reuse inside CSS rules. |
-| Custom variants | Tailwind `@custom-variant` and CSS rules using `@variant` | Use `@custom-media` for media names and `@mixin` with `@contents` for other wrappers. |
-| Composition | Rules using `@apply` | Replace with native CSS declarations and selectors. |
-| Source policy | `@source`, `@source not`, `@source inline()`, ignored paths | Remove broad scan directives; use Master CSS `@source` and `@source not` only for explicit source exceptions, and `@safelist` or `@blocklist` for candidate policy. |
-| Markup | Class strings in HTML, JSX, templates, helper maps, and component props | Convert complete class strings, not fragments. |
-| Third-party styling | Plugin CSS, vendor CSS, component-library overrides | Keep regular CSS until a Master CSS replacement is clearly better. |
-
-Use a clean git branch and commit migration batches by feature area. If a screen depends heavily on Tailwind-specific plugins or class generation, leave that screen on Tailwind until its replacement is explicit.
+<TailwindIllustration />
 
 ---
 
@@ -75,16 +62,9 @@ Do not remove Tailwind at this point. The first milestone is a project that stil
 ---
 
 ## Choose a rendering mode
-Use [Rendering modes](/guide/rendering-modes) before converting many files. The rendering mode controls CSS delivery, not class syntax.
+Start with [static rendering](/guide/rendering-modes): most Tailwind projects already keep complete class strings in source. Toggling those classes and updating per-element CSS variables work without a browser runtime.
 
-| Project shape | Recommended starting point | Why |
-| --- | --- | --- |
-| Vite SPA, component app, marketing site, or content site | Static rendering (default) | Tailwind projects already keep complete class strings in source, so the default setup builds a zero-runtime CSS asset. Toggling known classes and updating CSS variables work without a browser runtime. |
-| App that creates new class names in the browser, such as a visual editor or playground | Runtime rendering | Generates rules for class names that first appear after the build. |
-| SSR or SSG app that also creates new class names in the browser | Progressive rendering | Sends first-page CSS early, then lets the runtime handle class names that appear later. |
-| Highly interactive editor, builder, or data grid | Mixed approach | Keep stable classes in Master CSS and volatile per-element values in CSS variables or inline styles. |
-
-Static rendering depends on complete class strings in scanned source. If a Tailwind component builds class names from fragments, rewrite that part to explicit class maps before expecting static output to be complete.
+Use runtime or progressive rendering only when the app genuinely creates new class names after the build. Before choosing a mode, replace fragment assembly with complete class maps and inspect the source boundaries that the existing build relies on.
 
 ---
 
@@ -176,7 +156,7 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 | `p-6`, `px-4`, `mt-8` | `(padding:1.5rem)`, `(padding-inline:1rem)`, `(margin-top:2rem)` | These values assume Tailwind’s default .25rem scale; check the original project configuration. Use a defined token such as `p-card` for product spacing. |
 | `-mt-4` | `(margin-top:-1rem)` | Use a negative raw value, or `-mt-card` for a defined numeric token. |
 | `w-full`, `h-screen`, `min-w-0` | `w-full`, `(height:100vh)`, `min-w(0)` | Pixel and zero values use direct-value functions; other units stay native. |
-| `rounded-lg` | `r-lg` | Radius tokens come from the `radius` namespace. |
+| `rounded-lg` | `r-lg` | Both defaults are .5rem; confirm any project overrides before reusing the name. |
 | `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS preset color steps differ from Tailwind's default palette. |
 | `bg-zinc-50`, `text-zinc-500` | `bg-zinc-5`, `fg-zinc-60` | The scales differ. This darker text step keeps the fixed light surface readable; compare actual values instead of dividing Tailwind steps by ten. |
 | `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `(line-height:1.75rem)` | Use `text-*` only when the full type treatment is intended. |
@@ -184,14 +164,14 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 | `grid-cols-3`, `gap-4` | `grid-cols(3)`, `(gap:1rem)` | Use the explicit grid recipe and the native `gap` property. |
 | Arbitrary value such as `w-[min(100%,72rem)]` | `(width:min(100%,72rem))` | Write native CSS function values directly. |
 | Arbitrary property such as `[scroll-margin-top:4rem]` | `(scroll-margin-top:4rem)` | Master CSS writes every native declaration in parentheses. |
-| Important modifier such as `!mt-0` | `mt(0)!` | The important marker goes at the end of the class. |
+| Important modifier such as `mt-0!` | `mt(0)!` | The important marker goes at the end of the class in current Tailwind v4 and Master CSS. |
 
-Example conversion:
+A Master CSS layout using preset values (not a pixel-equivalent conversion of an unspecified Tailwind layout):
 
 ```html
 <section class="grid gap-lg w-full max-w-5xl mx-auto px-md py-2xl grid-cols(3)@md">
   <article class="p-lg r-lg bg-surface-base shadow-sm">
-    <h2 class="m(0) font-2xl font-semibold fg-text-neutral">Account</h2>
+    <h2 class="m(0) font-2xl font-regular fg-text-neutral">Account</h2>
     <p class="mt-xs fg-text-muted">Review profile settings.</p>
   </article>
 </section>
@@ -214,8 +194,8 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 
 | Tailwind v4 pattern | Master CSS pattern | Notes |
 | --- | --- | --- |
-| `hover:bg-blue-700` | `bg-blue-70:hover` | Selector states follow the value. |
-| `focus-visible:outline-2` | `outline(2):focus-visible` | Use native pseudo-class names when they are clearer. |
+| `hover:bg-blue-700` | `bg-blue-70:hover@media(hover:hover)` | Keep Tailwind v4’s hover-capability condition. The color is a new preset choice; copy the original token for exact color fidelity. |
+| `focus-visible:outline-2` | `outline(2):focus-visible` | This maps the width. Retain an outline style and color; width alone does not establish the same focus treatment. |
 | `disabled:opacity-50` | `(opacity:.5):disabled` | Attribute and pseudo-class selectors are supported. |
 | `md:grid-cols-3` | `grid-cols(3)@tailwind-md` | Preserve the original threshold with an explicit condition; the two presets use different `md` values. |
 | `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | Output follows the explicit `--manual-dark` selector mixin. |
@@ -225,7 +205,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `has-[:checked]:...` | `bg-blue-5:has(:checked)` | Native `:has()` is supported. |
 
 ```html
-<button class="inline-flex items-center (height:2.5rem) px-md r-md bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+<button type="button" class="inline-flex items-center (min-height:2.5rem) px-md r-md bg-blue-60 fg-white bg-blue-70:hover@media(hover:hover) (opacity:.5):disabled">
   Save
 </button>
 ```
@@ -247,7 +227,7 @@ Tailwind's `max-md:` maps to `@max-md`, the complement of the preset `md`; defin
 
 { }
 ```html
-<button type="button" class="bg-blue-70:hover fg-white:hover px-sm@compact">
+<button type="button" class="bg-blue-70:hover@media(hover:hover) fg-white:hover@media(hover:hover) px-sm@compact">
   Save
 </button>
 ```
@@ -256,7 +236,7 @@ Tailwind's `max-md:` maps to `@max-md`, the complement of the preset `md`; defin
 For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, and `:has()`, but it does not implement Tailwind's group and peer variant naming.
 
 ```html
-<article class="bg-blue-5:hover_h2 fg-blue-60:hover_h2">
+<article class="bg-blue-5:hover_h2@media(hover:hover) fg-blue-60:hover_h2@media(hover:hover)">
   <h2 class="fg-text-neutral">Project</h2>
 </article>
 ```
@@ -285,6 +265,21 @@ Rewrite Tailwind utility composition as native declarations and selectors, prese
   box-shadow: var(--shadow-sm);
   color: oklch(100% 0 none);
   align-items: center;
+}
+```
+
+The example adopts Master’s preset palette and shadow; it is not an exact visual match to Tailwind’s defaults. For a faithful conversion, retain the original resolved colors and shadow values until the project explicitly changes its design.
+
+When the declaration group needs reuse inside CSS, give it a mixin name. This is the Master CSS meaning of `@apply`:
+
+```css name=app.css
+@mixin --control {
+  padding-inline: 1rem;
+  padding-block: .5rem;
+}
+
+.btn {
+  @apply --control;
 }
 ```
 
@@ -408,9 +403,9 @@ function Progress({ value }: { value: number }) {
   const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
   return (
     <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
-      className="overflow-hidden (height:1rem) (border-radius:100%) bg-gray-10">
+      className="overflow-hidden (height:1rem) pill bg-surface-inset">
       <div
-        className="h-full (width:var(--progress)) bg-blue-60 (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        className="h-full (width:var(--progress)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
         style={{ '--progress': `${percent}%` } as React.CSSProperties}
       />
     </div>

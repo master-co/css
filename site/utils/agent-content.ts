@@ -1,3 +1,4 @@
+import { aiIllustrationMarkdown } from '../content/guide/ai-coding/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { configuredMarkupMarkdown } from '../reference/configured-example'
@@ -16,6 +17,7 @@ export async function agentGuideContent(siteRoot: string, slug: string) {
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component(name, attributes) {
+      if (name === 'AIIllustration') return aiIllustrationMarkdown()
       if (name === 'AgentPrompt') return agentPromptMarkdown(String(attributes.name))
       if (name === 'AgentOptions') return agentOptionsMarkdown(String(attributes.name))
       if (name === 'AgentWorkflow') return previewWorkflowMarkdown()

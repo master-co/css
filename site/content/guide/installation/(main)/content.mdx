@@ -2,7 +2,7 @@ import StepSection, { Step } from '~/site/docs-shell/components/StepSection'
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import InstallationGuides from '~/site/components/InstallationGuides'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import InstallationIllustration from './components/InstallationIllustration'
 
 Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, [CDN](#cdn) runs in the browser without a build, and [CLI](#cli) generates a stylesheet for projects without a bundler.
@@ -110,8 +110,8 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
   </Step>
   <Step>
     ### Load the generated stylesheet
-    Save the document below as `index.html`. The watcher generates `master.css` from its class names. Serve the directory and open the page to see the styled heading.
-    <HelloWorld>
+    Save the document below as `index.html`. The watcher generates `master.css` from its class names. Serve the directory and open the page to see the styled paragraph.
+    <InstallationPreview>
 
 ```html name=index.html
 <!DOCTYPE html>
@@ -122,13 +122,12 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
   <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
 </head>
 <body>
-  <!-- @MARK italic m-2xl fg-text-neutral font-5xl font-heavy -->
-  <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">Hello World</h1>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello World</p>
 </body>
 </html>
 ```
 
-    </HelloWorld>
+    </InstallationPreview>
   </Step>
 </StepSection>
 
@@ -142,7 +141,7 @@ npx @master/css-cli generate "index.html" --output master.css
 
 Deploy `index.html`, `master.css` and the neighboring CSS assets referenced by the generated stylesheet. Preserve their relative paths: copying only `master.css` can leave its imported styles missing. Keep each generated asset set together when publishing a new build.
 
-Load the deployed page and check that every stylesheet request succeeds. The heading should use the generated font, color and spacing with JavaScript disabled. [Scanning and pruning](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
+Load the deployed page and check that every stylesheet request succeeds. The paragraph should keep its generated padding, border and surface colors with JavaScript disabled. [Scanning and pruning](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
 
 ## If the style does not appear
 

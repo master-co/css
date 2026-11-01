@@ -22,14 +22,14 @@ export default function Page() {
         <a href="#demand" className="py-xs text-sm (text-decoration:none) fg-text-muted fg-text-strong:hover">Demand</a>
         <a href="#launch-tasks" className="py-xs text-sm (text-decoration:none) fg-text-muted fg-text-strong:hover">Tasks</a>
       </nav>
-      {metrics.map(([name, value, change], index) => <DemoSurface key={name} elevation="raised" id={index ? undefined : 'metrics'} className="grid-col-span(4) p-md grid-col-span(2)@4xs grid-col-span(4)@2xs">
+      {metrics.map(([name, value, change], index) => <DemoSurface key={name} elevation="raised" id={index ? undefined : 'metrics'} className="grid-col-span(4) p-md grid-col-span(4)@2xs">
         <DemoLabel>{name}</DemoLabel>
         <div className="mt-xs text-2xl font-regular (font-variant-numeric:tabular-nums) fg-text-strong">{value}</div>
         <div className="mt-2xs text-xs fg-text-muted">{change}</div>
       </DemoSurface>)}
       <DemoSurface elevation="raised" id="demand" className="flex flex-col grid-col-span(4) min-w(0) p-md grid-col-span(5)@2xs">
         <figure className="flex flex-col grow(1) m(0)">
-          <figcaption className="text-sm font-medium fg-text-strong">Weekly demand</figcaption>
+          <figcaption className="text-sm font-regular fg-text-strong">Weekly demand</figcaption>
           <p className="mb(0) mx(0) mt-3xs text-xs fg-text-muted">Sample requests per day</p>
           <div className="grid-cols(6) grow(1) gap-xs min-h(160) mt-md">
             {bars.map(([day, value, height]) => <div key={day} className="flex flex-col gap-2xs min-w(0) text-center">
@@ -43,7 +43,7 @@ export default function Page() {
         </figure>
       </DemoSurface>
       <DemoSurface elevation="raised" id="launch-tasks" className="grid-col-span(4) min-w(0) p-md grid-col-span(3)@2xs">
-        <h2 className="m(0) text-sm font-medium fg-text-strong">Launch tasks</h2>
+        <h2 className="m(0) text-sm font-regular fg-text-strong">Launch tasks</h2>
         <p className="mb(0) mx(0) mt-3xs text-xs fg-text-muted">Check off a task to try the controls.</p>
         <div className="mt-sm">
           {tasks.map(([task, date]) => <label key={task} className="flex items-start gap-xs py-sm bt-solid:not(:first-child) bt(1):not(:first-child) bt-line-divider:not(:first-child)">

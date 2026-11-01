@@ -18,6 +18,6 @@ function QuerySpecimen() {
 export default function Page() {
   return <ComponentPage title="Container" description="The tray head holds a container range, Fit and the live width. The wrapper changes; the page viewport does not." sections={[
     { id: 'query-card', title: 'A query card', children: <DemoContainer title="Query card" caption="Below 18rem of container width the regions stack."><QuerySpecimen /></DemoContainer> },
-    { id: 'page-viewport', title: 'A whole page instead', description: 'When the lesson is about the viewport, show the real page in a browser instead of a container.', children: <DemoPageViewport src="/examples/responsive-gallery" title="Responsive gallery" height={360} /> },
+    { id: 'page-viewport', title: 'A whole page instead', description: 'When the lesson is about the viewport, show the real page in a browser instead of a container.', children: <DemoPageViewport src="/examples/layout-system" title="Workspace layout" height={360} /> },
   ]} usage={{ href: '/guide/responsive-design', label: 'the Responsive Design guide' }} Documentation={ComponentDocumentation} />
 }

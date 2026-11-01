@@ -1,3 +1,9 @@
+import { transitionIllustrationMarkdown } from '../content/guide/view-transitions/illustration'
+import { monorepoIllustrationMarkdown } from '../content/guide/monorepo/illustration'
+import { cascadeIllustrationMarkdown } from '../content/guide/cascade-layers/illustration'
+import { packageIllustrationMarkdown } from '../content/guide/authoring-packages/illustration'
+import { globalIllustrationMarkdown } from '../content/guide/global-styles/illustration'
+import { themeIllustrationMarkdown } from '../content/guide/theme/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { configuredMarkupMarkdown } from '../reference/configured-example'
@@ -15,11 +21,17 @@ export async function projectStyleGuideContent(siteRoot: string, slug: string) {
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component(name, attributes) {
+      if (name === 'TransitionIllustration') return transitionIllustrationMarkdown()
+      if (name === 'MonorepoIllustration') return monorepoIllustrationMarkdown()
+      if (name === 'CascadeIllustration') return cascadeIllustrationMarkdown()
+      if (name === 'PackageIllustration') return packageIllustrationMarkdown()
+      if (name === 'GlobalIllustration') return globalIllustrationMarkdown()
+      if (name === 'ThemeIllustration') return themeIllustrationMarkdown()
       if (name === 'CompatibilityIllustration') return compatibilityIllustrationMarkdown()
       if (name === 'ReuseIllustration') return reuseIllustrationMarkdown()
       if (name === 'DemoFeatureSupport') return `Browser feature check: \`${String(attributes.condition)}\`. The live preview reports support in the current browser; the example retains its native fallback.`
       if (name === 'DemoViewTransition') return attributes.example === 'articles' ? '[Interactive article transition preview](/guide/view-transitions#article-list-to-detail). Open an article and return to its card; focus is restored and reduced motion uses an immediate update.' : '[Interactive view transition preview](/guide/view-transitions). Choose a view; reduced motion and unavailable APIs use an immediate update.'
-      if (name === 'ExplorerView') return '[Interactive package tree](/guide/monorepo). The adjacent prose and configuration examples define the project boundaries.'
+      if (name === 'ExplorerView') return packageTreeMarkdown('monorepo')
       if (name === 'PackageTree') return packageTreeMarkdown(String(attributes.name))
       if (name === 'PackageAuthoringExample') return authoringExampleMarkdown(String(attributes.part ?? 'preview'))
       if (name === 'ProjectStyleExample') {

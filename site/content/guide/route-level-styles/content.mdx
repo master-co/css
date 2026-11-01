@@ -2,7 +2,7 @@ import DeliveryFlow from '~/site/components/DeliveryFlow'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
 ## Overview [sr-only]
-Keep a page's layout and one-off styles in a CSS file beside the page. Import that file from the route or component that owns it.
+Keep a page's layout and one-off styles beside that page, and let its route or component load the stylesheet. Shared tokens can still supply the values; sharing definitions does not require delivering every native rule globally.
 
 Complete your framework’s [installation guide](/guide/installation) first. The Vite, Next.js and Webpack integrations let these local styles use your project tokens, mixins and custom media:
 
@@ -28,39 +28,61 @@ Load the route stylesheet from the route, page module, or component entry that o
 import "./home.css"
 ```
 
-Keep the global stylesheet loaded from your app shell for the layer order and shared styles.
+Keep the global stylesheet loaded from your app shell for the layer order and shared styles. It starts with the existing `@import '@master/css'`; do not add that full import to `home.css`.
+
+A route import controls **delivery**, not selector scope. Once loaded, `.home-section` can match any element with that class in the document. Choose names that express ownership, or use your framework's CSS Modules support when you need locally scoped class names. The framework also determines when route CSS loads and whether it remains after navigation.
 
 ---
 
 ## Use project definitions
 
 <DeliveryFlow name="route" />
-A route stylesheet can use project tokens, mixins, and custom media directly. It remains a separate CSS output owned by its route.
+The integration gives the local stylesheet its project definition context. Use those tokens, mixins and named conditions in ordinary native CSS; the framework keeps ownership of loading the resulting stylesheet.
 
 ```css name=app/home/home.css
 .pricing-card {
   padding: var(--spacing-lg);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background-color: var(--color-surface-raised);
 }
 ```
 
 The route output includes these native rules and the theme variables or managed keyframes they use. It stays self-contained even when another entry also uses those resources. Global native rules and utility classes are not copied into it.
 
-Use `@reference` for definitions outside the project context, such as a package used only by this route:
+### Reference definitions without loading their native rules
 
-```css
-@reference "@acme/theme/tokens.css";
+Use `@reference` when definitions live outside the app's entry graph. For example, a local marketing stylesheet can provide a color token as well as its own component:
 
-.route-card { background-color: var(--color-surface-raised); }
+```css name=styles/marketing.css
+@theme {
+  --color-campaign: var(--color-blue-60);
+}
+
+@layer components {
+  .campaign-root { color: var(--color-campaign); }
+}
 ```
+
+Reference that file from the route stylesheet, then use its token in a rule the route owns:
+
+```css name=app/home/home.css
+@reference "../../styles/marketing.css";
+
+@layer components {
+  .campaign-banner {
+    border-color: var(--color-campaign);
+  }
+}
+```
+
+The route output contains `.campaign-banner` and the color resources it needs. It does **not** contain `.campaign-root`. Load the marketing stylesheet through the appropriate app or route import if you also need that native component. The same distinction applies to a stylesheet exported by a package. See the [reference directive](/reference/directives/imports#reference) for its definition-only behavior.
 
 ---
 
 ## Write native selectors
 Write the route's native rules in `app/home/home.css`, then use their classes in the route markup. Keep them in `@layer components` when utility classes should be able to override individual choices.
 
-Both cards below use the same native class. The second adds `p-md`, so its utility overrides the component's `var(--spacing-lg)` padding. The class name does not need an `@utility` registration.
+Loading a native rule does not register a new Master CSS utility. Both cards below use the same native class. The second adds `p-md`, so its utility overrides the component's `var(--spacing-lg)` padding. The class name does not need an `@utility` registration.
 
 <DemoConfiguredExample
   name="route-native-card"
@@ -74,7 +96,7 @@ Both cards below use the same native class. The second adds `p-md`, so its utili
   }
 
   .home-bento-card {
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     border: 1px solid var(--color-line-divider);
     background-color: var(--color-surface-raised);
@@ -84,7 +106,7 @@ Both cards below use the same native class. The second adds `p-md`, so its utili
   .home-bento-card > h2 {
     font-size: var(--font-size-lg);
     line-height: 1.4;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-regular);
     margin-block: 0 0.5rem;
   }
 
@@ -117,11 +139,11 @@ These native rules are emitted with their stylesheet by default. If that source 
 Project custom media work inside native rules, beside ordinary media queries:
 
 ```css name=app/home/home.css
-.home-cta {
-  background-color: var(--color-blue);
+.home-note {
+  color: var(--color-blue-60);
 
   @media (--dark) {
-    background-color: var(--color-blue-70);
+    color: var(--color-blue-40);
   }
 
   @media (width < 52.125rem) {
@@ -131,3 +153,10 @@ Project custom media work inside native rules, beside ordinary media queries:
 ```
 
 `--dark` follows the system’s `prefers-color-scheme` preference. A manual `data-theme` attribute does not change that query; use [adaptive color tokens](/guide/colors#native-color-scheme-and-manual-themes) for surfaces that should follow a manually selected scheme.
+
+
+## Verify route delivery
+
+Open the route directly, then navigate to it from another page. Check that its stylesheet loads, the native selectors match and the expected token values are present. Inspect a shared page as well: local source ownership should not accidentally move route-only CSS into the app entry.
+
+If the output is missing, check the route's CSS import and the integration's project context. If the rule is present but the result differs, inspect the matching selector, layer and computed value. Adding another full `@master/css` import does not fix a selector or cascade problem.

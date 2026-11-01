@@ -38,7 +38,7 @@ Add Master CSS to an application built with Vite, including React, Vue, React Ro
 import './style.css'
 
 document.querySelector('#app').innerHTML = `
-  <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
     Hello World
   </p>
 `
@@ -64,7 +64,7 @@ In a [React project built with Vite](https://vite.dev/guide/#scaffolding-your-fi
 ```tsx name=src/App.tsx
 export default function App() {
   return (
-    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
       Hello World
     </p>
   )
@@ -76,7 +76,7 @@ In a [Vue project](https://vuejs.org/guide/quick-start), replace `src/App.vue`. 
 
 ```vue name=src/App.vue
 <template>
-  <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
     Hello World
   </p>
 </template>
@@ -88,7 +88,7 @@ In a [React Router framework mode](https://reactrouter.com/start/framework/insta
 ```tsx name=app/routes/home.tsx
 export default function Home() {
   return (
-    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
       Hello World
     </p>
   )
@@ -107,7 +107,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   return (
-    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
       Hello World
     </p>
   )

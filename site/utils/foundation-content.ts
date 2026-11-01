@@ -1,3 +1,7 @@
+import { responsiveIllustrationMarkdown } from '../content/guide/responsive-design/illustration'
+import { layoutIllustrationMarkdown } from '../content/guide/layout-system/illustration'
+import { typeIllustrationMarkdown } from '../content/guide/typography/illustration'
+import { colorIllustrationMarkdown } from '../content/guide/colors/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { sizingRoles } from '../common/foundation-data/sizing/scale-data'
@@ -20,6 +24,10 @@ const visualComponents = new Set([
   'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo'
 ])
 function foundationComponent(_slug: string, name: string, _attributes: Record<string, unknown>) {
+  if (name === 'ResponsiveIllustration') return responsiveIllustrationMarkdown()
+  if (name === 'LayoutIllustration') return layoutIllustrationMarkdown()
+  if (name === 'TypeIllustration') return typeIllustrationMarkdown()
+  if (name === 'ColorIllustration') return colorIllustrationMarkdown()
   if (name === 'FoundationPalette') return selectedSpecimensMarkdown('color', paletteKeys)
   if (visualComponents.has(name)) return ''
   if (name === 'SizingRoleTable') return sizingRoles.map(row => `- \`${row.utility}\` — ${row.role}. ${row.description}`).join('\n')

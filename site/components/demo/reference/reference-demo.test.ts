@@ -117,3 +117,16 @@ test('the frame paints teaching specimens with named system tones only', async (
     assert.match(token, /^--ui-(?:surface|line|text|tone|focus)\b/, `${token}: frame paint comes from system roles`)
   }
 })
+
+test('supporting controls opt into canonical styles without leaking them into teaching samples', () => {
+  const section = { page: 'test', id: 'controls', title: 'Controls', html: [], css: '', classes: [], classLists: [], highlighted: [] }
+  const controls = { html: '<button class="ui-button">Open</button>', caption: 'Open the demonstration' }
+  assert.throws(() => demoDocument(section, controls), /invalid demo classes ui-button/)
+  const document = demoDocument(section, { ...controls, systemButtons: true })
+  assert.match(document, /\.ui-button/)
+  assert.match(document, /:focus-visible/)
+  assert.doesNotMatch(document, /@apply|@mixin/)
+  const teaching = demoDocument(section, { html: '<button class="p-md">Padding</button>', caption: 'Inspect padding' })
+  assert.doesNotMatch(teaching, /\.ui-button/)
+  assert.match(teaching, /padding:\s*var\(--spacing-md\)/)
+})

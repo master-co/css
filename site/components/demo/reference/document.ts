@@ -10,6 +10,8 @@ const siteRoot = path.basename(process.cwd()) === 'site' ? process.cwd() : path.
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
 const materialFile = path.join(siteRoot, 'styles/docs-shell/materials.css')
 const systemTokenFile = path.join(siteRoot, 'styles/system/tokens.css')
+const readSystemButtons = () => ['mixins.css', 'buttons.css'].map(file => readFileSync(path.join(siteRoot, 'styles/system', file), 'utf8')).join('\n')
+const systemButtons = readSystemButtons()
 let materials = readFileSync(materialFile, 'utf8')
 const readSystemTokens = () => readFileSync(systemTokenFile, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
 let systemTokens = readSystemTokens()
@@ -31,7 +33,9 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, in
       shared = sharedManifest()
     }
   }
-  const configuration = [section.css, scene.css].filter(Boolean).join('\n')
+  // Opt in only for the interface operating a lesson. Use the canonical CSS so
+  // its material, geometry and interaction states cannot drift into a second recipe.
+  const configuration = [scene.systemButtons ? (developing ? readSystemButtons() : systemButtons) : '', section.css, scene.css].filter(Boolean).join('\n')
   const compiled = configuration ? compileManifestSync(configuration, { baseManifest: shared }) : undefined
   const errors = compiled?.diagnostics.filter(item => item.severity === 'error') ?? []
   if (errors.length) throw new Error(`${section.page}#${section.id}: ${JSON.stringify(errors)}`)

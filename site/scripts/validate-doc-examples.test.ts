@@ -71,9 +71,12 @@ test('route-level native CSS retains referenced tokens and named conditions', as
   assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
   assert.match(css, /--color-surface-raised:/)
   assert.match(css, /--spacing-5xl:/)
-  assert.match(css, /\.home-cta\s*\{[^}]*@media \(prefers-color-scheme:\s*dark\)\s*\{\s*background-color:/)
+  assert.match(css, /\.home-note\s*\{[^}]*@media \(prefers-color-scheme:\s*dark\)\s*\{\s*color:/)
   assert.match(css, /@media \(width\s*<\s*52\.125rem\)\s*\{\s*width:\s*100%/)
   assert.doesNotMatch(css, /@compose|@reference/)
+  assert.match(css, /\.campaign-banner/)
+  assert.match(css, /--color-campaign:/)
+  assert.doesNotMatch(css, /\.campaign-root/)
 })
 
 function extractClassCandidates(content: string) {

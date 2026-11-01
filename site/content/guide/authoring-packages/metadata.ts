@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Authoring Packages',
-  description: 'Create a simple CSS-only package that shares Master CSS tokens, utilities, mixins, custom media, and component vocabulary.',
+  description: 'Publish shared CSS source, override public tokens in each app, and verify the packed package in a production consumer.',
   category: 'Authoring',
   order: 4,
   fileURL: import.meta.url

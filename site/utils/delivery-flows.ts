@@ -62,10 +62,10 @@ export const deliveryFlows = {
     caption: 'Verify a pre-rendered page and a dynamic route separately. Build-time CSS coverage does not establish request-time SSR coverage.'
   },
   route: {
-    title: 'Route stylesheet ownership',
+    title: 'Shared definitions, local CSS delivery',
     steps: [
       { title: 'Reference', description: 'Read project tokens and shared vocabulary at compile time.' },
-      { title: 'Compose', description: 'Lower local declarations, variants and native selectors.' },
+      { title: 'Compile', description: 'Emit the route’s native rules and the variables or managed keyframes they use; do not copy unrelated global native rules.' },
       { title: 'Load', description: 'Let the framework or bundler deliver the route’s CSS output.' }
     ],
     caption: 'Definition context does not load global native rules. The framework delivers route CSS; its import does not isolate selectors.'
@@ -89,8 +89,8 @@ export const deliveryIllustrations = {
     labels: { shared: 'shared.css', policy: '@prune native;', sharedCard: '.shared-card', sharedOnlyB: '.only-used-in-b', aUsage: 'A usage', bUsage: 'B usage', aOutput: 'A output', bOutput: 'B output', aCard: '.shared-card', bCard: '.shared-card', bOnlyB: '.only-used-in-b' }
   },
   route: {
-    alt: 'Project definitions supply compile-time context to route CSS, whose output is loaded by the framework.',
-    labels: { project: 'Project definitions', definitions: 'Tokens · mixins · media', context: 'context', route: 'home.css', native: 'Native CSS rules', compile: 'compile', output: 'Route CSS', resources: 'Rules + resources', load: 'CSS import', page: 'Framework loads CSS' }
+    alt: 'The shared spacing-lg definition supplies context to home.css. Its pricing-card rule and the needed spacing variable appear in the local output, which the framework loads. Referencing definitions does not load unrelated native rules.',
+    labels: { project: 'Project definitions', definitions: '--spacing-lg: 1.5rem;', outputDefinition: '--spacing-lg: 1.5rem;', outputNative: '.pricing-card {', outputDeclaration: 'padding: var(--spacing-lg);', close: '}', outputClose: '}', context: 'Definition context', route: 'home.css', native: '.pricing-card {', declaration: 'padding: var(--spacing-lg);', compile: 'compile', output: 'Local output · excerpts', resources: 'Used variable', rule: 'Native rule', load: 'CSS import', page: 'Framework loads CSS' }
   },
   nextjs: {
     alt: 'The Next.js adapter processes build-time HTML; request-time dynamic SSR relies on browser rule generation.',
@@ -102,7 +102,7 @@ export const deliveryIllustrations = {
   },
   runtime: {
     alt: 'Connected DOM class usage flows through the browser engine into native stylesheet rules.',
-    labels: { dom: 'Connected DOM', heading: '<h2>', paragraph: '<p>', candidate: '(text-align:center)', engine: 'Engine + program', insert: 'Insert / reuse', rules: 'CSS rules' }
+    labels: { dom: 'Connected DOM', heading: '<h2>', paragraph: '<p>', candidate: 'text-center', sharedCandidate: 'text-center', engine: 'Engine + program', insert: 'Insert / reuse', rules: 'CSS rules', selector: '.text-center {', declaration: 'text-align: center;', close: '}' }
   },
   hydration: {
     alt: 'Existing CSS is compared with engine replay of the page manifest; matching rules are adopted and a mismatch rebuilds CSS.',

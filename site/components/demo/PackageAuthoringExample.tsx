@@ -5,7 +5,7 @@ import { demoDocument } from './reference/document'
 import { authoringSource, authoringHTML, authoringCSS } from '../../utils/authoring-examples'
 
 const title = 'Shared package vocabulary'
-const caption = 'Hover or focus the button. The package defines its color, spacing, radius and focus outline. The transition follows your reduced-motion preference.'
+const caption = 'Hover, press or focus the button to inspect the package’s shared states; it performs no save action. The app uses the package’s theme-motion condition to respect reduced motion.'
 
 export default function PackageAuthoringExample({ part = 'preview', code = true }: { part?: 'source' | 'preview'; code?: boolean }) {
   if (part === 'source') return <Code lang="css" name="master.css">{authoringSource}</Code>

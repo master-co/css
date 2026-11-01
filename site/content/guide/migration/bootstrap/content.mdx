@@ -1,3 +1,5 @@
+import BootstrapIllustration from './components/BootstrapIllustration'
+
 Bootstrap and Master CSS can run side by side. Keep Bootstrap loaded while existing markup still depends on its grid, utilities, components, JavaScript behavior, Sass variables, or selector overrides. Convert one screen or component family at a time, then remove Bootstrap only after the product no longer relies on it.
 
 This guide focuses on app-owned Bootstrap usage. Vendor markup, third-party plugins, generated HTML, and Bootstrap JavaScript components can stay on Bootstrap until the project has a deliberate replacement.
@@ -5,31 +7,17 @@ This guide focuses on app-owned Bootstrap usage. Vendor markup, third-party plug
 ---
 
 ## Migration strategy
-Start with coexistence.
+Follow the [shared migration workflow](/guide/migration#migration-strategy), starting with app-owned layout around existing widgets. Keep Bootstrap CSS, JavaScript and Sass output while any remaining component depends on them.
 
-1. Import Master CSS from the app stylesheet without removing Bootstrap.
-2. Keep Bootstrap CSS, Sass output, and JavaScript imports while current screens depend on them.
-3. Audit Bootstrap utilities, grid classes, components, Sass variable overrides, and custom selectors.
-4. Move project-owned design values into Master CSS `@theme`.
-5. Convert layout wrappers, spacing, typography, and simple surfaces to Master CSS classes.
-6. Keep Bootstrap JavaScript components and data attributes until equivalent behavior exists.
-7. Remove Bootstrap packages only after validation proves no converted path needs them.
+Before converting a screen, identify three boundaries:
 
-The first milestone is a stable app where both systems load and new Master CSS classes work. Dependency removal is the last step, not the first.
+- **Values:** inspect customized `$spacers`, `$grid-breakpoints` and container widths. A matching scale name does not imply a matching value.
+- **Selectors:** keep vendor markup and overrides tied to Bootstrap internals together until that component is replaced.
+- **Behavior:** leave modals, dropdowns and collapse regions on Bootstrap until focus handling, ARIA state and events have an explicit replacement.
 
----
+The first useful result is a converted layout around working components. Removing the dependency comes after those components have a replacement.
 
-## Audit checklist
-Inspect the Bootstrap surface before changing files.
-
-| Area | What to look for | Migration decision |
-| --- | --- | --- |
-| CSS entry | `bootstrap/dist/css/bootstrap.css`, compiled Sass output, and app CSS import order | Add Master CSS beside the existing entry and preserve cascade order during migration. |
-| Sass setup | `$theme-colors`, `$spacers`, `$grid-breakpoints`, `$container-max-widths`, and partial imports | Move product-owned values into `@theme`; keep Bootstrap variables needed by remaining Bootstrap components. |
-| Grid and layout | `.container`, `.row`, `.col-*`, `.g-*`, display, flex, and spacing utilities | Convert app-owned layout wrappers to Master CSS classes. |
-| Components | Buttons, navs, modals, dropdowns, accordions, alerts, forms, and cards | Convert simple visual surfaces first; keep behavior-heavy components on Bootstrap. |
-| JavaScript behavior | `data-bs-*`, Bootstrap plugin imports, portals, focus handling, transitions, and events | Keep until a replacement interaction is implemented and tested. |
-| Overrides | Selectors that target Bootstrap classes, component states, or generated markup | Keep as CSS until the underlying component is migrated. |
+<BootstrapIllustration />
 
 ---
 
@@ -114,7 +102,7 @@ Bootstrap's default [`md` breakpoint](https://getbootstrap.com/docs/5.3/layout/b
 </section>
 ```
 
-This preserves the three-column threshold while choosing a new container width and grid gap. Compare those dimensions before replacing Bootstrap's container and gutter rules. The explicit `fg-body` keeps the fixed white card paired with the product's dark text color.
+This preserves the three-column threshold while choosing a new container width and grid gap. Check 767px and 768px with three real items; copying `@md` would leave them stacked until 64rem in the preset. Compare those dimensions before replacing Bootstrap's container and gutter rules. The explicit `fg-body` keeps the fixed white card paired with the product's dark text color.
 
 Use native declaration syntax when it is clearer than a utility alias:
 
@@ -146,7 +134,7 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
     padding-inline: var(--spacing-md);
     background-color: var(--color-primary);
     color: oklch(100% 0 none);
-    height: 2.5rem;
+    min-height: 2.5rem;
     &:hover {
       background-color: var(--color-blue-70);
     }
@@ -165,7 +153,7 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 ```
 
 ```html
-<button class="action-button">Save</button>
+<button type="button" class="action-button">Save</button>
 <article class="panel">...</article>
 ```
 
@@ -174,7 +162,7 @@ Keep Bootstrap components when they still provide behavior, accessibility, or in
 ---
 
 ## Preserve JavaScript-driven components
-Bootstrap JavaScript components are not just CSS. They can manage focus, ARIA attributes, transitions, body scroll locks, popper positioning, and events.
+Bootstrap JavaScript components are not just CSS. Depending on the component, they manage focus, ARIA attributes, transitions, body scroll locks, Popper positioning and events. Use the [component’s JavaScript API](https://getbootstrap.com/docs/5.3/getting-started/javascript/) to inventory the behavior that must survive.
 
 Keep markup with `data-bs-*` attributes on Bootstrap until the replacement behavior has been implemented and tested. Convert only the surrounding layout or product-owned wrappers first.
 

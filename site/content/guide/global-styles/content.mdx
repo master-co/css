@@ -1,154 +1,109 @@
-import ProjectStyleExample from '~/site/components/demo/ProjectStyleExample'
-import ConfiguredExample from '~/site/reference/ConfiguredExample'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+import GlobalIllustration from './components/GlobalIllustration'
 
 ## Overview [sr-only]
-Global styles are the project-level CSS that every page can depend on. They define the Master CSS entry, default layer order, base styles, shared tokens, named media and reusable mixins, generated class vocabulary, and native CSS that belongs to the whole app.
+Give the application one place to load the styles every page needs. That entry can import several source files: keep shared values, document defaults and component rules with their owners, then assemble them through the same app stylesheet.
 
-Most applications should have exactly one app stylesheet that starts with the default Master CSS entry:
+Complete the [framework installation](/guide/installation#integrations) first. The examples below extend its existing CSS entry; they do not require a second Master CSS installation.
 
-```css name=app.css
-@import "@master/css";
+## Start from one app entry \{#entry-stylesheet\}
+
+Keep the default import at the beginning of the stylesheet your app already loads:
+
+```css name=styles/app.css
+@import '@master/css';
 ```
 
-That import marks the file as a full Master CSS entry. It loads the package stylesheet graph, declares the stable layer order, includes the preset theme and base styles, and gives integrations the stylesheet that receives generated CSS.
+The import brings in the preset definitions and base styles, including the order `theme, base, defaults, components, utilities`. The integration uses this entry to deliver the project's generated CSS. Import it from the framework's app root, root layout or build entry as described in its installation guide.
+
+A source file split does not need another full entry. Import your own files from `app.css`:
+
+```css name=styles/app.css
+@import '@master/css';
+@import './theme.css';
+@import './defaults.css';
+@import './components.css';
+```
+
+<GlobalIllustration />
+
+These files form one entry graph. A shared definition remains available whether you write it directly in `app.css` or in one of its imports. Avoid importing the full Master CSS entry again from every route stylesheet: that makes each file an entry and can repeat global native CSS.
 
 ---
 
-## Entry stylesheet
-Use the app stylesheet for project-wide styling inputs:
+## Set document defaults \{#base-layer\}
 
-```css name=app.css
-@import "@master/css";
+Keep the preset reset in `base`. Put your product's document defaults in `defaults`, where normal component and utility declarations can override them:
 
-@theme {
-  --color-brand: var(--color-blue-60);
-  --spacing-action-x: 1rem;
-}
-
-@custom-media --wide (width >= 90rem);
-```
-
-Load this stylesheet from the app root, framework layout, or build entry. Keep page-level styles focused on their own rules; importing the full entry through each route stylesheet can repeat global native CSS and make ownership harder to trace.
-
-Use `@reference` when a local stylesheet needs definition context without delivering the referenced native CSS.
-
----
-
-## Base layer
-The default entry includes the preset base layer and declares the layer order `theme, base, defaults, components, utilities`. Put broad product choices, such as the page background and text color, in `@layer defaults` so components and classes can override them:
-
-```css name=app.css
-@import "@master/css";
-
+```css name=styles/defaults.css
 @layer defaults {
   body {
-    background: var(--color-surface-base);
+    background-color: var(--color-surface-base);
     color: var(--color-text-body);
   }
 }
 ```
 
-The preset base layer applies the font tokens to the document; see [Typography](/guide/typography#site-typeface) to set the site typeface. See [Cascade layers](/guide/cascade-layers) for how the layers interact.
+Use native selectors for elements that should receive a default without an extra class. Keep the selector's reach intentional: a global `button` rule also reaches buttons inside every feature. Use a component class when the rule belongs to one product role.
+
+The preset base styles already apply the font tokens to the document. To choose a typeface, change those tokens as described in [Typography](/guide/typography#site-typeface). See [Cascade layers](/guide/cascade-layers) when declarations compete; loading a rule later does not move it into a stronger layer.
 
 ---
 
-## Shared vocabulary
-Reusable styling is an ownership decision. Keep local choices in markup while a pattern is changing. Promote only the part that has become shared.
+## Decide what belongs in the shared graph \{#shared-vocabulary\}
 
-Choose the abstraction by what is shared:
+| Shared decision | Where to define it | Where to continue |
+| --- | --- | --- |
+| A value whose consumers should change together | `@theme` in `theme.css` | [Theme tokens](/guide/theme) |
+| A default every page needs | Native selectors in `@layer defaults` | The example above |
+| A recurring product element | A native class in `@layer components` | [Reusing styles](/guide/reusing-styles#keep-a-components-shared-appearance-together) |
+| A class capability generated when used | `@utility` in an imported stylesheet | The helper example below |
+| Repeated CSS declarations or nested styles | `@mixin`, expanded with `@apply` | [CSS reuse](/guide/reusing-styles) |
+| A named viewport or container condition | `@custom-media` or `@custom-container` | [Responsive design](/guide/responsive-design) |
 
-- Keep one-off styling in markup utilities.
-- Give shared values theme tokens; keep independent roles separate even when their current values match.
-- Register reusable class recipes with `@utility` when markup needs a shared styling capability.
-- Define a `@mixin` when multiple CSS rules need the same declarations or nested styles, then expand it with `@apply`. A mixin does not register a markup class.
-- Create native component classes in `@layer components` for repeated product UI roles.
-- Write native global selectors for app-wide styles, using `@layer defaults` for broad defaults.
+For the imported `theme.css`, start with a value your project needs:
 
-Start with utilities when the style belongs to one element or one usage site:
-
-```html
-<button class="inline-flex items-center justify-center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
-  Save changes
-</button>
-```
-
-Do not abstract just to shorten a class list. Abstract when the name improves product vocabulary, such as `btn`, `card`, `field`, `toolbar`, or `empty-state`.
-
-When the repeated part is a value, make it a token instead of a class:
-
-```css name=app.css
+```css name=styles/theme.css
 @theme {
-  --color-brand: var(--color-blue-60);
-  --spacing-action-x: 1rem;
+  --spacing-card: 1.5rem;
 }
-
 ```
 
-```html
-<button class="r-lg fg-white bg-brand px-action-x">
-  Submit
-</button>
-```
+The token registers `p-card`, `gap-card` and the other spacing families that accept the key. Its declaration is emitted when the project needs it; placing it in the entry graph does not make an ordinary token static.
 
-Use [theme tokens](/guide/theme) for shared colors, spacing, typography, radius, shadow, motion, container sizes, and mode-specific values. Define named media and container conditions separately with `@custom-media` and `@custom-container`.
+Share a definition because its meaning is shared. Two features using the same number today can still need separate tokens; one element using several classes does not by itself need a component abstraction.
 
-Native global CSS in the entry graph is always emitted, not generated on demand. Use it for selectors every page needs.
+### Keep component ownership explicit \{#component-classes\}
 
----
+A shared notification, for example, can live in `components.css`:
 
-## Component classes
-Use native component classes for repeated product roles. Define class selectors in `@layer components` and apply them from markup:
-
-<ProjectStyleExample name="components" />
-
-Native component rules are emitted by default and follow source order within their layer. They do not become utilities: `btn:hover@sm` cannot reuse this definition. Write states and conditions inside the native rule. Native pruning is an explicit opt-in.
-
-Keep component classes small enough to combine:
-
-```css name=app.css
+```css name=styles/components.css
 @layer components {
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-  }
-
-  .btn-sm {
-    height: 2rem;
-    padding-inline: var(--spacing-sm);
+  .notice {
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-line-divider);
     border-radius: var(--radius-md);
-    font-size: var(--font-size-xs);
-  }
-
-  .btn-md {
-    height: 2.5rem;
-    padding-inline: var(--spacing-md);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-  }
-
-  .btn-primary {
-    background: var(--color-blue);
-    color: white;
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-body);
   }
 }
 ```
 
 ```html
-<button class="btn btn-md btn-primary">Submit</button>
+<aside class="notice">Your changes are saved locally.</aside>
 ```
 
-Keep hover and focus behavior in the component when it belongs to every usage, as in the preview above. Use markup utilities for one-off variations at a specific call site.
+This native selector styles `.notice`; it does not register a utility named `notice`. Write shared states and conditions in the component rule. For a class recipe that accepts Master CSS modifiers, use `@utility` instead. [Reusing styles](/guide/reusing-styles) compares those choices with working examples.
+
+Native CSS in the entry graph is emitted by default, including unused component rules. Native pruning is an explicit choice; see [Scanning and pruning](/guide/scanning-and-pruning). Do not move a large route-only stylesheet into the global graph simply to make its definitions visible.
 
 ---
 
-## Custom utilities
-Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
+## Add a shared helper \{#custom-utilities\}
 
-Add these definitions to the app stylesheet after its existing `@import '@master/css'`. The preset supplies `--spacing-md`; the print condition uses native CSS and needs no custom media definition.
+A global definition can describe behavior needed in several features without generating a rule for every possible class. These helpers arrange related links, allow off-screen content to skip rendering work, and exclude the group from print:
 
-<ConfiguredExample source={`@utility flow {
+<DemoConfiguredExample name="global-related-guides" title="Shared helpers, one group of links" source={`@utility flow {
   display: grid;
   gap: var(--spacing-md);
 }
@@ -162,36 +117,18 @@ Add these definitions to the app stylesheet after its existing `@import '@master
   @media print {
     display: none;
   }
-}`} html={`<section class="content-auto flow print-hidden">
-  <h2>Related articles</h2>
-  <a href="/guide/theme">Choose shared theme values</a>
-  <a href="/guide/responsive-design">Adapt a layout to its available space</a>
-</section>`} />
+}`} html={`<section class="content-auto flow print-hidden p-md b-solid b(1) b-line-divider r-md bg-surface-raised">
+  <h2 class="m(0) text-lg font-regular">Related guides</h2>
+  <a class="text-sm fg-text-body underline" href="/guide/theme" target="_top">Choose shared theme values</a>
+  <a class="text-sm fg-text-body underline" href="/guide/responsive-design" target="_top">Adapt a layout to its available space</a>
+</section>`} caption="flow supplies the grid and gap. print-hidden removes the group in print media. content-auto can skip off-screen rendering; its 32rem intrinsic size is a fallback estimate, not a fixed section height." />
 
-Load the page normally: the related links appear in a grid with the shared gap. Open the browser's print preview: the entire section is hidden. Remove `print-hidden` to include it in print again.
-
-Custom utilities are generated only when used. Use them for shared layout helpers, rendering hints, print behavior, or other primitives that should feel like part of the project class language.
-
-Use component classes when the name describes a UI role. Use theme tokens when the reusable part is a value.
+Put these definitions after the existing Master CSS import, or import a `utilities.css` file from the app entry. The classes generate CSS when discovered in markup. In your app, open print preview to check `print-hidden`; remove the class when the links should appear in print too. Choose the [intrinsic-size estimate](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain-intrinsic-size) for the content in your own layout.
 
 ---
 
-## Organize global files
-Split global CSS files by ownership, then import them from the app entry. Imported CSS becomes one project entry graph.
+## Keep local delivery local \{#organize-global-files\}
 
-```txt
-styles/
-  app.css
-  theme.css
-  base.css
-  buttons.css
-```
+Keep the app entry focused on styles shared across pages. A route stylesheet can import definition context with `@reference` while delivering its own native rules through that route's loader. Referencing a file does not deliver the referenced native CSS.
 
-```css name=styles/app.css
-@import "@master/css";
-@import "./theme.css";
-@import "./base.css";
-@import "./buttons.css";
-```
-
-Keep project-wide tokens, named conditions, generated vocabulary, and native global CSS in the global entry graph. Keep route-specific selectors in [Route-level styles](/guide/route-level-styles), and promote them here only after they become shared.
+Use [Route-level styles](/guide/route-level-styles) for that setup and [Monorepo](/guide/monorepo) when separate apps need separate entry graphs. After splitting a global file, check a page that consumes its definitions and one that does not: shared styles should still arrive through the app entry, and route-only rules should retain their local owner.

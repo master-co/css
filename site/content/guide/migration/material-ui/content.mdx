@@ -1,3 +1,5 @@
+import MaterialUIIllustration from './components/MaterialUIIllustration'
+
 Material UI and Master CSS can coexist. Most projects should migrate app-owned layout, product surfaces, and repeated `sx` styles first, while keeping Material UI components where their accessibility, state management, slots, and JavaScript behavior still provide value.
 
 Do not treat this as a component-for-component rewrite. A good migration often keeps `Button`, `Dialog`, `Menu`, `Select`, `DataGrid`, or theme-driven component overrides until the product has a deliberate replacement.
@@ -5,31 +7,20 @@ Do not treat this as a component-for-component rewrite. A good migration often k
 ---
 
 ## Migration strategy
-Run Master CSS beside Material UI.
+Use the [shared migration workflow](/guide/migration#migration-strategy) for each app-owned surface. Keep `ThemeProvider`, `CssBaseline`, Emotion cache and SSR setup while Material UI still needs them.
 
-1. Add Master CSS to the app CSS entry.
-2. Keep `ThemeProvider`, `CssBaseline`, Emotion cache, and Material UI SSR setup while screens still depend on them.
-3. Audit `sx`, `styled()`, `className`, `slotProps`, `classes`, `styleOverrides`, and theme tokens.
-4. Move app-owned design values into `@theme`.
-5. Convert layout wrappers and repeated `sx` objects to Master CSS classes.
-6. Keep component-internal styling in Material UI overrides until a replacement component exists.
-7. Remove Material UI packages only if the project actually replaces the component system.
+Choose the boundary before translating `sx`:
 
-Many migrations stop at coexistence: Master CSS owns app layout and custom surfaces, while Material UI continues to own complex interactive widgets.
+| Styling belongs to… | Migrate or retain |
+| --- | --- |
+| An app-owned layout wrapper | Convert static `sx` values after resolving the actual theme scale. |
+| A repeated product surface | Define shared tokens and, if useful, a native component class. |
+| A MUI slot or owner-state variant | Keep `slotProps`, `classes`, `styleOverrides` or the existing wrapper with its component. |
+| A dialog, menu, select or data grid | Preserve its component behavior and test focus, keyboard and state before considering a replacement. |
 
----
+Many projects stop at coexistence: Master CSS owns app layout and custom surfaces, while Material UI continues to own interactive widgets.
 
-## Audit checklist
-Inspect the Material UI surface before changing files.
-
-| Area | What to look for | Migration decision |
-| --- | --- | --- |
-| Theme | `createTheme`, palette, typography, spacing, shape, shadows, breakpoints, and color schemes | Move product tokens into `@theme`; keep MUI theme values required by remaining MUI components. |
-| `sx` usage | Layout, spacing, color, responsive arrays, pseudo selectors, and one-off overrides | Convert app-owned static `sx` to class strings. |
-| `styled()` usage | Styled MUI components, ownerState variants, and theme callbacks | Convert pure visual wrappers; keep wrappers tied to MUI slots or owner state. |
-| Component overrides | `components.*.styleOverrides`, `variants`, `defaultProps`, `classes`, and `slotProps` | Keep while the MUI component remains the source of behavior. |
-| Baseline and globals | `CssBaseline`, `GlobalStyles`, font imports, and reset assumptions | Keep until equivalent global CSS is loaded everywhere. |
-| Injection order | Emotion cache, SSR extraction, and style precedence | Verify class-based overrides in the browser before removing old style setup. |
+<MaterialUIIllustration />
 
 ---
 
@@ -95,12 +86,13 @@ import Box from '@mui/material/Box'
 
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
   return (
-    <Box sx={{
+    <Box component="section" sx={{
       display: 'grid',
       gap: 2,
       p: 3,
       borderRadius: 2,
-      bgcolor: 'background.paper'
+      bgcolor: 'background.paper',
+      color: 'text.primary'
     }}>
       {children}
     </Box>
@@ -118,7 +110,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 }
 ```
 
-With the theme above, [MUI’s `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders) multiplies the 8px base radius to 16px. `r-panel` expresses that panel role as 1rem; compare the result at the application’s root font size. Spacing and breakpoint names also need explicit value comparison.
+With the default spacing function, `gap: 2` resolves to 16px and `p: 3` to 24px. The converted preset values match at a 16px root font size. With the theme above, [MUI’s `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders) multiplies the 8px base radius to 16px. `r-panel` expresses that panel role as 1rem; compare the result at the application’s root font size. A customized spacing function needs its own mapping. The example keeps the same `section` element and explicit surface/text pair so these changes do not obscure the scale comparison.
 
 Keep Material UI components for their behavior and style app-owned wrappers first:
 
@@ -189,7 +181,7 @@ Translate static responsive `sx` into conditions with the same threshold. The de
 For component state, prefer the native state or attribute when it belongs to your markup.
 
 ```html
-<button class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
   Save
 </button>
 ```

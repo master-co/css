@@ -1,3 +1,4 @@
+import CSSMigrationIllustration from './components/CSSMigrationIllustration'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
 Regular CSS and CSS Modules can coexist with Master CSS for as long as the project needs. Treat migration as a cleanup pass, not a rule that every declaration must become a class.
@@ -7,30 +8,11 @@ Move repeated, visual, markup-owned styles into Master CSS classes. Keep global 
 ---
 
 ## Migration strategy
-Start with the stylesheet your app already loads.
+Choose a small component whose original CSS and rendered states you can inspect. Follow the [shared migration workflow](/guide/migration#migration-strategy) for the baseline and batch checks; this guide focuses on deciding which declarations belong in markup and which local CSS contracts should remain.
 
-1. Import `@master/css` from the app CSS entry.
-2. Keep default source discovery unless the project needs a narrower scan boundary.
-3. Move shared design values into `@theme`.
-4. Convert component-local visual rules into class strings when the markup stays readable.
-5. Keep CSS Modules when a local class name is still the clearest API; project tokens are available automatically in supported build integrations.
-6. Delete old CSS only after the affected screens build and visually match.
+A useful first batch has stable visual declarations and no vendor selectors. Keep a module when its local class name is an API, when it targets internal structure, or when replacing it would spread complicated selectors across call sites.
 
-Avoid converting selectors that describe document structure, third-party internals, browser quirks, or animation timelines better than a class list can.
-
----
-
-## Audit checklist
-Inspect the CSS surface before changing files.
-
-| Area | What to look for | Migration decision |
-| --- | --- | --- |
-| App CSS entry | Global imports, reset files, cascade layers, and framework CSS entries | Add Master CSS beside the existing CSS first. |
-| Global CSS | Base element styles, custom properties, fonts, media queries, and layout primitives | Keep broad document rules in CSS; move reusable values into `@theme`. |
-| CSS Modules | `.module.css` files, `styles.*` usage, `:global`, `composes`, and local variants | Convert to markup classes or retain native CSS in the module. |
-| Tokens | `--*` custom properties, theme files, spacing scales, color variables, and breakpoints | Move project-owned values into Master CSS `@theme` blocks. |
-| Dynamic values | Inline styles, CSS variables, runtime-calculated measurements, and data attributes | Keep the class static and pass dynamic values through CSS variables. |
-| External CSS | Vendor styles, generated CSS, editor themes, maps, and third-party component styles | Keep as CSS unless the project owns the styling contract. |
+<CSSMigrationIllustration />
 
 ---
 
@@ -48,23 +30,23 @@ Use [Rendering modes](/guide/rendering-modes) to decide whether the project shou
 ---
 
 ## Convert local CSS to markup classes
-Move local visual declarations into markup when the class list is easier to review than a separate selector.
+Move local visual declarations into markup when the class list is easier to review than a separate selector. This example already uses the shared surface and text roles from the installed preset; the conversion keeps them unchanged.
 
 ```css name=Card.module.css
 .card {
   display: grid;
   gap: 1rem;
   padding: 1.5rem;
-  border-radius: .75rem;
-  background: #fff;
-  color: #172033;
+  border-radius: .5rem;
+  background: var(--color-surface-raised);
+  color: var(--color-text-body);
 }
 ```
 
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap-md p-lg r-xl bg-white (color:#172033)">
+    <section className="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
       {children}
     </section>
   )
@@ -79,9 +61,9 @@ export function Card({ children }: { children: React.ReactNode }) {
     display: grid;
     gap: 1rem;
     padding: 1.5rem;
-    border-radius: .75rem;
-    background: #fff;
-    color: #172033;
+    border-radius: .5rem;
+    background: var(--color-surface-raised);
+    color: var(--color-text-body);
   }
 }`}
   html={`<div class="container-inline">
@@ -89,24 +71,24 @@ export function Card({ children }: { children: React.ReactNode }) {
     <div class="grid gap-xs">
       <p class="m(0) font-sm">CSS rule</p>
       <section class="legacy-card">
-        <h3 class="m(0) font-lg font-semibold">Account</h3>
-        <p class="m(0)">Review profile settings.</p>
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
       </section>
     </div>
     <div class="grid gap-xs">
       <p class="m(0) font-sm">Markup classes</p>
-      <section class="grid gap-md p-lg r-xl bg-white (color:#172033)">
-        <h3 class="m(0) font-lg font-semibold">Account</h3>
-        <p class="m(0)">Review profile settings.</p>
+      <section class="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
       </section>
     </div>
   </div>
 </div>`}
-  caption="Both cards use the same gap, padding, radius and background. The literal .75rem radius maps to the preset r-xl token."
+  caption="Both cards use the same gap, padding, radius and background. The literal .5rem radius maps to the preset r-lg token. Both versions use the same adaptive surface and text roles."
   code={false}
 />
 
-Prefer named theme tokens such as `bg-surface`, `p-card`, or `r-card` when the value is a product decision. Prefer direct native declaration classes such as `(scroll-margin-top:4rem)` when the CSS property is clearer than inventing a new abstraction.
+Prefer named theme tokens such as `bg-surface-card`, `p-card`, or `r-card` when the value is a product decision. Prefer direct native declaration classes such as `(scroll-margin-top:4rem)` when the CSS property is clearer than inventing a new abstraction.
 
 ---
 
@@ -125,7 +107,7 @@ Vite, Next.js, and Webpack supply project theme definitions to local stylesheets
   padding-inline: var(--spacing-md);
   background-color: var(--color-blue-60);
   color: oklch(100% 0 none);
-  height: 2.5rem;
+  min-height: 2.5rem;
 }
 
 .button:disabled {
@@ -158,16 +140,16 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 @import "@master/css";
 
 @theme {
-  --color-surface: #ffffff;
-  --color-body: #172033;
+  --color-surface-card: var(--color-surface-raised);
+  --color-body: var(--color-text-body);
   --spacing-card: 1.5rem;
-  --radius-card: .75rem;
+  --radius-card: .5rem;
 }
 
 ```
 
 ```html
-<article class="grid r-card fg-body grid-cols(3)@md bg-surface p-card">
+<article class="grid r-card fg-body grid-cols(3)@md bg-surface-card p-card">
   ...
 </article>
 ```

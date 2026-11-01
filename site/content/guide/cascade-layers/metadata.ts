@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Cascade Layers',
-  description: 'Understand how theme, base, defaults, components, and utilities layers control style priority.',
+  description: 'Override a shared component with utilities and diagnose competing rules, unlayered CSS and importance.',
   category: 'Fundamentals',
   fileURL: import.meta.url
 })

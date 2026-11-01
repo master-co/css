@@ -20,6 +20,5 @@ export default function FoundationRecipes() {
       <Component />
     </section>)}
     <DemoPageViewport src="/examples/layout-system" title="Workspace layout" height={540} />
-    <DemoPageViewport src="/examples/responsive-gallery" title="Responsive asset gallery" />
   </div>
 }

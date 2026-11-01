@@ -55,6 +55,7 @@ export async function routeStyles() {
   try {
     const fences = deliveryFences(deliverySource('route-level-styles'))
     fixture.write('app/globals.css', fences.find(f => f.name === 'app/globals.css')?.text ?? '@import "@master/css";')
+    fixture.write('styles/marketing.css', fences.find(f => f.name === 'styles/marketing.css')!.text)
     const source = fences.filter(f => f.name === 'app/home/home.css').map(f => f.text).join('\n')
     const file = fixture.write('app/home/home.css', source)
     const result = await compileRenderedStylesheet(file, source, { baseManifest: preset, projectDir: fixture.root, preserveNativeCSS: true })

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { Linter } from 'eslint'
 import masterCSS from '@master/eslint-config-css'
 import { MasterCSSLanguageService } from '@master/css-language-service'
+import { compileManifestSync } from '@master/css-compiler/node'
 import { defaultClassLintSettings } from '@master/css-tooling/lint'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import createDoc from '../../packages/language-service/src/utils/create-doc'
@@ -24,6 +25,10 @@ export function verifyLintExamples() {
   }]
   const html = (classes: string) => `<button class="${classes}">Save</button>`
   try {
+    assert.equal(lint.verifyAndFix(html('p-md flex flex'), config('sort-classes')).output, html('flex p-md'))
+    const decision = lint.verifyAndFix(html('(font-size:15px)'), config('no-unapproved-raw-values'))
+    assert.equal(decision.fixed, false)
+    assert.equal(decision.messages.length, 1)
     const source = deliverySource('code-linting')
     const section = (heading: string) => source.split(`### ${heading}\n`)[1].split(/\n## /)[0].split(/\n### /)[0]
     const invalid = deliveryFences(section('No invalid classes')).find(fence => fence.language === 'html')!
@@ -73,6 +78,22 @@ export function verifyLintExamples() {
 }
 
 export function verifyLanguageExamples() {
+  // Exercise the article's project token, not just completion against the preset.
+  const fences = deliveryFences(deliverySource('language-service'))
+  const theme = fences.find(fence => fence.language === 'css' && fence.text.includes('--spacing-card'))!
+  const markup = fences.find(fence => fence.language === 'html' && fence.text.includes('p-card'))!.text
+  const compiled = compileManifestSync(theme.text.replace(/@import\s+'@master\/css';/, ''), { baseManifest: preset })
+  assert.deepEqual(compiled.diagnostics.filter(item => item.severity === 'error'), [])
+  const project = new MasterCSSLanguageService({}, { session: createToolingSessionSync({ manifest: compiled.manifest }) })
+  try {
+    const partial = markup.replace('p-card', 'p-ca')
+    const document = createDoc('html', partial)
+    const completions = project.suggestSyntax(document, document.positionAt(partial.indexOf('p-ca') + 4), { triggerKind: 1 })
+    assert.ok(completions?.some(item => item.label === 'p-card'), 'The declared project token appears in completion')
+    const accepted = createDoc('html', markup)
+    const inspection = project.inspectSyntax(accepted, accepted.positionAt(markup.indexOf('p-card') + 3))
+    assert.match((inspection?.contents as { value: string }).value, /padding:\s*var\(--spacing-card\)/)
+  } finally { project.dispose() }
   const service = new MasterCSSLanguageService({ classFunctions: ['cn'], classAttributes: ['ui'] }, { session: createToolingSessionSync({ manifest: preset }) })
   try {
     const hover = toolingExample('hover')

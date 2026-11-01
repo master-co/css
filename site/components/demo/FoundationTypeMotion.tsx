@@ -13,7 +13,7 @@ function Specimen({ name, title, scene }: { name: string, title: string, scene: 
 }
 
 export function FoundationTypography() {
-  return <Specimen name="type-hierarchy" title="A readable type hierarchy" scene={{ html: "<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<p class=\"m(0) text-xs font-medium fg-text-blue\">Field notes / 024</p>\n<h2 class=\"mt-xs mb-sm text-2xl font-semibold fg-text-strong\">Make room for the details.</h2>\n<p class=\"m(0) text-sm\">A consistent type scale helps readers move from the main idea to the supporting detail.</p>\n<p class=\"mt-md mb(0) font-mono font-xs fg-text-muted\">4 min read · Updated today</p>\n</article>", caption: 'Size, weight and color establish hierarchy. The full body copy stays visible at every preview width.' }} />
+  return <Specimen name="type-hierarchy" title="A readable type hierarchy" scene={{ html: "<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<p class=\"m(0) text-xs font-regular fg-text-muted\">Field notes / 024</p>\n<h2 class=\"mt-xs mb-sm text-2xl font-regular fg-text-strong\">Make room for the details.</h2>\n<p class=\"m(0) text-sm\">A consistent type scale helps readers move from the main idea to the supporting detail.</p>\n<p class=\"mt-md mb(0) font-mono font-xs fg-text-muted\">4 min read · Updated today</p>\n</article>", caption: 'Size, spacing and text roles establish hierarchy with regular weight. The full body copy stays visible at every preview width.' }} />
 }
 
 export function FoundationTypeComparison() {
@@ -33,7 +33,7 @@ export function FoundationTransition() {
 }
 
 export function FoundationDialog() {
-  return <Specimen name="dialog-entrance" title="Motion follows a real action" scene={{ sizing: 'viewport', height: 340, css: `@theme {
+  return <Specimen name="dialog-entrance" title="Motion follows a real action" scene={{ systemButtons: true, sizing: 'viewport', height: 340, css: `@theme {
   --duration-enter: 180ms;
   --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
   --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
@@ -42,5 +42,5 @@ export function FoundationDialog() {
     from { translate: 0 0.5rem; opacity: 0; }
     to { translate: 0; opacity: 1; }
   }
-`, html: "<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\"><h2 class=\"m(0) text-lg font-semibold\">Collection settings</h2><p class=\"mt-xs mb-md fg-text-muted\">Open a native dialog to preview its entrance.</p><button id=\"open\" type=\"button\">Open details</button></article>\n<dialog id=\"details\" aria-labelledby=\"dialog-title\" aria-describedby=\"dialog-description\" class=\"(width:calc(100%-32px)) max-w-xs m-auto p-md r-lg b(1) b-solid b-line-divider bg-surface-floating fg-text-body shadow-xl animate-dialog-in@media(screen)@motion-safe\">\n<h2 id=\"dialog-title\" class=\"m(0) text-lg font-semibold fg-text-strong\">Collection details</h2><p id=\"dialog-description\" class=\"mt-sm mb-md\">This dialog has a finite entrance. Closing it is immediate.</p><form method=\"dialog\"><button autofocus>Close details</button></form>\n</dialog><script>const dialog = document.getElementById('details'); const openButton = document.getElementById('open'); openButton.addEventListener('click', () => dialog.showModal()); dialog.addEventListener('close', () => openButton.focus());</script>", caption: 'The dialog enters once on opening. Escape or Close details returns focus to its trigger. Reduced motion opens it immediately. Its modal boundary stays inside this preview.' }} />
+`, html: "<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\"><h2 class=\"m(0) text-lg font-regular\">Collection settings</h2><p class=\"mt-xs mb-md fg-text-muted\">Open a native dialog to preview its entrance.</p><button id=\"open\" type=\"button\" class=\"ui-button\">Open details</button></article>\n<dialog id=\"details\" aria-labelledby=\"dialog-title\" aria-describedby=\"dialog-description\" class=\"(width:calc(100%-32px)) max-w-xs m-auto p-md r-lg b(1) b-solid b-line-divider bg-surface-floating fg-text-body shadow-xl animate-dialog-in@media(screen)@motion-safe\">\n<h2 id=\"dialog-title\" class=\"m(0) text-lg font-regular fg-text-strong\">Collection details</h2><p id=\"dialog-description\" class=\"mt-sm mb-md\">This dialog has a finite entrance. Closing it is immediate.</p><form method=\"dialog\"><button class=\"ui-button\" autofocus>Close details</button></form>\n</dialog><script>const dialog = document.getElementById('details'); const openButton = document.getElementById('open'); openButton.addEventListener('click', () => dialog.showModal()); dialog.addEventListener('close', () => openButton.focus());</script>", caption: 'The dialog enters once on opening. Escape or Close details returns focus to its trigger. Reduced motion opens it immediately. Its modal boundary stays inside this preview.' }} />
 }

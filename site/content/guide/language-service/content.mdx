@@ -1,18 +1,55 @@
+import LanguageIllustration from './components/LanguageIllustration'
+
 ## Overview [sr-only]
-The Master CSS Language Service brings the project manifest into the editor. It reads project tokens, utility recipes, mixins, custom media, selectors and conditions, then uses that context for completion, hover previews, highlighting, color tools, directive formatting and diagnostics in class strings and stylesheets.
+Use the Master CSS Language Service to discover the classes your project actually supports and inspect their CSS while you edit. Its suggestions read the project's tokens and definitions, including your own utilities, mixins, selectors and conditions.
+
+Start with a project that has [Master CSS installed](/guide/installation). The extension helps author source; your framework integration still delivers the stylesheet to the browser.
 
 ---
 
 ## Set up VS Code \{#set-up-vs-code\}
-Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode) for language-service features, and the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for class policy diagnostics and sort-on-save once the project has [Code linting](/guide/code-linting) set up. The extension finds project context through a CSS entry that imports `@master/css` or a `package.json` that declares a Master CSS package.
-
-Enable suggestions inside strings, and restrict ESLint's save action to class sorting:
+Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode), open the project folder in VS Code, and enable completion inside strings:
 
 ```json name=.vscode/settings.json
 {
   "editor.quickSuggestions": {
     "strings": true
-  },
+  }
+}
+```
+
+The extension discovers project context from a CSS entry importing `@master/css` or a `package.json` declaring a Master CSS package. In a repository with several apps, open a source file in the app whose theme you want to use.
+
+## Check a project token
+
+Add a spacing token after the existing import in your app's CSS entry:
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --spacing-card: 1.5rem;
+}
+```
+
+In an HTML file, type `p-ca` inside a class attribute. Choose `p-card` from the suggestions, then hover the completed class:
+
+```html
+<article class="p-card">Field notes</article>
+```
+
+<LanguageIllustration />
+
+The hover's generated rule should contain `padding: var(--spacing-card)`. The class name comes from your project token; the declaration keeps a variable reference. Check the page in your browser to see the resulting padding. If `p-card` is missing, resolve the [workspace context](#workspace-aware-manifests) before adding more editor settings.
+
+---
+
+## Add class sorting on save
+
+For class policy diagnostics and sort-on-save, first set up [Code linting](/guide/code-linting) and install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). Add these options alongside `editor.quickSuggestions`:
+
+```json name=.vscode/settings.json
+{
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
@@ -22,21 +59,21 @@ Enable suggestions inside strings, and restrict ESLint's save action to class so
 }
 ```
 
-The rule list alone does not turn on fixes when saving, and the ESLint extension's `problems` mode ignores the filter; keep `eslint.codeActionsOnSave.mode` at its default `all`. See the [ESLint extension settings](https://github.com/microsoft/vscode-eslint#settings-options).
+Now an explicit save can sort classes using the project's ESLint configuration. The rule list alone does not enable the save action. Keep `eslint.codeActionsOnSave.mode` at its default `all`: the extension's `problems` mode ignores this rule filter. See the [ESLint extension settings](https://github.com/microsoft/vscode-eslint#settings-options).
 
 ---
 
-## Editor features
-### Syntax suggestions
+## Inspect styles as you edit
+### Complete classes and conditions
 Completion works inside configured class sources: markup attributes, bound framework attributes, JavaScript helper calls, tagged templates and project-specific class declarations. Suggestions include utilities, property values, color tokens, selectors, queries and directive syntax, and project tokens appear once the workspace manifest loads.
 
-### Hover inspection
-Hovering a class such as `bg-blue-60:hover@sm` previews the CSS Master CSS emits for it, including its selector state and query.
+### Read the generated rule
+Hover a class such as `fg-blue-60:hover@sm` to inspect its declaration, selector state and query. This example applies the preset blue token only for the hover state at `sm` and above:
 
 ```html
-<button class="bg-blue-70 fg-white bg-blue-60:hover@sm">
-  Save
-</button>
+<a class="fg-text-body fg-blue-60:hover@sm" href="/notes">
+  Field notes
+</a>
 ```
 
 ### Syntax highlighting
@@ -60,7 +97,23 @@ The language server reports directive errors in the same documents and project m
 
 ---
 
-## Settings and class sources \{#supported-class-sources\}
+## Recognize your class sources \{#supported-class-sources\}
+
+Built-in sources include `class` and `className`, framework bindings, common helper calls and tagged templates. When your project uses another helper or attribute, add its name:
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.classAttributes": ["ui"],
+  "masterCSS.classDeclarations": ["classes", "styles"],
+  "masterCSS.classFunctions": ["cn"]
+}
+```
+
+For example, `cn("p-card")` now receives class completion. Language-service arrays **extend** the built-in class sources, so `clsx` still works. ESLint source settings **replace** their defaults instead; configure both tools when introducing a project convention.
+
+<details>
+<summary>Available VS Code settings</summary>
+
 Set options in `.vscode/settings.json` or VS Code user settings. The defaults cover HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown and MDX.
 
 | Setting | Default | Use |
@@ -78,15 +131,7 @@ Set options in `.vscode/settings.json` or VS Code user settings. The defaults co
 | `masterCSS.embeddedSyntaxHighlighting` | `active` | `active` highlights the class under the cursor, `always` every embedded class, `off` none; directive syntax stays highlighted. |
 | `masterCSS.workspaces` | `auto` | Workspace detection for project manifests. |
 
-Language-service arrays extend the built-in class sources; ESLint settings replace them instead:
-
-```json name=.vscode/settings.json
-{
-  "masterCSS.classAttributes": ["ui"],
-  "masterCSS.classDeclarations": ["classes", "styles"],
-  "masterCSS.classFunctions": ["cn"]
-}
-```
+</details>
 
 ---
 
@@ -105,6 +150,6 @@ Run `Master CSS: Restart Language Server` after dependency changes, workspace-la
 | Symptom | Fix |
 | --- | --- |
 | Completions do not show inside strings. | Enable `editor.quickSuggestions.strings`. |
-| Project tokens, components or utilities are missing. | Add a CSS entry that imports `@master/css`, or declare a Master CSS package dependency, then restart the language server. |
+| Project tokens or utilities are missing. | Confirm the token is in the detected CSS entry or one of its imports, fix manifest errors, then restart the language server if needed. |
 | The wrong monorepo package is used. | Set `masterCSS.workspaces` to explicit workspace directories. |
 | Color decorators do not appear. | Enable `masterCSS.renderSyntaxColors` and `editor.colorDecorators`; check language-specific overrides. |

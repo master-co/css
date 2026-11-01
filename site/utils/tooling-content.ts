@@ -1,3 +1,5 @@
+import { lintIllustrationMarkdown } from '../content/guide/code-linting/illustration'
+import { languageIllustrationMarkdown } from '../content/guide/language-service/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { toolingExampleMarkdown, toolingOptionsMarkdown } from './tooling-guide-data'
@@ -8,7 +10,9 @@ export async function toolingGuideContent(siteRoot: string, slug: string) {
   if (!toolingGuideSlugs.includes(slug as typeof toolingGuideSlugs[number])) throw new Error(`Unsupported tooling guide: ${slug}`)
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
-    component: (name, attributes) => name === 'ToolingOptions' ? toolingOptionsMarkdown(String(attributes.name))
+    component: (name, attributes) => name === 'LintIllustration' ? lintIllustrationMarkdown()
+      : name === 'LanguageIllustration' ? languageIllustrationMarkdown()
+      : name === 'ToolingOptions' ? toolingOptionsMarkdown(String(attributes.name))
       : name === 'ToolingExample' ? toolingExampleMarkdown(String(attributes.name)) : undefined
   })
   if (result.notes.length) throw new Error(`Incomplete ${slug} export: ${result.notes.join('; ')}`)
