@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
+import { spawnSync } from 'node:child_process'
 import { chromium } from '@playwright/test'
 import { repairCompletion } from './repair-completion.mjs'
 import { repairCheckpoint } from './repair-checkpoint.mjs'
@@ -57,5 +58,52 @@ test('matching browser output still exposes obsolete classes and omitted reporti
     assert.equal(feedback.completion.sourceHash, fixed.sourceHash)
     assert.notEqual(fixed.sourceHash, initial.sourceHash)
     assert.equal(feedback.completion.requiredReports[0].requiresFreshAnswer, true)
+  } finally { await browser.close(); await rm(work, { recursive: true, force: true }) }
+})
+
+test('clean lint cannot clear invalid markup classes, while real native CSS hooks remain valid', async () => {
+  const work = await mkdtemp(join(tmpdir(), 'master-completion-inspect-')), browser = await chromium.launch()
+  const cli = args => {
+    const result = spawnSync(process.execPath, [join(repository, 'packages/cli/dist/bin/index.js'), ...args], { cwd: work, encoding: 'utf8', timeout: 30000 })
+    assert.ifError(result.error)
+    assert.equal(result.signal, null)
+    return { status: result.status, report: JSON.parse(result.stdout) }
+  }
+  try {
+    await prepare(work, 'fallback-order', true)
+    const html = await readFile(join(work, 'index.html'), 'utf8')
+    const unsupported = ['h-10', 'px-4', 'rounded-lg', 'text-white']
+    await writeFile(join(work, 'index.html'), html.replace('class="fallback"', `class="fallback ${unsupported.join(' ')}"`))
+    assert.equal(cli(['lint', 'index.html', '--fix']).status, 0)
+    const lint = cli(['lint', 'index.html'])
+    assert.equal(lint.status, 0)
+    assert.equal(lint.report.version, 5)
+    assert.equal(lint.report.coverage.status, 'complete')
+    assert.equal(lint.report.summary.checkedFiles, 1)
+    assert.equal(lint.report.summary.filesWithDiagnostics, 0)
+    assert.equal(lint.report.summary.diagnostics, 0)
+    const inspection = cli(['inspect', 'index.html', '--classes', `fallback ${unsupported.join(' ')}`])
+    assert.equal(inspection.status, 1)
+    const markup = inspection.report.files.find(file => file.filePath.endsWith('/index.html'))
+    assert.deepEqual(markup.discovered.invalid.slice().sort(), ['fallback', ...unsupported].sort())
+    assert.ok(markup.discovered.usedNative.includes('fallback'))
+    assert.ok(!markup.discovered.valid.includes('fallback'))
+    assert.ok(inspection.report.diagnostics.some(item => item.code === 'UNKNOWN_TOKEN'))
+    assert.deepEqual(inspection.report.missingCSS.missing.map(item => item.className).sort(), unsupported.slice().sort())
+    const run = previous => repairCheckpoint({ work, task: 'fallback-order', browser, repository, baseline: work, answer: 'Retained native CSS for ordered display fallback and padding override.', previous })
+    const invalid = await run()
+    assert.deepEqual(invalid.failedChecks.map(check => check.id), ['valid-classes'])
+    assert.deepEqual(invalid.completion.classes.unresolved.slice().sort(), unsupported.slice().sort())
+    await writeFile(join(work, 'index.html'), html)
+    const finalInspection = cli(['inspect', 'index.html', '--classes', 'fallback'])
+    assert.equal(finalInspection.status, 0)
+    assert.deepEqual(finalInspection.report.files[0].discovered.invalid, ['fallback'])
+    assert.deepEqual(finalInspection.report.missingCSS.present, [{ className: 'fallback', status: 'present', reason: 'native-css' }])
+    assert.deepEqual(finalInspection.report.missingCSS.missing, [])
+    assert.ok(finalInspection.report.files[0].discovered.usedNative.includes('fallback'))
+    const fixed = await run(invalid)
+    assert.equal(fixed.status, 'passed')
+    assert.equal(compareRepairCandidate(invalid, fixed).reason, 'passed')
+    assert.equal(compareRepairCandidate(fixed, invalid).reason, 'regression')
   } finally { await browser.close(); await rm(work, { recursive: true, force: true }) }
 })
