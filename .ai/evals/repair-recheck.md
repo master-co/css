@@ -78,7 +78,10 @@ Copy original source/build/baseline/skill files into isolated workspaces, droppi
 stale reports/logs/generated CSS. Reproduce each failure with a host checkpoint
 before invoking a model. Preserve original assessment hashes and initial inputs.
 
-Use the same originating model (`gpt-6-luna`, low reasoning), skill and CLI. Run
+Use the same originating model (`gpt-6-luna`, low reasoning), skill and CLI interface.
+Freeze the current built tools and record their hash differences from the prior
+campaign; reject scorer changes. Do not require an old native build or replace
+the shared checkout artifacts. Reproduction with the current tools is mandatory. Run
 sequentially, with at most two fresh 120-second model attempts per snapshot.
 Each prompt includes the latest host feedback and asks the model to finish its
 edit so the host can check it; do not ask it to launch a browser. Refresh full

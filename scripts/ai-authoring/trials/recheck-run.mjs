@@ -29,7 +29,9 @@ if (!selected.length) throw new Error('No eligible hover/inheritance failures')
 const root = await mkdtemp(join(tmpdir(), 'master-recheck-')), cacheRoot = join(userInfo().homedir, '.cache/mastercss')
 await mkdir(cacheRoot, { recursive: true })
 const sourceHashes = await treeHashes(join(repository, 'scripts/ai-authoring'))
-const artifactHashes = sourceProtocol.artifactHashes
+const artifactHashes = Object.fromEntries(await Promise.all(Object.keys(sourceProtocol.artifactHashes).map(async file => [file, digest(await readFile(join(repository, file)))])))
+const artifactChanges = Object.keys(artifactHashes).filter(file => artifactHashes[file] !== sourceProtocol.artifactHashes[file]).map(file => ({ file, previous: sourceProtocol.artifactHashes[file], current: artifactHashes[file] }))
+if (sourceHashes['trials/check.mjs'] !== sourceProtocol.sourceHashes['trials/check.mjs'] || sourceHashes['color-comparison.mjs'] !== sourceProtocol.sourceHashes['color-comparison.mjs']) throw new Error('Source scorer changed')
 async function verifyEnvironment() {
   if (JSON.stringify(await treeHashes(join(repository, 'scripts/ai-authoring'))) !== JSON.stringify(sourceHashes)) throw new Error('Runner sources changed')
   for (const [file, hash] of Object.entries(artifactHashes)) if (digest(await readFile(join(repository, file))) !== hash) throw new Error('Tool artifact changed: ' + file)
@@ -37,7 +39,7 @@ async function verifyEnvironment() {
 await verifyEnvironment()
 const browser = await chromium.launch(), results = []
 const protocol = { version: 1, revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), source, sourceProtocolHash: digest(await readFile(join(source, 'protocol.json'))),
-  sourceHashes, artifactHashes, client: execFileSync('codex', ['--version'], { encoding: 'utf8' }).trim(), browser: browser.version(), browserHash: digest(await readFile(chromium.executablePath())),
+  sourceHashes, artifactHashes, artifactChanges, client: execFileSync('codex', ['--version'], { encoding: 'utf8' }).trim(), browser: browser.version(), browserHash: digest(await readFile(chromium.executablePath())),
   selected, maxAttempts, timeoutMs: 120000, concurrency: 1, modelArguments,
   design: 'Every completed prior navigation trial failing line-height or hover background. Fresh host check before and after every repair, up to the fixed attempt budget. Same originating model, official skill and CLI. No model history. This is a failure-conditioned repair demonstration, not a causal A/B comparison. No old verdicts are modified.' }
 protocol.hash = digest(JSON.stringify(protocol))
