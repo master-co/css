@@ -105,3 +105,20 @@ body {
 .annotation { display: flex; flex-direction: column; align-items: center; gap: 6px; width: max-content; }
 .annotation > .title { color: var(--annotation-ink); }
 .routes path[data-from] { stroke: color-mix(in srgb, var(--annotation-ink) 65%, var(--ui-line-mark)); }
+
+/* A shared stylesheet reaches every consumer; conversion and verification have different scopes. */
+.migration-reach { left: 50%; top: 50%; translate: -50% -50%; display: flex; flex-direction: column; align-items: center; width: max-content; }
+.migration-reach > .sheet { position: static; }
+.migration-trunk { position: relative; height: 76px; border-left: 1px solid var(--ui-line-mark); }
+.migration-trunk > .edge { position: absolute; left: 12px; top: 24px; }
+.migration-consumers { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 28px; }
+.migration-consumer { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 42px; }
+.migration-consumer::before { content: ''; position: absolute; top: 0; height: 26px; left: 50%; border-left: 1px solid var(--ui-line-mark); }
+.migration-consumer::after { content: ''; position: absolute; top: 0; left: -14px; right: -14px; border-top: 1px solid var(--ui-line-mark); }
+.migration-consumer:first-child::after { left: 50%; }
+.migration-consumer:last-child::after { right: 50%; }
+.migration-screen { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--ui-radius-md); }
+.migration-consumer.is-batch .migration-screen { background: color-mix(in oklch, var(--ui-tone-blue) 8%, transparent); outline: 1px solid color-mix(in oklch, var(--ui-tone-blue) 45%, transparent); }
+.migration-consumer.is-batch .migration-screen > :is(.title, .icon) { color: var(--ui-tone-blue); }
+.migration-verification { position: relative; align-self: stretch; display: flex; justify-content: center; margin-top: 28px; padding-top: 24px; }
+.migration-verification::before { content: ''; position: absolute; top: 0; inset-inline: 0; height: 8px; border: 1px solid var(--ui-line-mark); border-top: 0; }

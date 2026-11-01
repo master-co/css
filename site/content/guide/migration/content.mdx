@@ -1,71 +1,108 @@
 import MigrationGuides from '~/site/components/MigrationGuides'
+import MigrationIllustration from './components/MigrationIllustration'
 
-Migrating a product to Master CSS is a styling change, not a one-to-one syntax rewrite: add Master CSS beside the existing system, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
+Start with one component or route whose appearance and behavior you can compare before and after the change. Connect Master CSS to the existing app, convert that slice, and verify it while the rest of the product continues to use its current styles.
 
----
+Keep the first batch focused on preserving the UI. A redesign, a component-library replacement and a styling migration each introduce different changes to review; separate them when possible.
+
+## Choose the source styling system \{#choose-the-source-styling-system\}
 
 <a id="frameworks"></a>
-## Choose the source styling system
-Start with the guide for the CSS or component system you are replacing. Keep the application framework and its behavior intact.
+
+Use the guide for the system you already have. If the app combines several systems, choose the one that owns the first component's styles; the others can stay in place.
 
 <MigrationGuides />
 
----
+## Define the first batch \{#migration-strategy\}
 
-## Migration strategy
-Start with an audit, then migrate incrementally. The first milestone is a working vertical slice: one component or route generates the intended CSS, preserves its interactions and still matches the design, while the rest of the application keeps its legacy styles.
+Record a working baseline in version control and run the app's existing checks. Note any failures before editing so you can distinguish them from regressions. Capture the chosen screen at its important widths and interaction states.
 
-### Plan an external-system conversion with MCP
+An account settings form makes a useful first batch: it has a clear boundary, visible fields and buttons, and observable behavior. Include its labels, validation messages, focus states and disabled controls. Keep billing and reports outside the conversion, but include them in visual checks if they share the app stylesheet.
 
-With the [Master CSS MCP server](/guide/ai-coding#connect-the-mcp-server) connected, the `migrate-to-mastercss` prompt asks the agent to inspect the active manifest, stylesheet entries, extraction coverage and existing vocabulary first, then return a rendering mode, a first reviewable batch, validation commands and visual risks. It is a planning workflow and does not edit files.
+Inspect these connections before deciding which files to change:
+
+| Connection | What it changes about the batch |
+| --- | --- |
+| CSS entry, reset and layer order | Setup can affect screens whose markup you leave untouched. |
+| Shared tokens and component classes | A definition may have consumers outside the chosen component. |
+| Source discovery and dynamic class names | The generated CSS must include the states the component actually renders. |
+| Component-library behavior | Replacing a class does not replace a widget's focus management, events or accessibility behavior. |
+
+The conversion boundary is not a CSS isolation boundary. In an app where Account, Billing and Reports load the same CSS entry, adding Master CSS or changing a shared rule requires checking all three.
+
+<MigrationIllustration />
+
+## Connect Master CSS beside the existing styles
+
+Follow [Installation](/guide/installation) for the app's framework or build tool. Confirm the app loads the CSS entry containing `@import '@master/css';`, and choose a [rendering mode](/guide/rendering-modes) that covers how the app supplies its class names.
+
+Keep existing styles loaded while the first batch is converted. If both systems compile their own directives, give each compiler its own input rather than sending one system's source through the other. The source-system guides above explain those build boundaries.
+
+Before converting the form, inspect the effects of setup itself: Master’s preset includes base styles for elements such as headings, lists and form controls. Compare the existing screens with the baseline now. Resolve reset differences, conflicting token names and overlapping utility names before attributing a visual change to the component conversion.
+
+Adding the Master import later does not guarantee that its utilities win. Within the same author origin and context, normal unlayered declarations outrank normal layered declarations under the [CSS cascade rules](https://www.w3.org/TR/css-cascade-5/#layer-order). Keeping an old class on an element can therefore hide whether its new utility works. Inspect the winning declaration in browser devtools; use [Compatibility](/guide/compatibility#third-party-styles) and [Cascade Layers](/guide/cascade-layers) to resolve the ordering deliberately.
+
+## Convert the component without changing its contract
+
+Follow the source-system guide for the code conversion. Compare the resulting declarations and computed values, rather than assuming similarly named classes or tokens produce the same result.
+
+- Use existing project tokens when their values match the intended design. Define a shared value in [`@theme`](/guide/theme) when it represents a product decision; check its other consumers when changing it.
+- Move local visual styles into markup where that makes the component easier to read. Keep native CSS or CSS Modules when they express the selector or component contract more clearly.
+- Preserve runtime values, component props, event handlers, semantic elements and keyboard behavior. Keep a vendor widget and its required CSS while the app still depends on that widget.
+- For scanned output, make class names available as complete strings. Check conditional variants and generated content against [Scanning and pruning](/guide/scanning-and-pruning).
+
+For the account form, completion means that entering a value, submitting, showing an error and disabling the action still work. Matching the form's idle screenshot is only part of the result.
+
+## Verify the batch, then remove unused styles \{#checklist\}
+
+Use the baseline to review the change before expanding to another component:
+
+1. Run the relevant formatter, lint, type-check and tests, then the production build. Check the built app as well as the development preview.
+2. Compare the converted screen at its important widths, themes and states. Exercise keyboard navigation, focus, validation and disabled controls.
+3. Check screens sharing any changed reset, token or global rule, including screens outside the batch. In the example, review Billing and Reports as well as Account.
+4. Remove the converted component's old styles only after checking their remaining consumers. Recheck the result after removal; a retained old rule may have been masking a missing new declaration.
+5. Remove a styling dependency only when no remaining screen, widget or build input needs it. Keep useful native and vendor CSS; it does not need to disappear for the batch to be complete.
+
+Record intentional visual differences and remaining dependencies with the batch. Once that result is reviewable and verified, repeat the process for the next component or route.
+
+## Ask an agent to plan the work
+
+### With MCP \{#plan-an-external-system-conversion-with-mcp\}
+
+The [Master CSS MCP server](/guide/ai-coding#connect-the-mcp-server) provides a `migrate-to-mastercss` prompt for planning a conversion from an external styling system. It instructs the agent to inspect the project and return a rendering mode, a first batch, CSS output risks and validation commands. The prompt supplies instructions; it is not an automatic code converter.
 
 ```text
 Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
 
-Inspect the external styling system, framework, CSS entries, tokens, source discovery and available checks. Do not edit yet.
+Inspect the external styling system, framework, stylesheet entries,
+source discovery, shared tokens and available checks. Do not edit yet.
 
-Return an incremental plan with the rendering mode, first conversion batch, CSS output risks, validation commands and visual checks.
+Return a plan for one component or route: setup changes, conversion
+files, screens affected by shared CSS, validation commands and the
+conditions for removing old styles. Identify uncertainties to inspect.
 ```
 
 ### Without MCP \{#migration-prompt\}
 
-Paste this into your local coding agent from the project root:
+Give a local coding agent the same bounded task. Include the component or route you chose, then use this planning request:
 
 ```text
-You are migrating this project to Master CSS.
+Plan the first batch of this project's migration to Master CSS.
+Use https://rc.css.master.co and the installed packages to verify
+current syntax, APIs and setup. Do not invent classes or package names.
 
-Use the official Master CSS documentation as the source of truth:
-Documentation: https://rc.css.master.co
+Inspect the framework, styling systems, CSS entry, shared definitions,
+source discovery and available checks. Do not edit yet.
 
-Do not invent Master CSS classes, APIs, directives, or package names.
+Propose the smallest working batch around the selected component or
+route. Explain how the old and new CSS will coexist, which screens
+need comparison, and which component behaviors must be preserved.
 
-First inspect the repository and identify:
-- the framework, build tool, package manager, and current styling systems
-- the app CSS entry point and component/template files that contain styles
-- any design tokens, theme variables, CSS modules, utility classes, styled components, preprocessors, or third-party stylesheets
-- the available formatter, lint, type-check, test, and build commands
-
-Then migrate incrementally:
-1. Choose the rendering mode, then install and configure the appropriate Master CSS integration.
-2. Import `@master/css` from the project CSS entry.
-3. Check cascade layers, resets and overlapping class names while the old and new CSS coexist. Keep each compiler responsible for its own source directives.
-4. Convert repeated visual styles into Master CSS classes in markup where that improves clarity.
-5. Move shared design values into `@theme` tokens.
-6. Use native CSS in `@layer components` for reusable component classes when markup classes would become hard to maintain.
-7. Keep vendor CSS, generated CSS, complex animation CSS, and hard-to-read one-off CSS in regular CSS unless converting it improves maintainability.
-8. Remove the old styling dependency only after the migrated screens build and match the previous UI.
-
-Work in small migration batches. After each focused batch, show me the changed files, explain the conversion decisions, and run the project’s formatter, type check, tests, and build if available. Call out anything that needs manual review, especially visual differences, removed CSS, changed tokens, old styling dependencies, or unsupported syntax.
+List the files to change, validation commands, unresolved questions
+and evidence needed before deleting old styles or dependencies.
 ```
 
----
-
-## Checklist
-- Start from a clean git working tree and identify every existing styling system, including component-library CSS.
-- Choose a [rendering mode](/guide/rendering-modes) and add `@import '@master/css';` to the CSS entry your app already loads.
-- Review each batch's diff and run the project's formatter, type check, tests and production build.
-- Compare important screens in the browser, including responsive states and dark mode if the app supports them.
-- Keep the old styling system, and regular CSS for vendor or generated styles, until the converted paths no longer rely on it.
+Review the plan against the actual project, then request implementation of that batch. Keep the same checks whether the edits are written by an agent or by hand.
 
 <a id="custom-engine-and-binding-migration"></a>
-For a custom engine host, use the [current execution contract](/reference/packages#css). This migration index focuses on converting external styling systems.
+For a custom engine host, use the [current execution contract](/reference/packages#css). This guide covers conversion from external styling systems.

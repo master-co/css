@@ -29,6 +29,7 @@ import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundatio
 import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
 import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-content'
 import { migrationGuides } from '../utils/migration-guides'
+import { migrationIllustrationMarkdown } from '../content/guide/migration/illustration'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
 import { projectStyleExamples, projectStyleExample } from '../components/demo/project-style-examples'
 import { configuredExampleCSS, configuredMarkupClasses, configuredMarkupMarkdown } from '../reference/configured-example'
@@ -86,7 +87,8 @@ test('migration exports retain readable comparisons, complete examples and searc
     if (['css', 'css-in-js'].includes(slug)) assert.match(content.markdown, /export function Button/)
     if (!slug) {
       for (const guide of migrationGuides) assert.ok(content.markdown.includes(`[${guide.title}](/guide/migration/${guide.slug}) — ${guide.description}`))
-      assert.doesNotMatch(content.markdown, /<MigrationGuides|brands\[/)
+      assert.doesNotMatch(content.markdown, /<MigrationGuides|<MigrationIllustration|brands\[/)
+      assert.ok(content.markdown.includes(migrationIllustrationMarkdown()))
       assert.match(content.markdown, /id="custom-engine-and-binding-migration"/)
       assert.match(content.markdown, /\/reference\/packages#css\)/)
     }
