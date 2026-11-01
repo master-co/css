@@ -389,7 +389,7 @@ Counts include cache hits; these are not billing estimates or evidence of a gene
 regression. Retain the factual guidance without claiming measured effectiveness.
 The [browser diagnostic workflow](browser-diagnostics.md) now exposes computed
 values, matching rules, ancestors and unresolved classes for repair feedback.
-Its effect on model success remains unmeasured; reading guidance was insufficient.
+The paired feedback pilot found no success-rate gain; see that workflow's results.
 
 External `analysis.json` and `audit.json` retain the full comparison and failure
 properties alongside immutable skill versions, prompts, events and all snapshots.

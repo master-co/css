@@ -146,3 +146,52 @@ Different starting errors confound conditional repair rates and repair-token cos
 Audit actual report reads; tool availability or a prompt is not proof of use.
 Keep calibration separate, preserve every error/timeout, and make no general
 success or cost claim from the small fixed-task sample.
+
+### Recorded feedback pilot: 2026-11-01
+
+Frozen runner `5f2dba159`, Codex CLI `0.166.0-alpha.5.1`, `gpt-6.1-sol` and
+`gpt-6-luna`, low reasoning, concurrency 2, 120 seconds per attempt and up to two
+repairs. Four calibration cases (seven attempts) were excluded. All 16 formal
+trials completed in 30 attempts without timeout, service or isolation failure.
+Source/tool hashes, copied skills, original fixture inputs and token totals were
+audited. No grader changes or regrading occurred during this campaign.
+
+| Measure | A: checks only | B: browser evidence |
+| --- | ---: | ---: |
+| First pass | 4/8 | 4/8 |
+| Final pass | 6/8 | 6/8 |
+| Repair requests | 7 | 7 |
+| Repaired trials passing | 2/4 | 2/4 |
+| First-attempt input tokens | 2,077,738 | 1,870,594 |
+| Repair-attempt input tokens | 1,487,958 | 1,461,820 |
+| Input tokens including repairs | 3,565,696 | 3,332,414 |
+| Cached input tokens | 3,145,472 | 2,941,952 |
+| Median model time including repairs | 74.30 s | 65.03 s |
+| CLI suggestion calls | 23 | 20 |
+| Final unmatched names | 5 | 1 |
+
+Pairs had one A win, one B win, five both-pass and one both-fail. Sol passed 4/4
+without repairs in each arm. Luna initially failed all four trials per arm and
+finished 2/4 in each. B's four repaired trials visibly read rule evidence in all
+seven repair attempts; A's workspace and acceptance files contained no diagnostic
+report. One A suggestion call failed because declaration text beginning with
+`--height` was treated as an unknown CLI option; B had no suggestion errors.
+
+No measured success-rate or repair-count improvement followed report use. B's
+repair input count was 1.8% lower and total input count 6.5% lower, but first-attempt
+input already differed by 10.0% before evidence was available. Different initial
+errors, cache hits and the small sample prevent a diagnostic cost-benefit claim.
+These are token counts, not billing estimates; timings are local concurrent runs.
+
+Both B failures were hover imports. One retained a components-layer hover rule
+overridden by its utilities-layer resting background; the other also retained an
+unresolved class and incorrect text color. The report exposed candidates but did
+not ensure a correct repair. Next compare a compact, property-focused diagnostic
+against the full report on **identical failed snapshots**, keeping initial errors
+fixed and verifying hover after each repair. Do not claim a general improvement
+or expand the public tool surface based on this pilot alone.
+
+External artifacts contain all prompts, events, snapshots, comparison, audit and
+analysis, plus separate calibration and historical color-audit records. Native
+and built tool artifacts are now archived alongside source hashes. Observation
+SHA-256: `81075b6f92fb24ffc8a6b2b019c377a96aaf8607abf86142006aacc789c2ab92`.
