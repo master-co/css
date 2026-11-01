@@ -114,3 +114,10 @@ It contains frozen sources/tools, original provenance, prompts/events, proposed
 and retained snapshots, final verification, decisions, audits and test logs.
 Result SHA-256:
 `f7782061b5ecea6b601d511e06f137f7fc8ccce722bfdb54db824489c29d8357`.
+
+The subsequent [full-cohort replication](completion-cohort.md) passed all seven
+original failures in eight calls. One touch regression was rejected before a
+successful retry; retained outputs had no new measured failures. It also exposed
+misinterpretation of lint's diagnostic-file count in several model answers.
+See that report for the distinction between measured repair success and reporting
+quality; neither run establishes a general repeated-run success rate.
