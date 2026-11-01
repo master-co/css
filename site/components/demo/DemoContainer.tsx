@@ -1,49 +1,42 @@
 'use client'
 
-import '~/site/styles/demo-interactions.css'
-import '~/site/styles/demo.css'
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
-import ResizeZone from '~/site/docs-shell/components/ResizeZone'
-import { DemoControls } from './primitives'
+import { useEffect, useId, useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react'
+import Demo from './Demo'
 
-/** Changes a real wrapper's width; children own their query container and layout. */
-export default function DemoContainer({ children, title, maxWidth = 720 }: {
-  children: ReactNode, title: string, maxWidth?: number
+/** One tray whose tools change a real wrapper's width; children own their query container and layout. */
+export default function DemoContainer({ children, title, caption, maxWidth = 720, ...props }: HTMLAttributes<HTMLElement> & {
+  children: ReactNode, title: string, caption?: ReactNode, maxWidth?: number
 }) {
   const [width, setWidth] = useState<number>()
   const [measured, setMeasured] = useState(480)
   const [minimumWidth, setMinimumWidth] = useState(240)
   const [ready, setReady] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const shellRef = useRef<HTMLDivElement>(null)
   const id = useId()
   useEffect(() => {
     const element = ref.current!
-    const shell = shellRef.current!
+    const stage = element.parentElement!
     const observer = new ResizeObserver(() => {
       setMeasured(Math.round(element.getBoundingClientRect().width))
-      const style = getComputedStyle(shell)
-      const available = shell.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      const style = getComputedStyle(stage)
+      const available = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
       setMinimumWidth(Math.min(240, Math.round(available), maxWidth))
       setReady(true)
     })
     observer.observe(element)
-    observer.observe(shell)
+    observer.observe(stage)
     return () => observer.disconnect()
   }, [maxWidth])
-  return <div data-demo-container data-ready={ready}>
-    <div ref={shellRef} className="demo-container-shell">
-      <ResizeZone width={width ? `${width}px` : `min(100%, ${maxWidth}px)`} originX="center" showHandler={false}>
-        <div ref={ref}>{children}</div>
-      </ResizeZone>
-    </div>
-    <div className="demo-viewport-toolbar">
-      <DemoControls label={`${title} controls`}>
-        <label className="demo-label" htmlFor={id}>Container</label>
-        <input id={id} type="range" min={minimumWidth} max={maxWidth} step="1" disabled={!ready} value={width ?? Math.min(measured, maxWidth)} onChange={event => setWidth(Number(event.target.value))} />
-        <button type="button" className="demo-button" disabled={!ready} onClick={() => setWidth(undefined)}>Fit</button>
-      </DemoControls>
-      <output className="demo-viewport-status">{ready ? `${measured} px · viewport unchanged` : 'Measuring container…'}</output>
-    </div>
-  </div>
+  const value = width ?? Math.min(measured, maxWidth)
+  const range = Math.max(1, maxWidth - minimumWidth)
+  return <Demo {...props} title={title} caption={caption} padding="sm" data-ready={ready} controls={<>
+    <label className="ui-label" data-case="as-is" htmlFor={id}>Container</label>
+    <input id={id} className="ui-range" type="range" min={minimumWidth} max={maxWidth} step="1" disabled={!ready} value={value}
+      style={{ '--value': `${((value - minimumWidth) / range) * 100}%`, width: '8rem' } as CSSProperties}
+      onChange={event => setWidth(Number(event.target.value))} />
+    <button type="button" className="ui-button" data-size="sm" disabled={!ready} onClick={() => setWidth(undefined)}>Fit</button>
+    <output className="ui-label" data-case="as-is">{ready ? `${measured} px · viewport unchanged` : 'Measuring container…'}</output>
+  </>}>
+    <div ref={ref} data-demo-container="" style={{ width: width ? `${width}px` : `min(100%, ${maxWidth}px)`, maxWidth: '100%' }}>{children}</div>
+  </Demo>
 }

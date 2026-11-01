@@ -1,4 +1,3 @@
-import '~/site/styles/token-specimens.css'
 import Demo from '../Demo'
 import DemoViewport from '../DemoViewport'
 import DemoThemeComparison from '../DemoThemeComparison'
@@ -11,7 +10,7 @@ function TokenScene({ namespace, tokens, title, compare = false }: { namespace: 
   const scene = foundationScene(namespace, tokens.map(token => token.key))
   if (!scene.html) return null
   if (compare) return <DemoThemeComparison name={`tokens-${namespace}`} title={title} html={scene.html} css={scene.css} caption={scene.caption} />
-  return <Demo title={title} background="plain" padding="none" frame="none" caption={scene.caption}>
+  return <Demo title={title} frame="none" caption={scene.caption}>
     <DemoViewport title={title} document={demoDocument({ page: 'tokens', id: namespace, title, html: [], css: '', classes: [], classLists: [], highlighted: [] }, scene)} sizing="content" theme motion={scene.motion} />
   </Demo>
 }
@@ -32,13 +31,13 @@ export default function FoundationTokensView({ namespace, keys, source, presenta
     const aliases = rest.filter(token => defaultValue(token).startsWith('var('))
     const specials = rest.filter(token => !aliases.includes(token))
     return <div data-foundation-tokens={namespace} data-token-keys={tokens.map(token => token.key).join(' ')}>
-      {groups.size > 0 && <Demo title="Fixed color steps" background="plain" padding="sm" caption={specimenCaption.color}><Palette groups={[...groups.values()].map(group => ({ ...group, colors: group.colors.sort((a, b) => a.step - b.step) }))} /></Demo>}
+      {groups.size > 0 && <Demo title="Fixed color steps" padding="sm" caption={specimenCaption.color}><Palette groups={[...groups.values()].map(group => ({ ...group, colors: group.colors.sort((a, b) => a.step - b.step) }))} /></Demo>}
       {aliases.length > 0 && <TokenScene namespace={namespace} tokens={aliases} title="Hue aliases" compare />}
       {specials.length > 0 && <TokenScene namespace={namespace} tokens={specials} title="Special colors" compare />}
     </div>
   }
   return <div data-foundation-tokens={namespace} data-token-keys={tokens.map(token => token.key).join(' ')}>
-    {namespace === 'spacing' ? <><ThemeNumberVariableTable namespace="spacing" keys={keys} representation="spacing" referenceUnits={presentation !== 'guide'} /><p className="demo-caption">{presentation === 'guide' ? 'The striped area is the actual gap between two equal blocks.' : specimenCaption.spacing}</p></>
+    {namespace === 'spacing' ? <><ThemeNumberVariableTable namespace="spacing" keys={keys} representation="spacing" referenceUnits={presentation !== 'guide'} /><p className="m(0) font-xs fg-text-muted">{presentation === 'guide' ? 'The striped area is the actual gap between two equal blocks.' : specimenCaption.spacing}</p></>
       : <TokenScene namespace={namespace} tokens={tokens} title={namespace === 'shadow' ? 'Shadow scale' : namespace === 'radius' ? 'Corner radius scale' : namespace.replaceAll('-', ' ')} compare={namespace.startsWith('color-') || (namespace === 'shadow' && presentation === 'reference')} />}
     {namespace === 'container' && <ThemeNumberVariableTable namespace="container" keys={keys} />}
     {source}

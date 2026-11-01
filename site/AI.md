@@ -203,16 +203,17 @@ For View Transitions examples, keep `view-transition-name` values unique, prefer
 
 Interactive demos should be local `'use client'` components under the guide's `components/` folder. Use existing site primitives:
 
-- Wrap demos in `<Demo>`.
+- Wrap demos in `<Demo>`: one example is one `ui-tray` with a head (`title`, `description`, `controls`), a `ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
+- Use the specimen primitives from `~/site/components/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they render the `ui-*` components in `styles/system/specimens.css` and `surfaces.css`. Teaching hue uses a named `tone` and is always named by a legend or label.
 - Use `~/site/docs-shell/components/Image` for local bitmap images.
 - Use `@tabler/icons-react` for icon buttons and icon+text controls when an appropriate icon exists.
-- Use existing app button and panel classes where possible.
+- Use the `ui-*` controls (`ui-button`, `ui-segmented`, `ui-range`, `ui-select`, `ui-check`) and `ui-sheet` panels; do not add demo-specific button, panel or color classes. `styles/system/DESIGN.md` is the markup contract.
 
 Design demos for the doc content column, not the viewport. A `<Demo>` inside guide content is roughly `674px` wide on desktop and narrower on mobile. Prefer container queries over viewport breakpoints, add `container` when using `@container(...)`, keep mobile single-column by default, and use two columns only when the container has room.
 
 For View Transitions demos, add transition styling classes to `document.documentElement` in a client component and clean them up on unmount. In React state demos, wrap the update passed to `document.startViewTransition()` in `flushSync()` so the DOM update happens inside the transition callback. Always provide a no-API fallback.
 
-For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `<ResizeZone>` with `<IFrame>` for primary responsive demos when the lesson depends on viewport width. Keep iframe pages under `site/content/examples/<slug>/`. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
+For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `DemoPageViewport` (or `DemoViewport` with `src` and `responsive`) for primary responsive demos when the lesson depends on viewport width, and `DemoContainer` when it depends on a container. Keep iframe pages under `site/content/examples/<slug>/`. Isolated documents from `components/demo/reference/document.ts` receive `styles/system/tokens.css`, the materials bridge and `reference/frame.css`; frame paint uses `--ui-*` roles only. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
 
 ## Design References
 

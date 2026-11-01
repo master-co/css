@@ -99,7 +99,7 @@ Native global CSS in the entry graph is always emitted, not generated on demand.
 ## Component classes
 Use native component classes for repeated product roles. Define class selectors in `@layer components` and apply them from markup:
 
-<ProjectStyleExample name="components" previewFirst />
+<ProjectStyleExample name="components" />
 
 Native component rules are emitted by default and follow source order within their layer. They do not become utilities: `btn:hover@sm` cannot reuse this definition. Write states and conditions inside the native rule. Native pruning is an explicit opt-in.
 

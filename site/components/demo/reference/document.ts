@@ -7,16 +7,14 @@ import preset from '../../../utils/preset-manifest'
 import type { DemoScene, ReferenceDemoSection } from './types'
 
 const siteRoot = path.basename(process.cwd()) === 'site' ? process.cwd() : path.join(process.cwd(), 'site')
-const tokenFile = path.join(siteRoot, 'styles/demo-theme.css')
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
 const materialFile = path.join(siteRoot, 'styles/docs-shell/materials.css')
 const systemTokenFile = path.join(siteRoot, 'styles/system/tokens.css')
 let materials = readFileSync(materialFile, 'utf8')
 const readSystemTokens = () => readFileSync(systemTokenFile, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
 let systemTokens = readSystemTokens()
-let tokens = readFileSync(tokenFile, 'utf8')
 const frameCSS = readFileSync(frameFile, 'utf8')
-const sharedManifest = () => compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${materials}\n${tokens}`, { baseManifest: preset }).manifest
+const sharedManifest = () => compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${materials}`, { baseManifest: preset }).manifest
 let shared = sharedManifest()
 
 export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, initialTheme?: 'light' | 'dark') {
@@ -26,11 +24,9 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, in
   // These files are read assets, so development HMR does not invalidate them.
   const developing = process.env.NODE_ENV === 'development'
   if (developing) {
-    const nextTokens = readFileSync(tokenFile, 'utf8')
     const nextMaterials = readFileSync(materialFile, 'utf8')
     systemTokens = readSystemTokens()
-    if (nextTokens !== tokens || nextMaterials !== materials) {
-      tokens = nextTokens
+    if (nextMaterials !== materials) {
       materials = nextMaterials
       shared = sharedManifest()
     }
@@ -42,13 +38,15 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, in
   const engine = createRenderSessionSync({ manifest: compiled?.manifest ?? shared })
   try {
     const classNames = [...new Set([...`${scene.html}<body class="${scene.bodyClass ?? ''}">`.matchAll(/\bclass="([\s\S]*?)"/g)].flatMap(match => match[1].replaceAll('&quot;', '"').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').split(/\s+/)).filter(Boolean))]
-    const tokenClasses = ['bg-demo-canvas', 'bg-demo-surface', 'fg-demo-text', 'fg-demo-muted', 'fg-demo-blue', 'fg-demo-violet', 'fg-demo-amber', 'fg-demo-neutral', 'b-demo-line', 'bg-demo-grid', 'font-sans', 'font-mono']
+    const frame = developing ? readFileSync(frameFile, 'utf8') : frameCSS
+    // The frame and the system roles reference preset variables (the neutral tone's zinc steps, the type families) without utility classes.
+    engine.ensureStylesheetResources(`${systemTokens}\n${frame}`)
     if (compiled?.css) engine.ensureStylesheetResources(compiled.css)
-    const rendered = engine.ensureClassRules([...classNames, ...tokenClasses])
+    const rendered = engine.ensureClassRules([...classNames, 'font-sans', 'font-mono'])
     const invalid = rendered.invalidClassNames.filter(value => classNames.includes(value) && !compiled?.nativeClassNames.includes(value))
     if (invalid.length) throw new Error(`${section.page}#${section.id}: invalid demo classes ${invalid.join(', ')}`)
     // The site utility tokens resolve to the system roles, so the frame needs them too.
-    const css = `${systemTokens}\n${developing ? readFileSync(frameFile, 'utf8') : frameCSS}\n${compiled?.css ?? ''}\n${rendered.cssText}`
+    const css = `${systemTokens}\n${frame}\n${compiled?.css ?? ''}\n${rendered.cssText}`
     return `<!doctype html><html lang="en"${initialTheme ? ` class="${initialTheme}"` : ''}${scene.motion ? ' data-demo-paused' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${scene.head ?? ''}<style>@layer theme,base,defaults,components,utilities;${css.replaceAll('</style', '<\\/style')}</style></head><body${scene.bodyClass ? ` class="${escape(scene.bodyClass)}"` : ''}>${html}</body></html>`
   } finally { engine.dispose() }
 }

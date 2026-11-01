@@ -6,7 +6,7 @@ import { getShadowRows } from '~/site/common/foundation-data/elevation/shadow-da
 /** Every preset shadow on the same raised surface; used by the design-system review pages. */
 export default function ShadowScaleDemo() {
   return (
-    <Demo>
+    <Demo align="start">
       <div className="container-inline w-full">
         <div className="grid-cols(1) gap-xl w-full grid-cols(2)@container(width>=18rem)">
           {getShadowRows().map(({ key, utility, role, description }) => (

@@ -3,29 +3,33 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { renderToStaticMarkup } from 'react-dom/server'
 
-const { default: Demo } = await import('./Demo')
+const { default: Demo, DemoGeneratedCSS } = await import('./Demo')
 
-test('a neutral canvas is the default, with explicit patterns still available', () => {
+test('one example is one tray with a plain, centered stage by default', () => {
   const html = renderToStaticMarkup(<Demo><span>Subject</span></Demo>)
-  assert.match(html, /class="site-demo" data-frame="default"/)
-  assert.match(html, /class="demo-canvas" data-background="plain" data-padding="lg"/)
-  const pattern = renderToStaticMarkup(<Demo background="checkerboard"><span>Transparent artwork</span></Demo>)
-  assert.match(pattern, /data-background="checkerboard"/)
+  assert.equal(html, '<figure class="ui-tray"><div class="ui-stage"><span>Subject</span></div></figure>')
+  const pattern = renderToStaticMarkup(<Demo background="checkerboard" padding="sm" align="start"><span>Transparent artwork</span></Demo>)
+  assert.match(pattern, /<div class="ui-stage" data-background="checkerboard" data-padding="sm" data-align="start">/)
 })
 
-test('a composed frameless example retains canvas geometry and keeps chrome outside it', () => {
-  const html = renderToStaticMarkup(<Demo frame="none" padding="none" title="Measured subject" caption="A real width" controls={<button type="button">Reset</button>}
-    id="example" frameClassName="example-frame" className="flex (width:240px)" style={{ gap: 12, overflow: 'visible' }}>
+test('head, stage, source and caption keep their order; stage geometry stays on the stage', () => {
+  const html = renderToStaticMarkup(<Demo padding="none" title="Measured subject" caption="A real width" controls={<button type="button">Reset</button>}
+    id="example" frameClassName="example-frame" className="flex (width:240px)" style={{ gap: 12, overflow: 'visible' }}
+    source={<DemoGeneratedCSS><pre>.flex {'{'}display:flex{'}'}</pre></DemoGeneratedCSS>}>
     <div style={{ width: 40, height: 60 }}>Subject</div>
   </Demo>)
-  const outer = html.match(/^<div[^>]+>/)?.[0] ?? ''
-  const canvas = html.match(/<div class="demo-canvas[^>]+>/)?.[0] ?? ''
-  assert.match(outer, /id="example"/)
-  assert.match(outer, /class="site-demo example-frame" data-frame="none"/)
-  assert.doesNotMatch(outer, /style=|width:240px|padding=/)
-  assert.match(canvas, /class="demo-canvas flex (width:240px)"/)
-  assert.match(canvas, /data-padding="none"/)
-  assert.match(canvas, /style="gap:12px;overflow:visible"/)
-  assert.match(html, /<div style="width:40px;height:60px">Subject<\/div><\/div><div class="demo-caption">/)
-  assert.ok(html.indexOf('Reset') < html.indexOf('class="demo-canvas'))
+  const outer = html.match(/^<figure[^>]+>/)?.[0] ?? ''
+  const stage = html.match(/<div class="ui-stage[^>]+>/)?.[0] ?? ''
+  assert.equal(outer, '<figure id="example" class="ui-tray example-frame">')
+  assert.equal(stage, '<div class="ui-stage flex (width:240px)" style="gap:12px;overflow:visible" data-padding="none">')
+  const order = ['ui-tray-head', 'Reset', 'ui-stage', '<details class="ui-disclosure">', 'ui-tray-caption'].map(part => html.indexOf(part))
+  assert.deepEqual([...order].sort((a, b) => a - b), order)
+  assert.ok(order.every(index => index >= 0))
+  assert.doesNotMatch(html, /<details[^>]* open/)
+  assert.match(html, /<div class="ui-tray-caption">A real width<\/div><\/figure>$/)
+})
+
+test('a frameless tray holds content that owns its frame, and a lone caption names the figure', () => {
+  const html = renderToStaticMarkup(<Demo frame="none" caption="Browser chrome"><div className="ui-browser" /></Demo>)
+  assert.equal(html, '<figure class="ui-tray"><div class="ui-browser"></div><figcaption class="ui-tray-caption">Browser chrome</figcaption></figure>')
 })

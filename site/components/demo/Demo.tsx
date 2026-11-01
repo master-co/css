@@ -2,42 +2,59 @@ import '~/site/styles/demo.css'
 import type { HTMLAttributes, ReactNode } from 'react'
 import clsx from 'clsx'
 
-export type DemoBackground = 'stripes' | 'grid' | 'dots' | 'plain' | 'checkerboard'
-export type DemoPadding = 'none' | 'sm' | 'md' | 'lg'
+export type DemoBackground = 'plain' | 'grid' | 'dots' | 'hatch' | 'checkerboard'
+export type DemoPadding = 'none' | 'sm' | 'lg'
 export type DemoFrame = 'default' | 'none'
+export type DemoAlign = 'center' | 'start'
 
-export interface DemoProps extends HTMLAttributes<HTMLDivElement> {
+export interface DemoProps extends HTMLAttributes<HTMLElement> {
   title?: string
   description?: ReactNode
   caption?: ReactNode
   background?: DemoBackground
   padding?: DemoPadding
-  /** Omit the surrounding boundary when the content already owns its frame. */
+  /** `none` omits the stage when the content already owns its frame: a browser, a comparison, a code window. */
   frame?: DemoFrame
+  /** Placement on the stage: centered specimens by default, or from the start edge. */
+  align?: DemoAlign
   controls?: ReactNode
+  /** Source and generated output, placed under the stage inside the same tray. */
+  source?: ReactNode
   frameClassName?: string
 }
 
-/** className/style belong to the canvas; the chrome never joins the demonstrated layout. */
+/** One example is one tray: head, stage, source, caption. className and style belong to the stage; the chrome never joins the demonstrated layout. */
 export default function Demo({
-  title, description, caption, background = 'plain', padding = 'lg', frame = 'default', controls,
+  title, description, caption, background = 'plain', padding = 'lg', frame = 'default', align = 'center', controls, source,
   frameClassName, className, style, children, ...props
 }: DemoProps) {
+  const head = Boolean(title || description || controls)
   return (
-    <div {...props} className={clsx('site-demo', frameClassName)} data-frame={frame}>
-      {(title || description || controls) && (
-        <div className="demo-header">
+    <figure {...props} className={clsx('ui-tray', frameClassName)}>
+      {head && (
+        <figcaption className="ui-tray-head">
           {(title || description) && <div>
-            {title && <div className="demo-title">{title}</div>}
-            {description && <div className="demo-description">{description}</div>}
+            {title && <p className="ui-tray-title">{title}</p>}
+            {description && <p className="ui-tray-description">{description}</p>}
           </div>}
-          {controls && <div className="demo-header-controls">{controls}</div>}
-        </div>
+          {controls && <div className="ui-tray-tools">{controls}</div>}
+        </figcaption>
       )}
-      <div className={clsx('demo-canvas', className)} data-background={background} data-padding={padding} style={style}>
-        {children}
-      </div>
-      {caption && <div className="demo-caption">{caption}</div>}
-    </div>
+      {frame === 'none'
+        ? children
+        : <div className={clsx('ui-stage', className)} style={style}
+          data-background={background === 'plain' ? undefined : background}
+          data-padding={padding === 'lg' ? undefined : padding}
+          data-align={align === 'center' ? undefined : align}>
+          {children}
+        </div>}
+      {source}
+      {caption && (head ? <div className="ui-tray-caption">{caption}</div> : <figcaption className="ui-tray-caption">{caption}</figcaption>)}
+    </figure>
   )
+}
+
+/** The complete generated stylesheet stays one native, closed disclosure under the source. */
+export function DemoGeneratedCSS({ children }: { children: ReactNode }) {
+  return <details className="ui-disclosure" suppressHydrationWarning><summary>Generated CSS</summary>{children}</details>
 }
