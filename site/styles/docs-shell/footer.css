@@ -6,7 +6,7 @@
   .ui-footer > * { width: 100%; max-width: 100rem; margin-inline: auto; }
   .ui-footer-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5em), 1fr)); gap: var(--ui-space-xl); }
   .ui-footer-nav > * { min-width: 0; }
-  .ui-footer-group > h2 { margin: 0 0 var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
+  .ui-footer-group > h2 { margin: 0 0 var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-footer-group > ul { display: grid; gap: var(--ui-space-2xs); margin: 0; padding: 0; list-style: none; }
   .ui-footer-group li { min-width: 0; }
   .ui-footer a { color: var(--ui-text-body); text-decoration: none; transition: color var(--ui-duration-quick); }

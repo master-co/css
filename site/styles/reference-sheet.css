@@ -44,7 +44,7 @@
   .ref-long-value summary:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
   .ref-table :is(.ref-long-value[open] > summary, .ref-long-value:not([open]) > code) { display: none; }
   .ref-table .ref-long-value > code { display: block; white-space: pre-wrap; }
-  .ref-value-table tr:target > * { background: light-dark(oklch(26% .012 265 / .05), oklch(100% 0 none / .06)); }
+  .ref-value-table tr:target > * { background: light-dark(oklch(22% .002 265 / .05), oklch(100% 0 none / .06)); }
 
   /* One scene keeps the composition's own flow and left edge on the stage. */
   .ref-example-scene { width: min(100%, 32rem); }

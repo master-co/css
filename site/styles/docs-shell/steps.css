@@ -8,7 +8,7 @@
   .ui-steps-content[data-columns] { display: grid; gap: var(--ui-space-md) var(--ui-space-xl); }
   .ui-steps-content :is(h2, h3, h4) {
     position: static; width: auto; margin: .1875rem 0 var(--ui-space-xs);
-    color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-heading); line-height: 1.5; letter-spacing: 0;
+    color: var(--ui-text-strong); font-size: 1.0625rem; font-weight: var(--ui-weight-medium); line-height: 1.5; letter-spacing: -.005em;
   }
   .ui-steps-content :is(h2, h3, h4) > .ui-anchor { display: none; }
   .ui-steps-content :is(h2, h3, h4) + p { margin-top: 0; }

@@ -7,12 +7,13 @@
   .ui-docs { display: flex; width: 100%; background: var(--ui-surface-canvas); }
 
   .ui-docs .ui-sidebar {
-    position: sticky; top: var(--docs-header); flex: none; align-self: start; width: 16rem; height: calc(100dvh - var(--docs-header));
+    position: sticky; top: var(--docs-header); flex: none; align-self: start; width: 17.25rem; height: calc(100dvh - var(--docs-header));
     overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--ui-line-divider) transparent;
     box-shadow: inset -1px 0 0 var(--ui-line-hair);
   }
   /* The search field stays in reach while the groups scroll beneath it. */
-  .ui-docs .ui-sidebar > .ui-search-trigger { position: sticky; top: 0; z-index: 1; box-shadow: var(--ui-elevation-sink), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .5rem .5rem var(--ui-surface-canvas); }
+  .ui-docs .ui-sidebar > .ui-search-trigger { position: sticky; top: 0; z-index: 1; background: var(--ui-surface-canvas); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
+  .ui-docs .ui-sidebar > .ui-search-trigger:hover { box-shadow: inset 0 0 0 1px var(--ui-line-strong), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
   /* The rail clips its overflow, so focus rings inside it sit on the element's edge. */
   .ui-docs .ui-sidebar .ui-nav-link:focus-visible { outline-offset: -2px; }
   @media (width < 64rem) { .ui-docs .ui-sidebar { display: none; } }

@@ -14,7 +14,7 @@
   .ui-dialog-close > span:last-child { display: none; }
   .ui-dialog-close > .ui-kbd { box-shadow: none; background: none; }
   .ui-dialog[data-variant="search"] > .ui-dialog-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
-  .ui-dialog-status { margin: 0; padding: var(--ui-space-sm) var(--ui-space-md) 0; color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
+  .ui-dialog-status { margin: 0; padding: var(--ui-space-sm) var(--ui-space-md) 0; color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-dialog-note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); padding: var(--ui-space-sm) var(--ui-space-md) var(--ui-space-lg); }
   .ui-dialog-note > p { width: 100%; margin: 0; color: var(--ui-text-body); font-size: .8125rem; line-height: 1.6; }
   .ui-dialog-note > .ui-button code { font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); }

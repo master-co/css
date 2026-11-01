@@ -3,34 +3,37 @@
  * One light source above and slightly left. Every surface is a step on one ladder:
  *   canvas (page) → tray (recessed holder) → stage (lit well inside a tray) → sheet (raised face) → float (overlay)
  *   well (sunken field) sits below its surroundings.
- * Light mode is moonstone: a cool pearl with a faint blue sheen. Dark mode is obsidian: volcanic glass.
+ * Neutrals are the preset's zinc (hue 265, chroma under .003): light mode is a clean pearl, dark mode a zinc-95
+ * obsidian whose surfaces step apart and keep a legible contour. Lines and shadows carry no hue of their own.
  * Tokens are namespaced --ui-* and are not utility tokens: content keeps teaching the preset vocabulary.
  * The interface is monochrome. Hues are reserved for teaching specimens and status; brand gold for the homepage and brand moments.
  */
 @layer theme {
 :root, :host {
 
-  /* Type */
+  /* Type: light regular text, headings at regular weight; size and ink carry the steps. */
   --ui-font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
-  --ui-text-display: 2.5rem;  --ui-leading-display: 1.1;  --ui-tracking-display: -.03em;
-  --ui-text-title: 2rem;      --ui-leading-title: 1.15;   --ui-tracking-title: -.026em;
-  --ui-text-h2: 1.5rem;       --ui-leading-h2: 1.3;       --ui-tracking-h2: -.02em;
-  --ui-text-h3: 1.1875rem;    --ui-leading-h3: 1.4;       --ui-tracking-h3: -.012em;
-  --ui-text-base: 1rem;       --ui-leading-body: 1.75;
-  --ui-text-small: .875rem;   --ui-leading-small: 1.6;
-  --ui-text-caption: .8125rem; --ui-leading-caption: 1.55;
-  --ui-text-label: .6875rem;  --ui-tracking-label: .06em;
-  --ui-text-code: .8125rem;   --ui-leading-code: 1.7;
-  --ui-weight-regular: 400; --ui-weight-medium: 520; --ui-weight-strong: 560; --ui-weight-heading: 600;
+  --ui-text-display: 2.5rem;    --ui-leading-display: 1.1;    --ui-tracking-display: -.03em;
+  --ui-text-title: 2.375rem;    --ui-leading-title: 2.75rem;  --ui-tracking-title: -.028em;
+  --ui-text-h2: 1.625rem;       --ui-leading-h2: 2.1875rem;   --ui-tracking-h2: -.022em;
+  --ui-text-h3: 1.25rem;        --ui-leading-h3: 1.75rem;     --ui-tracking-h3: -.014em;
+  --ui-text-base: 1rem;         --ui-leading-body: 1.75;
+  --ui-text-lead: 1.125rem;     --ui-leading-lead: 1.65;
+  --ui-text-small: .875rem;     --ui-leading-small: 1.65;
+  --ui-text-caption: .8125rem;  --ui-leading-caption: 1.55;
+  --ui-text-label: .75rem;      --ui-tracking-label: 0;
+  --ui-text-code: .8125rem;     --ui-leading-code: 1.7;
+  /* English runs a step lighter than the regular cut, as the original site did; Han text keeps 400. */
+  --ui-weight-regular: 400; --ui-weight-medium: 460; --ui-weight-strong: 500; --ui-weight-heading: 400;
 
-  /* Shape: radii nest by the 6px tray inset (outer = inner + inset) */
-  --ui-inset: 6px;
-  --ui-radius-xs: 4px;    /* inline code, kbd */
-  --ui-radius-sm: 6px;    /* badges, chips, tooltips */
-  --ui-radius-md: 10px;   /* controls, inputs, tiles */
-  --ui-radius-lg: 14px;   /* small cards, menus */
-  --ui-radius-xl: 18px;   /* stage, sheet, code window */
-  --ui-radius-2xl: 24px;  /* tray, dialog */
+  /* Shape: small radii that nest by a 4px inset (outer = inner + inset) */
+  --ui-inset: 4px;
+  --ui-radius-xs: 3px;    /* inline code, kbd */
+  --ui-radius-sm: 4px;    /* badges, chips, tooltips, tabs inside a bar */
+  --ui-radius-md: 6px;    /* controls, inputs, nav entries */
+  --ui-radius-lg: 8px;    /* small cards, menus, callouts, pager */
+  --ui-radius-xl: 10px;   /* stage, sheet, code window, table */
+  --ui-radius-2xl: 14px;  /* tray, dialog */
   --ui-radius-pill: 999px;
 
   /* Rhythm */
@@ -42,48 +45,49 @@
   --ui-ease-inout: cubic-bezier(.65, 0, .35, 1);
   --ui-duration-press: 60ms; --ui-duration-quick: 160ms; --ui-duration-base: 280ms; --ui-duration-slow: 640ms;
 }
+:root:lang(en) { --ui-weight-regular: 350; }
 
 :root, :host, .light, .dark {
   /* Surfaces */
-  --ui-surface-canvas:   light-dark(oklch(98.1% .0018 255), oklch(17.4% .0034 265));
-  --ui-surface-tray:     light-dark(oklch(95.6% .0032 255), oklch(13% .0032 265));
-  --ui-surface-stage:    light-dark(oklch(98.5% .0022 255), oklch(15.8% .0036 265));
-  --ui-surface-sheet:    light-dark(oklch(100% 0 none),     oklch(22.4% .0048 265));
-  --ui-surface-sheet-lo: light-dark(oklch(99% .0022 255),   oklch(19.8% .0044 265));
-  --ui-surface-well:     light-dark(oklch(97.2% .0026 255), oklch(14% .0034 265));
-  --ui-surface-well-hover: light-dark(oklch(96.4% .003 255), oklch(12.8% .0034 265));
-  --ui-surface-float:    light-dark(oklch(100% 0 none),     oklch(25.2% .005 265));
-  --ui-surface-chip:     light-dark(oklch(97% .0028 255),   oklch(100% 0 none / .07));
-  --ui-surface-code:     light-dark(oklch(99.3% .0014 255), oklch(16.4% .0038 265));
-  --ui-surface-ink:      light-dark(oklch(19% .003 265),    oklch(97.6% .0018 265));
-  --ui-surface-scrim:    light-dark(oklch(26% .012 265 / .18), oklch(0% 0 none / .55));
+  --ui-surface-canvas:   light-dark(oklch(98.6% .0008 265), oklch(19.4% .0019 265));
+  --ui-surface-tray:     light-dark(oklch(96% .0012 265),   oklch(16.6% .0017 265));
+  --ui-surface-stage:    light-dark(oklch(98.9% .0006 265), oklch(18.4% .0019 265));
+  --ui-surface-sheet:    light-dark(oklch(100% 0 none),     oklch(24.2% .0022 265));
+  --ui-surface-sheet-lo: light-dark(oklch(99.3% .0005 265), oklch(22.8% .0021 265));
+  --ui-surface-well:     light-dark(oklch(96.6% .0011 265), oklch(16.4% .0017 265));
+  --ui-surface-well-hover: light-dark(oklch(95.8% .0012 265), oklch(15.4% .0016 265));
+  --ui-surface-float:    light-dark(oklch(100% 0 none),     oklch(26.4% .0024 265));
+  --ui-surface-chip:     light-dark(oklch(96.5% .0011 265), oklch(100% 0 none / .07));
+  --ui-surface-code:     light-dark(oklch(99.6% .0004 265), oklch(21.2% .002 265));
+  --ui-surface-ink:      light-dark(oklch(22% .0022 265),   oklch(95% .0012 265));
+  --ui-surface-scrim:    light-dark(oklch(18% 0 none / .16), oklch(0% 0 none / .55));
 
-  /* Lines */
-  --ui-line-hair:    light-dark(oklch(26% .012 265 / .07),  oklch(100% 0 none / .06));
-  --ui-line-contour: light-dark(oklch(26% .012 265 / .1),   oklch(100% 0 none / .085));
-  --ui-line-divider: light-dark(oklch(26% .012 265 / .12),  oklch(100% 0 none / .1));
-  --ui-line-strong:  light-dark(oklch(26% .012 265 / .22),  oklch(100% 0 none / .2));
-  --ui-line-mark:    light-dark(oklch(26% .012 265 / .32),  oklch(100% 0 none / .3));
+  /* Lines: neutral ink in light mode, white in dark mode, where each step is a little firmer so edges stay legible */
+  --ui-line-hair:    light-dark(oklch(22% .002 265 / .065), oklch(100% 0 none / .075));
+  --ui-line-contour: light-dark(oklch(22% .002 265 / .095), oklch(100% 0 none / .11));
+  --ui-line-divider: light-dark(oklch(22% .002 265 / .12),  oklch(100% 0 none / .13));
+  --ui-line-strong:  light-dark(oklch(22% .002 265 / .2),   oklch(100% 0 none / .22));
+  --ui-line-mark:    light-dark(oklch(22% .002 265 / .3),   oklch(100% 0 none / .32));
 
-  /* Text */
-  --ui-text-strong:   light-dark(oklch(15% .0016 265),  oklch(97.6% .0018 265));
-  --ui-text-body:     light-dark(oklch(37.5% .0028 265), oklch(82% .0025 265));
-  --ui-text-muted:    light-dark(oklch(48.6% .003 265),  oklch(69.5% .0028 265));
+  /* Text: a soft ink, never pure black or white */
+  --ui-text-strong:   light-dark(oklch(21% .0022 265),  oklch(95% .0012 265));
+  --ui-text-body:     light-dark(oklch(39.8% .0028 265), oklch(80% .0025 265));
+  --ui-text-muted:    light-dark(oklch(48.6% .003 265),  oklch(68.6% .0028 265));
   --ui-text-disabled: light-dark(oklch(68.6% .0028 265), oklch(48.6% .003 265));
-  --ui-text-inverse:  light-dark(oklch(98.6% .0008 265), oklch(15% .0016 265));
+  --ui-text-inverse:  light-dark(oklch(98.6% .0008 265), oklch(19.4% .0019 265));
   --ui-focus: light-dark(oklch(24.6% .0022 265), oklch(93.2% .0015 265));
 
   /* Light */
-  --ui-highlight: light-dark(oklch(100% 0 none / .96), oklch(100% 0 none / .09));
-  --ui-lip:       light-dark(oklch(100% 0 none / .92), oklch(100% 0 none / .05));
-  --ui-shade-1: light-dark(oklch(28% .022 265 / .075), oklch(0% 0 none / .6));
-  --ui-shade-2: light-dark(oklch(28% .022 265 / .06),  oklch(0% 0 none / .44));
-  --ui-shade-3: light-dark(oklch(28% .022 265 / .05),  oklch(0% 0 none / .38));
-  --ui-shade-4: light-dark(oklch(28% .022 265 / .045), oklch(0% 0 none / .34));
-  --ui-shade-5: light-dark(oklch(28% .022 265 / .04),  oklch(0% 0 none / .32));
+  --ui-highlight: light-dark(oklch(100% 0 none / .95), oklch(100% 0 none / .07));
+  --ui-lip:       light-dark(oklch(100% 0 none / .9),  oklch(100% 0 none / .04));
+  --ui-shade-1: light-dark(oklch(18% 0 none / .07),  oklch(0% 0 none / .55));
+  --ui-shade-2: light-dark(oklch(18% 0 none / .05),  oklch(0% 0 none / .4));
+  --ui-shade-3: light-dark(oklch(18% 0 none / .04),  oklch(0% 0 none / .34));
+  --ui-shade-4: light-dark(oklch(18% 0 none / .035), oklch(0% 0 none / .3));
+  --ui-shade-5: light-dark(oklch(18% 0 none / .03),  oklch(0% 0 none / .28));
 
   /* Elevation: sink < flat < rise-1 < rise-1h < rise-2 < rise-3 < overlay. Offset and blur double; spread pulls in by half. */
-  --ui-elevation-sink: inset 0 1px 2px light-dark(oklch(28% .022 265 / .07), oklch(0% 0 none / .5)), inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip);
+  --ui-elevation-sink: inset 0 1px 2px light-dark(oklch(18% 0 none / .05), oklch(0% 0 none / .45)), inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip);
   --ui-elevation-flat: 0 0 0 1px var(--ui-line-contour);
   --ui-elevation-rise-1: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px var(--ui-line-contour),
     0 1px 1px -.5px var(--ui-shade-1), 0 2px 2px -1px var(--ui-shade-2), 0 4px 4px -2px var(--ui-shade-3);
@@ -95,12 +99,12 @@
   --ui-elevation-rise-3: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px var(--ui-line-contour),
     0 1px 1px -.5px var(--ui-shade-1), 0 3px 3px -1.5px var(--ui-shade-2), 0 6px 6px -3px var(--ui-shade-3),
     0 12px 12px -6px var(--ui-shade-4), 0 24px 24px -12px var(--ui-shade-4), 0 48px 48px -24px var(--ui-shade-5);
-  --ui-elevation-overlay: var(--ui-elevation-rise-3), 0 64px 96px -32px light-dark(oklch(28% .022 265 / .1), oklch(0% 0 none / .5));
+  --ui-elevation-overlay: var(--ui-elevation-rise-3), 0 64px 96px -32px light-dark(oklch(18% 0 none / .08), oklch(0% 0 none / .5));
 
   /* Stage lighting */
-  --ui-stage-light: radial-gradient(110% 80% at 18% -14%, light-dark(oklch(100% 0 none / .95), oklch(100% 0 none / .055)), transparent 60%),
-                 linear-gradient(180deg, transparent 55%, light-dark(oklch(28% .02 265 / .028), oklch(0% 0 none / .16)));
-  --ui-hatch: repeating-linear-gradient(135deg, light-dark(oklch(26% .012 265 / .13), oklch(100% 0 none / .1)) 0 1px, transparent 1px 7px);
+  --ui-stage-light: radial-gradient(110% 80% at 18% -14%, light-dark(oklch(100% 0 none / .9), oklch(100% 0 none / .04)), transparent 60%),
+                 linear-gradient(180deg, transparent 55%, light-dark(oklch(18% 0 none / .02), oklch(0% 0 none / .12)));
+  --ui-hatch: repeating-linear-gradient(135deg, light-dark(oklch(22% .002 265 / .13), oklch(100% 0 none / .1)) 0 1px, transparent 1px 7px);
 
   /* Teaching tones — specimens only, never chrome */
   --ui-tone-neutral: light-dark(var(--color-zinc-50), var(--color-zinc-40));
@@ -123,6 +127,6 @@
   --ui-code-keyword: light-dark(#91466f, #e6a0c4); --ui-code-function: light-dark(#3764a5, #9dbce6); --ui-code-property: light-dark(#256a78, #9acbd4);
   --ui-code-string: light-dark(#71622f, #d9ce96); --ui-code-number: light-dark(#71549e, #c5b0e6);
   --ui-code-added: light-dark(oklch(52% .12 150 / .1), oklch(78% .12 150 / .1)); --ui-code-removed: light-dark(oklch(54% .17 25 / .08), oklch(74% .14 22 / .1));
-  --ui-code-active: light-dark(oklch(26% .012 265 / .045), oklch(100% 0 none / .05));
+  --ui-code-active: light-dark(oklch(22% .002 265 / .045), oklch(100% 0 none / .05));
 }
 }

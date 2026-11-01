@@ -2,7 +2,7 @@
   .reference-document :is(h1, h2, h3) { overflow-wrap: anywhere; }
   .reference-document :is(h2, h3, tr, span)[id] { scroll-margin-top: 8rem; }
   .reference-document code { overflow-wrap: anywhere; }
-  .reference-syntax-row:target > * { background: light-dark(oklch(26% .012 265 / .05), oklch(100% 0 none / .06)); }
+  .reference-syntax-row:target > * { background: light-dark(oklch(22% .002 265 / .05), oklch(100% 0 none / .06)); }
   /* Every Reference table reads as one typographic grid: plain mono, the first column in strong ink. */
   .reference-document .ui-table :is(td, tbody th) code { padding: 0; border-radius: 0; background: none; box-shadow: none; color: inherit; font-size: .8125rem; line-height: 1.6; }
   @media (width < 48rem) {

@@ -4,7 +4,7 @@
  * transparent at the top of the page (`data-background="transparent"`).
  */
 @layer components {
-  .ui-header { padding-top: env(safe-area-inset-top); padding-inline: max(var(--ui-space-lg), env(safe-area-inset-left)) max(var(--ui-space-lg), env(safe-area-inset-right)); height: calc(3.75rem + env(safe-area-inset-top)); box-sizing: border-box; }
+  .ui-header { padding-top: env(safe-area-inset-top); padding-inline: max(var(--ui-space-xl), env(safe-area-inset-left)) max(var(--ui-space-xl), env(safe-area-inset-right)); height: calc(3.75rem + env(safe-area-inset-top)); box-sizing: border-box; }
   .ui-header[data-variant="stickable"] { position: fixed; inset: 0 0 auto; width: 100%; transition: translate var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-base), box-shadow var(--ui-duration-base); }
   .ui-header[data-tucked] { translate: 0 -100%; }
   /* A focused control stays on screen after the header has tucked away, revealed at once. */
@@ -23,6 +23,10 @@
   .ui-header .ui-version:hover { color: var(--ui-text-strong); }
   .ui-header-nav > a > .ui-badge { margin-left: var(--ui-space-2xs); }
   .ui-header-end > .ui-button[data-disabled] { color: var(--ui-text-disabled); pointer-events: none; }
+  /* The community and preference icons are words in the bar, not buttons: ink under the pointer, no material. */
+  .ui-header-end > .ui-button[data-shape="icon"] { width: 2.25rem; min-height: 2.25rem; }
+  .ui-header-end > .ui-button > svg { width: 1.125rem; height: 1.125rem; }
+  .ui-header-end > .ui-button[data-variant="quiet"]:where(:hover):not(:disabled) { background: transparent; box-shadow: none; }
 
   /* Icon-only controls name themselves with an ink tooltip under the pointer or keyboard focus. */
   .ui-header-end > :is(a, button, label) { position: relative; }

@@ -1,4 +1,4 @@
-/* Surfaces and the example frame. tray (24) → 6px inset → stage / code / sheet (18) */
+/* Surfaces and the example frame. tray (14) → 4px inset → stage / code / sheet (10) */
 @layer components {
   .ui-sheet { position: relative; border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; color: var(--ui-text-body); box-shadow: var(--ui-elevation-rise-2); }
   .ui-sheet[data-elevation="1"] { box-shadow: var(--ui-elevation-rise-1); }
@@ -9,7 +9,7 @@
   /* The tray holds one complete example: head, stage, source, caption */
   .ui-tray { position: relative; min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
   .ui-tray-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); min-height: 2.75rem; padding: 2px var(--ui-inset) var(--ui-space-xs) var(--ui-space-sm); }
-  .ui-tray-title { min-width: 0; margin: 0; color: var(--ui-text-strong); font-size: .8125rem; font-weight: var(--ui-weight-strong); line-height: 1.4; letter-spacing: -.003em; }
+  .ui-tray-title { min-width: 0; margin: 0; color: var(--ui-text-strong); font-size: .8125rem; font-weight: var(--ui-weight-medium); line-height: 1.4; letter-spacing: 0; }
   .ui-tray-description { margin: 2px 0 0; color: var(--ui-text-muted); font-size: .75rem; line-height: 1.5; }
   .ui-tray-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); }
   .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) var(--ui-space-sm) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
@@ -22,7 +22,7 @@
     position: relative; isolation: isolate; container: stage / inline-size; display: grid; place-items: center;
     min-height: 15rem; padding: 3.25rem 2.5rem; border-radius: var(--ui-radius-xl); overflow: hidden;
     background: var(--ui-stage-light), var(--ui-surface-stage);
-    box-shadow: inset 0 0 0 1px var(--ui-line-contour), inset 0 1px 2px light-dark(oklch(28% .022 265 / .04), oklch(0% 0 none / .45)), 0 1px 0 var(--ui-lip);
+    box-shadow: inset 0 0 0 1px var(--ui-line-contour), inset 0 1px 2px light-dark(oklch(18% 0 none / .04), oklch(0% 0 none / .45)), 0 1px 0 var(--ui-lip);
   }
   .ui-stage[data-padding="none"] { padding: 0; place-items: stretch; }
   .ui-stage[data-padding="sm"] { min-height: 0; padding: var(--ui-space-md); }
@@ -39,7 +39,7 @@
   /* Comparison: the same subject under two conditions */
   .ui-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--ui-inset); }
   .ui-compare > figure { display: grid; grid-template-rows: auto 1fr; gap: 0; min-width: 0; margin: 0; }
-  .ui-compare > figure > figcaption { padding: var(--ui-space-xs) var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
+  .ui-compare > figure > figcaption { padding: var(--ui-space-xs) var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-compare .ui-stage { min-height: 11rem; padding: var(--ui-space-xl) var(--ui-space-lg); }
 
   /* Browser chrome for a real document in an iframe */
@@ -47,7 +47,7 @@
   .ui-browser-bar { display: flex; align-items: center; gap: var(--ui-space-sm); height: 2.5rem; padding: 0 var(--ui-space-sm); border-bottom: 1px solid var(--ui-line-hair); background: var(--ui-surface-sheet-lo); }
   .ui-browser-dots { display: flex; gap: 6px; }
   .ui-browser-dots > i { width: 9px; height: 9px; border-radius: 50%; background: var(--ui-line-strong); }
-  .ui-browser-url { flex: 1; min-width: 0; height: 1.625rem; padding: 0 var(--ui-space-sm); overflow: hidden; border-radius: 8px; background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.625rem var(--font-family-mono); text-overflow: ellipsis; white-space: nowrap; }
+  .ui-browser-url { flex: 1; min-width: 0; height: 1.625rem; padding: 0 var(--ui-space-sm); overflow: hidden; border-radius: var(--ui-radius-md); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.625rem var(--font-family-mono); text-overflow: ellipsis; white-space: nowrap; }
   .ui-browser-body { position: relative; min-height: 12rem; }
   /* A real document: the tools set the viewport width, the handle follows its edge */
   .ui-browser-body:has(> .ui-browser-viewport) { min-height: 0; overflow-x: auto; scrollbar-width: thin; }

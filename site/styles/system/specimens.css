@@ -34,7 +34,7 @@
   .ui-badge[data-size="sm"] { height: 1.125rem; padding: 0 .375rem; font-size: .65625rem; }
 
   /* Label: names a condition, outside the measured layout */
-  .ui-label { display: inline-block; color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
+  .ui-label { display: inline-block; color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-label[data-case="as-is"] { text-transform: none; letter-spacing: 0; font-size: .75rem; }
 
   /* Legend: every teaching color has a visible name */

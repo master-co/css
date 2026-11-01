@@ -20,6 +20,6 @@
   --shadow-raised: var(--ui-elevation-rise-1);
   --shadow-floating-contact: 0 1px 1px -.5px var(--ui-shade-1), 0 3px 3px -1.5px var(--ui-shade-2), 0 6px 6px -3px var(--ui-shade-3), 0 12px 12px -6px var(--ui-shade-4), 0 24px 24px -12px var(--ui-shade-4), 0 48px 48px -24px var(--ui-shade-5);
   --shadow-floating: var(--ui-elevation-rise-3);
-  --shadow-pressed-contact: inset 0 1px 2px light-dark(oklch(28% .022 265 / .07), oklch(0% 0 none / .5));
+  --shadow-pressed-contact: inset 0 1px 2px light-dark(oklch(18% 0 none / .07), oklch(0% 0 none / .5));
   --shadow-pressed: var(--ui-elevation-sink);
 }

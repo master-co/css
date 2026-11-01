@@ -20,7 +20,7 @@
   }
   :is(img, video, iframe):is(.ui-prose > *, .ui-prose > :is(div, section, site-island):not([class]) > *) { width: calc(100% + var(--prose-bleed) * 2); max-width: none; }
   /* The figure bleeds; its caption is reading text and stays on the text column. */
-  .ui-prose > figure > figcaption { padding-inline: var(--prose-bleed); }
+  .ui-prose > figure:not(.ui-tray) > figcaption { padding-inline: var(--prose-bleed); }
   /* A table its author wrapped in a scroll region bleeds as the region. */
   .ui-prose > [role="region"]:has(> :is(.ui-table, table)) { margin: var(--ui-space-xl) calc(var(--prose-bleed) * -1); }
   .ui-prose > [role="region"][tabindex]:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
