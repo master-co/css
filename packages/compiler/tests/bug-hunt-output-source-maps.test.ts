@@ -93,7 +93,7 @@ test('native and Wasm transports retain identical rule, compose and copied graph
     const source = "@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n.card{@apply --all {padding:2rem;}}\n.plain{color:red}"
     const parsed = native.compileCSSDirectives(source, { from: '/entry.css' })
     expect(wasm.compileCSSDirectives(source, { from: '/entry.css' })).toEqual(parsed)
-    expect(parsed.nativeMappings?.length).toBeGreaterThan(0)
+    expect(parsed.nativeOutput?.mappings?.length).toBeGreaterThan(0)
     const request = { manifestInput: parsed.manifestInput, styleDefinitions: parsed.styleDefinitions ?? [], warnings: parsed.warnings }
     const lowered = native.lowerCSSDirectives(request, { baseManifest })
     expect(wasm.lowerCSSDirectives(request, { baseManifest })).toEqual(lowered)
