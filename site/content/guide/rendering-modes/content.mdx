@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import DeliveryFlow from '~/site/components/DeliveryFlow'
 import StepSection, { Step } from '~/site/docs-shell/components/StepSection'
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
@@ -52,6 +53,8 @@ Native selectors in the CSS entry are preserved by default, even when their clas
 Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or `@prune native;` for one file. `@preserve native;` excludes a file from integration-level pruning. See [pruning unused native CSS](/guide/scanning-and-pruning#prune-native-css).
 
 ---
+
+<GuideStudy id="static-late-class" />
 
 ## Runtime rendering
 Use runtime rendering when class names become known in the browser, such as in a visual editor or content loaded after the build. The runtime uses [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to track connected elements and their class changes, then inserts or reuses the matching CSS rules.
@@ -192,6 +195,8 @@ The integration supplies the actual asset URL. Custom SSR hosts that cannot publ
 The browser can apply the inline CSS before the runtime or manifest loads. This describes when CSS is available; actual paint timing still depends on the page's other resources. Do not preload the page hydration manifest or the deferred project program; see [preloading](#preload-runtime-engine).
 
 A class listed in the manifest can be reused without starting the engine. This includes ordinary authored classes and rule-free state or theme classes referenced by generated or project selectors. Changing an attribute used by an already-rendered selector also needs no new class rule. A complete class absent from the manifest starts the engine, even if it appeared elsewhere in the project's source.
+
+<GuideStudy id="progressive-known-class" />
 
 ### CSS hydration
 Hydration lets the runtime adopt existing CSS rules. At startup it reads the explicit `hydrationManifest` option, or discovers the inline manifest or the URL on `style#master-css`. With the engine deferred, it tracks usage without rebuilding the stylesheet.

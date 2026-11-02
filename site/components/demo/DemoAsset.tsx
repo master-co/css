@@ -20,7 +20,7 @@ export interface DemoAssetProps {
  * transparent artwork sits on a checkerboard. A demo container keeps the prose media perimeter off the artwork.
  */
 export default function DemoAsset({ title, description, src, alt, width, height, format = 'SVG', surface = 'transparent' }: DemoAssetProps) {
-  const image = <DemoMedia src={src} alt={alt} width={width} height={height} className="block h-auto w-auto max-w-full (max-height:6rem)" />
+  const image = <DemoMedia src={src} alt={alt} width={width} height={height} className="block h-auto w-auto max-w-full (max-height:var(--spacing-4xl))" />
   return <Demo title={title} description={description} background={surface === 'transparent' ? 'checkerboard' : 'plain'} className={surface === 'transparent' ? undefined : surface} data-asset={surface} caption={
     <span className="flex flex-wrap items-center justify-between gap-sm">
       <span className="ui-badge" data-size="sm">{format}</span>

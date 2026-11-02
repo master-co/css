@@ -23,5 +23,5 @@ export default function Page() {
     { id: 'well', title: 'Well', description: 'Inputs, tracks and pressed states sink into a well.', children: <Demo padding="sm">
       <div className="grid gap-xs w-full (max-width:22rem) p-md ui-well"><DemoLabel>ui-well</DemoLabel><span className="text-sm">A sunken field for entry and selection.</span></div>
     </Demo> },
-  ]} usage={{ href: '/guide/view-transitions', label: 'the View Transitions guide' }} Documentation={ComponentDocumentation} />
+  ]} usage={{ href: '/guide/view-transitions', label: 'the View transitions guide' }} Documentation={ComponentDocumentation} />
 }

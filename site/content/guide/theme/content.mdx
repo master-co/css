@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import ThemeIllustration from './components/ThemeIllustration'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import DemoDialogEntrance from './components/DemoDialogEntrance'
@@ -65,6 +66,8 @@ Use `var()` when one token should follow another. [Aliases resolve before inheri
   }
 }`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-regular fg-brand">Plum brand scope</h2><p class="mt-md mb(0) text-sm font-regular fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) text-sm font-regular fg-text-action">Rebound action: plum</p></section>'} caption="Both action labels use fg-text-action. The first inherits the alias computed at the root; the second redeclares it where --color-brand is plum." />
 
+<GuideStudy id="inherited-alias" />
+
 For a color that follows light and dark modes, give the token a `light-dark()` value and keep its name mode-neutral, such as `--color-surface-card`. See [Color](/guide/colors#native-color-scheme-and-manual-themes) for activating modes.
 
 ---
@@ -105,6 +108,8 @@ Here `bg-brand` emits `background-color: var(--app-brand)`, so the inner element
 Combine the modifiers with `@theme static inline` when you need both behaviors. Inline substitution applies to classes and `@apply`; handwritten native CSS keeps its authored references. See the [theme contract](/reference/directives/theme#theme-static).
 
 ---
+
+<GuideStudy id="delivery-substitution" />
 
 ## Define motion tokens
 

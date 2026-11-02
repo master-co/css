@@ -10,12 +10,12 @@ export interface GuideCategory {
 }
 
 const sections = [
-  { id: 'getting-started', category: 'Getting Started', title: 'Getting started', description: 'Install Master CSS and get your first project running.', descriptionTW: '安裝 Master\u00a0CSS，開始第一個專案。' },
-  { id: 'agentic-workflows', category: 'Agentic Workflows', title: 'Agentic workflows', description: 'Set up your editor and work with AI coding agents.', descriptionTW: '設定編輯器，與 AI coding agents 協作開發。' },
+  { id: 'getting-started', category: 'Getting started', title: 'Getting started', description: 'Install Master CSS and get your first project running.', descriptionTW: '安裝 Master\u00a0CSS，開始第一個專案。' },
+  { id: 'agentic-workflows', category: 'Agentic workflows', title: 'Agentic workflows', description: 'Set up your editor and work with AI coding agents.', descriptionTW: '設定編輯器，與 AI coding agents 協作開發。' },
   { id: 'authoring', category: 'Authoring', title: 'Authoring', description: 'Organize theme tokens, styles and reusable packages.', descriptionTW: '組織主題 tokens、樣式與可重用的套件。' },
   { id: 'fundamentals', category: 'Fundamentals', title: 'Fundamentals', description: 'Understand project context, rendering, layers and view transitions.', descriptionTW: '理解專案樣式脈絡、渲染、cascade layers 與畫面轉場。' },
-  { id: 'design-foundations', category: 'Design Foundations', title: 'Design foundations', description: 'Build responsive interfaces with consistent layout, color and type.', descriptionTW: '以一致的版面、色彩與字體建立響應式介面。' },
-  { id: 'build-and-delivery', category: 'Build and Delivery', title: 'Build and delivery', description: 'Prepare and optimize your styles for production.', descriptionTW: '為正式環境準備並最佳化樣式。' }
+  { id: 'design-foundations', category: 'Design foundations', title: 'Design foundations', description: 'Build responsive interfaces with consistent layout, color and type.', descriptionTW: '以一致的版面、色彩與字體建立響應式介面。' },
+  { id: 'build-and-delivery', category: 'Build and delivery', title: 'Build and delivery', description: 'Prepare and optimize your styles for production.', descriptionTW: '為正式環境準備並最佳化樣式。' }
 ]
 
 export function guideOverviewSections(categories: GuideCategory[]) {

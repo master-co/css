@@ -206,7 +206,7 @@ export default function ArtGalleryPreview({ className }: { className?: string })
                 artworkFrameRefs.current[artwork.id] = node
               }}>
               {/* Four small photos load with the page at low priority, so a cell is rarely empty when the card scrolls in. */}
-              <Image alt={$(artwork.imageAlt)} className="object-center object-cover" fetchPriority="low" fill loading="eager" sizes="(min-width: 64rem) 34vw, 50vw" src={artwork.image} />
+              <Image alt={$(artwork.imageAlt)} className="object-cover object-center" fetchPriority="low" fill loading="eager" sizes="(min-width: 64rem) 34vw, 50vw" src={artwork.image} />
             </span>
             <span aria-hidden="true" className="home-gallery-classes">
               {placements[artwork.id].split(' ').map((name) => <code key={name}>{name}</code>)}
@@ -237,7 +237,7 @@ export default function ArtGalleryPreview({ className }: { className?: string })
             <IconX aria-hidden="true" size={16} stroke={1.75} />
           </button>
           <figure className="home-gallery-view" data-home-art-modal-content="" style={getModalImageFrameStyle(modalFrameAspectRatio)}>
-            <Image alt={$(modalArtwork.imageAlt)} className="object-center object-cover" fill sizes="92vw" src={modalArtwork.image} />
+            <Image alt={$(modalArtwork.imageAlt)} className="object-cover object-center" fill sizes="92vw" src={modalArtwork.image} />
           </figure>
           <p className="home-gallery-caption" data-home-art-modal-content="" id={titleId}>
             <span>{$(modalArtwork.title)}</span>

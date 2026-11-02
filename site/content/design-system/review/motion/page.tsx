@@ -12,7 +12,7 @@ export default function Page() {
   return <ComponentPage title="Player" description="A native animation starts paused. Play, Pause and Replay control its real timeline; reduced motion pauses it again." sections={[
     { id: 'player', title: 'A paused timeline', children: <Demo caption="The player reads the actual animation state.">
       <DemoMotion><div className="grid (place-items:center) py-md">
-        <DemoItem tone="blue" className="(height:4rem) (width:4rem) (animation-duration:2s) (animation-iteration-count:infinite) (animation-name:rotate) (animation-timing-function:linear)">↗</DemoItem>
+        <DemoItem tone="blue" className="(height:var(--spacing-3xl)) (width:var(--spacing-3xl)) (animation-duration:2s) (animation-iteration-count:infinite) (animation-name:rotate) (animation-timing-function:linear)">↗</DemoItem>
       </div></DemoMotion>
     </Demo> },
     { id: 'reference', title: 'In a reference specimen', children: <DemoExample page="animation-play-state" section="run-an-animation" /> },

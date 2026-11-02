@@ -19,20 +19,20 @@ export default function PackageBadges({ repo, npm, source, translate = (text) =>
   return (
     <div className='flex gap-xs min-h(28) mt-md'>
       {repo && <Link aria-label={$('GitHub release (latest by date including pre-releases)')} href={`https://github.com/${repo}/releases`}>
-        <img className='r-sm hidden@apply(--site-dark)' alt={$('GitHub release (latest by date including pre-releases)')} src={`https://img.shields.io/github/v/release/${repo}?${lightQ}&label=%20&logo=github&include_prereleases`} />
-        <img className='r-sm hidden@apply(--site-light)' alt={$('GitHub release (latest by date including pre-releases)')} src={`https://img.shields.io/github/v/release/${repo}?${darkQ}&label=%20&logo=github&include_prereleases`} />
+        <img className='hidden@apply(--site-dark) r-sm' alt={$('GitHub release (latest by date including pre-releases)')} src={`https://img.shields.io/github/v/release/${repo}?${lightQ}&label=%20&logo=github&include_prereleases`} />
+        <img className='hidden@apply(--site-light) r-sm' alt={$('GitHub release (latest by date including pre-releases)')} src={`https://img.shields.io/github/v/release/${repo}?${darkQ}&label=%20&logo=github&include_prereleases`} />
       </Link>}
       {npm && <Link aria-label={$('NPM package')} href={`https://www.npmjs.com/package/${npm}`}>
-        <img className='r-sm hidden@apply(--site-dark)' alt={$('NPM package (download/month)')} src={`https://img.shields.io/npm/dm/${npm}?${lightQ}&label=%20&logo=npm`} />
-        <img className='r-sm hidden@apply(--site-light)' alt={$('NPM package (download/month)')} src={`https://img.shields.io/npm/dm/${npm}?${darkQ}&label=%20&logo=npm`} />
+        <img className='hidden@apply(--site-dark) r-sm' alt={$('NPM package (download/month)')} src={`https://img.shields.io/npm/dm/${npm}?${lightQ}&label=%20&logo=npm`} />
+        <img className='hidden@apply(--site-light) r-sm' alt={$('NPM package (download/month)')} src={`https://img.shields.io/npm/dm/${npm}?${darkQ}&label=%20&logo=npm`} />
       </Link>}
       {npm && <Link aria-label={$('NPM package size (gzipped size)')} href={`https://www.npmjs.com/package/${npm}`}>
-        <img className='r-sm hidden@apply(--site-dark)' alt={$('NPM package size (gzipped size)')} src={`https://img.shields.io/bundlephobia/minzip/${npm}?${lightQ}&label=%20&logo=npm`} />
-        <img className='r-sm hidden@apply(--site-light)' alt={$('NPM package size (gzipped size)')} src={`https://img.shields.io/bundlephobia/minzip/${npm}?${darkQ}&label=%20&logo=npm`} />
+        <img className='hidden@apply(--site-dark) r-sm' alt={$('NPM package size (gzipped size)')} src={`https://img.shields.io/bundlephobia/minzip/${npm}?${lightQ}&label=%20&logo=npm`} />
+        <img className='hidden@apply(--site-light) r-sm' alt={$('NPM package size (gzipped size)')} src={`https://img.shields.io/bundlephobia/minzip/${npm}?${darkQ}&label=%20&logo=npm`} />
       </Link>}
       {source && <Link aria-label={$('Source code')} href={source}>
-        <img className='r-sm hidden@apply(--site-dark)' alt={$('Source code')} src={`https://img.shields.io/badge/Source-${lightBg}?${lightQ}&label=%20`} />
-        <img className='r-sm hidden@apply(--site-light)' alt={$('Source code')} src={`https://img.shields.io/badge/Source-${darkBg}?${darkQ}&label=%20`} />
+        <img className='hidden@apply(--site-dark) r-sm' alt={$('Source code')} src={`https://img.shields.io/badge/Source-${lightBg}?${lightQ}&label=%20`} />
+        <img className='hidden@apply(--site-light) r-sm' alt={$('Source code')} src={`https://img.shields.io/badge/Source-${darkBg}?${darkQ}&label=%20`} />
       </Link>}
     </div>
   )

@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import ResponsiveIllustration from './components/ResponsiveIllustration'
 import Class2CSS from '~/site/components/Class2CSS'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
@@ -123,6 +124,8 @@ An unnamed size query measures the nearest eligible ancestor. If a nested layout
 
 The two status readouts sit inside the same narrow inner container. Widening the outer boundary changes only the named query's result. Naming a container chooses an ancestor; it does not make the element query itself.
 
+<GuideStudy id="named-container-target" />
+
 ## Condition only the style that changes \{#syntax-first\}
 
 Keep shared styles unconditional. Add a condition only for the property and range that need a different value. For example, an aside can have a raised surface below `md` without carrying that background into larger layouts:
@@ -134,6 +137,8 @@ Keep shared styles unconditional. Add a condition only for the property and rang
 <Class2CSS>{['bg-surface-raised@max-md']}</Class2CSS>
 
 `@max-md` is the complement of the preset `@md`; they do not overlap. Redeclaring `--md` moves both. A local bounded condition, such as `hidden@media(52.125rem<=width<=64rem)`, can target a specific interval without changing the project's named thresholds. The [conditions reference](/reference/rules/conditions#mediafeature) covers that query syntax.
+
+<GuideStudy id="responsive-local-change" />
 
 ## Verify the boundary, not just the screenshot
 

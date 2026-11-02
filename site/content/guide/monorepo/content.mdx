@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import MonorepoIllustration from './components/MonorepoIllustration'
 import ExplorerView from '~/site/docs-shell/components/ExplorerView'
 
@@ -96,6 +97,8 @@ A shared CSS import supplies definitions. Class strings inside a shared componen
 If components live in `packages/ui`, add `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";` to each consuming app's CSS entry. This explicit path includes the shared source in the app's build. It is relative to the CSS file that declares it, so adjust the path when the entry moves.
 
 Installed dependency directories are excluded from automatic scanning. A packaged component library may need a narrow `@source` pattern targeting its distributed source files. Check a class that appears only in that package against the app's production output. See [source boundaries](/reference/rules/extraction#source-boundaries) for exclusions and other source types.
+
+<GuideStudy id="shared-source-inputs" />
 
 ## Verify the boundary before sharing more
 

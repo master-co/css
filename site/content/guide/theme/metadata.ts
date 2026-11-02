@@ -1,7 +1,7 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Theme Tokens',
+  title: 'Theme tokens',
   description: 'Define shared design values, see how token edits affect consumers, and choose local overrides, static delivery and inline substitution.',
   category: 'Authoring',
   order: 1,

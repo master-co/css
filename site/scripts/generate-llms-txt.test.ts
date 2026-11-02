@@ -733,3 +733,19 @@ test('delivery payload charts count complete responses once and omit absent asse
   assert.match(table, /Docs \| Master CSS progressive \| 36\.1 kB/)
   assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.1 kB/)
 })
+
+test('all Guide studies retain their full lesson in search and Markdown', async () => {
+  const { guideStudies, guideStudyMarkdown } = await import('../content/guide/studies')
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const pages = await loadPages(path.join(root, 'content'))
+  const search = JSON.parse(await readFile(path.join(root, 'public/search/en.json'), 'utf8'))
+  for (const [id, figure] of Object.entries(guideStudies)) {
+    const page = pages.find(page => page.url.startsWith('/en/guide/') && page.body.includes(guideStudyMarkdown(id)))
+    assert.ok(page, `${id}: portable lesson`)
+    const entry = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === page.url.replace(/^\/(en|tw)(?=\/)/, ''))
+    assert.ok(entry, `${id}: searchable page`)
+    assert.ok(entry.nodes.some((node: { text: string }) => node.text.includes(figure.alt)), `${id}: full description in search`)
+    assert.doesNotMatch(page.body, /<GuideStudy\b/)
+  }
+  assert.throws(() => guideStudyMarkdown('missing-study'), /Unknown Guide study/)
+})

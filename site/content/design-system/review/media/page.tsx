@@ -14,7 +14,7 @@ export default function Page() {
       </div>
     </Demo> },
     { id: 'image', title: 'A real image', children: <Demo padding="sm" caption="Text wraps around the floated image and continues in the remaining inline space.">
-      <div className="(display:flow-root) w-full (max-width:28rem) text-sm">
+      <div className="(display:flow-root) w-full max-w-md text-sm">
         <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="(float:left) h-auto (width:7rem) mb-sm mr-md r-sm" />
         <p className="m(0)">Reset the float when the image should return to normal document flow. The image keeps its intrinsic ratio at every width.</p>
       </div>

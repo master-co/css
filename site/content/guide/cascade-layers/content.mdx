@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import CascadeIllustration from './components/CascadeIllustration'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
@@ -41,6 +42,8 @@ A normal rule outside every layer takes precedence over normal rules inside name
 ```
 
 Move that shared rule into `@layer components` when it should permit utility overrides. Avoid adding `!important` just to compensate for an unintended layer boundary.
+
+<GuideStudy id="unlayered-obstacle" />
 
 Layers do not replace the rest of the cascade. Importance is considered before normal layer precedence, and `!important` reverses the order between layers. Inline declarations, animations and transitions have their own precedence. See the [CSS cascade specification](https://www.w3.org/TR/css-cascade-5/#layer-order) for those rules and the [Master CSS layer contract](/reference/rules/layers#how-layers-control-the-cascade) for the preset order.
 

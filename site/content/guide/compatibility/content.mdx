@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport'
 import CompatibilityIllustration from './components/CompatibilityIllustration'
@@ -37,6 +38,8 @@ Publish when ready.</textarea>
 The preview checks syntax support in your current browser. Test the actual editing behavior in your target browsers too. To inspect the fallback in a supporting browser, temporarily remove the conditional class: the field should stop growing automatically while keeping all its text accessible by scrolling. This isolates the enhancement; it does not emulate an older browser.
 
 Use **Generated CSS** to inspect the emitted condition. [Conditions](/reference/rules/conditions#supportsfeature) documents the class syntax; native CSS can express more complex feature queries.
+
+<GuideStudy id="fallback-addition" />
 
 ### New selectors
 
@@ -78,6 +81,6 @@ Within the slider's existing markup, one slide can keep the component surface wh
 
 The normal background declaration in `utilities` wins over the one in `components`, which in turn sits above `defaults`. Reordering the class names in HTML does not change that result.
 
-Check competing declarations in browser devtools before adding stronger overrides. Within the same author origin and context, normal unlayered styles outrank normal layered styles. A vendor `!important` declaration also beats a normal utility; important declarations reverse the layer order. These are [native cascade rules](https://www.w3.org/TR/css-cascade-5/#layer-order), not a Master-specific priority system. [Cascade Layers](/guide/cascade-layers) walks through diagnosis.
+Check competing declarations in browser devtools before adding stronger overrides. Within the same author origin and context, normal unlayered styles outrank normal layered styles. A vendor `!important` declaration also beats a normal utility; important declarations reverse the layer order. These are [native cascade rules](https://www.w3.org/TR/css-cascade-5/#layer-order), not a Master-specific priority system. [Cascade layers](/guide/cascade-layers) walks through diagnosis.
 
 Native selectors in Master-managed stylesheets are preserved by default. If you enable native pruning, protect vendor, CMS and externally injected selectors with [`@preserve native`](/reference/directives/pruning#preserve-native) in a stylesheet you control, or keep those sources outside pruning. A selector used by a third-party widget may not appear in your app's scanned markup.

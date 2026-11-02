@@ -3,8 +3,8 @@ import Demo from '~/site/components/demo/Demo'
 import mobileImage from '~/site/public/images/landscape-mobile-screen.png'
 
 export default () => (
-  <Demo padding="none" className="(padding-inline:2rem) (padding-inline:3rem)@sm">
-    <div className="(transition-duration:0.2s) (transition-property:transform) (transform:scale(1.1)):hover">
+  <Demo padding="none" className="px-xl px-2xl@sm">
+    <div className="(transition-duration:var(--duration-normal)) (transition-property:transform) (transform:scale(1.1)):hover">
       <Image
         src={mobileImage}
         className="max-h(319) max-w(480) pointer-none"

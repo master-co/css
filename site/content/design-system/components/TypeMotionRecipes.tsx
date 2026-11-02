@@ -2,7 +2,7 @@ import { FoundationTypography, FoundationTypeComparison, FoundationMotion, Found
 
 const examples = [
   ['Type hierarchy', '/guide/typography#overview', FoundationTypography],
-  ['Size and treatment', '/guide/typography#without-vs-with--text-token', FoundationTypeComparison],
+  ['Size and treatment', '/guide/typography#without-vs-with-text-token', FoundationTypeComparison],
   ['Finite entrances', '/reference/tokens/motion', FoundationMotion],
   ['State transition', '/reference/tokens/motion', FoundationTransition],
   ['Dialog entrance', '/guide/theme#define-motion-tokens', FoundationDialog],

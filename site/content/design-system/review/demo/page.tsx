@@ -15,7 +15,7 @@ export default function Page() {
       controls={<DemoControls label="Gap" variant="segmented"><button type="button" aria-pressed="false">sm</button><button type="button" aria-pressed="true">md</button><button type="button" aria-pressed="false">lg</button></DemoControls>}
       source={<><Code lang="html">{html}</Code><DemoGeneratedCSS><Code lang="css" beautify>{'.grid-cols\\(3\\) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) }\n.gap-md { gap: var(--spacing-md) }\n.p-md { padding: var(--spacing-md) }'}</Code></DemoGeneratedCSS></>}
       caption="The hatch shows p-md around the grid and gap-md between its children.">
-      <div className="grid-cols(3) gap-md w-full (max-width:20rem) p-md r-lg bg-surface-raised"><DemoItem>01</DemoItem><DemoItem>02</DemoItem><DemoItem>03</DemoItem></div>
+      <div className="grid-cols(3) gap-md w-full max-w-xs p-md r-lg bg-surface-raised"><DemoItem>01</DemoItem><DemoItem>02</DemoItem><DemoItem>03</DemoItem></div>
     </Demo> },
     { id: 'stage-only', title: 'Stage only', description: 'Without a head or source the tray is a quiet frame around one specimen; a lone caption names the figure.', children: <Demo caption="A caption alone describes the figure."><DemoItem tone="blue">Subject</DemoItem></Demo> },
   ]} usage={{ href: '/guide/syntax-tutorial', label: 'the Syntax Tutorial' }} Documentation={ComponentDocumentation} />

@@ -48,7 +48,7 @@ export function FoundationSizing() {
     <DemoSurface className="w-full max-w-sm mx-auto p-md">
       <DemoLabel>w-full · max-w-sm</DemoLabel>
       <div className="flex items-center gap-md mt-md">
-        <DemoItem className="grid shrink(0) (place-content:center) (height:3rem) (width:3rem) (aspect-ratio:1/1) (border-radius:50%) text-sm font-mono">FN</DemoItem>
+        <DemoItem className="grid shrink(0) (place-content:center) (height:var(--spacing-2xl)) (width:var(--spacing-2xl)) (aspect-ratio:1/1) pill text-sm font-mono">FN</DemoItem>
         <div className="wrap-anywhere (flex:1) min-w(0)">
           <div className="text-sm font-semibold">Field notes</div>
           <p className="mb(0) mx(0) mt-2xs text-sm fg-text-muted">Measured avatar. Flexible content.</p>

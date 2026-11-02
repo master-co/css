@@ -26,8 +26,8 @@ type CSSContract = {
 
 type SiteCSSContractSnapshot = {
     version: 3
-    semanticBaseline: 'language-v17'
-    publicBaseline: 'v2-theme-token-modes'
+    semanticBaseline: 'language-v18'
+    publicBaseline: 'manifest-v6-css-first'
     approval?: {
         reference: string
     }
@@ -177,8 +177,8 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
 
     return {
         version: 3,
-        semanticBaseline: 'language-v17',
-        publicBaseline: 'v2-theme-token-modes',
+        semanticBaseline: 'language-v18',
+        publicBaseline: 'manifest-v6-css-first',
         projectManifest: {
             bytes: Buffer.byteLength(projectManifestText),
             sha256: sha256(projectManifestText),
@@ -262,7 +262,7 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         '/': ['--color-text-muted:', '--color-surface-inset:'],
         '/guide': ['--prose-bleed:', '--color-line-media:'],
         '/reference': ['--prose-bleed:', '--docs-header:'],
-        '/design-system': ['--color-text-strong:', '--spacing-lg:'],
+        '/design-system': ['--ui-text-strong:', '--ui-surface-sheet:', '--spacing-lg:'],
         '/design-system/review/asset': ['--prose-bleed:', '--color-line-media:'],
         '/design-system/review/data-table': ['--prose-bleed:'],
         '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']

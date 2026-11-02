@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import TypeIllustration from './components/TypeIllustration'
 import Class2CSS from '~/site/components/Class2CSS'
 import { FoundationTypography, FoundationTypeComparison } from '~/site/components/demo/FoundationTypeMotion'
@@ -65,5 +66,7 @@ The base layer resolves `--font-sans` through `--font-family-sans` and applies i
 ## Verify with real text
 
 Check a short heading, a long heading and a full paragraph at the actual content width. Repeat with narrow screens and larger text. Watch line breaks and clipped accents or descenders, not only the computed font size.
+
+<GuideStudy id="type-content-height" />
 
 A declared font family is a request, not proof that its font file loaded or contains every glyph. Inspect the rendered fonts, especially when Latin and CJK text share a line. Keep containers free to grow with the text; do not set a card height just to preserve one English sample's line count.

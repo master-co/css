@@ -54,7 +54,7 @@ function ShopScreen({ mode }: { mode: 'light' | 'dark' }) {
   return (
     <div className={clsx('home-theme-screen', mode)}>
       <div className="flex flex-col gap-md p-lg r-3xl bg-surface-base fg-text-strong">
-        <div className="flex items-center justify-between (height:2rem)">
+        <div className="flex items-center justify-between (height:var(--spacing-xl))">
           <IconChevronLeft size={18} stroke={1.75} />
           <span className="font-sm font-medium">{$('Shop')}</span>
           <span className="relative grid">

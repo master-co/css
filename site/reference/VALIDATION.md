@@ -45,10 +45,7 @@ Normal profiles use 390, 768 and 1440px widths and English/Traditional Chinese r
 
 ## Remaining limitations
 
-- The public-asset gate reports unused `images/contents.svg` and `images/search.svg`; these unrelated assets are unchanged.
-- The footer’s Trademark Policy link extends approximately 10px at 320px with 200% root text. Article content is checked separately; no claim of whole-site enlarged-text conformance is made.
-- The full-site CSS contract check stops at `/design-system`: its assertion expects a `--color-text-strong` declaration that the built route does not contain. This route is outside the edited article scope; the check and snapshot were not weakened or updated. The two CSS-variable parser helper tests pass.
-- Lint retains the existing 81 warnings.
+- The previously outstanding asset, footer reflow, CSS-contract and lint issues were resolved in the [Guide expansion validation](../tests/guide-illustration-qa-2026-11-02.md). The exact CSS snapshot was reviewed against the current workspace; its rationale is in [the contract review](../tests/css-contract-qa-2026-11-02.md).
 - Browser role/name checks are not a screen-reader user study or accessibility certification. Semantic and visual walkthroughs are not measured novice comprehension.
 
 Run the scripts described in [MAINTENANCE.md](MAINTENANCE.md) when changing authored sources. Update this record to match actual results; do not retain obsolete document counts or historical framework warnings.

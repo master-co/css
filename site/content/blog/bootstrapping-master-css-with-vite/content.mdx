@@ -85,7 +85,7 @@ Run `npm run dev`. The heading should be large, heavy, italic, and separated fro
 
 ## Choose the right mode
 
-### Static Rendering
+### Static rendering
 
 Keep `masterCSS()` when the scanner can find the complete classes you use. State changes can still switch among those classes, and CSS variables, selectors, and media queries keep their native browser behavior. A changing interface alone does not require runtime generation.
 
@@ -103,7 +103,7 @@ Choose `masterCSS({ mode: 'pre-render' })` when the built HTML contains the page
 
 This is CSS generation from HTML the build already emits. It does not render your framework's client components into HTML. A class introduced only after the page loads will need CSS supplied separately.
 
-### Progressive Rendering
+### Progressive rendering
 
 Choose progressive mode when the built HTML is useful on its own but the browser may later introduce new classes. Replace the plugin call in your existing configuration with:
 

@@ -16,5 +16,5 @@ export default function Page() {
       </div>
     </Demo> },
     { id: 'view-transition', title: 'View transitions', children: <DemoViewTransition /> },
-  ]} usage={{ href: '/guide/view-transitions', label: 'the View Transitions guide' }} Documentation={ComponentDocumentation} />
+  ]} usage={{ href: '/guide/view-transitions', label: 'the View transitions guide' }} Documentation={ComponentDocumentation} />
 }

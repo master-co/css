@@ -1,3 +1,4 @@
+import { guideStudyMarkdown } from '../content/guide/studies'
 import { readFile, access } from 'node:fs/promises'
 import path from 'node:path'
 import { fromMarkdown } from 'mdast-util-from-markdown'
@@ -113,6 +114,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       const name = node.name ?? ''
       const attrs: Record<string, any> = Object.fromEntries((node.attributes ?? []).filter((a: any) => a.name).map((a: any) => [a.name, a.value]))
       const inner = (node.children ?? []).map(raw).join('\n')
+      if (name === 'GuideStudy') return guideStudyMarkdown(String(attrs.id))
       const adapted = options.component?.(name, attrs, file)
       if (adapted !== undefined) return adapted
       if (['DocumentOptions', 'DocumentParameters'].includes(name)) {

@@ -105,7 +105,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-preset': {
     introduction: 'The preset supplies theme tokens, conditions, utilities and a compiled default manifest. CSS imports and the JSON manifest serve different consumers.',
-    usage: 'Import CSS when authoring a stylesheet; pass the JSON manifest to APIs that execute or compile against a base manifest. [Theme Tokens](/guide/theme) explains authoring and overrides.',
+    usage: 'Import CSS when authoring a stylesheet; pass the JSON manifest to APIs that execute or compile against a base manifest. [Theme tokens](/guide/theme) explains authoring and overrides.',
     entries: {
       '.': 'Complete preset stylesheet entry.',
       './default-manifest.json': 'Compiled default manifest for engine, compiler and tooling APIs.',
@@ -119,7 +119,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-runtime': {
     introduction: 'Observe classes in a document or shadow root and maintain their generated CSS. Runtime startup requires a runtime program, the project manifest compiled for the browser engine, and returns an owned session.',
-    usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering Modes](/guide/rendering-modes) for the browser workflow.\n\n'
+    usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering modes](/guide/rendering-modes) for the browser workflow.\n\n'
       + 'Official integrations inject startup. A custom entry passes `program` as a loader, such as `() => import(\'virtual:master-css-program\').then(module => module.default)`, plus `emittedGlobals`, then calls `observe()`. Runtime-only pages load the program during startup; progressive pages with a valid `hydrationManifest` defer the engine until a class outside it appears, unless `engine: \'eager\'` or `enginePrefetch: \'idle\'` is set. `emittedGlobals` applies to every page using the bundle. The runtime inserts generated rules and on-demand keyframes into its own stylesheet and never writes to linked stylesheets.\n\n'
       + '`snapshot()` separates `usageCounts`, connected DOM usage, from `classRules`, which can also hold warmed, hydrated or retained rules. `engine` is `\'deferred\'`, `\'loading\'`, `\'ready\'` or `\'failed\'`; before a deferred engine starts, class snapshots have no rule entries and `layers` is empty. `ensureClassRules()` and `deleteClassRules()` act independently of DOM usage; deletion is synchronous and bypasses retention. Before the engine is ready they throw `RUNTIME_ENGINE_NOT_READY` and start it, so await `ready()` first.',
     entries: {
@@ -147,7 +147,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-server': {
     introduction: 'Render generated CSS into HTML and produce hydration data for the browser. Use a one-shot helper, a reusable renderer or a streaming HTML session to match the host lifecycle.',
-    usage: 'Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering Modes](/guide/rendering-modes) for complete HTML examples.\n\n'
+    usage: 'Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering modes](/guide/rendering-modes) for complete HTML examples.\n\n'
       + '`createServerRenderer()` caches rules across renders: recreate it when the manifest changes, and bound `maxCachedClasses` in a long-lived server. Custom hosts can pass the final `stylesheets` a page may link, as `{ href, css, imports }` from `describeLinkedStylesheet()` in `@master/css-compiler/stylesheet`, with the `documentURL` that resolves them; theme variables and native keyframes those stylesheets already deliver are not repeated in `style#master-css`. Rendering tracks each keyframe definition independently, including same-name definitions in different layers or conditions.',
     entries: { '.': 'HTML rendering, streaming sessions and hydration options.' }
   },

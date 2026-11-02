@@ -19,9 +19,9 @@ export default function ControlsReviewScene() {
     <div className="grid gap-md w-full">
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard focus enables native horizontal scrolling. */}
       <div className="overflow-x-auto w-full p(4)" role="region" aria-label="Alignment preview" tabIndex={0} data-preview-scroll="">
-        <div className={`flex gap-sm (min-width:18rem) (height:10rem) ${alignment}`}>
+        <div className={`flex gap-sm (height:10rem) (min-width:18rem) ${alignment}`}>
           <DemoItem tone="blue" className="(flex:1)">01</DemoItem>
-          <DemoItem tone="violet" className="(flex:1) (height:6rem)">02</DemoItem>
+          <DemoItem tone="violet" className="(flex:1) (height:var(--spacing-4xl))">02</DemoItem>
           <DemoItem className="(flex:1)">03</DemoItem>
         </div>
       </div>
@@ -54,8 +54,8 @@ export function ControlsGallery() {
       </div>
     </Demo>
     <Demo title="Choices and fields" description="Selected segments rise inside a sunken track; fields float back to the sheet on focus" padding="sm">
-      <div className="grid gap-lg w-full (max-width:28rem) py-lg">
-        <div className="ui-segmented w-fit" role="group" aria-label="View">
+      <div className="grid gap-lg w-full max-w-md py-lg">
+        <div className="w-fit ui-segmented" role="group" aria-label="View">
           {['Preview', 'Code', 'Output'].map(name => <button key={name} type="button" aria-pressed={view === name} onClick={() => setView(name)}>{name}</button>)}
         </div>
         <label className="ui-field">Collection name<input className="ui-input" placeholder="Field notes" /><span className="ui-field-hint">Shown above the cards.</span></label>

@@ -33,7 +33,7 @@ export const footerNavGroups = [
     name: 'Resources',
     links: [
       { name: 'Blog', href: '/blog' },
-      { name: 'Design System', href: '/design-system' },
+      { name: 'Design system', href: '/design-system' },
       { name: 'Brand', href: '/brand' },
     ]
   },

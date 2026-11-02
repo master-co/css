@@ -8,11 +8,11 @@ export default ({ children, className }: any) => {
   const $ = useTranslation()
   const locale = useLocale()
   return (
-    <section className={clsx(className, 'mt-md@layer(defaults) grid-cols(1) bl-line-subtle bt-line-subtle bl-solid bl(1) bt-solid bt(1) grid-cols(2)@sm grid-cols(3)@lg')}>{
+    <section className={clsx(className, 'mt-md@layer(defaults) grid-cols(1) bl-solid bl(1) bt-solid bt(1) bl-line-subtle bt-line-subtle grid-cols(2)@sm grid-cols(3)@lg')}>{
       children.map((definedMetadata: DefinedMetadata) =>
         <Link key={definedMetadata.pathname}
           className={clsx(
-            'flex-col items-start! justify-between! p-xl bb-line-subtle br-line-subtle bb-solid bb(1) br-solid br(1) text-left (transition-duration:0.2s) (transition-property:background-color) bg-surface-raised:hover',
+            'flex-col items-start! justify-between! p-xl bb-solid bb(1) br-solid br(1) bb-line-subtle br-line-subtle text-left (transition-duration:var(--duration-normal)) (transition-property:background-color) bg-surface-raised:hover',
             {
               'disabled': definedMetadata.disabled
             }

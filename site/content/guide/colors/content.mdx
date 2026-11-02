@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import ColorIllustration from './components/ColorIllustration'
 import Class2CSS from '~/site/components/Class2CSS'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
@@ -35,6 +36,8 @@ Build interface color from roles: surface, line and text colors whose class stay
 The role is part of the color key: `bg-surface-raised` reads `--color-surface-raised`, and `b-line-divider` reads `--color-line-divider`. A line role sets only the color, so give the border its width and style separately. See [Color roles](/reference/tokens/color-roles) for every role and [Color palette](/reference/tokens/color) for the palette.
 
 ---
+
+<GuideStudy id="palette-or-role" />
 
 ## Fixed and adaptive hue aliases \{#mode-aware-hue-aliases\}
 
@@ -103,6 +106,8 @@ The `@light` and `@dark` suffixes are `prefers-color-scheme` media queries. A ma
 ```
 
 The mixin also matches inside a nested light region, because it tests the attribute rather than the used color scheme. Prefer adaptive tokens; see [Variables and modes](/reference/rules/modes) for scope and resolution.
+
+<GuideStudy id="local-color-scheme" />
 
 ## Check the roles in context
 

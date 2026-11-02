@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import Class2CSS from '~/site/components/Class2CSS'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import TokenValues from '~/site/reference/TokenValues'
@@ -60,6 +61,8 @@ HTML separates classes at whitespace. Outside quoted strings, write `|` where a 
 <Class2CSS>{['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]}</Class2CSS>
 
 The color becomes `rgb(30 60 90 / 80%)`. Inside the quoted content string, the pipe stays literal: the text is `New|collection`. Master CSS also normalizes operator spacing in expressions such as `calc(100%-2rem)`; the browser evaluates the expression. See [Declarations and values](/reference/rules/declarations) for native declaration boundaries, quoted values and escaping.
+
+<GuideStudy id="pipes-and-quotes" />
 
 ## Use tokens for shared values \{#token-families\}
 
@@ -160,6 +163,8 @@ A condition controls when a class applies. Add `@sm` to change a style only whil
 <Class2CSS>{['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']}</Class2CSS>
 
 Several conditions nest from left to right, so every wrapper must match. See [Conditions](/reference/rules/conditions) for custom media and the other wrappers.
+
+<GuideStudy id="conditions-intersection" />
 
 ### Follow a component's available space
 

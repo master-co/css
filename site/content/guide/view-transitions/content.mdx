@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy'
 import TransitionIllustration from './components/TransitionIllustration'
 import Class2CSS from '~/site/components/Class2CSS'
 import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
@@ -5,7 +6,7 @@ import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
 ## Overview [sr-only]
 Help readers follow an article from its collection card into a detail view. The View Transition API captures the old and new visual states around a DOM update; matching snapshot names let the image, heading and date move between layouts. Master CSS supplies classes for those native CSS properties and pseudo-elements.
 
-The DOM update remains your application's responsibility. A transition enhances that update; it does not provide routing, data loading or focus management. The [CSS View Transitions specification](https://www.w3.org/TR/css-view-transitions-1/#intro) explains how captures are separate from DOM changes.
+The DOM update remains your application's responsibility. A transition enhances that update; it does not provide routing, data loading or focus management. The [CSS View transitions specification](https://www.w3.org/TR/css-view-transitions-1/#intro) explains how captures are separate from DOM changes.
 
 <TransitionIllustration />
 
@@ -109,6 +110,8 @@ Apply the shared timing to the document root:
 (i) The same `view-transition-name` must be unique in the rendered document, or the browser skips the transition. The list uses article-specific names such as `article-aurora-image` and `article-studio-image` so the selected card can match the detail page without colliding with other cards.
 
 ---
+
+<GuideStudy id="transition-name-uniqueness" />
 
 ## Styling transition pseudo-elements
 Use `view-transition-name` for one matched capture and `view-transition-class` for a group of captures that share styling. The class does not replace each capture's unique name.

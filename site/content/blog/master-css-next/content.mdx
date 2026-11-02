@@ -1,9 +1,9 @@
 import DeliveryFlow from '~/site/components/DeliveryFlow'
 import ArticleTOC from '~/site/docs-shell/components/ArticleTOC'
 
-A component can construct a class name that is absent as a complete string in source. If Next.js renders that component during the build, the final HTML contains the class, even though a source scanner cannot infer it. Progressive Rendering in `@master/css-next` uses that HTML to generate the page's CSS, then lets the Master CSS runtime handle new classes in the browser.
+A component can construct a class name that is absent as a complete string in source. If Next.js renders that component during the build, the final HTML contains the class, even though a source scanner cannot infer it. Progressive rendering in `@master/css-next` uses that HTML to generate the page's CSS, then lets the Master CSS runtime handle new classes in the browser.
 
-Static Rendering remains the default. Use it when complete class names are visible in source and an ordinary generated stylesheet meets your needs. Choose progressive mode when static or pre-rendered pages need CSS from their final markup and runtime support for later class changes.
+Static rendering remains the default. Use it when complete class names are visible in source and an ordinary generated stylesheet meets your needs. Choose progressive mode when static or pre-rendered pages need CSS from their final markup and runtime support for later class changes.
 
 **The boundary is build-time HTML.** The adapter processes static and pre-rendered outputs from `next build`. It does not process dynamic SSR responses produced at request time; in progressive mode, those responses rely on the browser runtime for generated rules.
 
@@ -21,7 +21,7 @@ At that point, the page has already combined its layouts, components, and conten
 
 ---
 
-## Progressive Rendering in Next.js
+## Progressive rendering in Next.js
 
 The handoff has three parts:
 
@@ -45,7 +45,7 @@ The inline CSS is usable before that handoff. The manifest supports continued ru
 
 ## Install it
 
-Use the [Progressive Rendering installation guide](/guide/installation/nextjs#rendering-modes) for the complete setup. In an existing Next.js App Router project, the official installer selects the integration and mode:
+Use the [Progressive rendering installation guide](/guide/installation/nextjs#rendering-modes) for the complete setup. In an existing Next.js App Router project, the official installer selects the integration and mode:
 
 ```bash
 npm create @master/css@rc -- --framework nextjs --mode progressive --yes
@@ -105,7 +105,7 @@ View the page's response source. For this pre-rendered page, `style#master-css` 
 
 Source scanning needs complete class strings. [Tailwind scans source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files); Master CSS static mode has the same practical constraint for constructed class names. An explicit map containing every complete class is suitable when the variants are known in advance.
 
-Progressive Rendering can instead use the class names that appear in the pre-rendered document. Consider this component:
+Progressive rendering can instead use the class names that appear in the pre-rendered document. Consider this component:
 
 ```tsx name=Badge.tsx
 export function Badge({ tone }: {
@@ -171,7 +171,7 @@ If another integration already owns Next.js `adapterPath`, the Master CSS integr
 
 <a id="static-rendering"></a>
 
-## When to keep Static Rendering
+## When to keep Static rendering
 
 Use the [default Next.js setup](/guide/installation/nextjs) when source scanning can find your complete class strings. Static mode produces a stylesheet without requiring the Master CSS browser runtime. Verify the selected bundler independently; the [installation guide](/guide/installation/nextjs#verify-the-loaded-configuration) includes the current generated-asset limitation and Webpack build path. Interactive components can still switch among classes already included in that stylesheet.
 

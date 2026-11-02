@@ -14,14 +14,14 @@ test('one example is one tray with a plain, centered stage by default', () => {
 
 test('head, stage, source and caption keep their order; stage geometry stays on the stage', () => {
   const html = renderToStaticMarkup(<Demo padding="none" title="Measured subject" caption="A real width" controls={<button type="button">Reset</button>}
-    id="example" frameClassName="example-frame" className="flex (width:240px)" style={{ gap: 12, overflow: 'visible' }}
+    id="example" frameClassName="example-frame" className="flex w(240)" style={{ gap: 12, overflow: 'visible' }}
     source={<DemoGeneratedCSS><pre>.flex {'{'}display:flex{'}'}</pre></DemoGeneratedCSS>}>
     <div style={{ width: 40, height: 60 }}>Subject</div>
   </Demo>)
   const outer = html.match(/^<figure[^>]+>/)?.[0] ?? ''
   const stage = html.match(/<div class="ui-stage[^>]+>/)?.[0] ?? ''
   assert.equal(outer, '<figure id="example" class="ui-tray example-frame">')
-  assert.equal(stage, '<div class="ui-stage flex (width:240px)" style="gap:12px;overflow:visible" data-padding="none">')
+  assert.equal(stage, '<div class="ui-stage flex w(240)" style="gap:12px;overflow:visible" data-padding="none">')
   const order = ['ui-tray-head', 'Reset', 'ui-stage', '<details class="ui-disclosure">', 'ui-tray-caption'].map(part => html.indexOf(part))
   assert.deepEqual([...order].sort((a, b) => a - b), order)
   assert.ok(order.every(index => index >= 0))

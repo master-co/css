@@ -2,30 +2,30 @@ const units = {
   guide: {
     categories: [
       'Overview',
-      'Getting Started',
+      'Getting started',
       'Integrations',
-      'Agentic Workflows',
+      'Agentic workflows',
       'Authoring',
       'Fundamentals',
-      'Design Foundations',
+      'Design foundations',
       'Customization',
-      'Build and Delivery',
+      'Build and delivery',
     ]
   },
   reference: {
     categories: [
       'Overview',
       'Layout',
-      'Flexbox & Grid',
+      'Flexbox and grid',
       'Spacing',
       'Sizing',
       'Typography',
-      'Color & Backgrounds',
-      'Borders & Outlines',
+      'Color and backgrounds',
+      'Borders and outlines',
       'Effects',
       'Transforms',
-      'Media & SVG',
-      'Shapes & Masks',
+      'Media and SVG',
+      'Shapes and masks',
       'Motion',
       'Interactivity',
       'Accessibility'
@@ -34,13 +34,13 @@ const units = {
   blog: {
     categories: [
       'Major',
-      'New Feature',
+      'New feature',
     ]
   },
   examples: {},
   roadmap: {},
   brand: {},
-  'design-system': { categories: ['Overview', 'Design System', 'Components'] },
+  'design-system': { categories: ['Overview', 'Design system', 'Components'] },
 }
 
 export default units
