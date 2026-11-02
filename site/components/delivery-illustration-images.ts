@@ -16,8 +16,11 @@ import routeLight from '../assets/images/rendering-modes/route-light.png'
 import routeDark from '../assets/images/rendering-modes/route-dark.png'
 import nextjsLight from '../assets/images/rendering-modes/nextjs-light.png'
 import nextjsDark from '../assets/images/rendering-modes/nextjs-dark.png'
+import viteCoverageLight from '../assets/images/rendering-modes/vite-coverage-light.png'
+import viteCoverageDark from '../assets/images/rendering-modes/vite-coverage-dark.png'
 
 export const deliveryIllustrationImages = {
+  'vite-coverage': { light: viteCoverageLight, dark: viteCoverageDark },
   scanning: { light: scanningLight, dark: scanningDark },
   pruning: { light: pruningLight, dark: pruningDark },
   'pruning-scope': { light: pruningScopeLight, dark: pruningScopeDark },

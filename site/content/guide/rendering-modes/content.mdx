@@ -43,7 +43,7 @@ To see the source-to-CSS process, add this utility definition after the import a
   padding-inline: var(--spacing-md);
 }`} html={'<button class="btn text-center">Save</button>'} />
 
-The scanner finds `btn` and `text-center`. The engine recognizes the registered utility and the direct declaration, then generates their rules and referenced resources. Defining `btn` alone does not emit its rule: a scanned class or explicit safelist must request it.
+The scanner finds `btn` and `text-center`. The engine resolves the project recipe and the preset's fixed utility, then generates their rules and referenced resources. Defining `btn` alone does not emit its rule: a scanned class or explicit safelist must request it.
 
 Integrations discover ordinary application sources and update CSS during development. Keep complete class names in source and pass changing values through CSS variables; [Scanning and pruning](/guide/scanning-and-pruning) covers both, plus `@source` and safelist exceptions.
 

@@ -147,12 +147,10 @@ generate a utility, but its stylesheet rule can still be present. For an explici
 markup and native rules. An empty `missingCSS.checked` list is not a completed
 class check. The [CLI catalog](/reference/tools/cli#inspect) documents inspection.
 
-When a native rule and a utility affect the same property, check the emitted CSS
-and the project's actual layer order. Master CSS's base stylesheet declares
-`theme, base, defaults, components, utilities`; normal declarations in `utilities`
-outrank normal declarations in `components`, even when the latter selector is more
-specific. Reopening `components` later does not change that order. Important
-declarations follow different precedence; see [CSS layer ordering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description).
+When a native rule and a utility affect the same property, follow the
+[cascade diagnosis](/guide/cascade-layers#diagnose-a-competing-declaration) with the project's
+actual layer order. Keep the inspection result and the browser's winning
+declaration together in the repair report.
 
 A conflict warning also needs review when both class names are recognized. Using
 a registered utility as a native hover selector hook does not restrict its

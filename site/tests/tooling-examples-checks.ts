@@ -12,6 +12,7 @@ import { join } from 'node:path'
 import preset from '../utils/preset-manifest'
 import { toolingExample, toolingOptions } from '../utils/tooling-guide-data'
 import { deliveryFences, deliverySource } from './delivery-examples'
+import { packageEditorial } from '../reference/package-editorial'
 
 export function verifyLintExamples() {
   const root = mkdtempSync(join(tmpdir(), 'master-doc-lint-'))
@@ -64,9 +65,9 @@ export function verifyLintExamples() {
     }))
     assert.ok(rawMessages.some(message => message.message.includes('15px')))
     const recommended = Object.assign({}, ...masterCSS.map(item => item.rules))
-    for (const [, name, severity] of source.matchAll(/\| `@master\/css\/([^`]+)` \| `(warn|error)`/g)) {
-      assert.equal(recommended[`@master/css/${name}`], severity)
-    }
+    const documentedRules = Object.fromEntries([...packageEditorial['@master/eslint-config-css'].usage.matchAll(/\| `(@master\/css\/[^`]+)` \| `(warn|error)`/g)]
+      .map(([, name, severity]) => [name, severity]))
+    assert.deepEqual(documentedRules, recommended, 'Reference owns the complete recommended rule defaults')
     assert.deepEqual(defaultClassLintSettings.classAttributes, ['class', 'className'])
     assert.deepEqual(defaultClassLintSettings.ignoredKeys, ['compoundVariants', 'defaultVariants'])
     // ESLint arrays replace defaults; service arrays below extend them.
@@ -115,5 +116,12 @@ export function verifyLanguageExamples() {
     assert.ok(service.settings.classAttributes?.includes('class'))
     const settings = JSON.parse(readFileSync(new URL('../../packages/vscode/package.json', import.meta.url), 'utf8')).contributes.configuration.properties
     for (const option of toolingOptions.languageSettings.options) assert.equal(String(settings[option.name].default), option.defaultValue)
+    const documentedSettings = [...deliverySource('language-service').matchAll(/^\| `(masterCSS\.[^`]+)` \| ([^|]+) \|/gm)]
+    assert.ok(documentedSettings.length, 'Read the actual Guide settings table, not only gallery fixtures')
+    for (const [, name, value] of documentedSettings) {
+      assert.ok(settings[name], `The extension defines ${name}`)
+      const literal = /^`([^`]+)`$/.exec(value.trim())
+      if (literal && !Array.isArray(settings[name].default)) assert.equal(String(settings[name].default), literal[1], name)
+    }
   } finally { service.dispose() }
 }

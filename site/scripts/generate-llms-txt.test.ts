@@ -13,7 +13,7 @@ import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content
 import { toolingExampleMarkdown, toolingOptionsMarkdown } from '../utils/tooling-guide-data'
 import { packageTreeMarkdown } from '../utils/package-trees'
 import { authoringExampleMarkdown } from '../utils/authoring-examples'
-import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
+import { deliveryBlogContent, deliveryBlogSlugs, deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
 import { deliveryFlowMarkdown } from '../utils/delivery-flows'
 import { firstPaintMarkdown, resourceWaterfallsMarkdown } from '../utils/first-paint-examples'
 import assert from 'node:assert/strict'
@@ -748,4 +748,24 @@ test('all Guide studies retain their full lesson in search and Markdown', async 
     assert.doesNotMatch(page.body, /<GuideStudy\b/)
   }
   assert.throws(() => guideStudyMarkdown('missing-study'), /Unknown Guide study/)
+})
+
+
+test('delivery blogs preserve the argument, examples and figure descriptions in search and Markdown', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const pages = await loadPages(path.join(root, 'content'))
+  for (const slug of deliveryBlogSlugs) {
+    const content = await deliveryBlogContent(root, slug)
+    assert.deepEqual(content.notes, [])
+    assert.equal(pages.find(page => page.url === `/en/blog/${slug}`)?.body, content.markdown)
+    const source = await readFile(path.join(root, `content/blog/${slug}/content.mdx`), 'utf8')
+    const fences = deliveryFences(content.markdown).map(fence => fence.text.trim())
+    for (const fence of deliveryFences(source)) assert.ok(fences.includes(fence.text.trim()), `${slug}: ${fence.name}`)
+    for (const match of source.matchAll(/<DeliveryFlow name="([^"]+)"/g)) assert.ok(content.markdown.includes(deliveryFlowMarkdown(match[1])))
+    for (const locale of ['en', 'tw']) {
+      const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+      const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === `/blog/${slug}`)
+      assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
+    }
+  }
 })

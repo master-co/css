@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Master CSS with Vite: choose when to generate CSS',
-  description: 'Start with a working static setup, then choose runtime, pre-render, or progressive mode based on when your class names become known.',
+  description: 'Follow one interactive app through source scanning, emitted HTML and connected DOM to see why changing the interface does not require runtime CSS.',
   category: 'New feature',
   authors: [
     { name: 'Aron' }

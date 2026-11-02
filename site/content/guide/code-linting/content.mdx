@@ -70,7 +70,7 @@ inline-flex px-md <!-- [!code ++] -->
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
 
 ### No invalid classes
-`@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
+`@master/css/no-invalid-classes` reports malformed Master CSS class syntax and recognized classes that generate invalid CSS. These are separate failures: a malformed class can be rejected before any rule is generated, while an accepted declaration can still contain an invalid value.
 
 ```html
 <button class="(font-size:16)">Save</button>

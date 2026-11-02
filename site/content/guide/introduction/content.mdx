@@ -32,7 +32,7 @@ Take `p-lg` from the card. The preset connects `p-` to padding and `lg` to the s
 
 The browser applies `padding: var(--spacing-lg)` to the matching element. With the preset's value, that is `1.5rem` on all four sides. The class stays the same if you change the shared value in your theme.
 
-Other classes express different kinds of decisions: `flex` is a fixed utility for `display: flex`, while `bg-surface-inset:hover` adds a hover state. The [Syntax Tutorial](/guide/syntax-tutorial) walks through values, selectors and conditions in a working example.
+Other classes express different kinds of decisions: `flex` is a fixed utility for `display: flex`, while `bg-surface-inset:hover` adds a hover state. The [Syntax tutorial](/guide/syntax-tutorial) walks through values, selectors and conditions in a working example.
 
 ## Define what should change together
 
@@ -46,7 +46,7 @@ Add a theme token when several elements should share a project decision. For a p
 
 Changing `--color-brand` updates elements that use it. Share that token because the elements should change together; two unrelated colors can have the same value without needing the same name. [Theme tokens](/guide/theme) explains how to define and override shared values.
 
-Native CSS belongs here too. Keep complex selectors and reusable component styles in your stylesheet, and use ordinary UI components to share repeated markup. [Reusing Styles](/guide/reusing-styles) helps you choose between a shared token, a component class and a custom utility.
+Native CSS belongs here too. Keep complex selectors and reusable component styles in your stylesheet, and use ordinary UI components to share repeated markup. [Reusing styles](/guide/reusing-styles) helps you choose between a shared token, a component class and a custom utility.
 
 <GuideStudy id="language-and-delivery" />
 
@@ -56,4 +56,4 @@ Use the recommended static integration for your framework. It finds complete cla
 
 Interactive interfaces still work: switch between known classes, use selectors such as `:hover`, or update CSS custom properties for values such as progress and coordinates. A runtime is useful when a playground, visual editor or deployed content introduces previously unknown class names. [Rendering modes](/guide/rendering-modes) explains the delivery choices.
 
-Follow [Installation](/guide/installation) to connect Master CSS to your app, then build a card with interaction states and responsive conditions in the [Syntax Tutorial](/guide/syntax-tutorial). For completion and diagnostics while you write, set up the [Language Service](/guide/language-service).
+Follow [Installation](/guide/installation) to connect Master CSS to your app, then build a card with interaction states and responsive conditions in the [Syntax tutorial](/guide/syntax-tutorial). For completion and diagnostics while you write, set up the [Language service](/guide/language-service).
