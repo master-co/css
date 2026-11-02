@@ -1,1 +1,5 @@
 patches/*.patch text eol=lf
+
+# Preset artifacts preserve native keyframe bytes and source offsets.
+# Windows checkouts must use the same bytes as published preset sources.
+packages/preset/src/*.css text eol=lf
