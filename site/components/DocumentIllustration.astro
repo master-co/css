@@ -39,7 +39,7 @@ const { title, alt, images, caption, fullSize = false } = Astro.props
     />)}
   </div>
   <p class="ui-tray-caption">{caption}</p>
-  <details class="ui-disclosure">
+  <details class="ui-disclosure" data-variant="text-description">
     <summary>Text description</summary>
     <div class="ui-disclosure-body ui-tray-caption"><slot /></div>
   </details>

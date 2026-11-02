@@ -13,6 +13,14 @@ Start with the affected source and nearby tests. Before changing package code, r
 
 Source and tests establish current behavior; deeper `.ai/*.md` documents explain architecture and policy. Compact packs route to that evidence. Correct stale guidance when verified; do not infer semantic correctness from a short pack alone.
 
+## Development MCP Servers
+
+- Project configuration lives in `.codex/config.toml` for Codex and `.mcp.json` for Claude Code. Use only the servers relevant to the task.
+- For Svelte integration, example, or fixture changes, use `svelte` to retrieve the relevant documentation and run `svelte-autofixer` on changed components or `.svelte.ts`/`.svelte.js` modules before the existing project checks.
+- Use `astro-docs` for the Astro site and integration; use `next-devtools` for Next.js integrations and examples. Discover the intended development server and verify its project path before reading routes, logs, or errors. Prefer installed, version-matched framework documentation when current remote docs differ.
+- `master-css` runs this checkout's built MCP executable with `site/` as its root. Use its workspace, manifest, inspection, and lint tools for site styling; use its preview/apply flow for file changes. This is a local checkout configuration: update the executable and root paths when moving it to another checkout. It does not replace the source and Rust ownership rules below.
+- Use `cloudflare-docs` for Cloudflare hosting and deployment configuration.
+
 ## Project Contracts
 
 Master CSS turns markup classes such as `fg-red-60:hover@sm` into layered CSS across engine, runtime, server, scanner, integrations, language tooling, and ESLint.

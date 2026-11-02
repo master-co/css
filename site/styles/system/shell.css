@@ -38,18 +38,19 @@
   .ui-nav-link:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; border-radius: var(--ui-radius-sm); }
   .ui-nav-link > .ui-badge { margin-left: auto; }
 
-  /* The page's contents as one ruler: every entry hangs a tick before its title on one left edge; the section being
-     read draws the long tick in ink. A subsection keeps the edge and steps down in ink, never indents. */
-  .ui-toc { --toc-tick: 1.125rem; --toc-tick-current: 1.75rem; --toc-gap: .75rem; --toc-gutter: calc(var(--toc-tick-current) + var(--toc-gap));
+  /* One ruler: long section ticks and short subsection ticks share a right edge before the text. Titles share a second edge;
+     current location changes ink, never the tick's length or the title's position. */
+  .ui-toc { --toc-tick: 1.5rem; --toc-tick-subsection: .75rem; --toc-gap: .75rem; --toc-gutter: calc(var(--toc-tick) + var(--toc-gap)); --toc-row-padding: .5rem;
     display: grid; align-content: start; gap: var(--ui-space-xs); padding: var(--ui-space-xl) var(--ui-space-lg); font-size: var(--ui-text-caption); }
   .ui-toc > h4 { margin: 0 0 var(--ui-space-2xs); padding-left: var(--toc-gutter); color: var(--ui-text-muted); @apply --ui-eyebrow-type; }
   .ui-toc ol { display: grid; margin: 0; padding: 0; list-style: none; }
-  .ui-toc a { position: relative; display: block; padding: .5rem 0 .5rem var(--toc-gutter); color: var(--ui-text-muted); line-height: 1.125rem; text-decoration: none; transition: color var(--ui-duration-quick); }
-  .ui-toc a::before { content: ""; position: absolute; top: calc(.5rem + .5lh - 1px); right: calc(100% - var(--toc-tick-current)); width: var(--toc-tick); height: 2px; border-radius: 1px; background: var(--ui-line-divider); pointer-events: none; transition: width var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-quick); }
+  .ui-toc a { position: relative; display: block; padding: var(--toc-row-padding) 0 var(--toc-row-padding) var(--toc-gutter); color: var(--ui-text-muted); line-height: 1.125rem; text-decoration: none; transition: color var(--ui-duration-quick); }
+  .ui-toc a::before { content: ""; position: absolute; top: calc(var(--toc-row-padding) + .5lh - 1px); right: calc(100% - var(--toc-tick)); width: var(--toc-tick); height: 2px; border-radius: 1px; background: var(--ui-line-divider); pointer-events: none; transition: background-color var(--ui-duration-quick); }
+  .ui-toc :is(ol ol a, a[data-level="3"])::before { width: var(--toc-tick-subsection); }
   .ui-toc a:hover { color: var(--ui-text-strong); }
   .ui-toc a:hover::before { background: var(--ui-line-mark); }
-  .ui-toc a[aria-current="location"] { color: var(--ui-text-strong); }
-  .ui-toc a[aria-current="location"]::before { width: var(--toc-tick-current); background: var(--ui-text-strong); }
+  .ui-toc a[aria-current="location"] { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); }
+  .ui-toc a[aria-current="location"]::before { background: var(--ui-text-strong); }
   .ui-toc a:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; border-radius: var(--ui-radius-xs); }
   .ui-toc ol ol a:not([aria-current]) { color: color-mix(in oklab, var(--ui-text-muted) 72%, var(--ui-text-disabled)); }
   .ui-toc ol ol a:not([aria-current])::before { background: var(--ui-line-hair); }

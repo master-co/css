@@ -54,8 +54,8 @@
 </script>
 
 <!-- The bootstrap script marks the live entry before hydration, so its attribute may differ from the first render. -->
-{#snippet nav({ id, title }: PageContentItem)}
-  <Link href={'#' + id} aria-current={pageContent.currentId === id ? 'location' : undefined} data-page-content-nav-id={id} lang={langOf(title)}>
+{#snippet nav({ id, title, level }: PageContentItem)}
+  <Link href={'#' + id} aria-current={pageContent.currentId === id ? 'location' : undefined} data-page-content-nav-id={id} data-level={level} lang={langOf(title)}>
     <PageContentTitle {title} translate={translate ? t : undefined} />
   </Link>
 {/snippet}

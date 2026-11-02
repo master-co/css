@@ -2,6 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "blog-obsidian",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/aron/master-css/.claude/worktrees/blog-obsidian/site && exec bun --bun astro dev --ignore-lock --port 3131"
+      ],
+      "port": 3131,
+      "autoPort": false
+    },
+    {
       "name": "homepage-evolve",
       "runtimeExecutable": "bash",
       "runtimeArgs": [
@@ -29,6 +39,26 @@
         "cd /Users/aron/master-css/.claude/worktrees/master-design-polish/site && exec bun --bun astro dev --ignore-lock --port 3105"
       ],
       "port": 3105,
+      "autoPort": false
+    },
+    {
+      "name": "home-obsidian",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/aron/master-css/.claude/worktrees/home-obsidian/site && exec bun --bun astro dev --ignore-lock --port 3121"
+      ],
+      "port": 3121,
+      "autoPort": false
+    },
+    {
+      "name": "guide-consolidation",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/aron/master-css/.claude/worktrees/guide-consolidation/site && exec bun --bun astro dev --ignore-lock --port 3141"
+      ],
+      "port": 3141,
       "autoPort": false
     }
   ]
