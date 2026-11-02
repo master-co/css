@@ -2,9 +2,31 @@
 import DocumentIllustration from '~/site/components/DocumentIllustration.astro'
 import light from '../../../../assets/images/view-transitions/named-captures-light.png'
 import dark from '../../../../assets/images/view-transitions/named-captures-dark.png'
-import { transitionIllustration as figure } from '../illustration'
+import lifecycleLight from '../../../../assets/images/view-transitions/capture-lifecycle-light.png'
+import lifecycleDark from '../../../../assets/images/view-transitions/capture-lifecycle-dark.png'
+import identityLight from '../../../../assets/images/view-transitions/capture-identity-light.png'
+import identityDark from '../../../../assets/images/view-transitions/capture-identity-dark.png'
+import treeLight from '../../../../assets/images/view-transitions/capture-tree-light.png'
+import treeDark from '../../../../assets/images/view-transitions/capture-tree-dark.png'
+import navigationLight from '../../../../assets/images/view-transitions/capture-navigation-light.png'
+import navigationDark from '../../../../assets/images/view-transitions/capture-navigation-dark.png'
+import { transitionIllustration, transitionStudies, type TransitionStudyName } from '../illustration'
+
+interface Props {
+  name?: TransitionStudyName
+}
+
+const images = {
+  'capture-lifecycle': { light: lifecycleLight, dark: lifecycleDark },
+  'capture-identity': { light: identityLight, dark: identityDark },
+  'capture-tree': { light: treeLight, dark: treeDark },
+  'capture-navigation': { light: navigationLight, dark: navigationDark }
+}
+
+const { name } = Astro.props
+const figure = name ? transitionStudies[name] : transitionIllustration
 ---
 
-<DocumentIllustration title={figure.title} alt={figure.alt} images={{ light, dark }} caption={figure.caption}>
+<DocumentIllustration title={figure.title} alt={figure.alt} images={name ? images[name] : { light, dark }} caption={figure.caption}>
   <ol>{figure.description.map(item => <li><strong>{item.title}.</strong> {item.text}</li>)}</ol>
 </DocumentIllustration>

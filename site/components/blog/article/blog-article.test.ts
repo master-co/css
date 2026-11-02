@@ -1,11 +1,19 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { neighborsOf } from './neighbors'
+import { compareBlogDates, neighborsOf, type BlogArticleNeighbor } from './neighbors'
 import { titleParts } from './title-parts'
 import { contentLanguageOf, sourceLanguageOf } from './language'
 
 const post = (name: string, date: string) => ({ title: name, date, pathname: `/blog/${name}`, sourcePath: `site/content/blog/${name}/content.mdx` })
 const categories = [{ pages: [post('b', '2025-04-22'), post('c', '2026-06-15')] }, { pages: [post('a', '2023-12-19')] }]
+
+test('undated announcements precede dated posts without a synthetic date', () => {
+  const release: BlogArticleNeighbor = { title: 'Master CSS 2.0', pathname: '/blog/v2', sourcePath: 'site/content/blog/v2/content.mdx' }
+  const all = [...categories, { pages: [release] }]
+  assert.equal(compareBlogDates(release, release), 0)
+  assert.equal(all.flatMap(group => group.pages).sort(compareBlogDates)[0], release)
+  assert.deepEqual(neighborsOf(release.sourcePath, all), { newer: undefined, older: categories[0].pages[1] })
+})
 
 test('neighbours follow the index order, newest first, across categories', () => {
   assert.deepEqual(neighborsOf(post('c', '').sourcePath, categories), { newer: undefined, older: categories[0].pages[0] })

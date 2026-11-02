@@ -16,23 +16,19 @@ function browserMode() {
  * Use inside a dedicated example document so the root snapshot cannot capture the docs.
  * Call it during component initialization. `mode` is reactive: read it from the returned object.
  */
-export function useDemoViewTransition(rootClassName: string) {
+export function useDemoViewTransition() {
   let active: ViewTransition | null = null
   let revision = 0
   // The server and the first client render agree on "Ready"; the browser's mode follows after mount.
   let mounted = $state(false)
   onMount(() => {
     mounted = true
-    const classes = rootClassName.split(' ')
-    const added = classes.filter(value => !document.documentElement.classList.contains(value))
-    document.documentElement.classList.add(...added)
     const media = matchMedia(reducedMotion)
     const changed = () => { if (media.matches) active?.skipTransition() }
     media.addEventListener('change', changed)
     return () => {
       revision++
       active?.skipTransition()
-      document.documentElement.classList.remove(...added)
       media.removeEventListener('change', changed)
     }
   })
@@ -59,6 +55,8 @@ export function useDemoViewTransition(rootClassName: string) {
     active = transition
     // Rapid selections can skip a snapshot; the DOM update still runs.
     void transition.ready.catch(() => {})
+    // A failed update is an application error, not a reason to repeat the update.
+    void transition.updateCallbackDone.catch(error => { reportError(error) })
     const finished = () => { if (active === transition) active = null }
     void transition.finished.then(finished, finished)
   }

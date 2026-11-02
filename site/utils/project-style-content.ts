@@ -1,4 +1,4 @@
-import { transitionIllustrationMarkdown } from '../content/guide/view-transitions/illustration'
+import { transitionStudyMarkdown } from '../content/guide/view-transitions/illustration'
 import { monorepoIllustrationMarkdown } from '../content/guide/monorepo/illustration'
 import { cascadeIllustrationMarkdown } from '../content/guide/cascade-layers/illustration'
 import { packageIllustrationMarkdown } from '../content/guide/authoring-packages/illustration'
@@ -21,7 +21,7 @@ export async function projectStyleGuideContent(siteRoot: string, slug: string) {
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component(name, attributes) {
-      if (name === 'TransitionIllustration') return transitionIllustrationMarkdown()
+      if (name === 'TransitionIllustration') return transitionStudyMarkdown(attributes.name ? String(attributes.name) : undefined)
       if (name === 'MonorepoIllustration') return monorepoIllustrationMarkdown()
       if (name === 'CascadeIllustration') return cascadeIllustrationMarkdown()
       if (name === 'PackageIllustration') return packageIllustrationMarkdown()

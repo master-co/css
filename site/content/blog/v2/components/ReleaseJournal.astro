@@ -1,0 +1,26 @@
+---
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoGeneratedCSS from '~/site/components/demo/DemoGeneratedCSS.svelte'
+import DemoViewport from '~/site/components/demo/DemoViewport.svelte'
+import Code from '~/site/docs-shell/components/Code.astro'
+import CodeTabs from '~/site/docs-shell/components/CodeTabs.astro'
+import { demoDocument } from '~/site/components/demo/reference/document'
+import { configuredExampleCSS, configuredMarkupClasses } from '~/site/reference/configured-example'
+import { journalAssets, journalCaption, journalMarkup, journalSetup, journalSource, journalTitle } from '../journal'
+
+/** The same authored HTML and CSS are rendered here and exported to Markdown. */
+const section = { page: 'release', id: 'fieldwork-journal', title: 'Fieldwork — a working journal', html: [journalMarkup], css: journalSource, classes: [], classLists: [], highlighted: [] }
+const document = demoDocument(section, { html: journalMarkup, caption: journalCaption, bodyClass: 'p-md' })
+const generated = configuredExampleCSS(journalSource, configuredMarkupClasses(journalMarkup))
+---
+
+<Demo title={journalTitle} caption={journalCaption} frame="none" data-release-journal>
+  <details class="ui-disclosure" slot="source">
+    <summary>View the HTML and CSS</summary>
+    <p class="ui-tray-caption">{journalSetup}</p>
+    <p class="ui-tray-caption">Download: {journalAssets.map((asset, index) => <span>{index > 0 && ' · '}<a href={asset.href} download>{asset.label}</a></span>)}</p>
+    <CodeTabs tabs={[{ name: 'CSS', lang: 'css', code: journalSource }, { name: 'HTML', lang: 'html', code: journalMarkup }]} />
+    <DemoGeneratedCSS><Code lang="css" beautify code={generated} /></DemoGeneratedCSS>
+  </details>
+  <DemoViewport client:idle={{ timeout: 500 }} title={section.title} document={document} responsive chrome={false} theme sizing="content" maxWidth={960} />
+</Demo>

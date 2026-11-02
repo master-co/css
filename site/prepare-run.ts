@@ -1,4 +1,5 @@
 import { benchmarkContent } from './utils/benchmark-content'
+import { releaseContent } from './utils/release-content'
 import { introductionContent } from './utils/introduction-content'
 import { brandContent } from './utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from './utils/installation-content'
@@ -50,6 +51,7 @@ for (const slug of installationGuideSlugs) {
   guideContentNodes.set(`/guide/installation${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await installationGuideContent(process.cwd(), slug)).searchMarkdown))
 }
 guideContentNodes.set('/benchmarks', extractSearchNodesFromMdx((await benchmarkContent(process.cwd())).searchMarkdown))
+guideContentNodes.set('/blog/v2', extractSearchNodesFromMdx((await releaseContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/guide/introduction', extractSearchNodesFromMdx((await introductionContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/brand', extractSearchNodesFromMdx((await brandContent(process.cwd())).searchMarkdown))
 for (const route of designSystemRoutes) {

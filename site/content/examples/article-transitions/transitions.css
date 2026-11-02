@@ -1,0 +1,10 @@
+@layer components {
+  .article-capture {
+    view-transition-class: article;
+  }
+
+  ::view-transition-group(.article) {
+    animation-duration: .5s;
+    animation-timing-function: ease-in-out;
+  }
+}

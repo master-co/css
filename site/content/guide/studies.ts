@@ -388,20 +388,6 @@ export const guideStudies = {
     ],
     "kind": "coverage"
   },
-  "transition-name-uniqueness": {
-    "title": "Reuse an identity across views, not within a view",
-    "alt": "Two successive document states each contain one hero capture and match across the transition. A third state shows two hero captures and marks the duplicate.",
-    "caption": "A view-transition-name may identify the same subject before and after an update, but must be unique within each rendered state.",
-    "labels": [
-      "Before",
-      "After",
-      "hero",
-      "Same identity across states",
-      "Duplicate in one state",
-      "hero + hero"
-    ],
-    "kind": "identity"
-  },
   "language-and-delivery": {
     "title": "The class vocabulary survives a delivery choice",
     "alt": "One class and its declaration sit above two delivery paths: build-generated stylesheet and browser-generated stylesheet.",

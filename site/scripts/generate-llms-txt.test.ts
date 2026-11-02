@@ -765,3 +765,22 @@ test('delivery blogs preserve the argument, examples and figure descriptions in 
     }
   }
 })
+
+test('View transitions retains its five figure lessons and native CSS recipes in portable output', async () => {
+  const { transitionIllustration, transitionStudies } = await import('../content/guide/view-transitions/illustration')
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const content = await projectStyleGuideContent(root, 'view-transitions')
+  for (const figure of [transitionIllustration, ...Object.values(transitionStudies)]) {
+    assert.ok(content.markdown.includes(figure.title), figure.title)
+    assert.ok(content.markdown.includes(figure.caption), figure.caption)
+    for (const step of figure.description) {
+      assert.ok(content.markdown.includes(step.text), `${figure.title}: portable explanation`)
+      assert.ok(content.searchMarkdown.includes(step.text), `${figure.title}: search explanation`)
+    }
+  }
+  assert.match(content.markdown, /@view-transition\s*\{\s*navigation: auto/)
+  assert.match(content.markdown, /navigation: none/)
+  assert.match(content.markdown, /await transition\.updateCallbackDone/)
+  assert.match(content.markdown, /image\.style\.viewTransitionName/)
+  assert.doesNotMatch(content.markdown, /<TransitionIllustration\b/)
+})

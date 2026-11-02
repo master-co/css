@@ -1,5 +1,6 @@
 ---
 import '~/site/styles/documentation-illustration.css'
+import IconArrowsMaximize from '@tabler/icons-svelte-runes/icons/arrows-maximize'
 import Image from '../docs-shell/components/Image.svelte'
 import type { IllustrationImages } from './document-types'
 
@@ -10,14 +11,24 @@ interface Props {
   alt: string
   images: IllustrationImages
   caption: string
+  fullSize?: boolean
 }
 
 /** A static figure with one accessible image and an independent text description. */
-const { title, alt, images, caption } = Astro.props
+const { title, alt, images, caption, fullSize = false } = Astro.props
 ---
 
-<figure class="ui-tray" aria-label={title}>
-  <figcaption class="ui-tray-head"><p class="ui-tray-title">{title}</p></figcaption>
+<figure class="ui-tray" aria-label={title} data-illustration-expandable={fullSize || undefined}>
+  <figcaption class="ui-tray-head">
+    <p class="ui-tray-title">{title}</p>
+    {fullSize && (['light', 'dark'] as const).map(scheme => <a
+      class="document-illustration-expand ui-button"
+      data-variant="quiet" data-shape="icon" data-size="sm" data-scheme={scheme}
+      href={images[scheme].src} target="_blank" rel="noopener noreferrer"
+      aria-label={`View full-size illustration: ${title} (opens in a new tab)`}
+      title="View full-size illustration (opens in a new tab)"
+    ><IconArrowsMaximize aria-hidden="true" /></a>)}
+  </figcaption>
   <div class="document-illustration" role="img" aria-label={alt}>
     {(['light', 'dark'] as const).map(scheme => <Image
       src={images[scheme]}

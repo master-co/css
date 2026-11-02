@@ -1,0 +1,9 @@
+@layer components {
+  .view-panel { view-transition-name: demo-panel; }
+  .view-heading { view-transition-name: demo-heading; }
+
+  ::view-transition-group(demo-panel),
+  ::view-transition-group(demo-heading) {
+    animation-duration: var(--duration-slow);
+  }
+}

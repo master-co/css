@@ -36,7 +36,7 @@ const date = (value: string) => dayjs(value).format(tw ? 'YYYY 年 M 月 D 日' 
     <Link class="blog-article-next blog-marks" href={lead.pathname}>
       <span class="blog-article-next-meta">
         {showCategory && lead.category && <span>{$(lead.category)}</span>}
-        <time datetime={lead.date}>{date(lead.date)}</time>
+        {lead.date && <time datetime={lead.date}>{date(lead.date)}</time>}
       </span>
       <span class="blog-article-next-title" lang={languageOf(lead.title)}><TitleLines title={$(lead.title)} class="blog-article-next-title-line" /><IconArrowRight class="blog-article-next-arrow" aria-hidden="true" size={22} stroke={1.25} /></span>
       {lead.description && <span class="blog-article-next-description" lang={languageOf(lead.description)}>{$(lead.description)}</span>}
