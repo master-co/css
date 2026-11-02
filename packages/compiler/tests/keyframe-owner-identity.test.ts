@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, sep, toNamespacedPath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterAll, expect, test } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -33,9 +33,13 @@ function checkout(layout: string, name = 'app') {
 
 /** Source provenance keeps the checkout path; keyframe identities must not. */
 function projectKeyframes(manifest: MasterCSSManifest, root: string) {
-  return (manifest.keyframes ?? []).flatMap(({ id, source }) => source?.file?.startsWith(root)
-    ? [{ id, file: source.file.slice(root.length) }]
-    : [])
+  // Rust canonical paths can carry a Windows verbatim prefix; compare both
+  // hosts in the same filesystem namespace without changing manifest metadata.
+  const directory = toNamespacedPath(root)
+  return (manifest.keyframes ?? []).flatMap(({ id, source }) => {
+    const file = source?.file && toNamespacedPath(source.file)
+    return file?.startsWith(directory + sep) ? [{ id, file: file.slice(directory.length) }] : []
+  })
 }
 
 const first = checkout('a')
