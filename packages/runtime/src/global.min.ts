@@ -4,7 +4,19 @@ function resolveDefaultProgramURL(scriptURL: string) {
   const defaultProgramURL = new URL(scriptURL)
   defaultProgramURL.search = ''
   defaultProgramURL.hash = ''
-  if (defaultProgramURL.pathname.endsWith('/')) {
+  // Master CDN redirects npm paths without CORS response headers. Classic
+  // scripts can follow that redirect; fetch/preload must use its destination.
+  if (defaultProgramURL.origin === 'https://cdn.master.co'
+    && /^\/css-runtime(?:@[^/]+)?(?:\/|$)/.test(defaultProgramURL.pathname)) {
+    defaultProgramURL.hostname = 'cdn.jsdelivr.net'
+    defaultProgramURL.pathname = '/npm/@master' + defaultProgramURL.pathname
+  }
+  if (defaultProgramURL.origin === 'https://cdn.jsdelivr.net'
+    && /^\/npm\/@master\/css-runtime(?:@[^/]+)?\/?$/.test(defaultProgramURL.pathname)) {
+    // Package-entry CDNs select browser: dist/global.min.js, but currentScript
+    // retains the requested package URL even after a CDN redirect.
+    defaultProgramURL.pathname = defaultProgramURL.pathname.replace(/\/$/, '') + '/dist/default-program.bin'
+  } else if (defaultProgramURL.pathname.endsWith('/')) {
     defaultProgramURL.pathname += 'default-program.bin'
   } else if (defaultProgramURL.pathname.endsWith('.js')) {
     defaultProgramURL.pathname = defaultProgramURL.pathname.replace(/\/[^/]*$/, '/default-program.bin')
@@ -25,6 +37,11 @@ async function loadDefaultProgram(defaultProgramURL: URL): Promise<ArrayBuffer> 
 }
 
 const currentScript = document.currentScript as HTMLScriptElement | null
+// Start loading immediately, but scan only once the initial document is parsed.
+// A cached program can otherwise reveal a streamed page before its body arrives.
+const documentReady = document.readyState === 'loading'
+  ? new Promise<void>(resolve => document.addEventListener('DOMContentLoaded', () => resolve(), { once: true }))
+  : Promise.resolve()
 
 if (currentScript?.src) {
   const defaultProgramURL = resolveDefaultProgramURL(currentScript.src)
@@ -34,8 +51,15 @@ if (currentScript?.src) {
     program: () => loadDefaultProgram(defaultProgramURL),
     onDiagnostic: diagnostic => console.error(diagnostic)
   })
-    .then((runtime) => runtime.observe())
-    .catch((error) => console.error(error))
+    .then(async (runtime) => {
+      await documentReady
+      runtime.observe()
+    })
+    .catch((error) => {
+      document.documentElement.removeAttribute('hidden')
+      console.error(error)
+    })
 } else {
+  document.documentElement.removeAttribute('hidden')
   console.error('Cannot resolve the Master CSS runtime script URL.')
 }

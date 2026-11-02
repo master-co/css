@@ -168,8 +168,11 @@ export function verifyInstallationExamples() {
   assert.equal(saveSettings['editor.codeActionsOnSave']['source.fixAll.eslint'], 'explicit')
   assert.deepEqual(saveSettings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
   const cdn = installationSection('', 'cdn')
-  assert.equal(deliveryFences(cdn).length, 0, 'Unavailable CDN delivery must not advertise a runnable installation')
-  assert.match(cdn, /not available yet/)
+  const cdnHTML = deliveryFences(cdn).find(fence => fence.language === 'html')!.text.trim()
+  assert.equal(cdnHTML, readFileSync(new URL('examples/cdn/iife.html', rootURL), 'utf8').trim(), 'The guide uses the browser-tested CDN template')
+  assert.match(cdn, /not published yet/)
+  assert.match(cdn, /replace every `VERSION`/)
+  assert.doesNotMatch(cdnHTML, /@rc|modulepreload|default-manifest\.json/)
   assert.match(cdn, /\[Integrations\]\(#integrations\)/)
   assert.match(cdn, /\[CLI\]\(#cli\)/)
 }

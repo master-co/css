@@ -12,7 +12,7 @@ import dark from '~/site/assets/images/integrations/installation/cover-dark.webp
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS with Astro, Vite, Nuxt, Svelte, Next.js, Angular, Lit, webpack and Storybook" />
 
-Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, and [CLI](#cli) generates a stylesheet for projects without a bundler. The hosted [CDN setup](#cdn) is not available for the current version.
+Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, and [CLI](#cli) generates a stylesheet for projects without a bundler. [CDN](#cdn) provides a plain HTML setup for the default preset; its CSS-first release is pending.
 
 ## Integrations \{#integrations\}
 
@@ -86,7 +86,46 @@ For manual setup or framework-specific files, use the [integration guides](/guid
 
 A CDN installation runs Master CSS in the browser without a build tool. It suits a plain HTML prototype; generated styles depend on JavaScript. Use an integration or the CLI when the page needs styles without JavaScript.
 
-The hosted CDN setup for the current version is not available yet. Use [Integrations](#integrations) or [CLI](#cli) to follow this guide with the current syntax. For the browser runtime's behavior and loading requirements, see [Runtime rendering](/guide/rendering-modes#runtime-rendering).
+The CSS-first CDN release is not published yet. The current `rc` channel still serves the earlier RC88 runtime. The template below targets the new runtime: replace every `VERSION` with the same published CSS-first version of the runtime and preset before using it. Until then, use a local build as described below, or choose [Integrations](#integrations) or [CLI](#cli).
+
+Save this template as `index.html`:
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en" hidden>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
+</head>
+
+<body>
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-strong">Hello World</h1>
+</body>
+
+</html>
+```
+
+The heading should have a `3rem` margin, a `2.5rem` italic font at weight `900`, and the preset's strong text color. Change `font-5xl` to `font-6xl`: the text grows to `3rem`. The runtime also observes class changes made by JavaScript.
+
+The stylesheet supplies the base rules and layer order. The classic script starts automatically, loads its matching compiled program, then generates the initial classes after the document finishes parsing. It removes `hidden` when those rules are ready. The three preload links start the stylesheet, script, and program requests early; the binary uses `as="fetch" crossorigin` because the runtime fetches data, not a module. The binary preload and runtime fetch use the jsDelivr destination directly because the Master CDN redirect does not carry CORS headers. The CDN setup uses the default preset; use an integration to compile custom `@theme` or `@utility` definitions.
+
+<DocumentDisclosure title="Try a local build before the CDN release">
+
+From a built checkout, copy `packages/preset/src/base.css`, `packages/runtime/dist/global.min.js`, and `packages/runtime/dist/default-program.bin` into one directory beside `index.html`. Keep the script and program from the same build.
+
+Replace both stylesheet URLs with `./base.css`, both script URLs with `./global.min.js`, and the program preload URL with `./default-program.bin`. Serve the directory over HTTP and open `index.html`. The runtime resolves the program beside an explicit script file; at a Master CDN or jsDelivr npm package entry, it resolves `dist/default-program.bin` inside that package.
+
+</DocumentDisclosure>
+
+`hidden` is optional. It prevents an unstyled first paint; handled program-loading errors and the runtime's three-second startup timeout reveal the content. If JavaScript is disabled or the script itself cannot download, it cannot remove the attribute. Omit `hidden` when content must stay readable in those cases, or deliver static CSS.
+
+For a Content Security Policy, allow the CDN and its jsDelivr redirect target for scripts, stylesheet loading and program fetching (`connect-src`), and allow the runtime's generated stylesheet. No Wasm is fetched. See [Runtime rendering](/guide/rendering-modes#runtime-rendering) for loading and hydration behavior.
 
 ## CLI \{#cli\}
 

@@ -66,24 +66,37 @@
 
 </div>
 
+This template targets the CSS-first runtime. Replace every `VERSION` with the same published CSS-first version of the runtime and preset. The current `rc` channel still serves the earlier RC88 runtime and cannot run this example. Until a matching release is available, use the local files described below.
+
 ```html
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
 </head>
 <body>
-  <h1 class="(margin:3rem) (color:#111827) (font-size:40px) italic (font-weight:800)">Hello World</h1>
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-strong">Hello World</h1>
 </body>
 </html>
 ```
 
-The `@rc` URLs use published npm packages. They may lag unreleased changes in this repository; use matching runtime and preset versions when testing local source.
+The script starts automatically. It loads its compiled `dist/default-program.bin`, waits for the document to finish parsing, generates the initial classes, then removes `hidden`. Later class changes are observed automatically. The binary is fetched data, so its preload uses `as="fetch" crossorigin`; it is not a JavaScript or JSON module. Its URL points directly to jsDelivr because the Master CDN redirect does not carry CORS headers. The runtime uses the same destination.
+
+For a local build, serve these three files in the same directory:
+
+- `packages/preset/src/base.css` as `base.css`
+- `packages/runtime/dist/global.min.js` as `global.min.js`
+- `packages/runtime/dist/default-program.bin` as `default-program.bin`
+
+In `iife.html`, replace both stylesheet URLs with `./base.css`, both script URLs with `./global.min.js`, and the program preload URL with `./default-program.bin`. Serve the directory over HTTP. Build the runtime before copying its outputs; keep the script and program from the same build.
+
+`hidden` prevents the unstyled first paint. Handled program errors or the runtime's three-second startup timeout reveal the content. If JavaScript is disabled or the script itself cannot load, it cannot remove `hidden`; omit that attribute when readability must survive those cases, or use static CSS.
 
 ## Documentation
 Check out the official [CDN installation guide](https://rc.css.master.co/guide/installation#cdn).

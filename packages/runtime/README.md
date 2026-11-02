@@ -91,16 +91,36 @@ cssRuntime.observe()
 
 ## CDN IIFE
 
-Use the CDN runtime when a page only needs the default preset and zero configuration:
+Use the CDN runtime for a plain HTML page with the default preset. The CSS-first CDN release is pending; the current `rc` channel still serves the earlier RC88 runtime. Replace every `VERSION` below with the same published CSS-first runtime and preset version.
 
 ```html
-<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-<link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-<script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
+<!DOCTYPE html>
+<html lang="en" hidden>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
+</head>
+
+<body>
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-strong">Hello World</h1>
+</body>
+
+</html>
 ```
 
-The IIFE starts automatically and registers the document runtime as `globalThis.masterCSSRuntime`. The bundle includes the JavaScript engine. When its engine starts, it fetches `default-program.bin` next to the runtime script, the default preset compiled for the engine. The CDN must serve it with CORS headers, and a Content Security Policy must allow fetching it (`connect-src`); no Wasm is loaded, so `wasm-unsafe-eval` is not needed. The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime and preset on compatible versions. The IIFE does not read global options or custom programs. Use ESM `await MasterCSSRuntime.start({ program, emittedGlobals })` for custom inputs.
+The IIFE starts automatically and registers the document runtime as `globalThis.masterCSSRuntime`. It starts the engine and program download immediately, then waits for the initial document to finish parsing before observing classes and revealing the page. The bundle includes the JavaScript engine. The Master CDN and jsDelivr npm package entries load `dist/default-program.bin` inside that package; explicit `.js` URLs load `default-program.bin` beside the script. Keep both artifacts from the same build.
+
+The program is fetched binary data, so its preload uses `as="fetch" crossorigin`, including on the same origin. The classic script preload uses `as="script"`. For `cdn.master.co`, both the binary preload and runtime fetch use its jsDelivr destination directly, because the Master CDN redirect does not carry CORS headers. The CDN must serve the program with CORS headers. A Content Security Policy must permit the CDN and its jsDelivr redirect target for script/style loading and program fetching (`connect-src`), as well as the generated stylesheet. No Wasm is loaded, so `wasm-unsafe-eval` is not needed.
+
+The optional `hidden` attribute prevents the unstyled first paint. Handled startup failures, including a three-second timeout, reveal the content. If the runtime script itself cannot load or JavaScript is disabled, it cannot remove `hidden`; omit it when content must remain readable or use static CSS.
+
+To try a local build, serve `packages/preset/src/base.css`, `dist/global.min.js`, and `dist/default-program.bin` in one directory. Replace the corresponding URLs above with relative URLs. The IIFE does not read global options or custom programs. Use ESM `await MasterCSSRuntime.start({ program, emittedGlobals })` for custom inputs.
 
 ## API
 

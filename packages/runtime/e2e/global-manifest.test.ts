@@ -7,9 +7,9 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
-const RUNTIME_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js'
-const DEFAULT_PROGRAM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin'
-const PRESET_BASE_CSS_URL = 'https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css'
+const RUNTIME_SCRIPT_URL = 'https://cdn.master.co/css-runtime@VERSION'
+const DEFAULT_PROGRAM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin'
+const PRESET_BASE_CSS_URL = 'https://cdn.master.co/css-preset@VERSION/src/base.css'
 
 type RuntimeAssetRouteOptions = {
   onDefaultProgramRequest?: () => void
@@ -42,6 +42,8 @@ async function startGlobalRuntime(page: Page) {
 
 test('repository CDN example renders with current package artifacts', async ({ page }) => {
   const errors: string[] = []
+  const requests: string[] = []
+  page.on('request', request => requests.push(request.url()))
   page.on('pageerror', error => errors.push(error.message))
   page.on('console', message => {
     if (message.type() === 'error') errors.push(message.text())
@@ -60,11 +62,14 @@ test('repository CDN example renders with current package artifacts', async ({ p
   await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
   await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
   expect(errors).toEqual([])
+  // Only jsDelivr serves fetchable data: the Master CDN's real redirects lack
+  // CORS headers. Its short URL is still suitable for the classic script.
+  expect(requests.filter(url => url.endsWith('.bin')).every(url => url === DEFAULT_PROGRAM_URL)).toBe(true)
   expect(await page.locator('html').getAttribute('hidden')).toBeNull()
   expect(await page.locator('h1').evaluate(element => {
     const style = getComputedStyle(element)
     return { color: style.color, fontSize: style.fontSize, fontStyle: style.fontStyle, fontWeight: style.fontWeight, marginTop: style.marginTop }
-  })).toEqual({ color: 'rgb(17, 24, 39)', fontSize: '40px', fontStyle: 'italic', fontWeight: '800', marginTop: '48px' })
+  })).toEqual({ color: 'oklch(0.15 0.0016 265)', fontSize: '40px', fontStyle: 'italic', fontWeight: '900', marginTop: '48px' })
 })
 
 test('uses the default preset program', async ({ page }) => {
@@ -83,6 +88,7 @@ test('uses the default preset program', async ({ page }) => {
 test('uses the preloaded default program', async ({ page }) => {
   let defaultProgramRequests = 0
   let presetCSSRequests = 0
+  let runtimeRequests = 0
   const consoleMessages: string[] = []
   let assetBase = ''
   page.on('console', message => {
@@ -91,20 +97,31 @@ test('uses the preloaded default program', async ({ page }) => {
   // Playwright routing disables HTTP caching. Serve real responses so this test
   // observes browser preload reuse rather than interception-specific behavior.
   const assets = new Map([
-    ['/global.min.js', { type: 'text/javascript', body: readFileSync(resolve(__dirname, '../dist/global.min.js')) }],
-    ['/default-program.bin', { type: 'application/octet-stream', body: readFileSync(resolve(__dirname, '../dist/default-program.bin')) }],
+    ['/assets/runtime/global.min.js', { type: 'text/javascript', body: readFileSync(resolve(__dirname, '../dist/global.min.js')) }],
+    ['/assets/runtime/default-program.bin', { type: 'application/octet-stream', body: readFileSync(resolve(__dirname, '../dist/default-program.bin')) }],
     ['/base.css', { type: 'text/css', body: readFileSync(resolve(__dirname, '../../preset/src/base.css')) }]
   ])
   const server = createServer((request, response) => {
-    if (request.url === '/default-program.bin') defaultProgramRequests++
+    if (request.url?.startsWith('/css-runtime@next')) {
+      response.writeHead(301, {
+        location: request.url.endsWith('.bin') ? '/assets/runtime/default-program.bin' : '/assets/runtime/global.min.js',
+        // Exercise classic script redirects without CORS, like Master CDN.
+        // This generic local host keeps binary URLs on its own origin.
+        ...(request.url.endsWith('.bin') ? { 'access-control-allow-origin': '*' } : {})
+      }).end()
+      return
+    }
+    if (request.url === '/assets/runtime/default-program.bin') defaultProgramRequests++
+    if (request.url === '/assets/runtime/global.min.js') runtimeRequests++
     if (request.url === '/base.css') presetCSSRequests++
     const asset = assets.get(request.url ?? '')
     response.writeHead(200, { 'content-type': asset?.type ?? 'text/html', 'cache-control': 'public, max-age=3600', 'access-control-allow-origin': '*' })
     response.end(asset?.body ?? `<!doctype html><html hidden><head>
       <link rel="preload" as="style" href="${assetBase}/base.css">
-      <link rel="preload" as="fetch" crossorigin href="${assetBase}/default-program.bin">
+      <link rel="preload" as="script" href="${assetBase}/css-runtime@next">
+      <link rel="preload" as="fetch" crossorigin href="${assetBase}/css-runtime@next/default-program.bin">
       <link rel="stylesheet" href="${assetBase}/base.css">
-      <script src="${assetBase}/global.min.js"></script>
+      <script src="${assetBase}/css-runtime@next"></script>
       </head><body><h1 class="(font-size:40px)">Hello</h1></body></html>`)
   })
   try {
@@ -116,6 +133,7 @@ test('uses the preloaded default program', async ({ page }) => {
     await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
     expect(defaultProgramRequests).toBe(1)
     expect(presetCSSRequests).toBe(1)
+    expect(runtimeRequests).toBe(1)
     expect(consoleMessages).toEqual([])
     expect(await page.locator('h1').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
     expect(await page.evaluate(() => {
@@ -177,7 +195,7 @@ test('renders under a strict CSP that disallows Wasm compilation', async ({ page
   await page.route(consumerURL, route => route.fulfill({
     contentType: 'text/html',
     headers: {
-      'content-security-policy': "default-src 'none'; script-src https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net; style-src 'unsafe-inline'"
+      'content-security-policy': "default-src 'none'; script-src https://cdn.master.co https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net; style-src 'unsafe-inline'"
     },
     body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body><h1 class="(font-size:40px)">Hello</h1></body></html>`
   }))
