@@ -73,9 +73,7 @@ export function renderStudy(id: GuideStudyId, theme: Theme) {
     case 'coverage':
       body = `<div class="study-scope">${t(l[0], 'eyebrow')}<div class="study-coverage"><div class="study-checked">${t(l[1], 'eyebrow')}${block(l[2], '')}${block(l[3], '')}</div><div>${block(l[4], '')}${note(l[5])}</div></div></div>`
       break
-    case 'identity':
-      body = `<div class="study-identity"><div class="study-columns">${block(l[0], `<div class="study-capture">${t(l[2])}</div>`)}${arrow}${block(l[1], `<div class="study-capture">${t(l[2])}</div>`)}</div>${note(l[3])}<div class="study-duplicate">${t(l[4], 'eyebrow')}<div class="study-columns"><div class="study-capture">${t(l[2])}</div><div class="study-capture">${t(l[2])}</div></div><span class="study-collision" data-label>Duplicate name</span></div></div>`
-      break
+
   }
   return scene(figure.title, figure.alt, `<style>${id === 'palette-or-role' ? generatePresetCSS(['bg-blue-60','bg-surface-base']) : ''}
     .study { position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;padding:38px; }
@@ -151,9 +149,5 @@ export function renderStudy(id: GuideStudyId, theme: Theme) {
     .padding-columns > section { align-items:center;gap:24px; }
     .study-coverage { display:flex;gap:28px;align-items:center; }
     .study-checked { display:flex;flex-direction:column;gap:18px;padding:20px;border-left:2px solid var(--ui-tone-blue);background:color-mix(in oklch,var(--ui-tone-blue) 5%,transparent); }
-    .study-identity { display:flex;flex-direction:column;gap:24px;align-items:center; }
-    .study-capture { padding:10px 30px;border:1px solid var(--ui-tone-blue);border-radius:var(--ui-radius-md); }
-    .study-duplicate { display:flex;flex-direction:column;gap:18px;padding:18px;border:1px solid var(--ui-tone-amber);border-radius:var(--ui-radius-lg); }
-    .study-collision { font-size:var(--ui-text-caption);color:var(--ui-tone-amber); }
   </style><div class="study">${body}</div>`)
 }

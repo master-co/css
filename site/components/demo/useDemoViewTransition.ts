@@ -14,25 +14,21 @@ function browserMode() {
 }
 
 /** Use inside a dedicated example document so the root snapshot cannot capture the docs. */
-export function useDemoViewTransition(rootClassName: string) {
+export function useDemoViewTransition() {
   const active = useRef<ViewTransition | null>(null)
   const revision = useRef({ value: 0 })
   const mode = useSyncExternalStore(subscribe, browserMode, () => 'Ready')
   useEffect(() => {
     const requests = revision.current
-    const classes = rootClassName.split(' ')
-    const added = classes.filter(value => !document.documentElement.classList.contains(value))
-    document.documentElement.classList.add(...added)
     const media = matchMedia('(prefers-reduced-motion: reduce)')
     const changed = () => { if (media.matches) active.current?.skipTransition() }
     media.addEventListener('change', changed)
     return () => {
       requests.value++
       active.current?.skipTransition()
-      document.documentElement.classList.remove(...added)
       media.removeEventListener('change', changed)
     }
-  }, [rootClassName])
+  }, [])
 
   function run(update: () => void, focus?: () => HTMLElement | null) {
     const request = ++revision.current.value
@@ -56,6 +52,8 @@ export function useDemoViewTransition(rootClassName: string) {
     active.current = transition
     // Rapid selections can skip a snapshot; the DOM update still runs.
     void transition.ready.catch(() => {})
+    // A failed update is an application error, not a reason to repeat the update.
+    void transition.updateCallbackDone.catch(error => { reportError(error) })
     const finished = () => { if (active.current === transition) active.current = null }
     void transition.finished.then(finished, finished)
   }

@@ -56,8 +56,6 @@ import light26 from '../../../assets/images/guide-studies/lint-ownership-light.p
 import dark26 from '../../../assets/images/guide-studies/lint-ownership-dark.png'
 import light27 from '../../../assets/images/guide-studies/inspection-coverage-light.png'
 import dark27 from '../../../assets/images/guide-studies/inspection-coverage-dark.png'
-import light28 from '../../../assets/images/guide-studies/transition-name-uniqueness-light.png'
-import dark28 from '../../../assets/images/guide-studies/transition-name-uniqueness-dark.png'
 import light29 from '../../../assets/images/guide-studies/language-and-delivery-light.png'
 import dark29 from '../../../assets/images/guide-studies/language-and-delivery-dark.png'
 const images = {
@@ -89,7 +87,6 @@ const images = {
   'editor-build-boundary': { light: light25, dark: dark25 },
   'lint-ownership': { light: light26, dark: dark26 },
   'inspection-coverage': { light: light27, dark: dark27 },
-  'transition-name-uniqueness': { light: light28, dark: dark28 },
   'language-and-delivery': { light: light29, dark: dark29 },
 }
 

@@ -1,0 +1,14 @@
+/* Capture boundaries, browser views and identity rows use the shared illustration material. */
+.vt-view { position:absolute; border:1px solid var(--ui-line-divider); border-radius:var(--ui-radius-lg); background:var(--ui-surface-sheet); box-shadow:var(--ui-elevation-rise-1); overflow:hidden; }
+.vt-view > .vt-bar { height:24px; border-bottom:1px solid var(--ui-line-hair); background:var(--ui-surface-well); }
+.vt-photo { position:absolute; object-fit:cover; border-radius:var(--ui-radius-sm); outline:1px solid var(--ui-tone-blue); outline-offset:3px; }
+.vt-photo[data-old] { outline-color:var(--ui-tone-amber); }
+.vt-copy { position:absolute; height:4px; border-radius:2px; background:var(--ui-line-divider); }
+.vt-layer { position:absolute; border:1px dashed var(--ui-tone-blue); border-radius:var(--ui-radius-lg); background:color-mix(in srgb,var(--ui-tone-blue) 4%,transparent); }
+.vt-node { position:absolute; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:var(--ui-radius-md); background:var(--ui-surface-sheet); box-shadow:var(--ui-elevation-rise-1); }
+.vt-node > img { width:46px; height:32px; object-fit:cover; border-radius:var(--ui-radius-sm); }
+.vt-node[data-invalid] { outline:1px solid var(--ui-tone-amber); }
+.vt-tree-line { position:absolute; border-left:1px solid var(--ui-line-mark); border-bottom:1px solid var(--ui-line-mark); width:16px; }
+.vt-scope { position:absolute; border:1px solid var(--ui-line-divider); border-radius:var(--ui-radius-xl); }
+.vt-geometry { position:absolute; border:1px solid var(--ui-tone-blue); border-radius:var(--ui-radius-md); }
+.vt-tick { position:absolute; width:1px; height:12px; background:var(--ui-line-mark); }

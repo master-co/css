@@ -1,4 +1,5 @@
 import '../scene.css'
+import './transitions.css'
 import ViewTransitionScene from '~/site/content/guide/view-transitions/components/ViewTransitionScene'
 
 
