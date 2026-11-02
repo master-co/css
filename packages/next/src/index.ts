@@ -685,6 +685,9 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
   const projectDir = process.cwd()
   const resolvedOptions = resolveOptions(options)
   if (!resolvedOptions.enabled) return nextConfig
+  // Turbopack snapshots parent directories before loaders execute. Reserve the
+  // publication root now so a first build can resolve later generated CSS.
+  mkdirSync(join(projectDir, '.master/stylesheets'), { recursive: true })
   const cssManifestLoaderPath = resolveCSSManifestLoaderPath()
   const cssManifestImportLoaderPath = resolveCSSManifestImportLoaderPath()
   const stylesheetLoaderPath = resolveStylesheetLoaderPath()

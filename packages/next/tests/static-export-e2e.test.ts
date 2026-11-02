@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join, relative } from 'node:path'
 import { createServer } from 'node:http'
 import { once } from 'node:events'
@@ -15,6 +15,7 @@ const fixtureDir = join(packageDir, 'e2e/static-export')
 const outDir = join(fixtureDir, 'out')
 
 function buildFixture() {
+  for (const directory of ['.master', '.next', 'out']) rmSync(join(fixtureDir, directory), { recursive: true, force: true })
   try {
     execBunSync(['run', '--cwd', fixtureDir, 'build'], {
       cwd: packageDir,

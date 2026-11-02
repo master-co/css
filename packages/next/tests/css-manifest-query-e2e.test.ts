@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { readdirSync, readFileSync } from 'node:fs'
+import { readdirSync, readFileSync, rmSync } from 'node:fs'
 import { dirname, join, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -11,6 +11,7 @@ const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.
 const fixtureDir = join(packageDir, 'e2e/css-manifest-query')
 
 function buildFixture() {
+  for (const directory of ['.master', '.next-query']) rmSync(join(fixtureDir, directory), { recursive: true, force: true })
   try {
     execBunSync(['run', '--cwd', fixtureDir, 'build'], {
       cwd: packageDir,
