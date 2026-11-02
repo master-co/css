@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 
@@ -37,6 +38,8 @@ document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 <Class2CSS classes={'(font-size:var(--headline-size))'} />
 
 After a static build, run the JavaScript in the browser console. The heading grows without adding a class or generating a new rule. A local custom property needs no `@theme` registration or Master CSS runtime. If a class name itself first exists after startup, use [runtime or progressive rendering](/guide/rendering-modes#comparisons).
+
+<GuideStudy id="stable-dynamic-value" />
 
 ## Prune unused native CSS \{#prune-native-css\}
 
@@ -82,6 +85,8 @@ For a few known external classes in a pruned file, [list them with `@safelist`](
 ### Verify the output \{#verify-pruning\}
 
 Build for production and search the emitted stylesheet: a pruned class such as `.unused` is absent, and `.card` remains. Check a vendor file's classes the same way after enabling `pruneNativeCSS`.
+
+<GuideStudy id="source-and-policy" />
 
 ## Find why a style is missing
 

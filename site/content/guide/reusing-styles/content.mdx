@@ -1,10 +1,11 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
 import ConfiguredExample from '~/site/reference/ConfiguredExample.astro'
 import ReuseIllustration from './components/ReuseIllustration.astro'
 
 Two screens can share a Save button while giving one instance more space. Put the button's shared appearance in a component class, then keep that local adjustment in markup. The same approach applies at smaller scales: name a value when its consumers should change together, or share a piece of CSS when several rules need it.
 
-Complete [Installation](/guide/installation) and the [Syntax Tutorial](/guide/syntax-tutorial) first. Each example below supplies its own CSS and markup. Add its CSS after the existing preset import in your app stylesheet, and put the markup in a source file your integration scans:
+Complete [Installation](/guide/installation) and the [Syntax tutorial](/guide/syntax-tutorial) first. Each example below supplies its own CSS and markup. Add its CSS after the existing preset import in your app stylesheet, and put the markup in a source file your integration scans:
 
 ```css name=app.css
 @import '@master/css';
@@ -166,6 +167,8 @@ When both CSS and markup need the same capability, keep the mixin as its declara
 
 Add this definition to the mixin example's stylesheet. It replaces the earlier standalone utility body: edits to `--action-row` now reach the native components and the utility. Use [Global styles](/guide/global-styles#organize-global-files) to organize these definitions in the app's entry graph.
 
+<GuideStudy id="reuse-ownership" />
+
 ## Share a wrapper with contents
 
 Sometimes the repeated part is the condition around different declarations. A hover-and-keyboard-focus mixin can supply the selector while each caller supplies its styles through `@contents`:
@@ -210,6 +213,8 @@ A shared control size may coordinate several properties. Let a parameter express
 </div>`}
   caption="action-size() uses 2.5rem; action-size(3rem) uses 3rem. Both minimum height and horizontal padding follow the argument. These buttons demonstrate sizing only."
 />
+
+<GuideStudy id="independent-parameters" />
 
 The empty call uses the declared default. Arguments must be known during compilation; use complete class strings when choosing between sizes. A value that changes continuously in JavaScript belongs in a native CSS custom property instead. The [parameter contract](/reference/directives/definitions#dynamic-values) covers accepted types and restrictions.
 

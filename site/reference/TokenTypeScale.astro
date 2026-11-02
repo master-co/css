@@ -1,0 +1,37 @@
+---
+import DocumentDisclosure from '../components/DocumentDisclosure.astro'
+import { foundationTokens, tokenSpecimenProperties } from '../common/foundation-data/tokens'
+import type { SheetGroup } from './sheets'
+
+interface Props {
+  group: SheetGroup
+}
+
+function resolved(value: string) {
+  const name = value.match(/^var\(--([\w-]+)\)$/)?.[1]
+  return (name && foundationTokens.find(token => token.name === name)?.values[0].value) || value
+}
+
+/** Full-sized specimens use the exact lookup values, including text's companions. */
+const { group } = Astro.props
+const shown = ['font-family', 'font-size', 'font-weight', 'text', 'leading', 'tracking'].includes(group.namespace)
+const title = `Compare all ${({ 'font-family': 'font families', 'font-size': 'font sizes', 'font-weight': 'font weights', text: 'text treatments', leading: 'line heights', tracking: 'tracking values' } as Record<string, string>)[group.namespace]}`
+const compact = group.namespace === 'font-size' || group.namespace === 'text'
+const styleOf = (value: SheetGroup['values'][number]): Record<string, string> => group.namespace === 'text'
+  ? { fontSize: resolved(value.cells![0]), lineHeight: value.cells![1], letterSpacing: value.cells![2] }
+  : { [tokenSpecimenProperties[group.namespace]]: resolved(value.value) }
+---
+
+{shown && <DocumentDisclosure title={title}>
+  <div class="ui-tray">
+    {/* Real-size specimens can exceed the viewport; native scrolling must also work with a keyboard. */}
+    <div class="ref-type-scale ui-stage" data-kind={group.namespace} role="region" aria-label={title} tabindex="0">
+      {group.values.map(value => <div class="ref-type-specimen">
+        <code>{value.className}</code>
+        <div class="ref-type-sample" style={styleOf(value)}>
+          {group.namespace === 'leading' ? <Fragment><span>Read this line</span><span>Then the next</span><span>And one more</span></Fragment> : compact ? 'Aa' : 'The shape of a letter'}
+        </div>
+      </div>)}
+    </div>
+  </div>
+</DocumentDisclosure>}

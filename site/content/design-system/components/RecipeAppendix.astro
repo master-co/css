@@ -17,5 +17,5 @@ const recipes = [ProjectStyleRecipes, FoundationRecipes, TypeMotionRecipes, Pain
 
 <div class="grid gap-xs">{recipeGroups.map((group, index) => {
   const Recipe = recipes[index]
-  return <DocumentDisclosure title={group.title}><div class="(scroll-margin-top:6rem)" id={group.id}><Recipe /></div></DocumentDisclosure>
+  return <DocumentDisclosure title={group.title}><div class="(scroll-margin-top:var(--spacing-4xl))" id={group.id}><Recipe /></div></DocumentDisclosure>
 })}</div>

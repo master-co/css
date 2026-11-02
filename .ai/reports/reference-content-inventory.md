@@ -1,92 +1,60 @@
 # Guide and Reference content inventory
 
-Current source inventory for the Master CSS documentation. [Site ownership](../../site/AI.md#guide-and-reference-ownership) defines the content policy; [Reference maintenance](../../site/reference/MAINTENANCE.md) defines generation and validation.
+Audited on 2026-11-02 against the current checkout. [Site ownership](../../site/AI.md#guide-and-reference-ownership) defines policy; [Reference maintenance](../../site/reference/MAINTENANCE.md) owns generation. Counts describe current capabilities, not a page quota.
 
-## Ownership and evidence
+## Content ownership
 
-Guide teaches design and implementation tasks. Reference owns complete token catalogs and Master CSS contracts. Syntax Tutorial teaches class syntax through working examples. Complete collections belong in Reference; Guide selects explicit values from the same data for self-contained lessons.
+Guide teaches choices and implementation tasks. Syntax Tutorial introduces class composition. Reference owns complete names, values, declarations, restrictions and tool effects. Complete collections are read from the preset or public interfaces; Guide selects the values needed by its examples.
 
-| Facts | Source |
+| Question | Reference owner | Guide role |
+| --- | --- | --- |
+| How is a class parsed and ordered? | Declarations, Selectors, Conditions, Cascade layers | Syntax Tutorial and composition examples |
+| Which tokens register classes, and where do values resolve? | Token families, Variables and modes | Theme setup and component scoping |
+| Which media and container names exist? | Named conditions | Responsive design chooses boundaries |
+| How are named queries defined? | Query definitions | Responsive design uses a concrete definition |
+| What values and properties does a preset expose? | Twelve token/family sheets | Layout, colors, typography and motion choose a subset |
+| What does a utility emit? | Grid tracks, Truncation, Screen reader text, Direct values | Working interface composition |
+| What does a stylesheet directive accept or retain? | Six directive contracts | Reusing styles, route delivery, scanning and pruning |
+| What files or source strings are scanned? | Extraction and Scanning directives | Troubleshooting missing CSS |
+| Which tool or import path should I call? | MCP tools, CLI commands, Packages | Installation, AI coding and rendering workflows |
+
+## Current catalog
+
+The generated catalog contains **32 articles**. Category indexes, locale copies, Markdown/text copies and navigation-only URLs are excluded. Every article has an authored explanatory figure with light/dark variants, editable source and a portable text equivalent. Integration Guides remain exempt from the article-image requirement.
+
+All article paths below are relative to `/reference/`.
+
+| Group | Count | Paths |
+| --- | ---: | --- |
+| Syntax | 7 | `rules/declarations`, `rules/selectors`, `rules/conditions`, `rules/modes`, `rules/layers`, `rules/extraction`, `rules/named-conditions` |
+| Tokens | 12 | `tokens/families`, `tokens/color`, `tokens/color-roles`, `tokens/spacing`, `tokens/container`, `tokens/radius`, `tokens/shadow`, `tokens/font`, `tokens/text`, `tokens/leading`, `tokens/tracking`, `tokens/motion` |
+| Utilities | 4 | `grid-tracks`, `truncation`, `sr-only`, `direct-values` |
+| Directives | 6 | `directives/imports`, `directives/theme`, `directives/queries`, `directives/definitions`, `directives/scanning`, `directives/pruning` |
+| Tools and packages | 3 | `tools/mcp`, `tools/cli`, `packages` |
+
+The public `/reference` index, sidebar, search and `/reference.md` use the same catalog. The index supports category and alphabetical views. English and Traditional Chinese routes share explicit English body fallback. Headings and navigation use “and” rather than ampersands; syntax retains native `&` where required.
+
+## Consolidation decisions
+
+| Earlier split | Current owner and reason |
 | --- | --- |
-| Catalog and public routes | [reference/build.ts](../../site/reference/build.ts) and generated `site/.generated/reference.json` |
-| 118 token families, 100 direct-value functions, 292 fixed utilities and 7 recipes | [utilities.css](../../packages/preset/src/utilities.css) |
-| Family capabilities, prefixes and namespaces | Rust analysis exposed through language/tooling `tokenFamilies()` at site preparation time |
-| Token values, scopes and dependencies | [theme.css](../../packages/preset/src/theme.css) and the compiled preset manifest |
-| Shared Guide and Reference facts | [foundation data](../../site/common/foundation-data/tokens.ts) |
-| Public tool and package contracts | [tool contracts](../../site/reference/tool-contracts.ts), [package contracts](../../site/reference/package-contracts.ts) and API census |
+| Separate grid columns, rows and span pages | Grid tracks compares parent track creation with child spans and retains all four functions. |
+| Line clamp alone | Truncation compares one-line and multiline clipping and explains access to the complete text. |
+| Separate font family, size and weight pages | Font presents the three independent namespaces behind one prefix and keeps the full scales. |
+| Separate animation, duration and easing pages | Motion keeps every animation, duration and easing specimen, including justified playback controls. |
+| Separate line, surface and text color pages | Color roles groups semantic aliases while Color palette owns raw hues and steps. |
+| Breakpoints treated as token values | Named conditions separates viewport media and container registries from dimensional tokens. |
+| Theme also held queries, keyframes and wrappers | Query definitions owns named query expansion; Native CSS pruning owns keyframe policy; Utilities and mixins owns wrappers. |
+| Compiler-host APIs inside Imports | Packages owns source preservation and shared resource context; Imports owns stylesheet authoring and delivery boundaries. |
+| Repeated property pages and fixed-value lists | Declarations, Token families and Direct values provide complete generated lookup instead of duplicated mini-articles. |
 
-The generated catalog contains 44 content documents. Counts exclude category indexes, locale copies, Markdown/text copies and navigation-only URLs. Capability coverage determines the catalog; these counts are not a quota.
+Removed routes have no redirects. Incoming authored links, search entries and exports point directly to current owners. Reference title conjunctions, including Declarations and values and Variables and modes, follow the shared writing policy.
 
-| Group | Documents |
-| --- | ---: |
-| Syntax and execution rules | 6 |
-| Token families, values and presets | 20 |
-| Preset recipes | 7 |
-| Stylesheet directives | 8 |
-| CLI catalog | 1 |
-| MCP catalog | 1 |
-| Package source catalog | 1 |
+## Evidence and maintenance
 
-## Reference contracts
-
-All paths below are relative to `/reference/`.
-
-| Rule path | Contract |
-| --- | --- |
-| `rules/declarations` | Direct declarations, encoding, functions, units and importance |
-| `rules/selectors` | Class/selector composition, target identity and descendant encoding |
-| `rules/conditions` | Media, container and named conditions |
-| `rules/modes` | Variables, namespaces, modes and resolution |
-| `rules/layers` | Layer ownership and ordering |
-| `rules/extraction` | Sources, complete classes and candidate boundaries |
-
-Token documents live under `tokens/`:
-
-| Group | Slugs |
-| --- | --- |
-| Family lookup | `families` |
-| Colors | `color`, `color-line`, `color-surface`, `color-text` |
-| Space and appearance | `spacing`, `container`, `radius`, `shadow` |
-| Typography | `font-family`, `font-size`, `font-weight`, `leading`, `tracking`, `text` |
-| Motion | `animate`, `duration`, `easing` |
-| Ordering | `order` |
-| Named media conditions | `breakpoints` |
-
-The family index includes all loaded families, including namespaces with no token values. Prefixes, native properties and namespaces come from Rust analysis. Color role names are part of token keys within the color namespace. `text` documents primary tokens and typography companions. `animate` documents complete shorthand values and resource behavior. `container` documents dimensions; explicit container-query thresholds have independent native values.
-
-| Recipe path | Utility |
-| --- | --- |
-| `screen-readers` | `sr-only` |
-| `grid-columns` | `grid-cols(n)` |
-| `grid-rows` | `grid-rows(n)` |
-| `grid-column` | `grid-col-span(n)` |
-| `grid-row` | `grid-row-span(n)` |
-| `clamp-lines` | `clamp-lines(n)` |
-| `text-size` | Named `text-*` classes |
-
-Recipe documents include purpose, executable examples, parameter contracts, preset source and complete generated CSS. Each scene uses the public compiler/engine output.
-
-Directive documents live under `directives/`: `entry`, `reference`, `theme`, `definitions`, `source`, `candidates`, `variant`, and `preserve`. Their formal source is the Guide directive contract. The three tool/package catalogs identify public names, purposes, file effects and source destinations. Complete signatures and schemas remain in GitHub and installed tools.
-
-## Design Foundations
-
-| Guide | Teaching task |
-| --- | --- |
-| `spacing` | Component density, grouping and page rhythm |
-| `sizing` | Fluid/fixed dimensions, constraints and width caps |
-| `breakpoints` | Choosing viewport thresholds for content |
-| `containers` | Responsive components and named query containers |
-| `corner-radius` | Shape language, nested surfaces, pills and circles |
-| `colors` | Palettes, roles, themes and readable combinations |
-| `elevation` | Surface relationships, shadows and state hierarchy |
-| `typography` | Type hierarchy, treatments and independent settings |
-| `motion` | Feedback, entrances and reduced motion |
-| `layout-system` | Gutters, columns, regions and responsive composition |
-
-`/guide/responsive-design` connects viewport and container strategies. Guide HTML, search and portable Markdown use identical selected keys. Design advice is distinct from executable token semantics.
-
-## Maintenance and validation
-
-Update authored sources and shared facts, then run `prepare-app` to generate routes, search and per-page Markdown. Never edit generated catalogs directly. Keep consumer tables tied to the effective manifest and native declarations explicit. Project themes and mixins provide project-specific tokens and families.
-
-Check that every family and recipe appears in Reference, examples reproduce complete CSS, all internal links resolve, and portable output uses the same facts as the visible page. Validate Reference, documentation examples, site lint/type-check, CSS contracts and AI context. Browser checks cover changes to layout, interactive specimens, responsive behavior and animation.
+- [`reference/build.ts`](../../site/reference/build.ts) builds contracts and publishes current routes, search, Markdown and machine-readable indexes.
+- [`utilities.css`](../../packages/preset/src/utilities.css), the compiled preset and public `tokenFamilies()` metadata supply definitions and mappings. Counts are validated against source instead of being repeated in prose.
+- [`sheet-editorial.ts`](../../site/reference/sheet-editorial.ts) owns lookup explanations, constraints and working examples. Full typography, surface and motion specimens use the same values as their tables.
+- [`contract.mdx`](../../site/content/guide/directives/contract.mdx) remains the formal directive source. Every section has exactly one published owner, enforced during generation. Imports owns asset delivery boundaries; Packages owns custom compiler publication; Vite Guide owns stylesheet request workflows. Unpublished appendices were removed after their useful contracts were rehomed.
+- [`tool-contracts.ts`](../../site/reference/tool-contracts.ts) reads tool registrations and CLI help. [`package-contracts.ts`](../../site/reference/package-contracts.ts) reads public package exports and the API census, currently covering 20 public package entries.
+- [`VALIDATION.md`](../../site/reference/VALIDATION.md) records current checks and limitations. Technical correctness, visual review and browser integration are separate acceptance gates.

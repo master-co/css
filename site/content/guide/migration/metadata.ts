@@ -5,7 +5,7 @@ const metadata = define({
     absolute: 'Migrating to Master CSS'
   },
   description: 'Convert one component or route, verify the screens sharing its styles, and remove old dependencies when their consumers are gone.',
-  category: 'Getting Started',
+  category: 'Getting started',
   other: {
     subject: 'Migration'
   },

@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import ColorIllustration from './components/ColorIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
@@ -36,13 +37,15 @@ The role is part of the color key: `bg-surface-raised` reads `--color-surface-ra
 
 ---
 
+<GuideStudy id="palette-or-role" />
+
 ## Fixed and adaptive hue aliases \{#mode-aware-hue-aliases\}
 
 A hue alias such as `fg-yellow` is a fixed swatch with the same value in every mode. A text hue alias such as `fg-text-yellow` chooses a foreground step intended for text in each mode. Check its contrast on the actual background; an adaptive alias cannot guarantee every pairing.
 
 ```html
 <!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
-<svg class="fg-yellow" aria-hidden="true">…</svg>
+<svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
 <p class="fg-text-yellow">Pending review</p>
 ```
 
@@ -103,6 +106,8 @@ The `@light` and `@dark` suffixes are `prefers-color-scheme` media queries. A ma
 ```
 
 The mixin also matches inside a nested light region, because it tests the attribute rather than the used color scheme. Prefer adaptive tokens; see [Variables and modes](/reference/rules/modes) for scope and resolution.
+
+<GuideStudy id="local-color-scheme" />
 
 ## Check the roles in context
 

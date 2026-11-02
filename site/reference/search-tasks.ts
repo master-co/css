@@ -11,6 +11,7 @@ export const searchTasks = [
   ['specificity', 'rules/selectors'], ['selector target', 'rules/selectors'],
   ['@md', 'rules/named-conditions'], ['@container(--md)', 'rules/named-conditions'], ['breakpoints', 'rules/named-conditions'],
   ['Variables and modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],
+  ['Publish the complete asset set', 'directives/imports'], ['compileManifestFileSync', 'packages'],
   ['樣式沒生成', 'rules/extraction'], ['clamp-lines', 'truncation'],
   ['master-css generate', 'tools/cli'], ['master-css lint', 'tools/cli'],
   ['master-css inspect', 'tools/cli'], ['mastercss_inspect_class', 'tools/mcp'],

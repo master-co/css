@@ -10,7 +10,10 @@ import SheetNote from './SheetNote.astro'
 import SheetTable from './SheetTable.astro'
 import SheetValue from './SheetValue.astro'
 import InlineText from './InlineText.astro'
-import ReferenceIllustration from './ReferenceIllustration.astro'
+import SheetExplanation from './SheetExplanation.astro'
+import TokenSurfaceScale from './TokenSurfaceScale.astro'
+import TokenTypeScale from './TokenTypeScale.astro'
+import TokenMotionScale from './TokenMotionScale.astro'
 
 interface Props {
   sheet: TokenSheet
@@ -65,15 +68,12 @@ const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.f
           })}
       </tr>)}
     </SheetTable>}
+  <TokenSurfaceScale group={group} />
+  <TokenTypeScale group={group} />
+  <TokenMotionScale group={group} />
 </Fragment>)}
 
-{sheet.explanation && <Fragment>
-  <h2 id={sheet.explanation.id}>{sheet.explanation.title}</h2>
-  <p><InlineText text={sheet.explanation.paragraphs[0]} /></p>
-  <ReferenceIllustration id={sheet.explanation.illustration} />
-  {sheet.explanation.paragraphs.slice(1).map(paragraph => <p><InlineText text={paragraph} /></p>)}
-  {!!sheet.explanation.links?.length && <p class="ref-links">See {sheet.explanation.links.map((link, index) => <Fragment>{index ? ' and ' : ''}<Link href={link.href}>{link.label}</Link></Fragment>)}.</p>}
-</Fragment>}
+<SheetExplanation explanation={sheet.explanation} />
 
 <h2 id="usage">Usage</h2>
 <SheetExampleBlock example={sheet.usage} />

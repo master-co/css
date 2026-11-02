@@ -1,7 +1,7 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Authoring Packages',
+  title: 'Authoring packages',
   description: 'Publish shared CSS source, override public tokens in each app, and verify the packed package in a production consumer.',
   category: 'Authoring',
   order: 4,

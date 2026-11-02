@@ -16,6 +16,6 @@ if (p1 && p2) {
 }
 ---
 
-{p1 && p2 && <small class="(font-weight:460) text-success">↓ {
+{p1 && p2 && <small class="(font-weight:var(--ui-weight-medium)) text-success">↓ {
   Math.round(Math.abs((p1.length - p2.length) / p1.length) * 100)
 }% code</small>}

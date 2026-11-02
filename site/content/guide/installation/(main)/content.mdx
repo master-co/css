@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import StepSection from '~/site/docs-shell/components/StepSection.astro'
 import Step from '~/site/docs-shell/components/Step.astro'
 import DocumentDisclosure from '~/site/components/DocumentDisclosure.astro'
@@ -11,7 +12,7 @@ import dark from '~/site/assets/images/integrations/installation/cover-dark.webp
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS with Astro, Vite, Nuxt, Svelte, Next.js, Angular, Lit, webpack and Storybook" />
 
-Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, [CDN](#cdn) runs in the browser without a build, and [CLI](#cli) generates a stylesheet for projects without a bundler.
+Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, and [CLI](#cli) generates a stylesheet for projects without a bundler. The hosted [CDN setup](#cdn) is not available for the current version.
 
 ## Integrations \{#integrations\}
 
@@ -78,6 +79,8 @@ For manual setup or framework-specific files, use the [integration guides](/guid
     You should see text inside a small bordered surface. Change `p-md` to `p-lg` and save: its padding should grow from `1rem` to `1.5rem` on all four sides. This checks that changes in your source reach the page, beyond the installer completing successfully.
   </Step>
 </StepSection>
+
+<GuideStudy id="installation-observation" />
 
 ## CDN \{#cdn\}
 
@@ -153,6 +156,6 @@ Load the deployed page and check that every stylesheet request succeeds. The par
 
 Check that the page renders the markup you edited and loads the app stylesheet. Then check that the build integration is enabled and scans that source file. Keep class names complete, as in `p-lg`; constructing them from fragments such as `p-${size}` prevents a static scan from seeing the final class.
 
-If the installer reports an unrecognized framework or incomplete setup, follow the matching [integration guide](/guide/installation#integrations) or the [CLI guide](/guide/installation#cli). For files outside the normal application scope, see [Scanning and Pruning](/guide/scanning-and-pruning).
+If the installer reports an unrecognized framework or incomplete setup, follow the matching [integration guide](/guide/installation#integrations) or the [CLI guide](/guide/installation#cli). For files outside the normal application scope, see [Scanning and pruning](/guide/scanning-and-pruning).
 
-Once the spacing change works, continue with the [Syntax Tutorial](/guide/syntax-tutorial) to build a card with interaction states and responsive conditions.
+Once the spacing change works, continue with the [Syntax tutorial](/guide/syntax-tutorial) to build a card with interaction states and responsive conditions.

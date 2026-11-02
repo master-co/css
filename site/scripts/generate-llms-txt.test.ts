@@ -13,7 +13,7 @@ import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content
 import { toolingExampleMarkdown, toolingOptionsMarkdown } from '../utils/tooling-guide-data'
 import { packageTreeMarkdown } from '../utils/package-trees'
 import { authoringExampleMarkdown } from '../utils/authoring-examples'
-import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
+import { deliveryBlogContent, deliveryBlogSlugs, deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
 import { deliveryFlowMarkdown } from '../utils/delivery-flows'
 import { firstPaintMarkdown, resourceWaterfallsMarkdown } from '../utils/first-paint-examples'
 import assert from 'node:assert/strict'
@@ -208,7 +208,7 @@ test('Guide overview keeps its category anchors and publishes the same entries t
   const markdown = guideOverviewMarkdown(categories)
   const nodes = extractSearchNodesFromMdx(markdown)
   assert.deepEqual(nodes.filter(node => node.tag === 'h2').map(node => node.id), [
-    'getting-started', 'agentic-workflows', 'authoring', 'fundamentals', 'design-foundations', 'build--delivery'
+    'getting-started', 'agentic-workflows', 'authoring', 'fundamentals', 'design-foundations', 'build-and-delivery'
   ])
   for (const section of sections) for (const entry of section.entries) assert.ok(markdown.includes(`](${entry.url})`), entry.url)
   assert.ok(markdown.includes('<a id="syntax-tutorial"></a>'))
@@ -528,7 +528,10 @@ test('directive references export every native CSS example and setting to both l
   const { renderDocumentMarkdown } = await import('../reference/build')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'directive')
-  assert.equal(docs.length, 5)
+  assert.deepEqual(docs.map((doc: any) => doc.id), [
+    'directives/imports', 'directives/theme', 'directives/queries',
+    'directives/definitions', 'directives/scanning', 'directives/pruning'
+  ])
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {
@@ -725,4 +728,40 @@ test('delivery payload charts count complete responses once and omit absent asse
   assert.match(table, /Response assets.*Inline CSS \(in HTML\).*Hydration \(in HTML\)/)
   assert.match(table, /Docs \| Master CSS progressive \| 36\.1 kB/)
   assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.1 kB/)
+})
+
+test('all Guide studies retain their full lesson in search and Markdown', async () => {
+  const { guideStudies, guideStudyMarkdown } = await import('../content/guide/studies')
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const pages = await loadPages(path.join(root, 'content'))
+  const search = JSON.parse(await readFile(path.join(root, 'public/search/en.json'), 'utf8'))
+  for (const [id, figure] of Object.entries(guideStudies)) {
+    const page = pages.find(page => page.url.startsWith('/en/guide/') && page.body.includes(guideStudyMarkdown(id)))
+    assert.ok(page, `${id}: portable lesson`)
+    const entry = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === page.url.replace(/^\/(en|tw)(?=\/)/, ''))
+    assert.ok(entry, `${id}: searchable page`)
+    assert.ok(entry.nodes.some((node: { text: string }) => node.text.includes(figure.alt)), `${id}: full description in search`)
+    assert.doesNotMatch(page.body, /<GuideStudy\b/)
+  }
+  assert.throws(() => guideStudyMarkdown('missing-study'), /Unknown Guide study/)
+})
+
+
+test('delivery blogs preserve the argument, examples and figure descriptions in search and Markdown', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const pages = await loadPages(path.join(root, 'content'))
+  for (const slug of deliveryBlogSlugs) {
+    const content = await deliveryBlogContent(root, slug)
+    assert.deepEqual(content.notes, [])
+    assert.equal(pages.find(page => page.url === `/en/blog/${slug}`)?.body, content.markdown)
+    const source = await readFile(path.join(root, `content/blog/${slug}/content.mdx`), 'utf8')
+    const fences = deliveryFences(content.markdown).map(fence => fence.text.trim())
+    for (const fence of deliveryFences(source)) assert.ok(fences.includes(fence.text.trim()), `${slug}: ${fence.name}`)
+    for (const match of source.matchAll(/<DeliveryFlow name="([^"]+)"/g)) assert.ok(content.markdown.includes(deliveryFlowMarkdown(match[1])))
+    for (const locale of ['en', 'tw']) {
+      const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+      const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === `/blog/${slug}`)
+      assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
+    }
+  }
 })

@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import PackageIllustration from './components/PackageIllustration.astro'
 import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample.astro'
 
@@ -102,6 +103,8 @@ Keep app-specific choices after the package import. For example, this app makes 
 ```
 
 `.btn` still reads `var(--spacing-action-x)`. The app changes its horizontal padding from 1rem to 1.5rem; other apps keep their own values. Document the token names, component selectors and utility names consumers may rely on. Renaming one of those public names affects their markup or stylesheets, even when the package contains no JavaScript.
+
+<GuideStudy id="consumer-override" />
 
 ## Keep app policy in the app
 A reusable authoring package should not decide how one application scans, filters, or ships its source files.

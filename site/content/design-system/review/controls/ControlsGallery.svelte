@@ -30,7 +30,7 @@
   </div>
 </Demo>
 <Demo title="Choices and fields" description="Selected segments rise inside a sunken track; fields float back to the sheet on focus" padding="sm">
-  <div class="grid gap-lg w-full (max-width:28rem) py-lg">
+  <div class="grid gap-lg w-full max-w-md py-lg">
     <div class="w-fit ui-segmented" role="group" aria-label="View">
       {#each ['Preview', 'Code', 'Output'] as name (name)}
         <button type="button" aria-pressed={view === name} onclick={() => view = name}>{name}</button>

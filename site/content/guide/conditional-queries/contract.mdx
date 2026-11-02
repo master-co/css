@@ -119,11 +119,16 @@ Size queries measure an eligible ancestor query container. Establish that contai
 
 ```html
 <aside class="(container-name:card) container-inline">
-  <div class="grid-cols(2)@container(card|width>=40rem)">Card content</div>
+  <div class="grid-cols(2)@container(card|width>=40rem)">
+    <div>First item</div>
+    <div>Second item</div>
+  </div>
 </aside>
 ```
 
 <Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+
+The recipe sets both `display: grid` and two equal columns while the condition matches. Below the threshold, it supplies neither declaration, so these two block children stay stacked in normal flow. The container's own width is established by its surrounding layout.
 
 A custom-property style query checks the value on an ancestor container; it does not need `container-inline`:
 
@@ -149,7 +154,7 @@ Each `--max-*` name is the negation of its minimum-width condition. For example,
 
 <Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
 
-Define or replace names with [`@custom-container`](/reference/directives/theme#custom-container). An undefined name is an error.
+Define or replace names with [`@custom-container`](/reference/directives/queries#custom-container). An undefined name is an error.
 
 ## Queries that belong in CSS \{#queries-in-css\}
 

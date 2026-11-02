@@ -140,3 +140,18 @@ After `npm run build` and `npm run start`, check a pre-rendered route's response
 </DocumentDisclosure>
 
 If a Turbopack production build in runtime or progressive mode reports that a generated `.master/stylesheets/...-entry.css` cannot be resolved, check the Webpack build with `npx next build --webpack` and verify the resulting page with `npm run start` before deployment. A successful Webpack build does not verify the Turbopack path.
+
+## Keep an existing deployment adapter \{#adapter-composition\}
+
+If the project already uses Next.js [`adapterPath`](https://nextjs.org/docs/app/api-reference/config/next-config-js/adapterPath), keep it in `nextConfig` before passing that configuration to `withMasterCSS()`. The integration composes the configured adapter with its own build adapter. It also recognizes a deployment adapter supplied through `NEXT_ADAPTER_PATH` when no explicit external adapter path is configured.
+
+Master CSS runs first by default. An external adapter that packages the completed HTML can then consume the generated CSS and page manifest references. Use `adapterOrder: 'external-first'` only when the other adapter must process the build outputs first. Change the existing configuration export, retaining the project's options and chosen mode:
+
+```ts
+export default async () => withMasterCSS(nextConfig, {
+  mode: 'progressive',
+  adapterOrder: 'external-first'
+})
+```
+
+Run the production build with both adapters enabled. Inspect a pre-rendered route in the final deployment output, then its served response: `style#master-css` must survive, and its referenced hydration manifest must load from the deployed URL. Test a dynamic route separately; composing adapters does not add request-time CSS rendering to Master CSS.

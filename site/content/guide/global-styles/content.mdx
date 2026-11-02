@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
 import GlobalIllustration from './components/GlobalIllustration.astro'
 
@@ -49,6 +50,8 @@ Use native selectors for elements that should receive a default without an extra
 The preset base styles already apply the font tokens to the document. To choose a typeface, change those tokens as described in [Typography](/guide/typography#site-typeface). See [Cascade layers](/guide/cascade-layers) when declarations compete; loading a rule later does not move it into a stronger layer.
 
 ---
+
+<GuideStudy id="defaults-inheritance" />
 
 ## Decide what belongs in the shared graph \{#shared-vocabulary\}
 
@@ -129,6 +132,6 @@ Put these definitions after the existing Master CSS import, or import a `utiliti
 
 ## Keep local delivery local \{#organize-global-files\}
 
-Keep the app entry focused on styles shared across pages. A route stylesheet can import definition context with `@reference` while delivering its own native rules through that route's loader. Referencing a file does not deliver the referenced native CSS.
+Keep the app entry focused on styles shared across pages. The integration supplies project definitions to a route stylesheet without another full Master CSS import. Use `@reference` for additional definitions outside that graph; it does not deliver the referenced native CSS. The route's loader still owns delivery of its local rules.
 
 Use [Route-level styles](/guide/route-level-styles) for that setup and [Monorepo](/guide/monorepo) when separate apps need separate entry graphs. After splitting a global file, check a page that consumes its definitions and one that does not: shared styles should still arrive through the app entry, and route-only rules should retain their local owner.

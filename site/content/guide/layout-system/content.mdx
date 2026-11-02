@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LayoutIllustration from './components/LayoutIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import DemoPageViewport from '~/site/components/demo/DemoPageViewport.astro'
@@ -70,6 +71,8 @@ Container tokens set lengths only; they do not move a container query threshold.
 
 ---
 
+<GuideStudy id="width-cap-growth" />
+
 ## Start with a page wrapper \{#start-with-a-page-container\}
 
 Let the wrapper fill its parent, cap it with a container size, center it and give its content side gutters from the spacing scale:
@@ -129,6 +132,8 @@ For fixed or mixed tracks, write the native `grid-template-columns` value. Separ
 <Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
 
 `min-w(0)` lets the main region shrink below the width of its content. Keep equal columns and spans for ordinary content; use explicit tracks for app shells and split panes.
+
+<GuideStudy id="grid-long-content" />
 
 ## Verify the layout with longer content
 

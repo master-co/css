@@ -13,7 +13,7 @@ interface Props {
 const { class: className, head, modes, keyWidth } = Astro.props
 ---
 
-<div class:list={['ref-table ui-table', className]} data-modes={modes ? 'true' : undefined} style={keyWidth ? { '--ref-key-width': keyWidth } : undefined}>
+<div role="region" aria-label={head.join(', ')} tabindex="0" class:list={['ref-table ui-table', className]} data-columns={head.length} data-modes={modes ? 'true' : undefined} style={keyWidth ? { '--ref-key-width': keyWidth } : undefined}>
   <table>
     <thead><tr>{head.map(label => <th scope="col">{label}</th>)}</tr></thead>
     <tbody><slot /></tbody>

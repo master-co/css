@@ -54,7 +54,7 @@ export interface ReferenceCatalog {
 export const referenceSections: { id: string; title: string; titleTW: string; kinds: ReferenceKind[]; description: string; descriptionTW: string }[] = [
   { id: 'rules', title: 'Syntax', titleTW: '語法', kinds: ['rule'], description: 'How a class names its declarations, selectors, conditions and layer.', descriptionTW: 'class 如何寫出宣告、選擇器、條件與 layer。' },
   { id: 'tokens', title: 'Tokens', titleTW: 'Tokens', kinds: ['tokens'], description: 'Every preset value, the classes that read it and how to change it.', descriptionTW: '每個 preset 值、讀取它的 class，以及如何調整。' },
-  { id: 'utilities', title: 'Recipes', titleTW: '配方', kinds: ['utility'], description: 'Preset classes that write several declarations or take a number.', descriptionTW: '一次寫出多條宣告或接收數值的 preset class。' },
-  { id: 'directives', title: 'Directives', titleTW: '指令', kinds: ['directive'], description: 'Stylesheet at-rules for imports, themes, definitions, scanning and pruning.', descriptionTW: '用於匯入、主題、定義、掃描與修剪的樣式表 at-rule。' },
+  { id: 'utilities', title: 'Utilities', titleTW: 'Utilities', kinds: ['utility'], description: 'Preset recipes and numeric functions, with their declarations and constraints.', descriptionTW: '預設組合樣式與數值函式，以及它們的宣告和使用限制。' },
+  { id: 'directives', title: 'Directives', titleTW: '指令', kinds: ['directive'], description: 'Stylesheet at-rules for imports, tokens, query definitions, reuse, scanning and pruning.', descriptionTW: '用於匯入、tokens、查詢定義、重用、掃描與修剪的樣式表 at-rule。' },
   { id: 'tools', title: 'Tools', titleTW: '工具', kinds: ['tool', 'package'], description: 'The CLI, the MCP server and the public packages.', descriptionTW: 'CLI、MCP server 與公開套件。' }
 ]

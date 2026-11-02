@@ -19,7 +19,7 @@ const html = '<div class="grid-cols(3) gap-md p-md">\n  <div>01</div>\n  <div>02
     <Demo title="Padding around the group, gap between items" background="hatch" caption="The hatch shows p-md around the grid and gap-md between its children.">
       <DemoControls slot="controls" label="Gap" variant="segmented"><button type="button" aria-pressed="false">sm</button><button type="button" aria-pressed="true">md</button><button type="button" aria-pressed="false">lg</button></DemoControls>
       <Fragment slot="source"><Code lang="html" code={html} /><DemoGeneratedCSS><Code lang="css" beautify code={'.grid-cols\\(3\\) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) }\n.gap-md { gap: var(--spacing-md) }\n.p-md { padding: var(--spacing-md) }'} /></DemoGeneratedCSS></Fragment>
-      <div class="grid-cols(3) gap-md w-full (max-width:20rem) p-md r-lg bg-surface-raised"><DemoItem>01</DemoItem><DemoItem>02</DemoItem><DemoItem>03</DemoItem></div>
+      <div class="grid-cols(3) gap-md w-full max-w-xs p-md r-lg bg-surface-raised"><DemoItem>01</DemoItem><DemoItem>02</DemoItem><DemoItem>03</DemoItem></div>
     </Demo>
   </ComponentSection>
   <ComponentSection id="stage-only" title="Stage only" description="Without a head or source the tray is a quiet frame around one specimen; a lone caption names the figure.">

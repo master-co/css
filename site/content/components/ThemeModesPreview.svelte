@@ -26,7 +26,7 @@
 {#snippet shopScreen(mode: 'light' | 'dark')}
   <div class={['home-theme-screen', mode]}>
     <div class="flex flex-col gap-md p-lg r-3xl bg-surface-base fg-text-strong">
-      <div class="flex items-center justify-between (height:2rem)">
+      <div class="flex items-center justify-between (height:var(--spacing-xl))">
         <IconChevronLeft size={18} stroke={1.75} />
         <span class="font-sm font-medium">{t('Shop')}</span>
         <span class="relative grid">

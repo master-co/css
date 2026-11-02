@@ -5,7 +5,6 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
 import { configuredExampleCSS, configuredMarkupClasses } from '../reference/configured-example'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import { deliveryFences, deliveryFixture } from '../tests/delivery-examples'
@@ -60,50 +59,46 @@ test('Next.js Blog Badge renders both displayed variants with valid foreground a
   }
 })
 
-test('Vite Blog installer and authored files build a static stylesheet', () => {
+test('Vite Blog source covers both static states while empty HTML supplies no pre-rendered button rules', () => {
   const source = article('blog/bootstrapping-master-css-with-vite')
-  const command = deliveryFences(source).find(fence => fence.language === 'bash')!.text.trim()
-  assert.equal(command, 'npm create @master/css@rc -- --framework vite --yes')
   const root = mkdtempSync(join(tmpdir(), 'master-writing-vite-'))
   try {
     const write = (name: string, text: string) => {
       mkdirSync(dirname(join(root, name)), { recursive: true })
       writeFileSync(join(root, name), text)
     }
-    write('package.json', JSON.stringify({ type: 'module', devDependencies: { vite: '*' }, scripts: { dev: 'vite', build: 'vite build' } }))
-    for (const name of ['src/style.css', 'src/main.js', 'index.html']) write(name, namedFence(source, name))
-    // Run the official setup API using installed workspace packages instead of downloading the registry release.
-    const plan = planMasterCSSSetup({ root, framework: 'vite', install: false })
-    assert.equal(plan.framework, 'vite')
-    applyMasterCSSSetupPlan(plan, { install: false })
-    assert.match(readFileSync(join(root, 'vite.config.js'), 'utf8'), /masterCSS\(\)/)
-    assert.equal(readFileSync(join(root, 'src/main.js'), 'utf8'), namedFence(source, 'src/main.js'))
-    assert.equal(readFileSync(join(root, 'src/style.css'), 'utf8'), namedFence(source, 'src/style.css'))
-    // Exercise the configuration readers see, while retaining the installer's package and entry setup.
-    write('vite.config.js', namedFence(source, 'vite.config.js'))
+    write('package.json', JSON.stringify({ type: 'module', devDependencies: { vite: '*' } }))
+    for (const name of ['src/main.js', 'index.html']) write(name, namedFence(source, name))
+    // The article assumes the linked integration guide's loaded preset entry.
+    write('src/style.css', "@import '@master/css';")
     mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
     for (const name of ['css', 'css-vite', 'css-runtime']) {
       symlinkSync(fileURLToPath(new URL(`node_modules/@master/${name}`, rootURL)), join(root, 'node_modules/@master', name), 'dir')
     }
     symlinkSync(fileURLToPath(new URL('node_modules/vite', rootURL)), join(root, 'node_modules/vite'), 'dir')
-    const built = spawnSync(process.execPath, [fileURLToPath(new URL('node_modules/vite/bin/vite.js', rootURL)), 'build'], { cwd: root, encoding: 'utf8', timeout: 30000 })
-    assert.equal(built.status, 0, built.stderr || built.stdout)
-    const html = readFileSync(join(root, 'dist/index.html'), 'utf8')
-    const stylesheets = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1])
-    assert.ok(stylesheets.length, 'Production HTML must load the CSS without JavaScript')
-    const visited = new Set<string>()
-    const readCSS = (file: string): string => {
-      if (visited.has(file)) return ''
-      visited.add(file)
-      const text = readFileSync(file, 'utf8')
-      const imports = [...text.matchAll(/@import\s+["']([^"']+)["']/g)]
-      return text + imports.map(match => readCSS(resolve(dirname(file), match[1]))).join('\n')
+    for (const mode of ['static', 'pre-render']) {
+      write('vite.config.js', `import masterCSS from '@master/css-vite'; export default { plugins: [masterCSS({ mode: '${mode}' })] }`)
+      const built = spawnSync(process.execPath, [fileURLToPath(new URL('node_modules/vite/bin/vite.js', rootURL)), 'build'], { cwd: root, encoding: 'utf8', timeout: 30000 })
+      assert.equal(built.status, 0, built.stderr || built.stdout)
+      const html = readFileSync(join(root, 'dist/index.html'), 'utf8')
+      assert.match(html, /<div id="app"><\/div>/)
+      assert.doesNotMatch(html, /<button/)
+      const stylesheets = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1])
+      const visited = new Set<string>()
+      const readCSS = (file: string): string => {
+        if (visited.has(file)) return ''
+        visited.add(file)
+        const text = readFileSync(file, 'utf8')
+        const imports = [...text.matchAll(/@import\s+["']([^"']+)["']/g)]
+        return text + imports.map(match => readCSS(resolve(dirname(file), match[1]))).join('\n')
+      }
+      const css = stylesheets.map(href => readCSS(join(root, 'dist', href))).join('\n')
+        + [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(match => match[1]).join('\n')
+      for (const tone of ['blue', 'neutral']) {
+        assert.equal(css.includes(`.bg-${tone}{`), mode === 'static', `${mode}: ${tone} coverage`)
+      }
+      const assets = readdirSync(join(root, 'dist/assets'))
+      assert.ok(!assets.some(name => /\.wasm$|master-css-program|master-css-manifest/.test(name)))
     }
-    const css = stylesheets.map(href => readCSS(join(root, 'dist', href))).join('\n')
-    for (const declaration of ['font-style:italic', 'font-size:var(--font-size-5xl)', 'font-weight:var(--font-weight-heavy)', 'color:var(--color-text-neutral)', 'margin:var(--spacing-2xl)']) {
-      assert.ok(css.includes(declaration), `Missing ${declaration}: ${css}`)
-    }
-    const assets = readdirSync(join(root, 'dist/assets'))
-    assert.ok(!assets.some(name => /\.wasm$|master-css-program|master-css-manifest/.test(name)))
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

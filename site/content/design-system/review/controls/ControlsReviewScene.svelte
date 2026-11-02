@@ -25,9 +25,9 @@
     <!-- Keyboard focus enables native horizontal scrolling. -->
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div class="overflow-x-auto w-full p(4)" role="region" aria-label="Alignment preview" tabindex="0" data-preview-scroll="">
-      <div class={`flex gap-sm (min-width:18rem) (height:10rem) ${alignment}`}>
+      <div class={`flex gap-sm (height:10rem) (min-width:18rem) ${alignment}`}>
         <DemoItem tone="blue" class="(flex:1)">01</DemoItem>
-        <DemoItem tone="violet" class="(flex:1) (height:6rem)">02</DemoItem>
+        <DemoItem tone="violet" class="(flex:1) (height:var(--spacing-4xl))">02</DemoItem>
         <DemoItem class="(flex:1)">03</DemoItem>
       </div>
     </div>

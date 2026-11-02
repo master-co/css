@@ -7,6 +7,7 @@ import SheetClassTable from './SheetClassTable.astro'
 import SheetExampleBlock from './SheetExampleBlock.astro'
 import SheetNote from './SheetNote.astro'
 import type { RecipeSheet } from './sheets'
+import SheetExplanation from './SheetExplanation.astro'
 
 interface Props {
   sheet: RecipeSheet
@@ -19,6 +20,8 @@ const definitions = sheet.definitions.split('\n\n')
 <h2 id="overview">Classes</h2>
 <SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={`${sheet.more.length} more functions`} width={keyWidth(sheet.syntax.map(row => row.syntax))} />
 {sheet.note && <SheetNote text={sheet.note} />}
+
+<SheetExplanation explanation={sheet.explanation} />
 
 <h2 id="examples">Usage</h2>
 <SheetExampleBlock example={sheet.usage} caption={sheet.caption} />

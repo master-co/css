@@ -155,7 +155,13 @@
     update()
     const themeObserver = new MutationObserver(() => { applyTheme(); update() })
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    const resizeObserver = new ResizeObserver(update)
+    // Svelte flushes state in a microtask, still inside the observer's delivery,
+    // so resizing the iframe there trips WebKit's ResizeObserver loop error.
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined
+    const resizeObserver = new ResizeObserver(() => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(update)
+    })
     resizeObserver.observe(iframe)
     if (body) resizeObserver.observe(body)
     if (sizing === 'content') {
@@ -232,6 +238,7 @@
       active = false
       themeObserver.disconnect()
       resizeObserver.disconnect()
+      clearTimeout(resizeTimer)
       preference.removeEventListener('change', preferenceChanged)
       doc.removeEventListener('scroll', updateReadings, true)
       doc.fonts.removeEventListener('loadingdone', update)

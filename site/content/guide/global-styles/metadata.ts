@@ -1,7 +1,7 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Global Styles',
+  title: 'Global styles',
   description: 'Load one app entry, split shared CSS by ownership, and keep document defaults, component rules and route styles in the right scope.',
   category: 'Authoring',
   order: 2,

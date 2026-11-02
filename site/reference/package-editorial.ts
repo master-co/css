@@ -26,7 +26,11 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-compiler': {
     introduction: 'Compile stylesheet directives, load project manifests and compose generated CSS with authored styles. Choose the entrypoint that matches the work and execution environment.',
-    usage: 'Supply the base manifest explicitly when an API requires it. Inspect returned diagnostics before using the result. A delivery result is an asset set: publish every stylesheet and resource at its assigned URL. See [Stylesheet entrypoints](/reference/directives/imports) for resolution and delivery boundaries.',
+    usage: 'Supply the base manifest explicitly when an API requires it. Inspect returned diagnostics before using the result. A delivery result is an asset set: publish every stylesheet and resource at its assigned URL. See [Imports](/reference/directives/imports) for resolution and delivery boundaries.'
+      + '\n\n**Publishing a file compilation**\n\n`compileManifestFileSync(file, { baseManifest, delivery })` reads the file graph and returns assets without writing them. `delivery` supplies `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`; give distinct stylesheets distinct final URLs. Publish every returned `stylesheets` item at its `href`, and copy each `resources` item from `file` to `href`. The top-level `css`, `nativeCSS` and `generatedCSS` describe the entry only. Relative resource URLs keep their original source owner, query and fragment; reference-only stylesheets do not become published assets. Missing resources and colliding stylesheet URLs fail before publication. Omitting `delivery` returns the single-string result, without this asset-publication contract.\n\n'
+      + '`preserveNativeCSS` defaults to `true`; explicit `false` suppresses raw native CSS while retaining compiled native mixin applications in included output. It does not enable pruning. Stylesheet collections separately select native CSS, Master base CSS and generated utilities through `includeNativeCSS`, `includeMasterBaseCSS` and `includeGeneratedCSS`. Excluded native output does not remove definitions used by generated utilities. See [native pruning](/reference/directives/pruning) for file policy.\n\n'
+      + '`validation: \'report\'` is the default: inspect diagnostics while retaining the result. `validation: \'error\'` rejects known-invalid CSS in the complete result before returning assets; unknown capabilities alone do not fail it. Ranged diagnostics identify original stylesheet sources where a usable source map exists. A host transform that cannot map a generated segment must not invent an original position.'
+      + "\n\n**Preparing native CSS for another transformer**\n\nCompiler hosts can opt into `preserveNativeSource: true` when another transformer\nneeds the untouched native portions of a stylesheet. Master definitions are still\nconsumed and native `@apply` rules are still lowered, while unrelated comments,\nempty rules, value spelling, and rule boundaries are retained. The option defaults\nto `false`, preserving the compiler's normal native CSS normalization.\n\nSource preservation cannot be combined with enabled native pruning. Passing a class list alone does not enable pruning. `preserveNativeCSS: false` still suppresses native output. The option\ndoes not prevent subsequent host transforms from optimizing the result or rewriting\nits source map, and it does not discover new Master definitions or generated-global\nreferences introduced by a later transform.\n\n**Continuing resource rendering after host transforms**\n\n`compileRenderedStylesheet()` and `compileBrowserStylesheet()` accept an optional\n`emittedGlobals` resource-count snapshot when another output already supplies\ngenerated theme variables or keyframe definitions. Positive counts suppress duplicate emission;\nzero counts do not. New references still emit their transitive resource closure.\nThe returned snapshot includes the external context and resources required by this\nrender, without changing the input snapshot. Omitting the option preserves normal\nstandalone rendering.\n\nThis context prevents a later render from replacing an already processed variable\nwith its original manifest value. It does not run host plugins on newly generated\nCSS. Hosts remain responsible for processing that new CSS and publishing its\nresources while preserving plugin ordering and source ownership.",
     entries: {
       '.': 'Asynchronous compiler sessions and in-memory directive compilation.',
       './node': 'Synchronous native compilation and filesystem resolution.',
@@ -73,12 +77,12 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-language-server': {
     introduction: 'Provide Master CSS completion, hover, colors, formatting and semantic tokens through the Language Server Protocol. The library entry supports host-managed lifecycle; the server entry starts the process.',
-    usage: 'Create and start `MasterCSSLanguageServer` when embedding it in a host, then dispose it during shutdown. Loading the `/server` entry constructs and starts a server immediately. See [Language Service](/guide/language-service) for the editor-facing workflow.',
+    usage: 'Create and start `MasterCSSLanguageServer` when embedding it in a host, then dispose it during shutdown. Loading the `/server` entry constructs and starts a server immediately. See [Language service](/guide/language-service) for the editor-facing workflow.',
     entries: { '.': 'Language server, workspace settings and semantic-token request names.', './server': 'Executable server startup entry; no named or default exports.' }
   },
   '@master/css-language-service': {
     introduction: 'Map Master CSS tooling results to editor documents, language features and syntax highlighting. Use the Shiki entrypoint for server-rendered code presentation.',
-    usage: 'Supply a tooling session when creating `MasterCSSLanguageService`. Shiki helpers accept a reusable language session or manifest through their options. Import `@master/css-language-service/shiki.css` for hover-activated markup highlighting. See [Language Service](/guide/language-service) for configuration and examples.',
+    usage: 'Supply a tooling session when creating `MasterCSSLanguageService`. Shiki helpers accept a reusable language session or manifest through their options. Import `@master/css-language-service/shiki.css` for hover-activated markup highlighting. See [Language service](/guide/language-service) for configuration and examples.',
     entries: {
       '.': 'Editor document services, settings and trigger characters.',
       './common': 'Shared completion trigger characters.',
@@ -89,7 +93,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-mcp': {
     introduction: 'Create a Master CSS Model Context Protocol server or start its stdio transport. The tool catalog identifies operations and their file effects.',
-    usage: 'Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP Server](/guide/ai-coding#connect-the-mcp-server) for client registration and [the tool catalog](/guide/ai-coding#connect-the-mcp-server) for usage; read complete contracts through `tools/list`.',
+    usage: 'Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP server](/guide/ai-coding#connect-the-mcp-server) for client registration and [the tool catalog](/reference/tools/mcp) for usage; read complete contracts through `tools/list`.',
     entries: { '.': 'Server factory and stdio startup.' }
   },
   '@master/css-next': {
@@ -104,7 +108,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-preset': {
     introduction: 'The preset supplies theme tokens, conditions, utilities and a compiled default manifest. CSS imports and the JSON manifest serve different consumers.',
-    usage: 'Import CSS when authoring a stylesheet; pass the JSON manifest to APIs that execute or compile against a base manifest. [Theme Tokens](/guide/theme) explains authoring and overrides.',
+    usage: 'Import CSS when authoring a stylesheet; pass the JSON manifest to APIs that execute or compile against a base manifest. [Theme tokens](/guide/theme) explains authoring and overrides.',
     entries: {
       '.': 'Complete preset stylesheet entry.',
       './default-manifest.json': 'Compiled default manifest for engine, compiler and tooling APIs.',
@@ -118,7 +122,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-runtime': {
     introduction: 'Observe classes in a document or shadow root and maintain their generated CSS. Runtime startup requires a runtime program, the project manifest compiled for the browser engine, and returns an owned session.',
-    usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering Modes](/guide/rendering-modes) for the browser workflow.\n\n'
+    usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering modes](/guide/rendering-modes) for the browser workflow.\n\n'
       + 'Official integrations inject startup. A custom entry passes `program` as a loader, such as `() => import(\'virtual:master-css-program\').then(module => module.default)`, plus `emittedGlobals`, then calls `observe()`. Runtime-only pages load the program during startup; progressive pages with a valid `hydrationManifest` defer the engine until a class outside it appears, unless `engine: \'eager\'` or `enginePrefetch: \'idle\'` is set. `emittedGlobals` applies to every page using the bundle. The runtime inserts generated rules and on-demand keyframes into its own stylesheet and never writes to linked stylesheets.\n\n'
       + '`snapshot()` separates `usageCounts`, connected DOM usage, from `classRules`, which can also hold warmed, hydrated or retained rules. `engine` is `\'deferred\'`, `\'loading\'`, `\'ready\'` or `\'failed\'`; before a deferred engine starts, class snapshots have no rule entries and `layers` is empty. `ensureClassRules()` and `deleteClassRules()` act independently of DOM usage; deletion is synchronous and bypasses retention. Before the engine is ready they throw `RUNTIME_ENGINE_NOT_READY` and start it, so await `ready()` first.',
     entries: {
@@ -146,7 +150,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-server': {
     introduction: 'Render generated CSS into HTML and produce hydration data for the browser. Use a one-shot helper, a reusable renderer or a streaming HTML session to match the host lifecycle.',
-    usage: 'Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering Modes](/guide/rendering-modes) for complete HTML examples.\n\n'
+    usage: 'Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering modes](/guide/rendering-modes) for complete HTML examples.\n\n'
       + '`createServerRenderer()` caches rules across renders: recreate it when the manifest changes, and bound `maxCachedClasses` in a long-lived server. Custom hosts can pass the final `stylesheets` a page may link, as `{ href, css, imports }` from `describeLinkedStylesheet()` in `@master/css-compiler/stylesheet`, with the `documentURL` that resolves them; theme variables and native keyframes those stylesheets already deliver are not repeated in `style#master-css`. Rendering tracks each keyframe definition independently, including same-name definitions in different layers or conditions.',
     entries: { '.': 'HTML rendering, streaming sessions and hydration options.' }
   },

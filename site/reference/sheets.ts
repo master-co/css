@@ -48,6 +48,7 @@ export interface RecipeSheet {
   syntax: SheetSyntax[]
   more: SheetSyntax[]
   note?: string
+  explanation?: TokenPageEditorial['explanation']
   usage: SheetExample
   caption?: string
   definitions: string
@@ -190,7 +191,7 @@ export function recipeSheet(page: RecipePageEditorial, source: string): RecipeSh
   const primary = page.primary ?? page.names
   const subject = (className: string) => page.names.some(name => className === name || className.startsWith(`${name}(`))
   return {
-    kind: 'recipe', id: page.id, title: page.title, summary: page.summary, guide: page.guide, note: page.note, caption: page.caption,
+    kind: 'recipe', id: page.id, title: page.title, summary: page.summary, guide: page.guide, note: page.note, caption: page.caption, explanation: page.explanation,
     syntax: rows.filter(row => primary.includes(row.name)).map(row => row.row),
     more: rows.filter(row => !primary.includes(row.name)).map(row => row.row),
     definitions: definitions.join('\n\n'),
@@ -235,6 +236,16 @@ function classesMarkdown(rows: SheetSyntax[], linked: boolean) {
 
 const seeAlso = (links: string[]) => `See ${links.join(' and ')}.`
 
+function explanationMarkdown(explanation: TokenPageEditorial['explanation']) {
+  return explanation ? [
+    `## ${explanation.title} {#${explanation.id}}`,
+    explanation.paragraphs[0],
+    referenceIllustrationMarkdown(explanation.illustration),
+    ...explanation.paragraphs.slice(1),
+    explanation.links?.length ? seeAlso(explanation.links.map(link => `[${link.label}](${link.href})`)) : '',
+  ] : []
+}
+
 export function tokenSheetMarkdown(sheet: TokenSheet) {
   const values = sheet.groups.map(group => {
     const head = group.namespace === 'text' ? ['Class', 'Variable', 'Size', 'Line height', 'Letter spacing'] : ['Class', 'Variable', 'Value']
@@ -248,13 +259,7 @@ export function tokenSheetMarkdown(sheet: TokenSheet) {
     '## Values {#values}',
     sheet.valuesLead,
     values,
-    ...sheet.explanation ? [
-      `## ${sheet.explanation.title} {#${sheet.explanation.id}}`,
-      sheet.explanation.paragraphs[0],
-      referenceIllustrationMarkdown(sheet.explanation.illustration),
-      ...sheet.explanation.paragraphs.slice(1),
-      sheet.explanation.links?.length ? seeAlso(sheet.explanation.links.map(link => `[${link.label}](${link.href})`)) : '',
-    ] : [],
+    ...explanationMarkdown(sheet.explanation),
     '## Usage {#usage}',
     sheetExampleMarkdown(sheet.usage),
     '## Customize {#customize}',
@@ -268,6 +273,7 @@ export function recipeSheetMarkdown(sheet: RecipeSheet) {
     '## Classes {#overview}',
     classesMarkdown([...sheet.syntax, ...sheet.more], false),
     sheet.note,
+    ...explanationMarkdown(sheet.explanation),
     '## Usage {#examples}',
     sheetExampleMarkdown(sheet.usage),
     sheet.caption,

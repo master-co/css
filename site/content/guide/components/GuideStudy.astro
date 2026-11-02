@@ -1,0 +1,108 @@
+---
+import DocumentIllustration from '~/site/components/DocumentIllustration.astro'
+import { guideStudies, type GuideStudyId } from '../studies'
+import light0 from '../../../assets/images/guide-studies/pipes-and-quotes-light.png'
+import dark0 from '../../../assets/images/guide-studies/pipes-and-quotes-dark.png'
+import light1 from '../../../assets/images/guide-studies/conditions-intersection-light.png'
+import dark1 from '../../../assets/images/guide-studies/conditions-intersection-dark.png'
+import light2 from '../../../assets/images/guide-studies/inherited-alias-light.png'
+import dark2 from '../../../assets/images/guide-studies/inherited-alias-dark.png'
+import light3 from '../../../assets/images/guide-studies/delivery-substitution-light.png'
+import dark3 from '../../../assets/images/guide-studies/delivery-substitution-dark.png'
+import light4 from '../../../assets/images/guide-studies/reuse-ownership-light.png'
+import dark4 from '../../../assets/images/guide-studies/reuse-ownership-dark.png'
+import light5 from '../../../assets/images/guide-studies/independent-parameters-light.png'
+import dark5 from '../../../assets/images/guide-studies/independent-parameters-dark.png'
+import light6 from '../../../assets/images/guide-studies/local-color-scheme-light.png'
+import dark6 from '../../../assets/images/guide-studies/local-color-scheme-dark.png'
+import light7 from '../../../assets/images/guide-studies/palette-or-role-light.png'
+import dark7 from '../../../assets/images/guide-studies/palette-or-role-dark.png'
+import light8 from '../../../assets/images/guide-studies/width-cap-growth-light.png'
+import dark8 from '../../../assets/images/guide-studies/width-cap-growth-dark.png'
+import light9 from '../../../assets/images/guide-studies/grid-long-content-light.png'
+import dark9 from '../../../assets/images/guide-studies/grid-long-content-dark.png'
+import light10 from '../../../assets/images/guide-studies/type-content-height-light.png'
+import dark10 from '../../../assets/images/guide-studies/type-content-height-dark.png'
+import light11 from '../../../assets/images/guide-studies/named-container-target-light.png'
+import dark11 from '../../../assets/images/guide-studies/named-container-target-dark.png'
+import light12 from '../../../assets/images/guide-studies/responsive-local-change-light.png'
+import dark12 from '../../../assets/images/guide-studies/responsive-local-change-dark.png'
+import light13 from '../../../assets/images/guide-studies/unlayered-obstacle-light.png'
+import dark13 from '../../../assets/images/guide-studies/unlayered-obstacle-dark.png'
+import light14 from '../../../assets/images/guide-studies/defaults-inheritance-light.png'
+import dark14 from '../../../assets/images/guide-studies/defaults-inheritance-dark.png'
+import light15 from '../../../assets/images/guide-studies/delivery-not-scope-light.png'
+import dark15 from '../../../assets/images/guide-studies/delivery-not-scope-dark.png'
+import light16 from '../../../assets/images/guide-studies/stable-dynamic-value-light.png'
+import dark16 from '../../../assets/images/guide-studies/stable-dynamic-value-dark.png'
+import light17 from '../../../assets/images/guide-studies/source-and-policy-light.png'
+import dark17 from '../../../assets/images/guide-studies/source-and-policy-dark.png'
+import light18 from '../../../assets/images/guide-studies/static-late-class-light.png'
+import dark18 from '../../../assets/images/guide-studies/static-late-class-dark.png'
+import light19 from '../../../assets/images/guide-studies/progressive-known-class-light.png'
+import dark19 from '../../../assets/images/guide-studies/progressive-known-class-dark.png'
+import light20 from '../../../assets/images/guide-studies/installation-observation-light.png'
+import dark20 from '../../../assets/images/guide-studies/installation-observation-dark.png'
+import light21 from '../../../assets/images/guide-studies/fallback-addition-light.png'
+import dark21 from '../../../assets/images/guide-studies/fallback-addition-dark.png'
+import light22 from '../../../assets/images/guide-studies/migration-local-scope-light.png'
+import dark22 from '../../../assets/images/guide-studies/migration-local-scope-dark.png'
+import light23 from '../../../assets/images/guide-studies/shared-source-inputs-light.png'
+import dark23 from '../../../assets/images/guide-studies/shared-source-inputs-dark.png'
+import light24 from '../../../assets/images/guide-studies/consumer-override-light.png'
+import dark24 from '../../../assets/images/guide-studies/consumer-override-dark.png'
+import light25 from '../../../assets/images/guide-studies/editor-build-boundary-light.png'
+import dark25 from '../../../assets/images/guide-studies/editor-build-boundary-dark.png'
+import light26 from '../../../assets/images/guide-studies/lint-ownership-light.png'
+import dark26 from '../../../assets/images/guide-studies/lint-ownership-dark.png'
+import light27 from '../../../assets/images/guide-studies/inspection-coverage-light.png'
+import dark27 from '../../../assets/images/guide-studies/inspection-coverage-dark.png'
+import light28 from '../../../assets/images/guide-studies/transition-name-uniqueness-light.png'
+import dark28 from '../../../assets/images/guide-studies/transition-name-uniqueness-dark.png'
+import light29 from '../../../assets/images/guide-studies/language-and-delivery-light.png'
+import dark29 from '../../../assets/images/guide-studies/language-and-delivery-dark.png'
+
+interface Props {
+  id: GuideStudyId
+}
+
+const images = {
+  'pipes-and-quotes': { light: light0, dark: dark0 },
+  'conditions-intersection': { light: light1, dark: dark1 },
+  'inherited-alias': { light: light2, dark: dark2 },
+  'delivery-substitution': { light: light3, dark: dark3 },
+  'reuse-ownership': { light: light4, dark: dark4 },
+  'independent-parameters': { light: light5, dark: dark5 },
+  'local-color-scheme': { light: light6, dark: dark6 },
+  'palette-or-role': { light: light7, dark: dark7 },
+  'width-cap-growth': { light: light8, dark: dark8 },
+  'grid-long-content': { light: light9, dark: dark9 },
+  'type-content-height': { light: light10, dark: dark10 },
+  'named-container-target': { light: light11, dark: dark11 },
+  'responsive-local-change': { light: light12, dark: dark12 },
+  'unlayered-obstacle': { light: light13, dark: dark13 },
+  'defaults-inheritance': { light: light14, dark: dark14 },
+  'delivery-not-scope': { light: light15, dark: dark15 },
+  'stable-dynamic-value': { light: light16, dark: dark16 },
+  'source-and-policy': { light: light17, dark: dark17 },
+  'static-late-class': { light: light18, dark: dark18 },
+  'progressive-known-class': { light: light19, dark: dark19 },
+  'installation-observation': { light: light20, dark: dark20 },
+  'fallback-addition': { light: light21, dark: dark21 },
+  'migration-local-scope': { light: light22, dark: dark22 },
+  'shared-source-inputs': { light: light23, dark: dark23 },
+  'consumer-override': { light: light24, dark: dark24 },
+  'editor-build-boundary': { light: light25, dark: dark25 },
+  'lint-ownership': { light: light26, dark: dark26 },
+  'inspection-coverage': { light: light27, dark: dark27 },
+  'transition-name-uniqueness': { light: light28, dark: dark28 },
+  'language-and-delivery': { light: light29, dark: dark29 },
+}
+
+const { id } = Astro.props
+const study = guideStudies[id]
+---
+
+<DocumentIllustration title={study.title} alt={study.alt} images={images[id]} caption={study.caption}>
+  <p>{study.alt}</p>
+</DocumentIllustration>

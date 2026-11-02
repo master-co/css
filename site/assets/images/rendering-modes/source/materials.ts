@@ -112,6 +112,27 @@ export function drawing(theme: Theme) {
       <div class="role-selection-sample bg-surface-base" style="color-scheme:${mode}"><span class="fg-text-muted" data-label>${escapeHtml(sample)}</span></div>
       ${label(surface, 'edge')}
     </div>`
+  /** The two layouts share actual content; colored bands expose the native spacing. */
+  const spacingSpecimen = (x: number, y: number, kind: 'padding' | 'gap', first: string, second: string) =>
+    `<div class="spacing-sample grid ${kind === 'padding' ? 'p-md' : 'gap-md'} anchor-center" data-kind="${kind}" data-tone="${kind === 'padding' ? 'blue' : 'violet'}" style="${box(x, y)}"><div class="spacing-item">${label(first, 'body')}</div><div class="spacing-item">${label(second, 'body')}</div></div>`
+  /** Parent widths encode the measured constraint. The capped child's height remains intrinsic. */
+  const sizingSpecimen = (x: number, y: number, width: number, available: string, content: string, result: string) =>
+    `<div class="sizing-study" style="${box(x, y, width)}">${label(available, 'note')}<div class="sizing-parent"><div class="sizing-child max-w-3xs">${label(content, 'body')}${label(result, 'code')}</div></div></div>`
+  /** A real child paints into a rounded parent; only the compared clipping policy changes. */
+  const radiusSpecimen = (x: number, y: number, clip: boolean, child: string, parent: string) =>
+    `<div class="radius-sample r-4xl${clip ? ' overflow-hidden' : ''} anchor-center" style="${box(x, y)}"><div class="radius-child">${label(child, 'body')}</div><div class="radius-parent-content">${label(parent, 'body')}</div></div>`
+  /** Matched flow boxes keep their real gap while shadow paint extends beyond them. */
+  const shadowSpecimen = (x: number, y: number, token: string, title: string, content: string, next: string, gap: string) =>
+    `<div class="shadow-study anchor-center" style="${box(x, y)}"><div class="shadow-sample ${escapeHtml(token)}">${label(title, 'title')}${label(content, 'body')}</div><div class="shadow-following">${label(next, 'body')}<div class="shadow-gap">${label(gap, 'edge')}</div></div></div>`
+  /** Actual font properties change independently against the same baseline. */
+  const fontComparison = (x: number, y: number, baseline: string, headings: readonly string[], rows: readonly { class: string, classes: string }[], sample: string) =>
+    `<div class="font-comparison anchor-center" style="${box(x, y)}">${headings.map(value => label(value, 'edge')).join('')}${rows.map(item => `${label(item.class, 'code')}<span class="font-specimen ${escapeHtml(baseline)}" data-label>${escapeHtml(sample)}</span><span class="font-specimen ${escapeHtml(item.classes)}" data-label>${escapeHtml(sample)}</span>`).join('')}</div>`
+  /** Unitless line-height is inherited into real, equally wide text columns. */
+  const leadingComparison = (x: number, y: number, classes: readonly string[], sizes: readonly string[], lines: readonly string[], results: readonly string[]) =>
+    `<div class="leading-study leading-md anchor-center" style="${box(x, y)}">${classes.map((name, i) => `<section class="leading-column" data-tone="${i ? 'violet' : 'blue'}">${label(sizes[i], 'code')}<div class="leading-lines ${escapeHtml(name)}">${lines.map(line => `<span data-label>${escapeHtml(line)}</span>`).join('')}</div>${label(results[i], 'edge')}</section>`).join('')}</div>`
+  /** A real parent supplies computed tracking; only the second child declares it again. */
+  const trackingComparison = (x: number, y: number, classes: readonly string[], sample: string, results: readonly string[]) =>
+    `<div class="tracking-scope font-md tracking-widest anchor-center" style="${box(x, y)}">${classes.map((name, i) => `<section class="tracking-row" data-tone="${i ? 'violet' : 'blue'}">${label(name, 'code')}<div class="tracking-sample ${escapeHtml(name)}" data-label>${escapeHtml(sample)}</div>${label(results[i], 'edge')}</section>`).join('')}</div>`
   /** Adjacent literal fragments preserve the original string; each bracket follows its fragment's intrinsic width. */
   const codeParts = (x: number, y: number, parts: ({ id: string, value: string, tone: AnnotationTone } | { value: string })[]) =>
     `<div class="annotated-code anchor-center" style="${box(x, y)}">${parts.map(part =>
@@ -155,5 +176,5 @@ ${content}
     return { width: sceneWidth, height: sceneHeight, title, description, html }
   }
 
-  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, selectorSpecimen, queryScopes, sourceContribution, priorityStack, variableScope, codeScope, colorScale, roleSelection, codeParts, annotation, leader, route, scene }
+  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, selectorSpecimen, queryScopes, sourceContribution, priorityStack, variableScope, codeScope, colorScale, roleSelection, spacingSpecimen, sizingSpecimen, radiusSpecimen, shadowSpecimen, fontComparison, leadingComparison, trackingComparison, codeParts, annotation, leader, route, scene }
 }

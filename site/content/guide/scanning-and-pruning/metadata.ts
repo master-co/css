@@ -3,7 +3,7 @@ import define from '~/site/docs-shell/utils/metadata'
 const metadata = define({
   title: 'Scanning and pruning',
   description: 'Keep generated classes visible to the scanner, and opt stylesheets into removing unused native CSS rules.',
-  category: 'Build & Delivery',
+  category: 'Build and delivery',
   fileURL: import.meta.url
 })
 

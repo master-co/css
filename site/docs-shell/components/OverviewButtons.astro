@@ -18,7 +18,7 @@ const { t: $, locale } = siteOf(Astro)
   pages.map((definedMetadata: DefinedMetadata) =>
     <Link
       class={clsx(
-        'flex-col items-start! justify-between! p-xl bb-solid bb(1) br-solid br(1) bb-line-subtle br-line-subtle text-left (transition-duration:0.2s) (transition-property:background-color) bg-surface-raised:hover',
+        'flex-col items-start! justify-between! p-xl bb-solid bb(1) br-solid br(1) bb-line-subtle br-line-subtle text-left (transition-duration:var(--duration-normal)) (transition-property:background-color) bg-surface-raised:hover',
         {
           'disabled': definedMetadata.disabled
         }

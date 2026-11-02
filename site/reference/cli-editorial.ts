@@ -24,6 +24,11 @@ export const cliEditorial: Record<string, CLIEditorial> = {
     ]
   },
   "generate": {
+    "notes": [
+      "`--output` names the CSS entry (default: `master.css`). Publish its sibling stylesheet and resource assets as well; local imports and resources can remain separate files to preserve ordering, conditions and URL ownership. A copied entry alone may be incomplete. See [Imports](/reference/directives/imports) for stylesheet boundaries.",
+      "`--strict` rejects known CSS syntax or value errors before publishing assets. Unknown browser capabilities are not treated as verified support. `--prune-native-css` opts project-owned files into native pruning; package files keep their own policy and `@preserve native` wins locally. [Native CSS pruning](/reference/directives/pruning) defines the rule and keyframe behavior.",
+      "`--no-export` prints one CSS result and does not publish its referenced resources; preserve the required stylesheet and resource URL bases yourself. `--verbose 0` suppresses progress logging. Stop watch mode with Ctrl+C; a live watcher can still have a failed rebuild, with the last successful export retained."
+    ],
     "examples": [
       {
         "description": "Inspect generated CSS without writing output files:",
@@ -41,7 +46,7 @@ export const cliEditorial: Record<string, CLIEditorial> = {
   },
   "lint": {
     "notes": [
-      "Lint report v5 separates checked inputs from diagnostic files. `coverage.checkedFiles` lists every input passed to lint, including clean files and stdin virtual paths. `summary.checkedFiles` counts those inputs; `summary.filesWithDiagnostics` counts checked files with diagnostics. These replace the ambiguous v4 `summary.files`. The `files` array remains limited to diagnostic results; an empty array does not mean no checks ran.",
+      "Lint report v5 separates checked inputs from diagnostic files. `coverage.checkedFiles` lists every input passed to lint, including clean files and stdin virtual paths. `summary.checkedFiles` counts those inputs; `summary.filesWithDiagnostics` counts checked files with diagnostics. The `files` array remains limited to diagnostic results; an empty array does not mean no checks ran.",
       "Read `coverage.status` before interpreting zero diagnostics: `complete` means the selected inputs were checked, `no-inputs` means no source inputs matched, and `not-run` means manifest loading blocked source lint. Manifest diagnostics do not count as checked source files. With `--fix`, diagnostic counts describe the rechecked content. Clean stdin still counts as one input without creating a disk file. Stylish output includes the coverage summary on stderr.",
       "`coverage.description` explains the result and distinguishes manifest stylesheet entries from linted source inputs. Empty `manifest.entries` does not mean no source checks ran. Coverage applies only to the selected inputs and enabled lint rules. It does not verify browser behavior or prove the whole project was checked. A zero exit status with `no-inputs` is not evidence of a successful source check."
     ],
@@ -88,6 +93,9 @@ export const cliEditorial: Record<string, CLIEditorial> = {
       }
     ],
     "notes": [
+      "### Project snapshots {#project-snapshots}",
+      "`--snapshot` writes a resolved project snapshot to stdout. Save it before a change, then use `--compare` to compare that snapshot with the current project. These two modes are mutually exclusive and always return JSON. They compare definitions and known consumers, not browser pixels.",
+      "```sh\nmaster-css inspect --snapshot > before.json\n# After the intended source change:\nmaster-css inspect --compare before.json > comparison.json\n```",
       "### Design-system options {#design-system-options}",
       "`--design-system-options` reads a JSON file and requires `--design-system`. The same object is accepted by the MCP `mastercss_scan_project` `designSystem` input (project context only) and the language server's `designSystem` setting; all three return the same report.",
       "```json name=design-system.json\n{\n  \"version\": 1,\n  \"metadata\": {\n    \"--color-brand-old\": {\n      \"description\": \"Previous brand color\",\n      \"deprecated\": true,\n      \"replacement\": \"--color-brand\"\n    }\n  },\n  \"rawValuePolicy\": {\n    \"requireProperties\": [\"color\", \"background-color\"]\n  }\n}\n```",

@@ -1,0 +1,29 @@
+---
+import DocumentDisclosure from '../components/DocumentDisclosure.astro'
+import Demo from '../components/demo/Demo.svelte'
+import DemoViewport from '../components/demo/DemoViewport.svelte'
+import { demoDocument } from '../components/demo/reference/document'
+import { foundationScene } from '../common/foundation-data/specimens'
+import type { SheetGroup } from './sheets'
+
+interface Props {
+  group: SheetGroup
+}
+
+/** Keep the existing native playback comparisons, selected by the complete lookup table. */
+const { group } = Astro.props
+const shown = ['animate', 'duration', 'easing'].includes(group.namespace)
+const scene = shown ? foundationScene(group.namespace, group.values.map(value => value.key)) : undefined
+// Curves may travel beyond either endpoint. Reserve proportional paint room at every frame width.
+if (scene && group.namespace !== 'animate') scene.css += ' [data-motion-path] { margin-inline:16%; }'
+const title = `Compare all ${({ animate: 'animations', duration: 'durations', easing: 'easing curves' } as Record<string, string>)[group.namespace]}`
+const caption = group.namespace === 'animate'
+  ? 'Each preset animation runs once here and starts paused. Play, Pause and Replay control the native timelines. Reduced motion keeps the content still; the table above retains the complete preset shorthands.'
+  : scene?.caption
+---
+
+{scene && <DocumentDisclosure title={title}>
+  <Demo frame="none" caption={caption}>
+    <DemoViewport client:idle={{ timeout: 500 }} title={title} document={demoDocument({ page: 'tokens', id: group.namespace, title, html: [], css: '', classes: [], classLists: [], highlighted: [] }, scene)} sizing="content" motion />
+  </Demo>
+</DocumentDisclosure>}

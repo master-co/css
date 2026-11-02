@@ -9,7 +9,7 @@ import MeasureReviewStage from './MeasureReviewStage.svelte'
 export const metadata = pageMetadata
 ---
 
-<ComponentPage title="Measure" description="A hairline with end dots and the browser’s own reading above it. The wrapper measures; it never joins the layout it measures." usage={{ href: '/reference/width', label: 'the width reference' }} Documentation={ComponentDocumentation}>
+<ComponentPage title="Measure" description="A hairline with end dots and the browser’s own reading above it. The wrapper measures; it never joins the layout it measures." usage={{ href: '/reference/tokens/container', label: 'the container size reference' }} Documentation={ComponentDocumentation}>
   <ComponentSection id="bounds" title="Live bounds">
     <MeasureReviewStage client:idle={{ timeout: 500 }} />
   </ComponentSection>

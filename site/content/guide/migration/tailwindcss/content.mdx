@@ -55,7 +55,7 @@ Keep the existing Tailwind build producing `legacy-tailwind.generated.css` befor
 
 For most integrations, no Master CSS source directive is needed here. The integration or CLI scanner discovers ordinary app files; add `@source` only for migrated markup outside that default scope.
 
-Then add the framework or build integration that matches the project. Start from [Installation](/guide/installation), then choose the specific framework guide for Vite, Next.js, Nuxt, Svelte, Astro, Webpack, React, Angular, Laravel, Blazor, Lit, or the CLI.
+Then follow [Installation](/guide/installation) for the project’s framework or build tool. React uses its bundler’s guide; Laravel and Blazor use the host-specific sections in [Server-rendered apps](/guide/installation/server-rendered).
 
 Do not remove Tailwind at this point. The first milestone is a project that still looks the same while Master CSS can generate rules for new or converted markup.
 
@@ -160,7 +160,7 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 | `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS preset color steps differ from Tailwind's default palette. |
 | `bg-zinc-50`, `text-zinc-500` | `bg-zinc-5`, `fg-zinc-60` | The scales differ. This darker text step keeps the fixed light surface readable; compare actual values instead of dividing Tailwind steps by ten. |
 | `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `(line-height:1.75rem)` | Use `text-*` only when the full type treatment is intended. |
-| `flex`, `items-center`, `justify-between` | `flex`, `items-center`, `justify-between` | These fixed utilities have the same names and declarations. Other display, position and alignment values use `(property:value)`. |
+| `flex`, `items-center`, `justify-between` | `flex`, `items-center`, `justify-between` | These fixed utilities have the same names and declarations. Check the [fixed utility catalog](/reference/rules/declarations#fixed-utilities) before falling back to `(property:value)`. |
 | `grid-cols-3`, `gap-4` | `grid-cols(3)`, `(gap:1rem)` | Use the explicit grid recipe and the native `gap` property. |
 | Arbitrary value such as `w-[min(100%,72rem)]` | `(width:min(100%,72rem))` | Write native CSS function values directly. |
 | Arbitrary property such as `[scroll-margin-top:4rem]` | `(scroll-margin-top:4rem)` | Master CSS writes every native declaration in parentheses. |
@@ -216,7 +216,7 @@ Tailwind’s default `md` starts at 48rem; Master CSS’s preset `md` starts at 
 @custom-media --tailwind-md (width >= 48rem);
 ```
 
-Tailwind's `max-md:` maps to `@max-md`, the complement of the preset `md`; define `--max-tailwind-md not (--tailwind-md)` the same way to keep the Tailwind threshold. Use `@custom-media` for reusable media queries and a mixin with `@contents` for other wrappers. Keep selector states as selector suffixes or nested selectors.
+Preserve Tailwind's `max-md:` threshold with `@custom-media --max-tailwind-md not (--tailwind-md);` and the `@max-tailwind-md` suffix. Master’s preset `@max-md` instead complements its own 64rem threshold. Use `@custom-media` for reusable media queries and a mixin with `@contents` for other wrappers. Keep selector states as selector suffixes or nested selectors.
 
 ```css name=app.css
 @import "@master/css";
@@ -466,9 +466,9 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 - [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
-- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/theme) for modes, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
+- [Theme tokens](/guide/theme) for `@theme` tokens, [Variables and modes](/reference/rules/modes) for modes, and [Conditions](/reference/rules/conditions) for query syntax.
 - [CSS directives](/reference#directives) for `@source`, `@safelist`, `@blocklist`, and `@apply`.
-- [Scanning latent classes](/guide/scanning-and-pruning) for static source scanning behavior.
+- [Scanning and pruning](/guide/scanning-and-pruning) for static source scanning behavior.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup utilities, theme tokens, custom utilities, and component classes.
 - [Code linting](/guide/code-linting) for validating Master CSS classes during migration.
 

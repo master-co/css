@@ -2,12 +2,12 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: {
-    absolute: 'Language Service for Master CSS'
+    absolute: 'Language service for Master CSS'
   },
   description: 'Set up VS Code, confirm project-aware token completion, inspect generated CSS, and configure class sources and workspaces.',
-  category: 'Agentic Workflows',
+  category: 'Agentic workflows',
   other: {
-    subject: 'Language Service'
+    subject: 'Language service'
   },
   order: 1,
   openGraph: {

@@ -1,0 +1,23 @@
+---
+import DocumentDisclosure from '../components/DocumentDisclosure.astro'
+import type { SheetGroup } from './sheets'
+
+interface Props {
+  group: SheetGroup
+}
+
+/** Complete visual lookup from the same values as the adjacent table. */
+const { group } = Astro.props
+const radius = group.namespace === 'radius'
+---
+
+{(radius || group.namespace === 'shadow') && <DocumentDisclosure title={`Compare all ${radius ? 'radius' : 'shadow'} values`}>
+  <div class="ui-tray">
+    <div class="ref-surface-scale ui-stage" data-kind={group.namespace}>
+      {group.values.map(value => <div class="ref-surface-specimen">
+        <code>{value.className}</code>
+        <div class="ref-surface-sample" aria-hidden="true" style={radius ? { borderRadius: value.value } : { boxShadow: value.value }} />
+      </div>)}
+    </div>
+  </div>
+</DocumentDisclosure>}

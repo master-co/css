@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto'
 import { documentHeadings } from './headings'
 import type { ReferenceDocument } from './types'
 import { packageEditorial } from './package-editorial'
+import { referenceIllustrationMarkdown } from './illustrations'
 
 /** The website explains where to start; GitHub owns the complete API source. */
 export async function buildPackageContracts(repo: string): Promise<ReferenceDocument[]> {
@@ -13,6 +14,18 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
     'Choose a package by the work it owns. Each section lists its public import paths and links to its current source on GitHub. Read signatures, overloads and types there; this page does not reproduce declarations.',
     '', 'The source links follow the repository’s `rc` branch. For an installed release, also consult the declarations shipped with that package.', ''
   ]
+  body.push('## Choose an entrypoint {#choose-an-entrypoint}',
+    '| Work | Start with |', '| --- | --- |',
+    '| Connect a framework or build tool | [Installation](/guide/installation) and its integration package below. |',
+    '| Compile CSS definitions or resolve stylesheet files | [`@master/css-compiler`](#css-compiler) |',
+    '| Generate class rules from compiled definitions | [`@master/css`](#css) |',
+    '| Observe classes in a browser DOM | [`@master/css-runtime`](#css-runtime) |',
+    '| Render and hydrate a server response | [`@master/css-server`](#css-server) |',
+    '| Extract or validate source | [`@master/css-tooling`](#css-tooling) |',
+    '| Implement editor features | [`@master/css-language-service`](#css-language-service) |',
+    '| Automate from a terminal or agent | [CLI commands](/reference/tools/cli) or [MCP tools](/reference/tools/mcp) |',
+    referenceIllustrationMarkdown('compiler-output-ownership'),
+    'A manifest describes definitions; it is not a native stylesheet. Deliver the compiler’s native CSS as well as the utility output your rendering mode produces. A Node engine uses a manifest; the browser engine uses a compiled runtime program. [Rendering modes](/guide/rendering-modes) teaches which delivery path to choose.', '')
   const aliases: string[] = []
   const identifierAnchors: Record<string, string> = {}
   const inputs: string[] = []

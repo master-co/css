@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import AIIllustration from './components/AIIllustration.astro'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
 
@@ -146,12 +147,10 @@ generate a utility, but its stylesheet rule can still be present. For an explici
 markup and native rules. An empty `missingCSS.checked` list is not a completed
 class check. The [CLI catalog](/reference/tools/cli#inspect) documents inspection.
 
-When a native rule and a utility affect the same property, check the emitted CSS
-and the project's actual layer order. Master CSS's base stylesheet declares
-`theme, base, defaults, components, utilities`; normal declarations in `utilities`
-outrank normal declarations in `components`, even when the latter selector is more
-specific. Reopening `components` later does not change that order. Important
-declarations follow different precedence; see [CSS layer ordering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description).
+When a native rule and a utility affect the same property, follow the
+[cascade diagnosis](/guide/cascade-layers#diagnose-a-competing-declaration) with the project's
+actual layer order. Keep the inspection result and the browser's winning
+declaration together in the repair report.
 
 A conflict warning also needs review when both class names are recognized. Using
 a registered utility as a native hover selector hook does not restrict its
@@ -159,6 +158,8 @@ separate generated rule to hover. Check the resting state, hover condition,
 keyboard focus, disabled state and touch behavior that the component supports.
 Rerun the project's relevant checks after the last edit; preserve checks that
 passed before the repair rather than accepting a new failure elsewhere.
+
+<GuideStudy id="inspection-coverage" />
 
 ### Report the result and its limits \{#verification-limits\}
 Ask for a short final report identifying changed behavior, retained native CSS
@@ -193,7 +194,7 @@ For example, a class-order preview for one file:
 }
 ```
 
-If a file changes after the preview, applying it fails instead of overwriting newer work. Tokens belong to one running server and expire after `--preview-ttl` milliseconds (300000 by default); a restart or an applied preview requires a new one.
+If a file changes after the preview, applying it fails instead of overwriting newer work. Create a fresh preview when its files or server session change. See [preview lifetime](/reference/tools/mcp#preview-lifetime) for token validity and write guarantees.
 
 ---
 

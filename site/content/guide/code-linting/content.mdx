@@ -1,3 +1,4 @@
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LintIllustration from './components/LintIllustration.astro'
 
 ## Overview [sr-only]
@@ -69,7 +70,7 @@ inline-flex px-md <!-- [!code ++] -->
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
 
 ### No invalid classes
-`@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
+`@master/css/no-invalid-classes` reports malformed Master CSS class syntax and recognized classes that generate invalid CSS. These are separate failures: a malformed class can be rejected before any rule is generated, while an accepted declaration can still contain an invalid value.
 
 ```html
 <button class="(font-size:16)">Save</button>
@@ -121,6 +122,8 @@ b-solid bt-dashed
 Compare the generated declarations and inspect the element in the browser before removing an intentional override.
 
 ---
+
+<GuideStudy id="lint-ownership" />
 
 ## Supported sources
 The plugin checks class strings in `class` and `className` attributes, helpers such as `clsx` and `cva`, and `classList` methods. See the [settings and their defaults](/reference/packages#eslint-plugin-css).

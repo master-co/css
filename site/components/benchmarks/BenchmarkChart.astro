@@ -21,7 +21,7 @@ const { chart } = Astro.props
     {chart.groups.map((group) => (
       <div class="grid gap-sm">
         <div class="flex items-baseline justify-between gap-md">
-          <h4 class="m(0) font-sm (font-weight:460) fg-text-strong">{group.title}</h4>
+          <h4 class="m(0) font-sm (font-weight:var(--ui-weight-medium)) fg-text-strong">{group.title}</h4>
           <span class="font-xs fg-text-muted">{group.detail}</span>
         </div>
         <BenchmarkBars items={group.items} unit={group.unit} />
