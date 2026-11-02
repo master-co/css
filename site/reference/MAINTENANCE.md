@@ -11,12 +11,13 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 | Recipes | `reference/sheet-editorial.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
 | Language rules | `content/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
 | Directives | `content/guide/directives/contract.mdx` | Named sections in the directive Reference |
-| Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes, conditions and consumers |
+| Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes and consumers |
+| Named conditions | `reference/named-conditions.ts`, preset `customMedia` and `customContainers` | Independent media/container registries, expanded queries and complete suffix lookup |
 | CLI | Public `master-css` binary and concise catalog guidance | Command discovery and invocation; complete options remain in `--help` and GitHub |
 | MCP | Public stdio `tools/list` protocol and concise catalog guidance | Tool discovery and file effects; complete schemas remain in the server and GitHub |
 | Packages | Published exports, API census and package editorial | Public import paths, searchable symbols, lifecycle guidance and GitHub source destinations |
 
-The declarations, selectors, conditions and directives contracts have no Guide route; Reference publishes them and the Getting Started Syntax Tutorial teaches them. Rule registry entries separate the `source` contract path from the `guide` learning URL. The `contract.mdx` files remain beside existing MDX includes during migration. They are the single authored source consumed by Reference, not a second copy of the Guide.
+The declarations, selectors, conditions and directives contracts have no Guide route; Reference publishes them and the Getting Started Syntax Tutorial teaches them. Rule registry entries separate the `source` contract path from the `guide` learning URL. The `contract.mdx` files are the single authored source consumed by Reference. A neighboring `content.mdx` owns the Guide learning workflow. Named-condition lookup is a structured Syntax sheet, independent of token values; do not restore a second manual threshold table in Conditions.
 
 `prepare-app` builds `.generated/reference.json`, a compact `.generated/reference-route-index.json`, individual `.generated/reference-documents/*.json` files, the searchable documents, `public/reference/index.json`, per-page English and Traditional Chinese Markdown URLs, and section text bundles. The route reads only its selected document; generated files whose content has not changed keep their modification time. `build:llms` reuses the same normalized Reference in `llms.txt` and `llms-full.txt`. Generated outputs are ignored; edit their sources.
 
@@ -36,6 +37,8 @@ General Reference, token and recipe pages have separate route modules under `con
 The current source revision and semantic/content digests identify the build inputs. Current-version URLs can change between builds; these are not historical version snapshots. A local dirty checkout is not a published immutable document.
 
 Authored rule figures use `<ReferenceIllustration id="…" />`. Their shared labels and text equivalents live in `reference/illustrations.ts`, with editable scenes and theme images under `assets/images/`. The strict MDX adapter preserves the explanation between presentation markers; `ReferenceBody` replaces that range with the figure, and portable Markdown removes only the markers. Keep the full explanation searchable and test it alongside compiled examples. Unknown figure IDs fail generation rather than silently dropping content.
+
+Token value sheets define their focused explanation and figure in `sheet-editorial.ts`; `TokenSheetView` and `tokenSheetMarkdown` render the same fields and illustration text. Keep necessary layout or border prerequisites in a specimen's `keep` list so source abbreviation preserves them in both HTML and compiled exports. The complete family index uses namespace identity when grouping consumers; never merge distinct namespaces solely because their prefixes or properties match.
 
 Individual document pages render their authored or generated body directly. Do not inject a version/source/Markdown toolbar, a page-level copy-example control, a generic Related reference section or an extra alias list. Keep the body as the reading source of truth; search and machine exports derive from the existing shared content model.
 
@@ -83,6 +86,7 @@ Completion requires full family/recipe coverage; successful property, prefix and
 - Move visual content and interactions with the lookup data; validate the public destination before removing the source presentation. Gallery-only retention is insufficient.
 - `components/demo/foundations/FoundationTokens.astro` selects a subject-specific presentation. `common/foundation-data/specimens.ts` supplies the same authored scenes to Guide previews and Guide export adapters. Palette rows preserve full hue groups and copy original CSS or variable references with truthful status feedback.
 - Reference uses complete collections; Guide passes explicit keys. Reuse typography, role, scale and numeric-table designs with equal care for either selection. A subset has no arbitrary count limit.
+- `reference/named-conditions.ts` owns the media and container lookup sheet and its Markdown. Its row anchors, aliases and compiled query coverage must stay complete when the preset changes.
 - `reference/sheet-editorial.ts` lists every token and recipe page, its groups and its Usage and Customize examples; `reference/sheets.ts` builds one model per page that renders the HTML view and the portable Markdown. Examples compile through `configuredExampleCSS`, which rejects any invalid class; the displayed source keeps the page's own classes and the generated CSS covers only them.
 - Verify semantic effects as well as layout: actual text and border colors, multi-line leading, unclipped actual font sizes, distinguishable shadows in both modes, and actual timing values. Keep animation controls paused initially and respect reduced motion.
 - [Restoration inventory](../../.ai/reports/foundation-visual-restoration.md) maps the pre-migration baseline to public destinations and records comparison evidence. Update it when a presentation moves.

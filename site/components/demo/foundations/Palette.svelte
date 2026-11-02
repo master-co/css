@@ -25,9 +25,12 @@
   <div class="ui-palette">
     {#each groups as group (group.family)}<div class="ui-palette-row" role="group" aria-label={`${group.family} palette`}>
       <span>{group.family}</span>
-      {#each group.colors as color (color.name)}<DemoCopyButton icon={null} class="ui-palette-chip" style={`background-color:${color.value}`}
-        value={format === 'value' ? color.value : `var(--${color.name})`}
-        label={`Copy ${color.name} ${format === 'value' ? 'CSS value' : 'CSS variable'}`} title={`${color.name}: ${color.value}`} />{/each}
+      {#each group.colors as color (color.name)}<div class="ui-palette-cell">
+        <DemoCopyButton icon={null} class="ui-palette-chip" style={`background-color:${color.value}`}
+          value={format === 'value' ? color.value : `var(--${color.name})`}
+          label={`Copy ${color.name} ${format === 'value' ? 'CSS value' : 'CSS variable'}`} title={`${color.name}: ${color.value}`} />
+        <span aria-hidden="true">{color.step}</span>
+      </div>{/each}
     </div>{/each}
   </div>
   <div id={endId} tabindex="-1"><span class="sr-only">End of color palette</span></div>

@@ -9,17 +9,16 @@ import { tokenFamilies } from '../utils/manifest-utilities'
 import preset from '../utils/preset-manifest'
 import { extractReferenceMdx, portableMarkdown } from './markdown'
 import { directivePages, ruleSources } from './editorial'
-import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
 import type { SearchPage } from '../docs-shell/utils/search-pages'
 import { writeIfChanged } from '../scripts/write-if-changed'
 import { buildToolContracts } from './tool-contracts'
 import { buildPackageContracts } from './package-contracts'
+import { buildNamedConditionsContract } from './named-conditions'
 import { buildTokenContracts } from './token-contracts'
 import { createReferenceRenderDocument, referenceRenderVersion, type ReferenceRenderDocument } from './render-document'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
-const fence = (lang: string, value: string) => `\`\`\`${lang}\n${value}\n\`\`\``
 
 export { documentHeadings } from './headings'
 
@@ -41,17 +40,10 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     doc.guide = rule.guide
     doc.terms = rule.terms ?? []
     doc.related = ['rules/declarations', 'rules/selectors', 'rules/conditions', 'rules/modes', 'rules/layers'].filter(id => id !== rule.id)
-    if (rule.id === 'rules/conditions') {
-      const classes = ['fg-red:hover@sm']
-      const css = generatePresetCSS(classes)
-      const example = { id: 'composition', title: 'Combine a state, breakpoint and color token', classes, css }
-      doc.examples.unshift(example)
-      doc.aliases = classes
-      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg-red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg-red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['(opacity:1)@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The preset red alias has a fixed color; project overrides can change its value. The breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Project theme tokens and native scoped overrides customize the preset; custom media define named conditions.\n\n### Complete generated CSS\n\n${fence('css disclosure=generated-css', css)}\n\n${doc.markdown}`
-    }
     doc.headings = documentHeadings(doc.markdown)
     documents.push(doc)
   }
+  documents.push(buildNamedConditionsContract())
   documents.push(...buildTokenContracts())
   // Directive pages regroup the sections of one authored contract by what a reader looks up.
   const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives')

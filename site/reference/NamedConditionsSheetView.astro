@@ -1,0 +1,43 @@
+---
+import './sheet-blocks'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import InlineText from './InlineText.astro'
+import SheetExampleBlock from './SheetExampleBlock.astro'
+import SheetTable from './SheetTable.astro'
+import ReferenceIllustration from './ReferenceIllustration.astro'
+import { namedConditionText } from './named-conditions'
+import type { NamedConditionsSheet } from './sheets'
+
+interface Props {
+  sheet: NamedConditionsSheet
+}
+
+const { sheet } = Astro.props
+---
+
+<p><InlineText text={namedConditionText.intro} /></p>
+<h2 id="conditions">Media conditions</h2>
+<p><InlineText text={namedConditionText.media} /></p>
+{sheet.groups.map((group, index) => <Fragment>
+  {index === 3 && <Fragment>
+    <h2 id="container-conditions">Container conditions</h2>
+    <p><InlineText text={namedConditionText.container} /></p>
+  </Fragment>}
+  <h3 id={group.id}>{group.title}</h3>
+  <SheetTable class="ref-value-table" head={['Suffix', 'Expanded query']}>
+    {group.rows.map(row => <tr id={row.id}>
+      <th scope="row"><code>{row.suffix}</code></th>
+      <td><code>{row.query}</code></td>
+    </tr>)}
+  </SheetTable>
+</Fragment>)}
+<p><InlineText text={namedConditionText.complement} /></p>
+<h2 id="scope">Same name, different scope</h2>
+<p><InlineText text={namedConditionText.scope} /></p>
+<ReferenceIllustration id="condition-domains" />
+<h2 id="usage">Usage</h2>
+<SheetExampleBlock example={sheet.usage} />
+<h2 id="customize">Customize</h2>
+<p><InlineText text={namedConditionText.customize} /></p>
+<SheetExampleBlock example={sheet.customize} preview={false} />
+<p class="ref-links">See <Link href="/reference/rules/conditions">condition grammar</Link>, <Link href="/reference/rules/conditions#compiled-condition-definitions">condition definition scope</Link>, <Link href="/reference/directives/theme#custom-container">theme directives</Link>, <Link href="/reference/tokens/container">container sizing tokens</Link> and <Link href="/guide/responsive-design">Responsive design</Link>.</p>

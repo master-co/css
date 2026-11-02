@@ -1,105 +1,121 @@
 import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '~/site/reference/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
-## Overview [sr-only] \{#overview\}
-Append a named condition or a simple native query to a class. The parentheses delimit one condition; Master CSS restores the native group parentheses when it emits the query, so `@media(width>=800px)` becomes `@media (width>=800px)`.
+<a id="overview"></a>
+
+A condition suffix limits when a class's rule can apply. Master CSS resolves named definitions and emits native CSS queries; the browser evaluates those queries. Compilation does not test the current viewport, input device or browser support.
+
+This page defines accepted suffixes, query encoding and composition. For choosing a viewport or component boundary, see [Responsive design](/guide/responsive-design). For progressive enhancement, see [Compatibility](/guide/compatibility).
+
+## Query forms \{#arbitrary-conditions-and-queries\}
+
+Append conditions after the utility and any [selector suffix](/reference/rules/selectors). The parentheses in a class delimit the query; do not add a second pair around a media feature, range or supports declaration.
+
+| Query | Class suffix | Native condition |
+| --- | --- | --- |
+| Named media | `@sm` | Resolves `@custom-media --sm` |
+| Media type | `@media(print)` | `@media print` |
+| Boolean media feature | `@media(hover)` | `@media (hover)` |
+| Media feature | `@media(pointer:coarse)` | `@media (pointer:coarse)` |
+| Media range | `@media(width>=40rem)` | `@media (width>=40rem)` |
+| Supports declaration | `@supports(display:grid)` | `@supports (display:grid)` |
+| Container size | `@container(width>=40rem)` | `@container (width>=40rem)` |
+| Named container | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
+| Custom container condition | `@container(card\|--md)` | Resolves `@custom-container --md` for `card` |
+| Container style | `@container(style(--density:compact))` | `@container style(--density:compact)` |
+
+<Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
+
+`|` encodes whitespace outside strings, comments and CSS escapes. It separates the container name from its condition in `@container(card|width>=40rem)`. Quoted strings and escapes retain their literal content. The encoding belongs to classes; write ordinary whitespace in CSS definitions.
+
+<a id="simple-queries-in-classes"></a>
+
+Each suffix accepts one simple query. Balanced functions within a single value are preserved. Master CSS does not restrict feature names to a browser-support database; successful generation does not establish that a browser supports or matches the condition. See [queries that belong in CSS](#queries-in-css) for compound expressions and query lists.
+
+## Combining conditions \{#grouping-conditions\}
+
+Stack simple query suffixes to require all their conditions. The first suffix becomes the outer query; later suffixes nest inside it. Repeated wrappers of the same kind keep their order too.
+
+<ReferenceIllustration id="nested-conditions" />
 
 ```html
-<div class="hidden@sm">Hidden at the named breakpoint</div>
-<div class="hidden@media(width>=800px)">Hidden from 800px</div>
-<div class="grid@supports(display:grid)">Grid when supported</div>
+<div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
 ```
 
-<Class2CSS classes={['hidden@sm', 'hidden@media(width>=800px)', 'grid@supports(display:grid)']} />
+<Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
 
-Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditions](https://www.w3.org/TR/css-conditional-3/) and [container queries](https://www.w3.org/TR/css-conditional-5/) decide whether the browser applies the rule. Master CSS preserves the query rather than testing the current browser during compilation.
+These are nested CSS conditions, not steps executed in sequence. Both queries must match before the `display: grid` declaration participates in the cascade. A selector still determines which element receives the declaration.
 
-## Named conditions \{#common-condition-variants\}
-`@sm` and `@dark` resolve `@custom-media` definitions. Unknown names are errors. Mixin names use the separate `@apply(--name)` syntax and can share a name with a custom media definition. Bare names never select a container; container conditions are referenced inside `@container(...)`, as in [named containers](#named-container-conditions).
+### Selectors and token dependencies \{#composition\}
 
-The preset's `media.css` provides eleven breakpoints, a `max-` complement for each, and six preference/orientation queries:
+`fg-red:hover@sm` combines a token-backed utility, a selector and a named media condition:
 
-| Suffix | Meaning |
+```html
+<div class="fg-red:hover@sm">Hover at sm and above</div>
+```
+
+With the preset, `fg-red` uses `--color-red`, `:hover` tests the class-bearing element and `@sm` requires a viewport width of at least `52.125rem`. The preset red alias has a fixed color; a project can override its value. The class alone cannot establish the final color without the token values and competing CSS.
+
+<a id="complete-generated-css"></a>
+
+<Class2CSS classes={['fg-red:hover@sm']} />
+
+Generated CSS includes required token dependencies. It does not insert the base layer-order statement; load the [base stylesheet](/reference/rules/layers), normally through `@import '@master/css'`.
+
+## Named media conditions \{#common-condition-variants\}
+
+A bare suffix such as `@sm` resolves a `@custom-media` definition. Undefined names are errors. Mixin names use the separate `@apply(--name)` syntax, and container conditions use `@container(--name)`; neither is selected by a bare suffix.
+
+| Preset suffix | Meaning |
 | --- | --- |
 | `@sm`, `@md`, … | Viewport at least that breakpoint |
-| `@max-sm`, `@max-md`, … | Viewport below that breakpoint: `not (--md)` |
+| `@max-sm`, `@max-md`, … | Complement of the corresponding breakpoint |
 | `@landscape`, `@portrait` | Viewport orientation |
 | `@motion-safe`, `@motion-reduce` | Reduced-motion preference |
 | `@light`, `@dark` | System color preference |
 
-```css
-@custom-media --wide-screen screen and (width >= 50rem);
-```
-
-Use `@media(print)` and `@media(screen)` for media types. `@starting-style` and `@layer(...)` are engine built-ins and work without a preset.
-
 ### Breakpoints \{#sm--md--lg--and-more\}
-The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions. Breakpoints live in `media.css`; importing `theme.css` alone does not register them. Each `--max-*` condition is declared as the negation of its breakpoint, such as `@custom-media --max-md not (--md);`, so redeclaring `--md` moves `@max-md` with it and the two ranges never overlap.
 
-```html
-<h2 class="font-lg font-2xl@sm font-3xl@md">Responsive heading</h2>
-```
+The preset's `media.css` registers eleven viewport breakpoints. Importing `theme.css` alone does not register them; theme variables do not define media conditions. The [breakpoint reference](/reference/rules/named-conditions#viewport-widths) lists their values.
 
-Selectors work with every condition:
+A project can replace a query while retaining its native units. The preset's `--max-*` definitions negate the corresponding names: `--max-md` is `not (--md)`. When these definitions are compiled together, replacing `--md` updates both ranges, with no overlap at the boundary.
 
-```html
-<button class="bg-blue-60:hover@sm">Save</button>
-```
+<a id="compiled-condition-definitions"></a>
 
-See [breakpoints](/guide/responsive-design#based-on-viewport-breakpoints) and [responsive design](/guide/responsive-design).
+A compiled manifest already contains expanded queries. Adding a definition to that manifest does not re-expand its existing dependent conditions. A configuration fragment that must replace both ranges should declare both names explicitly:
 
-### Modes \{#light--dark--and-custom-modes\}
-`@light` and `@dark` use the preset's explicit system-preference definitions. Manual theme activation uses explicit selector mixins, for example `@apply(--manual-dark)`; the preset does not insert an ancestor selector. `@theme` supplies the token values; it does not choose how a mode activates.
+<ConfiguredExample source={'@custom-media --md (width >= 60rem);\n@custom-media --max-md not (--md);'} classes={['hidden@md', 'hidden@max-md']} />
 
-See [modes and activation](/reference/rules/modes#mode-triggers).
+### System color preference \{#light--dark--and-custom-modes\}
 
-### Layers \{#base--default--component--utility\}
-Select the generated layer with `@layer(base)`, `@layer(defaults)`, `@layer(components)`, or `@layer(utilities)`. This places the whole class in that layer without creating a sublayer. Repeating the same layer is allowed; different layers conflict. Layers cannot wrap mixin bodies or contents. See [cascade layers](/guide/cascade-layers).
+The preset's `@light` and `@dark` query `prefers-color-scheme`. They do not insert an ancestor selector or follow a manually selected site theme. Manual activation uses explicit selector mixins such as `@apply(--manual-dark)`; see [Variables and modes](/reference/rules/modes#mode-triggers).
 
-### Starting styles \{#starting-style\}
-Use the built-in `@starting-style` suffix to define a transition's initial value.
+## Native queries
 
-```html
-<div popover class="(opacity:0)@starting-style (transition-property:opacity)@motion-safe (transition-duration:250ms)@motion-safe">Details</div>
-```
+### Media features and ranges \{#mediafeature\}
 
-<Class2CSS classes={['(opacity:0)@starting-style', '(transition-property:opacity)@motion-safe (transition-duration:250ms)@motion-safe']} />
+Use full native feature names and units. Media types such as `print`, `screen` and `all` emit without group parentheses. A single name that is not a media type is a boolean feature: `@media(hover)` emits `@media (hover)`.
 
-## Simple native queries \{#arbitrary-conditions-and-queries\}
+<a id="comparison-operators"></a>
 
-| Purpose | Suffix |
-| --- | --- |
-| Viewport width | `@media(width>=800px)` |
-| Aspect ratio | `@media(aspect-ratio>=1.5)` |
-| Resolution | `@media(resolution>=2x)` |
-| Supports declaration | `@supports(display:grid)` |
-| Nearest size container | `@container(width>=40rem)` |
-| Named container | `@container(card\|width>=40rem)` |
-| Style container | `@container(style(--density:compact))` |
-| Custom container | `@container(--md)`, `@container(card\|--md)` |
+Ranges accept `<`, `<=`, `>`, `>=` and `=`, including chained comparisons. Fractional values and native units are preserved; CSS's resolution unit `x` retains its native meaning.
 
-`|` encodes whitespace in query syntax. Quoted strings and escaped characters retain their literal content. CSS's resolution unit `x` retains its native meaning.
+<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)', 'hidden@media(resolution>=2x)']} />
 
-### Media \{#mediafeature\}
+Comparable ranges in the same unit retain range priority. A named media condition and its equivalent native query share sorting evidence. Different units and expressions use stable syntax-based ordering; Master CSS does not assume a browser root font size or convert units for sorting. Container query domains remain distinct from media queries. Within equivalent conditions and the same property scope, direct values follow named tokens.
 
-```html
-<div class="hidden@media(pointer:coarse)">Fine-pointer controls</div>
-<div class="grid-cols(2)@media(width>=50rem)">Responsive content</div>
-```
+For browser interpretation of features and ranges, see [Media Queries](https://www.w3.org/TR/mediaqueries-5/).
 
-<Class2CSS classes={['hidden@media(pointer:coarse)', 'grid-cols(2)@media(width>=50rem)']} />
+### Supports declarations \{#supportsfeature\}
 
-### Supports \{#supportsfeature\}
-
-```html
-<div class="grid@supports(display:grid)">Content</div>
-```
+`@supports(property:value)` accepts one CSS declaration, such as `@supports(display:grid)`. The browser tests support for that property-value pair. Put `selector()` checks, negation and compound support conditions in a [CSS mixin](#queries-in-css).
 
 <Class2CSS classes={['grid@supports(display:grid)']} />
 
 ### Containers \{#containersize\}
-Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but neither `(width>=28rem)` nor a [named container condition](#named-container-conditions) follows it. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/responsive-design#based-on-container-sizes) for choosing a component boundary.
 
-Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
+Size queries measure an eligible ancestor query container. Establish that container with ordinary CSS; add a name when the query should select a particular container rather than the nearest eligible one. The queried element is a descendant in this example:
 
 ```html
 <aside class="(container-name:card) container-inline">
@@ -109,7 +125,7 @@ Choose a query container using ordinary CSS. The suffix contains the complete qu
 
 <Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
 
-Style queries use their native form:
+A custom-property style query checks the value on an ancestor container; it does not need `container-inline`:
 
 ```html
 <div style="--density:compact">
@@ -117,73 +133,56 @@ Style queries use their native form:
 </div>
 ```
 
+<Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+Native [container queries](https://www.w3.org/TR/css-conditional-5/#container-queries) define container eligibility and matching. Changing a sizing token such as `--container-md` does not change an explicit query threshold or a named container condition. See [container tokens](/reference/tokens/container) for their separate sizing role.
+
 ### Named container conditions \{#named-container-conditions\}
-`@container(--md)` resolves an `@custom-container` definition against the nearest container; `@container(card|--md)` measures the container named `card`. The definition supplies only the condition, so one name serves every container.
 
-The preset's `container.css` provides thirteen component widths and a `max-` complement for each. They are independent of the viewport breakpoints: `@container(--md)` is 28rem, while `@md` is 64rem.
+`@container(--md)` resolves `@custom-container --md`; `@container(card|--md)` applies the same condition to the eligible container named `card`. The definition supplies a condition, not a container name.
 
-| Name | Width |
-| --- | --- |
-| `--3xs`, `--2xs`, `--xs` | 16rem, 18rem, 20rem |
-| `--sm`, `--md`, `--lg`, `--xl` | 24rem, 28rem, 32rem, 36rem |
-| `--2xl`, `--3xl`, `--4xl` | 42rem, 48rem, 56rem |
-| `--5xl`, `--6xl`, `--7xl` | 64rem, 72rem, 80rem |
-| `--max-sm`, `--max-md`, … | Below that width: `not (--md)` |
+The preset's `container.css` registers thirteen component widths and a `max-` complement for each. These are independent of viewport breakpoints: `@container(--md)` is `28rem`, while `@md` is `64rem`.
 
-```html
-<aside class="(container-name:card) container-inline">
-  <div class="grid-cols(1) grid-cols(2)@container(card|--md)">Card content</div>
-</aside>
-```
+See [Named conditions](/reference/rules/named-conditions#container-widths) for the complete preset container scale and its complements.
+
+Each `--max-*` name is the negation of its minimum-width condition. For example, `--max-md` is `not (--md)`. As with media conditions, definitions compiled together follow an override of the referenced name; [already-expanded manifest definitions](#compiled-condition-definitions) do not re-expand when a fragment replaces only that name.
 
 <Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
 
-A project redeclares or adds names with `@custom-container`; see [`@custom-container`](/reference/directives/theme#custom-container). An undefined name is an error.
+Define or replace names with [`@custom-container`](/reference/directives/theme#custom-container). An undefined name is an error.
 
-## Ranges \{#comparison-operators\}
-Use native CSS comparisons, including chained ranges. Put compound media queries in `@custom-media`, and other compound conditions in a mixin. Do not abbreviate feature names or omit units.
-
-```html
-<div class="hidden@media(width<40rem)">Hidden below 40rem</div>
-<div class="grid-cols(2)@media(40rem<=width<64rem)">Two columns within a range</div>
-```
-
-<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)']} />
-
-## Combining wrappers \{#grouping-conditions\}
-Multiple suffixes preserve their nesting and source order, including repeated wrappers of the same kind:
-
-```html
-<div class="grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)">Content</div>
-```
-
-<Class2CSS classes={['grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
-
-Comparable ranges in the same unit retain range priority. Incomparable units and expressions use a stable syntax-based order; Master CSS does not assume a browser root font size. A named condition and its equivalent native query share sorting data. Autofix cannot reorder wrappers merely because their current declarations happen to match.
+## Queries that belong in CSS \{#queries-in-css\}
 
 <a id="upgrading-rc-conditions"></a>
 
-## Simple queries in classes
+Class queries deliberately accept a smaller grammar than native CSS. Define media query lists, compound conditions and negation with `@custom-media`. For other queries, use an `@mixin` whose `@contents` marks where the class's declaration is inserted.
 
-Classes accept one media type, one media feature or range, one supports declaration, or one container size or custom-property style query, written without the native group parentheses. A media type keyword (`all`, `print`, `screen` and the deprecated types) emits as a type; any other single name is a boolean feature, so `@media(hover)` emits `(hover)`. In `@container(card|width>=40rem)` the first name is the container name, and `@container(card|--md)` replaces the condition with a custom container reference. Feature names are not restricted to a browser support database. Balanced functions inside a single value are preserved.
+| Rejected class form | Reason | Accepted alternative |
+| --- | --- | --- |
+| `@media((width>=50rem))` | Extra group parentheses | `@media(width>=50rem)` |
+| `@media(screen\|and\|(width>=50rem))` | Compound query | A named `@custom-media` |
+| `@media(not\|print)` | Negated query | A named `@custom-media` |
+| `@media(screen,print)` | Query list | A named `@custom-media` |
+| `@supports(selector([lang\|=en]))` | Selector support test | An `@mixin` with native `@supports` |
 
-```html
-<div class="hidden@media(print) p-md@media(40rem<=width<64rem)"></div>
-<div class="grid@supports(display:grid) p-md@container(card|width>=40rem)"></div>
-<div class="p-md@container(style(--density:compact))"></div>
-```
+Extra group parentheses report `CLASS_SYNTAX_ERROR` with the class form to use. The complex forms report `MASTER_QUERY_REQUIRES_CSS` and generate no rule. Quoting the query does not extend the accepted grammar. Keep literal pipes, such as the `|=` attribute operator, in native CSS rather than class query encoding.
 
-A condition wrapped in its own group parentheses, such as `@media((width>=50rem))`, is a class syntax error whose message gives the class form. Define compound queries, query lists, negation, `selector()` and literal pipes in CSS. These class forms report `MASTER_QUERY_REQUIRES_CSS` and generate no rule. Quoting a query does not enable additional syntax.
+<ConfiguredExample source={'@custom-media --wide-screen screen and (width >= 50rem);\n@mixin --language-selector {\n  @supports selector([lang|=en]) { @contents; }\n}'} classes={['p-md@wide-screen', 'block@apply(--language-selector)']} />
 
-```css
-@custom-media --wide-screen screen and (width >= 50rem);
-@mixin --language-selector {
-  @supports selector([lang|=en]) { @contents; }
-}
-```
+For reusable wrappers and arguments, see [Utilities and mixins](/reference/directives/definitions#reusing-a-matched-value).
 
-```html
-<div class="p-md@wide-screen block@apply(--language-selector)"></div>
-```
+## Other suffixes
 
-The class encoding replaces `|` with a space only outside strings, comments and CSS escapes. Native CSS and mixin definitions do not use that encoding. Repeated simple suffixes preserve their wrapper order. Equivalent media ranges share ordering evidence, while container query domains remain distinct. Different units are never converted for sorting. Within equivalent conditions and the same property scope, direct values follow named tokens.
+These suffixes share the `@` notation but do not test media, support or container conditions.
+
+### Cascade layer selection \{#base--default--component--utility\}
+
+`@layer(base)`, `@layer(defaults)`, `@layer(components)` and `@layer(utilities)` choose the layer for the whole class. They do not create a sublayer. Repeating the same layer is allowed; selecting different layers in one class is an error. See [Cascade layers](/reference/rules/layers) for ordering and restrictions.
+
+### Starting styles \{#starting-style\}
+
+`@starting-style` wraps a rule in the native at-rule. It supplies a before-change style when an element has no previous rendered style, allowing an entry transition. It does not create a transition by itself or act as a general-purpose “first render” selector. See [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@starting-style) for native behavior.
+
+<Class2CSS classes={['(opacity:0)@starting-style']} />
+
+`@starting-style` and `@layer(...)` are built-in suffixes and do not require preset definitions. Reusable CSS wrappers instead use [`@apply(--name)`](/reference/directives/definitions#reusing-a-matched-value).

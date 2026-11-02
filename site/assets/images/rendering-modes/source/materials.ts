@@ -70,6 +70,48 @@ export function drawing(theme: Theme) {
       <a>${label(firstLink, 'body')}<svg class="selector-pointer" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l15 9-7 1-3 7z"/></svg></a>
       <a>${label(secondLink, 'body')}</a>
     </article>`
+  /** Measured query boundaries share one width scale; heights still follow content. */
+  const queryScopes = (x: number, y: number, viewportWidth: number, containerWidth: number, labels: {
+    viewport: string; media: string; viewportWidth: string; container: string; query: string; containerWidth: string; child: string
+  }) => `<div class="query-scopes anchor-center" style="${box(x, y, viewportWidth)}">
+    <div class="query-ruler">${label(labels.viewportWidth, 'code')}</div>
+    <div class="query-viewport">
+      <div class="query-scope-heading">${label(labels.viewport)}${label(labels.media, 'code')}</div>
+      <div class="query-container-study" style="width:${containerWidth}px">
+        <div class="query-ruler">${label(labels.containerWidth, 'code')}</div>
+        <div class="query-container">${label(labels.container)}${label(labels.query, 'code')}<div class="query-descendant">${label(labels.child, 'body')}</div></div>
+      </div>
+    </div>
+  </div>`
+  /** A file's current contribution; a removed source loses its solid artifact and connection. */
+  const sourceContribution = (x: number, y: number, name: string, source: string, removed = false) =>
+    `<div class="sheet source-contribution anchor-center" style="${box(x, y)}"${removed ? ' data-removed' : ''}>${row(icon('fileCode') + label(name))}${row(label(source, 'code'))}</div>`
+  /** An ordered layer list; unlayered CSS is separated because it is not a sixth named layer. */
+  const priorityStack = (x: number, y: number, layers: readonly string[], unlayered: string) =>
+    `<div class="priority-stack anchor-center" style="${box(x, y)}">${layers.map(value => `<div>${label(value, 'code')}</div>`).join('')}<div class="unlayered">${label(unlayered, 'body')}</div></div>`
+  /** Two DOM scopes expose inherited computed values; sample paint is the literal result being compared. */
+  const variableScope = (x: number, y: number, inline: boolean, labels: {
+    root: string; rootValue: string; resolved: string; omitted: string; region: string; regionValue: string; sample: string; blue: string; plum: string
+  }) => `<div class="variable-scope anchor-center" style="${box(x, y)}" data-inline="${inline}">
+    ${label(labels.root, 'code')}${label(labels.rootValue, 'code')}${label(inline ? labels.omitted : labels.resolved, inline ? 'edge' : 'code')}
+    <div class="variable-region">${label(labels.region, 'code')}${label(labels.regionValue, 'code')}
+      <div class="variable-sample">${label(labels.sample, 'code')}</div>
+      ${label(inline ? labels.plum : labels.blue, 'note')}
+    </div>
+  </div>`
+  /** A native CSS block: indentation and a scope guide expose containment, not execution order. */
+  const codeScope = (opening: string, content: string, tone?: AnnotationTone) =>
+    `<div class="code-scope"${tone ? ` data-tone="${tone}"` : ''}>${label(opening, 'code')}<div class="code-scope-body">${content}</div>${label('}', 'code')}</div>`
+  /** Equal swatches compare actual preset paint; the marked one is an alias target. */
+  const colorScale = (x: number, y: number, hue: string, steps: readonly string[], selected: number, tone: AnnotationTone) =>
+    `<div class="color-scale anchor-center" data-tone="${tone}" style="${box(x, y)}">${steps.map(step => `<div class="color-scale-step"><i class="bg-${hue}-${step}"${Number(step) === selected ? ` data-selected data-anchor="${hue}-selected"` : ''}></i>${label(step, 'code')}</div>`).join('')}</div>`
+  /** Matched content and geometry isolate native light-dark() selection. */
+  const roleSelection = (x: number, y: number, mode: Theme, heading: string, sample: string, surface: string, tone: AnnotationTone) =>
+    `<div class="role-selection anchor-center" data-tone="${tone}" style="${box(x, y)}">
+      <span class="code" data-label data-anchor="${mode}-scheme">${escapeHtml(heading)}</span>
+      <div class="role-selection-sample bg-surface-base" style="color-scheme:${mode}"><span class="fg-text-muted" data-label>${escapeHtml(sample)}</span></div>
+      ${label(surface, 'edge')}
+    </div>`
   /** Adjacent literal fragments preserve the original string; each bracket follows its fragment's intrinsic width. */
   const codeParts = (x: number, y: number, parts: ({ id: string, value: string, tone: AnnotationTone } | { value: string })[]) =>
     `<div class="annotated-code anchor-center" style="${box(x, y)}">${parts.map(part =>
@@ -84,8 +126,8 @@ export function drawing(theme: Theme) {
     return ''
   }
   /** A connector in scene coordinates: arrowed unless it only joins other routes, dashed only for a labelled condition. */
-  const route = (d: string, { arrow = true, dashed = false } = {}) => {
-    routes.push(`<path d="${d}"${arrow ? ' marker-end="url(#arrow)"' : ''}${dashed ? ' data-dashed' : ''}/>`)
+  const route = (d: string, { arrow = true, dashed = false, emphasis = false } = {}) => {
+    routes.push(`<path d="${d}"${arrow ? ` marker-end="url(#${emphasis ? 'arrow-emphasis' : 'arrow'})"` : ''}${emphasis ? ' data-emphasis' : ''}${dashed ? ' data-dashed' : ''}/>`)
     return ''
   }
 
@@ -102,7 +144,7 @@ export function drawing(theme: Theme) {
 <body>
 <main class="scene" style="width:${sceneWidth}px;height:${sceneHeight}px" role="img" aria-label="${escapeHtml(description)}">
 <svg class="routes" width="${sceneWidth}" height="${sceneHeight}" viewBox="0 0 ${sceneWidth} ${sceneHeight}" aria-hidden="true">
-<defs><marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2.5 1l4 3-4 3"/></marker></defs>
+<defs><marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2.5 1l4 3-4 3"/></marker><marker id="arrow-emphasis" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2.5 1l4 3-4 3"/></marker></defs>
 ${routes.join('\n')}
 </svg>
 ${content}
@@ -113,5 +155,5 @@ ${content}
     return { width: sceneWidth, height: sceneHeight, title, description, html }
   }
 
-  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, selectorSpecimen, codeParts, annotation, leader, route, scene }
+  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, selectorSpecimen, queryScopes, sourceContribution, priorityStack, variableScope, codeScope, colorScale, roleSelection, codeParts, annotation, leader, route, scene }
 }

@@ -2,7 +2,6 @@
 import ReferencePage from '~/site/reference/ReferencePage.astro'
 import TokenSheetView from '~/site/reference/TokenSheetView.astro'
 import FamiliesSheetView from '~/site/reference/FamiliesSheetView.astro'
-import BreakpointsSheetView from '~/site/reference/BreakpointsSheetView.astro'
 import { loadReferenceRoute, referenceMetadata } from '~/site/reference/reference-route'
 
 type Props = { params: { locale: string; namespace: string } }
@@ -15,11 +14,9 @@ export async function generateMetadata({ params }: Props) {
 const { namespace } = Astro.props.params
 const doc = await loadReferenceRoute(`tokens/${namespace}`, 'tokens')
 const sheet = doc.sheet
-if (sheet?.kind !== 'tokens' && sheet?.kind !== 'families' && sheet?.kind !== 'breakpoints') throw new Error(`Missing token sheet: ${doc.id}`)
+if (sheet?.kind !== 'tokens' && sheet?.kind !== 'families') throw new Error(`Missing token sheet: ${doc.id}`)
 ---
 
 <ReferencePage {...Astro.props} document={doc}>
-  {sheet.kind === 'tokens' ? <TokenSheetView sheet={sheet} />
-    : sheet.kind === 'families' ? <FamiliesSheetView sheet={sheet} />
-      : <BreakpointsSheetView sheet={sheet} />}
+  {sheet.kind === 'tokens' ? <TokenSheetView sheet={sheet} /> : <FamiliesSheetView sheet={sheet} />}
 </ReferencePage>

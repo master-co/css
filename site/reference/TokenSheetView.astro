@@ -9,6 +9,8 @@ import SheetExampleBlock from './SheetExampleBlock.astro'
 import SheetNote from './SheetNote.astro'
 import SheetTable from './SheetTable.astro'
 import SheetValue from './SheetValue.astro'
+import InlineText from './InlineText.astro'
+import ReferenceIllustration from './ReferenceIllustration.astro'
 
 interface Props {
   sheet: TokenSheet
@@ -43,6 +45,7 @@ const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.f
 {sheet.note && <SheetNote text={sheet.note} />}
 
 <h2 id="values">Values</h2>
+{sheet.valuesLead && <p><InlineText text={sheet.valuesLead} /></p>}
 {sheet.groups.filter(group => group.values.length).map(group => <Fragment>
   {grouped && group.title && <h3 id={group.id}>{group.title}</h3>}
   {group.palette
@@ -55,10 +58,22 @@ const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.f
       {group.values.map(row => <tr id={row.id}>
         <th scope="row"><code>{row.className}</code></th>
         {group.head.includes('Light') ? modePair(row.value)!.map(value => <td><code>{value}</code></td>)
-          : (row.cells ?? [row.value]).map(value => <td title={resolved(value) === value ? undefined : value}><SheetValue value={resolved(value)} note={pixels(resolved(value))} /></td>)}
+          : (row.cells ?? [row.value]).map(value => {
+            // A hue alias is a lookup relationship; do not hide its reference behind a hover title.
+            const display = group.namespace === 'color' ? value : resolved(value)
+            return <td title={display === value ? undefined : value}><SheetValue value={display} note={pixels(display)} /></td>
+          })}
       </tr>)}
     </SheetTable>}
 </Fragment>)}
+
+{sheet.explanation && <Fragment>
+  <h2 id={sheet.explanation.id}>{sheet.explanation.title}</h2>
+  <p><InlineText text={sheet.explanation.paragraphs[0]} /></p>
+  <ReferenceIllustration id={sheet.explanation.illustration} />
+  {sheet.explanation.paragraphs.slice(1).map(paragraph => <p><InlineText text={paragraph} /></p>)}
+  {!!sheet.explanation.links?.length && <p class="ref-links">See {sheet.explanation.links.map((link, index) => <Fragment>{index ? ' and ' : ''}<Link href={link.href}>{link.label}</Link></Fragment>)}.</p>}
+</Fragment>}
 
 <h2 id="usage">Usage</h2>
 <SheetExampleBlock example={sheet.usage} />

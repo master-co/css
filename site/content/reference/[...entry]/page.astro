@@ -1,5 +1,6 @@
 ---
 import ReferencePage from '~/site/reference/ReferencePage.astro'
+import NamedConditionsSheetView from '~/site/reference/NamedConditionsSheetView.astro'
 import { loadReferenceRoute, referenceMetadata } from '~/site/reference/reference-route'
 
 type Props = { params: { locale: string; entry: string[] } }
@@ -13,4 +14,6 @@ const { entry } = Astro.props.params
 const doc = await loadReferenceRoute(entry.join('/'))
 ---
 
-<ReferencePage {...Astro.props} document={doc} />
+{doc.sheet?.kind === 'named-conditions'
+  ? <ReferencePage {...Astro.props} document={doc}><NamedConditionsSheetView sheet={doc.sheet} /></ReferencePage>
+  : <ReferencePage {...Astro.props} document={doc} />}
