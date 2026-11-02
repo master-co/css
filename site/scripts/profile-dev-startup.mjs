@@ -71,7 +71,7 @@ async function worker() {
     // Astro drops `ssr` once an island hydrates, before its effects settle. Probe
     // the same idempotent open event as its button, then require usable results.
     await page.waitForFunction(() => {
-      if (document.querySelector('dialog.documentation-search')?.open) return true
+      if (document.querySelector('dialog[data-variant="search"]')?.open) return true
       window.dispatchEvent(new CustomEvent('site-search:open'))
       return false
     }, null, { timeout: 20000 })
@@ -106,7 +106,7 @@ async function worker() {
     const homeUpdates = updates.length, homeLoads = loads.length
     const homeLoadMs = loads.reduce((sum, load) => sum + load.ms, 0)
     const uniqueGlobals = new Set(loads.map(load => `${load.environment}:${load.hash}`)).size
-    for (const route of ['/guide/introduction', '/reference/grid-columns', '/']) {
+    for (const route of ['/guide/introduction', '/reference/grid-tracks', '/']) {
       const next = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
       if (next.status() !== 200) throw new Error(`${route}: HTTP ${next.status()}`)
       await page.waitForFunction(() => [...document.querySelectorAll('astro-island')].filter(element => {

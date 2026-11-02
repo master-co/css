@@ -38,7 +38,7 @@ async function browser(base) {
   try {
     const page = await instance.newPage()
     page.on('pageerror', error => errors.push(error.message))
-    for (const route of ['/', '/guide/view-transitions', '/reference/grid-columns', '/reference/rules/declarations', '/reference/tokens/color', '/tw/guide/view-transitions', '/design-system/review/package-api', '/benchmarks']) {
+    for (const route of ['/', '/guide/view-transitions', '/reference/grid-tracks', '/reference/rules/declarations', '/reference/tokens/color', '/tw/guide/view-transitions', '/benchmarks']) {
       const response = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
       if (response.status() !== 200) throw new Error(`${route}: HTTP ${response.status()}`)
       await page.waitForFunction(() => [...document.querySelectorAll('astro-island')].filter(island => {
@@ -55,12 +55,6 @@ async function browser(base) {
         await page.getByRole('combobox', { name: /Search documentation|搜尋文件/ }).fill('padding')
         await page.locator('#documentation-search-results a').first().waitFor()
         await page.keyboard.press('Escape')
-      }
-      if (route === '/design-system/review/package-api') {
-        // The review page keeps its export list in a native disclosure (open by default).
-        const disclosure = page.locator('details.ui-disclosure').filter({ has: page.locator('.ui-index') }).first()
-        if (await disclosure.getAttribute('open') === null) await disclosure.locator('summary').click()
-        if (await disclosure.getAttribute('open') === null || !(await disclosure.textContent()).includes('MasterCSSCompileManifestFileDeliveryOptions')) throw new Error('Package export disclosure is incomplete')
       }
     }
     if (errors.length) throw new Error(`Browser errors: ${errors.join('\n')}`)
@@ -128,11 +122,11 @@ async function worker() {
       }
       await sample(`hot-invalidation-${batch * 10}`)
     }
-    const routes = await (await vite.environments.ssr.runner.import(path.join(root, 'routes.ts'))).getStaticPaths()
+    const routes = await (await vite.environments.ssr.runner.import('virtual:master-site/routes')).getStaticPaths()
     if (!args.includes('--http-only')) await execute(process.execPath, [filename, '--browser', base], { cwd: root, maxBuffer: 1048576 })
     await visit('/__memory-audit-missing-page', 404)
     await sample('after-browsing')
-    return { versions: { node: process.version, astro: JSON.parse(await readFile(new URL('../node_modules/astro/package.json', import.meta.url))).version }, samples, requests, routes }
+    return { versions: { node: process.version, astro: JSON.parse(await readFile(fileURLToPath(import.meta.resolve('astro/package.json')))).version }, samples, requests, routes }
   } finally {
     await server.stop()
     await rm(temporary, { recursive: true, force: true })
