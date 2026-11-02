@@ -47,7 +47,8 @@
     "test:storage": "bun test ./scripts/storage-retention.spec.node.mjs",
     "turbo": "bun ./node_modules/turbo/bin/turbo",
     "check:toolchain": "bun scripts/check-toolchain.mjs",
-    "test:toolchain": "node --test scripts/toolchain.test.mjs scripts/semantic-release-workspace.test.mjs scripts/tsdown-package.test.mjs"
+    "test:toolchain": "node --test scripts/toolchain.test.mjs scripts/semantic-release-workspace.test.mjs scripts/tsdown-package.test.mjs scripts/site-toolchain-snapshot.test.mjs",
+    "snapshot:site": "node scripts/site-toolchain-snapshot.mjs"
   },
   "engines": {
     "node": "^24"

@@ -1,0 +1,61 @@
+name: Site toolchain snapshot
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/shared-site-platform]
+    paths:
+      - .github/workflows/site-toolchain-snapshot.yml
+      - scripts/site-toolchain-snapshot.mjs
+      - scripts/site-toolchain-snapshot.test.mjs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-toolchain-snapshot
+  cancel-in-progress: false
+
+jobs:
+  validation:
+    uses: ./.github/workflows/validation.yml
+    with:
+      full: true
+      release_build: true
+
+  snapshot:
+    needs: validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: build
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: mastercss-binding-*
+          path: binding-artifacts
+      - name: Stage validated native artifacts
+        run: cargo xtask assemble-native-release binding-artifacts release-artifacts/checksums.json --stage
+      - run: bun run build
+      - name: Verify staged artifacts
+        run: cargo xtask assemble-native-release binding-artifacts release-artifacts/checksums.json --require-assets --verify-staged
+      - name: Test snapshot packaging
+        run: node --test scripts/site-toolchain-snapshot.test.mjs
+      - name: Install publishing npm CLI
+        run: npm install --global npm@11.21.0
+      - name: Publish exact site snapshot
+        run: node scripts/site-toolchain-snapshot.mjs --output release-artifacts/site-toolchains --publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Retain snapshot manifest and verified tarballs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-toolchain-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-artifacts/site-toolchains/
+          if-no-files-found: ignore
