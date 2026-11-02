@@ -63,7 +63,7 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipePages } = await import('./sheet-editorial')
-  assert.equal(catalog.documents.length, 31)
+  assert.equal(catalog.documents.length, 32)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, recipePages.length)
   // Fixed utilities emit one declaration; the declarations contract lists them all.
   const fixed = preset.utilities!.filter(utility => utility.kind === 'static' && utility.body.length === 1 && utility.body[0].type === 'declaration')
@@ -98,7 +98,7 @@ test('catalog covers every public family and preset recipe without indexing reti
 
 test('motion lookup owns the animation shorthand family and all ten preset values', () => {
   const animation = catalog.documents.find(doc => doc.id === 'tokens/motion')!
-  assert.match(animation.markdown, /animation: var\(--animate-<name>\)/)
+  assert.match(animation.markdown, /animation: var\(--animate-<animation>\)/)
   assert.match(animation.markdown, /family-animate/)
   assert.match(animation.markdown, /transition-duration:var\(--duration-fast\)/)
   assert.doesNotMatch(animation.markdown, /companion|reference\/animate|@apply --animate/)
@@ -147,7 +147,7 @@ test('namespace consumer tables cover the registry including color role groups',
     }
   }
   const container = catalog.documents.find(doc => doc.id === 'tokens/container')!
-  assert.match(container.markdown, /Changing `--container-md` does not change/)
+  assert.match(container.markdown, /Changing `--container-md` does not redefine `@container\(--md\)`/)
   const breakpoints = catalog.documents.find(doc => doc.id === 'rules/named-conditions')!
   for (const name of Object.keys(preset.customMedia!)) assert.ok(breakpoints.aliases.includes(`@${name.slice(2)}`))
   for (const name of Object.keys(preset.customContainers!)) assert.ok(breakpoints.aliases.includes(`@container(${name})`))
@@ -573,21 +573,33 @@ test('tool catalogs retain discovery, effects and source links without copying f
   }
 })
 
-test('directive contracts preserve stable entrances and complete compiled stylesheet examples', async () => {
-  const previous = JSON.parse(await readFile(path.join(root, 'tests/directive-heading-ids.json'), 'utf8'))
+test('directive contracts keep each definition and example with its content owner', async () => {
   const { directiveExamples } = await import('../tests/directive-examples')
   const { stylesheetExampleMarkdown } = await import('./stylesheet-example')
   const docs = catalog.documents.filter(doc => doc.kind === 'directive')
-  assert.equal(docs.length, 5)
-  // Every earlier section entrance survives on the page that now holds its section.
-  const pages: Record<string, string> = { entry: 'imports', reference: 'imports', theme: 'theme', variant: 'theme', definitions: 'definitions', source: 'scanning', candidates: 'scanning', preserve: 'pruning' }
-  for (const [old, headings] of Object.entries(previous) as [string, { id: string }[]][]) {
-    // Settings and compose were retired before these pages were regrouped.
-    if (!pages[old.slice('directives/'.length)]) continue
-    const doc = docs.find(doc => doc.id === `directives/${pages[old.slice('directives/'.length)]}`)!
-    assert.ok(doc, old)
-    const exported = renderDocumentMarkdown(doc, catalog)
-    for (const heading of headings.filter(heading => heading.id !== 'related-contracts')) assert.ok(doc.headings.some(item => item.id === heading.id) || exported.includes(`id="${heading.id}"`), `${old} → ${doc.id}#${heading.id}`)
+  assert.equal(docs.length, 6)
+  const owners: Record<string, string[]> = {
+    imports: ['import-mastercss', 'reference'],
+    theme: ['theme', 'theme-inline', 'theme-static', 'theme-mode'],
+    queries: ['custom-media', 'custom-container'],
+    definitions: ['utilities', 'reusing-a-matched-value', 'contents', 'whole-definition-replacement'],
+    scanning: ['source', 'source-not', 'safelist', 'blocklist'],
+    pruning: ['prune-native', 'preserve-native', 'native-keyframes']
+  }
+  for (const [owner, anchors] of Object.entries(owners)) {
+    const doc = docs.find(doc => doc.id === `directives/${owner}`)!
+    for (const id of anchors) {
+      assert.ok(doc.headings.some(heading => heading.id === id), `${doc.id}#${id}`)
+      assert.equal(docs.filter(other => other.headings.some(heading => heading.id === id)).length, 1, id)
+    }
+    assert.match(doc.markdown, /reference-illustration:/, doc.id)
+  }
+  const exampleOwners: Record<string, string> = {
+    'Scoped tokens in native CSS': 'theme',
+    'Native keyframes': 'pruning',
+    'A parameter utility': 'definitions',
+    'A named media condition': 'queries',
+    'A named container condition': 'queries'
   }
   for (const doc of docs) {
     assert.notEqual(doc.description, 'Stylesheet directives, their scope and effects.')
@@ -596,6 +608,7 @@ test('directive contracts preserve stable entrances and complete compiled styles
   for (const example of directiveExamples) {
     const matching = docs.filter(doc => doc.markdown.includes(`**${example.title}**`))
     assert.equal(matching.length, 1, example.title)
+    assert.equal(matching[0].id, `directives/${exampleOwners[example.title]}`)
     assert.ok(matching[0].markdown.includes(await stylesheetExampleMarkdown(example.title, example.source)))
   }
 })
@@ -619,4 +632,20 @@ test('package catalog covers public exports and preserves qualified symbol disco
     }
   }
   assert.doesNotMatch(doc.markdown, /```typescript declaration|### createEngine/)
+})
+
+test('Reference overview exports the complete current catalog with matching search sections', async () => {
+  const { referenceOverviewMarkdown } = await import('./navigation-data')
+  const markdown = referenceOverviewMarkdown(catalog.documents)
+  for (const doc of catalog.documents) {
+    assert.ok(markdown.includes(`[${doc.title}](${doc.url})`), doc.id)
+  }
+  for (const locale of ['en', 'tw']) {
+    const prefix = locale === 'en' ? '' : 'tw/'
+    const exported = await readFile(path.join(root, `public/${prefix}reference.md`), 'utf8')
+    assert.ok(exported.includes(markdown))
+    const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+    const overview = search.find((page: any) => page.url === `/${prefix}reference`)
+    assert.deepEqual(overview.nodes, extractSearchNodesFromMdx(markdown))
+  }
 })

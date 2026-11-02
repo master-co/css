@@ -208,7 +208,7 @@ test('Guide overview keeps its category anchors and publishes the same entries t
   const markdown = guideOverviewMarkdown(categories)
   const nodes = extractSearchNodesFromMdx(markdown)
   assert.deepEqual(nodes.filter(node => node.tag === 'h2').map(node => node.id), [
-    'getting-started', 'agentic-workflows', 'authoring', 'fundamentals', 'design-foundations', 'build--delivery'
+    'getting-started', 'agentic-workflows', 'authoring', 'fundamentals', 'design-foundations', 'build-and-delivery'
   ])
   for (const section of sections) for (const entry of section.entries) assert.ok(markdown.includes(`](${entry.url})`), entry.url)
   assert.ok(markdown.includes('<a id="syntax-tutorial"></a>'))
@@ -528,7 +528,10 @@ test('directive references export every native CSS example and setting to both l
   const { renderDocumentMarkdown } = await import('../reference/build')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'directive')
-  assert.equal(docs.length, 5)
+  assert.deepEqual(docs.map((doc: any) => doc.id), [
+    'directives/imports', 'directives/theme', 'directives/queries',
+    'directives/definitions', 'directives/scanning', 'directives/pruning'
+  ])
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {

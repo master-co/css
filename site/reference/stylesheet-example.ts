@@ -13,10 +13,11 @@ export async function stylesheetExampleCSS(source: string) {
   if (errors.length) throw new Error(`Invalid documentation stylesheet: ${JSON.stringify(errors)}`)
   const renderer = createRenderSessionSync({ manifest: result.manifest })
   try {
-    renderer.ensureClassRules([...result.directiveSummary.extractionPolicy.safelist])
     renderer.ensureStylesheetResources(result.css)
+    renderer.ensureClassRules([...result.directiveSummary.extractionPolicy.safelist])
     const snapshot = renderer.snapshot()
-    return beautifyCSS([...(snapshot.engine.stylesheets ?? []), snapshot.cssText].filter(Boolean).join('\n\n')).trim()
+    // The compiler owns native rules; the engine snapshot owns generated rules.
+    return beautifyCSS([result.css, snapshot.cssText].filter(Boolean).join('\n\n')).trim()
   } finally { renderer.dispose() }
 }
 

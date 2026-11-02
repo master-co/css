@@ -15,7 +15,7 @@ export async function buildRecipeContracts(siteRoot: string): Promise<ReferenceD
     // Functions are found by their call form, so a bare `p` still leads to its token family.
     const calls = page.names.map(name => sheet.syntax.concat(sheet.more).some(row => row.syntax.startsWith(`${name}(`)) ? `${name}()` : name)
     return {
-      id: page.id, kind: 'utility', title: page.title, description: page.summary, category: 'Recipes', url: `/reference/${page.id}`,
+      id: page.id, kind: 'utility', title: page.title, description: page.summary, category: 'Utilities', url: `/reference/${page.id}`,
       source: 'packages/preset/src/utilities.css', sourceDigest: createHash('sha256').update(sheet.definitions).digest('hex'), language: 'en',
       aliases: calls, identifierAnchors: Object.fromEntries(calls.map(name => [name, 'overview'])), terms: [], rows: [],
       examples: [{ id: sheet.usage.id, title: sheet.usage.title, classes: sheet.usage.classes, css: sheet.usage.css }],

@@ -193,7 +193,7 @@ For example, a class-order preview for one file:
 }
 ```
 
-If a file changes after the preview, applying it fails instead of overwriting newer work. Tokens belong to one running server and expire after `--preview-ttl` milliseconds (300000 by default); a restart or an applied preview requires a new one.
+If a file changes after the preview, applying it fails instead of overwriting newer work. Create a fresh preview when its files or server session change. See [preview lifetime](/reference/tools/mcp#preview-lifetime) for token validity and write guarantees.
 
 ---
 

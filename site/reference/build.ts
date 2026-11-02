@@ -16,6 +16,7 @@ import { buildToolContracts } from './tool-contracts'
 import { buildPackageContracts } from './package-contracts'
 import { buildNamedConditionsContract } from './named-conditions'
 import { buildTokenContracts } from './token-contracts'
+import { referenceOverviewMarkdown } from './navigation-data'
 import { createReferenceRenderDocument, referenceRenderVersion, type ReferenceRenderDocument } from './render-document'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
@@ -86,6 +87,7 @@ export function renderDocumentMarkdown(doc: ReferenceDocument, catalog: Referenc
 
 export async function generateReference(siteRoot: string, searchPages?: Record<string, SearchPage[]>, pageEntries?: any[]) {
   const catalog = await buildReferenceCatalog(siteRoot)
+  const overview = referenceOverviewMarkdown(catalog.documents)
   const expectedFiles = new Set<string>()
   await mkdir(path.join(siteRoot, '.generated'), { recursive: true })
   await writeIfChanged(path.join(siteRoot, '.generated/reference.json'), JSON.stringify(catalog))
@@ -106,6 +108,9 @@ export async function generateReference(siteRoot: string, searchPages?: Record<s
   }
   await removeStaleGeneratedFiles(documentDir, expectedDocuments)
   for (const locale of ['en', 'tw']) {
+    const overviewFile = path.join(siteRoot, 'public', ...(locale === 'tw' ? ['tw'] : []), 'reference.md')
+    await mkdir(path.dirname(overviewFile), { recursive: true })
+    await writeIfChanged(overviewFile, `# Reference\n\nThe language and tool reference for writing, understanding and reviewing Master CSS.\n\n- Canonical: /reference\n- Language: English${locale === 'tw' ? ' (English fallback; 尚無繁中全文翻譯)' : ''}\n\n${overview}`)
     for (const doc of catalog.documents) {
       const filename = path.join(siteRoot, 'public', ...(locale === 'tw' ? ['tw'] : []), `${doc.url}.md`)
       expectedFiles.add(filename)
@@ -114,13 +119,13 @@ export async function generateReference(siteRoot: string, searchPages?: Record<s
     }
     const searchFile = path.join(siteRoot, `public/search/${locale}.json`)
     const existing = searchPages?.[locale] ?? JSON.parse(await readFile(searchFile, 'utf8').catch(() => '[]'))
-    const pages = catalog.documents.map(doc => ({
+    const pages = [{ title: 'Reference', description: 'The language and tool reference for writing, understanding and reviewing Master CSS.', category: 'Overview', url: `${locale === 'tw' ? '/tw' : ''}/reference`, nodes: extractSearchNodesFromMdx(overview) }, ...catalog.documents.map(doc => ({
       title: doc.title, description: doc.description, category: doc.category, kind: doc.kind,
       url: `${locale === 'tw' ? '/tw' : ''}${doc.url}`,
       identifiers: doc.aliases.map(text => ({ text, id: doc.identifierAnchors?.[text] ?? doc.rows.find(row => row.identifiers.includes(text))?.id, detail: doc.rows.find(row => row.identifiers.includes(text))?.declarations })),
       terms: doc.terms,
       nodes: [...doc.rows.map(row => ({ id: row.id, tag: 'code', text: `${row.syntax} → ${row.declarations}` })), ...extractSearchNodesFromMdx(doc.markdown)]
-    }))
+    }))]
     const merged = [...existing.filter((page: any) => !/^\/(?:en\/|tw\/)?reference\//.test(page.url) && !pages.some(doc => doc.url === page.url)), ...pages]
     if (searchPages) searchPages[locale] = merged
     else {

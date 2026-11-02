@@ -131,4 +131,4 @@ An `--animate-*` token is a complete `animation` shorthand, so it can combine th
 <dialog class="animate-dialog-in@motion-safe">…</dialog>
 ```
 
-The token has no iteration count, so the entrance runs once; preset `animate-*` tokens repeat. `@motion-safe` keeps the dialog still when reduced motion is requested. Keyframes stay in their stylesheet by default; with `@prune native`, a referenced animation token retains its keyframes. Add `@safelist keyframes "dialog-in";` for a name that only JavaScript applies. See [Motion](/reference/tokens/motion) and the [keyframe contract](/reference/directives/theme#native-keyframes).
+The token has no iteration count, so the entrance runs once; preset `animate-*` tokens repeat. `@motion-safe` keeps the dialog still when reduced motion is requested. Keyframes stay in their stylesheet by default; with `@prune native`, a referenced animation token retains its keyframes. Add `@safelist keyframes "dialog-in";` for a name that only JavaScript applies. See [Motion](/reference/tokens/motion) and the [keyframe contract](/reference/directives/pruning#native-keyframes).

@@ -7,6 +7,7 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolvePublicEnv } from '../utils/public-env.js'
 import { generateReference, renderDocumentMarkdown } from '../reference/build'
+import { referenceOverviewMarkdown } from '../reference/navigation-data'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundation-content'
 import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
@@ -241,6 +242,7 @@ export async function generate(siteRoot: string): Promise<{ index: string; full:
     const { guideOverviewMarkdown } = await import('../utils/guide-overview')
     overview.body = guideOverviewMarkdown(JSON.parse(await readFile(path.join(siteRoot, '.categories/guide.json'), 'utf8')))
   }
+  pages.push({ file: 'site/reference/navigation-data.ts', section: 'reference', url: '/reference', markdownUrl: '/reference.md', title: 'Reference', description: 'The language and tool reference for writing, understanding and reviewing Master CSS.', body: referenceOverviewMarkdown(catalog.documents) })
   pages.push(...catalog.documents.map(doc => ({
     file: doc.source, section: `reference / ${doc.kind}`, url: doc.url, markdownUrl: `${doc.url}.md`,
     title: doc.title, description: doc.description, body: renderDocumentMarkdown(doc, catalog)

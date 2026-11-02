@@ -30,7 +30,9 @@ export function SheetHeading({ id, children }: { id: string, children: React.Rea
  * document table treatment and bleed with code blocks and examples.
  */
 export function SheetTable({ className, head, modes, keyWidth, children }: { className?: string, head: string[], modes?: boolean, keyWidth?: string, children: React.ReactNode }) {
-  return <div className={clsx('ref-table ui-table', className)} data-modes={modes || undefined} style={keyWidth ? { '--ref-key-width': keyWidth } as React.CSSProperties : undefined}>
+  const label = head.join(', ')
+  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- A wide table's overflow region needs native keyboard scrolling.
+  return <div role="region" aria-label={label} tabIndex={0} className={clsx('ref-table ui-table', className)} data-columns={head.length} data-modes={modes || undefined} style={keyWidth ? { '--ref-key-width': keyWidth } as React.CSSProperties : undefined}>
     <table>
       <thead><tr>{head.map(label => <th key={label} scope="col">{label}</th>)}</tr></thead>
       <tbody>{children}</tbody>

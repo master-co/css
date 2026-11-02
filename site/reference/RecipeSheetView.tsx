@@ -2,6 +2,7 @@ import Code from '~/site/docs-shell/components/Code'
 import DocumentDisclosure from '../components/DocumentDisclosure'
 import { keyWidth, Link, SheetClassTable, SheetExampleBlock, SheetHeading, SheetLinks, SheetNote } from './SheetBlocks'
 import type { RecipeSheet } from './sheets'
+import SheetExplanation from './SheetExplanation'
 
 export default function RecipeSheetView({ sheet }: { sheet: RecipeSheet }) {
   const definitions = sheet.definitions.split('\n\n')
@@ -9,6 +10,8 @@ export default function RecipeSheetView({ sheet }: { sheet: RecipeSheet }) {
     <SheetHeading id="overview">Classes</SheetHeading>
     <SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={`${sheet.more.length} more functions`} width={keyWidth(sheet.syntax.map(row => row.syntax))} />
     {sheet.note && <SheetNote>{sheet.note}</SheetNote>}
+
+    <SheetExplanation explanation={sheet.explanation} />
 
     <SheetHeading id="examples">Usage</SheetHeading>
     <SheetExampleBlock example={sheet.usage} caption={sheet.caption} />

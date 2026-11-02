@@ -20,7 +20,7 @@ export function directiveSection(id: string) {
 export const directiveExamples = stylesheetExamples(directiveSource)
 
 export async function verifyDirectiveExamples() {
-  assert.equal(directiveExamples.length, 4)
+  assert.equal(directiveExamples.length, 5)
   const output = new Map<string, string>()
   for (const example of directiveExamples) {
     const actual = (await stylesheetExampleCSS(example.source)).replace(/\s+/g, '')
@@ -33,6 +33,7 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('Native keyframes')!, /@keyframesfade-in/)
   assert.match(output.get('A parameter utility')!, /width:2rem;height:2rem/)
   assert.match(output.get('A named media condition')!, /@media\(width>=40rem\)/)
+  assert.match(output.get('A named container condition')!, /@container\(width>=40rem\)/)
   await assert.rejects(stylesheetExampleCSS('@theme unknown { --color-brand: red; }'), /accepts only static and inline modifiers/)
   const preservation = deliveryFences(directiveSection('native-css-preservation')).find(fence => fence.text.includes('@preserve native;'))!.text
   const pruningFixture = deliveryFixture()

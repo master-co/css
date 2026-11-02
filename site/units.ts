@@ -9,7 +9,7 @@ const units = {
       'Fundamentals',
       'Design Foundations',
       'Customization',
-      'Build & Delivery',
+      'Build and Delivery',
     ]
   },
   reference: {

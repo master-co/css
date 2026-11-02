@@ -1,4 +1,40 @@
+import tool0light from '../assets/images/reference-tools/preview-file-identity/preview-file-identity-light.png'
+import tool0dark from '../assets/images/reference-tools/preview-file-identity/preview-file-identity-dark.png'
+import tool1light from '../assets/images/reference-tools/cli-output-destinations/cli-output-destinations-light.png'
+import tool1dark from '../assets/images/reference-tools/cli-output-destinations/cli-output-destinations-dark.png'
+import tool2light from '../assets/images/reference-tools/compiler-output-ownership/compiler-output-ownership-light.png'
+import tool2dark from '../assets/images/reference-tools/compiler-output-ownership/compiler-output-ownership-dark.png'
+import directive0light from '../assets/images/reference-directives/import-reference-output/import-reference-output-light.png'
+import directive0dark from '../assets/images/reference-directives/import-reference-output/import-reference-output-dark.png'
+import directive1light from '../assets/images/reference-directives/theme-modifier-axes/theme-modifier-axes-light.png'
+import directive1dark from '../assets/images/reference-directives/theme-modifier-axes/theme-modifier-axes-dark.png'
+import directive2light from '../assets/images/reference-directives/container-condition-expansion/container-condition-expansion-light.png'
+import directive2dark from '../assets/images/reference-directives/container-condition-expansion/container-condition-expansion-dark.png'
+import directive3light from '../assets/images/reference-directives/definition-replacement/definition-replacement-light.png'
+import directive3dark from '../assets/images/reference-directives/definition-replacement/definition-replacement-dark.png'
+import directive4light from '../assets/images/reference-directives/scanning-two-filters/scanning-two-filters-light.png'
+import directive4dark from '../assets/images/reference-directives/scanning-two-filters/scanning-two-filters-dark.png'
+import directive5light from '../assets/images/reference-directives/pruning-file-boundary/pruning-file-boundary-light.png'
+import directive5dark from '../assets/images/reference-directives/pruning-file-boundary/pruning-file-boundary-dark.png'
 import DocumentIllustration from '../components/DocumentIllustration'
+import gridLight from '../assets/images/reference-grid-tracks/grid-track-flow-light.png'
+import gridDark from '../assets/images/reference-grid-tracks/grid-track-flow-dark.png'
+import truncationLight from '../assets/images/reference-truncation/truncation-lines-light.png'
+import truncationDark from '../assets/images/reference-truncation/truncation-lines-dark.png'
+import accessibleLight from '../assets/images/reference-sr-only/screen-reader-name-light.png'
+import accessibleDark from '../assets/images/reference-sr-only/screen-reader-name-dark.png'
+import directLight from '../assets/images/reference-direct-values/direct-number-units-light.png'
+import directDark from '../assets/images/reference-direct-values/direct-number-units-dark.png'
+import motionLight from '../assets/images/reference-motion/motion-duration-override-light.png'
+import motionDark from '../assets/images/reference-motion/motion-duration-override-dark.png'
+import fontLight from '../assets/images/reference-font/font-properties-light.png'
+import fontDark from '../assets/images/reference-font/font-properties-dark.png'
+import textLight from '../assets/images/reference-text/text-companions-light.png'
+import textDark from '../assets/images/reference-text/text-companions-dark.png'
+import leadingLight from '../assets/images/reference-leading/leading-ratio-light.png'
+import leadingDark from '../assets/images/reference-leading/leading-ratio-dark.png'
+import trackingLight from '../assets/images/reference-tracking/tracking-inheritance-light.png'
+import trackingDark from '../assets/images/reference-tracking/tracking-inheritance-dark.png'
 import light from '../assets/images/reference-declarations/native-value-boundary-light.png'
 import dark from '../assets/images/reference-declarations/native-value-boundary-dark.png'
 import targetsLight from '../assets/images/reference-selectors/selector-targets-light.png'
@@ -19,9 +55,41 @@ import hueLight from '../assets/images/reference-color/hue-alias-selection-light
 import hueDark from '../assets/images/reference-color/hue-alias-selection-dark.png'
 import roleLight from '../assets/images/reference-color-roles/role-value-selection-light.png'
 import roleDark from '../assets/images/reference-color-roles/role-value-selection-dark.png'
+import spacingLight from '../assets/images/reference-spacing/spacing-boundaries-light.png'
+import spacingDark from '../assets/images/reference-spacing/spacing-boundaries-dark.png'
+import capLight from '../assets/images/reference-container/container-cap-light.png'
+import capDark from '../assets/images/reference-container/container-cap-dark.png'
+import radiusLight from '../assets/images/reference-radius/radius-clipping-light.png'
+import radiusDark from '../assets/images/reference-radius/radius-clipping-dark.png'
+import shadowLight from '../assets/images/reference-shadow/shadow-footprint-light.png'
+import shadowDark from '../assets/images/reference-shadow/shadow-footprint-dark.png'
 import { referenceIllustrations, type ReferenceIllustrationId } from './illustrations'
 
 const images = {
+  'preview-file-identity': { light: tool0light, dark: tool0dark },
+  'cli-output-destinations': { light: tool1light, dark: tool1dark },
+  'compiler-output-ownership': { light: tool2light, dark: tool2dark },
+
+  'import-reference-output': { light: directive0light, dark: directive0dark },
+  'theme-modifier-axes': { light: directive1light, dark: directive1dark },
+  'container-condition-expansion': { light: directive2light, dark: directive2dark },
+  'definition-replacement': { light: directive3light, dark: directive3dark },
+  'scanning-two-filters': { light: directive4light, dark: directive4dark },
+  'pruning-file-boundary': { light: directive5light, dark: directive5dark },
+
+  'grid-track-flow': { light: gridLight, dark: gridDark },
+  'truncation-lines': { light: truncationLight, dark: truncationDark },
+  'screen-reader-name': { light: accessibleLight, dark: accessibleDark },
+  'direct-number-units': { light: directLight, dark: directDark },
+  'motion-duration-override': { light: motionLight, dark: motionDark },
+  'font-properties': { light: fontLight, dark: fontDark },
+  'text-companions': { light: textLight, dark: textDark },
+  'leading-ratio': { light: leadingLight, dark: leadingDark },
+  'tracking-inheritance': { light: trackingLight, dark: trackingDark },
+  'radius-clipping': { light: radiusLight, dark: radiusDark },
+  'shadow-footprint': { light: shadowLight, dark: shadowDark },
+  'spacing-boundaries': { light: spacingLight, dark: spacingDark },
+  'container-cap': { light: capLight, dark: capDark },
   'hue-alias-selection': { light: hueLight, dark: hueDark },
   'role-value-selection': { light: roleLight, dark: roleDark },
   'namespace-lookup': { light: namespacesLight, dark: namespacesDark },

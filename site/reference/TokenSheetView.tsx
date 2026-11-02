@@ -3,7 +3,10 @@ import Palette, { type PaletteGroup } from '../components/demo/foundations/Palet
 import { foundationTokens } from '../common/foundation-data/tokens'
 import { modePair, pixels, type SheetGroup, type TokenSheet } from './sheets'
 import { InlineText, keyWidth, Link, SheetClassTable, SheetExampleBlock, SheetHeading, SheetLinks, SheetNote, SheetTable, SheetValue } from './SheetBlocks'
-import ReferenceIllustration from './ReferenceIllustration'
+import SheetExplanation from './SheetExplanation'
+import TokenSurfaceScale from './TokenSurfaceScale'
+import TokenTypeScale from './TokenTypeScale'
+import TokenMotionScale from './TokenMotionScale'
 
 /** Show a stored `var(--token)` reference as the value it resolves to, e.g. text sizes. */
 function resolved(value: string) {
@@ -54,15 +57,12 @@ export default function TokenSheetView({ sheet }: { sheet: TokenSheet }) {
     {sheet.groups.filter(group => group.values.length).map(group => <Fragment key={group.id}>
       {grouped && group.title && <h3 id={group.id}>{group.title}</h3>}
       {group.palette ? <PaletteView group={group} /> : <ValueTable group={group} width={width} />}
+      <TokenSurfaceScale group={group} />
+      <TokenTypeScale group={group} />
+      <TokenMotionScale group={group} />
     </Fragment>)}
 
-    {sheet.explanation && <>
-      <SheetHeading id={sheet.explanation.id}>{sheet.explanation.title}</SheetHeading>
-      <p><InlineText>{sheet.explanation.paragraphs[0]}</InlineText></p>
-      <ReferenceIllustration id={sheet.explanation.illustration} />
-      {sheet.explanation.paragraphs.slice(1).map(paragraph => <p key={paragraph}><InlineText>{paragraph}</InlineText></p>)}
-      {!!sheet.explanation.links?.length && <SheetLinks>See {sheet.explanation.links.map((link, index) => <Fragment key={link.href}>{index ? ' and ' : ''}<Link href={link.href}>{link.label}</Link></Fragment>)}.</SheetLinks>}
-    </>}
+    <SheetExplanation explanation={sheet.explanation} />
 
     <SheetHeading id="usage">Usage</SheetHeading>
     <SheetExampleBlock example={sheet.usage} />

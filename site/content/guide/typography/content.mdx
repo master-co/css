@@ -23,7 +23,7 @@ This hierarchy uses size, spacing and text roles while keeping regular weight. A
 
 ## Text treatments and font sizes \{#without-vs-with-text-token\}
 
-`font-<token>` changes only the font size and keeps the inherited line height and letter spacing. `text-<token>` sets all three. Compare the same size in both forms:
+`font-<size>` changes only the font size and keeps the inherited line height and letter spacing. `text-<token>` sets all three. Compare the same size in both forms:
 
 <TypeIllustration />
 
@@ -39,9 +39,9 @@ This hierarchy uses size, spacing and text roles while keeping regular weight. A
 
 <Class2CSS>{['font-3xl', 'text-3xl']}</Class2CSS>
 
-Use `text-<token>` for body, heading and display styles. Use `font-<token>`, `leading-<token>` or `tracking-<token>` only when the design deliberately departs from a treatment.
+Use `text-<token>` for body, heading and display styles. Use `font-<size>`, `leading-<token>` or `tracking-<token>` only when the design deliberately departs from a treatment.
 
-The `font-` prefix reads three namespaces: `font-sans` reads `--font-family-sans`, `font-sm` reads `--font-size-sm`, and `font-bold` reads `--font-weight-bold`. A key must belong to only one of them. If a custom `brand` key exists as both a family and a size, `font-brand` reports an ambiguity and generates no CSS; write `(font-size:var(--font-size-brand))` instead. See [Font](/reference/tokens/font).
+The `font-` prefix also accepts family and weight keys: `font-sans` chooses a family and `font-bold` requests a weight. Keep custom names distinct across these namespaces; [Font](/reference/tokens/font) lists their values and resolution rules.
 
 ---
 

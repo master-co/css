@@ -8,7 +8,7 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 
 | Content | Source | Generated facts |
 | --- | --- | --- |
-| Recipes | `reference/sheet-editorial.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
+| Utilities | `reference/sheet-editorial.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS; includes recipes and single-declaration numeric functions |
 | Language rules | `content/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
 | Directives | `content/guide/directives/contract.mdx` | Named sections in the directive Reference |
 | Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes and consumers |
@@ -40,12 +40,20 @@ Authored rule figures use `<ReferenceIllustration id="…" />`. Their shared lab
 
 Token value sheets define their focused explanation and figure in `sheet-editorial.ts`; `TokenSheetView` and `tokenSheetMarkdown` render the same fields and illustration text. Keep necessary layout or border prerequisites in a specimen's `keep` list so source abbreviation preserves them in both HTML and compiled exports. The complete family index uses namespace identity when grouping consumers; never merge distinct namespaces solely because their prefixes or properties match.
 
+`TokenSurfaceScale` preserves complete radius and shadow comparisons behind a disclosure, using the adjacent table's values directly. Samples share geometry, follow the site scheme and leave room for shadow paint. Their values already belong to the portable table; do not add a second token list or theme control to support this presentation.
+
+`TokenTypeScale` preserves every family, size, weight, text treatment, leading and tracking value at its actual size. Text specimens read all three table cells, including companions. Wide samples scroll in a labelled keyboard-accessible stage; never shrink the scale to fit a phone. Typography Guide owns composition and font loading; these Reference sheets own independent properties, recipe companions, namespace ambiguity and inheritance contracts.
+
+`TokenMotionScale` reuses the foundation scenes and native playback controller for the complete animation, duration and easing collections. The lookup retains preset infinite shorthand values; the comparisons explicitly run once and begin paused. Playback controls serve the lesson, with no theme toggle. Verify generated shorthand/longhand order from actual output before describing overrides; animation duration utilities currently follow the animation shorthand under equal conditions.
+
+Utilities include both multi-declaration recipes and single-declaration numeric functions. Their focused explanation uses `SheetExplanation` and the same Markdown adapter as token sheets. Keep prerequisite layout, width constraints and border styles in visible source when the lesson depends on them. Clipped text needs a real path to its full content; visually hidden text needs an actual accessible-name check.
+
 Individual document pages render their authored or generated body directly. Do not inject a version/source/Markdown toolbar, a page-level copy-example control, a generic Related reference section or an extra alias list. Keep the body as the reading source of truth; search and machine exports derive from the existing shared content model.
 
 ## Editing safely
 
 1. Retain URLs for continuing content. Remove retired Reference routes and update active internal links to their replacement content. The user explicitly waived redirect handling for this migration; do not add navigation-only pages or anchor redirect maps merely for compatibility. Keep removed articles out of navigation, search, sitemap and machine exports.
-2. Preserve explicit heading IDs. In MDX, write `## New title \{#stable-id\}`. The braces must be escaped for MDX; the visible title and exported Markdown omit the marker. Add an old anchor entrance when moving a section.
+2. Preserve useful semantic heading IDs when their sections remain. In MDX, write `## New title \{#stable-id\}`. The braces must be escaped for MDX; the visible title and exported Markdown omit the marker. When moving a section, update its incoming links to the new owner; this refactor does not require legacy anchor entrances.
 3. Add prose for prerequisites, exceptions and intended use. Placeholder syntax rows describe declaration shapes, not the full grammar of accepted values.
 4. Keep a text equivalent for every meaningful component. `markdown.ts` handles `Overview`, `Class2CSS`, literal `Code`, local MDX includes, token tables and configured examples. Unsupported components are reported and fail the coverage test. Do not execute arbitrary JSX to extract prose.
 5. Use `ConfiguredExample` for classes that depend on custom theme settings. It compiles the configuration through the public compiler before generating CSS with the public engine.
@@ -219,9 +227,13 @@ file fixtures when a lesson depends on imports, references or resource ownership
 Keep this compiler-backed component outside client barrels.
 
 The directive renderer keeps the opening section anchor without repeating the page
-title. All headings remain in the exported contract. The old `related-contracts`
-anchor remains available; authored links replace the generic related-contracts
-paragraph. Only the exact Setting/Default/Effect table shape becomes
+title. All published headings remain in the exported contract. Imports owns
+stylesheet delivery; Theme owns token declarations; Query definitions owns custom
+media and containers; Utilities and mixins owns reuse definitions; Scanning owns
+file and candidate filters; Native CSS pruning owns per-file policy and keyframes.
+Update incoming links directly when moving an entry. The source contract also
+retains compiler-delivery fixtures used by documentation tests; these appendices
+are not separate public directive pages. Only the exact Setting/Default/Effect table shape becomes
 `DocumentOptions`; inline code and links remain part of the description.
 
 Stylesheet pairs use explicit `stylesheet=source` and `stylesheet=result` fence

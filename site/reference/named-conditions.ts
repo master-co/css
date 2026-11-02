@@ -66,7 +66,7 @@ export function namedConditionsMarkdown(sheet: NamedConditionsSheet) {
     referenceIllustrationMarkdown('condition-domains'),
     '## Usage {#usage}', sheetExampleMarkdown(sheet.usage),
     '## Customize {#customize}', namedConditionText.customize, sheetExampleMarkdown(sheet.customize),
-    'See [condition grammar](/reference/rules/conditions), [condition definition scope](/reference/rules/conditions#compiled-condition-definitions), [theme directives](/reference/directives/theme#custom-container), [container sizing tokens](/reference/tokens/container) and [Responsive design](/guide/responsive-design).',
+    'See [condition grammar](/reference/rules/conditions), [condition definition scope](/reference/rules/conditions#compiled-condition-definitions), [query definitions](/reference/directives/queries#custom-container), [container sizing tokens](/reference/tokens/container) and [Responsive design](/guide/responsive-design).',
   ].join('\n\n')
 }
 

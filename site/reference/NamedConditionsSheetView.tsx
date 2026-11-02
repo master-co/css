@@ -31,6 +31,6 @@ export default function NamedConditionsSheetView({ sheet }: { sheet: NamedCondit
     <SheetHeading id="customize">Customize</SheetHeading>
     <p><InlineText>{namedConditionText.customize}</InlineText></p>
     <SheetExampleBlock example={sheet.customize} preview={false} />
-    <SheetLinks>See <Link href="/reference/rules/conditions">condition grammar</Link>, <Link href="/reference/rules/conditions#compiled-condition-definitions">condition definition scope</Link>, <Link href="/reference/directives/theme#custom-container">theme directives</Link>, <Link href="/reference/tokens/container">container sizing tokens</Link> and <Link href="/guide/responsive-design">Responsive design</Link>.</SheetLinks>
+    <SheetLinks>See <Link href="/reference/rules/conditions">condition grammar</Link>, <Link href="/reference/rules/conditions#compiled-condition-definitions">condition definition scope</Link>, <Link href="/reference/directives/queries#custom-container">query definitions</Link>, <Link href="/reference/tokens/container">container sizing tokens</Link> and <Link href="/guide/responsive-design">Responsive design</Link>.</SheetLinks>
   </>
 }

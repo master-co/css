@@ -1,5 +1,219 @@
+import { toolIllustrations } from './tool-illustrations'
+import { directiveIllustrations } from './directive-illustrations'
+
 /** Shared evidence for authored Reference figures and their portable text. */
 export const referenceIllustrations = {
+  ...directiveIllustrations,
+  ...toolIllustrations,
+  'grid-track-flow': {
+    title: 'Column and row recipes fill the same children in different directions',
+    alt: 'Six numbered items form three columns and two rows with grid-cols(3). With grid-rows(3), they form three rows and two columns, filling down before starting the next column.',
+    caption: 'Both grids use the same six children and gap. grid-rows(3) also sets grid-auto-flow: column; grid-cols(3) leaves the default row flow. Tile heights follow their content.',
+    labels: { shared: 'Same children: 1 → 2 → 3 → 4 → 5 → 6', left: 'grid-cols(3)', right: 'grid-rows(3)', leftFlow: 'Row flow · default', rightFlow: 'Column flow · set by the recipe', scope: 'Track count belongs to the parent; a span belongs to an item.' },
+    description: [
+      'The first grid has three explicit minmax(0, 1fr) columns. Default row flow places items 1, 2 and 3 across its first row, followed by 4, 5 and 6.',
+      'The second grid has three explicit minmax(0, 1fr) rows and column auto-flow. Items 1, 2 and 3 fill the first column; 4, 5 and 6 fill the second.',
+      'Both scenes use real preset CSS, six identical content-sized tiles and a 12px gap. Widths keep the tile widths comparable; neither recipe supplies that gap or width.',
+      'The illustration uses default item placement. Explicit placement and spans can change the result; grid-cols does not reset a column flow established elsewhere.'
+    ]
+  },
+  'truncation-lines': {
+    title: 'The same text can paint all lines, one line or two lines',
+    alt: 'Three equal-width copies of a paragraph show the full text, a one-line ellipsis using truncate, and a two-line ellipsis using clamp-lines(2). The clipped examples keep the same complete text in the DOM.',
+    caption: 'The font, width and text are identical. Only the truncation class changes. The native browser paints the ellipsis; the full string remains available in each element.',
+    labels: { headings: ['Full text', 'truncate', 'clamp-lines(2)'], content: 'Good interfaces keep the full story within reach. A short preview helps readers decide what to explore next.', scope: 'Visual clipping does not shorten the DOM text or provide a way to expand it.' },
+    description: [
+      'Each copy has a 192px width, a 14px font and a 24px line height.',
+      'The first copy wraps freely and grows to contain every line. truncate keeps the second on one line and hides the overflow with an ellipsis.',
+      'clamp-lines(2) lets the third copy wrap, then limits its visible content to two lines using the prefixed line-clamp combination.',
+      'All three elements contain the same full string. A separate disclosure or link is needed when readers must access the complete visible text.'
+    ]
+  },
+  'screen-reader-name': {
+    title: 'Clipped text can still name a visible control',
+    alt: 'One link contains a visible arrow and sr-only text. Its visual representation shows only the arrow; its accessible representation is a link named Read the utility definition.',
+    caption: 'The arrow has aria-hidden="true". The label text is visually clipped by sr-only and supplies the link’s accessible name. The link itself stays visible and focusable.',
+    labels: { source: 'One link', visual: 'Visual rendering', accessible: 'Accessible representation', open: '<a href="#customize">', icon: '<span aria-hidden="true">↓</span>', clipped: '<span class="sr-only">', name: 'Read the utility definition', closeSpan: '</span>', close: '</a>', role: 'link', scope: 'Hide the label’s paint; keep the control and its name available.' },
+    description: [
+      'The link contains an arrow excluded from accessible-name calculation and a span containing Read the utility definition.',
+      'The span uses the actual sr-only preset: absolute positioning, a 1px box, hidden overflow and clipping. It remains in the DOM without aria-hidden.',
+      'The visible link still occupies a 40px square and shows the arrow. Its accessible role is link and its name is Read the utility definition.',
+      'The two branches are representations of the same control, not sequential operations. Hiding an ancestor from the accessibility tree would also hide its descendants.'
+    ]
+  },
+  'direct-number-units': {
+    title: 'Direct numbers become pixel lengths or unitless factors',
+    alt: 'p(12) produces a 12-pixel inset around a content box. grow(1) and grow(2) divide an equal zero-basis flex row’s free space in a one-to-two ratio.',
+    caption: 'The left number becomes a pixel length. The right numbers are flex factors: zero bases and no content minimum isolate their 1:2 distribution. Other bases and minimum sizes can change final widths.',
+    labels: { left: 'p(12)', leftOutput: 'padding: calc(12 * 1px)', content: 'Content', inset: '12px', right: 'grow(1) / grow(2)', rightOutput: 'Unitless growth factors', basis: 'Zero basis · no content minimum', scope: 'A direct number is not a theme-scale step.' },
+    description: [
+      'The padding example applies real p(12), giving exactly 12px between its content and each outer edge. A blue annotation makes that inset visible.',
+      'The flex example applies grow(1) and grow(2) to two items with zero flex bases and zero minimum widths, in a 252px row with a 12px gap.',
+      'The remaining 240px is distributed as 80px and 160px. The factors remain unitless; they are not pixel widths.',
+      'These are controlled comparisons. With nonzero bases or content minimums, the final widths need not match the growth ratio. Each function’s declaration is listed in the article.'
+    ]
+  },
+  'motion-duration-override': {
+    title: 'A duration class changes timing while keeping the same keyframes',
+    alt: 'Two animations are compared on a shared time scale. animate-pulse alone lasts 1000 milliseconds per iteration; adding animation-slow reduces the duration to 300 milliseconds while keeping the same keyframes.',
+    caption: 'Both cases use the same pulse keyframes. Bars measure one iteration’s duration, not animation progress or rendering speed. The preset repeats; the comparison isolates a single iteration.',
+    labels: {
+      first: 'animate-pulse',
+      second: 'animate-pulse animation-slow',
+      firstResult: 'Preset shorthand: 1000ms', secondResult: 'Duration override: 300ms',
+      start: '0ms', middle: '300ms', end: '1000ms',
+      scope: 'Same conditions · same keyframes · one shared time scale'
+    },
+    description: [
+      'The animate-pulse shorthand supplies pulse 1s infinite. Its duration is one second per iteration.',
+      'Under the same conditions, animation-slow sorts after animate-pulse and replaces only its duration with var(--duration-slow), or 300ms. The pulse keyframes and infinite iteration count remain the same.',
+      'Both horizontal bars start at zero. Their lengths have a 1000:300 ratio on the same millisecond axis. They measure declared duration per iteration, not performance or the distance a shape travels.',
+      'The preset pulse token repeats infinitely. Add a native iteration count or define a custom token to run once; changing the order of class names does not change generated rule order.'
+    ]
+  },
+  'font-properties': {
+    title: 'The font prefix can change three independent properties',
+    alt: 'Three rows compare the same Field notes text with one baseline. A serif class changes the face, a larger size class changes the size, and a semibold class changes the weight.',
+    caption: 'Every row starts with font-sans, font-2xl and font-regular. The result replaces only the class for the named property. The available fonts determine the rendered faces.',
+    labels: {
+      baseline: 'font-sans font-2xl font-regular', heading: 'Common baseline',
+      headings: ['Changed class', 'Baseline', 'Result'], sample: 'Field notes',
+      rows: [
+        { class: 'font-serif', classes: 'font-serif font-2xl font-regular' },
+        { class: 'font-4xl', classes: 'font-sans font-4xl font-regular' },
+        { class: 'font-semibold', classes: 'font-sans font-2xl font-semibold' }
+      ],
+      scope: 'Family, size and weight remain independent; the shared prefix does not combine them.'
+    },
+    description: [
+      'The baseline text uses the sans family, 1.5rem size and weight 400, with a 16px root font size.',
+      'The font-serif row changes only font-family. The font-4xl row changes only font-size, to 2.25rem. The font-semibold row changes only font-weight, to 600.',
+      'Each result uses the same words. A common unitless line-height of 1.5 keeps the samples readable; these font classes do not set line-height.',
+      'The samples render real preset CSS with available system fonts. They do not imply that a family class downloads a font file.'
+    ]
+  },
+  'text-companions': {
+    title: 'A text treatment always writes three properties',
+    alt: 'A custom text-card class branches to font-size, line-height and letter-spacing. The size reads the primary token; the two absent companions each fall back to normal.',
+    caption: 'Only the primary --text-card token is defined here. Both companion declarations still exist and use normal, replacing any inherited line height or letter spacing.',
+    source: '@theme { --text-card: 1.5rem; }',
+    labels: {
+      class: 'text-card',
+      properties: ['font-size:', 'line-height:', 'letter-spacing:'],
+      values: ['var(--text-card)', 'var(--text-card--line-height, normal)', 'var(--text-card--letter-spacing, normal)'],
+      scope: 'Missing companions use normal; they do not preserve inherited values.'
+    },
+    description: [
+      'The custom theme defines --text-card as 1.5rem and defines neither companion.',
+      'text-card emits font-size: var(--text-card), line-height: var(--text-card--line-height, normal) and letter-spacing: var(--text-card--letter-spacing, normal).',
+      'All three solid branches represent emitted declarations. The absent companions use their normal fallback rather than inheriting another line height or letter spacing.',
+      'A companion on its own does not register text-card. Family, weight and color are outside this recipe.'
+    ]
+  },
+  'leading-ratio': {
+    title: 'The same inherited ratio produces different line heights',
+    alt: 'Two children inherit leading-md, or 1.6. Equal-width columns show three full line boxes: a 16px font produces 25.6px lines; a 24px font produces 38.4px lines.',
+    caption: 'The children inherit a unitless 1.6 and use different font sizes. Tinted bands show complete line boxes, not the blank gaps between glyphs. The columns keep the same width.',
+    labels: {
+      parent: 'Parent: leading-md', ratio: 'line-height: 1.6',
+      classes: ['font-md', 'font-2xl'], sizes: ['font-md · 16px', 'font-2xl · 24px'],
+      lines: ['Read this line', 'Then the next', 'And one more'],
+      results: ['16px × 1.6 = 25.6px', '24px × 1.6 = 38.4px'],
+      scope: 'The ratio is inherited; each child supplies its own font size.'
+    },
+    description: [
+      'A common parent uses leading-md, whose preset value is the number 1.6.',
+      'The first child uses font-md at a 16px root font size, giving 16px text and a 25.6px line height.',
+      'The second child uses font-2xl, giving 24px text and a 38.4px line height. It inherits the same ratio rather than a fixed 25.6px length.',
+      'Each column contains the same three lines. Colored bands are inspection annotations of the complete line boxes; they are not padding or gaps generated by leading-md.'
+    ]
+  },
+  'tracking-inheritance': {
+    title: 'Reapplying em tracking recalculates its length',
+    alt: 'A 16px parent uses tracking-widest. Two 32px children show the same word: one inherits 1.92px tracking, while the other reapplies tracking-widest and uses 3.84px, producing a wider text box.',
+    caption: 'Both children have the same font and size. The inherited letter-spacing length stays 1.92px; reapplying the class evaluates .12em at the child’s 32px font size.',
+    labels: {
+      parent: 'Parent: font-md tracking-widest', computed: '.12 × 16px = 1.92px',
+      classes: ['font-3xl', 'font-3xl tracking-widest'], sample: 'Letterforms',
+      results: ['Inherited: 1.92px', 'Reapplied: 3.84px'],
+      scope: 'Guides span the text boxes; font size and glyph shapes stay the same.'
+    },
+    description: [
+      'The parent uses font-md and tracking-widest. With a 16px root font size, its .12em tracking computes to a 1.92px length.',
+      'Both child samples use font-3xl, or 32px, and the same word and font.',
+      'The first child inherits the computed 1.92px letter spacing. The second reapplies tracking-widest, so .12em computes against 32px and becomes 3.84px.',
+      'The second text box is wider even though the glyph size is unchanged. The colored guides show layout widths, not glyph-ink bounds or borders emitted by tracking.'
+    ]
+  },
+  'radius-clipping': {
+    title: 'The parent’s radius does not round its child',
+    alt: 'Two identical rounded parents contain the same blue child surface. With radius alone the child keeps square top corners; with overflow-hidden it follows the parent’s curved edge.',
+    caption: 'Both parents use r-4xl and the same content. Only the right parent adds overflow-hidden. Blue identifies the child surface; the dashed contour marks the parent’s rounded edge.',
+    labels: {
+      shared: 'Same parent radius · same child', left: 'r-4xl', right: 'r-4xl overflow-hidden',
+      child: 'Child surface', parent: 'Parent content',
+      visible: 'The child still paints square corners', clipped: 'The parent clips the child’s paint',
+      scope: 'Rounding sets the shape; overflow decides whether descendants are clipped.'
+    },
+    description: [
+      'Both parent boxes use r-4xl, whose preset value is 2rem. They contain identical child and parent-content regions, with dimensions following the same content.',
+      'The left parent keeps the default visible overflow. Its own background is rounded, but the blue child paints a rectangle at the top.',
+      'The right parent adds overflow-hidden. The same child rectangle is clipped to the parent’s rounded edge; the child does not inherit a radius.',
+      'The dashed contour is an inspection annotation, not a border emitted by r-4xl. The color only identifies the same child in both examples.'
+    ]
+  },
+  'shadow-footprint': {
+    title: 'Shadow paint does not reserve layout space',
+    alt: 'Identical surfaces use shadow-xs and shadow-xl. Their box edges and following elements align at the same heights, while the larger shadow extends farther into the surrounding space.',
+    caption: 'The surfaces keep identical geometry and a 16px gap to the next element. Only the shadow token changes. Rulers measure the gap between boxes, not the shadow’s visible edge.',
+    labels: {
+      left: 'shadow-xs', right: 'shadow-xl', title: 'One surface', content: 'Content stays in flow',
+      next: 'Next element', gap: '16px',
+      shared: 'Same box · same content · same gap',
+      scope: 'A larger painted footprint does not move the next element.'
+    },
+    description: [
+      'Both columns contain the same surface and following element. Their dimensions, padding and 16px layout gap are identical.',
+      'The left surface uses the preset shadow-xs token. The right surface uses shadow-xl, which paints more layers over a wider area.',
+      'The next element starts at the same height in both columns. Box shadows do not change the dimensions or spacing used by layout.',
+      'Both shadows use actual preset values. Their colors adapt to the image’s scheme while their offsets, blur and spread lengths remain unchanged. Gap rulers are inspection annotations.'
+    ]
+  },
+  'spacing-boundaries': {
+    title: 'Padding surrounds content; gap separates items',
+    alt: 'The same spacing-md token feeds two Grid examples. The padding example highlights a band inside the outer edge. The gap example highlights only the space between two rows.',
+    caption: 'Both highlighted distances are 1rem, shown at a 16px root font size. Blue and violet are inspection overlays; p-md and gap-md do not add those colors.',
+    labels: {
+      token: '--spacing-md: 1rem', padding: 'grid p-md', gap: 'grid gap-md',
+      first: 'First row of content', second: 'Next row of content',
+      inside: '1rem inside the box', between: '1rem between rows',
+      distinction: 'Gap adds no space before the first item or after the last.'
+    },
+    description: [
+      'Both examples use Grid and the preset --spacing-md value of 1rem. Their content rows use the same typography and internal dimensions.',
+      'The left example has p-md and no gap. Its blue band lies inside the box edge, surrounding the content on all four sides.',
+      'The right example has gap-md and no padding. Its violet band lies only between the two rows, with no matching band around the outside.',
+      'At the depicted 16px root font size, each highlighted distance is 16px. The examples use real generated padding and gap; the annotation colors and dashed boundaries are not utility output.'
+    ]
+  },
+  'container-cap': {
+    title: 'The same maximum can produce different widths',
+    alt: 'Two auto-width blocks share max-w-3xs, a 16rem maximum. In a 20rem parent the block is 16rem wide; in a 13rem parent it fits at 13rem.',
+    caption: 'A normal block with auto width fits the available space up to its maximum. The two parent widths are drawn at the same scale, with a 16px root font size.',
+    labels: {
+      class: 'max-w-3xs', declaration: 'max-width: var(--container-3xs)',
+      wide: '20rem available', narrow: '13rem available',
+      capped: '16rem', fitted: '13rem', content: 'Content',
+      scope: 'Normal block layout · auto width · border-box · no minimum width'
+    },
+    widths: { wide: 320, narrow: 208 },
+    description: [
+      'max-w-3xs reads the preset --container-3xs value of 16rem. Both examples have auto width in normal block layout, use border-box sizing and have no minimum-width constraint.',
+      'The first parent provides 20rem. The child stops at its 16rem maximum, leaving unused space after it.',
+      'The second parent provides 13rem. The child fits that smaller space instead of becoming 16rem wide.',
+      'The dashed contour identifies the available width; it is not a generated border or query container. Both parents are drawn at the same scale with a 16px root font size. Heights follow the same content.'
+    ]
+  },
   'hue-alias-selection': {
     title: 'Hue aliases do not share one step number',
     alt: 'A blue alias connects to step 60 in a blue swatch strip; a yellow alias connects to step 40 in an otherwise identically arranged yellow strip.',
