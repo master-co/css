@@ -1,0 +1,30 @@
+---
+import IconArrowUpRight from '@tabler/icons-svelte-runes/icons/arrow-up-right'
+import IconCheck from '@tabler/icons-svelte-runes/icons/check'
+import IconPlus from '@tabler/icons-svelte-runes/icons/plus'
+import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh'
+import { siteOf } from '~/site/astro/site-context'
+import { localizePathname } from '~/site/docs-shell/utils/i18n-pathname'
+import HomeIllustration from './HomeIllustration.astro'
+import type { HomeIllustrationId } from './home-illustration'
+import { deliveryModes } from './home-content'
+import baseCSS from './delivery-preview.css?raw'
+import { deliveryLateClass, deliveryRenderedClasses, type DeliveryMode, type DeliveryRule } from './delivery-content'
+
+interface Props {
+  globals: string
+  rules: DeliveryRule[]
+}
+
+const artwork = {
+  static: 'render-static',
+  progressive: 'render-progressive',
+  runtime: 'render-runtime'
+} satisfies Record<DeliveryMode, HomeIllustrationId>
+
+/** The mode explainer is the example page itself, styled by the inspector's real rules, in a declarative shadow root. */
+const { globals, rules } = Astro.props
+const { locale, t, i18n } = siteOf(Astro)
+---
+
+<div class="home-delivery-preview-host" data-preview-host=""><template shadowrootmode="open"><style is:inline set:html={'@layer theme, base, defaults, components, utilities;' + globals + baseCSS} />{rules.map(rule => <style is:inline data-delivery-rule={rule.className} data-rule-text={rule.text} set:html={`@layer utilities{${rule.text}}`} />)}<div class="preview" data-preview-page=""><article class={`demo ${deliveryRenderedClasses.join(' ')} ${deliveryLateClass}`} data-preview-sample="" data-applied=""><div class="mode-stack">{deliveryModes.map(mode => <section class="preview-mode" data-preview-mode={mode.id}><div class="mode-heading"><HomeIllustration icon={artwork[mode.id]} size={64} />{'default' in mode && mode.default && <span class="mode-default">{t('Default')}</span>}</div><h1>{t(mode.title)}</h1><p class="description">{t(mode.body)}</p><a class="mode-guide" href={localizePathname(mode.href, { defaultLocale: i18n.defaultLocale, locale, locales: i18n.locales, localizablePathnameRoots: i18n.localizablePathnameRoots })}>{t('Explore this mode')}<IconArrowUpRight aria-hidden="true" size={14} stroke={1.75} /></a></section>)}</div><div class="demo-change"><span class="change-class"><span class="change-dot" aria-hidden="true" /><code id="delivery-preview-class">{deliveryLateClass}</code><IconCheck aria-hidden="true" class="change-check" size={13} stroke={1.75} /></span><button aria-describedby="delivery-preview-class" data-preview-change="" disabled type="button"><span class="change-idle"><IconPlus aria-hidden="true" size={13} stroke={1.75} />{t('Apply')}</span><span class="change-pending">{t('Applying…')}</span><span class="change-replay"><IconRefresh aria-hidden="true" size={13} stroke={1.75} />{t('Replay')}</span></button></div></article></div></template></div>

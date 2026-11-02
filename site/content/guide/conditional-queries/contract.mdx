@@ -1,4 +1,4 @@
-import Class2CSS from '~/site/components/Class2CSS'
+import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## Overview [sr-only] \{#overview\}
 Append a named condition or a simple native query to a class. The parentheses delimit one condition; Master CSS restores the native group parentheses when it emits the query, so `@media(width>=800px)` becomes `@media (width>=800px)`.
@@ -9,7 +9,7 @@ Append a named condition or a simple native query to a class. The parentheses de
 <div class="grid@supports(display:grid)">Grid when supported</div>
 ```
 
-<Class2CSS>{['hidden@sm', 'hidden@media(width>=800px)', 'grid@supports(display:grid)']}</Class2CSS>
+<Class2CSS classes={['hidden@sm', 'hidden@media(width>=800px)', 'grid@supports(display:grid)']} />
 
 Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditions](https://www.w3.org/TR/css-conditional-3/) and [container queries](https://www.w3.org/TR/css-conditional-5/) decide whether the browser applies the rule. Master CSS preserves the query rather than testing the current browser during compilation.
 
@@ -62,7 +62,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 <div popover class="(opacity:0)@starting-style (transition-property:opacity)@motion-safe (transition-duration:250ms)@motion-safe">Details</div>
 ```
 
-<Class2CSS>{['(opacity:0)@starting-style', '(transition-property:opacity)@motion-safe (transition-duration:250ms)@motion-safe']}</Class2CSS>
+<Class2CSS classes={['(opacity:0)@starting-style', '(transition-property:opacity)@motion-safe (transition-duration:250ms)@motion-safe']} />
 
 ## Simple native queries \{#arbitrary-conditions-and-queries\}
 
@@ -86,7 +86,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 <div class="grid-cols(2)@media(width>=50rem)">Responsive content</div>
 ```
 
-<Class2CSS>{['hidden@media(pointer:coarse)', 'grid-cols(2)@media(width>=50rem)']}</Class2CSS>
+<Class2CSS classes={['hidden@media(pointer:coarse)', 'grid-cols(2)@media(width>=50rem)']} />
 
 ### Supports \{#supportsfeature\}
 
@@ -94,7 +94,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 <div class="grid@supports(display:grid)">Content</div>
 ```
 
-<Class2CSS>{['grid@supports(display:grid)']}</Class2CSS>
+<Class2CSS classes={['grid@supports(display:grid)']} />
 
 ### Containers \{#containersize\}
 Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but neither `(width>=28rem)` nor a [named container condition](#named-container-conditions) follows it. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/responsive-design#based-on-container-sizes) for choosing a component boundary.
@@ -107,7 +107,7 @@ Choose a query container using ordinary CSS. The suffix contains the complete qu
 </aside>
 ```
 
-<Class2CSS>{['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']}</Class2CSS>
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
 
 Style queries use their native form:
 
@@ -136,7 +136,7 @@ The preset's `container.css` provides thirteen component widths and a `max-` com
 </aside>
 ```
 
-<Class2CSS>{['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']}</Class2CSS>
+<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
 
 A project redeclares or adds names with `@custom-container`; see [`@custom-container`](/reference/directives/theme#custom-container). An undefined name is an error.
 
@@ -148,7 +148,7 @@ Use native CSS comparisons, including chained ranges. Put compound media queries
 <div class="grid-cols(2)@media(40rem<=width<64rem)">Two columns within a range</div>
 ```
 
-<Class2CSS>{['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)']}</Class2CSS>
+<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)']} />
 
 ## Combining wrappers \{#grouping-conditions\}
 Multiple suffixes preserve their nesting and source order, including repeated wrappers of the same kind:
@@ -157,7 +157,7 @@ Multiple suffixes preserve their nesting and source order, including repeated wr
 <div class="grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)">Content</div>
 ```
 
-<Class2CSS>{['grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']}</Class2CSS>
+<Class2CSS classes={['grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
 
 Comparable ranges in the same unit retain range priority. Incomparable units and expressions use a stable syntax-based order; Master CSS does not assume a browser root font size. A named condition and its equivalent native query share sorting data. Autofix cannot reorder wrappers merely because their current declarations happen to match.
 

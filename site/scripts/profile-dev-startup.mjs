@@ -56,11 +56,11 @@ async function worker() {
     const response = await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 60000 })
     if (response.status() !== 200) throw new Error(`Homepage: HTTP ${response.status()}`)
     await page.waitForFunction(() => {
-      const islands = [...document.querySelectorAll('site-island')]
+      const islands = [...document.querySelectorAll('astro-island')]
       return islands.length && islands.filter(element => {
         const rect = element.getBoundingClientRect()
         return rect.top < innerHeight && rect.bottom > 0
-      }).every(element => element.siteIslandHydrated)
+      }).every(element => !element.hasAttribute('ssr'))
     }, null, { timeout: 20000 })
     const islandPreparationMs = performance.now() - at
     const timing = await page.evaluate(() => {
@@ -68,7 +68,7 @@ async function worker() {
       return { firstHomeMilliseconds: navigation.responseStart - navigation.requestStart, responseEndMs: navigation.responseEnd }
     })
     if (!await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-surface-base').trim())) throw new Error('Missing theme styles')
-    // The island flag is set before module resolution and React effects. Probe
+    // Astro drops `ssr` once an island hydrates, before its effects settle. Probe
     // the same idempotent open event as its button, then require usable results.
     await page.waitForFunction(() => {
       if (document.querySelector('dialog.documentation-search')?.open) return true
@@ -91,13 +91,13 @@ async function worker() {
       warm.push(performance.now() - before)
     }
     const loaded = [...vite.environments.ssr.moduleGraph.idToModuleMap.values()].filter(module => module.transformResult)
-    const pages = [...new Set(loaded.filter(module => module.file?.startsWith(path.join(site, 'content/')) && module.file.endsWith('/page.tsx')).map(module => path.relative(site, module.file)))]
+    const pages = [...new Set(loaded.filter(module => module.file?.startsWith(path.join(site, 'content/')) && module.file.endsWith('/page.astro')).map(module => path.relative(site, module.file)))]
     const mdx = loaded.filter(module => module.file?.endsWith('.mdx')).length
-    if (pages.some(file => file !== 'content/page.tsx') || mdx) throw new Error(`Homepage loaded unrelated routes: ${JSON.stringify({ pages, mdx })}`)
+    if (pages.some(file => file !== 'content/page.astro') || mdx) throw new Error(`Homepage loaded unrelated routes: ${JSON.stringify({ pages, mdx })}`)
     global.gc?.()
     const memory = process.memoryUsage()
     // Exercise browser behavior after recording the cold-start graph and times.
-    await page.waitForFunction(() => document.querySelector('site-island[data-island$="search.tsx#default"]')?.siteIslandHydrated)
+    await page.waitForFunction(() => document.querySelector('astro-island[component-url*="SearchDialog"]:not([ssr])'))
     await page.keyboard.press(process.platform === 'darwin' ? 'Meta+k' : 'Control+k')
     await page.getByRole('dialog', { name: 'Search documentation' }).waitFor()
     await page.getByRole('combobox', { name: /Search documentation|搜尋文件/ }).fill('padding')
@@ -109,10 +109,10 @@ async function worker() {
     for (const route of ['/guide/introduction', '/reference/grid-columns', '/']) {
       const next = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
       if (next.status() !== 200) throw new Error(`${route}: HTTP ${next.status()}`)
-      await page.waitForFunction(() => [...document.querySelectorAll('site-island')].filter(element => {
+      await page.waitForFunction(() => [...document.querySelectorAll('astro-island')].filter(element => {
         const rect = element.getBoundingClientRect()
         return rect.top < innerHeight && rect.bottom > 0
-      }).every(element => element.siteIslandHydrated))
+      }).every(element => !element.hasAttribute('ssr')))
       if (!await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-surface-base').trim())) throw new Error(`${route}: missing theme styles`)
     }
     if (errors.length) throw new Error(errors.join('\n'))

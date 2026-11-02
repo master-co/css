@@ -1,6 +1,7 @@
-import TypeIllustration from './components/TypeIllustration'
-import Class2CSS from '~/site/components/Class2CSS'
-import { FoundationTypography, FoundationTypeComparison } from '~/site/components/demo/FoundationTypeMotion'
+import TypeIllustration from './components/TypeIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import FoundationTypography from '~/site/components/demo/foundations/FoundationTypography.astro'
+import FoundationTypeComparison from '~/site/components/demo/foundations/FoundationTypeComparison.astro'
 
 ## Overview [sr-only]
 
@@ -15,7 +16,7 @@ Use `text-<token>` for a complete type treatment: font size, line height and let
 <p class="text-sm">A consistent type scale helps readers move from the main idea to the supporting detail.</p>
 ```
 
-<Class2CSS>{['text-2xl', 'font-regular']}</Class2CSS>
+<Class2CSS classes={['text-2xl', 'font-regular']} />
 
 This hierarchy uses size, spacing and text roles while keeping regular weight. Add emphasis only where the content calls for it; a heading does not need a heavier weight by default. See [Text](/reference/tokens/text) for every treatment and how to add one.
 
@@ -37,7 +38,7 @@ This hierarchy uses size, spacing and text roles while keeping regular weight. A
 </div>
 ```
 
-<Class2CSS>{['font-3xl', 'text-3xl']}</Class2CSS>
+<Class2CSS classes={['font-3xl', 'text-3xl']} />
 
 Use `text-<token>` for body, heading and display styles. Use `font-<token>`, `leading-<token>` or `tracking-<token>` only when the design deliberately departs from a treatment.
 

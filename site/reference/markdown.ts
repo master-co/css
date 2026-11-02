@@ -8,7 +8,7 @@ import { mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx'
 import * as acorn from 'acorn'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceExample, SyntaxRow } from './types'
-import { tokenValuesMarkdown } from './TokenValues'
+import { tokenValuesMarkdown } from './token-values'
 import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-content'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
 import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses, configuredMarkupMarkdown } from './configured-example'
@@ -42,10 +42,16 @@ export interface MdxContentOptions {
   component?: (name: string, attributes: Record<string, unknown>, file: string) => string | undefined
 }
 
+/**
+ * An element whose children are one expression, such as `<Code lang="html">{`…`}</Code>`. Attribute values may hold
+ * `>` inside quotes or braces; a self-closing element (`<Class2CSS classes={[…]} />`) has no children to extract.
+ */
+const expressionElement = /(<(Code|Class2CSS|DocumentDeclaration)\b(?:"[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\}|[^>"'{/])*>)([\s\S]*?)(<\/\2>)/g
+
 export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], stack: string[] = [], options: MdxContentOptions = {}) {
   if (stack.includes(file)) throw new Error(`Recursive document include: ${file}`)
   const expressions: Record<string, string> = {}
-  const source = (await readFile(file, 'utf8')).split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/\{?<Demo\b[\s\S]*?<\/Demo>\}?/g, '').replace(/(<(?:Code|Class2CSS|DocumentDeclaration)\b[^>]*>)([\s\S]*?)(<\/(?:Code|Class2CSS|DocumentDeclaration)>)/g, (_, start, expression, end) => { const key = `MCSS_EXPRESSION_${Object.keys(expressions).length}`; expressions[key] = expression; return `${start}\n${key}\n${end}` })).join('')
+  const source = (await readFile(file, 'utf8')).split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/\{?<Demo\b[\s\S]*?<\/Demo>\}?/g, '').replace(expressionElement, (_, start, _name, expression, end) => { const key = `MCSS_EXPRESSION_${Object.keys(expressions).length}`; expressions[key] = expression; return `${start}\n${key}\n${end}` })).join('')
   const examples: ReferenceExample[] = []
   const notes: string[] = []
   const variables: Record<string, unknown> = {}
@@ -169,17 +175,18 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       if (name === 'TextHeirs') return getVariableNamespacePublicKeys('color-text').map(key => `\`${key}:\``).join(', ')
       if (name === 'StartingStyleExample' || name === 'AnimationDirectionBasicDemo') return '' // Visual demos accompany the adjacent complete code examples.
       if (name === 'Class2CSS') {
-        const value = await expression(inner)
+        // `<Class2CSS classes={[...]} />`; older sources pass the classes as children.
+        const value = attrs.classes !== undefined ? typeof attrs.classes === 'string' ? attrs.classes : await expression(attrs.classes.value) : await expression(inner)
         const classes = (Array.isArray(value) ? value : [value]).flatMap(item => String(item).split(/\s+/)).filter(Boolean)
         const css = generatePresetCSS(classes)
         examples.push({ id: `example-${examples.length + 1}`, title: classes.join(' '), classes, css })
         return `\`\`\`css disclosure=generated-css\n${css}\n\`\`\``
       }
       if (name === 'Code') {
-        try { return `\`\`\`${typeof attrs.lang === 'string' ? attrs.lang : ''}\n${await expression(inner)}\n\`\`\`` }
+        try { return `\`\`\`${typeof attrs.lang === 'string' ? attrs.lang : ''}\n${attrs.code !== undefined ? typeof attrs.code === 'string' ? attrs.code : await expression(attrs.code.value) : await expression(inner)}\n\`\`\`` }
         catch { notes.push(`${path.basename(file)}: Code expression requires a text equivalent`); return '' }
       }
-      if (name === 'Basic' && typeof attrs.className === 'string') return `\`\`\`html\n<div class="${attrs.className}">…</div>\n\`\`\``
+      if (name === 'Basic' && typeof (attrs.class ?? attrs.className) === 'string') return `\`\`\`html\n<div class="${attrs.class ?? attrs.className}">…</div>\n\`\`\``
       if (name === 'DemoIndex') {
         const groups = await expression(attrs.groups.value) as { title: string, links: { href: string, label: string }[] }[]
         if (!Array.isArray(groups) || groups.some(group => !group || typeof group.title !== 'string' || !Array.isArray(group.links)

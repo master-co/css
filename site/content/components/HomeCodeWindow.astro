@@ -1,0 +1,35 @@
+---
+import Code from '~/site/docs-shell/components/Code.astro'
+import type { CodeProp } from '~/site/docs-shell/components/code-props'
+import { slotText } from '~/site/docs-shell/utils/slot-text'
+
+export interface Props {
+  /** The source; text children work too. */
+  code?: string
+  class?: string
+  fixPreviewCode?: string
+  lang: CodeProp['lang']
+  masterCSS?: CodeProp['masterCSS']
+  preClassName?: string
+}
+
+/** Highlighted code in a well; with `fixPreviewCode`, the fixed source sits on a second layer that hover or a parent state reveals. */
+const { class: className, fixPreviewCode, lang, masterCSS, preClassName } = Astro.props
+const code = Astro.props.code ?? await slotText(Astro.slots) ?? ''
+const codePreClassName = ['home-code-window-pre', preClassName].filter(Boolean).join(' ')
+---
+
+<div class:list={['home-code-window', fixPreviewCode && 'home-code-window-has-fix', className]}>
+  {fixPreviewCode ? (
+    <div class="home-code-window-stack">
+      <div class="home-code-window-layer home-code-window-source">
+        <Code copyable={false} {lang} {masterCSS} preClassName={codePreClassName} {code} />
+      </div>
+      <div aria-hidden="true" class="home-code-window-fix home-code-window-layer">
+        <Code copyable={false} {lang} {masterCSS} preClassName={codePreClassName} code={fixPreviewCode} />
+      </div>
+    </div>
+  ) : (
+    <Code class="home-code-window-body" copyable={false} {lang} {masterCSS} preClassName={codePreClassName} {code} />
+  )}
+</div>

@@ -35,8 +35,8 @@ async function open({ js = true, motion = 'no-preference', width = 1440, scheme 
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
   await page.goto(url, { waitUntil: 'networkidle' })
   const chart = page.locator('#css-cost .home-bench-chart')
-  // The canvas paints only once the chart comes into view, so hydration is the island's own React props.
-  if (js) await page.waitForFunction(() => { const element = document.querySelector('#css-cost .home-bench-chart'); return !!element && Object.keys(element).some(key => key.startsWith('__reactProps$')) })
+  // The canvas paints only once the chart comes into view, so hydration is the island losing Astro's `ssr` attribute.
+  if (js) await page.waitForFunction(() => { const element = document.querySelector('#css-cost .home-bench-chart'); return !!element && !element.closest('astro-island[ssr]') })
   return { context, page, errors, chart }
 }
 

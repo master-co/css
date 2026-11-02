@@ -9,9 +9,8 @@ test('prepared blocks escape displayed markup and preserve complete copy text', 
   assert.equal(code.text, source)
   assert.doesNotMatch(code.html, /<(?:script|img)\b/)
   assert.match(code.html, /(?:&lt;|&#x3[cC];|&#60;)/)
-  assert.match(code.properties.className!, /\bshiki\b/)
-  assert.equal(String(code.properties.tabIndex), '0')
-  assert.ok(!('children' in code.properties))
+  assert.match(code.html, /^<pre class="[^"]*\bshiki\b[^"]*"[^>]*\btabindex="0"/)
+  assert.match(code.html, /<\/pre>$/)
 })
 
 test('prepared blocks preserve notation effects without copying their markers', async () => {

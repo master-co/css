@@ -1,17 +1,7 @@
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { Node, PropertyName, SourceFile } from 'typescript/unstable/ast'
-import {
-  isIdentifier,
-  isJsxAttribute,
-  isJsxText,
-  isNumericLiteral,
-  isPropertyAssignment,
-  isStringLiteral,
-  isStringLiteralLikeNode
-} from 'typescript/unstable/ast'
-import { createTypeScriptASTHost, visit } from './ts-ast'
+import { componentTexts, isComponentFile } from './component-text'
 
 interface Finding {
   file: string
@@ -44,9 +34,7 @@ const ignoredExact = new Set([
   'JS'
 ])
 
-const astHost = createTypeScriptASTHost(resolve(siteRoot, 'tsconfig.json'))
-
-try {
+{
   const findings = roots.flatMap((root) => scanRoot(root))
 
   if (findings.length) {
@@ -64,55 +52,21 @@ try {
   if (process.argv.includes('--strict') && findings.length) {
     process.exitCode = 1
   }
-} finally {
-  astHost.close()
 }
 
 function scanRoot(root: string): Finding[] {
-  return walk(root, (file) => file.endsWith('.tsx') && isAuditableSourceFile(file)).flatMap(scanFile)
+  return walk(root, (file) => isComponentFile(file) && isAuditableSourceFile(file)).flatMap(scanFile)
 }
 
 function scanFile(file: string): Finding[] {
-  const sourceFile = astHost.getSourceFile(file)
-  const findings: Finding[] = []
-
-  visit(sourceFile, (node) => {
-    if (isJsxText(node)) {
-      addFinding(findings, sourceFile, file, node, 'jsx', node.getText(sourceFile))
-      return
-    }
-
-    if (isJsxAttribute(node) && translatableAttributes.has(node.name.getText(sourceFile)) && node.initializer && isStringLiteral(node.initializer)) {
-      addFinding(findings, sourceFile, file, node, node.name.getText(sourceFile), node.initializer.text)
-      return
-    }
-
-    if (!isPropertyAssignment(node)) return
-    const name = propertyName(node.name)
-    if (!name || !translatablePropertyNames.has(name)) return
-    if (!isStringLiteralLikeNode(node.initializer)) return
-    addFinding(findings, sourceFile, file, node, name, node.initializer.text)
-  })
-
-  return findings.filter((finding) => !isAlreadyTranslated(sourceFile, finding.line))
+  const lines = readFileSync(file, 'utf8').split('\n')
+  return componentTexts(file, { attributes: translatableAttributes, properties: translatablePropertyNames })
+    .map(({ line, kind, text }) => ({ file: relative(repoRoot, file), line, kind, text: normalizeText(text) }))
+    .filter(({ line, text }) => isTranslatableText(text) && !isAlreadyTranslated(lines[line - 1] || ''))
 }
 
-function addFinding(findings: Finding[], sourceFile: SourceFile, file: string, node: Node, kind: string, value: string) {
-  const text = normalizeText(value)
-  if (!isTranslatableText(text)) return
-  const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
-  findings.push({
-    file: relative(repoRoot, file),
-    line: line + 1,
-    kind,
-    text
-  })
-}
-
-function isAlreadyTranslated(sourceFile: SourceFile, line: number) {
-  const lines = sourceFile.text.split('\n')
-  const text = lines[line - 1] || ''
-  return /\$\(|<Translate\b|translate=|useTranslation\(/.test(text)
+function isAlreadyTranslated(text: string) {
+  return /\$\(|\bt\(|<Translate\b|translate=/.test(text)
 }
 
 function isTranslatableText(value: string) {
@@ -130,9 +84,6 @@ function normalizeText(value: string) {
   return value.replace(/\s+/g, ' ').trim()
 }
 
-function propertyName(name: PropertyName) {
-  if (isIdentifier(name) || isStringLiteral(name) || isNumericLiteral(name)) return name.text
-}
 
 function walk(root: string, filter: (file: string) => boolean): string[] {
   if (!existsSync(root)) return []
@@ -150,5 +101,5 @@ function walk(root: string, filter: (file: string) => boolean): string[] {
 }
 
 function isAuditableSourceFile(file: string) {
-  return !/(\.test\.tsx?$|\/api\/|\/\.astro\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(file.split(sep).join('/'))
+  return !/(\.test\.ts$|\/api\/|\/\.astro\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(file.split(sep).join('/'))
 }

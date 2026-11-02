@@ -1,0 +1,28 @@
+---
+import '~/site/styles/docs-shell/prose.css'
+import resolveHeading from '../utils/resolve-heading'
+
+interface Props {
+  tagName: 'h2' | 'h3'
+  id?: string
+  [key: string]: any
+}
+
+const entities: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&#x27;': "'" }
+const decode = (html: string) => html.replace(/&(?:amp|lt|gt|quot|#39|#x27);/g, (entity) => entities[entity])
+
+/** A section heading with its `ui-anchor`. Clicking a heading copies its link; see `docs-shell/scripts/document`. */
+const { tagName, id, class: className, ...props } = Astro.props
+const Element = tagName === 'h2' ? 'h2' : 'h3'
+const html = await Astro.slots.render('default')
+// Plain-text headings may end with ` [sr-only]`; headings with inline code or links render as written.
+const plain = !html.includes('<')
+const text = decode(html.replace(/<[^>]*>/g, '')).trim()
+const heading = resolveHeading(plain ? decode(html) : undefined, id)
+const title = typeof heading.title === 'string' ? heading.title : text
+---
+
+<Element {...props} id={heading.id ?? id} class:list={[className, heading.className]} title={title || undefined} data-doc-heading="">
+  <a class="ui-anchor" href={'#' + (heading.id ?? id)} aria-label={`Link to section: ${title}`}>#</a>
+  <Fragment set:html={plain ? html.replace(' [sr-only]', '') : html} />
+</Element>

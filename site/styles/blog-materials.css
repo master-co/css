@@ -13,7 +13,7 @@
  *                       As (or inside) a link, hover/focus deepens the shadow a little, slowly; a press settles it
  *                       onto the ground; nothing moves.
  *   .blog-stone-text    A title tone: obsidian / moonstone ink, each line lit from above by a barely-there sheen.
- *   .blog-authors       Overlapping portraits + names (components/blog/BlogAuthors.tsx); ring = --blog-avatar-ring.
+ *   .blog-authors       Overlapping portraits + names (components/blog/BlogAuthors.astro); ring = --blog-avatar-ring.
  *   .blog-signal        A tiny gold dot: the page's rare accent (a live or newest state). Decorative; aria-hidden.
  *   .blog-rails         Drafting rails with rulers just outside a box, as on the homepage (from md). Draws ::after.
  *                       Knobs: --blog-rail-gap (box edge to rail, 1.25rem), --blog-tick-length (.75rem).

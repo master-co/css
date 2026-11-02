@@ -1,0 +1,16 @@
+---
+interface Props {
+  value: string
+  note?: string
+}
+
+/** One line per value: a long layered value collapses and opens in place. */
+const { value, note } = Astro.props
+---
+
+{value.length > 64
+  ? <details class="ref-long-value">
+    <summary><code>{value}</code></summary>
+    <code>{value}</code>
+  </details>
+  : <Fragment><code>{value}</code>{note && <span class="ref-value-note">{note}</span>}</Fragment>}

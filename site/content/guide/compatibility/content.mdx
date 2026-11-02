@@ -1,6 +1,6 @@
-import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
-import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport'
-import CompatibilityIllustration from './components/CompatibilityIllustration'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
+import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport.svelte'
+import CompatibilityIllustration from './components/CompatibilityIllustration.astro'
 
 Master CSS generates CSS; the browser decides which properties, values and selectors it can apply. Build a usable baseline, add newer features where they improve it, and check how existing styles participate in the cascade.
 
@@ -18,7 +18,7 @@ A recognized class is not a browser-compatibility guarantee. Master emits compat
 
 A note field should remain editable even when automatic sizing is unavailable. Give it an ordinary textarea size and allow vertical resizing, then add [`field-sizing: content`](https://drafts.csswg.org/css-forms/#field-sizing) as an enhancement. The native property can size the control from its contents; minimum and maximum heights keep it within a useful range.
 
-<DemoFeatureSupport condition="field-sizing: content" />
+<DemoFeatureSupport client:idle={{ timeout: 500 }} condition="field-sizing: content" />
 
 <DemoConfiguredExample name="compatibility-field" title="A note field with a fallback" source="" caption="Add or remove lines. Supporting browsers grow the field up to 12rem; otherwise it keeps its initial size. You can scroll and resize it in either case." html={`<div class="w-full (max-width:28rem) mx-auto">
   <label for="project-note" class="block mb-xs text-sm fg-text-strong">Project notes</label>

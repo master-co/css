@@ -8,6 +8,8 @@ export default {
         },
       },
     },
+    // Titles name files, not page content; svgo 4 no longer removes them by default.
+    'removeTitle',
     // Prefix ids from the SVG file name so server and client renders stay identical.
     'prefixIds',
   ],

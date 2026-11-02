@@ -156,7 +156,9 @@ export function mountThemeSplit(root: HTMLElement, artboard: HTMLElement, descri
     } else request()
   }
 
-  const intersection = new IntersectionObserver(([entry]) => {
+  // Notifications batch while layout settles; the last entry is the current state.
+  const intersection = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     visible = entry.isIntersecting
     admitted ||= entry.intersectionRatio >= .55
     if (!visible) { pause(); pending = undefined }

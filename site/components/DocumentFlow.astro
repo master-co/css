@@ -1,0 +1,27 @@
+---
+import '~/site/styles/system/data.css'
+import type { DocumentFlowProps } from './document-types'
+
+export type { DocumentFlowStep, DocumentFlowProps } from './document-types'
+
+type Props = DocumentFlowProps
+
+/** A static, ordered process; no timeline duration or interactive state is implied. */
+const { title, steps, caption } = Astro.props
+---
+
+<figure class="ui-tray" aria-label={title}>
+  <figcaption class="ui-tray-head"><p class="ui-tray-title">{title}</p></figcaption>
+  <div class="ui-stage" data-padding="sm" data-align="start">
+    {/* Preserve WebKit list semantics when list-style is none. */}
+    <ol class="ui-steps" role="list">
+      {steps.map(step => <li>
+        <div>
+          <h4>{step.title}</h4>
+          <p>{step.description}</p>
+        </div>
+      </li>)}
+    </ol>
+  </div>
+  {caption && <p class="ui-tray-caption">{caption}</p>}
+</figure>

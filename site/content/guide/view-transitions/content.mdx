@@ -1,6 +1,6 @@
-import TransitionIllustration from './components/TransitionIllustration'
-import Class2CSS from '~/site/components/Class2CSS'
-import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
+import TransitionIllustration from './components/TransitionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoViewTransition from '~/site/components/demo/DemoViewTransition.astro'
 
 ## Overview [sr-only]
 Help readers follow an article from its collection card into a detail view. The View Transition API captures the old and new visual states around a DOM update; matching snapshot names let the image, heading and date move between layouts. Master CSS supplies classes for those native CSS properties and pseudo-elements.
@@ -96,15 +96,13 @@ Apply the shared timing to the document root:
 <html class="(animation-duration:.52s)::view-transition-group(.article)">
 ```
 
-<Class2CSS>
-  {[
+<Class2CSS classes={[
       '(view-transition-name:article-aurora-image)',
       '(view-transition-name:article-aurora-date)',
       '(view-transition-name:article-aurora-title)',
       '(view-transition-class:article)',
       '(animation-duration:.52s)::view-transition-group(.article)'
-    ]}
-</Class2CSS>
+    ]} />
 
 (i) The same `view-transition-name` must be unique in the rendered document, or the browser skips the transition. The list uses article-specific names such as `article-aurora-image` and `article-studio-image` so the selected card can match the detail page without colliding with other cards.
 
@@ -123,13 +121,11 @@ Write the pseudo-element after the declaration, and put these classes on the `ht
 ">
 ```
 
-<Class2CSS>
-  {[
+<Class2CSS classes={[
       'animation-slow::view-transition-group(hero)',
       '(animation-name:fade)::view-transition-old(hero) (animation-direction:reverse)::view-transition-old(hero) (animation-fill-mode:both)::view-transition-old(hero)',
       '(animation-name:fade)::view-transition-new(hero) (animation-fill-mode:both)::view-transition-new(hero)'
-    ]}
-</Class2CSS>
+    ]} />
 
 The group supplies one duration for its movement and both image animations. The outgoing `fade` runs in reverse; the incoming `fade` runs forward.
 
@@ -142,9 +138,7 @@ Scope custom transition timing with `@motion-safe`, which maps to `@media (prefe
 <html class="(animation-duration:.42s)::view-transition-group(root)@motion-safe">
 ```
 
-<Class2CSS>
-  {['(animation-duration:.42s)::view-transition-group(root)@motion-safe']}
-</Class2CSS>
+<Class2CSS classes={['(animation-duration:.42s)::view-transition-group(root)@motion-safe']} />
 
 This condition controls only your duration override; it does not disable the browser's default transition. The article example also skips `startViewTransition()` when reduced motion is requested.
 

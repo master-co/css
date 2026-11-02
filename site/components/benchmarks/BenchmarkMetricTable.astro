@@ -1,0 +1,38 @@
+---
+import '~/site/styles/system/data.css'
+import { siteOf } from '~/site/astro/site-context'
+import BenchmarkStatus from './BenchmarkStatus.astro'
+import type { BenchmarkMetric } from './types'
+
+interface Props {
+  metrics: BenchmarkMetric[]
+  /** Names the scrollable region; several metric tables share a page, so each needs its own name. */
+  label?: string
+}
+
+const { metrics, label = 'Benchmark metrics' } = Astro.props
+const { t } = siteOf(Astro)
+const hasDetails = metrics.some((metric) => metric.detail)
+---
+
+{/* Preserve keyboard access to wide metric tables. */}
+<div class="ui-table" role="region" aria-label={label} tabindex="0">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">{t('Metric')}</th>
+        <th scope="col">{t('Value')}</th>
+        {hasDetails && <th scope="col">{t('Detail')}</th>}
+      </tr>
+    </thead>
+    <tbody>
+      {metrics.map((metric) => (
+        <tr>
+          <th scope="row">{t(metric.label)}</th>
+          <td class="benchmark-value">{metric.value} <BenchmarkStatus tone={metric.tone} /></td>
+          {hasDetails && <td>{metric.detail && t(metric.detail)}</td>}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

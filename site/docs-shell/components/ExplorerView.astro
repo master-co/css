@@ -1,0 +1,37 @@
+---
+import FileIcon from './FileIcon.astro'
+import FolderSvg from '../../public/icons/folder.svg'
+
+declare type ExplorerViewItemOption = {
+  name: string
+  children?: ExplorerViewItemOption[]
+}
+
+interface Props {
+  /** The tree's entries; folders list theirs as `children`. */
+  items: ExplorerViewItemOption[]
+  /** Nested folders render their list alone, without the `ui-tree` frame. */
+  nested?: boolean
+}
+
+/** A file tree (`ui-tree`): names in mono, nested folders on hairline guides. */
+const { items, nested } = Astro.props
+const extOf = (name: string) => name.includes('.') ? name.split('.').pop() : ''
+---
+
+{nested
+  ? <ul>
+    {items.map((option) => {
+      const ext = extOf(option.name)
+      return (
+        <li>
+          <div>
+            {ext ? <FileIcon name={option.name} ext={ext} aria-hidden="true" /> : <FolderSvg aria-hidden="true" />}
+            <b>{option.name}</b>
+          </div>
+          {option.children?.length ? <Astro.self items={option.children} nested /> : null}
+        </li>
+      )
+    })}
+  </ul>
+  : <div class="ui-tree"><Astro.self items={items} nested /></div>}

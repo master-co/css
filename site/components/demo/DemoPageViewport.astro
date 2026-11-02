@@ -1,0 +1,17 @@
+---
+import Demo from './Demo.svelte'
+import DemoViewport from './DemoViewport.svelte'
+
+interface Props {
+  src: string
+  title: string
+  height?: number
+}
+
+/** Site-owned example pages share the same keyboard-accessible viewport controls. */
+const { src, title, height = 420 } = Astro.props
+---
+
+<Demo title={title} frame="none" caption="Adjust the iframe viewport. Scroll inside the preview to see all content.">
+  <DemoViewport client:idle={{ timeout: 500 }} src={src} title={title} height={height} responsive />
+</Demo>

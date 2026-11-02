@@ -1,0 +1,24 @@
+---
+import '~/site/styles/system/data.css'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import RenderNode from '~/site/docs-shell/components/RenderNode.astro'
+import type { DocumentChoice } from './document-types'
+
+export type { DocumentChoice } from './document-types'
+
+interface Props {
+  label: string
+  entries: readonly DocumentChoice[]
+}
+
+/** A compact reading-column index. Navigation stays outside measured demo layouts. */
+const { label, entries } = Astro.props
+---
+
+<nav aria-label={label} class="ui-index">
+  {entries.map(entry => <Link href={entry.href}>
+    {entry.icon != null && <RenderNode node={entry.icon} />}
+    <b>{entry.title}</b>
+    <span>{entry.description}</span>
+  </Link>)}
+</nav>

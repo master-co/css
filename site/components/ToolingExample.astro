@@ -1,0 +1,12 @@
+---
+import DocumentCodeExample from './DocumentCodeExample.astro'
+import { toolingExample, toolingExamples } from '../utils/tooling-guide-data'
+
+interface Props {
+  name: keyof typeof toolingExamples
+}
+
+const { name } = Astro.props
+---
+
+<div data-tooling-example={name}><DocumentCodeExample {...toolingExample(name)} /></div>

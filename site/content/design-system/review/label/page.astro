@@ -1,0 +1,26 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoLabel from '~/site/components/demo/DemoLabel.svelte'
+import ShadowScaleDemo from '~/site/components/demo/foundations/ShadowScaleDemo.astro'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage title="Label" description="A label names the condition, value or class a specimen shows. It sits above or beside the subject, never inside the measured layout." usage={{ href: '/guide/colors#raised-surfaces', label: 'the Colors guide' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="cases" title="As written or uppercase">
+    <Demo caption="Class names and values keep their case; a quiet heading may be uppercase.">
+      <div class="grid-cols(2) gap-lg w-full (max-width:24rem)">
+        <div class="grid gap-xs"><DemoLabel>p-md · gap-sm</DemoLabel><DemoItem>Aa</DemoItem></div>
+        <div class="grid gap-xs"><DemoLabel upper>Collection / 024</DemoLabel><DemoItem>Aa</DemoItem></div>
+      </div>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="scale" title="Labelling a scale">
+    <ShadowScaleDemo />
+  </ComponentSection>
+</ComponentPage>

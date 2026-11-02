@@ -75,9 +75,9 @@ Follow with the example and observation procedure, then explain how to choose a 
 
 - Check same-type Guide metadata, page factories, MDX, and categories. Titles and summaries describe reader purposes rather than lists of keywords.
 - Keep necessary entrypoints, imports, and filenames for the setup. Do not assume configuration that the reader has not supplied.
-- Use `Class2CSS` for default classes. For custom settings, inspect the actual [ConfiguredExample interface](../../../../site/reference/ConfiguredExample.tsx).
+- Use `Class2CSS` for default classes. For custom settings, inspect the actual [ConfiguredExample interface](../../../../site/reference/ConfiguredExample.astro).
 - Retain teaching scales, palettes, and comparisons. Reuse shared data instead of copying preset values.
-- The demo, displayed code, and output must express the same behavior. Internal React wrappers need not appear in framework-neutral examples.
+- The demo, displayed code, and output must express the same behavior. Internal component wrappers need not appear in framework-neutral examples.
 - For a new data-bearing component, locate its search and Markdown adapter and preserve text equivalents according to [Reference maintenance](../../../../site/reference/MAINTENANCE.md).
 
 ## Common failures

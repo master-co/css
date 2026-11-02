@@ -13,9 +13,9 @@
 | `site/assets/images/home/icons/artwork.css` | `home-icon-artwork` 的 zinc 灰階處理 |
 | `site/assets/images/home/icons/catalog.ts` | 全圖錄、語意 ID、target 與 compact 對應 |
 | `site/assets/images/home/icons/*-compact.svg` | 15 張歷史 32 單位 SVG 研究稿，僅保留於圖錄 |
-| `site/content/components/HomeIllustration.tsx` | 裝飾性明暗主圖；沿用網站圖片元件 |
-| `site/content/components/HomeCompactIcon.tsx` | 重用 HomeIllustration 的裝飾性清單 WebP |
-| `site/content/components/HomeBento.tsx` | 共用 bento header／card 與 section header |
+| `site/content/components/HomeIllustration.astro`（island 內用 `HomeIllustrationArt.svelte`） | 裝飾性明暗主圖；沿用網站圖片元件 |
+| `site/content/components/HomeCompactIcon.astro` | 重用 HomeIllustration 的裝飾性清單 WebP |
+| `site/content/components/HomeBento*.astro`、`HomeSectionHeader.astro` | 共用 bento header／card 與 section header |
 | `site/content/home.css` | 實際大小、圖文排列、主題顯示規則 |
 | `site/content/design-system/review/home-icons/` | 圖錄、尺寸預覽與接入說明；路由 `/design-system/review/home-icons`，noindex |
 
@@ -23,7 +23,7 @@
 
 清單項目的 `recommendedSize` 為 lint 48、MCP 40；`CompactIcon` 也只是歷史研究稿，不能因為名稱是 compact 就用於目前首頁。
 
-保持 server 元件與 client island 的邊界。現有 Editor、Lint、Agent islands 接收 server 端生成的圖示 ReactNode slots；不要為了顯示圖示把整個 catalog 或所有 SVG imports 搬進 client bundle。
+保持 server 元件與 client island 的邊界。現有 Editor、Lint、Agent islands 接收 server 端生成的圖示 named slots 或圖示 id；不要為了顯示圖示把整個 catalog 或所有 SVG imports 搬進 client bundle。
 
 ## 位置與尺寸
 

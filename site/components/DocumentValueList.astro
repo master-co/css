@@ -1,0 +1,25 @@
+---
+import '~/site/styles/system/data.css'
+import type { DocumentValueRow } from './document-types'
+
+export type { DocumentValueRow } from './document-types'
+
+interface Props {
+  rows: DocumentValueRow[]
+  headingLevel?: 3 | 4
+}
+
+/** Compact, selectable reference facts. IDs belong to the visible row headings. */
+const { rows, headingLevel = 3 } = Astro.props
+const Heading = `h${headingLevel}` as const
+---
+
+<dl class="ui-params">
+  {rows.map(row => <div>
+    <dt>
+      <Heading id={row.id}><a href={`#${row.id}`}>{row.title}</a></Heading>
+      {row.identifier && <small>{row.identifier}</small>}
+    </dt>
+    <dd>{row.values.map(({ label, value }) => <p><small>{label}</small> <code>{value}</code></p>)}</dd>
+  </div>)}
+</dl>

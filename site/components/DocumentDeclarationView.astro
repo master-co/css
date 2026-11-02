@@ -1,0 +1,12 @@
+---
+import DocumentDisclosure from './DocumentDisclosure.astro'
+
+interface Props {
+  source: string
+}
+
+/** Full TypeScript remains server rendered and copyable, including long contracts. */
+const lines = Astro.props.source.split('\n').length
+---
+
+{lines > 40 ? <DocumentDisclosure title={`Complete declaration · ${lines} lines`}><slot /></DocumentDisclosure> : <slot />}

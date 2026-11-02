@@ -1,0 +1,16 @@
+---
+import { renderJSX } from 'astro/runtime/server/jsx.js'
+import { isVNode } from 'astro/jsx-runtime'
+
+interface Props {
+  /** Markup passed as a prop: an Astro template value, or JSX written in MDX. */
+  node: unknown
+}
+
+const { node } = Astro.props
+const containsVNode = (value: unknown): boolean => Array.isArray(value) ? value.some(containsVNode) : isVNode(value)
+// MDX writes JSX with Astro's JSX runtime, whose nodes only render through the page's result.
+const html = containsVNode(node) ? await renderJSX($$result, node) : undefined
+---
+
+{html !== undefined ? <Fragment set:html={html} /> : node}

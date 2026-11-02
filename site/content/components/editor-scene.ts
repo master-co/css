@@ -1,5 +1,4 @@
 /** The editor film's character-cell geometry, color math and deterministic scene clock. */
-import type { CSSProperties } from 'react'
 import type { EditorModel, EditorSceneId } from './editor-content'
 
 /** A color decoration takes two character cells, so every column after it moves two to the right. */
@@ -9,16 +8,16 @@ export const menuRows = 8
 /** The color picker's geometry in pixels; the drawn pointer aims at its parts. */
 export const picker = { width: 232, header: 44, inset: 8, plane: 168, planeHeight: 120, strip: 14, gap: 10, left: 12 }
 export const pickerHeight = picker.header + picker.inset * 2 + picker.planeHeight
-/** The picker's box, for the stylesheet that places it and the pointer that aims inside it. */
-export const pickerStyle = {
-  '--editor-picker-width': `${picker.width}px`,
-  '--editor-picker-height': `${pickerHeight}px`,
-  '--editor-picker-left': `${picker.left}px`,
-  '--editor-picker-inset': `${picker.inset}px`,
-  '--editor-picker-plane-height': `${picker.planeHeight}px`,
-  '--editor-picker-strip': `${picker.strip}px`,
-  '--editor-picker-gap': `${picker.gap}px`
-} as CSSProperties
+/** The picker's box, for the stylesheet that places it and the pointer that aims inside it, as an inline style. */
+export const pickerStyle = [
+  `--editor-picker-width: ${picker.width}px`,
+  `--editor-picker-height: ${pickerHeight}px`,
+  `--editor-picker-left: ${picker.left}px`,
+  `--editor-picker-inset: ${picker.inset}px`,
+  `--editor-picker-plane-height: ${picker.planeHeight}px`,
+  `--editor-picker-strip: ${picker.strip}px`,
+  `--editor-picker-gap: ${picker.gap}px`
+].join('; ')
 
 export type HSV = [hue: number, saturation: number, value: number]
 

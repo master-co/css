@@ -31,7 +31,7 @@ const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'content')
 const docSections = new Set(['blog', 'guide', 'reference'])
 const visibleSourceFiles = [
-  'content/examples/layout-system/page.tsx'
+  'content/examples/layout-system/page.astro'
 ]
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const tooling = createToolingSessionSync({ manifest: defaultManifest })
@@ -164,7 +164,7 @@ test('installation routes use static entry points and explicit optional modes', 
     const entries = await readdir(frameworkRoot, { withFileTypes: true })
     if (entries.some((entry) => entry.isFile() && entry.name === 'content.mdx')) actual.add(framework.name)
     // Runtime and progressive setups are sections of the framework page, not routes or tabs.
-    if (entries.some((entry) => entry.isFile() && entry.name === 'layout.tsx')) nested.push(`${framework.name}/layout.tsx`)
+    if (entries.some((entry) => entry.isFile() && entry.name === 'layout.astro')) nested.push(`${framework.name}/layout.astro`)
     for (const entry of entries) {
       if (entry.isDirectory() && entry.name !== 'components') nested.push(`${framework.name}/${entry.name}`)
     }
@@ -175,9 +175,9 @@ test('installation routes use static entry points and explicit optional modes', 
   const mainEntries = await readdir(path.join(root, '(main)'), { withFileTypes: true })
   assert.deepEqual(mainEntries.filter(entry => entry.isDirectory()).map(entry => entry.name), ['components'])
   for (const slug of actual) {
-    const page = await readFile(path.join(root, slug || '(main)', 'page.tsx'), 'utf8')
-    assert.doesNotMatch(page, /noTOC:\s*true|InstallationLayout/, slug)
-    assert.match(page, /~\/site\/layouts\/doc/, slug)
+    const page = await readFile(path.join(root, slug || '(main)', 'page.astro'), 'utf8')
+    assert.doesNotMatch(page, /\bnoTOC\b|InstallationLayout/, slug)
+    assert.match(page, /~\/site\/layouts\/Doc\.astro/, slug)
   }
 
   for (const slug of actual) {
@@ -628,7 +628,7 @@ function extractSafelistValues(text: string): { index: number, value: string }[]
 
 function extractClass2CSSValues(text: string): { index: number, value: string }[] {
   const out: { index: number, value: string }[] = []
-  const pattern = /<Class2CSS[\s\S]*?<\/Class2CSS>/g
+  const pattern = /<Class2CSS\b[\s\S]*?(?:\/>|<\/Class2CSS>)/g
   let match: RegExpExecArray | null
   while ((match = pattern.exec(text))) {
     for (const eachString of extractStringLiteralValues(match[0])) {

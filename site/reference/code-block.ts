@@ -1,6 +1,6 @@
 import type { markdownTree } from '../docs-shell/utils/markdown-tree'
 import type { PreparedCode } from '../docs-shell/utils/prepared-code'
-import type { CodeProp } from '../docs-shell/components/CodeView'
+import type { CodeProp } from '../docs-shell/components/code-props'
 
 type Children<T> = T extends { children: (infer Child)[] } ? Child : never
 type Tree = ReturnType<typeof markdownTree>
@@ -18,16 +18,15 @@ export function isStylesheetExample(title: ReferenceMarkdownNode, source?: Refer
 
 export function referenceCodeProps(node: Code, stylesheetExample = false): CodeProp {
   // A stylesheet example's result sits in the Generated CSS disclosure, so its source needs no label.
-  if (stylesheetExample) return { lang: 'css', children: node.value }
+  if (stylesheetExample) return { lang: 'css' }
   if (node.lang === 'typescript' && node.meta === 'declaration') {
-    return { lang: 'typescript', children: node.value, beautify: false, dedent: false }
+    return { lang: 'typescript', beautify: false, dedent: false }
   }
   return {
     lang: node.lang || 'plaintext',
     // Plain blocks like the Guide's; only an explicit file name earns a tab bar.
     name: node.meta?.match(/name=(\S+)/)?.[1],
     beautify: node.lang === 'css' || node.lang === 'html',
-    dedent: node.lang === 'sh' ? false : undefined,
-    children: node.value
+    dedent: node.lang === 'sh' ? false : undefined
   }
 }

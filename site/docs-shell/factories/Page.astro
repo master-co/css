@@ -1,0 +1,35 @@
+---
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
+import type { PageParams } from '../types/Props'
+import { resolveContent, type ContentModule } from './create-page'
+
+interface Props {
+  params: PageParams
+  metadata: any
+  dictionaries: Record<string, () => Promise<any>>
+  categories?: any
+  /** The page's MDX module; its translation replaces it in other locales. Pages without MDX pass content as children. */
+  content?: ContentModule
+  Layout?: AstroComponentFactory
+  noTOC?: boolean
+  subtitle?: string
+  /** Further layout props, such as `categoryLink` or a header `icon`. */
+  [key: string]: any
+}
+
+const { params, metadata, dictionaries, categories, content, Layout, noTOC = false, subtitle, ...options } = Astro.props
+const contentModule = content ? await resolveContent(params.locale, metadata, content) : undefined
+if (contentModule && !contentModule.default) throw new Error('Invalid content module')
+const Content = contentModule?.default
+const toc = contentModule?.toc
+---
+
+{Layout
+  ? <Layout {...options} params={params} pageCategories={categories} dictionaries={dictionaries} metadata={metadata} toc={noTOC ? null : toc} subtitle={subtitle}>
+      {Content && <Content pageCategories={categories} />}
+      <slot />
+    </Layout>
+  : <Fragment>
+      {Content && <Content pageCategories={categories} />}
+      <slot />
+    </Fragment>}

@@ -23,7 +23,7 @@ function graphs(server) {
     return [name, {
       modules: modules.length,
       files: files.length,
-      pages: loadedFiles.filter(file => file.startsWith(path.join(root, 'content/')) && file.endsWith('/page.tsx')).map(file => path.relative(root, file)),
+      pages: loadedFiles.filter(file => file.startsWith(path.join(root, 'content/')) && file.endsWith('/page.astro')).map(file => path.relative(root, file)),
       mdx: loadedFiles.filter(file => file.endsWith('.mdx')).map(file => path.relative(root, file)),
       largeData: files.filter(file => file.endsWith('/.generated/reference.json') || /\/benchmarks\/[^/]+\/(?:snapshot|long-session-evidence)\.json$/.test(file)),
       transformedMiB: mib(modules.reduce((total, module) => total + Buffer.byteLength((module.transformResult ?? module.ssrTransformResult)?.code ?? ''), 0))
@@ -41,15 +41,15 @@ async function browser(base) {
     for (const route of ['/', '/guide/view-transitions', '/reference/grid-columns', '/reference/rules/declarations', '/reference/tokens/color', '/tw/guide/view-transitions', '/design-system/review/package-api', '/benchmarks']) {
       const response = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
       if (response.status() !== 200) throw new Error(`${route}: HTTP ${response.status()}`)
-      await page.waitForFunction(() => [...document.querySelectorAll('site-island')].filter(island => {
+      await page.waitForFunction(() => [...document.querySelectorAll('astro-island')].filter(island => {
         const rect = island.getBoundingClientRect()
         return rect.top < innerHeight && rect.bottom > 0
-      }).every(island => island.siteIslandHydrated), null, { timeout: 15000 })
+      }).every(island => !island.hasAttribute('ssr')), null, { timeout: 15000 })
       const styled = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-surface-base').trim())
       if (!styled) throw new Error(`${route}: missing site theme styles`)
       if (route === '/') {
         if (await page.locator('.home-page').evaluate(element => getComputedStyle(element).overflow) !== 'hidden') throw new Error('Homepage utility CSS is missing')
-        await page.waitForFunction(() => document.querySelector('site-island[data-island$="search.tsx#default"]')?.siteIslandHydrated)
+        await page.waitForFunction(() => document.querySelector('astro-island[component-url*="SearchDialog"]:not([ssr])'))
         await page.keyboard.press('Meta+k')
         await page.getByRole('dialog', { name: 'Search documentation' }).waitFor()
         await page.getByRole('combobox', { name: /Search documentation|搜尋文件/ }).fill('padding')
@@ -108,7 +108,7 @@ async function worker() {
     await visit('/')
     const first = await sample('first-home')
     if (args.includes('--assert-lazy')) {
-      if (first.graphs.ssr.pages.some(file => file !== 'content/page.tsx') || first.graphs.ssr.mdx.length) throw new Error(`Home loaded unrelated page or MDX modules: ${JSON.stringify({ pages: first.graphs.ssr.pages, mdx: first.graphs.ssr.mdx })}`)
+      if (first.graphs.ssr.pages.some(file => file !== 'content/page.astro') || first.graphs.ssr.mdx.length) throw new Error(`Home loaded unrelated page or MDX modules: ${JSON.stringify({ pages: first.graphs.ssr.pages, mdx: first.graphs.ssr.mdx })}`)
       if (first.graphs.ssr.largeData.some(file => !file.includes('/docs-page-css-size/'))) throw new Error('Home loaded unrelated large data')
     }
     for (let batch = 1; batch <= 3; batch++) {
@@ -122,7 +122,7 @@ async function worker() {
     // Exercise Vite's real watcher invalidation without editing the user's files.
     for (let batch = 1; batch <= 2; batch++) {
       for (let index = 0; index < 10; index++) {
-        vite.watcher.emit('change', path.join(root, 'content/components/HeroSection.tsx'))
+        vite.watcher.emit('change', path.join(root, 'content/components/HeroSection.astro'))
         await pause(150)
         await visit('/')
       }

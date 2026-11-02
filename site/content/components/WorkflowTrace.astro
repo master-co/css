@@ -1,0 +1,26 @@
+---
+import { siteOf } from '~/site/astro/site-context'
+import { workflowTraceChange, workflowTraceNodes } from './workflow-content'
+import WorkflowCanvas from './WorkflowCanvas.svelte'
+
+/** The graph is a drawing; every node remains a real keyboard-operable button. */
+const { t } = siteOf(Astro)
+---
+
+<div class="home-wf-figure home-wf-trace" data-wf="trace">
+  <div aria-label={t('Impact graph')} class="home-wf-scene home-wf-trace-stage" role="group">
+    {workflowTraceNodes.map(([, label, kind], index) => (
+      <button
+        aria-label={kind === 'definition' ? `${label}: ${workflowTraceChange.before} → ${workflowTraceChange.after}` : undefined}
+        aria-pressed="false"
+        class:list={['home-wf-anchor home-wf-trace-node', `home-wf-trace-node-${kind}`, kind === 'definition' && 'home-stone home-stone-quiet']}
+        data-node={index}
+        data-wf-anchor={`node-${index}`}
+        data-wf-pick={index}
+        type="button">{kind === 'definition'
+          ? <><span>{label}</span><span aria-hidden="true" class="home-wf-trace-change"><span class="home-wf-trace-swatch" style={{ backgroundColor: workflowTraceChange.before }} /><span class="home-wf-trace-arrow">→</span><span class="home-wf-trace-swatch" style={{ backgroundColor: workflowTraceChange.after }} /></span></>
+          : <>{kind === 'class' && <span aria-hidden="true" class="home-wf-trace-dot" style={{ '--home-wf-before': workflowTraceChange.before, '--home-wf-after': workflowTraceChange.after }} />}<span>{label}</span></>}</button>
+    ))}
+    <WorkflowCanvas client:idle={{ timeout: 500 }} figure="trace" />
+  </div>
+</div>

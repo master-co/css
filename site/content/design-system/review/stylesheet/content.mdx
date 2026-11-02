@@ -1,5 +1,6 @@
-import DocumentOptions, { DocumentOptionEntry, DocumentOptionList } from '~/site/components/DocumentOptions'
-import StylesheetExample from '~/site/components/StylesheetExample'
+import DocumentOptionEntry from '~/site/components/DocumentOptionEntry.astro'
+import DocumentOptionList from '~/site/components/DocumentOptionList.astro'
+import StylesheetExample from '~/site/components/StylesheetExample.astro'
 
 Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The server compiles the literal source with the current preset and displays the complete result, including required variables and keyframes. The pair reuses `DocumentCodeExample`, including keyboard copy, visible focus and clipboard feedback. It does not execute a visual effect in the page.
 

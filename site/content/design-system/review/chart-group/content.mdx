@@ -1,4 +1,4 @@
-import BenchmarkChartsDemo from '../../components/BenchmarkChartsDemo'
+import BenchmarkChartsDemo from '../../components/BenchmarkChartsDemo.astro'
 
 Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for composition within each row. Pass the same `max` to a stacked chart when its row totals also need a shared scale, as in the delivery payload comparison. The examples below use **illustrative data**, not measured results. See [Benchmarks](/benchmarks) for real fixtures, sources, and limits.
 
@@ -7,7 +7,9 @@ Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for 
 Keep series labels visible, include units and sample counts, and distinguish zero from missing data. Labels wrap; values use tabular numerals. A zero value has no colored fill. Stacked rows normalize to their own totals, so their lengths do not compare absolute payload size. Put important findings and limitations in the document body as well as the chart caption.
 
 ```tsx
-import { BenchmarkChartGroup, BenchmarkDataTable, BenchmarkSource } from '~/site/components/benchmarks'
+import BenchmarkChartGroup from '~/site/components/benchmarks/BenchmarkChartGroup.astro'
+import BenchmarkDataTable from '~/site/components/benchmarks/BenchmarkDataTable.astro'
+import BenchmarkSource from '~/site/components/benchmarks/BenchmarkSource.astro'
 
 <BenchmarkChartGroup title="Style recalculation" detail="Median · 3 samples" unit="ms"
   items={[{ id: 'fixture-a', label: 'Fixture A', value: 12.5, color: 'blue' }]} />

@@ -1,0 +1,12 @@
+---
+import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up'
+import Demo from '../Demo.svelte'
+import DemoLabel from '../DemoLabel.svelte'
+---
+
+<Demo title="Content-sized pill and width-led circle" data-foundation="shapes" caption="These links share a destination. Their shape is independent of their native navigation behavior.">
+  <div class="flex flex-wrap items-end gap-lg">
+    <div><DemoLabel>pill</DemoLabel><div class="mt-sm"><a href="#use-shape-shortcuts" class="inline-flex items-center justify-center min-h(44) py-sm px-md pill b-solid b(1) b-line-divider text-sm (text-decoration:none) bg-surface-raised fg-text-body">Pills and circles</a></div></div>
+    <div><DemoLabel>w(48) (aspect-ratio:1/1) pill</DemoLabel><div class="mt-sm"><a href="#use-shape-shortcuts" aria-label="Pills and circles" class="inline-flex items-center justify-center w(48) (aspect-ratio:1/1) pill b-solid b(1) b-line-divider bg-surface-raised fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
+  </div>
+</Demo>

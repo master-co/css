@@ -1,0 +1,15 @@
+---
+import HomeIllustration from './HomeIllustration.astro'
+import type { HomeCompactIconId } from './home-illustration'
+
+export type { HomeCompactIconId } from './home-illustration'
+
+interface Props {
+  icon: HomeCompactIconId
+}
+
+/** The same themed glass artwork in list-sized slots; rendered on the server. */
+const { icon } = Astro.props
+---
+
+<HomeIllustration class="home-compact-icon" {icon} size={48} />

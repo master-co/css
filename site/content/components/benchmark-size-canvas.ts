@@ -787,14 +787,17 @@ export function mountBenchmarkCanvas(chart: HTMLElement, canvas: HTMLCanvasEleme
     resize()
   }
 
-  const intersection = new IntersectionObserver(([entry]) => {
+  // Notifications batch while layout settles; the last entry is the current state.
+  const intersection = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     present = entry.isIntersecting
     const root = entry.rootBounds?.height ?? innerHeight
     if (present && (entry.intersectionRatio >= 0.34 || entry.intersectionRect.height >= root * 0.5)) play()
     if (present) schedule()
     else pause()
   }, { threshold: [0, 0.1, 0.2, 0.34, 0.5] })
-  const nearObserver = new IntersectionObserver(([entry]) => {
+  const nearObserver = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     near = entry.isIntersecting
     if (near && !painted) resize()
   }, { rootMargin: '100% 0px' })

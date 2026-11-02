@@ -1,4 +1,5 @@
-import PageCSSSizeBenchmark from './components/PageCSSSizeBenchmark'
+import BenchmarkChart from '~/site/components/benchmarks/BenchmarkChart.astro'
+import PageCSSSizeBenchmark from './components/PageCSSSizeBenchmark.astro'
 import {
   StaticBuildChart,
   StaticBuildTable,
@@ -102,7 +103,7 @@ Question answered: how do equivalent static Master CSS and Tailwind CSS v4 fixtu
 The curated snapshot combines `css-output-size`, `build-performance`, and `css-structure` results. The headline charts use the `docs` fixture and CLI variants so the first view stays focused on static artifact output.
 
 <figure>
-  <StaticComparisonSummary />
+  <BenchmarkChart chart={StaticComparisonSummary} />
   <figcaption>Curated static comparison snapshot across all measured fixtures.</figcaption>
 </figure>
 
@@ -110,17 +111,17 @@ The curated snapshot combines `css-output-size`, `build-performance`, and `css-s
 The `docs` fixture represents a dense article and documentation layout with navigation, code blocks, and tables.
 
 <figure>
-  <StaticCSSOutputChart />
+  <BenchmarkChart chart={StaticCSSOutputChart} />
   <figcaption>Brotli-compressed CSS output for the `docs` fixture using the CLI setup.</figcaption>
 </figure>
 
 <figure>
-  <StaticBuildChart />
+  <BenchmarkChart chart={StaticBuildChart} />
   <figcaption>Cold production command median for the `docs` fixture using the CLI setup.</figcaption>
 </figure>
 
 <figure>
-  <StaticStructureChart />
+  <BenchmarkChart chart={StaticStructureChart} />
   <figcaption>Generated declaration counts for the `docs` fixture from a CSS AST parse.</figcaption>
 </figure>
 
@@ -128,17 +129,17 @@ The `docs` fixture represents a dense article and documentation layout with navi
 The complete tables keep every measured fixture and both CLI/Vite setup variants.
 
 <figure>
-  <StaticCSSBytesTable />
+  <BenchmarkChart chart={StaticCSSBytesTable} />
   <figcaption>Raw, gzip, and brotli CSS byte data for every measured fixture and setup.</figcaption>
 </figure>
 
 <figure>
-  <StaticBuildTable />
+  <BenchmarkChart chart={StaticBuildTable} />
   <figcaption>Cold and repeat production command timing data for every measured fixture and setup.</figcaption>
 </figure>
 
 <figure>
-  <StaticStructureTable />
+  <BenchmarkChart chart={StaticStructureTable} />
   <figcaption>Rule, selector, declaration, at-rule, layer, and selector-shape data parsed from generated CSS.</figcaption>
 </figure>
 
@@ -152,17 +153,17 @@ Question answered: which Master CSS startup, integration, extraction, and compil
 This snapshot combines `startup-diagnostics`, `build-diagnostics`, `compiler-diagnostics`, and `extraction-diagnostics`. It explains the Master CSS build path; it is not a cross-framework production benchmark.
 
 <figure>
-  <BuildPathDiagnosticsSummary />
+  <BenchmarkChart chart={BuildPathDiagnosticsSummary} />
   <figcaption>Curated Master CSS build-path diagnostics snapshot.</figcaption>
 </figure>
 
 <figure>
-  <BuildPathDiagnosticsCharts />
+  <BenchmarkChart chart={BuildPathDiagnosticsCharts} />
   <figcaption>Diagnostic medians for the `docs` fixture. Startup probes are directional and are not additive flamegraphs.</figcaption>
 </figure>
 
 <figure>
-  <BuildPathDiagnosticsTable />
+  <BenchmarkChart chart={BuildPathDiagnosticsTable} />
   <figcaption>Complete build-path diagnostic snapshot data for every measured fixture.</figcaption>
 </figure>
 
@@ -176,22 +177,22 @@ Question answered: how does CSS rule volume affect Chromium style recalculation,
 This suite uses local fixture pages, deterministic external CSS, Playwright, and Chromium tracing. It is a browser-only calibration suite, not a Master CSS versus Tailwind CSS comparison.
 
 <figure>
-  <BrowserCSSCostSummary />
+  <BenchmarkChart chart={BrowserCSSCostSummary} />
   <figcaption>Curated browser CSS cost snapshot.</figcaption>
 </figure>
 
 <figure>
-  <BrowserCSSVolumeTraceChart />
+  <BenchmarkChart chart={BrowserCSSVolumeTraceChart} />
   <figcaption>Warm-cache trace medians while CSS rule volume grows and visible DOM stays fixed.</figcaption>
 </figure>
 
 <figure>
-  <BrowserDOMScalingTraceChart />
+  <BenchmarkChart chart={BrowserDOMScalingTraceChart} />
   <figcaption>Warm-cache trace medians while DOM volume grows and CSS stays fixed.</figcaption>
 </figure>
 
 <figure>
-  <BrowserCSSCostTables />
+  <BenchmarkChart chart={BrowserCSSCostTables} />
   <figcaption>Complete browser CSS cost data for CSS volume and DOM scaling variants.</figcaption>
 </figure>
 
@@ -205,7 +206,7 @@ Question answered: what initial payload, local Chromium load cost, runtime boots
 The suite compares Master CSS static, runtime, progressive, and Tailwind CSS static browser-control variants across the static fixture set.
 
 <figure>
-  <MasterDeliveryModesSummary />
+  <BenchmarkChart chart={MasterDeliveryModesSummary} />
   <figcaption>Curated Master CSS delivery modes snapshot.</figcaption>
 </figure>
 
@@ -215,24 +216,24 @@ The primary charts show the `docs` fixture.
 The payload chart counts the complete HTML response and each recorded external asset once. Inline CSS and the injected hydration manifest are already inside that HTML, so they are not separate segments. Empty asset fields do not add compression-container bytes to the total.
 
 <figure>
-  <MasterDeliveryPayloadChart />
+  <BenchmarkChart chart={MasterDeliveryPayloadChart} />
   <figcaption>Recorded response assets, compressed separately with Brotli, for the `docs` fixture. All bars share a zero-based scale ending at the largest total; segments show each asset's contribution.</figcaption>
 </figure>
 
 These totals are estimates from the recorded asset fields, not measured network transfer sizes. They exclude headers and transport overhead. The detailed table retains separately compressed inline CSS and hydration fragments as diagnostics; adding those columns to the response total would count their content twice.
 
 <figure>
-  <MasterDeliveryLoadChart />
+  <BenchmarkChart chart={MasterDeliveryLoadChart} />
   <figcaption>Local Chromium load timing medians for the `docs` fixture.</figcaption>
 </figure>
 
 <figure>
-  <MasterDeliveryRuntimeChart />
+  <BenchmarkChart chart={MasterDeliveryRuntimeChart} />
   <figcaption>Runtime bootstrap and observe medians for Master runtime and progressive modes.</figcaption>
 </figure>
 
 <figure>
-  <MasterDeliveryModesTables />
+  <BenchmarkChart chart={MasterDeliveryModesTables} />
   <figcaption>Complete delivery mode snapshot data for every measured fixture and mode.</figcaption>
 </figure>
 
@@ -246,22 +247,22 @@ Question answered: how expensive are post-load class toggles, first-time runtime
 The suite measures local Chromium interactions across `dynamic`, `dashboard`, and `stress-dom` fixtures. Tailwind CSS static variants act as browser controls for style/layout/paint work; they do not have a client-side runtime rule-generation equivalent.
 
 <figure>
-  <InteractionCostSummary />
+  <BenchmarkChart chart={InteractionCostSummary} />
   <figcaption>Curated interaction cost snapshot.</figcaption>
 </figure>
 
 <figure>
-  <InteractionPrimaryCharts />
+  <BenchmarkChart chart={InteractionPrimaryCharts} />
   <figcaption>Mutation-ready medians for primary `dynamic` fixture scenarios.</figcaption>
 </figure>
 
 <figure>
-  <InteractionRuntimeCharts />
+  <BenchmarkChart chart={InteractionRuntimeCharts} />
   <figcaption>Runtime rule-update medians for Master runtime and progressive `dynamic` fixture scenarios.</figcaption>
 </figure>
 
 <figure>
-  <InteractionCostTables />
+  <BenchmarkChart chart={InteractionCostTables} />
   <figcaption>Complete interaction cost data for supported fixture, mode, and scenario combinations.</figcaption>
 </figure>
 
@@ -277,17 +278,17 @@ The lifecycle suite compares Master CSS static, runtime and progressive setups w
 The table’s elapsed time covers the entire scripted session and its final settling frames. The source metric is named `inp-style-interaction-ms`, but for this scenario it is approximately five minutes by construction. It does not measure an individual input delay or Web Vitals INP.
 
 <figure>
-  <BrowserLifecycleSummary />
+  <BenchmarkChart chart={BrowserLifecycleSummary} />
   <figcaption>Coverage and correctness checks for browser lifecycle evidence.</figcaption>
 </figure>
 
 <figure>
-  <BrowserLifecycleLongSessionCharts />
+  <BenchmarkChart chart={BrowserLifecycleLongSessionCharts} />
   <figcaption>Browser rendering and runtime work observed during one five-minute run per mode.</figcaption>
 </figure>
 
 <figure>
-  <BrowserLifecycleLongSessionTable />
+  <BenchmarkChart chart={BrowserLifecycleLongSessionTable} />
   <figcaption>Complete five-minute long-session evidence for every mode.</figcaption>
 </figure>
 

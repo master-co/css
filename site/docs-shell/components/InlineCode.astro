@@ -1,0 +1,30 @@
+---
+import clsx from 'clsx'
+import { toHtml } from 'hast-util-to-html'
+import highlightCode from '../utils/highlight-code'
+import { slotText } from '../utils/slot-text'
+
+interface Props {
+  /** The source; text children work too. */
+  code?: string
+  lang?: string
+  class?: string
+  [key: string]: any
+}
+
+/** Highlighted inline code, drawn as a `ui-inline-code` chip. */
+const { code: source, class: className, ...props } = Astro.props
+const code = source ?? await slotText(Astro.slots) ?? ''
+const hast: any = await highlightCode(code, {
+  inline: true,
+  ...props,
+  className: clsx('ui-inline-code', className)
+})
+// A single token (no spaces) is marked, so reading text can keep it whole rather than split it at a hyphen.
+const element = hast.children?.[0]
+if (element?.type === 'element' && !/\s/.test(code.trim())) {
+  element.properties = { ...element.properties, dataToken: '' }
+}
+---
+
+<Fragment set:html={toHtml(hast)} />

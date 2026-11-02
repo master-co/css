@@ -1,0 +1,71 @@
+---
+import './agent.css'
+import './agents-protocol.css'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
+import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import { siteOf } from '~/site/astro/site-context'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import preset from '~/site/utils/preset-manifest'
+import AgentSession, { type AgentSessionInspection } from './AgentSession.svelte'
+import { agentSessionCalls } from './agents-content'
+import HomeCompactIcon from './HomeCompactIcon.astro'
+import HomeSectionHeader from './HomeSectionHeader.astro'
+import { agentSession, glyphFieldLines, homeSections } from './home-content'
+
+/**
+ * What the server returns for the session's manifest query and class inspection, computed at build
+ * time from the preset with the same tooling session `@master/css-mcp` uses.
+ */
+function sessionFacts(): { inspection: AgentSessionInspection, tokens: { name: string, value: string }[] } {
+  const manifest = preset as unknown as MasterCSSManifest
+  const { namespace } = agentSessionCalls.manifest.args
+  const tokens = flattenMasterCSSManifestVariables(manifest.variables)
+    .filter((variable) => variable.namespace === namespace)
+    .map((variable) => ({ name: variable.name, value: String(variable.values[0].value) }))
+  const session = createToolingSessionSync({ manifest })
+  try {
+    const inspection = session.inspectClassName(agentSessionCalls.inspect.args.className as string)
+    const [rule] = inspection.rules
+    const [{ variable }] = inspection.variables
+    return {
+      tokens,
+      inspection: {
+        selector: rule.selectorText ?? `.${inspection.className}`,
+        declarations: inspection.declarations.map(({ property, value }) => ({ property, value })),
+        matchStatus: inspection.matchStatus,
+        cssSyntaxStatus: inspection.cssSyntaxStatus,
+        layer: rule.layer ?? '',
+        variable: { name: variable.name, value: String(variable.values[0].value) }
+      }
+    }
+  } finally {
+    session.dispose()
+  }
+}
+
+const { t } = siteOf(Astro)
+---
+
+<section id={homeSections.agents} class="home-section">
+  <div class="app-wrapper home-section-wrap">
+    <HomeSectionHeader
+      icon="section-ai-agents"
+      index="06"
+      label={t('AI agents')}
+      title={t('Agents check their own changes.')}
+      body={t('The MCP server gives coding agents your manifest and lint rules, so they check their own edits and hand you fixes as diffs.')}>
+      <Link class="home-section-link" href="/guide/ai-coding#connect-the-mcp-server">{t('Set up the MCP server')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+    </HomeSectionHeader>
+    {/* One scene: the session's window, and tucked under it the server its calls reach. The themed artwork renders on the server as slots. */}
+    <AgentSession client:idle={{ timeout: 500 }} {...agentSession} {...sessionFacts()} classRows={glyphFieldLines}>
+      <HomeCompactIcon slot="editIcon" icon="agent-edit-file" />
+      <HomeCompactIcon slot="manifestIcon" icon="mcp-manifest-query" />
+      <HomeCompactIcon slot="inspectIcon" icon="mcp-inspect-class" />
+      <HomeCompactIcon slot="lintIcon" icon="mcp-lint-project" />
+      <HomeCompactIcon slot="previewIcon" icon="mcp-preview-fixes" />
+      <HomeCompactIcon slot="applyIcon" icon="mcp-apply-preview" />
+      <HomeCompactIcon slot="relintIcon" icon="mcp-lint-project" />
+    </AgentSession>
+  </div>
+</section>

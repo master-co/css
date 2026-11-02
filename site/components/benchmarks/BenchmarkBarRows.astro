@@ -1,0 +1,34 @@
+---
+import '~/site/styles/system/data.css'
+import '~/site/styles/benchmarks.css'
+import { siteOf } from '~/site/astro/site-context'
+import { uniqueId } from '~/site/docs-shell/utils/unique-id'
+import type { BenchmarkBarsProps } from './types'
+import { clampPercent, formatMetricValue } from './utils'
+
+type Props = BenchmarkBarsProps
+
+/** Rows of one measurement: every bar is named by its row, so bars stay ink. */
+const { items, max, unit, valueFormatter } = Astro.props
+const { t } = siteOf(Astro)
+const labelPrefix = uniqueId(Astro, 'benchmark-bars')
+const resolvedMax = max ?? Math.max(0, ...items.map((item) => item.max ?? item.value))
+---
+
+{items.map((item, index) => {
+  const labelId = `${labelPrefix}-label-${index}`
+  const valueId = `${labelPrefix}-value-${index}`
+  const itemMax = item.max ?? resolvedMax
+  const valueLabel = item.valueLabel ?? (valueFormatter ? valueFormatter(item.value) : formatMetricValue(item.value, unit))
+  return <div class="ui-chart-row">
+    <span>
+      {item.icon && <img src={item.icon.src} alt="" width={item.icon.width} height={item.icon.height} class={item.icon.class} />}
+      <span id={labelId}>{t(item.label)}{item.labelNote && <span class="ml-xs font-xs fg-text-muted">{item.labelNote}</span>}</span>
+      {item.detail && <small>{t(item.detail)}</small>}
+    </span>
+    <div class="ui-bar" role="meter" aria-labelledby={`${labelId} ${valueId}`} aria-valuemin={0} aria-valuemax={itemMax} aria-valuenow={item.value}>
+      <i data-tone={item.color === 'neutral' ? 'muted' : undefined} style={{ width: `${clampPercent(item.value, itemMax)}%` }} />
+    </div>
+    <output id={valueId}>{valueLabel}</output>
+  </div>
+})}

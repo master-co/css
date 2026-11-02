@@ -1,0 +1,68 @@
+---
+import type { HomeIconDefinition } from '~/site/assets/images/home/icons/catalog'
+import Artwork from './Artwork.astro'
+
+interface Props {
+  entry: HomeIconDefinition
+}
+
+const { entry } = Astro.props
+const { id, label, concept, target, Icon, CompactIcon, recommendedSize } = entry
+const themes = ['light', 'dark'] as const
+const artworkSizes = entry.placement === 'item' ? [40, 48, 64] : [64, 80, 96, 112]
+const compactLabel = 'Archived compact SVG'
+---
+
+<article class="hir-card" id={id}>
+  <div class="hir-pair" aria-label="Light and dark background previews">
+    <div class="hir-light"><Artwork entry={entry} size={96} theme="light" /><span>Light</span></div>
+    <div class="hir-dark"><Artwork entry={entry} size={96} theme="dark" /><span>Dark</span></div>
+  </div>
+  <div class="hir-card-copy">
+    <div class="hir-card-title"><h3>{label}</h3>{CompactIcon && <span class="hir-badge">SVG study</span>}</div>
+    <p>{concept}</p>
+    <code class="hir-filename">artwork/{id}-&#123;light,dark&#125;.webp</code>
+    <dl class="hir-target"><div><dt>Section</dt><dd><a href={`/#${target.section}`}>{target.section}</a></dd></div>
+      {target.item && <div><dt>Item</dt><dd>{target.item}</dd></div>}
+      <div><dt>Suggested</dt><dd>{recommendedSize}px artwork</dd></div>
+    </dl>
+  </div>
+  <details class="hir-size-details">
+    <summary>Actual sizes{CompactIcon ? ' · artwork + SVG study' : ''}</summary>
+    {/* The main artwork at its placement sizes. */}
+    <div class="hir-size-strip">
+      <p>Main artwork · WebP</p>
+      {themes.map(theme => <div class={`hir-size-row hir-${theme}`} aria-label={`Main artwork on ${theme}`}>
+        {artworkSizes.map(size => <figure>
+          <Artwork entry={entry} size={size} theme={theme} />
+          <figcaption>{size}px</figcaption>
+        </figure>)}
+      </div>)}
+    </div>
+    {CompactIcon && <Fragment>
+      <div class="hir-size-strip">
+        <p>{compactLabel}</p>
+        {themes.map(scheme => <div class={`hir-size-row hir-${scheme}`} aria-label={`${compactLabel} on ${scheme}`}>
+          {[24, 32, 40].map(size => <figure>
+            <CompactIcon width={size} height={size} aria-hidden="true" focusable="false" />
+            <figcaption>{size}px</figcaption>
+          </figure>)}
+        </div>)}
+      </div>
+      <code class="hir-compact-filename">{id}-compact.svg</code>
+    </Fragment>}
+  </details>
+  <details class="hir-construction-details hir-size-details">
+    <summary>Material and vector construction · enlarged</summary>
+    <div class="hir-construction-view">
+      <Artwork entry={entry} size={240} />
+      <span>Selected WebP material</span>
+      <Icon width={240} height={240} aria-hidden="true" focusable="false" />
+      <span>{id}.svg · vector construction</span>
+    </div>
+    {CompactIcon && <div class="hir-construction-compact hir-construction-view">
+      <CompactIcon width={128} height={128} aria-hidden="true" focusable="false" />
+      <span>Compact drawing · 4×</span>
+    </div>}
+  </details>
+</article>

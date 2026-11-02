@@ -1,0 +1,36 @@
+---
+import clsx from 'clsx'
+import Link from './Link.svelte'
+import type { DefinedMetadata } from '../types/Metadata'
+import { siteOf } from '~/site/astro/site-context'
+
+interface Props {
+  /** The pages to link, such as a category's `pages`. */
+  pages: DefinedMetadata[]
+  class?: string
+}
+
+const { pages, class: className } = Astro.props
+const { t: $, locale } = siteOf(Astro)
+---
+
+<section class={clsx(className, 'mt-md@layer(defaults) grid-cols(1) bl-solid bl(1) bt-solid bt(1) bl-line-subtle bt-line-subtle grid-cols(2)@sm grid-cols(3)@lg')}>{
+  pages.map((definedMetadata: DefinedMetadata) =>
+    <Link
+      class={clsx(
+        'flex-col items-start! justify-between! p-xl bb-solid bb(1) br-solid br(1) bb-line-subtle br-line-subtle text-left (transition-duration:0.2s) (transition-property:background-color) bg-surface-raised:hover',
+        {
+          'disabled': definedMetadata.disabled
+        }
+      )}
+      href={definedMetadata.pathname}
+      disabled={definedMetadata.disabled}
+      rel="noreferrer noopener">
+      <div class={clsx('font-md leading-md (word-break:break-all)')}>
+        {$(((definedMetadata.title as any)?.absolute || definedMetadata.title) as string)}
+        {definedMetadata.type === 'entity' && locale !== 'en' && typeof definedMetadata.title === 'string' && <span class="(margin-left:.25em)" translate="no">{definedMetadata.title}</span>}
+      </div>
+      {definedMetadata.description && <div class="clamp-lines(2) mt-3xs text-xs font-regular fg-text-muted">{definedMetadata.description as string}</div>}
+    </Link>
+  )
+}</section>

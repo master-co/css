@@ -1,0 +1,11 @@
+---
+import '~/site/styles/system/data.css'
+
+interface Props {
+  label: string
+}
+
+const { label } = Astro.props
+---
+
+<dl class="ui-params" aria-label={label}><slot /></dl>

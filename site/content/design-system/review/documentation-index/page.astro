@@ -1,0 +1,23 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import IndexReviewScene from './IndexReviewScene.svelte'
+import GuideIndex from '~/site/content/guide/components/GuideIndex.svelte'
+import { guideIndexCategories } from '~/site/content/guide/components/guide-index'
+import categories from '~/site/.categories/guide.json'
+
+export const metadata = pageMetadata
+
+const gettingStarted = guideIndexCategories(categories.filter(category => category.name === 'Getting Started'))
+---
+
+<ComponentPage kicker="Documents" title="Documentation index" description="Grouped links with a useful start: the Guide and Reference indexes share one component." usage={{ href: '/guide', label: 'the Guide index' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="index" title="Grouped entries">
+    <IndexReviewScene client:idle={{ timeout: 500 }} prefix="current" />
+  </ComponentSection>
+  <ComponentSection id="guide" title="In the Guide">
+    <GuideIndex client:idle={{ timeout: 500 }} pageCategories={gettingStarted} />
+  </ComponentSection>
+</ComponentPage>

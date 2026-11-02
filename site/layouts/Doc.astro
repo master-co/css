@@ -1,0 +1,8 @@
+---
+import Layout from '~/site/docs-shell/layouts/Doc.astro'
+import { footerProps } from '~/site/navigation'
+
+const { class: className, ...props } = Astro.props
+---
+
+<Layout {...props} class={props.metadata.pathname?.startsWith('/reference') ? 'reference-document' : className} footerProps={footerProps}><slot /></Layout>

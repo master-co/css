@@ -1,8 +1,8 @@
-import ColorIllustration from './components/ColorIllustration'
-import Class2CSS from '~/site/components/Class2CSS'
-import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
-import { FoundationColorRoles } from '~/site/components/demo/FoundationPaint'
-import DemoRaisedSurface from './components/DemoRaisedSurface'
+import ColorIllustration from './components/ColorIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
+import FoundationColorRoles from '~/site/components/demo/foundations/FoundationColorRoles.astro'
+import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 ## Overview [sr-only]
 
@@ -30,7 +30,7 @@ Build interface color from roles: surface, line and text colors whose class stay
 </section>
 ```
 
-<Class2CSS>{['bg-surface-raised', 'b-line-divider', 'fg-text-muted']}</Class2CSS>
+<Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
 
 The role is part of the color key: `bg-surface-raised` reads `--color-surface-raised`, and `b-line-divider` reads `--color-line-divider`. A line role sets only the color, so give the border its width and style separately. See [Color roles](/reference/tokens/color-roles) for every role and [Color](/reference/tokens/color) for the palette.
 
@@ -46,7 +46,7 @@ A hue alias such as `fg-yellow` is a fixed swatch with the same value in every m
 <p class="fg-text-yellow">Pending review</p>
 ```
 
-<Class2CSS>{['fg-yellow', 'fg-text-yellow']}</Class2CSS>
+<Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
 
 Use text hue aliases for colored labels. Keep body copy, emphasis and links on the text roles.
 
@@ -68,7 +68,7 @@ A raised surface combines a surface role, a radius token and a shadow token. Rai
 </a>
 ```
 
-<Class2CSS>{['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']}</Class2CSS>
+<Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
 
 Preset shadows use `light-dark()` for their colors, so `shadow-sm` keeps its geometry and follows the element's color scheme. `pill` is a fixed utility, not a radius token; with equal width and height it draws a circle. Round single corners with `rtl-lg`, `rtr-lg`, `rbl-lg` and `rbr-lg`. See [Radius](/reference/tokens/radius) and [Shadow](/reference/tokens/shadow) for the scales and their customization.
 

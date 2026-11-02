@@ -1,4 +1,4 @@
-import type { DocumentFileEntry, DocumentFileTreeProps } from '../components/DocumentFileTree'
+import type { DocumentFileEntry, DocumentFileTreeProps } from '../components/document-types'
 
 export const packageTrees = {
   monorepo: {

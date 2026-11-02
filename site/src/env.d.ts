@@ -1,4 +1,4 @@
-/// <reference types="vite/types/import-meta.d.ts" />
+/// <reference types="astro/client" />
 /// <reference types="@master/css/client" />
 
 interface ImportMetaEnv {
@@ -16,38 +16,20 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-// Site conventions differ from `astro/client`: see astro/svg-components.ts.
-declare module '*.svg' {
-  const Component: import('react').FunctionComponent<import('react').SVGProps<SVGSVGElement>>
+// TypeScript modules import components; the Astro and Svelte compilers type-check their own sources.
+declare module '*.astro' {
+  const Component: import('astro/runtime/server/index.js').AstroComponentFactory
   export default Component
 }
 
-declare module '*.png' {
-  const image: import('../docs-shell/components/Image').StaticImage
-  export default image
+declare module '*.svelte' {
+  const Component: import('svelte').Component<any>
+  export default Component
 }
 
-declare module '*.jpg' {
-  const image: import('../docs-shell/components/Image').StaticImage
-  export default image
-}
-
-declare module '*.jpeg' {
-  const image: import('../docs-shell/components/Image').StaticImage
-  export default image
-}
-
-declare module '*.webp' {
-  const image: import('../docs-shell/components/Image').StaticImage
-  export default image
-}
-
-declare module '*?raw' {
-  const source: string
-  export default source
-}
-
-declare module 'virtual:site-islands' {
-  const modules: Record<string, () => Promise<Record<string, unknown>>>
-  export default modules
+declare module '*.mdx' {
+  const Content: import('astro/runtime/server/index.js').AstroComponentFactory
+  export default Content
+  export const toc: { id: string, title: string, level: number }[] | undefined
+  export const components: Record<string, unknown>
 }

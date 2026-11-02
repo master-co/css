@@ -5,14 +5,13 @@ import { fileURLToPath } from 'node:url'
 import type { Node, PropertyName } from 'typescript/unstable/ast'
 import {
     isIdentifier,
-    isJsxAttribute,
-    isJsxText,
     isNumericLiteral,
     isPropertyAssignment,
     isStringLiteral,
     isStringLiteralLikeNode
 } from 'typescript/unstable/ast'
 import { createTypeScriptASTHost, visit } from './ts-ast'
+import { componentTexts, isComponentFile } from './component-text'
 
 type SegmentKind = 'dictionary' | 'metadata' | 'mdx' | 'ui'
 
@@ -176,33 +175,12 @@ function collectMdxSegments(locale: string): TranslationSegment[] {
 
 function collectUiSegments(locale: string): TranslationSegment[] {
     return uiRoots.flatMap((root) =>
-        walk(root, (file) => file.endsWith('.tsx') && isAuditableSourceFile(file)).flatMap((file) => {
-            const sourceFile = getSourceFile(file)
-            const segments: TranslationSegment[] = []
-
-            visit(sourceFile, (node) => {
-                if (isJsxText(node)) {
-                    const text = normalizeText(node.getText(sourceFile))
-                    if (isTranslatableText(text)) segments.push(createSegment('ui', file, locale, text, 'jsx'))
-                    return
-                }
-
-                if (isJsxAttribute(node) && translatableAttributes.has(node.name.getText(sourceFile)) && node.initializer && isStringLiteral(node.initializer)) {
-                    const text = node.initializer.text
-                    if (isTranslatableText(text)) segments.push(createSegment('ui', file, locale, text, node.name.getText(sourceFile)))
-                    return
-                }
-
-                if (!isPropertyAssignment(node)) return
-                const name = propertyName(node.name)
-                if (!name || !translatablePropertyNames.has(name)) return
-                if (!isStringLiteralLikeNode(node.initializer)) return
-                const text = node.initializer.text
-                if (isTranslatableText(text)) segments.push(createSegment('ui', file, locale, text, name))
-            })
-
-            return segments
-        })
+        walk(root, (file) => isComponentFile(file) && isAuditableSourceFile(file)).flatMap((file) =>
+            componentTexts(file, { attributes: translatableAttributes, properties: translatablePropertyNames })
+                .map(({ kind, text }) => ({ kind, text: normalizeText(text) }))
+                .filter(({ text }) => isTranslatableText(text))
+                .map(({ kind, text }) => createSegment('ui', file, locale, text, kind))
+        )
     )
 }
 
@@ -538,7 +516,7 @@ function walk(root: string, filter: (file: string) => boolean): string[] {
 }
 
 function isAuditableSourceFile(file: string) {
-    return !/(\.test\.tsx?$|\/api\/|\/\.astro\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(toPosix(file))
+    return !/(\.test\.ts$|\/api\/|\/\.astro\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(toPosix(file))
 }
 
 function hash(value: string) {

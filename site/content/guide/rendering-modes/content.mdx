@@ -1,7 +1,8 @@
-import DeliveryFlow from '~/site/components/DeliveryFlow'
-import StepSection, { Step } from '~/site/docs-shell/components/StepSection'
-import ConfiguredExample from '~/site/reference/ConfiguredExample'
-import Class2CSS from '~/site/components/Class2CSS'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import StepSection from '~/site/docs-shell/components/StepSection.astro'
+import Step from '~/site/docs-shell/components/Step.astro'
+import ConfiguredExample from '~/site/reference/ConfiguredExample.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## Overview [sr-only]
 Choose a rendering mode by when your application knows its complete class names. Start with static rendering when those names are visible in source. Use pre-rendering to generate CSS from finished page HTML, runtime rendering for new classes created in the browser, or progressive rendering to combine page CSS with runtime support.
@@ -96,7 +97,7 @@ Select runtime mode through your integration, for example the [Vite runtime setu
 
 These are the rules used while both classes are present:
 
-<Class2CSS>{['text-center', '(font-size:3rem)']}</Class2CSS>
+<Class2CSS classes={['text-center', '(font-size:3rem)']} />
 
 Runtime generation depends on JavaScript startup. Use pre-rendered CSS when the page's initial rules must already be available in the response, and runtime support only when later class names require it.
 
@@ -168,7 +169,7 @@ renderer.dispose()
 
 Write or serve the returned `html`. Its `style#master-css` contains the heading's rule and the font-size token it needs:
 
-<Class2CSS>{'font-5xl'}</Class2CSS>
+<Class2CSS classes={'font-5xl'} />
 
 No Master CSS runtime or hydration manifest is needed for this output. A class that only appears later needs CSS supplied separately, or a mode with runtime support.
 

@@ -1,0 +1,10 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type Props = HTMLAttributes<'div'>
+
+/** A row step's source. */
+const { class: className, ...props } = Astro.props
+---
+
+<div {...props} class:list={['ui-steps-source', className]}><slot /></div>

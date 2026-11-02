@@ -1,3 +1,4 @@
-import GuideIndex from './components/GuideIndex'
+import GuideIndex from './components/GuideIndex.svelte'
+import { guideIndexCategories } from './components/guide-index'
 
-<GuideIndex pageCategories={props.pageCategories} />
+<GuideIndex client:idle={{ timeout: 500 }} pageCategories={guideIndexCategories(props.pageCategories)} />

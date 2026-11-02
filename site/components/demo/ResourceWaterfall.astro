@@ -1,0 +1,6 @@
+---
+import DemoWaterfall from './DemoWaterfall.astro'
+import { resourceWaterfalls } from '../../utils/first-paint-examples'
+---
+
+<div data-first-paint="waterfalls">{resourceWaterfalls.map(scenario => <DemoWaterfall {...scenario} />)}</div>

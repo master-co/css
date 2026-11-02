@@ -1,0 +1,24 @@
+---
+import '~/site/styles/system/data.css'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import DocumentIdentifier from './DocumentIdentifier.astro'
+import type { DocumentAPIEntry } from './document-types'
+
+export type { DocumentAPIEntry } from './document-types'
+
+interface Props {
+  label: string
+  entries: readonly DocumentAPIEntry[]
+  compact?: boolean
+}
+
+/** Static navigation for exact identifiers; long names wrap without changing copy text. */
+const { label, entries, compact = false } = Astro.props
+---
+
+<nav class="ui-index" data-density={compact ? 'compact' : undefined} aria-label={label}>
+  {entries.map(entry => <Link href={entry.href}>
+    <b><code><DocumentIdentifier text={entry.name} /></code></b>
+    <span>{entry.description}</span>
+  </Link>)}
+</nav>

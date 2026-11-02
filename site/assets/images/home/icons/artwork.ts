@@ -1,4 +1,4 @@
-import type { StaticImage } from '~/site/docs-shell/components/Image'
+import type { StaticImage } from '~/site/docs-shell/types/StaticImage'
 import artwork0Light from './artwork/section-design-system-light.webp'
 import artwork0Dark from './artwork/section-design-system-dark.webp'
 import artwork1Light from './artwork/section-editor-light.webp'

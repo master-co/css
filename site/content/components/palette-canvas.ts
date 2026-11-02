@@ -223,7 +223,9 @@ export function mountPaletteCanvas(stage: HTMLElement, canvas: HTMLCanvasElement
 
   const readout = stage.parentElement!.querySelector<HTMLElement>('.home-palette-inspector')
   const resizeObserver = new ResizeObserver(resize)
-  const intersection = new IntersectionObserver(([entry]) => {
+  // Notifications batch while layout settles; the last entry is the current state.
+  const intersection = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     visible = entry.isIntersecting
     if (visible) schedule()
     else {

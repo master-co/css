@@ -18,14 +18,14 @@ function fixture(t) {
   write('site/package.json', JSON.stringify({ dependencies: { '@master/css': '*' } }))
   write('site/content/index.css', '@import "@master/css"; @import "../../theme.css";')
   write('theme.css', '@mixin --fixture-one { color: red; }')
-  write('site/content/page.tsx', 'export default function Page() { return null }')
+  write('site/content/page.astro', '<main></main>')
   return { root, site, write, key: () => lintCacheFingerprint({ root, site }) }
 }
 
 test('content keys remain stable across source edits and cache writes', t => {
   const { key, write } = fixture(t)
   const before = key()
-  write('site/content/page.tsx', 'export default function Page() { return <div /> }')
+  write('site/content/page.astro', '<main><div></div></main>')
   write('site/.cache/eslint/result.json', '{}')
   assert.equal(key(), before)
 })

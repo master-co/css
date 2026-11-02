@@ -1,0 +1,63 @@
+---
+import highlightCode from '~/site/docs-shell/utils/highlight-code'
+import { toHtml } from 'hast-util-to-html'
+import dedent from 'ts-dedent'
+import type { ShikiTransformer } from 'shiki/core'
+import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
+import { createSyntaxTrPlaceholderContext } from './syntax-tr-placeholders'
+import { syntaxAnchor } from '../reference/syntax'
+
+interface Props {
+  value: string | string[]
+  previewSyntax?: string
+}
+
+function convertDeclarationsToCSS(obj: any) {
+  let cssText = ''
+  for (const property in obj) {
+    if (Object.hasOwn(obj, property)) {
+      cssText += `${property}: ${obj[property]};\n`
+    }
+  }
+  return cssText
+}
+
+const { previewSyntax } = Astro.props
+const value = (Array.isArray(Astro.props.value) ? Astro.props.value[0] : Astro.props.value) as string
+const placeholders = createSyntaxTrPlaceholderContext()
+const proxyCode = placeholders.proxy(value)
+const declarations = generateSyntaxTrDeclarations(proxyCode, previewSyntax)
+const text = dedent`
+  __TMP__ {
+  ${convertDeclarationsToCSS(declarations)}}`
+const transformerRestore: ShikiTransformer = {
+  root(root) {
+    placeholders.restoreTextNodes(root)
+  },
+}
+const hast = await highlightCode(text, {
+  lang: 'css',
+  inline: true,
+  className: 'fg-text-body whitespace-pre-wrap whitespace-pre@sm b(0) p(0) r(0) (background-color:transparent)',
+  transformers: [transformerRestore]
+})
+const codeElement = (hast.children[0] as any)
+const lineElements = codeElement.children
+lineElements.splice(0, 1) // remove __TMP__ {
+lineElements.splice(0, 1) // remove \n
+lineElements.splice(lineElements.length - 1, 1) // remove }
+const keyHast = await highlightCode(proxyCode, {
+  lang: 'plaintext',
+  inline: true,
+  transformers: [transformerRestore]
+})
+---
+
+<tr id={syntaxAnchor(value)} class="reference-syntax-row">
+  <td class="whitespace-normal whitespace-nowrap@sm">
+    <slot /><Fragment set:html={toHtml(keyHast as any)} />
+  </td>
+  <td>
+    {value && text && <Fragment set:html={toHtml(hast as any)} />}
+  </td>
+</tr>

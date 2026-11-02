@@ -1,0 +1,13 @@
+---
+import Demo from '../Demo.svelte'
+import DemoItem from '../DemoItem.svelte'
+import DemoLabel from '../DemoLabel.svelte'
+---
+
+<Demo title="One scale, related surfaces" data-foundation="radius">
+  <div class="grid-cols(3) gap-sm w-full">
+    <div><DemoLabel>r-sm</DemoLabel><DemoItem class="grid (place-content:center) (height:5rem) mt-sm r-sm text-sm">Control</DemoItem></div>
+    <div><DemoLabel>r-lg</DemoLabel><DemoItem class="grid (place-content:center) (height:5rem) mt-sm r-lg text-sm">Panel</DemoItem></div>
+    <div><DemoLabel>r-2xl</DemoLabel><DemoItem class="grid (place-content:center) (height:5rem) mt-sm r-2xl text-sm">Feature</DemoItem></div>
+  </div>
+</Demo>

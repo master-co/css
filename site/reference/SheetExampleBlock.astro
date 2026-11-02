@@ -1,0 +1,30 @@
+---
+import Code from '~/site/docs-shell/components/Code.astro'
+import GeneratedCSS from '../components/GeneratedCSS.astro'
+import InlineText from './InlineText.astro'
+import type { SheetExample } from './sheets'
+
+interface Props {
+  example: SheetExample
+  preview?: boolean
+  source?: boolean
+  caption?: string
+}
+
+/**
+ * Lead sentence, then one tray: the live preview on its stage, the subject's source and its
+ * closed Generated CSS, so the preview and the code read as one example.
+ */
+const { example, preview = true, source = true, caption } = Astro.props
+---
+
+{example.lead && <p><InlineText text={example.lead} /></p>}
+<figure class="ui-tray">
+  {preview && <div class="ui-stage">
+    <div class="ref-example-scene" set:html={example.html} />
+  </div>}
+  {!preview && example.configuration && <Code lang="css" code={example.configuration} />}
+  {source && <Code lang="html" code={example.code} />}
+  <GeneratedCSS><Code lang="css" beautify code={example.css} /></GeneratedCSS>
+  {caption && <figcaption class="ui-tray-caption"><InlineText text={caption} /></figcaption>}
+</figure>

@@ -1,0 +1,68 @@
+---
+import { keyWidth } from './sheet-blocks'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import Palette from '../components/demo/foundations/Palette.svelte'
+import { foundationTokens } from '../common/foundation-data/tokens'
+import { modePair, pixels, type SheetGroup, type TokenSheet } from './sheets'
+import SheetClassTable from './SheetClassTable.astro'
+import SheetExampleBlock from './SheetExampleBlock.astro'
+import SheetNote from './SheetNote.astro'
+import SheetTable from './SheetTable.astro'
+import SheetValue from './SheetValue.astro'
+
+interface Props {
+  sheet: TokenSheet
+}
+
+type PaletteGroup = { family: string; colors: { name: string; step: number; value: string }[] }
+
+/** Show a stored `var(--token)` reference as the value it resolves to, e.g. text sizes. */
+function resolved(value: string) {
+  const name = value.match(/^var\(--([\w-]+)\)$/)?.[1]
+  return (name && foundationTokens.find(token => token.name === name)?.values[0].value) || value
+}
+
+/** Numbered steps read best as a hue × step matrix; every swatch copies its value. */
+function paletteGroups(group: SheetGroup) {
+  const hues = new Map<string, PaletteGroup>()
+  for (const row of group.values) {
+    const [, family, step] = row.key.match(/^(.+)-(\d+)$/)!
+    if (!hues.has(family)) hues.set(family, { family, colors: [] })
+    hues.get(family)!.colors.push({ name: row.variable.slice(2), step: Number(step), value: row.value })
+  }
+  return [...hues.values()].map(hue => ({ ...hue, colors: hue.colors.sort((a, b) => a.step - b.step) }))
+}
+
+const { sheet } = Astro.props
+const grouped = sheet.groups.length > 1
+const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.flatMap(group => group.values.map(value => value.className))))
+---
+
+<h2 id="consumers">Classes</h2>
+<SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={sheet.id.startsWith('color') ? `${sheet.more.length} other color families` : `${sheet.more.length} more classes`} width={width} />
+{sheet.note && <SheetNote text={sheet.note} />}
+
+<h2 id="values">Values</h2>
+{sheet.groups.filter(group => group.values.length).map(group => <Fragment>
+  {grouped && group.title && <h3 id={group.id}>{group.title}</h3>}
+  {group.palette
+    ? <div class="ui-tray">
+      <div class="ui-stage" data-padding="sm" data-align="start">
+        <Palette client:idle={{ timeout: 500 }} groups={paletteGroups(group)} />
+      </div>
+    </div>
+    : <SheetTable class="ref-value-table" head={group.head} modes={group.head.includes('Light')} keyWidth={width}>
+      {group.values.map(row => <tr id={row.id}>
+        <th scope="row"><code>{row.className}</code></th>
+        {group.head.includes('Light') ? modePair(row.value)!.map(value => <td><code>{value}</code></td>)
+          : (row.cells ?? [row.value]).map(value => <td title={resolved(value) === value ? undefined : value}><SheetValue value={resolved(value)} note={pixels(resolved(value))} /></td>)}
+      </tr>)}
+    </SheetTable>}
+</Fragment>)}
+
+<h2 id="usage">Usage</h2>
+<SheetExampleBlock example={sheet.usage} />
+
+<h2 id="customize">Customize</h2>
+<SheetExampleBlock example={sheet.customize} preview={false} source={false} />
+<p class="ref-links">See <Link href="/reference/directives/theme">theme directives</Link>{sheet.guide && <Fragment> and <Link href={sheet.guide.href}>{sheet.guide.label}</Link></Fragment>}.</p>

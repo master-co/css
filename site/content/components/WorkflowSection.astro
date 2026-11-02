@@ -1,0 +1,72 @@
+---
+import './workflow.css'
+import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import { siteOf } from '~/site/astro/site-context'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import HomeBentoCard from './HomeBentoCard.astro'
+import HomeBentoFrame from './HomeBentoFrame.astro'
+import HomeBentoGrid from './HomeBentoGrid.astro'
+import HomeSectionHeader from './HomeSectionHeader.astro'
+import type { HomeIllustrationId } from './home-illustration'
+import { homeSections, workflowCards } from './home-content'
+import { workflowGuides } from './workflow-content'
+import WorkflowRepo from './WorkflowRepo.astro'
+import WorkflowRoutes from './WorkflowRoutes.astro'
+import WorkflowStage from './WorkflowStage.astro'
+import WorkflowTrace from './WorkflowTrace.astro'
+
+type WorkflowCardKey = keyof typeof workflowGuides
+
+const cardIcons = {
+  frameworks: 'workflow-integrations',
+  workspaces: 'workflow-monorepo',
+  routes: 'workflow-route-styles',
+  impact: 'workflow-trace-change'
+} satisfies Record<WorkflowCardKey, HomeIllustrationId>
+
+const { t } = siteOf(Astro)
+
+/** Shared bento header with its guide linked directly from the title. */
+const card = (key: WorkflowCardKey, className: string) => ({
+  body: t(workflowCards[key].body),
+  class: `home-reveal-item ${className}`,
+  href: workflowGuides[key],
+  icon: cardIcons[key],
+  title: t(workflowCards[key].title)
+})
+
+/**
+ * Workflow: one project manifest, orchestrated across the frameworks, monorepo apps and routes
+ * that use it, and a report of where a change goes. Each card holds one drawing straight on the
+ * card: Canvas draws the glass scopes and signals; native links, code and controls sit above it.
+ */
+---
+
+<section id={homeSections.developmentWorkflow} class="home-section">
+  <div class="app-wrapper home-section-wrap">
+    <HomeSectionHeader
+      icon="section-workflow"
+      index="07"
+      label={t('Workflow')}
+      title={t('Works with your framework and build.')}
+      body={t('One project manifest drives the CSS of every integration, monorepo app and route, and a snapshot comparison shows what a change touches.')}>
+      <Link class="home-section-link" href="/guide/installation">{t('Install for your framework')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+    </HomeSectionHeader>
+    <HomeBentoFrame>
+      <HomeBentoGrid class="grid-cols(1) grid-cols(2)@md grid-cols(12)@lg home-wf-grid">
+        <HomeBentoCard {...card('frameworks', 'grid-col-span(2)@md grid-col-span(7)@lg')}>
+          <WorkflowStage />
+        </HomeBentoCard>
+        <HomeBentoCard {...card('workspaces', 'grid-col-span(5)@lg')}>
+          <WorkflowRepo />
+        </HomeBentoCard>
+        <HomeBentoCard {...card('routes', 'grid-col-span(5)@lg')}>
+          <WorkflowRoutes />
+        </HomeBentoCard>
+        <HomeBentoCard {...card('impact', 'grid-col-span(2)@md grid-col-span(7)@lg')}>
+          <WorkflowTrace />
+        </HomeBentoCard>
+      </HomeBentoGrid>
+    </HomeBentoFrame>
+  </div>
+</section>

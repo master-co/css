@@ -1,0 +1,28 @@
+---
+import { siteOf } from '~/site/astro/site-context'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import Tabs from '~/site/docs-shell/components/Tabs.astro'
+
+export interface InstallationModeTab {
+  href: string
+  label: string
+}
+
+interface Props {
+  items: readonly InstallationModeTab[]
+}
+
+/** Reuse the site's navigation appearance for sibling setup guides. */
+const { items } = Astro.props
+const { pathname } = siteOf(Astro)
+---
+
+<Tabs class="mb-xl">
+  {items.map(item => {
+    const active = pathname === item.href
+    // A tab is a site link; `Tab` only forwarded its props to `Link`.
+    return <Link href={item.href} active={active} aria-current={active ? 'page' : undefined}>
+      {item.label}
+    </Link>
+  })}
+</Tabs>

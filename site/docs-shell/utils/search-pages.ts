@@ -99,7 +99,7 @@ export async function loadSearchPageEntries({
   metadataGlob = DEFAULT_METADATA_GLOB
 }: LoadSearchPageEntriesOptions = {}): Promise<SearchPageEntry[]> {
   const metadataPaths = FastGlob.sync(metadataGlob, { cwd })
-    .filter((metadataPath) => existsSync(resolve(cwd, dirname(metadataPath), 'page.tsx')))
+    .filter((metadataPath) => existsSync(resolve(cwd, dirname(metadataPath), 'page.astro')))
     .sort()
 
   return await Promise.all(metadataPaths.map(async (metadataPath) => {

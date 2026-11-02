@@ -1,7 +1,7 @@
-import ResponsiveIllustration from './components/ResponsiveIllustration'
-import Class2CSS from '~/site/components/Class2CSS'
-import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
-import { FoundationContainerGrid } from '~/site/components/demo/FoundationExamples'
+import ResponsiveIllustration from './components/ResponsiveIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
+import FoundationContainerGrid from '~/site/components/demo/foundations/FoundationContainerGrid.astro'
 
 ## Overview [sr-only]
 A page layout and a reusable card can need different responsive rules. Let the page follow the viewport; let the card follow the space its parent gives it. In Master CSS, append a condition to the class whose style should change.
@@ -97,7 +97,7 @@ Put `container-inline` on an ancestor, then give its descendant a container cond
 </section>
 ```
 
-<Class2CSS>{['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']}</Class2CSS>
+<Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
 
 Move the **Container** slider while keeping your browser window unchanged. It resizes the ancestor, not the viewport. At a 16px font size, compare 447px and 448px: the second column should appear at 448px. The control stays within the article's available width; widen the browser if the article itself is narrower than that threshold.
 
@@ -131,7 +131,7 @@ Keep shared styles unconditional. Add a condition only for the property and rang
 <aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
-<Class2CSS>{['bg-surface-raised@max-md']}</Class2CSS>
+<Class2CSS classes={['bg-surface-raised@max-md']} />
 
 `@max-md` is the complement of the preset `@md`; they do not overlap. Redeclaring `--md` moves both. A local bounded condition, such as `hidden@media(52.125rem<=width<=64rem)`, can target a specific interval without changing the project's named thresholds. The [conditions reference](/reference/rules/conditions#mediafeature) covers that query syntax.
 

@@ -1,0 +1,25 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport.svelte'
+import DemoViewTransition from '~/site/components/demo/DemoViewTransition.astro'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage title="Platform behavior" description="Report what this browser supports without changing the example’s own fallback, and run view transitions in an isolated document." usage={{ href: '/guide/view-transitions', label: 'the View Transitions guide' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="support" title="Feature support">
+    <Demo padding="sm" caption="The report uses CSS.supports() after hydration; the example keeps its native fallback.">
+      <div class="grid gap-sm py-md">
+        <DemoFeatureSupport client:idle={{ timeout: 500 }} condition="(field-sizing: content)" />
+        <DemoFeatureSupport client:idle={{ timeout: 500 }} condition="(not-a-css-property: value)" />
+      </div>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="view-transition" title="View transitions">
+    <DemoViewTransition />
+  </ComponentSection>
+</ComponentPage>

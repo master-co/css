@@ -1,0 +1,35 @@
+---
+import '~/site/styles/documentation-illustration.css'
+import Image from '../docs-shell/components/Image.svelte'
+import type { IllustrationImages } from './document-types'
+
+export type { IllustrationImages } from './document-types'
+
+interface Props {
+  title: string
+  alt: string
+  images: IllustrationImages
+  caption: string
+}
+
+/** A static figure with one accessible image and an independent text description. */
+const { title, alt, images, caption } = Astro.props
+---
+
+<figure class="ui-tray" aria-label={title}>
+  <figcaption class="ui-tray-head"><p class="ui-tray-title">{title}</p></figcaption>
+  <div class="document-illustration" role="img" aria-label={alt}>
+    {(['light', 'dark'] as const).map(scheme => <Image
+      src={images[scheme]}
+      data-scheme={scheme}
+      sizes="(max-width: 834px) 100vw, 900px"
+      alt=""
+      aria-hidden="true"
+    />)}
+  </div>
+  <p class="ui-tray-caption">{caption}</p>
+  <details class="ui-disclosure">
+    <summary>Text description</summary>
+    <div class="ui-disclosure-body ui-tray-caption"><slot /></div>
+  </details>
+</figure>

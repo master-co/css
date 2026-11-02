@@ -1,0 +1,16 @@
+---
+import '~/site/styles/system/specimens.css'
+import type { BenchmarkTone } from './types'
+import { benchmarkStatusTones } from './utils'
+
+interface Props {
+  tone?: BenchmarkTone
+}
+
+const names: Record<Exclude<BenchmarkTone, 'neutral'>, string> = { good: 'Good', warn: 'Check', bad: 'Regression' }
+
+/** A measured value's status is named, not only colored. */
+const { tone } = Astro.props
+---
+
+{tone && tone !== 'neutral' && <span class="ui-badge" data-tone={benchmarkStatusTones[tone]} data-variant="dot" data-size="sm">{names[tone]}</span>}

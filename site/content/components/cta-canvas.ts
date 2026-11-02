@@ -511,12 +511,15 @@ export function mountCTAField(host: HTMLElement, canvas: HTMLCanvasElement) {
   resize.observe(host)
   const theme = new MutationObserver(invalidate)
   theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] })
-  const intersection = new IntersectionObserver(([entry]) => {
+  // Notifications batch while layout settles; the last entry is the current state.
+  const intersection = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     visible = entry.isIntersecting
     activity()
   })
   intersection.observe(host)
-  const arrival = new IntersectionObserver(([entry]) => {
+  const arrival = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     if (!entry.isIntersecting || entry.intersectionRatio < revealThreshold) return
     inView = true
     arrival.disconnect()

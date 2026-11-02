@@ -1,0 +1,19 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import DemoExample from '~/site/components/demo/DemoExample.astro'
+import MeasureReviewStage from './MeasureReviewStage.svelte'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage title="Measure" description="A hairline with end dots and the browser’s own reading above it. The wrapper measures; it never joins the layout it measures." usage={{ href: '/reference/width', label: 'the width reference' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="bounds" title="Live bounds">
+    <MeasureReviewStage client:idle={{ timeout: 500 }} />
+  </ComponentSection>
+  <ComponentSection id="reference" title="In a reference specimen">
+    <DemoExample page="width" section="set-a-fixed-or-fluid-width" />
+  </ComponentSection>
+</ComponentPage>

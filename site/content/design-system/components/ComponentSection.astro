@@ -1,0 +1,14 @@
+---
+interface Props {
+  id: string
+  title: string
+  description?: string
+}
+
+/** One section of a `ComponentPage`: its heading, an optional description and the live specimens in the default slot. */
+const { id, title, description } = Astro.props
+---
+
+<h2 id={id}>{title}</h2>
+{description && <p>{description}</p>}
+<div class="ui-handbook-section"><slot /></div>

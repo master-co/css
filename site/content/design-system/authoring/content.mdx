@@ -1,6 +1,7 @@
-import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
-import { DocumentOptionEntry, DocumentOptionList } from '~/site/components/DocumentOptions'
-import RecipeAppendix from '../components/RecipeAppendix'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
+import DocumentOptionEntry from '~/site/components/DocumentOptionEntry.astro'
+import DocumentOptionList from '~/site/components/DocumentOptionList.astro'
+import RecipeAppendix from '../components/RecipeAppendix.astro'
 
 Keep the complete example, its source and its controls together. The shared UI supplies the surrounding presentation; the example owns every CSS prerequisite and measured relationship.
 
@@ -15,7 +16,7 @@ Import site primitives from `~/site/components/demo`. Import each component expl
 
 **Interface:** `title`, `description`, `caption`, `controls`, `source`, `background`, `padding`, `align`, `frame`
 
-One example is one `ui-tray`: the head (`title`, `description`, `controls`), the `ui-stage`, the `source` (a code window and a closed `DemoGeneratedCSS` disclosure) and the caption. `className` and `style` apply to the stage; `frameClassName` styles the tray. Use `frame="none"` when the content already owns its frame, such as a `DemoViewport` browser or a comparison.
+One example is one `ui-tray`: the head (`title`, `description`, `controls`), the `ui-stage`, the `source` (a code window and a closed `DemoGeneratedCSS` disclosure) and the caption. `class` and `style` apply to the stage; `frameClassName` styles the tray. Use `frame="none"` when the content already owns its frame, such as a `DemoViewport` browser or a comparison.
 
 Use `padding="none"` when the child owns its own spacing. The stage centers its specimen; `align="start"` places it from the start edge. Framing must not add layout, containment, clipping or dimensions to the measured subject.
 

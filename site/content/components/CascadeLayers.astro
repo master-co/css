@@ -1,0 +1,96 @@
+---
+import { createRenderSessionSync } from '@master/css/node'
+import IconCheck from '@tabler/icons-svelte-runes/icons/check'
+import { siteOf } from '~/site/astro/site-context'
+import { uniqueId } from '~/site/docs-shell/utils/unique-id'
+import preset from '~/site/utils/preset-manifest'
+import { cascadeProbe } from './design-system-content'
+import { cascadeLayers } from './home-content'
+
+/** The utility's layer and declaration come from the same engine as the generated stylesheet. */
+function getUtilityRule() {
+  const engine = createRenderSessionSync({ manifest: preset })
+  try {
+    return engine.ensureClassRules([cascadeProbe.utility]).classRules[cascadeProbe.utility][0]
+  } finally {
+    engine.dispose()
+  }
+}
+
+/** An exploded drawing in one SVG: no CSS 3D surfaces or scroll-driven style inheritance. */
+const { t } = siteOf(Astro)
+const id = uniqueId(Astro, 'home-layers')
+const rule = getUtilityRule()
+const face = 'matrix(.78 -.32 .66 .45 48 36)'
+---
+
+<div aria-label={`${t('Cascade layers from theme at the bottom to utilities at the top')}. ${t('The px-lg utility sets the padding over the btn component rule, because utilities come later.')}`} class="home-bento-visual home-layers" role="img">
+  <p aria-hidden="true" class="home-layers-element"><span class="home-code-punct">&lt;</span><span class="home-code-tag">{cascadeProbe.tag}</span> <span class="home-code-attr">class</span><span class="home-code-punct">=</span><span class="home-code-string">&quot;{cascadeProbe.classes.join(' ')}&quot;</span><span class="home-code-punct">&gt;</span></p>
+  <div aria-hidden="true" class="home-layers-figure">
+    <svg class="home-layers-drawing" fill="none" viewBox="0 0 400 460">
+      <defs>
+        <linearGradient id={`${id}-face`} x1="0" x2=".7" y1="0" y2="1">
+          <stop class="home-layer-light" />
+          <stop class="home-layer-shade" offset="1" />
+        </linearGradient>
+        <linearGradient id={`${id}-winner`} x1="0" x2=".7" y1="0" y2="1">
+          <stop class="home-layer-signal-light" />
+          <stop class="home-layer-signal-shade" offset="1" />
+        </linearGradient>
+        <linearGradient id={`${id}-edge`} x2="0" y2="1">
+          <stop class="home-layer-edge-light" />
+          <stop class="home-layer-edge-shade" offset="1" />
+        </linearGradient>
+        <radialGradient id={`${id}-shadow`}>
+          <stop class="home-layer-shadow" />
+          <stop class="home-layer-shadow" offset="1" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      {/* A soft ground contact, registration corners and extension lines locate the whole assembly. */}
+      <ellipse cx="181" cy="416" fill={`url(#${id}-shadow)`} rx="150" ry="32" />
+      <g class="home-layers-registration">
+        <path d="M38 410v14h14m246 0h14v-14M48 374V102m251 244V74M127 428V181" stroke-dasharray="2 5" />
+        <path d="M25 374V82m-4 6 4-6 4 6" />
+      </g>
+      {cascadeLayers.map((layer, index) => {
+        const wins = layer.name === rule.layer
+        const component = layer.name === 'components'
+        return (
+          <g class="home-layer-group" data-wins={wins || undefined} style={{ '--home-layer-offset': `${(2 - index) * 5}px` }}>
+            <g transform={`translate(0 ${338 - index * 68})`}>
+              {/* The lower copy gives the plate a machined edge; its top is a single softly lit surface. */}
+              <g transform="translate(0 3)">
+                <rect fill={`url(#${id}-edge)`} height="120" rx="13" transform={face} width="220" />
+              </g>
+              <g transform={face}>
+                <rect class="home-layer-face" fill={`url(#${id}-${wins ? 'winner' : 'face'})`} height="120" rx="13" width="220" />
+                <rect class="home-layer-inset" height="96" rx="7" width="196" x="12" y="12" />
+                <path class="home-layer-seam" d="M24 35h172" />
+                <text class="home-layer-etched" x="24" y="29">@layer</text>
+                <path class="home-layer-detail" d="M24 54h58m-58 9h83m-83 9h42" />
+                {(wins || component) && <>
+                  <rect class="home-layer-rule-slot" height="26" rx="5" width="90" x="108" y="66" />
+                  <text class="home-layer-rule" x="119" y="83">.{wins ? cascadeProbe.utility : cascadeProbe.component}</text>
+                  {component && <path class="home-layer-strike" d="M117 78h37" />}
+                  {wins && <path class="home-layer-check" d="m180 78 4 4 7-8" />}
+                </>}
+                <circle class="home-layer-pin" cx="20" cy="101" r="2" />
+                <circle class="home-layer-pin" cx="200" cy="19" r="2" />
+              </g>
+              {/* Labels face the reader, independently of the projected artwork. */}
+              <path class="home-layer-leader" d="M299 20h12" />
+              <circle class="home-layer-anchor" cx="299" cy="20" r="2" />
+              <text class="home-layer-label" x="320" y="24">{layer.name}</text>
+              <path class="home-layer-tick" d="M25 36h8" />
+              <text class="home-layer-number" text-anchor="end" x="17" y="40">0{index + 1}</text>
+            </g>
+          </g>
+        )
+      })}
+    </svg>
+  </div>
+  <div aria-hidden="true" class="home-layers-result">
+    <span class="home-layers-result-selector"><IconCheck size={14} stroke={1.75} /><code>.{cascadeProbe.utility}</code></span>
+    <code class="home-layers-result-declaration">{rule.text.slice(rule.text.indexOf('{') + 1, -1)}</code>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import BenchmarkChart from '~/site/components/benchmarks/BenchmarkChart.astro'
+import BenchmarkDataTable from '~/site/components/benchmarks/BenchmarkDataTable.astro'
+import { StaticCSSBytesTable } from '~/site/content/benchmarks/components/StaticTailwindComparison'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage kicker="Documents" title="Data table" description="Complete data in a named, keyboard-reachable scroll region inside a native disclosure." usage={{ href: '/benchmarks#static-css-output-structure-and-production-build', label: 'the benchmarks' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="table" title="Recorded output">
+    <BenchmarkDataTable title="Recorded CSS output">
+      <table>
+        <thead><tr><th scope="col">Fixture</th><th scope="col">Variant</th><th scope="col">Raw CSS</th><th scope="col">Gzip</th><th scope="col">Brotli</th><th scope="col">Samples</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Documentation</th><td>Static</td><td>56.2 kB</td><td>6.8 kB</td><td>5.1 kB</td><td>10</td></tr>
+          <tr><th scope="row">Documentation</th><td>Runtime</td><td>32.4 kB</td><td>4.9 kB</td><td>3.7 kB</td><td>10</td></tr>
+          <tr><th scope="row">Dashboard</th><td>Static</td><td>104.8 kB</td><td>13.2 kB</td><td>9.4 kB</td><td>10</td></tr>
+        </tbody>
+      </table>
+    </BenchmarkDataTable>
+  </ComponentSection>
+  <ComponentSection id="benchmarks" title="In the benchmarks">
+    <BenchmarkChart chart={StaticCSSBytesTable} />
+  </ComponentSection>
+</ComponentPage>

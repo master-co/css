@@ -1,0 +1,28 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoExample from '~/site/components/demo/DemoExample.astro'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoLabel from '~/site/components/demo/DemoLabel.svelte'
+import DemoScrollArea from '~/site/components/demo/DemoScrollArea.svelte'
+
+export const metadata = pageMetadata
+
+const layers = ['Background', 'Content', 'Overlay', 'Navigation', 'Notifications', 'Dialogs', 'Tooltips', 'Toasts']
+---
+
+<ComponentPage title="Scroll region" description="Overflow stays local inside a sunken well with a focus stop. The page does not scroll with it." usage={{ href: '/reference/overflow', label: 'the overflow reference' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="local-scroll" title="Local overflow">
+    <Demo caption="Tab to the region, then use the arrow keys.">
+      <DemoScrollArea role="region" aria-label="Layer collection" class="(height:12rem) w-full (max-width:20rem)">
+        <div class="grid gap-xs p-sm">{layers.map((name, index) => <DemoItem class="flex (justify-content:space-between) gap-sm"><DemoLabel>0{index + 1}</DemoLabel><span>{name}</span></DemoItem>)}</div>
+      </DemoScrollArea>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="reference" title="In a reference specimen">
+    <DemoExample page="overflow" section="create-a-scroll-container" />
+  </ComponentSection>
+</ComponentPage>

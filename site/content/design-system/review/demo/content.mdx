@@ -1,6 +1,6 @@
-import CanvasTreatments from './CanvasTreatments'
+import CanvasTreatments from './CanvasTreatments.astro'
 
-`Demo` renders one `figure.ui-tray`: an optional `ui-tray-head` (`title`, `description`, `controls`), a `ui-stage` holding the children, an optional `source`, and a `ui-tray-caption`. `className` and `style` belong to the stage, so the chrome never joins the demonstrated layout. The stage centers its specimen; `align="start"` places it from the start edge.
+`Demo` renders one `figure.ui-tray`: an optional `ui-tray-head` (`title`, `description`, `controls`), a `ui-stage` holding the children, an optional `source`, and a `ui-tray-caption`. `class` and `style` belong to the stage, so the chrome never joins the demonstrated layout. The stage centers its specimen; `align="start"` places it from the start edge.
 
 ```tsx
 <Demo title="Collection" caption="The card follows its container." source={<>

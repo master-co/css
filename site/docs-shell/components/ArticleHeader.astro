@@ -1,0 +1,64 @@
+---
+import '~/site/styles/docs-shell/docs.css'
+import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle'
+import ChevronLeftSvg from '../../public/images/chevron-left.svg'
+import Link from './Link.svelte'
+import dayjs from 'dayjs'
+import { createTranslation } from '../utils/i18n'
+import i18n from '../common/i18n.config.js'
+import PackageBadges from './PackageBadges.astro'
+import PageContentDisclosure from './PageContentDisclosure.astro'
+import HeaderIcon from './HeaderIcon.astro'
+import RenderNode from './RenderNode.astro'
+
+interface Props {
+  h1Class?: string
+  metadata: any
+  /** A brand name from `data/brands`, drawn beside the title. */
+  icon?: string
+  /** Markup after the title. */
+  end?: unknown
+  date?: string | number | Date
+  center?: boolean
+  locale: string
+  categoryLink?: string | boolean
+  dictionaries: Record<string, () => Promise<any>>
+  toc?: any[] | null
+  subtitle?: string
+  [key: string]: any
+}
+
+const { h1Class, metadata, icon, end, date, center, locale, categoryLink, dictionaries, toc, subtitle } = Astro.props
+const $ = await createTranslation(locale, dictionaries)
+// Text a translated page still shows in its source language says so, for screen readers and Han type rules.
+const sourceLanguage = locale !== i18n.defaultLocale ? (i18n.hreflangOfLocale as Record<string, string>)[i18n.defaultLocale] ?? i18n.defaultLocale : undefined
+const languageOf = (text?: string) => sourceLanguage && text && !text.startsWith('`') && $(text) === text ? sourceLanguage : undefined
+const kickers = [
+  metadata.category && { text: $(metadata.category), lang: languageOf(metadata.category) },
+  date && { text: dayjs(date).format('MMMM D, YYYY') }
+].filter(Boolean) as { text: string, lang?: string }[]
+---
+
+<div class="ui-pagehead" data-align={center ? 'center' : undefined}>
+  {kickers.map(({ text, lang }) => categoryLink
+    ? <Link href={typeof categoryLink === 'string' ? categoryLink : './'} lang={lang} class="ui-pagehead-kicker">
+      <ChevronLeftSvg aria-hidden="true" />
+      {text}
+    </Link>
+    : <span class="ui-pagehead-kicker" lang={lang}>{text}</span>)}
+  <div class="ui-pagehead-title">
+    <h1 class={h1Class} lang={languageOf(metadata.title.absolute || metadata.title)}>
+      {$(metadata.title.absolute || metadata.title)}
+      {metadata.type === 'entity' && locale !== 'en' && <span lang={sourceLanguage}> {metadata.title}</span>}
+      {metadata.unfinished && <span class="ui-pagehead-unfinished" aria-hidden="true">🚧</span>}
+    </h1>
+    {end != null && <RenderNode node={end} />}
+    {icon && <div class="ui-pagehead-icon"><HeaderIcon name={icon as any} /></div>}
+  </div>
+  <p lang={languageOf(metadata.description)}>{$(metadata.description)}</p>
+  {subtitle && <p lang={languageOf(subtitle)}>{$(subtitle)}</p>}
+  {metadata.package && <PackageBadges {...metadata.package} translate={$} />}
+  {(metadata.unfinished || metadata.disabled) &&
+    <div class="ui-callout" data-tone="warning" role="note"><IconAlertTriangle aria-hidden="true" /><div>{$('This page is still under construction and some content may not be complete.')}</div></div>}
+</div>
+{!!toc?.length && <PageContentDisclosure items={toc.map((item: any) => ({ ...item, title: $(item.title), lang: languageOf(item.title) }))} label={$('On this page')} />}

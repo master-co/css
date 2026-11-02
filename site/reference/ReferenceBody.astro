@@ -1,0 +1,110 @@
+---
+import Link from '~/site/docs-shell/components/Link.svelte'
+import PreparedCodeView from '~/site/docs-shell/components/PreparedCodeView.astro'
+import { isStylesheetExample, referenceCodeProps } from './code-block'
+import { anchorOf, createReferenceBodyContext, headingChildren, referenceCodeWrapper, referenceTable, type ReferenceBodyContext } from './reference-body'
+import DocumentAPIIndex from '../components/DocumentAPIIndex.astro'
+import DocumentDeclarationView from '../components/DocumentDeclarationView.astro'
+import DocumentIdentifier from '../components/DocumentIdentifier.astro'
+import DocumentParameters from '../components/DocumentParameters.astro'
+import DocumentDisclosure from '../components/DocumentDisclosure.astro'
+import GeneratedCSS from '../components/GeneratedCSS.astro'
+import DocumentOptions from '../components/DocumentOptions.astro'
+import DocumentCodeExampleView from '../components/DocumentCodeExampleView.astro'
+import DocumentCodeTable from '../components/DocumentCodeTable.astro'
+import DocumentNamespaceTable from '../components/DocumentNamespaceTable.astro'
+import type { ReferenceRenderDocument } from './render-document'
+import ReferenceIllustration from './ReferenceIllustration.astro'
+import type { ReferenceIllustrationId } from './illustrations'
+
+/**
+ * A document renders from `tree` and `headings`; the component then renders itself for each
+ * list of child nodes (`nodes`) and each node (`node`), sharing the document's `context`.
+ */
+type Props = Pick<ReferenceRenderDocument, 'tree' | 'headings'>
+  | { nodes: any[], context: ReferenceBodyContext }
+  | { node: any, context: ReferenceBodyContext }
+
+/** Small, non-executing renderer for the normalized reference Markdown. */
+const props = Astro.props
+const root = 'tree' in props
+const context = 'context' in props ? props.context : createReferenceBodyContext(props)
+
+// The document: a marked illustration renders as its figure, and top-level stylesheet source/result pairs as one example.
+const blocks: ({ example: { title: string, source: any, result: any } } | { illustration: ReferenceIllustrationId } | { node: any })[] = []
+if ('tree' in props) {
+  const children = props.tree.children
+  for (let index = 0; index < children.length; index++) {
+    const [title, source, result] = children.slice(index, index + 3) as any[]
+    const illustration = title.type === 'html' && title.value.match(/^<!-- reference-illustration:([\w-]+) -->$/)?.[1]
+    if (illustration) {
+      const end = children.findIndex((node: any, at: number) => at > index && node.type === 'html' && node.value === '<!-- /reference-illustration -->')
+      if (end < 0) throw new Error(`Unclosed Reference illustration: ${illustration}`)
+      blocks.push({ illustration: illustration as ReferenceIllustrationId })
+      index = end
+    } else if (isStylesheetExample(title, source, result)) {
+      blocks.push({ example: { title: title.children[0].children.map((child: any) => child.value).join(''), source, result } })
+      index += 2
+    } else blocks.push({ node: title })
+  }
+}
+
+const nodes = 'nodes' in props ? props.nodes : undefined
+const node = 'node' in props ? props.node : undefined
+const type: string | undefined = node?.type
+const anchor = node && (type === 'paragraph' || type === 'html') ? anchorOf(node) : undefined
+// Elements that only wrap their children.
+const Wrapper = anchor ? undefined : {
+  paragraph: 'p', strong: 'strong', emphasis: 'em', delete: 'del', listItem: 'li', blockquote: 'blockquote',
+  tableRow: 'tr', tableCell: 'td', list: node?.ordered ? 'ol' : 'ul'
+}[type ?? '']
+// A long path may break after a slash, so a table column of import paths leaves its neighbour a readable measure.
+const codeParts: string[] | undefined = type === 'inlineCode' && node.value.length > 24 && node.value.includes('/') ? node.value.split(/(?<=\/)/) : undefined
+const codeWrapper = type === 'code' ? referenceCodeWrapper(node) : undefined
+const heading = type === 'heading' ? context.headingOf.get(node) : undefined
+const Heading = `h${node?.depth}`
+const href = type === 'link' ? node.url : type === 'linkReference' ? context.definitions.get(node.identifier)?.url : undefined
+const table = type === 'table' ? referenceTable(node) : undefined
+const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
+---
+
+{root ? blocks.map(block => 'illustration' in block
+  ? <ReferenceIllustration id={block.illustration} />
+  : 'example' in block
+  ? <DocumentCodeExampleView title={block.example.title} resultKind="generated-css"><PreparedCodeView slot="sourceCode" {...referenceCodeProps(block.example.source, true)} prepared={block.example.source.data.prepared} /><PreparedCodeView slot="resultCode" {...referenceCodeProps(block.example.result, true)} prepared={block.example.result.data.prepared} /></DocumentCodeExampleView>
+  : <Astro.self node={block.node} context={context} />)
+  : nodes ? nodes.map(child => child.type === 'text' ? child.value : <Astro.self node={child} context={context} />)
+  : type === 'text' ? node.value
+  : anchor ? <span id={anchor} />
+  : Wrapper ? <Wrapper><Astro.self nodes={node.children} context={context} /></Wrapper>
+  : type === 'inlineCode' ? <code>{codeParts ? codeParts.map((part, index) => <Fragment>{index ? <wbr /> : null}{part}</Fragment>) : node.value}</code>
+  : type === 'code' ? (codeWrapper?.kind === 'declaration'
+    ? <DocumentDeclarationView source={node.value}><PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDeclarationView>
+    : codeWrapper?.kind === 'generated-css'
+      ? <GeneratedCSS><PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></GeneratedCSS>
+      : codeWrapper?.kind === 'disclosure'
+        ? <DocumentDisclosure title={codeWrapper.title}><PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDisclosure>
+        : <PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} />)
+  : type === 'heading' ? <Heading id={heading?.id}>{heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
+    ? <DocumentIdentifier text={heading.title} />
+    : <Astro.self nodes={headingChildren(node)} context={context} />}</Heading>
+  : type === 'link' || type === 'linkReference' ? <Link href={href}><Astro.self nodes={node.children} context={context} /></Link>
+  : type === 'break' ? <br />
+  : type === 'thematicBreak' ? <hr />
+  : table?.kind === 'api' ? (table.compact
+    ? <DocumentDisclosure title={`Exports · ${table.entries.length}`}><DocumentAPIIndex label={`${entrypoint} exports`} entries={table.entries} compact /></DocumentDisclosure>
+    : <DocumentAPIIndex label="Public entrypoints" entries={table.entries} compact={false} />)
+  : table?.kind === 'options' ? <DocumentOptions label="Project settings" options={table.options.map(option => ({
+    name: option.name, defaultValue: option.defaultValue,
+    description: <Astro.self nodes={option.description} context={context} />
+  }))} />
+  : table?.kind === 'parameters' ? <DocumentParameters label="Parameters" parameters={table.parameters.map(parameter => ({
+    name: parameter.name, type: parameter.type, requirement: parameter.requirement,
+    description: <Astro.self nodes={parameter.description} context={context} />
+  }))} />
+  : table?.kind === 'code' ? <DocumentCodeTable label={table.label} rows={table.rows} />
+  : table?.kind === 'namespace' ? <DocumentNamespaceTable rows={table.rows} />
+  // A wide table's overflow region must be focusable for native keyboard scrolling.
+  : table?.kind === 'table' ? <div class="ui-table" role="region" aria-label={table.label} tabindex="0"><table><thead><tr>{node.children[0].children.map((cell: any) => <th><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div>
+  : type === 'html' || type === 'definition' ? null
+  : <Astro.self nodes={node.children ?? []} context={context} />}

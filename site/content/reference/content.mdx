@@ -1,13 +1,11 @@
 import categories from '~/site/.categories/reference.json'
-import OverviewButtons from '~/site/docs-shell/components/OverviewButtons'
+import OverviewButtons from '~/site/docs-shell/components/OverviewButtons.astro'
 
 {categories
   .filter(category => category.name !== 'Overview')
   .map(category => (
-    <section key={category.name}>
+    <section>
       <h2>{category.name}</h2>
-      <OverviewButtons>
-        {category.pages}
-      </OverviewButtons>
+      <OverviewButtons pages={category.pages} />
     </section>
   ))}

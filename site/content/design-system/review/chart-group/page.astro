@@ -1,0 +1,27 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import BenchmarkChart from '~/site/components/benchmarks/BenchmarkChart.astro'
+import BenchmarkChartGroup from '~/site/components/benchmarks/BenchmarkChartGroup.astro'
+import type { BenchmarkBarItem } from '~/site/components/benchmarks/types'
+import { StaticCSSOutputChart } from '~/site/content/benchmarks/components/StaticTailwindComparison'
+
+export const metadata = pageMetadata
+
+const items: BenchmarkBarItem[] = [
+  { id: 'a', label: 'Fixture A', value: 18.4, color: 'blue', detail: '10 samples' },
+  { id: 'b', label: 'Fixture B', value: 28.6, color: 'violet', detail: '10 samples' },
+  { id: 'c', label: 'Fixture C', value: 0, color: 'neutral', detail: 'no recorded output' }
+]
+---
+
+<ComponentPage kicker="Documents" title="Chart group" description="Units, series and sample context together." usage={{ href: '/benchmarks', label: 'the benchmarks' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="group" title="A chart group">
+    <BenchmarkChartGroup title="Compressed CSS" detail="Brotli · 10 samples" items={items} unit="kB" />
+  </ComponentSection>
+  <ComponentSection id="benchmarks" title="In the benchmarks">
+    <BenchmarkChart chart={StaticCSSOutputChart} />
+  </ComponentSection>
+</ComponentPage>

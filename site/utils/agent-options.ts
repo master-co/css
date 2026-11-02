@@ -1,4 +1,4 @@
-import type { DocumentOption } from '../components/DocumentOptions'
+import type { DocumentOption } from '../components/document-types'
 
 export const agentOptions = {
   "project": {

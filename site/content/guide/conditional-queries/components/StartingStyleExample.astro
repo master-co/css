@@ -1,0 +1,12 @@
+---
+import Demo from '~/site/components/demo/Demo.svelte'
+---
+
+<Demo>
+  <button type="button" class="ui-button" data-variant="primary" popovertarget="my-popover">Open Popover</button>
+  <div id="my-popover" popover="auto" class="(max-width:90vw) p-xl b-solid b(1) b-line-divider r-xl bg-surface-raised (transition-duration:var(--duration-slow)) (transition-property:transform) (transition-timing-function:var(--easing-smooth)) bg-black/.3::backdrop (transform:scale(0))@starting-style">
+    <div class='text-xl font-medium text-center'>@starting-style</div>
+    <div class='mt-md text-sm'>Hello! I&apos;m a popover with zoom-in effect ✨</div>
+    <button type="button" class='w-full mt-lg ui-button' popovertarget="my-popover" popovertargetaction="hide">Close</button>
+  </div>
+</Demo>

@@ -6,7 +6,7 @@ import i18n from '~/site/docs-shell/common/i18n.config.js'
 import { resolveHead } from '~/site/docs-shell/utils/head'
 import { siteContextOf } from '~/site/astro/site-context'
 import { localizePathname } from '~/site/routes'
-import { siteContextElementId } from '~/site/docs-shell/layouts/root'
+import { siteContextElementId } from '~/site/docs-shell/site'
 import type { Metadata } from '~/site/docs-shell/types/Metadata'
 import type { PageAssets } from '~/site/astro/propagated-assets'
 
@@ -30,12 +30,6 @@ const languages = locales.length > 1
   : undefined
 const head = resolveHead(metadata, { project: import.meta.env.PUBLIC_PROJECT, siteURL: import.meta.env.PUBLIC_URL, pathname: site.pathname, languages })
 const siteContextJSON = JSON.stringify(site).replace(/</g, '\\u003c')
-// Island modules carry React Refresh registration in development and need its runtime first,
-// as @vitejs/plugin-react's preamble provides for Astro's own islands.
-const refreshPreamble = import.meta.env.DEV ? `import { injectIntoGlobalHook } from "${import.meta.env.BASE_URL}@react-refresh";
-injectIntoGlobalHook(window);
-window.$RefreshReg$ = () => {};
-window.$RefreshSig$ = () => (type) => type;` : undefined
 const themeScript = `
 const preference = localStorage.getItem('theme-preference') || 'system';
 const value = preference === 'system'
@@ -49,7 +43,6 @@ if (['dark', 'light'].includes(value)) document.documentElement.style.colorSchem
 <html lang={hreflangOf(site.locale)}>
   <head>
     <meta charset="utf-8" />
-    {refreshPreamble && <script type="module" is:inline set:html={refreshPreamble}></script>}
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -58,7 +51,6 @@ if (['dark', 'light'].includes(value)) document.documentElement.style.colorSchem
     <link blocking="render" rel="preload" as="font" href="/fonts/IBMPlexMono-Regular.woff2" crossorigin="anonymous" />
     {(site.locale === 'tw' || basePathname === '/brand') && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet" />}
     <style is:inline blocking="render" set:html={fontCSS}></style>
-    <style is:inline>site-island,site-slot{display:contents}</style>
     {assets.links.map((href) => <link rel="stylesheet" href={href} />)}
     {assets.styles.map((css) => <style is:inline set:html={css}></style>)}
     <title>{head.title}</title>
@@ -70,7 +62,6 @@ if (['dark', 'light'].includes(value)) document.documentElement.style.colorSchem
     {!bare && <script is:inline set:html={`(${codeTabsBootstrap.toString()})();`}></script>}
     <script is:inline type="application/json" id={siteContextElementId} set:html={siteContextJSON}></script>
     <script>
-      import '~/site/islands/client'
       import '~/site/docs-shell/scripts/document'
       import '~/site/docs-shell/scripts/code'
     </script>

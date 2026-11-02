@@ -1,0 +1,48 @@
+---
+import Code from '~/site/docs-shell/components/Code.astro'
+import CodeTabs from '~/site/docs-shell/components/CodeTabs.astro'
+import Demo from './Demo.svelte'
+import DemoGeneratedCSS from './DemoGeneratedCSS.svelte'
+import DemoViewport from './DemoViewport.svelte'
+import { demoDocument } from './reference/document'
+import { configuredExampleCSS, configuredMarkupClasses } from '../../reference/configured-example'
+
+export interface DemoConfiguredExampleProps {
+  name: string
+  title: string
+  source: string
+  /** Trusted site-authored markup; never pass user-provided HTML. */
+  html: string
+  caption: string
+  theme?: boolean
+  code?: boolean
+  /** Render generated utilities inside a real, declarative shadow root. */
+  shadow?: boolean
+  responsive?: boolean
+  /** The lesson is a container, not the viewport: no browser chrome, and the range is named for what it sizes. */
+  container?: boolean
+  motion?: boolean
+  widthPresets?: readonly { label: string; width: number }[]
+}
+type Props = DemoConfiguredExampleProps
+
+/**
+ * One tray: the preview, its CSS and markup, and the closed generated stylesheet share the same literal source.
+ * The CSS is beautified: MDX strips up to two spaces from each line of a multi-line attribute literal.
+ */
+const { name, title, source, html, caption, theme, code = true, shadow = false, responsive, container = false, motion, widthPresets } = Astro.props
+const section = { page: 'project-styles', id: name, title, html: [html], css: source, classes: [], classLists: [], highlighted: [] }
+const generated = configuredExampleCSS(source, configuredMarkupClasses(html))
+const preview = shadow ? `<div data-demo-shadow><template shadowrootmode="open"><style>${generated.replaceAll('</style', '<\\/style')}</style>${html}</template></div>` : html
+const document = demoDocument(section, { html: preview, caption, bodyClass: 'p-md p(8)@media(width<240px)', motion })
+---
+
+<Demo title={title} caption={caption} frame="none" data-project-style={name}>
+  {code && <Fragment slot="source">
+    {source.trim()
+      ? <CodeTabs tabs={[{ name: 'CSS', lang: 'css', beautify: true, code: source }, { name: 'HTML', lang: 'html', beautify: true, code: html }]} />
+      : <Code lang="html" beautify code={html} />}
+    <DemoGeneratedCSS><Code lang="css" beautify code={generated} /></DemoGeneratedCSS>
+  </Fragment>}
+  <DemoViewport client:idle={{ timeout: 500 }} title={title} document={document} theme={theme} responsive={responsive} chrome={container ? false : undefined} rangeLabel={container ? 'Container' : undefined} widthPresets={widthPresets} motion={motion} sizing="content" />
+</Demo>

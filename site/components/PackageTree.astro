@@ -1,0 +1,12 @@
+---
+import DocumentFileTree from './DocumentFileTree.astro'
+import { packageTrees, type PackageTreeName } from '../utils/package-trees'
+
+interface Props {
+  name: PackageTreeName
+}
+
+const { name } = Astro.props
+---
+
+<DocumentFileTree {...packageTrees[name]} />

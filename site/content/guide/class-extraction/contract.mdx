@@ -1,4 +1,4 @@
-import Class2CSS from '~/site/components/Class2CSS'
+import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## Overview [sr-only] \{#overview\}
 Static rendering starts by finding latent classes. A latent class is a possible class name found in source text before validation establishes whether it is a utility, project-defined class, or native class from a pruned stylesheet.
@@ -23,7 +23,7 @@ The source contains `card`, `p-md`, `bg-white`, `fg-zinc-90`, `shadow-md`, `font
 
 The generated result for `p-md` and `shadow-md` includes their theme dependencies:
 
-<Class2CSS>{['p-md', 'shadow-md']}</Class2CSS>
+<Class2CSS classes={['p-md', 'shadow-md']} />
 
 The same scanning model is used by build integrations and by Node tools that create `MasterCSSScanner` from `@master/css-tooling/scanner/node`.
 

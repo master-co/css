@@ -1,0 +1,13 @@
+---
+import Page from '~/site/docs-shell/factories/Page.astro'
+import { createPageMetadata } from '~/site/docs-shell/factories/create-page'
+import Layout from '~/site/layouts/Doc.astro'
+import metadata from './metadata'
+import dictionaries from '~/site/dictionaries'
+import categories from '~/site/.categories/guide.json'
+import * as content from './content.mdx'
+
+export const generateMetadata = createPageMetadata(metadata, dictionaries)
+---
+
+<Page {...Astro.props} {metadata} {dictionaries} {categories} subtitle="Choose when CSS is generated and how it reaches the page." {content} {Layout} />

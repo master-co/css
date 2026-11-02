@@ -1,0 +1,22 @@
+---
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoLabel from '~/site/components/demo/DemoLabel.svelte'
+
+import { getShadowRows } from '~/site/common/foundation-data/elevation/shadow-data'
+
+/** Every preset shadow on the same raised surface; used by the design-system review pages. */
+---
+
+<Demo align="start">
+  <div class="container-inline w-full">
+    <div class="grid-cols(1) gap-xl w-full grid-cols(2)@container(width>=18rem)">
+      {getShadowRows().map(({ utility, role, description }) => (
+        <div class={`bg-surface-raised r-lg p-lg ${utility}`}>
+          <DemoLabel>{utility}</DemoLabel>
+          <div class="font-medium fg-text-strong">{role}</div>
+          <p class="mb(0) mx(0) mt-xs text-sm fg-text-muted">{description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</Demo>

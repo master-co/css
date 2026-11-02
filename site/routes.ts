@@ -1,4 +1,4 @@
-import { createElement as h, type ComponentType, type ReactNode } from 'react'
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
 import { mergeAssets, type PageAssets, type PropagatedModule } from './astro/propagated-assets'
 import { createStaticPaths, directoriesOf, localesOf, sectionOf, type ParamsModule, type RouteProps, type Section } from './astro/route-paths'
 import type { Metadata } from './docs-shell/types/Metadata'
@@ -8,13 +8,13 @@ export { localizePathname, sectionOf } from './astro/route-paths'
 export type { RouteProps, Section } from './astro/route-paths'
 
 /**
- * Content routes follow `content/<url>/page.tsx`. A page module default-exports a
- * React server component and may export `metadata` or `generateMetadata`.
- * Dynamic routes enumerate params through a lightweight sibling `params.ts`.
- * `layout.tsx` modules wrap nested pages; `(group)` directories add no URL segment.
+ * Content routes follow `content/<url>/page.astro`. A page component receives {@link Props}
+ * and may export `metadata` or `generateMetadata` from its frontmatter. Dynamic routes
+ * enumerate params through a lightweight sibling `params.ts`. `layout.astro` modules wrap
+ * nested pages through their default slot; `(group)` directories add no URL segment.
  */
 interface PageModule {
-  default?: (props: Props) => ReactNode | Promise<ReactNode>
+  default?: AstroComponentFactory
   metadata?: Partial<Metadata>
   generateMetadata?: (props: Pick<Props, 'params'>) => Promise<Partial<Metadata>> | Partial<Metadata>
   /** `false` for pages that render no document surfaces, code or prose, such as indexes. */
@@ -22,11 +22,11 @@ interface PageModule {
 }
 
 interface LayoutModule {
-  default: (props: Props) => ReactNode | Promise<ReactNode>
+  default: AstroComponentFactory
 }
 
 interface SectionModule {
-  default: ComponentType<{ children: ReactNode }>
+  default: AstroComponentFactory
   bodyClass?: string
   bare?: boolean
 }
@@ -35,10 +35,10 @@ type Propagated<T> = () => Promise<PropagatedModule<T>>
 
 const contentRoot = '/content/'
 // Literal globs: see astro/propagated-assets for why modules load through this query.
-const pageModules = import.meta.glob<PropagatedModule<PageModule>>('/content/**/page.tsx', { query: '?astroPropagatedAssets', import: 'default' })
+const pageModules = import.meta.glob<PropagatedModule<PageModule>>('/content/**/page.astro', { query: '?astroPropagatedAssets', import: 'default' })
 const paramsModules = import.meta.glob<ParamsModule>('/content/**/params.ts')
-const layoutModules = import.meta.glob<PropagatedModule<LayoutModule>>('/content/**/layout.tsx', { query: '?astroPropagatedAssets', import: 'default' })
-const sectionModules = import.meta.glob<PropagatedModule<SectionModule>>('/sections/*.tsx', { query: '?astroPropagatedAssets', import: 'default' })
+const layoutModules = import.meta.glob<PropagatedModule<LayoutModule>>('/content/**/layout.astro', { query: '?astroPropagatedAssets', import: 'default' })
+const sectionModules = import.meta.glob<PropagatedModule<SectionModule>>('/sections/*.astro', { query: '?astroPropagatedAssets', import: 'default' })
 const siteStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/site.ts', { query: '?astroPropagatedAssets', import: 'default' })
 const interfaceStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/interface.ts', { query: '?astroPropagatedAssets', import: 'default' })
 const documentStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/documents.ts', { query: '?astroPropagatedAssets', import: 'default' })
@@ -65,7 +65,16 @@ export async function getStaticPaths() {
   return createStaticPaths(Object.keys(pageModules), paramsModules)
 }
 
-export type LoadedRoute = { kind: 'page', metadata: Partial<Metadata>, element: ReactNode, assets: PageAssets, bodyClass?: string, bare?: boolean, locales: readonly string[] }
+export interface LoadedRoute {
+  metadata: Partial<Metadata>
+  /** Components from the outermost (the section shell) to the page; each wraps the next in its default slot. */
+  layers: AstroComponentFactory[]
+  props: Props
+  assets: PageAssets
+  bodyClass?: string
+  bare?: boolean
+  locales: readonly string[]
+}
 
 export async function loadRoute({ file, locale, params }: RouteProps): Promise<LoadedRoute> {
   const page = await loadPropagated(pageModules, file)
@@ -73,30 +82,30 @@ export async function loadRoute({ file, locale, params }: RouteProps): Promise<L
   if (!module.default) throw new Error(`${file} must export a page component`)
   const props: Props = { params: { ...params, locale } }
   const metadata = (module.generateMetadata ? await module.generateMetadata(props) : module.metadata) ?? {}
-  let element: ReactNode = h(module.default, props)
+  const layers = [module.default]
   const propagated: PropagatedModule<unknown>[] = [page.propagated]
   const directories = directoriesOf(file)
   for (let depth = directories.length; depth > 0; depth--) {
-    const layoutFile = `${contentRoot}${directories.slice(0, depth).join('/')}/layout.tsx`
+    const layoutFile = `${contentRoot}${directories.slice(0, depth).join('/')}/layout.astro`
     if (!layoutModules[layoutFile]) continue
     const layout = await loadPropagated(layoutModules, layoutFile)
-    element = h(layout.module.default, props, element)
+    layers.unshift(layout.module.default)
     propagated.unshift(layout.propagated)
   }
-  return withSection(sectionOf(file), metadata, element, propagated, module.documentStyles)
+  return withSection(sectionOf(file), metadata, layers, props, propagated, module.documentStyles)
 }
 
 /** Wrap a page in its section shell, e.g. for routes outside `content/` such as 404. */
-export async function withSection(sectionName: Section, metadata: Partial<Metadata>, element: ReactNode, propagated: PropagatedModule<unknown>[] = [], documents = true): Promise<LoadedRoute & { kind: 'page' }> {
-  const section = await loadPropagated(sectionModules, `/sections/${sectionShells[sectionName]}.tsx`)
+export async function withSection(sectionName: Section, metadata: Partial<Metadata>, layers: AstroComponentFactory[], props: Props, propagated: PropagatedModule<unknown>[] = [], documents = true): Promise<LoadedRoute> {
+  const section = await loadPropagated(sectionModules, `/sections/${sectionShells[sectionName]}.astro`)
   // Links within one asset boundary are unordered, so the foundation, the shell interface and
   // document styles each form their own boundary, in that order. Bare sections import what they render.
   const site = section.module.bare ? [] : [await siteStyles['/styles/site.ts'](), await interfaceStyles['/styles/interface.ts']()]
   const document = section.module.bare || !documents ? [] : [await documentStyles['/styles/documents.ts']()]
   return {
-    kind: 'page',
     metadata,
-    element: h(section.module.default, null, element),
+    layers: [section.module.default, ...layers],
+    props,
     assets: mergeAssets(...site, ...document, section.propagated, ...propagated),
     bodyClass: section.module.bodyClass,
     bare: section.module.bare,

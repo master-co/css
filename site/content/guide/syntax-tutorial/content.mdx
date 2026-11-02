@@ -1,7 +1,7 @@
-import Class2CSS from '~/site/components/Class2CSS'
-import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
-import TokenValues from '~/site/reference/TokenValues'
-import SyntaxIllustration from './components/SyntaxIllustration'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample.astro'
+import TokenValues from '~/site/reference/TokenValues.astro'
+import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 A guide card needs spacing, readable text and a link that responds to interaction. Master CSS lets you make those decisions in HTML: choose a style, then add a selector or condition where that style should apply.
 
@@ -27,7 +27,7 @@ The class has three parts. `fg-blue-60` selects the style, `:hover` selects a st
 
 <SyntaxIllustration />
 
-<Class2CSS>{['fg-blue-60:hover@sm']}</Class2CSS>
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
 
 The generated rule sets `color` through a CSS variable and sits inside a media query. Its selector escapes punctuation to match the literal HTML class name. Write the readable form in HTML; escaped CSS selectors belong in the generated output.
 
@@ -43,7 +43,7 @@ Use the preset's names for common decisions. When you need an exact local value,
 | `(max-width:32rem)` | A native declaration with a full CSS property and value |
 | `text-sm` | A recipe coordinating text size, line height and tracking |
 
-<Class2CSS>{['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']}</Class2CSS>
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']} />
 
 Fixed utilities such as `items-center` and `text-center` cover common declarations. Direct-value functions such as `m(4)`, `b(1)` and `grow(1)` take a number; length functions use pixels, while `grow(1)` supplies a unitless flex factor. Native declarations keep the full property name inside parentheses. A recipe such as `text-sm` or `grid-cols(2)` can coordinate several declarations. All these forms accept selector and condition suffixes.
 
@@ -57,7 +57,7 @@ HTML separates classes at whitespace. Outside quoted strings, write `|` where a 
 </div>
 ```
 
-<Class2CSS>{['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]}</Class2CSS>
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
 
 The color becomes `rgb(30 60 90 / 80%)`. Inside the quoted content string, the pipe stays literal: the text is `New|collection`. Master CSS also normalizes operator spacing in expressions such as `calc(100%-2rem)`; the browser evaluates the expression. See [Declarations and values](/reference/rules/declarations) for native declaration boundaries, quoted values and escaping.
 
@@ -71,7 +71,7 @@ A token class connects a prefix to a named value. `p-md` and `gap-md` both read 
 | `gap-md` | `gap: var(--spacing-md)` |
 | `fg-text-muted` | `color: var(--color-text-muted)` |
 
-<Class2CSS>{['p-md', 'gap-md', 'fg-text-muted']}</Class2CSS>
+<Class2CSS classes={['p-md', 'gap-md', 'fg-text-muted']} />
 
 These selected spacing values come directly from the preset:
 
@@ -90,7 +90,7 @@ Build a small surface by giving each decision its own class:
 </article>
 ```
 
-<Class2CSS>{['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']}</Class2CSS>
+<Class2CSS classes={['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']} />
 
 Here `b(1)` sets the border width, `b-solid` its style, and `b-line-divider` its color. Change one without restating the others. The padding, corner radius and text treatment stay independent too. This makes a later variation small: a wider layout can change padding while keeping the same surface and text.
 
@@ -98,7 +98,7 @@ Here `b(1)` sets the border width, `b-solid` its style, and `b-line-divider` its
 
 If you write `p-md p(12)`, the direct value wins over the token for this property. Reversing the HTML class order produces the same CSS:
 
-<Class2CSS>{['p-md', 'p(12)']}</Class2CSS>
+<Class2CSS classes={['p-md', 'p(12)']} />
 
 Choose one base padding unless an override is intentional. When combining native component CSS and utilities, layer order matters as well: the preset places normal `utilities` declarations after `components`. [Cascade layers](/guide/cascade-layers) covers competing rules; [Reusing styles](/guide/reusing-styles) shows how to keep a component's shared appearance while changing one instance.
 
@@ -127,7 +127,7 @@ A selector can target another element. In this example the article owns the clas
 </article>
 ```
 
-<Class2CSS>{['fg-blue-60:hover>a']}</Class2CSS>
+<Class2CSS classes={['fg-blue-60:hover>a']} />
 
 Use `>` for a direct child and `_` for a descendant: `fg-blue-60_a` reaches descendant links. The class-bearing element remains the anchor for the suffix. [Selectors](/reference/rules/selectors) covers sibling combinators, attributes, selector lists and specificity.
 
@@ -157,7 +157,7 @@ A condition controls when a class applies. Add `@sm` to change a style only whil
 | `grid@supports(display:grid)` | Support for the declaration |
 | `grid@sm@supports(display:grid)` | Both the named viewport query and declaration support |
 
-<Class2CSS>{['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']}</Class2CSS>
+<Class2CSS classes={['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']} />
 
 Several conditions nest from left to right, so every wrapper must match. See [Conditions](/reference/rules/conditions) for custom media and the other wrappers.
 

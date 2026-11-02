@@ -1,0 +1,21 @@
+---
+import Image from '~/site/docs-shell/components/Image.svelte'
+import Demo from '~/site/components/demo/Demo.svelte'
+import mobileImage from '~/site/public/images/landscape-mobile-screen.png'
+---
+
+<Demo padding="none" class="(padding-inline:2rem) (padding-inline:3rem)@sm">
+  <div class="(transition-duration:0.2s) (transition-property:transform) (transform:scale(1.1)):hover">
+    <Image
+      src={mobileImage}
+      class="max-h(319) max-w(480) pointer-none"
+      priority={true}
+      alt="hello world"
+    />
+    <div class="absolute inset(0) h-fit m-auto (mix-blend-mode:overlay) (animation-duration:3s) (animation-iteration-count:infinite) (animation-name:flash)">
+      <h1 class="m(0) font-heavy (font-size:7vw) text-center fg-white font-5xl@xs">
+        Hello, World!
+      </h1>
+    </div>
+  </div>
+</Demo>

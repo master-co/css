@@ -1,0 +1,16 @@
+---
+import ReferencePage from '~/site/reference/ReferencePage.astro'
+import { loadReferenceRoute, referenceMetadata } from '~/site/reference/reference-route'
+
+type Props = { params: { locale: string; entry: string[] } }
+
+export async function generateMetadata({ params }: Props) {
+  const { entry, locale } = params
+  return referenceMetadata(entry.join('/'), locale)
+}
+
+const { entry } = Astro.props.params
+const doc = await loadReferenceRoute(entry.join('/'))
+---
+
+<ReferencePage {...Astro.props} document={doc} />

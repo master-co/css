@@ -1,0 +1,15 @@
+---
+import '~/site/styles/system/specimens.css'
+import '~/site/styles/brand.css'
+import { brandAssets } from '~/site/common/brand'
+import DemoAsset from '~/site/components/demo/DemoAsset.astro'
+
+interface Props {
+  kind: 'logotype' | 'mark'
+}
+
+const { kind } = Astro.props
+const assets = kind === 'logotype' ? brandAssets.slice(0, 2) : brandAssets.slice(2)
+---
+
+<div class="brand-downloads">{assets.map(asset => <DemoAsset {...asset} />)}</div>

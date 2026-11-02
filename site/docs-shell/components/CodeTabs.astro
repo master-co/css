@@ -1,0 +1,53 @@
+---
+import '~/site/styles/docs-shell/code.css'
+import { toHtml } from 'hast-util-to-html'
+import highlightCode from '../utils/highlight-code'
+import { uniqueId } from '../utils/unique-id'
+import CodeTabBar from './CodeTabBar.astro'
+import type { CodeTab } from './code-props'
+
+interface Props {
+  tabs: CodeTab[]
+  tabbarClassName?: string
+  showControls?: boolean
+  class?: string
+  localStorageKey?: string
+}
+
+/**
+ * One `ui-code` panel with `ui-tabs`. Every panel is rendered; the first is shown. `docs-shell/scripts/code` switches
+ * tabs, and a storage key restores and shares the choice across tab sets.
+ */
+const { tabs, tabbarClassName, class: className, localStorageKey } = Astro.props
+const panels = await Promise.all(tabs.map(async (tab) => ({
+  ...tab,
+  name: tab.name ?? tab.lang,
+  html: toHtml(await highlightCode(tab.code, tab))
+})))
+const idPrefix = uniqueId(Astro, 'code-tabs')
+const current = panels[0]
+---
+
+<div
+  class:list={['ui-code', className]}
+  data-code-tabs=""
+  data-code-tabs-current-name={current.name}
+  data-code-tabs-storage-key={localStorageKey}
+  data-numbers={panels.some(tab => tab.number) ? '' : undefined}
+>
+  <CodeTabBar class={tabbarClassName} currentName={current.name} tabs={panels} idPrefix={idPrefix} />
+  {panels.map((tab, index) => (
+    <div
+      role="tabpanel"
+      id={`${idPrefix}-panel-${index}`}
+      aria-labelledby={`${idPrefix}-tab-${index}`}
+      data-code-tabs-panel-name={tab.name}
+      data-lang={tab.lang}
+      hidden={index !== 0}
+    >
+      {/* Paper and pages without scripts show every panel under its name. */}
+      <span class="ui-code-file" aria-hidden="true">{tab.name}</span>
+      <Fragment set:html={tab.html} />
+    </div>
+  ))}
+</div>

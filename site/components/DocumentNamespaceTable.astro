@@ -1,0 +1,20 @@
+---
+import '~/site/styles/system/data.css'
+import DocumentKeyList from './DocumentKeyList.astro'
+
+interface Props {
+  rows: { namespace: string, consumers: string[] }[]
+}
+
+/** Native disclosure keeps large registry rows readable; every key remains in the HTML. */
+const { rows } = Astro.props
+---
+
+{/* The table's narrow overflow region must be focusable for native keyboard scrolling. */}
+<div class="ui-table" data-variant="lookup" role="region" aria-label="Namespace consumers" tabindex="0"><table>
+  <thead><tr><th scope="col">Namespace</th><th scope="col">Consumers</th></tr></thead>
+  <tbody>{rows.map(({ namespace, consumers }) => <tr>
+    <th scope="row"><code>{namespace}-*</code></th>
+    <td><DocumentKeyList keys={consumers} previewCount={6} /></td>
+  </tr>)}</tbody>
+</table></div>

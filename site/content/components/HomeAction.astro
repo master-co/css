@@ -1,0 +1,17 @@
+---
+import Link from '~/site/docs-shell/components/Link.svelte'
+
+const actionClassNames = {
+  primary: 'home-action home-action-primary',
+  secondary: 'home-action home-action-secondary'
+}
+
+interface Props {
+  href: string
+  variant: keyof typeof actionClassNames
+}
+
+const { href, variant } = Astro.props
+---
+
+<Link class={actionClassNames[variant]} {href}><slot /></Link>

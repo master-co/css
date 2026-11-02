@@ -17,12 +17,10 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
     "incremental": true,
     // Stylesheet side-effect imports resolve to CSS files the bundler owns.
     "noUncheckedSideEffectImports": false,
     "types": [
-      "mdx",
       "node"
     ],
     "paths": {
@@ -57,8 +55,6 @@
   "include": [
     "src/env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.mdx"
+    "**/*.js"
   ]
 }

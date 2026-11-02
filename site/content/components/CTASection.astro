@@ -1,0 +1,32 @@
+---
+import './cta.css'
+import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import { siteOf } from '~/site/astro/site-context'
+import CopyCommand from './CopyCommand.svelte'
+import CTACanvas from './CTACanvas.svelte'
+import { homeSections, installCommand } from './home-content'
+
+/** The close: one gold point opens into a field of silk and stone threads below a centered invitation, under the section's own lamp. */
+const { t } = siteOf(Astro)
+---
+
+<section aria-labelledby="home-cta-title" id={homeSections.getStarted} class="home-cta-section home-section">
+  <div class="app-wrapper home-section-wrap">
+    <div class="home-cta">
+      <h2 id="home-cta-title" class="home-cta-title"><span class="home-cta-title-start">{t('Start with one class string,')}</span><span class="sr-only">{' '}</span><span class="home-cta-title-finish home-stone-type">{t('then grow into a design system.')}</span></h2>
+      <div class="home-cta-actions">
+        {/* The canvas lamp lights the title and these controls itself, so they carry no `home-lit`. */}
+        <Link class="home-action home-cta-start home-stone home-stone-button" href="/guide/introduction">
+          {t('Get started')}
+          <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+        </Link>
+        <CopyCommand client:idle={{ timeout: 500 }} command={installCommand} wrap />
+      </div>
+      <div class="home-cta-field" aria-hidden="true">
+        {/* Hydrates as early as the canvas's own observer would start the field. */}
+        <CTACanvas client:idle={{ timeout: 500 }} />
+      </div>
+    </div>
+  </div>
+</section>

@@ -6,7 +6,7 @@ import { writeIfChangedSync } from './write-if-changed'
 
 const { default: units } = await import(resolve('./units'))
 const metadataPaths = FastGlob.sync('./content/**/*metadata.ts')
-  .filter((metadataPath) => existsSync(join(dirname(metadataPath), 'page.tsx')))
+  .filter((metadataPath) => existsSync(join(dirname(metadataPath), 'page.astro')))
 export const pages = await Promise.all(
   metadataPaths
     .map(async (metadataPath) => {

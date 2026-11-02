@@ -1,0 +1,22 @@
+---
+import Layout from '~/site/layouts/Doc.astro'
+import dictionaries from '~/site/dictionaries'
+import ReferenceBody from './ReferenceBody.astro'
+import type { ReferenceRenderDocument } from './render-document'
+
+interface Props {
+  document: ReferenceRenderDocument
+  params: { locale: string }
+}
+
+/**
+ * Route entries choose their body view; the shared shell imports no view graph.
+ * A structured sheet view, passed as the default slot, replaces the Markdown renderer.
+ */
+const { document: doc, ...props } = Astro.props
+const toc = doc.headings.filter(heading => doc.kind !== 'package' || heading.depth === 2).map(heading => ({ ...heading, level: heading.depth }))
+---
+
+<Layout {...props} metadata={{ title: doc.title, description: doc.description, category: doc.category, pathname: doc.url, sourcePath: doc.source }} dictionaries={dictionaries} toc={toc} pageCategories={[]}>
+  {Astro.slots.has('default') ? <slot /> : <ReferenceBody tree={doc.tree} headings={doc.headings} />}
+</Layout>

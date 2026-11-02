@@ -1,0 +1,23 @@
+---
+import '~/site/styles/docs-shell/code.css'
+
+import type { HTMLAttributes } from 'astro/types'
+import type { CodeProp } from './code-props'
+import CodeTabBar from './CodeTabBar.astro'
+import CodeCopyButton from './CodeCopyButton.astro'
+
+type Props = CodeProp & Omit<HTMLAttributes<'div'>, 'class'>
+
+/**
+ * A `ui-code` panel without loading the highlighting pipeline: a bar naming the file when it has a `name`, otherwise a
+ * copy button in the corner. The default slot is the highlighted `<pre>`. Copy controls read the rendered Shiki lines;
+ * see `docs-shell/scripts/code`.
+ */
+const { lang, class: className, name, tabbarClassName, copyable = true, number, ext } = Astro.props
+---
+
+<div class:list={['ui-code', className]} data-lang={lang} data-numbers={number ? '' : undefined}>
+  {name && <CodeTabBar tabs={[{ name, lang, ext }]} currentName={name} class={tabbarClassName} copyable={copyable} />}
+  {!name && copyable && <CodeCopyButton />}
+  <slot />
+</div>

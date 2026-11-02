@@ -1,0 +1,12 @@
+---
+import DocumentOptions from './DocumentOptions.astro'
+import { agentOptionGroup } from '../utils/agent-options'
+
+interface Props {
+  name: string
+}
+
+const { name } = Astro.props
+---
+
+<div data-agent-options={name}><DocumentOptions {...agentOptionGroup(name)} /></div>

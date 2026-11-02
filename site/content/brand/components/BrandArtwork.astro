@@ -1,0 +1,21 @@
+---
+import { brandArtwork } from '~/site/common/brand'
+
+const artwork = {
+  mark: ['/brand/v2/logo/mark/master-mark-on-light.svg', '/brand/v2/logo/mark/master-mark-on-dark.svg', brandArtwork.mark],
+  'small-mark': ['/brand/v2/logo/mark/master-mark-small-on-light.svg', '/brand/v2/logo/mark/master-mark-small-on-dark.svg', brandArtwork.mark],
+  logotype: ['/images/css-logotype@light.svg', '/images/css-logotype@dark.svg', brandArtwork.logotype],
+} as const
+
+interface Props {
+  kind: keyof typeof artwork
+  alt: string
+}
+
+/** The approved background variants follow the theme, including without JavaScript. A demo container keeps prose media rules off the artwork. */
+const { kind, alt } = Astro.props
+const [light, dark, { width, height }] = artwork[kind]
+---
+
+<img class="hidden@apply(--site-dark)" src={light} {width} {height} {alt} />
+<img class="hidden@apply(--site-light)" src={dark} {width} {height} {alt} />

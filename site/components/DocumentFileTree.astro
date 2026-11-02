@@ -1,0 +1,34 @@
+---
+import IconFile from '@tabler/icons-svelte-runes/icons/file'
+import IconFolder from '@tabler/icons-svelte-runes/icons/folder'
+import type { DocumentFileEntry, DocumentFileTreeProps } from './document-types'
+
+export type { DocumentFileEntry, DocumentFileTreeProps } from './document-types'
+
+type Props = DocumentFileTreeProps | {
+  /** Nested levels render through this component again with only their entries. */
+  entries: readonly DocumentFileEntry[]
+  nested: true
+}
+
+/** Read-only nested lists; no tree widget or keyboard interaction is implied. */
+const props = Astro.props
+const Entries = Astro.self
+---
+
+{'nested' in props
+  ? <ul role="list">{/* Preserve WebKit list semantics when list-style is none. */}
+    {props.entries.map(entry => <li>
+      <div>
+        {entry.children ? <IconFolder stroke={1.6} aria-hidden="true" /> : <IconFile stroke={1.6} aria-hidden="true" />}
+        <b>{entry.name}{entry.children ? '/' : ''}</b>
+        {entry.description && <span>{entry.description}</span>}
+      </div>
+      {!!entry.children?.length && <Entries entries={entry.children} nested />}
+    </li>)}
+  </ul>
+  : <figure class="ui-tray" aria-label={props.title}>
+    <figcaption class="ui-tray-head"><p class="ui-tray-title">{props.title}</p></figcaption>
+    <div class="ui-tree"><Entries entries={props.entries} nested /></div>
+    {props.caption && <p class="ui-tray-caption">{props.caption}</p>}
+  </figure>}

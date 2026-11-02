@@ -1,0 +1,8 @@
+---
+import SearchDialog from '~/site/docs-shell/components/SearchDialog.svelte'
+
+// Every documentation page owns one search dialog.
+---
+
+<slot />
+<SearchDialog client:idle={{ timeout: 500 }} />

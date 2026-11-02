@@ -6,7 +6,7 @@ function isPlainClick(event: MouseEvent) {
   return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey
 }
 
-// Static markup has no React handlers; these delegated behaviors replace them.
+// Static markup has no component handlers; these delegated behaviors replace them.
 document.addEventListener('click', (event) => {
   if (!(event.target instanceof Element) || !isPlainClick(event)) return
   const heading = event.target.closest<HTMLElement>('[data-doc-heading][id]')

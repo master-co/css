@@ -1,0 +1,14 @@
+---
+import FoundationSpecimen from './FoundationSpecimen.astro'
+---
+
+<FoundationSpecimen name="dialog-entrance" title="Motion follows a real action" scene={{ systemButtons: true, sizing: 'viewport', height: 340, css: `@theme {
+  --duration-enter: 180ms;
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+ }
+  @keyframes dialog-in {
+    from { translate: 0 0.5rem; opacity: 0; }
+    to { translate: 0; opacity: 1; }
+  }
+`, html: "<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\"><h2 class=\"m(0) text-lg font-regular\">Collection settings</h2><p class=\"mt-xs mb-md fg-text-muted\">Open a native dialog to preview its entrance.</p><button id=\"open\" type=\"button\" class=\"ui-button\">Open details</button></article>\n<dialog id=\"details\" aria-labelledby=\"dialog-title\" aria-describedby=\"dialog-description\" class=\"(width:calc(100%-32px)) max-w-xs m-auto p-md r-lg b(1) b-solid b-line-divider bg-surface-floating fg-text-body shadow-xl animate-dialog-in@media(screen)@motion-safe\">\n<h2 id=\"dialog-title\" class=\"m(0) text-lg font-regular fg-text-strong\">Collection details</h2><p id=\"dialog-description\" class=\"mt-sm mb-md\">This dialog has a finite entrance. Closing it is immediate.</p><form method=\"dialog\"><button class=\"ui-button\" autofocus>Close details</button></form>\n</dialog><script>const dialog = document.getElementById('details'); const openButton = document.getElementById('open'); openButton.addEventListener('click', () => dialog.showModal()); dialog.addEventListener('close', () => openButton.focus());</script>", caption: 'The dialog enters once on opening. Escape or Close details returns focus to its trigger. Reduced motion opens it immediately. Its modal boundary stays inside this preview.' }} />

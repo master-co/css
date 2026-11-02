@@ -1,0 +1,32 @@
+---
+import Link from '~/site/docs-shell/components/Link.svelte'
+import HomeIllustration from './HomeIllustration.astro'
+import type { HomeIllustrationId } from './home-illustration'
+
+interface Props {
+  body: string
+  class?: string
+  hint?: string
+  href: string
+  icon: HomeIllustrationId
+  title: string
+}
+
+/** A bento card with a heading block; the default slot renders below it as the visual. */
+const { body, class: className, hint, href, icon, title } = Astro.props
+---
+
+<article class:list={['home-bento-card', className]}>
+  <div class="home-bento-card-header">
+    <div class="home-bento-card-caption">
+      <div class="home-bento-card-copy">
+        <h3 class="home-bento-card-title"><Link class="home-heading-link" {href}>{title}</Link></h3>
+        <p class="home-bento-card-body">{body}</p>
+        {hint && <p class="home-bento-card-hint">{hint}</p>}
+      </div>
+      <HomeIllustration class="home-illustration-hung" {icon} size={112} />
+    </div>
+  </div>
+  <slot />
+  <span aria-hidden="true" class="home-edge-light home-lit" />
+</article>

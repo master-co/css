@@ -674,10 +674,7 @@ test('introduction retains its panel, class mapping and shared token in portable
 })
 
 test('benchmarks export the same chart values and complete tables as the page', async () => {
-  const { benchmarkContent, benchmarkContentComponents, benchmarkMarkdown } = await import('../utils/benchmark-content')
-  const { createElement, Fragment } = await import('react')
-  const { benchmarkLabel } = await import('../utils/benchmark-content')
-  const { BenchmarkBars } = await import('../components/benchmarks')
+  const { benchmarkContent, benchmarkContentComponents, benchmarkLabel, benchmarkMarkdown } = await import('../utils/benchmark-content')
   const root = fileURLToPath(new URL('../', import.meta.url))
   const content = await benchmarkContent(root)
   const pages = await loadPages(path.join(root, 'content'))
@@ -686,9 +683,10 @@ test('benchmarks export the same chart values and complete tables as the page', 
   for (const page of snapshot.pages) {
     assert.ok(content.markdown.includes(`| ${page.name} | ${(page.css.total.rawBytes / 1000).toFixed(1)} kB | ${(page.css.total.brotliBytes / 1000).toFixed(1)} kB |`), page.name)
   }
-  for (const [name, component] of Object.entries(benchmarkContentComponents)) {
-    if (name === 'BenchmarkSnapshot') continue
-    const rendered = benchmarkMarkdown((component as () => import('react').ReactNode)())
+  const mdx = await readFile(path.join(root, 'content/benchmarks/content.mdx'), 'utf8')
+  for (const [name, chart] of Object.entries(benchmarkContentComponents)) {
+    assert.ok(mdx.includes(`<BenchmarkChart chart={${name}} />`), `${name} is on the page`)
+    const rendered = benchmarkMarkdown(chart)
     assert.ok(rendered.includes('|'), name)
     assert.ok(content.markdown.includes(rendered.trim().replace(/\n{3,}/g, '\n\n')), name)
   }
@@ -699,17 +697,15 @@ test('benchmarks export the same chart values and complete tables as the page', 
     const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === '/benchmarks')
     assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
   }
-  const fragment = createElement(Fragment, null, 'Fixture ', createElement('strong', null, 'A'))
-  assert.equal(benchmarkLabel(fragment), 'Fixture A')
-  assert.match(benchmarkMarkdown(createElement(BenchmarkBars, { items: [{ id: 'zero', label: fragment, value: 0 }], unit: 'ms' })), /Fixture A \| 0 ms/)
-  assert.throws(() => benchmarkMarkdown(createElement(() => null)), /Unregistered benchmark presentation/)
+  assert.equal(benchmarkLabel(['Fixture ', 'A']), 'Fixture A')
+  assert.match(benchmarkMarkdown({ kind: 'bars', items: [{ id: 'zero', label: 'Fixture', labelNote: ' A', value: 0 }], unit: 'ms' }), /Fixture A \| 0 ms/)
+  assert.throws(() => benchmarkMarkdown({ kind: 'unknown' } as any), /Unregistered benchmark presentation/)
 })
 
 test('delivery payload charts count complete responses once and omit absent assets', async () => {
-  const { MasterDeliveryPayloadChart, MasterDeliveryModesTables } = await import('../content/benchmarks/components/MasterDeliveryModesBenchmark')
+  const { MasterDeliveryPayloadChart: chart, MasterDeliveryModesTables } = await import('../content/benchmarks/components/MasterDeliveryModesBenchmark')
   const { benchmarkMarkdown } = await import('../utils/benchmark-content')
-  const chart = MasterDeliveryPayloadChart()
-  const items = chart.props.items as import('../components/benchmarks').BenchmarkStackedBarItem[]
+  const items = chart.items
   // Independently checked against the committed docs fixture: HTML already embeds CSS and hydration JSON.
   const expected = [
     { label: 'Master CSS static', bytes: 2996, parts: ['HTML', 'External CSS'] },
@@ -718,14 +714,14 @@ test('delivery payload charts count complete responses once and omit absent asse
     { label: 'Tailwind CSS static', bytes: 3698, parts: ['HTML', 'External CSS'] },
   ]
   assert.equal(items.length, expected.length)
-  assert.equal(chart.props.max, 36138, 'all rows use the largest complete-response total as their scale')
+  assert.equal(chart.max, 36138, 'all rows use the largest complete-response total as their scale')
   for (const [index, row] of expected.entries()) {
     assert.equal(items[index].label, row.label)
     assert.equal(items[index].total, row.bytes)
     assert.deepEqual(items[index].segments.map(segment => segment.label), row.parts)
     assert.equal(items[index].segments.reduce((sum, segment) => sum + segment.value, 0), row.bytes)
   }
-  const table = benchmarkMarkdown(MasterDeliveryModesTables())
+  const table = benchmarkMarkdown(MasterDeliveryModesTables)
   assert.match(table, /Response assets.*Inline CSS \(in HTML\).*Hydration \(in HTML\)/)
   assert.match(table, /Docs \| Master CSS progressive \| 36\.1 kB/)
   assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.1 kB/)

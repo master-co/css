@@ -1,0 +1,129 @@
+---
+import './design-system.css'
+import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import Color from 'colorjs.io'
+import { siteOf } from '~/site/astro/site-context'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import { getColor } from '~/site/docs-shell/data/color-palette'
+import ArtGalleryPreview from './ArtGalleryPreview.svelte'
+import CascadeLayers from './CascadeLayers.astro'
+import DesignSystemFigures from './DesignSystemFigures.svelte'
+import HomeBentoCard from './HomeBentoCard.astro'
+import HomeBentoFrame from './HomeBentoFrame.astro'
+import HomeBentoGrid from './HomeBentoGrid.astro'
+import HomeCodeWindow from './HomeCodeWindow.astro'
+import HomeSectionHeader from './HomeSectionHeader.astro'
+import type { HomeIllustrationId } from './home-illustration'
+import ThemeModesPreview from './ThemeModesPreview.svelte'
+import { designSystemGuides } from './design-system-content'
+import { designSystemPalette, designSystemTiles, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode, type DesignSystemTileContent } from './home-content'
+
+type DesignSystemVisual = DesignSystemTileContent['visual'] | 'p3-palette'
+
+const tileIcons = {
+  'theme-modes': 'design-theme-modes',
+  'theme-variables': 'design-theme-tokens',
+  'art-gallery': 'design-layout-motion',
+  'cascade-layers': 'design-cascade-layers',
+  'p3-palette': 'design-p3-gamut'
+} satisfies Record<DesignSystemVisual, HomeIllustrationId>
+
+const p3PaletteGridStyle = {
+  '--home-palette-columns': p3PaletteColorNames.length,
+  '--home-palette-rows': p3PaletteTiers.length
+}
+
+/** Every swatch with its class, preset value and gamut, so the client readout only reads attributes. */
+const p3Swatches = p3PaletteTiers.map((tier) => p3PaletteColorNames.map((colorName) => {
+  const value = getColor(colorName, tier)
+  const color = new Color(value)
+  return {
+    colorName, tier, value, token: `bg-${colorName}-${tier}`,
+    wide: !color.inGamut('srgb'), chroma: color.to('oklch').coords[1] ?? 0
+  }
+}))
+
+const { t } = siteOf(Astro)
+---
+
+<section id={homeSections.designSystem} class="home-section">
+  <div class="app-wrapper home-section-wrap">
+    <HomeSectionHeader
+      icon="section-design-system"
+      index="01"
+      label={t('Design system')}
+      title={t('Build modern interfaces from one class vocabulary.')}
+      body={t('Themes, tokens, wide-gamut color, layout and motion are all written as classes, and the CSS they generate stays predictable.')}>
+      <Link class="home-section-link" href="/guide/theme">{t('Define your theme tokens')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+    </HomeSectionHeader>
+    {/* Themes first, layout and layers side by side, then the full-width palette. */}
+    <HomeBentoFrame>
+      <HomeBentoGrid class="grid-cols(1) grid-cols(8)@md home-ds-row">
+        {designSystemTiles.map((tile) => (
+          <HomeBentoCard
+            body={t(tile.body)}
+            class={['home-reveal-item', tile.gridColumnClassName].filter(Boolean).join(' ')}
+            hint={tile.visual === 'art-gallery' ? t('Click a photo to preview the transition.') : undefined}
+            href={designSystemGuides[tile.visual]}
+            icon={tileIcons[tile.visual]}
+            title={t(tile.title)}>
+            {tile.visual === 'theme-modes' && <ThemeModesPreview client:idle={{ timeout: 500 }} class="h-md (height:30rem)@xl home-bento-visual" />}
+            {tile.visual === 'art-gallery' && <ArtGalleryPreview client:idle={{ timeout: 500 }} class="home-bento-visual home-gallery" />}
+            {/* The @theme sample; the theme preview beside it tints each light-dark() value by the share of the preview it paints. */}
+            {tile.visual === 'theme-variables' && (
+              <div class="home-bento-visual home-tokens">
+                <HomeCodeWindow class="home-tokens-code" lang="css" code={themeVariablesCode} />
+              </div>
+            )}
+            {tile.visual === 'cascade-layers' && <CascadeLayers />}
+          </HomeBentoCard>
+        ))}
+        {/* The full-width palette closes the bento; its inspector stays beside the field in the same well. */}
+        <HomeBentoCard
+          body={t(designSystemPalette.body)}
+          class="grid-col-span(8)@md home-ds-palette home-reveal-item"
+          href={designSystemGuides['p3-palette']}
+          icon={tileIcons['p3-palette']}
+          title={t(designSystemPalette.title)}>
+          <DesignSystemFigures
+            client:idle={{ timeout: 500 }}
+            columns={p3PaletteColorNames.length}
+            label={t('P3 palette tiers from 100 through 0')}
+            summary={t('{count} colors · {tiers} tiers')
+              .replace('{count}', String(p3PaletteColorNames.length * p3PaletteTiers.length))
+              .replace('{tiers}', String(p3PaletteTiers.length))}>
+            {/* The P3 palette as an isometric field; swatches rise with chroma and flatten into a table on hover. */}
+            <div class="home-palette" style={p3PaletteGridStyle}>
+              <span aria-hidden="true" class="home-palette-label home-palette-name" />
+              {p3PaletteColorNames.map((colorName) => (
+                <span aria-hidden="true" class="home-palette-label home-palette-name">{colorName}</span>
+              ))}
+              {p3Swatches.map((row, tierIndex) => (
+                <>
+                  <span aria-hidden="true" class="home-palette-label home-palette-tier">{p3PaletteTiers[tierIndex]}</span>
+                  {row.map((swatch, colorIndex) => (
+                    <span
+                      aria-label={`${swatch.token}, ${swatch.value}${swatch.wide ? ', P3' : ''}`}
+                      aria-selected="false"
+                      class="home-swatch"
+                      data-gamut={swatch.wide ? 'P3' : 'sRGB'}
+                      data-name={swatch.colorName}
+                      data-tier={swatch.tier}
+                      data-chroma={swatch.chroma.toFixed(4)}
+                      data-column={colorIndex}
+                      data-row={tierIndex}
+                      data-token={swatch.token}
+                      data-value={swatch.value}
+                      id={`home-swatch-${swatch.colorName}-${swatch.tier}`}
+                      role="option"
+                      style={{ '--home-swatch-color': swatch.value }} />
+                  ))}
+                </>
+              ))}
+            </div>
+          </DesignSystemFigures>
+        </HomeBentoCard>
+      </HomeBentoGrid>
+    </HomeBentoFrame>
+  </div>
+</section>

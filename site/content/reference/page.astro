@@ -1,0 +1,16 @@
+---
+import Page from '~/site/docs-shell/factories/Page.astro'
+import { createPageMetadata } from '~/site/docs-shell/factories/create-page'
+import Layout from '~/site/layouts/Doc.astro'
+import metadata from './metadata'
+import dictionaries from '~/site/dictionaries'
+import categories from '~/site/.categories/reference.json'
+import { routeIndex } from '~/site/reference/route-index'
+import ReferenceIndex from '~/site/reference/Index.svelte'
+
+export const generateMetadata = createPageMetadata(metadata, dictionaries)
+---
+
+<Page {...Astro.props} {metadata} {dictionaries} {categories} noTOC {Layout}>
+  <ReferenceIndex client:idle={{ timeout: 500 }} categoryOrder={categories.map(category => category.name)} documents={routeIndex} />
+</Page>

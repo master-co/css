@@ -6,7 +6,7 @@ import { createStaticPaths, sectionOf } from '../astro/route-paths'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const contentRoot = path.join(siteRoot, 'content')
-const pageFiles = await fg('**/page.tsx', { cwd: contentRoot, onlyFiles: true })
+const pageFiles = await fg('**/page.astro', { cwd: contentRoot, onlyFiles: true })
 const paramsFiles = await fg('**/params.ts', { cwd: contentRoot, onlyFiles: true })
 const providers = Object.fromEntries(paramsFiles.map(file => [`/content/${file}`, () => import(pathToFileURL(path.join(contentRoot, file)).href)]))
 const paths = await createStaticPaths(pageFiles.map(file => `/content/${file}`), providers)

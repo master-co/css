@@ -1,0 +1,20 @@
+---
+import Demo from '../Demo.svelte'
+import DemoViewport from '../DemoViewport.svelte'
+import { demoDocument } from '../reference/document'
+import type { DemoScene, ReferenceDemoSection } from '../reference/types'
+
+interface Props {
+  name: string
+  title: string
+  scene: DemoScene
+}
+
+/** One type or motion foundation in its own document. */
+const { name, title, scene } = Astro.props
+const section: ReferenceDemoSection = { page: 'foundations', id: name, title, html: [], css: '', classes: [], classLists: [], highlighted: [] }
+---
+
+<Demo title={title} frame="none" data-foundation-type-motion={name} caption={scene.caption}>
+  <DemoViewport client:idle={{ timeout: 500 }} title={title} document={demoDocument(section, scene)} sizing={scene.sizing ?? 'content'} height={scene.height} motion={scene.motion} />
+</Demo>

@@ -1,8 +1,8 @@
 import { pathToFileURL } from 'node:url'
 import type { Plugin } from 'vite'
-import { cleanId } from '../islands/vite'
+import { cleanId } from './module-id'
 
-const sourcePattern = /\.(?:[cm]?[jt]sx?|mdx)$/
+const sourcePattern = /\.(?:[cm]?[jt]sx?|mdx|astro|svelte)$/
 
 /**
  * Server chunks only run on the machine that builds the static site. Keep each

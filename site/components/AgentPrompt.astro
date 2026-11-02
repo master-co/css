@@ -1,0 +1,12 @@
+---
+import DocumentPrompt from './DocumentPrompt.astro'
+import { agentPrompt } from '../utils/agent-guide-data'
+
+interface Props {
+  name: string
+}
+
+const { name } = Astro.props
+---
+
+<div data-agent-prompt={name}><DocumentPrompt {...agentPrompt(name)} /></div>

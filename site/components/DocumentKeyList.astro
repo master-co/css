@@ -1,0 +1,22 @@
+---
+import '~/site/styles/system/data.css'
+
+interface Props {
+  keys: string[]
+  previewCount?: number
+}
+
+/** Keep complete utility keys together when a consumer list wraps. */
+const { keys, previewCount = keys.length } = Astro.props
+const lists = [keys.slice(0, previewCount), keys.slice(previewCount)]
+---
+
+<ul aria-label="Utility keys">
+  {lists[0].map(key => <li><code>{key}</code></li>)}
+</ul>
+{keys.length > previewCount && <details class="ui-disclosure">
+  <summary>Show {keys.length - previewCount} more keys</summary>
+  <ul aria-label="Utility keys">
+    {lists[1].map(key => <li><code>{key}</code></li>)}
+  </ul>
+</details>}

@@ -1,0 +1,176 @@
+---
+import IconBraces from '@tabler/icons-svelte-runes/icons/braces'
+import IconBrowser from '@tabler/icons-svelte-runes/icons/browser'
+import IconCheck from '@tabler/icons-svelte-runes/icons/check'
+import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code'
+import IconLink from '@tabler/icons-svelte-runes/icons/link'
+import IconPlus from '@tabler/icons-svelte-runes/icons/plus'
+import { siteOf } from '~/site/astro/site-context'
+import HomeEditorBar from './HomeEditorBar.svelte'
+import HomeEditorLights from './HomeEditorLights.svelte'
+import HomeEditorTab from './HomeEditorTab.svelte'
+import HomeEditorWindow from './HomeEditorWindow.svelte'
+import DeliveryPreview from './DeliveryPreview.astro'
+import { getDeliveryProgram } from './delivery-program'
+import { deliveryModes } from './home-content'
+import { deliveryAdded, deliveryLateClass, deliveryOn as on, deliveryBetween as between, deliveryRuleAt, deliveryTiming, type DeliveryMode, type DeliveryRule } from './delivery-content'
+
+const modes = ['static', 'progressive', 'runtime'] as const
+const always = -1
+const { locale, t } = siteOf(Astro)
+const program = getDeliveryProgram()
+
+/** Code lines are highlighted by hand into HTML, so their `white-space: pre` text stays exactly as written. */
+const escape = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+/** Brackets and `=` read as punctuation and names as tags, as in highlighted docs code. */
+const tag = (text: string) => text.split(/(<\/?|\/?>)/).filter(Boolean).map((part) => `<span class="${/^[</>]/.test(part) ? 'home-delivery-code-punct' : 'home-delivery-code-tag'}">${escape(part)}</span>`).join('')
+/** `value` is markup: escaped text or a code reference. */
+const attr = (name: string, value: string) => ` <span class="home-delivery-code-attr">${name}</span><span class="home-delivery-code-punct">=</span><span class="home-delivery-code-string">&quot;${value}&quot;</span>`
+const token = (value: string) => `<span class="home-delivery-token" data-glyph="${escape(value)}">${escape(value)}</span>`
+const codeReference = (file: string) => `<button aria-label="${escape(t('Open generated CSS: {file}').replace('{file}', file))}" class="home-delivery-code-reference" data-css-reference="" data-reveal-css="" disabled="" type="button">${escape(file)}</button>`
+const comment = (text: string) => `<span class="home-delivery-code-comment">${escape(text)}</span>`
+interface Line { id: string, content: string, at?: number, reference?: boolean, edit?: boolean, rule?: string, engine?: string, source?: string, flash?: number, repeatFlash?: number, show?: number }
+
+function templateLines(mode: DeliveryMode, title: string, language: string): Line[] {
+  const timing = deliveryTiming[mode]
+  const heads: Record<DeliveryMode, Line[]> = {
+    static: [
+      { id: 'link', at: timing.reference, reference: true, content: `    ${tag('<link')}${attr('rel', 'stylesheet')}${attr('href', codeReference('/app.css'))}${tag('>')}` }
+    ],
+    progressive: [
+      { id: 'style', at: timing.reference, reference: true, content: `    ${tag('<style')}${attr('id', codeReference('master-css'))}` },
+      { id: 'hydration', at: timing.reference, content: `      ${attr('data-master-css-hydration-manifest', '…')}${tag('>')}` },
+      { id: 'fold', at: timing.reference, content: comment('      /* … */') },
+      { id: 'style-close', at: timing.reference, content: `    ${tag('</style>')}` }
+    ],
+    runtime: [
+      { id: 'script', at: 1.08, content: `    ${tag('<script')}${attr('type', 'module')}${attr('src', '/main.js')}${tag('></script>')}` },
+      { id: 'style', at: timing.reference, reference: true, content: `    ${tag('<style')}${attr('id', codeReference('master-css'))}${tag('>')}` },
+      { id: 'fold', at: timing.reference, content: comment('      /* CSSOM ↓ */') },
+      { id: 'style-close', at: timing.reference, content: `    ${tag('</style>')}` }
+    ]
+  }
+  return [
+    { id: 'doctype', content: comment('<!doctype html>') },
+    { id: 'html', content: `${tag('<html')}${attr('lang', escape(language))}${tag('>')}` },
+    { id: 'head', content: `  ${tag('<head>')}` },
+    { id: 'charset', content: `    ${tag('<meta')}${attr('charset', 'utf-8')}${tag('>')}` },
+    { id: 'title', content: `    ${tag('<title>')}${escape(title)}${tag('</title>')}` },
+    { id: 'base', content: `    ${tag('<link')}${attr('rel', 'stylesheet')}${attr('href', '/base.css')}${tag('>')}` },
+    ...heads[mode],
+    { id: 'head-close', content: `  ${tag('</head>')}` },
+    { id: 'body', content: `  ${tag('<body>')}` },
+    { id: 'classes', content: `    ${tag('<article')}<span class="home-delivery-class-attribute"> <span class="home-delivery-code-attr">class</span><span class="home-delivery-code-punct">=</span><span class="home-delivery-code-string">&quot;demo ${token('p-lg')} ${token('r-xl')}</span></span>` },
+    { id: 'edit', edit: true, content: `      <span class="home-delivery-template-new" style="--added:${escape(on(deliveryAdded))}">${token(deliveryLateClass)} <span class="home-delivery-caret"></span></span><span class="home-delivery-code-string">${token('shadow-sm')}&quot;</span>${tag('>')}` },
+    { id: 'plan-title', content: `      ${tag('<h1>')}${escape(title)}${tag('</h1>')}` },
+    { id: 'details', content: comment('      …') },
+    { id: 'plan-close', content: `    ${tag('</article>')}` },
+    { id: 'app', content: `    ${tag('<script')}${attr('src', '/app.js')}${tag('></script>')}` },
+    { id: 'body-close', content: `  ${tag('</body>')}` },
+    { id: 'html-close', content: tag('</html>') }
+  ]
+}
+
+function ruleLines(rules: DeliveryRule[], mode: DeliveryMode): Line[] {
+  const lines: Line[] = [{ id: 'base', content: comment('/* Shared styles … */') }, { id: 'layer', content: '<span class="home-delivery-code-at">@layer</span> utilities {' }]
+  for (const rule of rules) {
+    const [, selector, body] = rule.text.match(/^([^{]+)\{([^}]*)\}$/)!
+    const colon = body.indexOf(':')
+    const property = body.slice(0, colon)
+    const value = body.slice(colon + 1)
+    const moment = deliveryRuleAt(mode, rule.className)
+    const late = rule.className === deliveryLateClass
+    const engine = mode === 'progressive' ? late ? 'progressive-runtime' : 'progressive-server' : mode
+    const metadata = { at: moment, show: late && mode !== 'static' ? moment - .1 : moment, flash: moment, repeatFlash: late && mode === 'static' ? deliveryAdded : undefined }
+    const declaration = `<span class="home-delivery-code-property">${escape(property)}</span>: <span class="home-delivery-code-value">${escape(value)}</span>;`
+    lines.push({ id: `${rule.className}-selector`, ...metadata, rule: rule.className, engine, source: mode === 'static' && late ? 'template-action' : 'template-markup', content: `  <span class="home-delivery-code-selector">${escape(selector)}</span> {${!late ? ` ${declaration} }` : ''}` })
+    if (late) {
+      lines.push({ id: `${rule.className}-property`, ...metadata, content: `    ${declaration}` })
+      lines.push({ id: `${rule.className}-close`, ...metadata, content: '  }' })
+    }
+  }
+  lines.push({ id: 'end', content: '}' })
+  return lines
+}
+
+const flash = (line: Line) => line.flash === undefined ? 0 : line.repeatFlash === undefined ? between(line.flash, line.flash + .38) : `max(${between(line.flash, line.flash + .38)}, ${between(line.repeatFlash, line.repeatFlash + .38)})`
+const language = locale === 'tw' ? 'zh-Hant' : 'en'
+const templates = deliveryModes.map((mode) => ({ mode: mode.id, lines: templateLines(mode.id, t(mode.title), language) }))
+const stylesheets = modes.map((mode) => ({ mode, lines: ruleLines(program.rules, mode) }))
+
+function processor(mode: DeliveryMode) {
+  const timing = deliveryTiming[mode]
+  const active = mode === 'static' ? between(timing.rules - .1, 1) : `max(${between(timing.rules - .12, timing.rules + .6)}, ${between(3.28, timing.lateRule + .14)})`
+  const phases = mode === 'progressive' ? [
+    { id: 'progressive-server', label: 'Server', show: `calc(1 - ${on(deliveryAdded)})`, deferred: false },
+    { id: 'progressive-runtime', label: 'Runtime', show: on(deliveryAdded), deferred: true }
+  ] : [{ id: mode, label: mode === 'static' ? 'Compiler' : 'Runtime', show: '1', deferred: false }]
+  return { active, phases }
+}
+---
+
+<HomeEditorWindow class="home-delivery-workbench">
+  <div class="home-delivery-board">
+    <div class="home-delivery-code-column">
+      <section class="home-delivery-pane home-delivery-template" data-station="template" aria-label={t('Template')}>
+        <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorLights /><HomeEditorTab><IconFileCode aria-hidden="true" size={14} stroke={1.75} />index.html</HomeEditorTab><span class="home-delivery-pane-status home-editor-status">{t('Template')}</span></HomeEditorBar>
+        <div class="home-delivery-code-stack">
+          {templates.map(({ mode, lines }) => (
+            <div class="home-delivery-variant" data-mode={mode}>
+              {/* Keyboard users need a focusable scroll region to read the complete document. */}
+              <div aria-label={t('HTML template')} class="home-delivery-code-scroll" data-carry-source="template-markup" role="region" tabindex="0">
+                <div class="home-delivery-code" style={{ '--lines': lines.length }}>
+                  {lines.map((line, index) => <div
+                    class:list={['home-delivery-code-row', line.edit && 'home-delivery-edit-row', line.flash !== undefined && 'home-delivery-rule-row']}
+                    data-at={line.engine ? line.at : undefined}
+                    data-land={line.engine ? line.rule : undefined}
+                    data-engine={line.engine}
+                    data-glyph-source={line.source}
+                    data-edit-line={line.edit ? '' : undefined}
+                    data-reference-line={line.reference ? '' : undefined}
+                    data-line-at={line.show ?? line.at ?? always}
+                    style={{ '--on': on(line.show ?? line.at ?? always), '--flash': flash(line) }}><span aria-hidden="true" class="home-delivery-line-number">{index + 1}</span><span class="home-delivery-line-content" set:html={line.content} /></div>)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="home-delivery-template-action" data-carry-source="template-action"><button class="home-delivery-add" data-add-class="" disabled type="button"><IconPlus aria-hidden="true" size={13} stroke={1.75} /><span>{t('Add a class')}</span><code class="home-delivery-token" data-glyph={deliveryLateClass}>{deliveryLateClass}</code></button></div>
+      </section>
+      <section class="home-delivery-css home-delivery-pane" data-station="css" aria-label="CSS">
+        <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorTab><IconBraces aria-hidden="true" size={14} stroke={1.75} /><button class="home-delivery-file-reference" data-inspect-css="" disabled title={t('Inspect stylesheet reference')} type="button"><span class="home-delivery-filenames">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}>{mode === 'static' ? 'app.css' : 'style#master-css'}</span>)}</span></button></HomeEditorTab><span class="home-delivery-pane-status home-editor-status"><span class="home-delivery-css-origin">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}>{mode === 'static' ? 'CSS' : 'CSSOM'}</span>)}</span></span></HomeEditorBar>
+        <div class="home-delivery-code-stack">
+          {stylesheets.map(({ mode, lines }) => (
+            <div class="home-delivery-variant" data-mode={mode}>
+              <div aria-label={t('Generated CSS')} class="home-delivery-code-scroll" data-carry-source="css-output" role="region" tabindex="0">
+                <div class="home-delivery-code" style={{ '--lines': lines.length }}>
+                  {lines.map((line, index) => <div
+                    class:list={['home-delivery-code-row', line.edit && 'home-delivery-edit-row', line.flash !== undefined && 'home-delivery-rule-row']}
+                    data-at={line.engine ? line.at : undefined}
+                    data-land={line.engine ? line.rule : undefined}
+                    data-engine={line.engine}
+                    data-glyph-source={line.source}
+                    data-edit-line={line.edit ? '' : undefined}
+                    data-reference-line={line.reference ? '' : undefined}
+                    data-line-at={line.show ?? line.at ?? always}
+                    style={{ '--on': on(line.show ?? line.at ?? always), '--flash': flash(line) }}><span aria-hidden="true" class="home-delivery-line-number">{index + 1}</span><span class="home-delivery-line-content" set:html={line.content} /></div>)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="home-delivery-css-footer home-delivery-pane-footer"><span class="home-delivery-footer-receipts">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}><span class="home-delivery-css-receipt" data-cue-at={mode === 'static' ? 3.2 : deliveryTiming[mode].lateRule} style={{ '--on': on(mode === 'static' ? 3.2 : deliveryTiming[mode].lateRule) }}><IconCheck aria-hidden="true" size={12} stroke={1.75} />{mode === 'static' ? t('Already generated') : t('1 rule added')}</span></span>)}</span><button aria-label={t('Inspect stylesheet reference')} class="home-delivery-inspect" data-inspect-css="" disabled title={t('Inspect stylesheet reference')} type="button"><IconLink aria-hidden="true" size={13} stroke={1.75} /></button></div>
+      </section>
+    </div>
+    <div aria-hidden="true" class="home-delivery-process" data-station="process"><span class="home-delivery-flow-label" data-flow-label="input">HTML</span>{modes.map(mode => {
+      const { active, phases } = processor(mode)
+      return <div class="home-delivery-variant" data-mode={mode}><div class="home-delivery-engine-group" style={{ '--glow': active }}>{phases.map(phase => <div class="home-delivery-engine" data-ring={phase.id} data-deferred={phase.deferred ? '' : undefined} style={{ '--phase': phase.show, '--ready': phase.deferred ? on(deliveryTiming.progressive.ready) : 1 }}><span class="home-delivery-engine-core home-lit home-stone"><img alt="" src="/brand/v2/logo/mark/master-mark-small-on-dark.svg" width="34" height={34 * 120 / 216.6} /><i /><i /></span><span class="home-delivery-engine-label">{phase.label}</span>{phase.deferred && <span class="home-delivery-engine-state"><code style={{ '--on': `calc(1 - ${on(deliveryTiming.progressive.loading)})` }}>deferred</code><code style={{ '--on': between(deliveryTiming.progressive.loading, deliveryTiming.progressive.ready) }}>loading</code><code style={{ '--on': on(deliveryTiming.progressive.ready) }}>ready</code></span>}</div>)}</div></div>
+    })}<span class="home-delivery-flow-label" data-flow-label="output">CSS</span></div>
+    <section class="home-delivery-browser home-delivery-pane" data-station="browser" aria-label={t('Preview')}>
+      <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorTab><IconBrowser aria-hidden="true" size={14} stroke={1.75} />{t('Preview')}</HomeEditorTab><span class="home-delivery-pane-status home-editor-status"><span class="home-delivery-live-dot">{t('Live')}</span></span></HomeEditorBar>
+      <DeliveryPreview {...program} />
+      <div aria-hidden="true" class="home-delivery-arrivals">{modes.map(mode => <div class="home-delivery-variant" data-mode={mode}>{mode !== 'runtime' && <span data-at={deliveryTiming[mode].sheet} data-carry={mode === 'static' ? 'app.css' : '<style>'} />}{mode !== 'static' && <span data-at={deliveryTiming[mode].latePaint} data-lead="0.1" data-carry={deliveryLateClass} />}</div>)}</div>
+      <div class="home-delivery-pane-footer">{modes.map(mode => <div class="home-delivery-variant" data-mode={mode}><span class="home-delivery-applied" data-cue-at={deliveryTiming[mode].latePaint} style={{ '--on': on(deliveryTiming[mode].latePaint) }}><IconCheck aria-hidden="true" size={12} stroke={1.75} />{t('Preview updated')}</span></div>)}</div>
+    </section>
+  </div>
+</HomeEditorWindow>

@@ -1,0 +1,65 @@
+---
+import Demo from '../Demo.svelte'
+import DemoViewport from '../DemoViewport.svelte'
+import DemoThemeComparison from '../DemoThemeComparison.astro'
+import ThemeNumberVariableTable from '../../ThemeNumberVariableTable.astro'
+import Palette, { type PaletteGroup } from './Palette.svelte'
+import { demoDocument } from '../reference/document'
+import { defaultValue, foundationScene, specimenCaption, specimenTokens, type FoundationToken } from '../../../common/foundation-data/specimens'
+
+interface Props {
+  namespace: string
+  keys?: string[]
+  presentation?: 'guide' | 'reference'
+}
+
+/** Extra example markup, such as a source disclosure, follows the specimens in the `source` slot. */
+const { namespace, keys, presentation = 'reference' } = Astro.props
+const tokens = namespace === 'breakpoints' ? [] : specimenTokens(namespace, keys)
+const tokenKeys = tokens.map(token => token.key).join(' ')
+
+function tokenScene(tokens: FoundationToken[], title: string, compare = false) {
+  const scene = foundationScene(namespace, tokens.map(token => token.key))
+  return scene.html ? { scene, title, compare } : undefined
+}
+
+let palette: PaletteGroup[] = []
+let scenes: NonNullable<ReturnType<typeof tokenScene>>[] = []
+if (namespace === 'color') {
+  const groups = new Map<string, PaletteGroup>()
+  const rest: FoundationToken[] = []
+  for (const token of tokens) {
+    const match = token.key.match(/^(.+)-(\d+)$/)
+    if (!match) { rest.push(token); continue }
+    const [, family, step] = match
+    if (!groups.has(family)) groups.set(family, { family, colors: [] })
+    groups.get(family)!.colors.push({ name: token.name, step: Number(step), value: defaultValue(token) })
+  }
+  palette = [...groups.values()].map(group => ({ ...group, colors: group.colors.sort((a, b) => a.step - b.step) }))
+  const aliases = rest.filter(token => defaultValue(token).startsWith('var('))
+  const specials = rest.filter(token => !aliases.includes(token))
+  scenes = [
+    aliases.length > 0 ? tokenScene(aliases, 'Hue aliases', true) : undefined,
+    specials.length > 0 ? tokenScene(specials, 'Special colors', true) : undefined,
+  ].filter(scene => scene !== undefined)
+} else if (namespace !== 'breakpoints' && namespace !== 'spacing') {
+  const scene = tokenScene(tokens, namespace === 'shadow' ? 'Shadow scale' : namespace === 'radius' ? 'Corner radius scale' : namespace.replaceAll('-', ' '), namespace.startsWith('color-') || (namespace === 'shadow' && presentation === 'reference'))
+  scenes = scene ? [scene] : []
+}
+---
+
+{namespace === 'breakpoints' ? <ThemeNumberVariableTable namespace="breakpoint" />
+  : namespace === 'color' ? <div data-foundation-tokens={namespace} data-token-keys={tokenKeys}>
+    {palette.length > 0 && <Demo title="Fixed color steps" padding="sm" caption={specimenCaption.color}><Palette client:idle={{ timeout: 500 }} groups={palette} /></Demo>}
+    {scenes.map(({ scene, title }) => <DemoThemeComparison name={`tokens-${namespace}`} title={title} html={scene.html!} css={scene.css} caption={scene.caption} />)}
+  </div>
+  : <div data-foundation-tokens={namespace} data-token-keys={tokenKeys}>
+    {namespace === 'spacing' ? <><ThemeNumberVariableTable namespace="spacing" keys={keys} representation="spacing" referenceUnits={presentation !== 'guide'} /><p class="m(0) font-xs fg-text-muted">{presentation === 'guide' ? 'The striped area is the actual gap between two equal blocks.' : specimenCaption.spacing}</p></>
+      : scenes.map(({ scene, title, compare }) => compare
+        ? <DemoThemeComparison name={`tokens-${namespace}`} title={title} html={scene.html!} css={scene.css} caption={scene.caption} />
+        : <Demo title={title} frame="none" caption={scene.caption}>
+          <DemoViewport client:idle={{ timeout: 500 }} title={title} document={demoDocument({ page: 'tokens', id: namespace, title, html: [], css: '', classes: [], classLists: [], highlighted: [] }, scene)} sizing="content" theme={namespace === 'shadow'} motion={scene.motion} />
+        </Demo>)}
+    {namespace === 'container' && <ThemeNumberVariableTable namespace="container" keys={keys} />}
+    <slot name="source" />
+  </div>}

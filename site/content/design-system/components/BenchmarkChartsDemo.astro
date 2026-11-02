@@ -1,0 +1,62 @@
+---
+import BenchmarkBars from '~/site/components/benchmarks/BenchmarkBars.astro'
+import BenchmarkChartGroup from '~/site/components/benchmarks/BenchmarkChartGroup.astro'
+import BenchmarkDataTable from '~/site/components/benchmarks/BenchmarkDataTable.astro'
+import BenchmarkSource from '~/site/components/benchmarks/BenchmarkSource.astro'
+import BenchmarkDelta from '~/site/components/benchmarks/BenchmarkDelta.astro'
+import BenchmarkFigure from '~/site/components/benchmarks/BenchmarkFigure.astro'
+import BenchmarkMetrics from '~/site/components/benchmarks/BenchmarkMetrics.astro'
+import BenchmarkSampleSummary from '~/site/components/benchmarks/BenchmarkSampleSummary.astro'
+import BenchmarkStackedBars from '~/site/components/benchmarks/BenchmarkStackedBars.astro'
+import { outputItems, payloadItems, metrics, traceItems, deltaItems, sampleSummary } from './benchmark-examples'
+---
+
+<div class="grid gap-xl">
+  <BenchmarkFigure
+    title="Ranking bars"
+    description="Sample data for comparing one metric across fixtures. Bar lengths share a common zero and maximum."
+    caption="Illustrative values for the component.">
+    <BenchmarkBars items={outputItems} unit="kB" />
+  </BenchmarkFigure>
+
+  <BenchmarkFigure
+    title="Stacked payload bars"
+    description="Each row fills its own width to show composition. Compare the printed totals to compare payload size."
+    caption="Illustrative values and totals for the component.">
+    <BenchmarkStackedBars items={payloadItems} unit="kB" />
+  </BenchmarkFigure>
+
+  <BenchmarkFigure
+    title="Metric summary"
+    description="Sample data for dense benchmark summaries.">
+    <BenchmarkMetrics metrics={metrics} />
+  </BenchmarkFigure>
+
+  <BenchmarkFigure title="Readable labels and zero values" description="Labels wrap in the available column. A zero value has no colored fill.">
+    <BenchmarkChartGroup title="Local trace" detail="Illustrative values" items={traceItems} />
+  </BenchmarkFigure>
+
+  <BenchmarkDataTable title="Illustrative measurements by fixture">
+    <table>
+      <thead><tr><th scope="col">Fixture</th><th scope="col">Raw CSS</th><th scope="col">Brotli CSS</th><th scope="col">Build median</th><th scope="col">Samples</th><th scope="col">Environment</th></tr></thead>
+      <tbody>{outputItems.map(item => <tr><th scope="row">{item.label}</th><td>100 kB</td><td>{item.value} kB</td><td>148 ms</td><td>10</td><td>Illustrative local fixture</td></tr>)}</tbody>
+    </table>
+  </BenchmarkDataTable>
+  <BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/benchmarks" label="See real benchmark sources (this date is illustrative)" />
+
+  <BenchmarkFigure
+    title="Delta labels"
+    description="Sample data for compact comparison badges.">
+    <div class="ui-stage" data-padding="sm" data-align="start">
+      <div class="flex flex-wrap gap-xs">
+        {deltaItems.map(delta => <BenchmarkDelta {...delta} />)}
+      </div>
+    </div>
+  </BenchmarkFigure>
+
+  <BenchmarkFigure
+    title="Sample summary"
+    description="Sample data for raw benchmark rounds.">
+    <BenchmarkSampleSummary {...sampleSummary} />
+  </BenchmarkFigure>
+</div>

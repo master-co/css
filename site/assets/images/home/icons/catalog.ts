@@ -1,5 +1,5 @@
-import type { FunctionComponent, SVGProps } from 'react'
-import type { StaticImage } from '~/site/docs-shell/components/Image'
+import type { SvgComponent } from 'astro/types'
+import type { StaticImage } from '~/site/docs-shell/types/StaticImage'
 import { homeIconArtwork } from './artwork'
 import type { HomeSectionId } from '~/site/content/components/home-content'
 import SectionDesignSystem from './section-design-system.svg'
@@ -82,8 +82,9 @@ export interface HomeIconDefinition {
   concept: string
   recommendedSize: 96 | 48 | 40
   artwork: { light: StaticImage, dark: StaticImage }
-  Icon: FunctionComponent<SVGProps<SVGSVGElement>>
-  CompactIcon?: FunctionComponent<SVGProps<SVGSVGElement>>
+  /** Astro SVG components: render them from `.astro` files. */
+  Icon: SvgComponent
+  CompactIcon?: SvgComponent
 }
 
 /** 41 themed WebP illustrations; 15 dense-list themes also retain archived 32-unit SVG studies. */

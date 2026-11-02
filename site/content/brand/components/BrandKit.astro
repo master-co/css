@@ -1,0 +1,11 @@
+---
+import '~/site/styles/system/specimens.css'
+import '~/site/styles/brand.css'
+import IconDownload from '@tabler/icons-svelte-runes/icons/download'
+import { brandKit } from '~/site/common/brand'
+---
+
+<p class="brand-kit">
+  <a href={brandKit.src} download class="ui-button"><IconDownload aria-hidden="true" />Download the brand kit (ZIP)</a>
+  <a href={brandKit.manifest} class="ui-button" data-variant="quiet">Asset manifest</a>
+</p>

@@ -1,0 +1,20 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import GuideResourceWaterfall from '~/site/components/demo/ResourceWaterfall.astro'
+import DemoWaterfall from '~/site/components/demo/DemoWaterfall.astro'
+import { resourceWaterfalls } from '~/site/utils/first-paint-examples'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage kicker="Documents" title="Delivery diagram" description="Resource order on one time axis, with the first-paint marker named." usage={{ href: '/guide/rendering-modes#preload-runtime-engine', label: 'the Rendering Modes guide' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="single" title="One scenario">
+    <DemoWaterfall {...resourceWaterfalls[0]} />
+  </ComponentSection>
+  <ComponentSection id="guide" title="In the Guide" description="The preload lesson compares both scenarios.">
+    <GuideResourceWaterfall />
+  </ComponentSection>
+</ComponentPage>

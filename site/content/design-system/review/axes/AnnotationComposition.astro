@@ -1,0 +1,24 @@
+---
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoMeasure from '~/site/components/demo/DemoMeasure.svelte'
+import DemoAxes from '~/site/components/demo/DemoAxes.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoLegend from '~/site/components/demo/DemoLegend.svelte'
+import DemoSurface from '~/site/components/demo/DemoSurface.svelte'
+---
+
+<Demo title="Anatomy of a layout" background="grid">
+  <DemoLegend slot="caption" items={[{ tone: 'blue', label: 'Subject' }, { tone: 'violet', label: 'Comparison' }, { tone: 'neutral', label: 'Context' }]} />
+  {/* The diagram keeps its real width and needs a native keyboard scroll stop. */}
+  <div class="overflow-x-auto w-full p(8)" role="region" aria-label="Annotated row with content bounds" tabindex="0">
+    <DemoAxes class="(min-width:22rem)">
+      <DemoMeasure client:idle={{ timeout: 500 }} label="Container">
+        <DemoSurface elevation="raised" class="flex items-center gap-sm (min-height:9rem) p-md">
+          <DemoItem tone="blue" class="(flex:1)">01</DemoItem>
+          <DemoItem tone="violet" class="(flex:1)">02</DemoItem>
+          <DemoItem class="(flex:1)">03</DemoItem>
+        </DemoSurface>
+      </DemoMeasure>
+    </DemoAxes>
+  </div>
+</Demo>

@@ -1,5 +1,5 @@
-import DeliveryFlow from '~/site/components/DeliveryFlow'
-import Class2CSS from '~/site/components/Class2CSS'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## Overview [sr-only]
 Static rendering generates CSS only for complete classes it finds in source. Keep known states in source, pass changing values through CSS variables, and opt stylesheets into pruning when unused native class rules should leave the output.
@@ -18,7 +18,7 @@ Do not assemble a class from fragments such as `'bg-' + tone`: neither result ex
 
 Both branches are visible even though only one is used at a time. The active project definitions determine what each class generates:
 
-<Class2CSS>{['bg-red-60', 'bg-green-60']}</Class2CSS>
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
 
 ## Keep changing values out of class names
 
@@ -34,7 +34,7 @@ Suppose a heading's size comes from an editor control. Keep its class complete a
 document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
-<Class2CSS>{'(font-size:var(--headline-size))'}</Class2CSS>
+<Class2CSS classes={'(font-size:var(--headline-size))'} />
 
 After a static build, run the JavaScript in the browser console. The heading grows without adding a class or generating a new rule. A local custom property needs no `@theme` registration or Master CSS runtime. If a class name itself first exists after startup, use [runtime or progressive rendering](/guide/rendering-modes#comparisons).
 

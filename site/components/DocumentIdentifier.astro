@@ -1,0 +1,14 @@
+---
+import { slotText } from '~/site/docs-shell/utils/slot-text'
+
+interface Props {
+  /** The identifier; text children work too, as in `<DocumentIdentifier>{name}</DocumentIdentifier>`. */
+  text?: string
+}
+
+/** Prefer identifier boundaries without inserting characters into copied text. */
+const text = Astro.props.text ?? await slotText(Astro.slots) ?? ''
+const parts = text.split(/(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=[/_-])/)
+---
+
+{parts.map((part, index) => <Fragment>{index > 0 && <wbr />}{part}</Fragment>)}

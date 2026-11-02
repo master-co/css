@@ -1,0 +1,17 @@
+---
+import Demo from './Demo.svelte'
+import DemoViewport from './DemoViewport.svelte'
+import { demoDocument } from './reference/document'
+
+/** Keep integration examples isolated from article typography and site-only utilities. */
+const html = '<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello World</p>'
+const title = 'Check the installed styles'
+const caption = 'A neutral surface, a fine border, small corners and 1rem of padding on every side.'
+const section = { page: 'installation', id: 'check', title, html: [html], css: '', classes: [], classLists: [], highlighted: [] }
+const document = demoDocument(section, { html, caption, bodyClass: 'p-md' })
+---
+
+<Demo title={title} caption={caption} frame="none">
+  <Fragment slot="source"><slot /></Fragment>
+  <DemoViewport client:idle={{ timeout: 500 }} title={title} document={document} sizing="content" />
+</Demo>

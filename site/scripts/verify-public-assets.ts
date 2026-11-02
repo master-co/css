@@ -8,7 +8,7 @@ const publicRoot = path.join(siteRoot, 'public')
 const outputRoot = path.join(siteRoot, 'out')
 const assetDirs = ['images', 'icons', 'fonts'] as const
 const ignoredDirs = new Set(['node_modules', '.astro', '.generated', '.wrangler', '.turbo', '.master', 'out', 'test-results', 'public'])
-const sourceExtensions = new Set(['.astro', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.mdx', '.css'])
+const sourceExtensions = new Set(['.astro', '.svelte', '.ts', '.js', '.mjs', '.mdx', '.css'])
 const sourceAsset = /['"`]((?:(?:~\/site\/|(?:\.\.\/)+)public\/|\/)?(?:images|icons|fonts)\/[^'"`\s<>${}]+)['"`]/g
 const outputAttribute = /\b(?:src|href|poster|srcset)=(['"])(.*?)\1/gi
 const cssUrl = /url\(\s*['"]?([^\)'"\s]+)['"]?\s*\)/gi

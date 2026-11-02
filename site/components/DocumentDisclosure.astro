@@ -1,0 +1,14 @@
+---
+interface Props {
+  title: string
+  open?: boolean
+}
+
+/** A native disclosure remains usable before JavaScript loads; its body reads like the article. */
+const { title, open = false } = Astro.props
+---
+
+<details class="ui-disclosure" data-variant="rule" open={open}>
+  <summary>{title}</summary>
+  <div class="ui-disclosure-body ui-prose"><slot /></div>
+</details>

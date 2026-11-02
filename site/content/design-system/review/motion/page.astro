@@ -1,0 +1,25 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoExample from '~/site/components/demo/DemoExample.astro'
+import DemoMotion from '~/site/components/demo/DemoMotion.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage title="Player" description="A native animation starts paused. Play, Pause and Replay control its real timeline; reduced motion pauses it again." usage={{ href: '/guide/theme', label: 'the Theme guide' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="player" title="A paused timeline">
+    <Demo caption="The player reads the actual animation state.">
+      <DemoMotion client:idle={{ timeout: 500 }}><div class="grid (place-items:center) py-md">
+        <DemoItem tone="blue" class="(height:4rem) (width:4rem) (animation-duration:2s) (animation-iteration-count:infinite) (animation-name:rotate) (animation-timing-function:linear)">↗</DemoItem>
+      </div></DemoMotion>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="reference" title="In a reference specimen">
+    <DemoExample page="animation-play-state" section="run-an-animation" />
+  </ComponentSection>
+</ComponentPage>

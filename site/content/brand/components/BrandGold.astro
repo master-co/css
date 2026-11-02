@@ -1,0 +1,13 @@
+---
+import '~/site/styles/system/specimens.css'
+import '~/site/styles/brand.css'
+import { brandGold } from '~/site/common/brand'
+import Demo from '~/site/components/demo/Demo.svelte'
+---
+
+<Demo padding="sm" caption="The mark's gradient belongs to the artwork. Interface gold comes from the preset amber family.">
+  <div class="brand-gold">{brandGold().map(color => <figure class="ui-swatch">
+    <div class="ui-swatch-paint" data-signal={color.paint ? undefined : ''} style={color.paint ? { background: color.paint } : undefined} aria-hidden="true" />
+    <figcaption><b>{color.title}</b><code>{color.value}</code></figcaption>
+  </figure>)}</div>
+</Demo>

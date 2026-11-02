@@ -1,0 +1,25 @@
+---
+import '~/site/styles/blog-materials.css'
+import Image from '~/site/docs-shell/components/Image.svelte'
+import authors from '~/site/docs-shell/data/authors'
+
+interface Props {
+  names: { name: string }[]
+  class?: string
+}
+
+/** Overlapping portraits and the names they belong to; portraits are decorative beside the names. */
+const { names, class: className } = Astro.props
+const known = names.flatMap(({ name }) => authors.find((author) => author.name === name) ?? [])
+---
+
+<span class={['blog-authors', className].filter(Boolean).join(' ')}>
+  <span class="blog-avatar-stack" aria-hidden="true">
+    {known.map((author, index) => (
+      <span class="blog-avatar" style={{ zIndex: known.length - index }}>
+        <Image src={author.image} width={24} height={24} alt="" />
+      </span>
+    ))}
+  </span>
+  <span class="blog-author-names">{names.map(({ name }) => name).join(' · ')}</span>
+</span>

@@ -1,0 +1,21 @@
+---
+interface Props {
+  class?: string
+  head: string[]
+  modes?: boolean
+  keyWidth?: string
+}
+
+/**
+ * Sheet tables are bare `.ui-table` children of the prose column, so they share the
+ * document table treatment and bleed with code blocks and examples.
+ */
+const { class: className, head, modes, keyWidth } = Astro.props
+---
+
+<div class:list={['ref-table ui-table', className]} data-modes={modes ? 'true' : undefined} style={keyWidth ? { '--ref-key-width': keyWidth } : undefined}>
+  <table>
+    <thead><tr>{head.map(label => <th scope="col">{label}</th>)}</tr></thead>
+    <tbody><slot /></tbody>
+  </table>
+</div>

@@ -330,7 +330,9 @@ export function mountWorkflowCanvas(scene: HTMLElement, canvas: HTMLCanvasElemen
     if (!unavailable.size) resize()
   }
 
-  const intersection = new IntersectionObserver(([entry]) => {
+  // Notifications batch while layout settles; the last entry is the current state.
+  const intersection = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1]
     visible = entry.isIntersecting
     stopClock()
     if (visible) { dirty = true; wake() }

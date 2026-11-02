@@ -1,0 +1,46 @@
+---
+import './benchmark.css'
+import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import { siteOf } from '~/site/astro/site-context'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import brands from '~/site/docs-shell/data/brands'
+import { getHomePageCSSSize } from '~/site/utils/home-page-css-size'
+import snapshot from '../../.generated/benchmarks/docs-page-css-size.json'
+import BenchmarkSizeChart from './BenchmarkSizeChart.svelte'
+import HomeSectionHeader from './HomeSectionHeader.astro'
+import { homeSections } from './home-content'
+
+const { t } = siteOf(Astro)
+const modes = getHomePageCSSSize()
+// Brand icons render on the server and reach the chart island as static slots, `icon<row index>`.
+const chartBrands = modes[0].rows.map((row) => Object.values(brands).find((eachBrand) => eachBrand.name === row.name))
+---
+
+<section id={homeSections.cssCost} class="relative home-section">
+  <div class="app-wrapper home-section-wrap">
+    <HomeSectionHeader
+      icon="section-css-size"
+      index="04"
+      label={t('CSS size')}
+      title={t('Only the CSS a page uses.')}
+      body={t('The total CSS each documentation page delivers, measured raw and with Brotli. Master CSS ships only the rules a page uses.')}>
+      <Link class="home-section-link" href="/benchmarks#page-css-size">{t('View benchmark details')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+    </HomeSectionHeader>
+    <div class="home-bench home-marks">
+      <BenchmarkSizeChart
+        client:idle={{ timeout: 500 }}
+        labels={{
+          caption: t('CSS per documentation page'),
+          date: snapshot.generatedAt.slice(0, 10),
+          modeLabels: { brotli: t('Brotli'), raw: t('Raw') },
+          modeSelectorLabel: t('CSS size mode')
+        }}
+        modes={modes}>
+        {chartBrands.map((brand, index) => {
+          const Icon = brand?.src
+          return Icon && <Icon slot={`icon${index}`} class={['(flex:none)', brand?.className].filter(Boolean).join(' ')} height={22} width={22} />
+        })}
+      </BenchmarkSizeChart>
+    </div>
+  </div>
+</section>

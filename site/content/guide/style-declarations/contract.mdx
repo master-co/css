@@ -1,5 +1,5 @@
-import Class2CSS from '~/site/components/Class2CSS'
-import ReferenceIllustration from '~/site/reference/ReferenceIllustration'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <a id="overview"></a>
 
@@ -20,7 +20,7 @@ The named forms below assume the default preset is loaded through `@import '@mas
 
 These are syntax shapes, not interchangeable spellings. Static, token and functional utilities can each contain several declarations: `truncate`, `text-sm` and `grid-cols(2)` are recipes. A native head contains exactly one declaration, which may use a CSS shorthand.
 
-<Class2CSS>{['flex', 'p-md', 'p(12)', '(padding:1rem)']}</Class2CSS>
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(padding:1rem)']} />
 
 <a id="combine-with-states-and-queries"></a>
 
@@ -51,7 +51,7 @@ Other CSS constructs keep their own boundaries inside the head:
 | `(grid-template-columns:[start]\|1fr\|[end])` | Brackets enclose grid line names |
 | `(background-image:url(/a{b.svg))` | The brace belongs to the unquoted URL token |
 
-<Class2CSS>{["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']}</Class2CSS>
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
 
 CSS escaping still applies inside a value. For an unquoted URL containing parentheses, use a quoted URL or CSS escapes so the token remains valid.
 
@@ -75,11 +75,11 @@ A custom property may have an empty value or a balanced brace block: `(--slot:)`
 
 A syntactically valid property name can emit a declaration even when tooling does not list it. Native values are not limited to the preset, but they must still be valid for the property in the target browser. For example, `(font-size:48)` emits `font-size: 48`; it does not acquire `px`, and that nonzero unitless length is invalid CSS. Use `(font-size:48px)` for that length. A native property such as `(field-sizing:content)` needs no utility registration.
 
-<Class2CSS>{['(font-size:48px)', '(field-sizing:content)']}</Class2CSS>
+<Class2CSS classes={['(font-size:48px)', '(field-sizing:content)']} />
 
 Master CSS emits selected compatibility declarations, such as `-webkit-backdrop-filter` beside `backdrop-filter`. It does not add vendor-specific selectors or polyfill browser features. Inspect the generated CSS and use [Compatibility](/guide/compatibility) for browser requirements and fallback design.
 
-<Class2CSS>{['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']}</Class2CSS>
+<Class2CSS classes={['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']} />
 
 ## Value encoding \{#values\}
 
@@ -91,7 +91,7 @@ HTML whitespace separates classes, even when the value contains CSS quotes. With
 <div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
 ```
 
-<Class2CSS>{['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']}</Class2CSS>
+<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
 
 The color value becomes `rgb(30 60 90 / 80%)`; the content string stays `'a|b'`. For an actual space in a CSS string, use a CSS escape such as `\000020`: `(content:'New\000020collection')::before` produces “New collection”. The six-digit escape avoids a terminating space in the HTML class.
 
@@ -101,7 +101,7 @@ An underscore inside the native head is literal, as in `slide_in`. After the hea
 
 CSS functions remain values of the native property. Master CSS normalizes arithmetic spacing in `calc(100%-2rem)`; the browser evaluates the calculation. It does not infer a token from a bare word or evaluate a CSS function as a utility call.
 
-<Class2CSS>{['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']}</Class2CSS>
+<Class2CSS classes={['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']} />
 
 <a id="rgb-hsl-oklch-"></a>
 <a id="hexadecimal-color"></a>
@@ -132,7 +132,7 @@ Whether a property accepts a number, length, percentage or other type is a [CSS 
 
 Native negatives stay inside the value: `(margin-top:-2rem)`. Direct numeric arguments use `mt(-8)`. Negative token classes put `-` before the complete class: `-mt-sm`. The negative-token form requires a numeric token and a supporting utility; `-p-sm` is rejected because padding does not support it.
 
-<Class2CSS>{['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']}</Class2CSS>
+<Class2CSS classes={['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']} />
 
 Argument validation does not redefine the CSS property’s value constraints.
 
@@ -168,7 +168,7 @@ A `(--name:value)` head declares a CSS custom property on the matched element. I
 </div>
 ```
 
-<Class2CSS>{['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']}</Class2CSS>
+<Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
 
 `var(--progress)` uses normal CSS resolution and inheritance. An unresolved variable or an incompatible substituted value can make the consuming declaration invalid; use a [CSS variable fallback](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var) where appropriate. The [Syntax tutorial](/guide/syntax-tutorial#complete-card) covers keeping a fixed class while supplying a dynamic value.
 
@@ -185,7 +185,7 @@ Separate classes express independent decisions, such as `b(1) b-solid b-line-con
 
 Within the same layer, conditions and selector, recipes sort before single-declaration utilities, then native declarations. Single-declaration utilities sort by property family and coverage before value source; a token precedes a fixed or direct value for the same property. HTML class order does not determine the result:
 
-<Class2CSS>{['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']}</Class2CSS>
+<Class2CSS classes={['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']} />
 
 Here the native padding follows both utilities, while `mt(0)` and `mx-auto` override the relevant parts of `m-md`. [Cascade layers](/reference/rules/layers) owns the complete ordering contract. Use [Reusing styles](/guide/reusing-styles) to choose a component class, `@utility` recipe or CSS mixin.
 
@@ -193,7 +193,7 @@ Here the native padding follows both utilities, while `mt(0)` and `mx-auto` over
 
 A final `!` marks the class's declarations important. A trailing native `!important` inside a parenthesized value has the same effect; writing both emits it once. The text `'!important'` inside a string remains content.
 
-<Class2CSS>{['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]}</Class2CSS>
+<Class2CSS classes={['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]} />
 
 ## Fixed utility lookup \{#fixed-utilities\}
 

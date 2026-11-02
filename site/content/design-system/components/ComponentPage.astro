@@ -1,0 +1,37 @@
+---
+import '~/site/styles/design-system.css'
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
+import Link from '~/site/docs-shell/components/Link.svelte'
+
+interface Props {
+  title: string
+  description: string
+  kicker?: string
+  /** A real page that uses the component. */
+  usage?: { href: string, label: string }
+  Documentation?: AstroComponentFactory
+  /** The heading above the documentation; null when the documentation is the whole page. */
+  documentationTitle?: string | null
+}
+
+/** A component review: what it is, its live states (`ComponentSection`s in the default slot), where the site uses it, and its interface. */
+const { title, description, kicker = 'Components', usage, Documentation, documentationTitle = 'Usage and interface' } = Astro.props
+---
+
+<main class="ui-handbook ui-prose">
+  <header class="ui-pagehead">
+    <nav class="ui-pagehead-meta" aria-label="Design system navigation">
+      <Link href="/design-system">Design system</Link>
+      <Link href="/design-system/authoring">Authoring handbook</Link>
+    </nav>
+    <span class="ui-pagehead-kicker">{kicker}</span>
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </header>
+  <slot />
+  {usage && <p>Used on <Link href={usage.href}>{usage.label}</Link>.</p>}
+  {Documentation && <Fragment>
+    {documentationTitle && <h2 id="component-interface">{documentationTitle}</h2>}
+    <Documentation />
+  </Fragment>}
+</main>

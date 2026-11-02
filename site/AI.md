@@ -31,21 +31,21 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 ## Astro Architecture
 
-The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro owns routing, the document head and the build; React renders page bodies.
+The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro owns routing, the document head, the build and server-rendered markup (`.astro`); Svelte 5 (runes) renders interactive islands (`.svelte`).
 
-- `src/pages/[...path].astro` renders every route in `routes.ts`, which reads `content/<url>/page.tsx`. A page module default-exports a React server component and may export `metadata` or `generateMetadata`. Dynamic routes export `generateStaticParams()` from a lightweight sibling `params.ts`; route enumeration must not evaluate page, MDX or specimen modules. There are no redirect routes. Nested `layout.tsx` modules wrap pages; `(group)` directories add no URL segment; `index` is not a route segment. Each section shell lives in `sections/`.
-- English is unprefixed and Traditional Chinese uses `/tw`. `astro/site-context.ts` derives the locale, canonical pathname and translations from the URL; `SiteRoot` provides them to every React root.
-- Mark interactive React modules `'use client'`. `islands/` gives them React Server Component semantics: server code receives client references, props must be serializable, server-component children become static slots, and the browser hydrates each island root. Do not use Astro `client:*` directives. Components that only read context or render markup need no directive; delegated document behavior lives in `docs-shell/scripts/document.ts`.
-- MDX compiles to React through `@mdx-js/rollup`, so content may pass arrays, elements and nested components as children. `docs-shell/components/mdx-provider.tsx` supplies Markdown renderers.
+- `src/pages/[...path].astro` renders every route in `routes.ts`, which reads `content/<url>/page.astro`. A page component receives `params` and may export `metadata`, `generateMetadata` or `documentStyles` from its frontmatter (hoisted module exports: they may use imports, not frontmatter locals). Dynamic routes export `generateStaticParams()` from a lightweight sibling `params.ts`; route enumeration must not evaluate page, MDX or specimen modules. There are no redirect routes. Nested `layout.astro` modules wrap pages through `<slot />`; `(group)` directories add no URL segment; `index` is not a route segment. Each section shell lives in `sections/*.astro`, which may export `bodyClass` or `bare`.
+- English is unprefixed and Traditional Chinese uses `/tw`. `astro/site-context.ts` derives the locale, canonical pathname and translations from the URL: `.astro` components read them with `siteOf(Astro)`, Svelte components with `getSite()` from `docs-shell/site.ts` (the server renderer `astro/svelte-renderer.ts` provides it as context; hydrated islands read the page's serialized `#site-context`).
+- Components that only render markup are `.astro`. Interactive components are `.svelte` and hydrate with an Astro directive where an `.astro` or MDX file uses them: `client:load` for shell chrome visible at first paint, `client:idle={{ timeout: 500 }}` otherwise (an animated page may never be idle without the timeout). Canvases and figures watch their own visibility before painting; avoid `client:visible`, which waits for the island's own box and leaves surrounding server-rendered parts of a figure inert. Svelte components imported by another Svelte component hydrate with it; Svelte components used from `.astro` without a directive render statically. Island props must be serializable; slots reach Svelte as snippets (`children`, or the slot's name) and stay static HTML. Delegated document behavior lives in `docs-shell/scripts/document.ts`.
+- MDX compiles through `@astrojs/mdx` with the `unified` processor. `docs-shell/remark/markdown-components.js` turns fences, inline code and `(o)`/`(x)`/`(i)`/`(!)` paragraphs into site components and makes every MDX module export `components` from `docs-shell/components/markdown-components.ts`. Markup passed as a prop to an `.astro` component renders with `docs-shell/components/RenderNode.astro`; to a Svelte component, pass it as a named slot.
 - Pages, layouts and sections load through `astro/propagated-assets.ts` so each page links only its own stylesheets. Keep that private Astro contract in one module. Import page content statically (`import * as content from './content.mdx'`): Astro collects the stylesheets when the page module loads, so CSS behind a pending dynamic import is missing in development.
 - Island props are serialized into every page's HTML. Pass islands only the fields they render; `define()` metadata carries a repository-relative `sourcePath`, never a machine path.
 - Public build values are `import.meta.env.PUBLIC_*`, resolved by `utils/public-env.js`. Server bundles keep source `import.meta.url` values (`astro/source-url.ts`).
 - `prepare-app` projects committed benchmark reports into per-suite `.generated/benchmarks/` display data before loading the content generators. Page rendering, search and Markdown share these synchronous aggregates; source timestamps use a separate small index. Import the generated data rather than raw benchmark reports in presentation modules, and rerun `prepare-app` after updating a committed report.
-- SVG imports from scripts and MDX are React components; bitmap imports are Astro image metadata rendered with `docs-shell/components/Image`. Raw text imports use `?raw`; tsx scripts load these through `scripts/bundler-imports.ts`.
+- SVG imports are Astro SVG components (optimized with the site's SVGO config) usable from `.astro` and MDX; Svelte components import SVG markup with `?raw`. Bitmap imports are Astro image metadata rendered with `docs-shell/components/Image.svelte`. Raw text imports use `?raw`; Node scripts load these through `scripts/bundler-imports.ts`. Icons come from `@tabler/icons-svelte-runes` by deep import (`@tabler/icons-svelte-runes/icons/<name>`).
 
 ## Key Files And Patterns
 
-- Guide pages: `site/content/guide/<slug>/{metadata.ts,page.tsx,content.mdx}` plus optional `components/`.
+- Guide pages: `site/content/guide/<slug>/{metadata.ts,page.astro,content.mdx}` plus optional `components/`.
 - Example iframe pages: `site/content/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
 - Brand (`site/content/brand/`) owns the identity only: the mark and logotype, their gold, the typefaces, the voice, artwork downloads and the usage policy. Interface materials, controls, layout and motion belong to `/design-system`; token values belong to Reference. Its facts live in `common/brand.ts`, which feeds the page, search and `/brand.md`.
@@ -88,13 +88,13 @@ Use this shape:
 
 ```txt
 metadata.ts
-page.tsx
+page.astro
 content.mdx
 components/
 ```
 
 - `metadata.ts` defines public title, description, category, reference links, and `fileURL`.
-- `page.tsx` exports the page created by `createPage` with `site/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
+- `page.astro` renders `docs-shell/factories/Page.astro` with `site/layouts/Doc.astro`, `site/dictionaries` and `site/.categories/guide.json`, and exports `generateMetadata = createPageMetadata(metadata, dictionaries)`.
 - `content.mdx` contains guide copy, code examples, generated CSS examples, and imported local demos.
 - `components/` contains interactive demos and guide-local presentational components.
 
@@ -196,14 +196,14 @@ Keep reduced-motion handling and progressive hardening after the primary example
 Visible documentation examples should be as framework-neutral as practical:
 
 - Prefer native `html`, `css`, and `js` blocks.
-- Use `class`, not React `className`, in visible HTML examples.
+- Use `class`, not `className`, in visible HTML examples.
 - In `/guide` pages, describe default integration and CLI scanning as zero-configuration for ordinary app sources. Use CSS scanner directives such as `@source`, `@source not`, `@safelist`, and `@blocklist` for explicit exceptions or scoped examples over JavaScript scanner options unless the section is specifically about integration configuration. Do not present broad `src/**/*` includes or test-file excludes as setup boilerplate.
 - Prefer the preset's fixed utilities (`block`, `flex`, `hidden`, `relative`, `items-center`, `justify-between`, `flex-col`, `box-border` and the rest of the declarations contract table) for those exact declarations; write every other native declaration as `(property:value)`. Keep `(property:value)` where a page teaches native syntax or needs a shorthand's resets, such as `(text-decoration:underline)`.
 - Use native CSS references such as `(width:var(--size))` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference. Preserve native resolution `x`.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
-- Avoid exposing React state, `flushSync`, or site image components in visible examples unless the section is about that framework integration.
-- Implementation demos may use React and `flushSync`; displayed code does not need to match exactly.
-- Import every custom MDX component explicitly in the page or fragment that uses it. Guide-local components can use relative `./components/*` imports; shared presentation components live under `~/site/docs-shell/components`, and site demos under `~/site/components/demo`. The MDX provider only supplies Markdown renderers and `Image`.
+- Avoid exposing framework state or site image components in visible examples unless the section is about that framework integration.
+- Implementation demos are Svelte components; displayed code does not need to match exactly.
+- Import every custom MDX component explicitly in the page or fragment that uses it. Guide-local components can use relative `./components/*` imports; shared presentation components live under `~/site/docs-shell/components`, and site demos under `~/site/components/demo`. The injected MDX `components` only supply Markdown renderers and `Image`.
 
 For View Transitions examples, keep `view-transition-name` values unique, prefer article-specific names such as `article-image`, use `view-transition-class` to group related snapshots, and avoid broad `::view-transition-group(*)` in shared demos unless intentionally documenting global behavior.
 
@@ -211,12 +211,12 @@ For View Transitions examples, keep `view-transition-name` values unique, prefer
 
 Before authoring or revising a demo, read the active rules in [the design system](styles/system/DESIGN.md#rules) and inspect the relevant component source. Check the preview's contents as well as its tray: using `<Demo>` does not establish visual conformity.
 
-Interactive demos should be local `'use client'` components under the guide's `components/` folder. Use existing site primitives:
+Interactive demos should be local Svelte components under the guide's `components/` folder, hydrated where the MDX uses them. Use existing site primitives:
 
 - Wrap demos in `<Demo>`: one example is one `ui-tray` with a head (`title`, `description`, `controls`), a `ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
 - Use the specimen primitives from `~/site/components/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they render the `ui-*` components in `styles/system/specimens.css` and `surfaces.css`. Teaching hue uses a named `tone` and is always named by a legend or label.
-- Use `~/site/docs-shell/components/Image` for local bitmap images.
-- Use `@tabler/icons-react` for icon buttons and icon+text controls when an appropriate icon exists.
+- Use `~/site/docs-shell/components/Image.svelte` for local bitmap images.
+- Use `@tabler/icons-svelte-runes` for icon buttons and icon+text controls when an appropriate icon exists.
 - Use the `ui-*` controls (`ui-button`, `ui-segmented`, `ui-range`, `ui-select`, `ui-check`) and `ui-sheet` panels; do not add demo-specific button, panel or color classes. `styles/system/DESIGN.md` is the markup contract.
 
 Distinguish the interface operating the demonstration from the subject being taught. Preview controls and supporting presentation use the site's components. A component class or utility that is itself the lesson must remain reproducible from the displayed public CSS and markup; do not insert private `ui-*` dependencies to make that sample look correct. Use the public preset to express the system's restrained materials, type and geometry, varying only what the lesson needs. A saturated button is not justified merely because it is example content. For supporting buttons inside a `demoDocument` iframe, opt into `DemoScene.systemButtons` and use the canonical `ui-button`; keep this out of public teaching markup. Inspect the existing iframe materials bridge before adding presentation overrides; it must not supply a missing declaration essential to the lesson.
@@ -229,7 +229,7 @@ Before delivering a changed demo, compare its rendered contents with the relevan
 
 Design demos for the doc content column, not the viewport. A `<Demo>` inside guide content is roughly `674px` wide on desktop and narrower on mobile. Prefer container queries over viewport breakpoints, add `container` when using `@container(...)`, keep mobile single-column by default, and use two columns only when the container has room.
 
-For View Transitions demos, add transition styling classes to `document.documentElement` in a client component and clean them up on unmount. In React state demos, wrap the update passed to `document.startViewTransition()` in `flushSync()` so the DOM update happens inside the transition callback. Always provide a no-API fallback.
+For View Transitions demos, add transition styling classes to `document.documentElement` in a client component and clean them up on unmount. In Svelte state demos, call `await tick()` inside the callback passed to `document.startViewTransition()` so the DOM update happens inside the transition. Always provide a no-API fallback.
 
 For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `DemoPageViewport` (or `DemoViewport` with `src` and `responsive`) for primary responsive demos when the lesson depends on viewport width, and `DemoContainer` when it depends on a container. Keep iframe pages under `site/content/examples/<slug>/`. Isolated documents from `components/demo/reference/document.ts` receive `styles/system/tokens.css`, the materials bridge and `reference/frame.css`; frame paint uses `--ui-*` roles only. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
 
@@ -257,7 +257,7 @@ Complete namespace-consumer tables belong in Reference. Use canonical keys from 
 
 ## Homepage Map
 
-The homepage is `content/page.tsx` with `content/design.css` (home tokens and primitives) and `content/home.css`. Its components live in `content/components/`; `DESIGN.md` there is the design language. Read its Principles and the section for the area being changed rather than the whole file. Shared copy and sample data are in `home-content.ts` (guarded by `home-content.test.ts`); each section's own `*-content.ts` holds the rest.
+The homepage is `content/page.astro` with `content/design.css` (home tokens and primitives) and `content/home.css`. Its components live in `content/components/`; `DESIGN.md` there is the design language. Read its Principles and the section for the area being changed rather than the whole file. Shared copy and sample data are in `home-content.ts` (guarded by `home-content.test.ts`); each section's own `*-content.ts` holds the rest.
 
 | Area | Components | Logic and styles |
 | --- | --- | --- |
@@ -294,8 +294,8 @@ site/assets/images/<guide-or-feature>/
 
 Import them statically and render with the site `<Image>`:
 
-```tsx
-import Image from '~/site/docs-shell/components/Image'
+```astro
+import Image from '~/site/docs-shell/components/Image.svelte'
 import articleImage from '~/site/assets/images/view-transitions/article-aurora.jpg'
 ```
 

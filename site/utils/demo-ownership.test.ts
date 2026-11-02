@@ -8,14 +8,13 @@ const site = new URL('../', import.meta.url)
 const sitePath = fileURLToPath(site)
 
 test('Guide MDX resolves demos from the site owner and shell has no demo imports', async () => {
-  const provider = await readFile(new URL('docs-shell/components/mdx-provider.tsx', site), 'utf8')
-  const shell = await readFile(new URL('docs-shell/components/mdxComponents.tsx', site), 'utf8')
+  const shell = await readFile(new URL('docs-shell/components/markdown-components.ts', site), 'utf8')
   const shellFiles = await readdir(new URL('docs-shell/components/', site))
-  assert.doesNotMatch(provider, /demoComponents|components\/demo/)
+  assert.doesNotMatch(shell, /demoComponents|components\/demo/)
   const installation = await readFile(new URL('content/guide/installation/vite/content.mdx', site), 'utf8')
-  assert.match(installation, /import \{ DemoInstallation as InstallationPreview \} from '~\/site\/components\/demo\/DemoBrowser'/)
+  assert.match(installation, /import InstallationPreview from '~\/site\/components\/demo\/DemoInstallation\.astro'/)
   for (const name of ['Demo', 'DemoPanel', 'DemoP', 'DemoLabel', 'DemoDark', 'DemoLight', 'IFrame', 'HelloWorld', 'BrowserHeader']) {
-    assert.ok(!shellFiles.includes(`${name}.tsx`), `${name} still has a shell implementation`)
+    assert.ok(!shellFiles.some(file => file.startsWith(`${name}.`)), `${name} still has a shell implementation`)
     assert.doesNotMatch(shell, new RegExp(`\\b${name}:`))
   }
 })
@@ -26,7 +25,7 @@ test('site sources contain no retired demo imports, props or selectors', async (
   const retiredStyle = /(?:\.demo(?![-\w])|\.demo-ground\b|\.app-demo\b|\.box-perspective-pink\b|var\(--stripe\))/
   for (const directory of ['content', 'components', 'docs-shell', 'styles']) {
     for (const relative of await readdir(path.join(sitePath, directory), { recursive: true })) {
-      if (!/\.(?:tsx|mdx|css)$/.test(relative)) continue
+      if (!/\.(?:astro|svelte|ts|mdx|css)$/.test(relative)) continue
       const source = await readFile(path.join(sitePath, directory, relative), 'utf8')
       assert.doesNotMatch(source, retiredImport, `${directory}/${relative} imports a retired demo`)
       assert.doesNotMatch(source, retiredProp, `${directory}/${relative} uses a retired Demo prop`)

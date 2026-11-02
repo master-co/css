@@ -1,40 +1,22 @@
 import type { AstroIntegration } from 'astro'
-import mdx from '@mdx-js/rollup'
-import remarkGfm from 'remark-gfm'
 import { fileURLToPath } from 'node:url'
-import siteIslands from '../islands/vite'
-import svgComponents from './svg-components'
 import sourceURL from './source-url'
 import serverStyles from './server-styles'
-import remarkSlugAndTOC from '../docs-shell/remark/slug-and-toc.js'
-import remarkCodeMeta from '../docs-shell/remark/code-meta.js'
+import svgMarkup from './svg-markup'
 
-/** Site build conventions: React-compiled MDX, SVG components, and `'use client'` islands. */
+/** Site build conventions: Svelte roots with the site context, optimized SVG markup and server-only stylesheets. */
 export default function siteIntegration(): AstroIntegration {
   return {
     name: 'master-css-site',
     hooks: {
-      'astro:config:setup': ({ addRenderer, updateConfig, command }) => {
+      'astro:config:setup': ({ addRenderer, updateConfig }) => {
+        // Registered before `@astrojs/svelte`, whose Vite setup it reuses, so Svelte roots render here.
         addRenderer({
-          name: 'master-css-site:react',
-          serverEntrypoint: fileURLToPath(new URL('./react-renderer.ts', import.meta.url))
+          name: 'master-css-site:svelte',
+          serverEntrypoint: fileURLToPath(new URL('./svelte-renderer.ts', import.meta.url)),
+          clientEntrypoint: '@astrojs/svelte/client.js'
         })
-        const plugins: unknown[] = [
-          {
-            enforce: 'pre',
-            ...mdx({
-              jsxImportSource: 'react',
-              providerImportSource: fileURLToPath(new URL('../docs-shell/components/mdx-provider.tsx', import.meta.url)),
-              development: command === 'dev',
-              remarkPlugins: [remarkSlugAndTOC, remarkGfm, remarkCodeMeta]
-            })
-          },
-          svgComponents(),
-          sourceURL(),
-          serverStyles(),
-          siteIslands()
-        ]
-        updateConfig({ vite: { plugins: plugins as never } })
+        updateConfig({ vite: { plugins: [sourceURL(), serverStyles(), svgMarkup()] } })
       }
     }
   }

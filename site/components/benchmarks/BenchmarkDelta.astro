@@ -1,0 +1,23 @@
+---
+import '~/site/styles/system/specimens.css'
+import { siteOf } from '~/site/astro/site-context'
+import RenderNode from '~/site/docs-shell/components/RenderNode.astro'
+import type { BenchmarkTone } from './types'
+import { benchmarkStatusTones } from './utils'
+
+interface Props {
+  value?: unknown
+  label?: unknown
+  tone?: BenchmarkTone
+  class?: string
+}
+
+/** A change between two measurements; its status tone always comes with words. */
+const { value, label, tone = 'neutral', class: className } = Astro.props
+const { t } = siteOf(Astro)
+---
+
+<span class={className ? `ui-badge ${className}` : 'ui-badge'} data-tone={benchmarkStatusTones[tone]}>
+  <strong>{Astro.slots.has('default') ? <slot /> : <RenderNode node={value} />}</strong>
+  {label && <span>{typeof label === 'string' ? t(label) : <RenderNode node={label} />}</span>}
+</span>

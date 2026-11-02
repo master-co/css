@@ -1,0 +1,25 @@
+---
+import HomeIllustration from './HomeIllustration.astro'
+import type { HomeIllustrationId } from './home-illustration'
+
+interface Props {
+  body: string
+  icon: HomeIllustrationId
+  index: string
+  label: string
+  title: string
+}
+
+/** Every section opens with the same stack on the left rail: eyebrow, title, lead and an optional link (the default slot). */
+const { body, icon, index, label, title } = Astro.props
+---
+
+<header class="home-section-header">
+  <div class="home-section-caption">
+    <HomeIllustration {icon} />
+    <p class="home-eyebrow"><span aria-hidden="true" class="home-eyebrow-index">{index}</span><span>{label}</span></p>
+  </div>
+  <h2 class="home-lit home-section-heading home-stone-type">{title}</h2>
+  <p class="home-section-body">{body}</p>
+  <slot />
+</header>

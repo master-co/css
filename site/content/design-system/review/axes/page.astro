@@ -1,0 +1,26 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoAxes from '~/site/components/demo/DemoAxes.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoSurface from '~/site/components/demo/DemoSurface.svelte'
+import AnnotationComposition from './AnnotationComposition.astro'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage title="Axes" description="Drafting arrows name the main and cross axes around a subject. They sit outside the layout they explain." usage={{ href: '/guide/layout-system', label: 'the Layout System guide' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="flex-axes" title="Main and cross axis">
+    <Demo>
+      <DemoAxes class="w-full (max-width:26rem)">
+        <DemoSurface class="flex gap-sm p-md"><DemoItem tone="blue">01</DemoItem><DemoItem tone="violet">02</DemoItem><DemoItem>03</DemoItem></DemoSurface>
+      </DemoAxes>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="composition" title="With a measure and a legend">
+    <AnnotationComposition />
+  </ComponentSection>
+</ComponentPage>

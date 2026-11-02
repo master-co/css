@@ -1,0 +1,12 @@
+---
+import DocumentShell from './document.astro'
+import DocHeader from '~/site/docs-shell/components/DocHeader.svelte'
+
+/** Standalone pages such as Brand. */
+export const bodyClass = 'bg-surface-base'
+---
+
+<DocumentShell>
+  <DocHeader client:load contained />
+  <slot />
+</DocumentShell>

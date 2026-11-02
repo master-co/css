@@ -1,0 +1,12 @@
+---
+import { inlineTextParts } from './sheet-blocks'
+
+interface Props {
+  text: string
+}
+
+/** Backticks in short editorial sentences mark inline code. */
+const parts = inlineTextParts(Astro.props.text)
+---
+
+{parts.map(part => part.code ? <code>{part.text}</code> : part.text)}

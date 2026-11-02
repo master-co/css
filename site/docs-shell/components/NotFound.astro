@@ -1,0 +1,19 @@
+---
+import '~/site/styles/docs-shell/not-found.css'
+import { siteOf } from '~/site/astro/site-context'
+import SearchButton from './SearchButton.svelte'
+import Link from './Link.svelte'
+
+const { t: $, locale } = siteOf(Astro)
+const tw = locale === 'tw'
+---
+
+<main class="ui-not-found">
+  <div class="ui-pagehead">
+    <span class="ui-pagehead-kicker">404</span>
+    <h1>{$('This page does not exist')}</h1>
+    <p>{tw ? '試著搜尋文件，或返回 Guide 繼續閱讀。' : 'Try searching the documentation or return to the Guide.'}</p>
+  </div>
+  <SearchButton client:load class="ui-search-trigger" />
+  <Link href="/guide" class="ui-button" data-variant="quiet">{tw ? '瀏覽 Guide' : 'Browse the Guide'}<span aria-hidden="true">→</span></Link>
+</main>

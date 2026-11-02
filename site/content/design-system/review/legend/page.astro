@@ -1,0 +1,23 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoLegend from '~/site/components/demo/DemoLegend.svelte'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage title="Legend" description="Hue is only allowed in a specimen when something names it. The legend is that name." usage={{ href: '/design-system/review/axes', label: 'Axes' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="roles" title="Context, subject and comparison">
+    <Demo>
+      <DemoLegend slot="caption" items={[{ label: 'Context', tone: 'neutral' }, { label: 'Subject', tone: 'blue' }, { label: 'Comparison', tone: 'violet' }]} />
+      <div class="flex gap-sm"><DemoItem>01</DemoItem><DemoItem tone="blue">02</DemoItem><DemoItem tone="violet">03</DemoItem></div>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="outcomes" title="Outcomes">
+    <Demo padding="sm"><DemoLegend items={[{ label: 'Measured', tone: 'amber' }, { label: 'Passes', tone: 'green' }, { label: 'Fails', tone: 'red' }]} /></Demo>
+  </ComponentSection>
+</ComponentPage>

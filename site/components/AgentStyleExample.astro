@@ -1,0 +1,12 @@
+---
+import DemoConfiguredExample from './demo/DemoConfiguredExample.astro'
+import { agentStyleExample } from '../utils/agent-style-example'
+
+interface Props {
+  code?: boolean
+}
+
+const { code = true } = Astro.props
+---
+
+<DemoConfiguredExample name="agent-project-vocabulary" {...agentStyleExample} code={code} />

@@ -10,7 +10,6 @@ import { generateReference, renderDocumentMarkdown } from './build'
 import { searchTasks } from './search-tasks'
 import type { ReferenceCatalog } from './types'
 import { generatePresetCSS } from '../common/generate-preset-css'
-import SyntaxTr from '../components/SyntaxTr'
 import { resolveSyntaxRow } from './syntax'
 import resolveHeading from '~/site/docs-shell/utils/resolve-heading'
 import { extractReferenceMdx } from './markdown'
@@ -296,8 +295,8 @@ test('continuing recipe and Guide anchors remain available', async () => {
 
 test('Reference links and preserved Guide anchors resolve to real documents and sections', async () => {
   const guideRoutes = new Set((await readdir(path.join(root, 'content/guide'), { recursive: true }))
-    .filter(file => file.endsWith('page.tsx'))
-    .map(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.tsx$/, '')))
+    .filter(file => file.endsWith('page.astro'))
+    .map(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.astro$/, '')))
   for (const doc of catalog.documents) {
     for (const match of doc.markdown.matchAll(/\]\((\/guide\/[^)#]+)(?:#[^)]+)?\)/g)) {
       assert.ok(guideRoutes.has(match[1]), `${doc.id}: ${match[1]}`)
@@ -427,7 +426,7 @@ test('route payloads preserve Reference content and its parsed render tree', asy
     assert.match(renderDigest, /^[a-f0-9]{64}$/)
     function withoutHighlights(node: any): any {
       if (node.type === 'code') {
-        assert.ok(node.data.prepared.properties.className.includes('master-site'), `${doc.id}: ${node.lang}`)
+        assert.match(node.data.prepared.html, /^<pre\b[^>]*\bmaster-site\b/, `${doc.id}: ${node.lang}`)
         const { data: _data, ...source } = node
         return source
       }

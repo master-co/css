@@ -1,5 +1,5 @@
-import Class2CSS from '~/site/components/Class2CSS'
-import ReferenceIllustration from '~/site/reference/ReferenceIllustration'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <a id="overview"></a>
 
@@ -18,7 +18,7 @@ utility<selector><conditions>!
 
 The angle-bracket parts and `!` above are optional syntax placeholders. For example, `underline:hover@sm` applies the underline when the class-bearing element is hovered and the viewport matches `@sm`. The condition does not change which element the selector targets.
 
-<Class2CSS>{['underline:hover@sm', '(text-decoration-thickness:2px):hover@sm']}</Class2CSS>
+<Class2CSS classes={['underline:hover@sm', '(text-decoration-thickness:2px):hover@sm']} />
 
 Master CSS escapes the complete class name in the generated CSS selector. The colon inside `.underline\:hover` is part of that literal class name; the appended `:hover` is the actual pseudo-class. Write the unescaped class in HTML, as shown in the examples.
 
@@ -45,7 +45,7 @@ Without a combinator, the suffix adds a requirement to the element carrying the 
 | `underline:hover` | Matches the browser's hover state |
 | `underline:is(a)` | Is an `a` element |
 
-<Class2CSS>{['underline.active', 'underline#current', 'underline[data-current]', 'underline:hover', 'underline:is(a)']}</Class2CSS>
+<Class2CSS classes={['underline.active', 'underline#current', 'underline[data-current]', 'underline:hover', 'underline:is(a)']} />
 
 For a type check on the same element, use `:is(a)` or `:where(a)`. To select its children, use `>a` or `>*`. A bare tag name immediately after a utility name is not a separate selector suffix.
 
@@ -53,7 +53,7 @@ For a type check on the same element, use `:is(a)` or `:where(a)`. To select its
 
 Adjacent simple selectors describe the same element. `underline:hover:not([aria-disabled=true])` requires hover and excludes an element whose `aria-disabled` attribute is `true`. It does not set or update that attribute.
 
-<Class2CSS>{['underline:hover:not([aria-disabled=true])']}</Class2CSS>
+<Class2CSS classes={['underline:hover:not([aria-disabled=true])']} />
 
 Selectors respond to DOM and browser state; they do not create interaction behavior. Native attributes and ARIA retain their own semantics. In particular, `aria-disabled="true"` describes a disabled state but does not itself prevent activation.
 
@@ -76,7 +76,7 @@ A combinator moves from the class-bearing element to another element. The declar
 
 `_` encodes the descendant space between selectors. An actual space in HTML would start another class. `>`, `+` and `~` keep their native CSS meanings.
 
-<Class2CSS>{['underline_a', 'underline>a', 'underline+a', 'underline~a', 'underline>*']}</Class2CSS>
+<Class2CSS classes={['underline_a', 'underline>a', 'underline+a', 'underline~a', 'underline>*']} />
 
 ### State position \{#state-position\}
 
@@ -103,7 +103,7 @@ The position of a state determines which element must match it. These two classe
 </article>
 ```
 
-<Class2CSS>{['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']}</Class2CSS>
+<Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
 
 Hovering a link also hovers its ancestor article. In the first example, that makes both links eligible; in the second, the other link still fails its own `:hover` test. The article owns each class, but the declarations target its links. The link classes remove the default underline; the more specific parent-to-child selectors restore it when their hover tests match.
 
@@ -118,11 +118,11 @@ A top-level comma starts another branch from the same class-bearing element. Rep
 </section>
 ```
 
-<Class2CSS>{['block>div,>span', "(content:'“')::before,::after"]}</Class2CSS>
+<Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
 
 Commas inside functions or quoted attribute values stay inside those constructs. `underline:is(:hover,:focus-visible)` contains one selector suffix with two alternatives, rather than two top-level branches.
 
-<Class2CSS>{['underline:is(:hover,:focus-visible)', "underline[data-label='draft,review']"]}</Class2CSS>
+<Class2CSS classes={['underline:is(:hover,:focus-visible)', "underline[data-label='draft,review']"]} />
 
 ### Selector functions \{#selector-functions\}
 
@@ -144,7 +144,7 @@ Commas inside functions or quoted attribute values stay inside those constructs.
 </label>
 ```
 
-<Class2CSS>{['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']}</Class2CSS>
+<Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
 
 A relative match can also be a sibling: `underline:has(+input:checked)` underlines the class-bearing element when the next element sibling is a checked input. Native [`:has()` restrictions](https://www.w3.org/TR/selectors-4/#relational) still apply; nesting `:has()` inside itself is invalid. For a working checkbox example and a usable fallback, see [Compatibility](/guide/compatibility#new-selectors).
 
@@ -179,7 +179,7 @@ Use complete names such as `:first-child` and `:nth-child(odd)`. A spelling that
 </ul>
 ```
 
-<Class2CSS>{['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']}</Class2CSS>
+<Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
 
 ## Attribute selectors \{#attribute-selectors\}
 
@@ -212,11 +212,11 @@ Quoted attribute text remains literal: `underline[data-state=':first']:first-chi
 <a class="underline.is\_active is_active" href="/reference">Reference</a>
 ```
 
-<Class2CSS>{["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']}</Class2CSS>
+<Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
 
 CSS quotes do not prevent HTML whitespace from splitting a class. Use a CSS escape for a literal space in an attribute value, such as `[data-label='New\000020collection']`. A quoted value can be followed directly by a case flag, as in `[data-kind='draft'i]` for an ASCII case-insensitive match. See [attribute selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors) for native operators and case matching.
 
-<Class2CSS>{["underline[data-label='New\\000020collection']", "underline[data-kind='draft'i]"]}</Class2CSS>
+<Class2CSS classes={["underline[data-label='New\\000020collection']", "underline[data-kind='draft'i]"]} />
 
 ## Pseudo-elements \{#pseudo-elements\}
 
@@ -232,7 +232,7 @@ A pseudo-element suffix targets that pseudo-element rather than its originating 
 </span>
 ```
 
-<Class2CSS>{['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']}</Class2CSS>
+<Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
 
 Write vendor-specific selectors explicitly. Master CSS preserves their spelling; it does not expand a pseudo-element into vendor variants or supply browser support. For quoted values containing parentheses, see [native declaration boundaries](/reference/rules/declarations#declaration-heads).
 
@@ -250,7 +250,7 @@ The generated selector follows the browser's [specificity rules](https://develop
 
 `:is()`, `:not()` and `:has()` use the most specific argument in their selector list. `:where()` adds no specificity, including from its arguments. Combinators and the universal selector add none. These weights apply after the cascade has resolved origin, importance and layer precedence; a higher-specificity selector does not automatically defeat a rule in another layer.
 
-<Class2CSS>{['underline:where(:hover,#selected)', 'underline:is(:hover,#selected)']}</Class2CSS>
+<Class2CSS classes={['underline:where(:hover,#selected)', 'underline:is(:hover,#selected)']} />
 
 Use [Cascade layers](/reference/rules/layers) for rule ordering and [the Guide's override workflow](/guide/cascade-layers#override-a-component-locally) for practical decisions. Reordering classes in HTML does not change specificity.
 

@@ -43,6 +43,6 @@ test('the cascade probe follows a utility the engine puts in a later layer than 
 test('every design system figure links to a guide page that exists', () => {
   for (const href of Object.values(designSystemGuides)) {
     assert.match(href, /^\/guide\/[\w-]+$/)
-    assert.ok(existsSync(new URL(`../${href.slice(1)}/page.tsx`, import.meta.url)), href)
+    assert.ok(existsSync(new URL(`../${href.slice(1)}/page.astro`, import.meta.url)), href)
   }
 })

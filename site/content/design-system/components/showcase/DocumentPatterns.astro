@@ -1,0 +1,26 @@
+---
+import '~/site/styles/system/specimens.css'
+import '~/site/styles/system/data.css'
+import { siteOf } from '~/site/astro/site-context'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoBadge from '~/site/components/demo/DemoBadge.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoLegend from '~/site/components/demo/DemoLegend.svelte'
+import DemoTokenTable from '~/site/components/demo/DemoTokenTable.astro'
+import { projectTokenDefinitions } from '~/site/components/demo/project-style-examples'
+
+const { t } = siteOf(Astro)
+---
+
+<div class="ui-handbook-section" data-columns="2">
+  <Demo id="values-together" title="Values, together" frame="none" caption={t('Names, values and supporting details share a start.')}>
+    <DemoTokenTable rows={projectTokenDefinitions.map(token => ({ token: token.name, utilities: [], value: token.value, description: token.name.includes('spacing') ? 'Shared card padding' : token.name.includes('radius') ? 'Shared card corners' : 'An existing semantic color' }))} />
+  </Demo>
+  <Demo title="Teaching color is always named" padding="sm" caption={t('Hue appears only inside specimens. A legend or label names each tone.')}>
+    <div class="grid (justify-items:center) gap-md">
+      <div class="flex gap-sm"><DemoItem>Context</DemoItem><DemoItem tone="blue">Subject</DemoItem><DemoItem tone="violet">Comparison</DemoItem></div>
+      <DemoLegend items={[{ label: 'Context', tone: 'neutral' }, { label: 'Subject', tone: 'blue' }, { label: 'Comparison', tone: 'violet' }]} />
+      <div class="flex flex-wrap gap-xs"><DemoBadge variant="dot" tone="green">Supported</DemoBadge><DemoBadge>Static</DemoBadge></div>
+    </div>
+  </Demo>
+</div>

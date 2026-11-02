@@ -1,0 +1,13 @@
+---
+import '~/site/styles/system/specimens.css'
+import '~/site/styles/brand.css'
+import { brandTypefaces } from '~/site/common/brand'
+import Demo from '~/site/components/demo/Demo.svelte'
+---
+
+<Demo align="start">
+  <div class="brand-typefaces">{brandTypefaces.map(face => <div>
+    <span class={'mono' in face ? 'brand-mono' : undefined} lang={'lang' in face ? face.lang : undefined} aria-hidden="true">{face.sample}</span>
+    <b>{face.family}</b><small>{face.role}</small>
+  </div>)}</div>
+</Demo>

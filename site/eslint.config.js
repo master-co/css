@@ -7,7 +7,5 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
 
 export default defineConfig([
   includeIgnoreFile(gitignorePath),
-  // Astro pages hold routing and document markup; React and MDX sources carry the lint rules.
-  { ignores: ['**/*.astro'] },
   ...common,
 ])

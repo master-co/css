@@ -1,0 +1,26 @@
+---
+import { workflowProjectClass, workflowProjects } from './workflow-content'
+import WorkflowCanvas from './WorkflowCanvas.svelte'
+
+/** Each app keeps its nearest entry and its own resolution of the same class. */
+---
+
+<div class="home-wf-figure home-wf-repo" data-active="0" data-wf="repo">
+  <div class="home-wf-repo-stage home-wf-scene">
+    {workflowProjects.map((project, index) => (
+      <div class="home-wf-repo-app">
+        <span aria-hidden="true" class="home-stone home-stone-quiet home-wf-anchor home-wf-repo-entry" data-wf-anchor={`entry-${index}`}>index.css</span>
+        <button
+          aria-label={`${project.directory}: ${project.file}, ${workflowProjectClass} → ${project.primary}`}
+          aria-pressed={index === 0 ? 'true' : 'false'}
+          class="home-wf-anchor home-wf-repo-file"
+          data-wf-anchor={`project-${index}`}
+          data-wf-pick={index}
+          style={{ '--home-wf-primary': project.primary }}
+          type="button"><span class="home-wf-repo-directory">{project.directory}</span><span class="home-wf-repo-file-name">{project.file}</span><code class="home-wf-repo-class"><span aria-hidden="true" class="home-wf-repo-swatch" />{workflowProjectClass}</code></button>
+      </div>
+    ))}
+    <span class="home-stone home-stone-quiet home-wf-anchor home-wf-manifest home-wf-repo-root" data-wf-anchor="shared"><code>index.css</code></span>
+    <WorkflowCanvas client:idle={{ timeout: 500 }} figure="repo" />
+  </div>
+</div>

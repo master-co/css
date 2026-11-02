@@ -276,7 +276,7 @@ for (const interaction of ['focus', 'pointer', 'selection', 'code focus']) test(
   let delayed = false
   const player = new Promise(resolve => { release = resolve })
   await page.routeWebSocket(socket => socket.hostname === new URL(url).hostname, socket => socket.onMessage(() => undefined))
-  await page.route(candidate => /\/DeliveryFigures(?:\.tsx|[^/]*\.js)$/.test(candidate.pathname), async route => {
+  await page.route(candidate => /\/DeliveryFigures(?:\.svelte|[^/]*\.js)$/.test(candidate.pathname), async route => {
     delayed = true
     await player
     await route.continue()

@@ -1,0 +1,21 @@
+---
+import DocumentDisclosure from '~/site/components/DocumentDisclosure.astro'
+import ProjectStyleRecipes from './ProjectStyleRecipes.astro'
+import FoundationRecipes from './FoundationRecipes.astro'
+import TypeMotionRecipes from './TypeMotionRecipes.astro'
+import PaintRecipes from './PaintRecipes.astro'
+import NamespaceRecipes from './NamespaceRecipes.astro'
+import CodeTableRecipes from './CodeTableRecipes.astro'
+import DemoRecipes from './DemoRecipes.astro'
+import SyntaxViewportGallery from './SyntaxViewportGallery.astro'
+import { recipeGroups } from './catalog'
+
+const recipes = [ProjectStyleRecipes, FoundationRecipes, TypeMotionRecipes, PaintRecipes, NamespaceRecipes, CodeTableRecipes, SyntaxViewportGallery, DemoRecipes]
+
+/** Keep the full source-backed collection available without mounting it on the overview. */
+---
+
+<div class="grid gap-xs">{recipeGroups.map((group, index) => {
+  const Recipe = recipes[index]
+  return <DocumentDisclosure title={group.title}><div class="(scroll-margin-top:6rem)" id={group.id}><Recipe /></div></DocumentDisclosure>
+})}</div>

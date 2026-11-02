@@ -1,6 +1,6 @@
-import LayoutIllustration from './components/LayoutIllustration'
-import Class2CSS from '~/site/components/Class2CSS'
-import { DemoPageViewport } from '~/site/components/demo/DemoBrowser'
+import LayoutIllustration from './components/LayoutIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoPageViewport from '~/site/components/demo/DemoPageViewport.astro'
 
 ## Overview [sr-only]
 Compose a page from three decisions: a wrapper that caps the width, spacing tokens for gutters and margins, and a column grid for the regions. Native [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) and [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout) do the layout; Master CSS names the values.
@@ -22,9 +22,7 @@ Compose a page from three decisions: a wrapper that caps the width, spacing toke
 </main>
 ```
 
-<Class2CSS>
-  {['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']}
-</Class2CSS>
+<Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
 
 <LayoutIllustration />
 
@@ -42,7 +40,7 @@ Spacing classes such as `p-`, `m-` and `gap-` accept three forms:
 | Direct value | `p(1)` | `padding: calc(1 * 1px)` |
 | Native length | `(padding:0.5rem)` | `padding: 0.5rem` |
 
-<Class2CSS>{['p-md', 'p(1)', '(padding:0.5rem)']}</Class2CSS>
+<Class2CSS classes={['p-md', 'p(1)', '(padding:0.5rem)']} />
 
 Use tokens for the rhythm a page shares: gutters, padding and section spacing. A direct-value length is expressed in pixels, so `p(1)` is a one-pixel padding, not one step of a scale; use it for hairlines and resets such as `m(0)`. Write other units as a native declaration. See [Spacing](/reference/tokens/spacing) for the scale and [Direct values](/reference/direct-values) for every function.
 
@@ -66,7 +64,7 @@ When a distance becomes a repeated decision, name it by its role. A numeric key 
 
 `w-`, `max-w-`, `h-`, `min-w-` and `basis-` read `--container-*` tokens, so `max-w-5xl` is `max-width: var(--container-5xl)`. The full and intrinsic sizes are fixed utilities instead: `w-full`, `w-fit`, `w-max` and `w-min` always set `100%`, `fit-content`, `max-content` and `min-content`, and a project `--container-full` token does not change them.
 
-<Class2CSS>{['max-w-5xl', 'w-full', 'w-fit']}</Class2CSS>
+<Class2CSS classes={['max-w-5xl', 'w-full', 'w-fit']} />
 
 Container tokens set lengths only; they do not move a container query threshold. See [Container sizes](/reference/tokens/container) for the scale.
 
@@ -81,7 +79,7 @@ Let the wrapper fill its parent, cap it with a container size, center it and giv
 <main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
 ```
 
-<Class2CSS>{['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']}</Class2CSS>
+<Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
 
 Keep page alignment on the wrapper and content relationships on the grids inside it.
 
@@ -110,7 +108,7 @@ Keep page alignment on the wrapper and content relationships on the grids inside
 </section>
 ```
 
-<Class2CSS>{['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']}</Class2CSS>
+<Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
 
 Use `col-gap-*` and `row-gap-*` when the two axes need different spacing tokens. See [Grid tracks](/reference/grid-tracks).
 
@@ -128,7 +126,7 @@ For fixed or mixed tracks, write the native `grid-template-columns` value. Separ
 </section>
 ```
 
-<Class2CSS>{['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']}</Class2CSS>
+<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
 
 `min-w(0)` lets the main region shrink below the width of its content. Keep equal columns and spans for ordinary content; use explicit tracks for app shells and split panes.
 

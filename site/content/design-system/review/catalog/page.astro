@@ -1,0 +1,21 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import DemoCatalog from '~/site/components/demo/DemoCatalog.astro'
+import DemoExample from '~/site/components/demo/DemoExample.astro'
+
+export const metadata = pageMetadata
+---
+
+<ComponentPage kicker="Documents" title="Recipe catalog" description="Groups of closed recipes; each opens to a complete example." usage={{ href: '/design-system/authoring#working-recipes', label: 'the authoring handbook' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="catalog" title="A recipe group">
+    <DemoCatalog groups={[{
+      id: 'current-catalog-flow', title: 'Document flow', entries: [
+        { id: 'current-catalog-clear', title: 'Clear a right float', label: '(clear:right)', children: <DemoExample page="clear" section="clearing-right-floats" /> },
+        { id: 'current-catalog-clear-both', title: 'Clear both sides', label: '(clear:both)', children: <DemoExample page="clear" section="clearing-both-left-and-right-floats" /> }
+      ]
+    }]} />
+  </ComponentSection>
+</ComponentPage>

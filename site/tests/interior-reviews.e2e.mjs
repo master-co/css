@@ -10,7 +10,7 @@ const engine = process.env.MASTER_SITE_BROWSER ?? 'chromium'
 const base = process.env.MASTER_SITE_URL ?? 'http://127.0.0.1:3218'
 const site = new URL('../', import.meta.url)
 const output = new URL(`test-results/interior-redesign/reviews-${engine}/`, site)
-const files = await fg('content/design-system/**/page.tsx', { cwd: site.pathname })
+const files = await fg('content/design-system/**/page.astro', { cwd: site.pathname })
 const routes = files.map(file => '/' + path.dirname(file).replace(/^content\//, '')).sort()
 const records = []
 const visited = new Set()

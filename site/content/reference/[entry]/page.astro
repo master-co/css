@@ -1,0 +1,19 @@
+---
+import ReferencePage from '~/site/reference/ReferencePage.astro'
+import RecipeSheetView from '~/site/reference/RecipeSheetView.astro'
+import { loadReferenceRoute, referenceMetadata } from '~/site/reference/reference-route'
+
+type Props = { params: { locale: string; entry: string } }
+
+export async function generateMetadata({ params }: Props) {
+  const { entry, locale } = params
+  return referenceMetadata(entry, locale)
+}
+
+const { entry } = Astro.props.params
+const doc = await loadReferenceRoute(entry, 'utility')
+const sheet = doc.sheet
+if (sheet?.kind !== 'recipe') throw new Error(`Missing recipe sheet: ${doc.id}`)
+---
+
+<ReferencePage {...Astro.props} document={doc}><RecipeSheetView sheet={sheet} /></ReferencePage>

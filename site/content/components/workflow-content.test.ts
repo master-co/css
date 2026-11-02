@@ -85,7 +85,7 @@ test('workflow cards link to guide pages and headings that exist', () => {
   for (const [card, href] of Object.entries(workflowGuides)) {
     const [pathname, anchor] = href.split('#')
     const directory = guideDirectory(pathname)
-    assert.ok(directory && existsSync(new URL('page.tsx', directory)), `${card}: no page for ${pathname}`)
+    assert.ok(directory && existsSync(new URL('page.astro', directory)), `${card}: no page for ${pathname}`)
     if (!anchor) continue
     const headings = readFileSync(new URL('content.mdx', directory), 'utf8').match(/^#{2,4} .+$/gm) ?? []
     const slugs = headings.map((heading) => heading.replace(/^#+ /, '').toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-'))

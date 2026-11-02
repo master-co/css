@@ -27,7 +27,8 @@ async function open({ width = 1440, scheme = 'light', locale = 'en', motion = 'r
   await page.evaluate(size => { document.documentElement.style.fontSize = `${size}px` }, text)
   await page.evaluate(() => document.fonts.ready)
   // The server renders the completed scene; a click before hydration would not reach the chapters.
-  if (js) await page.waitForFunction(() => { const chapter = document.querySelector('.home-editor-chapter'); return !!chapter && Object.keys(chapter).some(key => key.startsWith('__reactProps$')) })
+  // Astro drops an island's `ssr` attribute once it hydrates.
+  if (js) await page.waitForFunction(() => { const chapter = document.querySelector('.home-editor-chapter'); return !!chapter && !chapter.closest('astro-island[ssr]') })
   const stage = page.locator('.home-editor-stage')
   const frame = stage.locator('.home-editor-frame')
   const chapters = stage.locator('.home-editor-chapter')

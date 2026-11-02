@@ -1,5 +1,5 @@
-import DeliveryFlow from '~/site/components/DeliveryFlow'
-import ArticleTOC from '~/site/docs-shell/components/ArticleTOC'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import ArticleTOC from '~/site/docs-shell/components/ArticleTOC.astro'
 
 A component can construct a class name that is absent as a complete string in source. If Next.js renders that component during the build, the final HTML contains the class, even though a source scanner cannot infer it. Progressive Rendering in `@master/css-next` uses that HTML to generate the page's CSS, then lets the Master CSS runtime handle new classes in the browser.
 

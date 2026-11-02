@@ -1,0 +1,12 @@
+---
+import DocumentOptions from './DocumentOptions.astro'
+import { toolingOptionGroup, toolingOptions } from '../utils/tooling-guide-data'
+
+interface Props {
+  name: keyof typeof toolingOptions
+}
+
+const { name } = Astro.props
+---
+
+<div data-tooling-options={name}><DocumentOptions {...toolingOptionGroup(name)} /></div>

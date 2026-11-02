@@ -1,11 +1,11 @@
 import { isCSSRequest, type Plugin } from 'vite'
-import { cleanId } from '../islands/vite'
+import { cleanId } from './module-id'
 
 const siteRoot = new URL('..', import.meta.url).pathname
 const empty = '\0site-server-style'
 
 /**
- * Pages link the stylesheets of every module they render on the server. Island
+ * Pages link the stylesheets of every module they render on the server. Hydrated
  * modules repeat those imports in the browser bundle, where Astro would attach
  * them to every page of the route, so the client build omits site stylesheets.
  * Development keeps them for Vite's CSS hot updates.

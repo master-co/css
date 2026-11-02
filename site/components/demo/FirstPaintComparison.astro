@@ -1,0 +1,6 @@
+---
+import DemoStyleComparison from './DemoStyleComparison.astro'
+import { firstPaintCSS, firstPaintHTML } from '../../utils/first-paint-examples'
+---
+
+<div data-first-paint="comparison"><DemoStyleComparison html={firstPaintHTML} css={firstPaintCSS()} sizing="content" /></div>

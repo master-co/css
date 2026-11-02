@@ -1,0 +1,17 @@
+---
+import Code from '~/site/docs-shell/components/Code.astro'
+import { slotText } from '~/site/docs-shell/utils/slot-text'
+import DocumentDeclarationView from './DocumentDeclarationView.astro'
+
+interface Props {
+  label?: string
+  /** The declaration; text children work too, as in `<DocumentDeclaration>{declaration}</DocumentDeclaration>`. */
+  code?: string
+}
+
+const source = Astro.props.code ?? await slotText(Astro.slots) ?? ''
+---
+
+<DocumentDeclarationView source={source}>
+  <Code lang="typescript" beautify={false} dedent={false} code={source} />
+</DocumentDeclarationView>

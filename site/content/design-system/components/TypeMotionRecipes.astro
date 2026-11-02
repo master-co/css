@@ -1,0 +1,20 @@
+---
+import FoundationTypography from '~/site/components/demo/foundations/FoundationTypography.astro'
+import FoundationTypeComparison from '~/site/components/demo/foundations/FoundationTypeComparison.astro'
+import FoundationMotion from '~/site/components/demo/foundations/FoundationMotion.astro'
+import FoundationTransition from '~/site/components/demo/foundations/FoundationTransition.astro'
+import FoundationDialog from '~/site/components/demo/foundations/FoundationDialog.astro'
+
+const examples = [
+  ['Type hierarchy', '/guide/typography#overview', FoundationTypography],
+  ['Size and treatment', '/guide/typography#without-vs-with--text-token', FoundationTypeComparison],
+  ['Finite entrances', '/reference/tokens/motion', FoundationMotion],
+  ['State transition', '/reference/tokens/motion', FoundationTransition],
+  ['Dialog entrance', '/guide/theme#define-motion-tokens', FoundationDialog],
+] as const
+---
+
+<div class="grid gap-2xl">{examples.map(([title, href, Component], index) => <section class="grid gap-sm" data-type-motion-recipe={index}>
+  <div class="flex flex-wrap items-baseline justify-between gap-sm"><h3 class="m(0) font-md font-semibold fg-text-strong">{title}</h3><a href={href} class="font-sm fg-text-muted fg-text-strong:hover">View guide ↗</a></div>
+  <Component />
+</section>)}</div>

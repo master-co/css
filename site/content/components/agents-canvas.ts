@@ -533,7 +533,8 @@ export function mountAgentsCanvas(stage: HTMLElement, canvas: HTMLCanvasElement,
   }
 
   const resizeObserver = new ResizeObserver(resize)
-  const intersection = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; visibility() })
+  // Notifications batch while layout settles; the last entry is the current state.
+  const intersection = new IntersectionObserver((entries) => { const entry = entries[entries.length - 1]; visible = entry.isIntersecting; visibility() })
   const themeObserver = new MutationObserver(theme)
   resizeObserver.observe(stage)
   intersection.observe(canvas)

@@ -1,5 +1,5 @@
-import MonorepoIllustration from './components/MonorepoIllustration'
-import ExplorerView from '~/site/docs-shell/components/ExplorerView'
+import MonorepoIllustration from './components/MonorepoIllustration.astro'
+import ExplorerView from '~/site/docs-shell/components/ExplorerView.astro'
 
 ## Overview [sr-only]
 Give each application its own project boundary, then share CSS vocabulary through imports. The [Language Service](/guide/language-service), [code linting](/guide/code-linting), and build integrations can use the same app-specific project context.
@@ -15,8 +15,7 @@ Each `package.json` project has one Master CSS workspace: one project manifest g
 
 For independent applications, use separate package projects such as `projects/admin` and `projects/shop`. Each owns its CSS entry and application setup:
 
-<ExplorerView>
-{[
+<ExplorerView items={[
   { name: 'projects', children: [
     { name: 'admin', children: [
       { name: 'package.json' },
@@ -31,8 +30,7 @@ For independent applications, use separate package projects such as `projects/ad
   ]},
   { name: 'package.json' },
   { name: 'styles', children: [{ name: 'shared.css' }] }
-]}
-</ExplorerView>
+]} />
 
 Complete the appropriate [framework setup](/guide/installation#integrations) in each application. Start its development server and production build from that app's directory. This keeps generated CSS, source scanning, diagnostics and editor state aligned with its project root.
 

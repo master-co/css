@@ -1,0 +1,34 @@
+---
+import '~/site/styles/system/data.css'
+import InlineCode from '~/site/docs-shell/components/InlineCode.astro'
+import RenderNode from '~/site/docs-shell/components/RenderNode.astro'
+
+export interface DemoTokenRow {
+  token: string
+  utilities: string[]
+  value?: string
+  /** Text or markup (an Astro template value or MDX JSX), rendered with RenderNode. */
+  description: unknown
+  preview?: unknown
+}
+
+interface Props {
+  rows: DemoTokenRow[]
+  descriptionTitle?: string
+}
+
+/** A document inventory, separate from any specimen's measured layout. */
+const { rows, descriptionTitle = 'Role' } = Astro.props
+---
+
+{/* Narrow token inventories need native keyboard scrolling. */}
+<div class="ui-table" role="region" aria-label={`${descriptionTitle} token table`} tabindex="0"><table>
+  <thead><tr><th scope="col">Token / class</th><th scope="col" class="(min-width:12rem)">{descriptionTitle}</th></tr></thead>
+  <tbody>{rows.map(({ token, utilities, value, description, preview }) => <tr>
+    <td>
+      <div class="whitespace-nowrap">{preview != null && <RenderNode node={preview} />}<code>{token}</code></div>
+      {utilities.length > 0 && <div class="flex flex-wrap gap-xs mt-xs">{utilities.map(utility => <InlineCode class="whitespace-nowrap" code={utility} />)}</div>}
+    </td>
+    <td>{value && <div class="mb-xs"><code>{value}</code></div>}<RenderNode node={description} /></td>
+  </tr>)}</tbody>
+</table></div>

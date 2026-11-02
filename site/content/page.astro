@@ -1,0 +1,45 @@
+---
+import './design.css'
+import './home.css'
+import DocHeader from '~/site/docs-shell/components/DocHeader.svelte'
+import dictionaries from '~/site/dictionaries'
+import { createTranslation } from '~/site/docs-shell/utils/i18n'
+import AgentsSection from './components/AgentsSection.astro'
+import BenchmarkSection from './components/BenchmarkSection.astro'
+import CTASection from './components/CTASection.astro'
+import DeliveryModesSection from './components/DeliveryModesSection.astro'
+import DesignSystemSection from './components/DesignSystemSection.astro'
+import HeroSection from './components/HeroSection.astro'
+import HomeFooter from './components/HomeFooter.svelte'
+import HomeLamp from './components/HomeLamp.svelte'
+import LanguageServiceSection from './components/LanguageServiceSection.astro'
+import LintSection from './components/LintSection.astro'
+import WorkflowSection from './components/WorkflowSection.astro'
+
+export const metadata = {
+  title: { absolute: 'Master CSS - A markup-driven CSS orchestration language for developers and AI agents' },
+  description: 'Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.'
+}
+
+/** Localized pages keep the same title and description in their own language. */
+export async function generateMetadata({ params }: { params: { locale: string } }) {
+  const $ = await createTranslation(params.locale, dictionaries)
+  return { title: { absolute: $(metadata.title.absolute) }, description: $(metadata.description) }
+}
+---
+
+<DocHeader client:load class="home-header" stickable transitionAtTop />
+<main class="overflow-clip home-page">
+  <HeroSection />
+  <DesignSystemSection />
+  <LanguageServiceSection />
+  <DeliveryModesSection />
+  <BenchmarkSection />
+  <LintSection />
+  <AgentsSection />
+  <WorkflowSection />
+  <CTASection />
+  {/* Renders nothing of its own, so it hydrates once the page is idle rather than when visible. */}
+  <HomeLamp client:idle={{ timeout: 500 }} />
+</main>
+<HomeFooter client:idle={{ timeout: 500 }} />

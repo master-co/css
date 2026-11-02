@@ -4,7 +4,7 @@ import milesImage from '../../public/images/authors/miles.jpg'
 import benseageImage from '../../public/images/authors/benseage.jpg'
 import joyImage from '../../public/images/authors/joy.jpg'
 
-import type { StaticImage } from '../components/Image'
+import type { StaticImage } from '../types/StaticImage'
 
 const authors: { name: string, image: StaticImage, url?: string, twitter?: string }[] = [
   { name: 'Aron', image: aronImage, url: 'https://github.com/1aron', twitter: '@aron1tw' },

@@ -1,0 +1,24 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoBadge from '~/site/components/demo/DemoBadge.svelte'
+
+export const metadata = pageMetadata
+
+const tones = ['neutral', 'blue', 'violet', 'amber', 'green', 'red'] as const
+---
+
+<ComponentPage title="Badge" description="A short, legible category or state beside a value. It stays outside measured layouts." usage={{ href: '/design-system/review/feature-support', label: 'Platform behavior' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="tones" title="Tones, dots and sizes">
+    <Demo caption="A dot carries state; the text always says it.">
+      <div class="grid (justify-items:center) gap-md">
+        <div class="flex flex-wrap justify-center gap-xs">{tones.map(tone => <DemoBadge tone={tone}>{tone}</DemoBadge>)}</div>
+        <div class="flex flex-wrap justify-center gap-xs"><DemoBadge variant="dot" tone="green">Supported</DemoBadge><DemoBadge variant="dot" tone="amber">Partial</DemoBadge><DemoBadge variant="dot">Unknown</DemoBadge></div>
+        <div class="flex flex-wrap justify-center gap-xs"><DemoBadge size="sm">sm</DemoBadge><DemoBadge>md</DemoBadge></div>
+      </div>
+    </Demo>
+  </ComponentSection>
+</ComponentPage>

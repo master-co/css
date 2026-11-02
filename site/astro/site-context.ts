@@ -1,9 +1,10 @@
 import i18n from '../docs-shell/common/i18n.config.js'
 import en from '../public/dictionaries/en.json' with { type: 'json' }
 import tw from '../public/dictionaries/tw.json' with { type: 'json' }
-import type { SiteContextValue, SiteLocale } from '../docs-shell/layouts/root'
+import { createSite, type Site, type SiteContextValue, type SiteLocale } from '../docs-shell/site'
 
 const translations: Record<SiteLocale, Record<string, string>> = { en, tw }
+const contexts = new Map<string, SiteContextValue>()
 
 export function localeOfPathname(pathname: string): SiteLocale {
   const segment = pathname.split('/')[1]
@@ -21,8 +22,19 @@ export function canonicalPathname(pathname: string) {
   return normalized.replace(new RegExp(`^/${i18n.defaultLocale}(?=/|$)`), '') || '/'
 }
 
+/** One context object per pathname, so derived sites are shared by every component of a page. */
 export function siteContextOf(url: URL): SiteContextValue {
   const pathname = canonicalPathname(url.pathname)
-  const locale = localeOfPathname(pathname)
-  return { locale, pathname, translations: translations[locale] }
+  let context = contexts.get(pathname)
+  if (!context) {
+    const locale = localeOfPathname(pathname)
+    context = { locale, pathname, translations: translations[locale] }
+    contexts.set(pathname, context)
+  }
+  return context
+}
+
+/** The site of the page an Astro component renders: `const { locale, t } = siteOf(Astro)`. */
+export function siteOf(astro: { url: URL }): Site {
+  return createSite(siteContextOf(astro.url))
 }

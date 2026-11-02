@@ -1,0 +1,48 @@
+---
+import { siteOf } from '~/site/astro/site-context'
+import { workflowRouteDefinitions, workflowRoutes } from './workflow-content'
+import WorkflowCanvas from './WorkflowCanvas.svelte'
+
+/** Keep the actual stylesheet selectable; Canvas supplies only its floating paper and connections. */
+function codeLine(line: string) {
+  const parts: { text: string, reference?: boolean }[] = []
+  let last = 0
+  for (const match of line.matchAll(/--[\w-]+/g)) {
+    if (!workflowRouteDefinitions.some((definition) => definition.name === match[0])) continue
+    parts.push({ text: line.slice(last, match.index) })
+    parts.push({ text: match[0], reference: true })
+    last = match.index + match[0].length
+  }
+  parts.push({ text: line.slice(last) })
+  return parts
+}
+
+const { t } = siteOf(Astro)
+---
+
+<div class="home-wf-figure home-wf-routes" data-wf="routes">
+  <div aria-label={t('Route')} class="home-segmented-control home-wf-routes-tabs" role="radiogroup">
+    {workflowRoutes.map(({ route }, index) => (
+      <label class="home-segmented-control-option home-wf-routes-tab"><input class="home-wf-routes-input" checked={index === 0} name="home-wf-route" type="radio" value={index} />{route}</label>
+    ))}
+  </div>
+  <div class="home-wf-routes-stage home-wf-scene">
+    <div class="home-wf-anchor home-wf-routes-paper" data-wf-anchor="route-sheet">
+      {workflowRoutes.map(({ route, code }, index) => (
+        <div class="home-wf-routes-sheet" data-sheet={index}>
+          <span class="home-wf-routes-filename">{route === '/' ? 'index' : route.slice(1)}.css</span>
+          {/* Keyboard readers need a focus target for this native overflow region. */}
+          <div aria-label={`${route} CSS`} class="home-wf-routes-code" role="region" tabindex="0">
+            <code>{code.split('\n').map((line) => <span class="home-wf-routes-line">{codeLine(line).map((part) => part.reference ? <span class="home-wf-routes-ref">{part.text}</span> : part.text)}</span>)}</code>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="home-wf-routes-defs">
+      {workflowRouteDefinitions.map(({ name }, index) => (
+        <span class="home-wf-anchor home-wf-routes-def" data-wf-anchor={`definition-${index}`}>{name}</span>
+      ))}
+    </div>
+    <WorkflowCanvas client:idle={{ timeout: 500 }} figure="routes" />
+  </div>
+</div>

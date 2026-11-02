@@ -29,7 +29,7 @@ async function mdxFiles(directory: string): Promise<string[]> {
 function missingImports(source: string): string[] {
   // Some authored code examples contain angle brackets inside string expressions.
   // Their child text is not an MDX component, but the containing tag is.
-  source = source.replace(/(<(?:Code|Class2CSS|DocumentDeclaration)\b[^>]*>)\{[\s\S]*?\}(<\/(?:Code|Class2CSS|DocumentDeclaration)>)/g, '$1{"example"}$2')
+  source = source.replace(/(<(?:Code|DocumentDeclaration)\b[^>]*>)\{[\s\S]*?\}(<\/(?:Code|DocumentDeclaration)>)/g, '$1{"example"}$2')
   let tree: any
   try {
     tree = fromMarkdown(source, {

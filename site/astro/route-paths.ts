@@ -58,7 +58,7 @@ export async function createStaticPaths(files: string[], providers: Record<strin
   for (const file of [...files].sort()) {
     const segments = segmentsOf(file)
     const dynamic = segments.some(segment => segment.kind !== 'static')
-    const providerFile = file.replace(/page\.tsx$/, 'params.ts')
+    const providerFile = file.replace(/page\.astro$/, 'params.ts')
     if (dynamic && !providers[providerFile]) throw new Error(`${file}: dynamic routes require a sibling params.ts`)
     const paramSets = dynamic ? await (await providers[providerFile]()).generateStaticParams() : [{}]
     for (const params of paramSets) {

@@ -1,0 +1,36 @@
+---
+import '~/site/styles/system/specimens.css'
+import '~/site/styles/system/data.css'
+import { siteOf } from '~/site/astro/site-context'
+import Code from '~/site/docs-shell/components/Code.astro'
+import CodeTabs from '~/site/docs-shell/components/CodeTabs.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoGeneratedCSS from '~/site/components/demo/DemoGeneratedCSS.svelte'
+import DemoViewport from '~/site/components/demo/DemoViewport.svelte'
+import { projectStyleExample, projectTokenDefinitions } from '~/site/components/demo/project-style-examples'
+import { demoDocument } from '~/site/components/demo/reference/document'
+import { configuredExampleCSS, configuredMarkupClasses } from '~/site/reference/configured-example'
+
+const { t } = siteOf(Astro)
+const example = projectStyleExample('tokens')
+const document = demoDocument({ page: 'design-system', id: 'workbench', title: example.title, html: [example.html], css: example.source, classes: [], classLists: [], highlighted: [] }, {
+  html: example.html, bodyClass: 'p-lg bg-surface-base fg-text-body', caption: ''
+})
+---
+
+<h2 id="workspace">{t('A small document workspace')}</h2>
+<div class="ui-handbook-section">
+  <Demo title={example.title} frame="none" caption={t('The responsive preview and its source use the same project token definitions.')}>
+    <Fragment slot="source">
+      <CodeTabs tabs={[
+        { name: 'collection.html', lang: 'html', code: example.html, beautify: true },
+        { name: 'theme.css', lang: 'css', code: example.source },
+      ]} />
+      <DemoGeneratedCSS><Code lang="css" beautify code={configuredExampleCSS(example.source, configuredMarkupClasses(example.html))} /></DemoGeneratedCSS>
+    </Fragment>
+    <DemoViewport client:idle={{ timeout: 500 }} title="Collection card" document={document} responsive sizing="content" maxWidth={1000} />
+  </Demo>
+  <dl class="ui-params" aria-label="Project tokens">
+    {projectTokenDefinitions.map(token => <div><dt>{token.name}</dt><dd><code>{token.value}</code></dd></div>)}
+  </dl>
+</div>

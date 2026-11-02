@@ -1,0 +1,23 @@
+---
+import '~/site/styles/system/specimens.css'
+
+export interface DemoIndexGroup {
+  title: string
+  links: readonly { href: string, label: string }[]
+}
+
+interface Props {
+  label: string
+  groups: readonly DemoIndexGroup[]
+}
+
+/** Native links keep catalog navigation available before hydration. */
+const { label, groups } = Astro.props
+---
+
+<nav class="grid gap-md" aria-label={label}>
+  {groups.map(group => <div class="grid gap-xs">
+    <p class="m(0) ui-label">{group.title}</p>
+    <ul class="flex flex-wrap gap-2xs m(0) p(0) (list-style:none)">{group.links.map(link => <li><a class="ui-button" data-size="sm" href={link.href}>{link.label}</a></li>)}</ul>
+  </div>)}
+</nav>

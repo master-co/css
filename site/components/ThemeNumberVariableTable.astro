@@ -1,0 +1,57 @@
+---
+import '~/site/styles/system/data.css'
+import { siteOf } from '~/site/astro/site-context'
+import { uniqueId } from '~/site/docs-shell/utils/unique-id'
+import InlineCode from '~/site/docs-shell/components/InlineCode.astro'
+import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
+
+interface Props {
+  namespace: string
+  keys?: string[]
+  variablePrefix?: string
+  descriptions?: Record<string, string>
+  representation?: 'spacing'
+  referenceUnits?: boolean
+}
+
+const formatRem = (value: number) => `${Number(value.toFixed(4))}rem`
+const formatPx = (value: number) => `${Number(value.toFixed(4))}px`
+
+const { t } = siteOf(Astro)
+const captionId = uniqueId(Astro, 'theme-number-variable-table')
+const { namespace, variablePrefix = namespace, descriptions, representation, referenceUnits = true } = Astro.props
+const entries = getThemeNumericVariableEntries(namespace).filter(entry => !Astro.props.keys || Astro.props.keys.includes(entry.key))
+const hasDescriptions = descriptions && entries.some(({ key }) => descriptions[key])
+const hasSpacingRepresentation = representation === 'spacing'
+const referenceUnit = entries.every(({ unit }) => unit === 'rem') ? 'px' : 'rem'
+---
+
+{/* Numeric tables scroll within the document column and need native keyboard access. */}
+<div class="ui-table" role="region" aria-labelledby={captionId} tabindex="0">
+  <table>
+    <caption id={captionId} class="sr-only">{t(namespace === 'breakpoint' ? 'Viewport breakpoints' : 'Numeric theme variables')}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{t(namespace === 'breakpoint' ? 'Query' : 'Token')}</th>
+        <th scope="col">{t(namespace === 'breakpoint' ? 'Minimum width' : 'Value')}</th>
+        {referenceUnits && <th scope="col" data-align="end">{referenceUnit}</th>}
+        {hasSpacingRepresentation && <th scope="col">{t('Representation')}</th>}
+        {hasDescriptions && <th scope="col" class="(min-width:12rem)">{t('Description')}</th>}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        entries.map((entry) => (
+          <tr>
+            <th scope="row"><InlineCode code={namespace === 'breakpoint' ? `@${entry.key}` : `--${variablePrefix}-${entry.key}`} /></th>
+            <td><InlineCode code={entry.value} /></td>
+            {referenceUnits && <td data-align="end">{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>}
+            {/* The hatched width is the measured space itself. */}
+            {hasSpacingRepresentation && <td><span aria-hidden="true" class="ui-preview" style={{ width: entry.value, background: 'var(--ui-hatch)' }} /></td>}
+            {hasDescriptions && <td>{t(descriptions?.[entry.key])}</td>}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

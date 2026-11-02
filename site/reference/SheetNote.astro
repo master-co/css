@@ -1,0 +1,12 @@
+---
+import InlineText from './InlineText.astro'
+
+interface Props {
+  text: string
+}
+
+/** A Master-specific rule placed right after the classes it governs. */
+const { text } = Astro.props
+---
+
+<p class="ref-note"><InlineText text={text} /></p>

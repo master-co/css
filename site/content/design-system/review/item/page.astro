@@ -1,0 +1,35 @@
+---
+import pageMetadata from './metadata'
+import ComponentDocumentation from './content.mdx'
+import ComponentPage from '../../components/ComponentPage.astro'
+import ComponentSection from '../../components/ComponentSection.astro'
+import Demo from '~/site/components/demo/Demo.svelte'
+import DemoItem from '~/site/components/demo/DemoItem.svelte'
+import DemoLabel from '~/site/components/demo/DemoLabel.svelte'
+import DemoLegend from '~/site/components/demo/DemoLegend.svelte'
+
+export const metadata = pageMetadata
+
+const tones = ['neutral', 'blue', 'violet', 'amber', 'green', 'red'] as const
+const variants = ['soft', 'solid', 'outline', 'ghost'] as const
+---
+
+<ComponentPage title="Item" description="An item stands for content inside a specimen. Neutral is the context; a named tone marks the subject or a comparison, and a legend or label always names it." usage={{ href: '/guide/layout-system#namespace-for-spacing', label: 'the Layout System guide' }} Documentation={ComponentDocumentation}>
+  <ComponentSection id="tones" title="Tone and paint">
+    <Demo background="dots" caption="Tone chooses the hue; variant chooses the paint. Neither changes the item’s size.">
+      <div class="grid gap-sm w-full (max-width:34rem)">
+        <div class="grid-cols(5) gap-sm"><span />{variants.map(variant => <DemoLabel class="text-center">{variant}</DemoLabel>)}</div>
+        {tones.map(tone => <div class="grid-cols(5) items-center gap-sm">
+          <DemoLabel>{tone}</DemoLabel>
+          {variants.map(variant => <DemoItem tone={tone} variant={variant}>Aa</DemoItem>)}
+        </div>)}
+      </div>
+    </Demo>
+  </ComponentSection>
+  <ComponentSection id="in-a-lesson" title="In a lesson" description="The example supplies the layout: here a hatched padding box and a gap between three items.">
+    <Demo background="hatch">
+      <DemoLegend slot="caption" items={[{ label: 'Context', tone: 'neutral' }, { label: 'Subject', tone: 'blue' }]} />
+      <div class="grid-cols(3) gap-md w-full (max-width:22rem) p-md r-lg bg-surface-raised"><DemoItem>01</DemoItem><DemoItem tone="blue">02</DemoItem><DemoItem>03</DemoItem></div>
+    </Demo>
+  </ComponentSection>
+</ComponentPage>

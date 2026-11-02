@@ -1,0 +1,34 @@
+---
+import Link from '~/site/docs-shell/components/Link.svelte'
+import DocumentDisclosure from '../components/DocumentDisclosure.astro'
+import SheetTable from './SheetTable.astro'
+import { keyWidth, placeholderParts } from './sheet-blocks'
+import type { SheetSyntax } from './sheets'
+
+interface Props {
+  rows: SheetSyntax[]
+  more?: SheetSyntax[]
+  moreLabel?: string
+  width?: string
+}
+
+/** Class pattern → native declarations, the first fact a reader looks for. */
+const { rows, more, moreLabel, width } = Astro.props
+const declarationsOf = (row: SheetSyntax) => row.declarations.split('\n').map(line => {
+  const separator = line.indexOf(':')
+  return { property: line.slice(0, separator), value: line.slice(separator + 1).trim().replace(/;$/, '') }
+})
+---
+
+<SheetTable class="ref-class-table" head={['Class', 'Declarations']} keyWidth={width}>
+  {rows.map(row => <tr>
+    <th scope="row">
+      {row.prefix
+        ? <Link href={`/reference/tokens/families#family-${row.prefix}`}><code>{placeholderParts(row.syntax).map(part => part.placeholder ? <var>{part.text}</var> : part.text)}</code></Link>
+        : <code>{placeholderParts(row.syntax).map(part => part.placeholder ? <var>{part.text}</var> : part.text)}</code>}
+    </th>
+    <td><span class="ref-declarations">{declarationsOf(row).map(({ property, value }) => <span class="ref-declaration"><span class="ref-property">{property}:</span> <span class="ref-declaration-value">{placeholderParts(value).map(part => part.placeholder ? <var>{part.text}</var> : part.text)};</span></span>)}</span></td>
+  </tr>)}
+</SheetTable>
+{/* The disclosed rows size their own column; they never join the page's alignment. */}
+{!!more?.length && <DocumentDisclosure title={moreLabel ?? `${more.length} more classes`}><Astro.self rows={more} width={keyWidth(more.map(row => row.syntax))} /></DocumentDisclosure>}

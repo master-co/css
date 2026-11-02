@@ -1,0 +1,40 @@
+---
+import CodeCopyButton from './CodeCopyButton.astro'
+
+type Tab = { name?: string, lang: string, ext?: string }
+
+interface Props {
+  tabs: Tab[]
+  currentName?: string
+  class?: string
+  /** Accepted for older callers; the bar names the file and nothing else. */
+  showControls?: boolean
+  copyable?: boolean
+  /** Tab lists switch panels through `docs-shell/scripts/code`. */
+  idPrefix?: string
+}
+
+/** The `ui-code-bar`: the file's name, or `ui-tabs` that switch panels, and the copy action. */
+const { tabs, currentName, class: className, copyable = true, idPrefix } = Astro.props
+---
+
+<div class={className ? `ui-code-bar ${className}` : 'ui-code-bar'}>
+  {idPrefix
+    ? <div class="ui-tabs" role="tablist" aria-label="Code examples">
+      {tabs.map(({ name, lang }, index) => {
+        const tabName = name ?? lang
+        const active = currentName === tabName
+        return <button
+          type="button"
+          role="tab"
+          id={`${idPrefix}-tab-${index}`}
+          aria-controls={`${idPrefix}-panel-${index}`}
+          aria-selected={active ? 'true' : 'false'}
+          tabindex={active ? 0 : -1}
+          data-code-tabs-tab-name={tabName}
+        >{tabName}</button>
+      })}
+    </div>
+    : <span class="ui-code-file">{tabs[0]?.name}</span>}
+  {copyable && <CodeCopyButton name={currentName} />}
+</div>

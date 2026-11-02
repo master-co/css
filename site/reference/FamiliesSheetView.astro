@@ -1,0 +1,32 @@
+---
+import './sheet-blocks'
+import Link from '~/site/docs-shell/components/Link.svelte'
+import SheetTable from './SheetTable.astro'
+import { ungroupedFamilies, type FamiliesSheet } from './sheets'
+
+interface Props {
+  sheet: FamiliesSheet
+}
+
+/** Every prefix that reads a token, grouped by the page that lists its values. */
+const { sheet } = Astro.props
+const rest = ungroupedFamilies(sheet)
+const tables = [
+  ...sheet.groups.map(group => ({ group, rows: group.rows })),
+  ...rest.length > 0 ? [{ group: undefined, rows: rest.map(family => ({ prefix: family.prefix, property: family.property })) }] : []
+]
+---
+
+<p>Each prefix writes native properties from a token namespace, such as <code>p-md</code>. Write any other value as a native declaration, such as <code>(padding:1rem)</code>.</p>
+{tables.map(({ group, rows }) => <Fragment>
+  {group
+    ? <h2 id={group.id}>{group.pages.map(page => page.title).join(' and ')}</h2>
+    : <h2 id="other">Other families</h2>}
+  <SheetTable class="ref-family-table" head={['Prefix', 'Property']}>
+    {rows.map((row, index) => <tr id={rows.findIndex(other => other.prefix === row.prefix) === index ? `family-${row.prefix}` : undefined}>
+      <th scope="row"><code>{row.prefix}-</code></th>
+      <td><code>{row.property}</code></td>
+    </tr>)}
+  </SheetTable>
+  {group && <p class="ref-links">Values in {group.pages.map((page, index) => <Fragment>{index ? ' and ' : ''}<Link href={page.href}>{page.title}</Link></Fragment>)}.</p>}
+</Fragment>)}
