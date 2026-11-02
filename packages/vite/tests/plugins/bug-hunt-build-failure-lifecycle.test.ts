@@ -46,7 +46,19 @@ for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'p
       expect((await state.next()).code).toBe('ERROR')
       state.write('.paint{@contents;} .paint{@contents;}')
       const invalid = await state.next();expect(invalid.code).toBe('ERROR');expect(String(invalid.error)).toContain('@contents is only valid inside @mixin')
-      await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(state.events).toEqual([])
+      // Rolldown's native watcher and the adapter's recovery watcher can both
+      // observe this edit. Validate any queued duplicate, then require a quiet
+      // window so a continuing recovery loop still fails the test.
+      const queued: typeof state.events = []
+      await vi.waitFor(async () => {
+        queued.push(...state.events.splice(0))
+        await delay(process.env.BH_WATCH_TRACE ? 2000 : 250)
+        expect(state.events).toEqual([])
+      }, { timeout: watchDeadline })
+      for (const event of queued) {
+        expect(event.code).toBe('ERROR')
+        expect(String(event.error)).toContain('@contents is only valid inside @mixin')
+      }
       state.write(`@theme {--paint-padding:3rem}
 `)
       const recovered = await state.next()

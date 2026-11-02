@@ -5,7 +5,7 @@ import { afterEach, expect, test, vi } from 'vitest'
 import LocalStylesPlugin from '../../src/plugins/local-styles'
 import { devStylesheetState } from '../../src/utils/dev-stylesheet-delivery'
 import { localStylesheets } from '../../src/utils/local-stylesheet'
-import { createServer } from 'vite'
+import { createServer, normalizePath } from 'vite'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
@@ -48,8 +48,8 @@ test('concurrent stylesheet hosts share project loading and each observe all dep
   expect(discovery.calls).toBe(1)
   expect(discovery.loads).toBe(1)
   for (const [index, host] of hosts.entries()) {
-    expect(host).toHaveBeenCalledWith(entry)
-    expect(host).toHaveBeenCalledWith(tokens)
+    expect(host).toHaveBeenCalledWith(normalizePath(entry))
+    expect(host).toHaveBeenCalledWith(normalizePath(tokens))
     expect(results[index].code).toContain('--color-shared:red')
   }
 })
@@ -63,7 +63,7 @@ test('failed shared loading observes missing dependencies and retries after repa
   discovery.calls = 0
   const failed = await Promise.allSettled(hosts.map(transform))
   expect(failed.every(result => result.status === 'rejected')).toBe(true)
-  for (const host of hosts) expect(host).toHaveBeenCalledWith(tokens)
+  for (const host of hosts) expect(host).toHaveBeenCalledWith(normalizePath(tokens))
   writeFileSync(tokens, '@theme{--color-shared:green}')
   const results = await Promise.all(hosts.map(transform))
   expect(discovery.calls).toBe(2)
@@ -83,7 +83,7 @@ test('a pending old project cannot replace the manifest loaded after an edit', a
   const old = transform('old')
   try {
     await waiting
-    expect(addWatchFile).toHaveBeenCalledWith(entry)
+    expect(addWatchFile).toHaveBeenCalledWith(normalizePath(entry))
     writeFileSync(entry, '@import "@master/css";@theme{--color-shared:blue}')
     const environment = { moduleGraph: { getModuleById: vi.fn() } }
     await plugin.hotUpdate.call({ environment }, { type: 'update', file: entry, modules: [] })
