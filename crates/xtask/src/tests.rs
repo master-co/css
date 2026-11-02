@@ -58,12 +58,13 @@ fn assembles_all_native_packages_and_writes_stable_checksums() {
         fs::write(directory.join(executable), format!("cli:{package}")).unwrap();
         fs::write(
             directory.join("package.json"),
-            serde_json::json!({
-                "name": format!("@master/css-{package}"),
-                "files": ["mastercss.node", executable],
-                "bin": { "mcss": format!("./{executable}") }
-            })
-            .to_string(),
+            fs::read(
+                workspace_root()
+                    .join("packages")
+                    .join(package)
+                    .join("package.json"),
+            )
+            .unwrap(),
         )
         .unwrap();
     }
@@ -98,5 +99,21 @@ fn assembles_all_native_packages_and_writes_stable_checksums() {
         assemble_native_release_at(&root, &root, &required_output, false, true, false).unwrap_err(),
         "Missing required release asset: packages/runtime/dist/global.min.js"
     );
+    let package_path = root.join("mastercss-binding-darwin-arm64/package.json");
+    let mut package: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(&package_path).unwrap()).unwrap();
+    for bin in [
+        serde_json::json!({ "mcss": "./mcss" }),
+        serde_json::json!("./mcss"),
+        serde_json::json!({}),
+        serde_json::Value::Null,
+    ] {
+        package["bin"] = bin;
+        fs::write(&package_path, package.to_string()).unwrap();
+        assert_eq!(
+            assemble_native_release_at(&root, &root, &output, false, false, false).unwrap_err(),
+            "Native package @master/css-binding-darwin-arm64 must keep the mcss executable loader-private."
+        );
+    }
     fs::remove_dir_all(root).unwrap();
 }

@@ -250,6 +250,11 @@ pub(crate) fn assemble_native_release_at(
                 package_json.name
             ));
         }
+        if package_json.extra.contains_key("bin") {
+            return Err(format!(
+                "Native package {expected_name} must keep the mcss executable loader-private."
+            ));
+        }
         let executable_name = if package.contains("win32") {
             "mcss.exe"
         } else {
@@ -263,15 +268,6 @@ pub(crate) fn assemble_native_release_at(
                 .files
                 .iter()
                 .any(|file| file == executable_name)
-            || package_json
-                .bin
-                .get("mcss")
-                .and_then(serde_json::Value::as_str)
-                != Some(if package.contains("win32") {
-                    "./mcss.exe"
-                } else {
-                    "./mcss"
-                })
         {
             return Err(format!(
                 "Native package {expected_name} does not publish both required artifacts."

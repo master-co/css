@@ -118,7 +118,8 @@ struct CompilerParityCase {
 struct NativePackageJson {
     name: String,
     files: Vec<String>,
-    bin: serde_json::Map<String, serde_json::Value>,
+    #[serde(flatten)]
+    extra: serde_json::Map<String, serde_json::Value>,
 }
 
 #[derive(Serialize)]
