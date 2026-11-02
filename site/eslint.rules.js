@@ -88,30 +88,12 @@ const reviewedGeometry = [
   { files: ["components/demo/DemoWaterfall.astro"], values: ["-50%"] },
   // Controlled comparison geometry for layout, clipping and shadow specimens.
   { files: ["components/demo/foundations/FoundationAxes.astro", "components/demo/foundations/FoundationMedia.astro", "components/demo/foundations/FoundationRadius.astro", "components/demo/foundations/FoundationShrink.astro"], values: ["2.5rem", "3.5rem", "5rem", "9rem"] },
-  // Scrollable minimum width of the delivery comparison.
-  { files: ["content/blog/bootstrapping-master-css-with-vite/content.mdx"], values: ["40rem"] },
   // Measured chart bars use a compact rem-scaled thickness.
   { files: ["content/components/BenchmarkSizeChart.svelte"], values: ["1.25rem"] },
   // Large-screen handbook preview boundary.
   { files: ["content/components/DesignSystemSection.astro"], values: ["30rem"] },
   // Matched shopping artboards; icon badge geometry and compact display rhythm.
   { files: ["content/components/ThemeModesPreview.svelte"], values: ["-0.125rem", "0.4375rem", "1.1", "1.75rem", "5rem"] },
-  // Concentric-radius specimen boundary.
-  { files: ["content/design-system/components/showcase/Materials.astro"], values: ["22rem"] },
-  // Space reserved for the coordinate annotation and its leaders.
-  { files: ["content/design-system/review/axes/AnnotationComposition.astro"], values: ["22rem", "9rem"] },
-  // Contain the annotation specimen at its reviewed width.
-  { files: ["content/design-system/review/axes/page.astro"], values: ["26rem"] },
-  // Matched specimen widths for items and their context.
-  { files: ["content/design-system/review/item/page.astro"], values: ["22rem", "34rem"] },
-  // Explicit image width in the aspect-ratio specimen.
-  { files: ["content/design-system/review/media/page.astro"], values: ["7rem"] },
-  // Slow linear timeline makes playback controls observable.
-  { files: ["content/design-system/review/motion/page.astro"], values: ["2s", "linear"] },
-  // Fixed scroll viewport demonstrates overflow.
-  { files: ["content/design-system/review/scroll/page.astro"], values: ["12rem"] },
-  // Same specimen boundary as the concentric-radius showcase.
-  { files: ["content/design-system/review/surface/page.astro"], values: ["22rem"] },
   // The standalone layout fills the dynamic viewport.
   { files: ["content/examples/layout-system/page.astro"], values: ["100dvh"] },
   // Popover stays within its own viewport.

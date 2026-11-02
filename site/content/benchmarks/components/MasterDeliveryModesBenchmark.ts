@@ -6,7 +6,7 @@ import type {
   BenchmarkMetric,
   BenchmarkSegment,
   BenchmarkStackedBarItem
-} from '~/site/components/benchmarks/types'
+} from '@master/internal-site/benchmarks/types.ts'
 
 type ModeId = 'master-static' | 'master-runtime' | 'master-progressive' | 'tailwind-static'
 type TimingMetricId =

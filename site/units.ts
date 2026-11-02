@@ -31,16 +31,8 @@ const units = {
       'Accessibility'
     ]
   },
-  blog: {
-    categories: [
-      'Major',
-      'New feature',
-    ]
-  },
   examples: {},
   roadmap: {},
-  brand: {},
-  'design-system': { categories: ['Overview', 'Design system', 'Components'] },
 }
 
 export default units

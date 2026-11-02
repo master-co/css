@@ -1,24 +1,21 @@
 import { benchmarkContent } from './utils/benchmark-content'
-import { releaseContent } from './utils/release-content'
 import { introductionContent } from './utils/introduction-content'
-import { brandContent } from './utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from './utils/installation-content'
 import { pages as basePages } from './scripts/generate-page-categories'
 
 import { readFile } from 'node:fs/promises'
-import i18n from './docs-shell/common/i18n.config.js'
+import i18n from '@master/internal-site/common/i18n.config.js'
 import { writeIfChanged } from './scripts/write-if-changed'
-import { extractSearchNodesFromMdx, generateSearchPages } from '~/site/docs-shell/utils/search-pages'
+import { extractSearchNodesFromMdx, generateSearchPages } from '@master/internal-site/utils/search-pages'
 import { generateReference } from './reference/build'
 import { guideOverviewMarkdown } from './utils/guide-overview'
 import { syntaxTutorialContent } from './utils/syntax-tutorial'
 import { foundationGuideContent, foundationGuideSlugs } from './utils/foundation-content'
 import { projectStyleGuideContent, projectStyleGuideSlugs } from './utils/project-style-content'
 import { migrationGuideContent, migrationGuideSlugs } from './utils/migration-content'
-import { deliveryGuideContent, deliveryGuideSlugs, deliveryBlogContent, deliveryBlogSlugs } from './utils/delivery-content'
+import { deliveryGuideContent, deliveryGuideSlugs } from './utils/delivery-content'
 import { agentGuideContent, agentGuideSlugs } from './utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from './utils/tooling-content'
-import { designSystemContent, designSystemRoutes } from './utils/design-system-content'
 
 const searchPages = await generateSearchPages({ defaultLocale: i18n.defaultLocale, locales: i18n.locales, write: false })
 await generateReference(process.cwd(), searchPages, basePages)
@@ -35,9 +32,6 @@ for (const slug of projectStyleGuideSlugs) {
 for (const slug of migrationGuideSlugs) {
   guideContentNodes.set(`/guide/migration${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await migrationGuideContent(process.cwd(), slug)).searchMarkdown))
 }
-for (const slug of deliveryBlogSlugs) {
-  guideContentNodes.set(`/blog/${slug}`, extractSearchNodesFromMdx((await deliveryBlogContent(process.cwd(), slug)).searchMarkdown))
-}
 for (const slug of deliveryGuideSlugs) {
   guideContentNodes.set(`/guide/${slug}`, extractSearchNodesFromMdx((await deliveryGuideContent(process.cwd(), slug)).searchMarkdown))
 }
@@ -51,12 +45,7 @@ for (const slug of installationGuideSlugs) {
   guideContentNodes.set(`/guide/installation${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await installationGuideContent(process.cwd(), slug)).searchMarkdown))
 }
 guideContentNodes.set('/benchmarks', extractSearchNodesFromMdx((await benchmarkContent(process.cwd())).searchMarkdown))
-guideContentNodes.set('/blog/v2', extractSearchNodesFromMdx((await releaseContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/guide/introduction', extractSearchNodesFromMdx((await introductionContent(process.cwd())).searchMarkdown))
-guideContentNodes.set('/brand', extractSearchNodesFromMdx((await brandContent(process.cwd())).searchMarkdown))
-for (const route of designSystemRoutes) {
-  guideContentNodes.set(route, extractSearchNodesFromMdx((await designSystemContent(process.cwd(), route)).searchMarkdown))
-}
 for (const locale of ['en', 'tw']) {
   const searchFile = new URL(`./public/search/${locale}.json`, import.meta.url)
   const pages = searchPages[locale]

@@ -1,5 +1,5 @@
 import { reuseIllustration } from '../../../../content/guide/reusing-styles/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 export default {
   id: 'shared-and-local',

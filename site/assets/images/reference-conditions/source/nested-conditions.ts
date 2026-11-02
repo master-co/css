@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Reader question: how do two query suffixes constrain one rule?
 // Exact nested CSS, braces and scope guides establish containment even without colour.

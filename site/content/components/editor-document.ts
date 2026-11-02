@@ -1,8 +1,8 @@
 import { MasterCSSLanguageService } from '@master/css-language-service'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSessionSync } from '@master/css-tooling/node'
-import { getColor, type ColorLevel } from '~/site/docs-shell/data/color-palette'
-import preset from '~/site/utils/preset-manifest'
+import { getColor, type ColorLevel } from '@master/internal-site/data/color-palette'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { editorCompletion, editorCompletionDetail, editorCompletionLabels, editorFileName, editorHoverClass, editorSource, editorSwatches, type EditorClass, type EditorHover, type EditorModel, type EditorRole, type EditorSpan } from './editor-content'
 
 interface SemanticToken {

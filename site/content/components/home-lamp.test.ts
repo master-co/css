@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { lampValues, litProperties } from './home-lamp'
+import { lampValues, litProperties } from '@master/internal-site/home/home-lamp.ts'
 
 const box = { left: 100, top: 400, width: 200, height: 60 }
 const read = (values: string[]) => values.map(value => Number.parseFloat(value))

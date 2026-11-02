@@ -1,5 +1,5 @@
-import type { DocumentOption } from '../components/document-types'
-import type { DocumentCodeExampleProps } from '../components/document-types'
+import type { DocumentOption } from '@master/internal-site/components/document-types.ts'
+import type { DocumentCodeExampleProps } from '@master/internal-site/components/document-types.ts'
 
 export const toolingOptions = {
   rules: {

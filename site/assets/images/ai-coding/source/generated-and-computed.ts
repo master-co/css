@@ -1,5 +1,5 @@
 import { aiIllustration as figure } from '../../../../content/guide/ai-coding/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A cascade comparison, not a workflow: two actual rules compete for one property.
 // Equal artifact treatment keeps validity distinct from precedence; the specimen measures the winner.

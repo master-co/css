@@ -1,7 +1,7 @@
 import { aiIllustrationMarkdown } from '../content/guide/ai-coding/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
-import { configuredMarkupMarkdown } from '../reference/configured-example'
+import { configuredMarkupMarkdown } from '@master/internal-site/css/configured-example.ts'
 import { agentPromptMarkdown, agentFixExample, previewWorkflowMarkdown } from './agent-guide-data'
 import { agentOptionsMarkdown } from './agent-options'
 import { agentStyleExample } from './agent-style-example'

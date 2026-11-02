@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../../reference/illustrations'
-import { drawing, type Theme } from '../../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 /** Follow actual URL references: publishing the entry does not publish its dependencies. */
 export default {

@@ -10,7 +10,7 @@ import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { deliveryFences, deliverySource, deliveryFixture, pruningFixture } from '../tests/delivery-examples'
 import { compileMigrationExample } from '../tests/migration-examples'
-import { projectStyleExample } from '../components/demo/project-style-examples'
+import { projectStyleExample } from '@master/internal-site/demo/project-style-examples.ts'
 
 test('the maintenance example compiles and compares snapshots by changed token consumers', async () => {
   // The universal compiler receives the imported preset as resolved context.

@@ -1,5 +1,5 @@
+/* Product entry for the compiler, editor and lint; shared styling has one owner. */
 @import '@master/css';
-@import './docs-shell/theme.css';
-@import './system/mixins.css';
-@import './system/tokens.css';
-@import './base.css';
+/* Headless tooling reads package definitions; Vite owns the imported native CSS. */
+@reference '@master/internal-site/styles/foundation.css';
+@import '@master/internal-site/styles/foundation.css';

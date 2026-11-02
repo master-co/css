@@ -1,39 +1,22 @@
-import { createHash } from 'node:crypto'
+import { generateStaticSocialImages } from '@master/internal-site/build/static-social.ts'
 import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Resvg } from '@resvg/resvg-js'
-import satori from 'satori'
 import { readPublicEnv } from '../utils/public-env.js'
+import { organizationRedirects } from './organization-redirects'
 
 type PageMetadata = {
     pathname: string
 }
 
-type StaticOgImageOptions = {
-    title: string
-    description: string
-    category: string
-    authors: string[]
-    locale: string
-}
-
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
 const outDir = path.join(siteDir, 'out')
 const publicEnv = readPublicEnv({ input: '.generated/public-env.json' })
-const authorImageFiles: Record<string, string> = {
-    Aron: 'aron.jpg',
-    Joy: 'joy.jpg',
-    BenSeage: 'benseage.jpg',
-    Miles: 'miles.jpg',
-    Lola: 'lola.jpg'
-}
-
 Object.assign(process.env, publicEnv)
 process.chdir(siteDir)
 
 await generateSitemap()
-await generateStaticOgImages()
+await generateStaticSocialImages({ siteDir, outDir, origin: publicEnv.PUBLIC_URL, logo: new URL('../public/images/css-logotype@light.png', import.meta.url), locales: ['en', 'tw'] })
 await writeHeaders()
 await writeRedirects()
 await validateHydrationManifestReferences()
@@ -58,303 +41,6 @@ ${pages.map((page) => {
     await writeFile(path.join(outDir, 'sitemap.xml'), xml, 'utf8')
 }
 
-async function generateStaticOgImages() {
-    const textFiles = (await listFiles(outDir)).filter((file) => /\.(html|txt)$/.test(file))
-    const filesWithMatches: { file: string, content: string, matches: string[] }[] = []
-
-    for (const file of textFiles) {
-        const content = await readFile(file, 'utf8')
-        const matches = findOgImageUrls(content)
-        if (matches.length) {
-            filesWithMatches.push({ file, content, matches })
-        }
-    }
-
-    if (!filesWithMatches.length) return
-
-    await rm(path.join(outDir, 'og'), { recursive: true, force: true })
-
-    const generated = new Map<string, string>()
-
-    for (const { file, matches, content: originalContent } of filesWithMatches) {
-        let content = originalContent
-
-        for (const rawUrl of matches) {
-            const normalizedUrl = normalizeOgImageUrl(rawUrl)
-            const cacheKey = getOgImageCacheKey(normalizedUrl)
-            let staticPath = generated.get(cacheKey)
-            if (!staticPath) {
-                staticPath = await writeOgImage(normalizedUrl, cacheKey)
-                generated.set(cacheKey, staticPath)
-            }
-            // Keep the origin of absolute card URLs, which social crawlers require.
-            content = content.split(rawUrl).join(/^https?:\/\//.test(rawUrl) ? new URL(staticPath, rawUrl).href : staticPath)
-        }
-
-        if (content.includes('/api/og-image')) {
-            throw new Error(`Static postbuild left dynamic OG image URL in ${path.relative(siteDir, file)}`)
-        }
-
-        await writeFile(file, content, 'utf8')
-    }
-}
-
-function findOgImageUrls(html: string) {
-    const matches = new Set<string>()
-    const pattern = /(?:https?:\/\/[^"'<>\s]+)?\/api\/og-image\?[^"'<>\s]+/g
-    for (const match of html.matchAll(pattern)) {
-        const rawUrl = trimEscapedStringTerminator(html, match.index || 0, match[0])
-        matches.add(rawUrl)
-    }
-    return [...matches]
-}
-
-function trimEscapedStringTerminator(content: string, matchIndex: number, rawUrl: string) {
-    const nextCharacter = content[matchIndex + rawUrl.length]
-    if (nextCharacter === '"' && rawUrl.endsWith('\\')) {
-        return rawUrl.slice(0, -1)
-    }
-    return rawUrl
-}
-
-function normalizeOgImageUrl(rawUrl: string) {
-    return rawUrl
-        .replaceAll('&amp;', '&')
-        .replaceAll('\\u0026', '&')
-        .replaceAll('\\u003d', '=')
-        .replaceAll('\\u002f', '/')
-}
-
-function getOgImageCacheKey(rawUrl: string) {
-    const url = new URL(rawUrl, publicEnv.PUBLIC_URL)
-    const params = url.searchParams
-    return JSON.stringify({
-        locale: normalizeLocale(params.get('locale')),
-        title: params.get('title') || '',
-        description: params.get('description') || '',
-        category: params.get('category') || '',
-        authors: parseAuthors(params.get('authors'))
-    })
-}
-
-async function writeOgImage(rawUrl: string, cacheKey: string) {
-    const url = new URL(rawUrl, publicEnv.PUBLIC_URL)
-    const params = url.searchParams
-    const locale = normalizeLocale(params.get('locale'))
-    const dictionary = await readDictionary(locale)
-    const image = await createStaticOgImage({
-        locale,
-        title: translate(params.get('title'), dictionary),
-        description: translate(params.get('description'), dictionary),
-        category: translate(params.get('category'), dictionary),
-        authors: parseAuthors(params.get('authors'))
-    })
-    const filename = `${createHash('sha1').update(cacheKey).digest('hex').slice(0, 16)}.png`
-    const publicPath = `/og/${filename}`
-    const outputPath = path.join(outDir, publicPath.slice(1))
-
-    await mkdir(path.dirname(outputPath), { recursive: true })
-    await writeFile(outputPath, image)
-
-    return publicPath
-}
-
-async function createStaticOgImage({ title, description, category, authors }: StaticOgImageOptions) {
-    const size = { width: 1200, height: 630 }
-    const coverBgURL = await readPublicDataURL('images/cover-bg.jpg')
-    const cssLogotypeURL = await readPublicDataURL('images/css-logotype@light.png')
-    const authorProfiles = await Promise.all(authors.map(async (name) => ({
-        name,
-        image: await readOptionalPublicDataURL(`images/authors/${authorImageFiles[name]}`)
-    })))
-    const fontRegular = await readPublicAsset('fonts/Geist-Regular.ttf')
-    const fontMedium = await readPublicAsset('fonts/Geist-Medium.ttf')
-    const titleFontSize = title.length > 72 ? 40 : title.length > 46 ? 48 : 56
-    const displayDescription = truncateText(description, 150)
-
-    const svg = await satori(
-        h('div', { style: {
-            display: 'flex',
-            position: 'relative',
-            width: size.width,
-            height: size.height,
-            overflow: 'hidden',
-            backgroundColor: '#fff',
-            color: '#111827',
-            fontFamily: 'Geist Regular'
-        } },
-            h('img', { src: coverBgURL, width: size.width, height: size.height, style: {
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0
-            } }),
-            h('div', { style: {
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                padding: '70px 95px'
-            } },
-                h('img', { src: cssLogotypeURL, width: 340 }),
-                h('div', { style: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 24
-                } },
-                    category && h('div', { style: {
-                        display: 'flex',
-                        color: '#64748b',
-                        fontSize: 24,
-                        fontFamily: 'Geist Medium'
-                    } },
-                        category
-                    ),
-                    h('div', { style: {
-                        display: 'flex',
-                        maxWidth: 900,
-                        fontFamily: 'Geist Medium',
-                        fontSize: titleFontSize,
-                        lineHeight: 1.22
-                    } },
-                        title
-                    ),
-                    displayDescription && h('div', { style: {
-                        display: 'flex',
-                        maxWidth: 930,
-                        color: '#64748b',
-                        fontSize: 28,
-                        lineHeight: 1.45
-                    } },
-                        displayDescription
-                    )
-                ),
-                h('div', { style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    minHeight: 70
-                } },
-                    authorProfiles.map(({ name, image }) => h('div', { key: name, style: {
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginRight: 32
-                    } },
-                        image && h('img', { src: image, width: 58, height: 58, style: {
-                            borderRadius: 999,
-                            objectFit: 'cover'
-                        } }),
-                        h('div', { style: {
-                            display: 'flex',
-                            marginLeft: image ? 14 : 0,
-                            color: '#334155',
-                            fontSize: 24
-                        } },
-                            name
-                        )
-                    ))
-                )
-            )
-        ),
-        {
-            ...size,
-            fonts: [
-                {
-                    name: 'Geist Regular',
-                    data: fontRegular
-                },
-                {
-                    name: 'Geist Medium',
-                    data: fontMedium
-                }
-            ]
-        }
-    )
-    return new Resvg(svg, { fitTo: { mode: 'width', value: size.width } }).render().asPng()
-}
-
-type SatoriChild = SatoriElement | string | number | false | null | undefined | SatoriChild[]
-interface SatoriElement {
-    type: string
-    key: string | null
-    props: Record<string, unknown>
-}
-
-/**
- * The element objects satori reads, shaped like JSX output without React: `key` stays beside the props, and one
- * child is passed as itself rather than in an array.
- */
-function h(type: string, { key = null, ...props }: Record<string, unknown> & { key?: string | null }, ...children: SatoriChild[]) {
-    if (children.length) props.children = children.length === 1 ? children[0] : children
-    // Satori types its input as a React node; these objects are the same shape.
-    return { type, key, props } as SatoriElement & Parameters<typeof satori>[0]
-}
-
-async function readPublicAsset(publicPath: string) {
-    return await readFile(path.join(siteDir, 'public', publicPath))
-}
-
-async function readOptionalPublicDataURL(publicPath: string | undefined) {
-    if (!publicPath) return undefined
-    try {
-        return await readPublicDataURL(publicPath)
-    } catch {
-        return undefined
-    }
-}
-
-async function readPublicDataURL(publicPath: string) {
-    const data = await readPublicAsset(publicPath)
-    return `data:${mimeTypeForPath(publicPath)};base64,${data.toString('base64')}`
-}
-
-async function readDictionary(locale: string) {
-    try {
-        return JSON.parse(await readFile(path.join(siteDir, 'public', 'dictionaries', `${locale}.json`), 'utf8')) as Record<string, string>
-    } catch {
-        return {}
-    }
-}
-
-function translate(value: string | null, dictionary: Record<string, string>) {
-    if (!value) return ''
-    return dictionary[value] || value
-}
-
-function normalizeLocale(locale: string | null) {
-    return locale === 'tw' ? 'tw' : 'en'
-}
-
-function parseAuthors(value: string | null) {
-    if (!value) return []
-    try {
-        const parsed = JSON.parse(value)
-        if (Array.isArray(parsed)) {
-            return parsed
-                .map((author) => typeof author === 'string' ? author : author?.name)
-                .filter(Boolean)
-        }
-    } catch {
-        return value.split(',').map((author) => author.trim()).filter(Boolean)
-    }
-    return []
-}
-
-function truncateText(value: string, maxLength: number) {
-    if (value.length <= maxLength) return value
-    return value.slice(0, maxLength - 3).replace(/[,.;]?\s[\w']*$|.$/, '...')
-}
-
-function mimeTypeForPath(publicPath: string) {
-    if (publicPath.endsWith('.jpg') || publicPath.endsWith('.jpeg')) return 'image/jpeg'
-    if (publicPath.endsWith('.png')) return 'image/png'
-    if (publicPath.endsWith('.svg')) return 'image/svg+xml'
-    if (publicPath.endsWith('.ttf')) return 'font/ttf'
-    return 'application/octet-stream'
-}
-
 async function writeHeaders() {
     await writeFile(path.join(outDir, '_headers'), [
         '/_astro/*',
@@ -369,6 +55,7 @@ async function writeHeaders() {
 
 async function writeRedirects() {
     await writeFile(path.join(outDir, '_redirects'), [
+        ...organizationRedirects(),
         '/en/* /:splat 301',
         '/en / 301',
         '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 200',

@@ -1,18 +1,18 @@
 ---
-import Link from '~/site/docs-shell/components/Link.svelte'
-import PreparedCodeView from '~/site/docs-shell/components/PreparedCodeView.astro'
+import Link from '@master/internal-site/components/Link.svelte'
+import PreparedCodeView from '@master/internal-site/components/PreparedCodeView.astro'
 import { isStylesheetExample, referenceCodeProps } from './code-block'
 import { anchorOf, createReferenceBodyContext, headingChildren, referenceCodeWrapper, referenceTable, type ReferenceBodyContext } from './reference-body'
-import DocumentAPIIndex from '../components/DocumentAPIIndex.astro'
-import DocumentDeclarationView from '../components/DocumentDeclarationView.astro'
-import DocumentIdentifier from '../components/DocumentIdentifier.astro'
-import DocumentParameters from '../components/DocumentParameters.astro'
-import DocumentDisclosure from '../components/DocumentDisclosure.astro'
-import GeneratedCSS from '../components/GeneratedCSS.astro'
-import DocumentOptions from '../components/DocumentOptions.astro'
-import DocumentCodeExampleView from '../components/DocumentCodeExampleView.astro'
-import DocumentCodeTable from '../components/DocumentCodeTable.astro'
-import DocumentNamespaceTable from '../components/DocumentNamespaceTable.astro'
+import DocumentAPIIndex from '@master/internal-site/components/DocumentAPIIndex.astro'
+import DocumentDeclarationView from '@master/internal-site/components/DocumentDeclarationView.astro'
+import DocumentIdentifier from '@master/internal-site/components/DocumentIdentifier.astro'
+import DocumentParameters from '@master/internal-site/components/DocumentParameters.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
+import DocumentOptions from '@master/internal-site/components/DocumentOptions.astro'
+import DocumentCodeExampleView from '@master/internal-site/components/DocumentCodeExampleView.astro'
+import DocumentCodeTable from '@master/internal-site/components/DocumentCodeTable.astro'
+import DocumentNamespaceTable from '@master/internal-site/components/DocumentNamespaceTable.astro'
 import type { ReferenceRenderDocument } from './render-document'
 import ReferenceIllustration from './ReferenceIllustration.astro'
 import type { ReferenceIllustrationId } from './illustrations'
@@ -62,7 +62,7 @@ const Wrapper = anchor ? undefined : {
 const codeParts: string[] | undefined = type === 'inlineCode' && node.value.length > 24 && node.value.includes('/') ? node.value.split(/(?<=\/)/) : undefined
 const codeWrapper = type === 'code' ? referenceCodeWrapper(node) : undefined
 const heading = type === 'heading' ? context.headingOf.get(node) : undefined
-const Heading = `h${node?.depth}`
+const Heading = `h${node?.depth}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 const href = type === 'link' ? node.url : type === 'linkReference' ? context.definitions.get(node.identifier)?.url : undefined
 const table = type === 'table' ? referenceTable(node) : undefined
 const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined

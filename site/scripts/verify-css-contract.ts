@@ -88,8 +88,9 @@ if (!expected) {
 }
 
 async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot> {
-    for (const sourceDirectory of ['content', 'components', 'docs-shell', 'sections', 'styles']) {
-        for (const file of await listFiles(path.join(siteDir, sourceDirectory))) {
+    const sharedSource = path.join(path.dirname(fileURLToPath(import.meta.resolve('@master/internal-site/package.json'))), 'src')
+    for (const sourceDirectory of [...['content', 'components', 'sections', 'styles'].map(directory => path.join(siteDir, directory)), sharedSource]) {
+        for (const file of await listFiles(sourceDirectory)) {
             if (file.endsWith('.module.css')) {
                 throw new Error(`Site runtime styles must use route or component CSS: ${path.relative(siteDir, file)}`)
             }
@@ -204,6 +205,8 @@ function repositorySourceFiles(value: JSONValue): JSONValue {
 }
 
 async function assertRouteStylesheetBoundary(route: string, css: string) {
+    const foundations = [...css.matchAll(/body,\s*:host\s*\{\s*font-family:\s*var\(--font-family-sans\)/g)]
+    if (foundations.length !== 1) throw new Error(`${route} must deliver exactly one preset foundation; found ${foundations.length}.`)
     if (/(?:^|[;{}])\s*@(compose|reference|light|dark|variant)\b/.test(css)) {
         throw new Error(`${route} delivers an uncompiled Master CSS directive.`)
     }
@@ -231,14 +234,10 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         '/guide': { documents: true, reference: false, benchmark: false },
         // Pages that render only the shell interface.
         '/404': { interface: true, documents: false },
-        '/blog': { interface: true, documents: false },
-        '/design-system/review/home-icons': { interface: true, documents: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/benchmarks': { benchmark: true, reference: false },
-        '/design-system': { demo: true, benchmark: false, reference: false },
         '/examples/responsive-button': { button: true, interface: false, documents: false, reference: false, benchmark: false, demo: false },
         '/examples/article-transitions': { interface: false, documents: false },
-        '/design-system/review/asset': { specimens: true, reference: false, benchmark: false }
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {
         const selector = selectors[group as keyof typeof selectors]
@@ -247,24 +246,10 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
             throw new Error(`${route} ${present ? 'is missing' : 'unexpectedly includes'} ${group} styles.`)
         }
     }
-    const reviewRoute = route.match(/^\/design-system\/review\/([a-z-]+)$/)
-    if (reviewRoute) {
-        // The homepage illustration handoff has its own full-page shell.
-        if (reviewRoute[1] !== 'home-icons' && !/\.ui-handbook\s*\{/.test(css)) {
-            throw new Error(`${route} is missing the shared component reference styles.`)
-        }
-        const pageSelector = reviewRoute[1] === 'home-icons' ? '.home-icon-review' : `.review-${reviewRoute[1]}-`
-        if (await exists(path.join(siteDir, 'content', route.slice(1), 'page.css')) && !css.includes(pageSelector)) {
-            throw new Error(`${route} is missing its page-local review styles.`)
-        }
-    }
     const requiredVariables: Record<string, string[]> = {
         '/': ['--color-text-muted:', '--color-surface-inset:'],
         '/guide': ['--prose-bleed:', '--color-line-media:'],
         '/reference': ['--prose-bleed:', '--docs-header:'],
-        '/design-system': ['--ui-text-strong:', '--ui-surface-sheet:', '--spacing-lg:'],
-        '/design-system/review/asset': ['--prose-bleed:', '--color-line-media:'],
-        '/design-system/review/data-table': ['--prose-bleed:'],
         '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']
     }
     for (const variable of requiredVariables[route] ?? []) {

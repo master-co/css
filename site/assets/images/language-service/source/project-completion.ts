@@ -1,5 +1,5 @@
 import { languageIllustration as figure } from '../../../../content/guide/language-service/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // One real token follows a project-context link into two successive editor states.
 // Editor chrome is reduced to the class attribute, completion and hover being taught.

@@ -1,5 +1,5 @@
 import { packageIllustration as figure } from '../../../../content/guide/authoring-packages/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A source graph followed by two build outcomes; no package-wide pre-generated utility bundle.
 export default {

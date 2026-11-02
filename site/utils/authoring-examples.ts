@@ -1,4 +1,4 @@
-import { configuredExampleCSS, configuredMarkupClasses } from '../reference/configured-example'
+import { configuredExampleCSS, configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
 
 export const authoringSource = `@theme {
   --color-brand: #4f46e5;

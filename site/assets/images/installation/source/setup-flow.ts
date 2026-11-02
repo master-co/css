@@ -1,5 +1,5 @@
 import { installationIllustration } from '../../../../content/guide/installation/(main)/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Reader question: what needs to be connected after package installation?
 // The two real inputs merge at the build integration; only CSS travels to the page.

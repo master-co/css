@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Compare identical markup under two separate compilations, changing only inline.
 // Nested boundaries are DOM scopes. Literal blue/plum sample paint is the computed result;

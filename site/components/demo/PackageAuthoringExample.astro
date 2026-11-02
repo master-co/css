@@ -1,9 +1,9 @@
 ---
-import Code from '~/site/docs-shell/components/Code.astro'
-import Demo from './Demo.svelte'
-import DemoGeneratedCSS from './DemoGeneratedCSS.svelte'
-import DemoViewport from './DemoViewport.svelte'
-import { demoDocument } from './reference/document'
+import Code from '@master/internal-site/components/Code.astro'
+import Demo from '@master/internal-site/demo/Demo.svelte'
+import DemoGeneratedCSS from '@master/internal-site/demo/DemoGeneratedCSS.svelte'
+import DemoViewport from '@master/internal-site/demo/DemoViewport.svelte'
+import { demoDocument } from '@master/internal-site/demo/reference/document.ts'
 import { authoringSource, authoringHTML, authoringCSS } from '../../utils/authoring-examples'
 
 interface Props {

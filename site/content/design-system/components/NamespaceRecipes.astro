@@ -1,6 +1,0 @@
----
-import DocumentNamespaceTable from '~/site/components/DocumentNamespaceTable.astro'
-import { variableNamespaceSources } from '~/site/utils/variable-namespace-sources'
----
-
-<DocumentNamespaceTable rows={variableNamespaceSources.filter(row => ['duration', 'color-text', 'spacing'].includes(row.namespace))} />

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Master Design"
+  short_description: "Build and refine coherent interface details"
+  default_prompt: "Use $master-design to refine this interface while preserving its existing design language."

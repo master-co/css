@@ -30,6 +30,8 @@
   import { createBenchmarkAxis, formatKilobytes, mountBenchmarkCanvas, toPercent, type BenchmarkCanvas } from './benchmark-size-canvas'
 
   interface Props {
+    /** Astro represents the named slots as children during type checking. */
+    children?: Snippet
     labels: BenchmarkSizeChartLabels
     modes: HomePageCSSSizeMode[]
     /**

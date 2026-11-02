@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { getTokenNamespacePublicKeys, getVariableNamespacePublicKeys, tokenFamilies } from './manifest-utilities'
+import { getTokenNamespacePublicKeys, getVariableNamespacePublicKeys, tokenFamilies } from '@master/internal-site/css/manifest-utilities.ts'
 
 test('spacing token namespace public keys contain only loaded family prefixes', () => {
   const keys = getTokenNamespacePublicKeys('spacing')

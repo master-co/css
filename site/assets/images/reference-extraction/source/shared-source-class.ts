@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Reader question: why can CSS stay unchanged after a source is removed?
 // A removed file has no dependency edge. The surviving file keeps the same exact class and its rule.

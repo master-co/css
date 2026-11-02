@@ -37,7 +37,7 @@ When evidence is missing, describe verifiable capabilities and limitations. Do n
 
 ## Project case: when CSS is generated
 
-The current [Vite article](../../../../site/content/blog/bootstrapping-master-css-with-vite/content.mdx) and [Next.js article](../../../../site/content/blog/master-css-next/content.mdx) locate same-type metadata, article layout, TOC, and technical topics. Existing slogans, time-sensitive wording, and claims still need verification.
+The current [Vite article](https://master.co/blog/bootstrapping-master-css-with-vite) and [Next.js article](https://master.co/blog/master-css-next) locate same-type metadata, article layout, TOC, and technical topics. Existing slogans, time-sensitive wording, and claims still need verification.
 
 For first-page CSS, check current server and integration behavior before choosing the argument. Without benchmarks, an article can explain when rules become available but cannot claim a measured improvement in paint timing.
 

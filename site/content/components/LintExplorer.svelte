@@ -27,9 +27,9 @@
   import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected'
   import IconRotateClockwise from '@tabler/icons-svelte-runes/icons/rotate-clockwise'
   import IconTerminal2 from '@tabler/icons-svelte-runes/icons/terminal-2'
-  import { getSite } from '~/site/docs-shell/site'
-  import HomeIllustrationArt from './HomeIllustrationArt.svelte'
-  import type { HomeCompactIconId } from './home-illustration'
+  import { getSite } from '@master/internal-site/site'
+  import HomeIllustrationArt from '@master/internal-site/home/HomeIllustrationArt.svelte'
+  import type { HomeCompactIconId } from '@master/internal-site/home/home-illustration.ts'
   import { pointerMoved } from './pointer-motion'
 
   /**
@@ -655,7 +655,7 @@
             {@const current = index === active}
             <div aria-hidden={current ? undefined : 'true'} class="home-lint-problem-cell" data-active={current ? '' : undefined}>
               <p class="home-lint-problem" data-shown={current && reported ? '' : undefined}>
-                <Icon aria-hidden="true" class={['home-lint-problem-icon', itemTone]} size={15} stroke={1.75} />
+                <Icon aria-hidden="true" class={['home-lint-problem-icon', itemTone].join(' ')} size={15} stroke={1.75} />
                 <span class="home-lint-problem-rule">{item.problem.source}</span>
                 <span class="home-lint-loc">{shortLocation(item.problem.location)}</span>
               </p>

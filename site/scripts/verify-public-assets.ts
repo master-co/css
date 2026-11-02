@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url'
 
 const siteRoot = fileURLToPath(new URL('..', import.meta.url))
 const publicRoot = path.join(siteRoot, 'public')
+const sharedRoot = fileURLToPath(new URL('src/', import.meta.resolve('@master/internal-site/package.json')))
+const sharedPublicRoot = path.join(sharedRoot, 'public')
 const outputRoot = path.join(siteRoot, 'out')
 const assetDirs = ['images', 'icons', 'fonts'] as const
 const ignoredDirs = new Set(['node_modules', '.astro', '.generated', '.wrangler', '.turbo', '.master', 'out', 'test-results', 'public'])
@@ -15,7 +17,7 @@ const cssUrl = /url\(\s*['"]?([^\)'"\s]+)['"]?\s*\)/gi
 const used = new Set<string>()
 const missing = new Set<string>()
 
-for (const file of await listFiles(siteRoot, ignoredDirs)) {
+for (const file of [...await listFiles(siteRoot, ignoredDirs), ...await listFiles(sharedRoot, ignoredDirs)]) {
   if (!sourceExtensions.has(path.extname(file)) || file.includes('.test.') || file.includes('.spec.') || file.endsWith('verify-public-assets.ts')) continue
   const content = await readFile(file, 'utf8')
   for (const [, value] of content.matchAll(sourceAsset)) {
@@ -24,7 +26,7 @@ for (const file of await listFiles(siteRoot, ignoredDirs)) {
 }
 
 // The injected font-face CSS is a public asset and also references other font files.
-const fontCss = path.join(publicRoot, 'fonts/index.css')
+const fontCss = path.join(sharedPublicRoot, 'fonts/index.css')
 for (const [, value] of (await readFile(fontCss, 'utf8')).matchAll(cssUrl)) {
   check(value, fontCss, publicRoot)
 }
@@ -74,7 +76,7 @@ function check(raw: string, source: string, root: string) {
     missing.add(`${source}: ${raw}`)
     return
   }
-  if (!isFile(path.join(root, decoded))) missing.add(`${source}: ${decoded}`)
+  if (!isFile(path.join(root, decoded)) && !(root === publicRoot && isFile(path.join(sharedPublicRoot, decoded)))) missing.add(`${source}: ${decoded}`)
 }
 
 function isFile(file: string) {
@@ -87,6 +89,7 @@ function isFile(file: string) {
 
 async function listFiles(root: string, ignored = new Set<string>()): Promise<string[]> {
   const files: string[] = []
+  if (!isDirectory(root)) return files
   for (const entry of await readdir(root, { withFileTypes: true })) {
     if (ignored.has(entry.name)) continue
     const file = path.join(root, entry.name)
@@ -94,4 +97,8 @@ async function listFiles(root: string, ignored = new Set<string>()): Promise<str
     else if (entry.isFile()) files.push(file)
   }
   return files
+}
+
+function isDirectory(file: string) {
+  try { return statSync(file).isDirectory() } catch { return false }
 }

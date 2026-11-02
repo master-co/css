@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 import { deliveryFlow, deliveryFlowDescription, deliveryIllustrations } from '../utils/delivery-flows'
-import { sceneHeight, sceneWidth, type Theme } from '../assets/images/rendering-modes/source/materials'
+import { sceneHeight, sceneWidth, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 const directory = new URL('../assets/images/rendering-modes/', import.meta.url)
 const decode = (value: string) => value.replace(/&(amp|lt|gt|quot|#39);/g, (_, name: string) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" })[name]!)

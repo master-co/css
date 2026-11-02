@@ -1,6 +1,6 @@
 import { responsiveIllustration as figure } from '../../../../content/guide/responsive-design/illustration'
-import { configuredExampleCSS } from '../../../../reference/configured-example'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { configuredExampleCSS } from '@master/internal-site/css/configured-example.ts'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Controlled widths are the experiment: real generated @container CSS chooses the tracks at 448px.
 export default {

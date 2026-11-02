@@ -1,6 +1,6 @@
 import { typeIllustration as figure } from '../../../../content/guide/typography/illustration'
-import { configuredExampleCSS } from '../../../../reference/configured-example'
-import { drawing, escapeHtml, type Theme } from '../../rendering-modes/source/materials'
+import { configuredExampleCSS } from '@master/internal-site/css/configured-example.ts'
+import { drawing, escapeHtml, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Real generated typography controls each line box. Explicit line breaks isolate leading and tracking from wrapping.
 export default {

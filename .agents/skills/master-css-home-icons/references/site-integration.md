@@ -17,7 +17,7 @@
 | `site/content/components/HomeCompactIcon.astro` | 重用 HomeIllustration 的裝飾性清單 WebP |
 | `site/content/components/HomeBento*.astro`、`HomeSectionHeader.astro` | 共用 bento header／card 與 section header |
 | `site/content/home.css` | 實際大小、圖文排列、主題顯示規則 |
-| `site/content/design-system/review/home-icons/` | 圖錄、尺寸預覽與接入說明；路由 `/design-system/review/home-icons`，noindex |
+| `master/site/content/design-system/review/home-icons/` | 圖錄、尺寸預覽與接入說明；路由 `https://master.co/design-system/review/home-icons`，noindex |
 
 `catalog.ts` 的 `recommendedSize: 96` 是圖錄通用基準；**bento 實際尺寸是 112px**。不要只讀 catalog 就把首頁縮回 96px。`Icon` 是舊 SVG 構造研究，`artwork.light/dark` 才是定案主圖。
 

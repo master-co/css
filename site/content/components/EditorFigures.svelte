@@ -6,16 +6,16 @@
   import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
   import IconVariable from '@tabler/icons-svelte-runes/icons/variable'
   import IconX from '@tabler/icons-svelte-runes/icons/x'
-  import { getSite } from '~/site/docs-shell/site'
+  import { getSite } from '@master/internal-site/site'
   import HomeEditorBar from './HomeEditorBar.svelte'
   import HomeEditorLights from './HomeEditorLights.svelte'
   import HomeEditorTab from './HomeEditorTab.svelte'
   import HomeEditorWindow from './HomeEditorWindow.svelte'
-  import HomeIllustrationArt from './HomeIllustrationArt.svelte'
+  import HomeIllustrationArt from '@master/internal-site/home/HomeIllustrationArt.svelte'
   import { createEditorScenes, hexToHsv, hsvToHex, isDark, measureEditor, menuRows, picker, pickerStyle, type Frame, type Geometry, type HSV } from './editor-scene'
   import { editorCSSParts } from './editor-syntax'
   import { filterCompletions, type EditorClass, type EditorFeature, type EditorModel, type EditorRole } from './editor-content'
-  import type { HomeIllustrationId } from './home-illustration'
+  import type { HomeIllustrationId } from '@master/internal-site/home/home-illustration.ts'
 
   let { features, icons, model }: { features: readonly EditorFeature[], icons: HomeIllustrationId[], model: EditorModel } = $props()
   const { t } = getSite()

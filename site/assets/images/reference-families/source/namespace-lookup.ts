@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Mapping, not a pipeline: each row repeats the key while preserving a different
 // namespace. The arrows bind a class to its token and property, never to another row.

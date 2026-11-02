@@ -4,7 +4,7 @@ import { test } from 'node:test'
 import masterCSS from '@master/eslint-config-css'
 import { createRenderSessionSync } from '@master/css/node'
 import { Linter } from 'eslint'
-import preset from '../../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { cascadeProbe, designSystemGuides, galleryPlacements, surfaceModeValues } from './design-system-content'
 import { cascadeLayers, themeVariablesCode } from './home-content'
 
@@ -43,6 +43,6 @@ test('the cascade probe follows a utility the engine puts in a later layer than 
 test('every design system figure links to a guide page that exists', () => {
   for (const href of Object.values(designSystemGuides)) {
     assert.match(href, /^\/guide\/[\w-]+$/)
-    assert.ok(existsSync(new URL(`../${href.slice(1)}/page.astro`, import.meta.url)), href)
+    assert.ok((existsSync(new URL(`../${href.slice(1)}/page.astro`, import.meta.url)) || (existsSync(new URL(`../${href.slice(1)}/content.mdx`, import.meta.url)) && existsSync(new URL(`../${href.slice(1)}/metadata.ts`, import.meta.url)))), href)
   }
 })

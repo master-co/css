@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { fileURLToPath } from 'node:url'
 import { compile } from 'svelte/compiler'
 
 // Node evaluates Svelte components without the Astro/Vite bundler: compile them for the server and resolve the site alias.
@@ -23,8 +23,8 @@ registerHooks({
 
 const { createRawSnippet } = await import('svelte')
 const { render } = await import('svelte/server')
-const { default: Demo } = await import(pathToFileURL(fileURLToPath(new URL('./Demo.svelte', import.meta.url))).href)
-const { default: DemoGeneratedCSS } = await import(pathToFileURL(fileURLToPath(new URL('./DemoGeneratedCSS.svelte', import.meta.url))).href)
+const { default: Demo } = await import(import.meta.resolve('@master/internal-site/demo/Demo.svelte'))
+const { default: DemoGeneratedCSS } = await import(import.meta.resolve('@master/internal-site/demo/DemoGeneratedCSS.svelte'))
 
 /** Markup without Svelte's hydration comments. */
 const markup = (component: any, props: Record<string, unknown>) => render(component, { props }).body.replace(/<!--[\s\S]*?-->/g, '')

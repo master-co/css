@@ -1,5 +1,5 @@
 import { deliveryFlow, deliveryFlowDescription, deliveryIllustrations } from '../../../../utils/delivery-flows'
-import { drawing, type Theme } from './materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Two connected elements share a class and one generated rule. Artifacts size to their literal contents.
 export default {

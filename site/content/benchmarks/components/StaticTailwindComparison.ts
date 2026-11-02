@@ -1,5 +1,5 @@
 import snapshot from '~/site/.generated/benchmarks/tailwind-static-comparison.json'
-import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '~/site/components/benchmarks/types'
+import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '@master/internal-site/benchmarks/types.ts'
 
 type VariantId = 'master-static-cli' | 'master-static-vite' | 'tailwind-cli' | 'tailwind-vite'
 type PrimaryVariantId = 'master-static-cli' | 'tailwind-cli'

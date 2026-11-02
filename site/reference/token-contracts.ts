@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { foundationFamilies, namespaceTokens } from '../common/foundation-data/tokens'
+import { foundationFamilies, namespaceTokens } from '@master/internal-site/css/foundation-data/tokens.ts'
 import { documentHeadings } from './headings'
 import { tokenPages } from './sheet-editorial'
 import { familiesSheet, familiesSheetMarkdown, tokenSheet, tokenSheetMarkdown, ungroupedFamilies, type ReferenceSheet } from './sheets'

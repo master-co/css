@@ -1,6 +1,6 @@
-import type { markdownTree } from '../docs-shell/utils/markdown-tree'
-import type { PreparedCode } from '../docs-shell/utils/prepared-code'
-import type { CodeProp } from '../docs-shell/components/code-props'
+import type { markdownTree } from '@master/internal-site/utils/markdown-tree'
+import type { PreparedCode } from '@master/internal-site/utils/prepared-code'
+import type { CodeProp } from '@master/internal-site/components/code-props'
 
 type Children<T> = T extends { children: (infer Child)[] } ? Child : never
 type Tree = ReturnType<typeof markdownTree>

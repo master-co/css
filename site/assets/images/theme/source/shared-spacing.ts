@@ -1,5 +1,5 @@
 import { themeIllustration as figure } from '../../../../content/guide/theme/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A controlled comparison. Real CSS padding and gap carry the quantitative claim;
 // intrinsic layout, identical text, and aligned centers keep the token edit the only changing variable.

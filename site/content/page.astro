@@ -1,17 +1,18 @@
 ---
-import './design.css'
-import './home.css'
-import DocHeader from '~/site/docs-shell/components/DocHeader.svelte'
+import '@master/internal-site/home/design.css'
+import '@master/internal-site/home/home.css'
+import DocHeader from '@master/internal-site/components/DocHeader.svelte'
 import dictionaries from '~/site/dictionaries'
-import { createTranslation } from '~/site/docs-shell/utils/i18n'
+import { createTranslation } from '@master/internal-site/utils/i18n'
 import AgentsSection from './components/AgentsSection.astro'
 import BenchmarkSection from './components/BenchmarkSection.astro'
 import CTASection from './components/CTASection.astro'
 import DeliveryModesSection from './components/DeliveryModesSection.astro'
 import DesignSystemSection from './components/DesignSystemSection.astro'
 import HeroSection from './components/HeroSection.astro'
-import HomeFooter from './components/HomeFooter.svelte'
-import HomeLamp from './components/HomeLamp.svelte'
+import HomeFooter from '@master/internal-site/home/HomeFooter.svelte'
+import { footerNavGroups } from '~/site/navigation'
+import HomeLamp from '@master/internal-site/home/HomeLamp.svelte'
 import LanguageServiceSection from './components/LanguageServiceSection.astro'
 import LintSection from './components/LintSection.astro'
 import WorkflowSection from './components/WorkflowSection.astro'
@@ -42,4 +43,4 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   {/* Renders nothing of its own, so it hydrates once the page is idle rather than when visible. */}
   <HomeLamp client:idle={{ timeout: 500 }} />
 </main>
-<HomeFooter client:idle={{ timeout: 500 }} />
+<HomeFooter navGroups={footerNavGroups} wordmark="master css" client:idle={{ timeout: 500 }} />

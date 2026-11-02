@@ -1,4 +1,4 @@
-import define from '~/site/docs-shell/utils/metadata'
+import define from '@master/internal-site/utils/metadata'
 
 export default define({
   title: 'Syntax tutorial',

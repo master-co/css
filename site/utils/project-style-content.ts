@@ -6,8 +6,8 @@ import { globalIllustrationMarkdown } from '../content/guide/global-styles/illus
 import { themeIllustrationMarkdown } from '../content/guide/theme/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
-import { configuredMarkupMarkdown } from '../reference/configured-example'
-import { projectStyleExample } from '../components/demo/project-style-examples'
+import { configuredMarkupMarkdown } from '@master/internal-site/css/configured-example.ts'
+import { projectStyleExample } from '@master/internal-site/demo/project-style-examples.ts'
 
 import { packageTreeMarkdown } from './package-trees'
 import { authoringExampleMarkdown } from './authoring-examples'

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import type { MasterCSSMediaQueryExpression } from '@master/css-schema/manifest'
-import preset from '../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { documentHeadings } from './headings'
 import { sheetExample, sheetExampleMarkdown, type NamedConditionsSheet } from './sheets'
 import { referenceIllustrationMarkdown } from './illustrations'

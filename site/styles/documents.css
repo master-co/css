@@ -1,4 +1,0 @@
-/* Surfaces, code and prose: pages that render documents, examples or source. One local stylesheet emits its theme variables once. */
-@import './system/surfaces.css';
-@import './system/code.css';
-@import './system/prose.css';

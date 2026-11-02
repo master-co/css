@@ -18,7 +18,7 @@ const engine = createEngineSync({ manifest })
 engine.ensureClassRules([...markup.matchAll(/class="([^"]+)"/g)].flatMap(match => match[1].split(/\s+/)))
 const css = engine.snapshot().text
 engine.dispose()
-const image = readFileSync(new URL('../assets/images/view-transitions/article-aurora.jpg', import.meta.url))
+const image = readFileSync(new URL('@master/internal-site/examples/images/article-aurora.jpg', import.meta.url))
 let browser, server, base
 
 before(async () => {

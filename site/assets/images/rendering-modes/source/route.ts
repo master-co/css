@@ -1,5 +1,5 @@
 import { deliveryFlow, deliveryFlowDescription, deliveryIllustrations } from '../../../../utils/delivery-flows'
-import { drawing, type Theme } from './materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Actual names connect context, authored rule and output resources. Output shows excerpts,
 // not a complete stylesheet; intrinsic artifact heights follow their different contents.

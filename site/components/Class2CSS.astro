@@ -1,9 +1,9 @@
 ---
-import Code from '~/site/docs-shell/components/Code.astro'
-import type { CodeProp } from '~/site/docs-shell/components/code-props'
-import { slotText } from '~/site/docs-shell/utils/slot-text'
-import { generatePresetCSS } from '../common/generate-preset-css'
-import GeneratedCSS from './GeneratedCSS.astro'
+import Code from '@master/internal-site/components/Code.astro'
+import type { CodeProp } from '@master/internal-site/components/code-props'
+import { slotText } from '@master/internal-site/utils/slot-text'
+import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
+import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
 
 type Props = Partial<CodeProp> & {
   /** The classes to compile, as a list or a space-separated string. Text children work too: `<Class2CSS>p-md shadow-md</Class2CSS>`. */

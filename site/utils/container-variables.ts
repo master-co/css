@@ -1,4 +1,4 @@
-import { getThemeNumberVariableEntries } from './theme-variables'
+import { getThemeNumberVariableEntries } from '@master/internal-site/css/theme-variables.ts'
 
 export const containerVariableEntries = getThemeNumberVariableEntries('container')
 

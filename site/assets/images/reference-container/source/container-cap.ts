@@ -1,6 +1,6 @@
-import { generatePresetCSS } from '../../../../common/generate-preset-css'
+import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // An actual max-width meets two measured containing blocks. Widths share a scale;
 // natural content sets both heights, so the changed width is the only comparison.

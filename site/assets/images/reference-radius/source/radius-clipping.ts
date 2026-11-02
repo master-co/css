@@ -1,6 +1,6 @@
-import { generatePresetCSS } from '../../../../common/generate-preset-css'
+import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Same real parent radius and child content; only native overflow clipping changes.
 export default {

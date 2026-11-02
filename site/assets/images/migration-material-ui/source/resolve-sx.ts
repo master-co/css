@@ -1,5 +1,5 @@
 import { materialUIIllustration as figure } from '../../../../content/guide/migration/material-ui/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Aligned equations expose the hidden scale conversion without depicting a redesigned widget.
 export default {

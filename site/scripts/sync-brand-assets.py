@@ -14,6 +14,16 @@ ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / 'site/public'
 DEST = PUBLIC / 'brand/v2'
 KIT = 'master-css-brand-kit-v2.zip'
+SHARED = Path(subprocess.check_output([
+    'node', '--input-type=module', '-e',
+    'import { fileURLToPath } from "node:url"; console.log(fileURLToPath(import.meta.resolve("@master/internal-site/package.json")))'
+], cwd=ROOT, text=True).strip()).parent / 'src/public/brand/v2'
+
+
+def asset(name):
+    """Match the shared public-assets integration's consumer-first resolution."""
+    local = DEST / name
+    return local if local.is_file() else SHARED / name
 
 
 def digest(data):
@@ -71,9 +81,13 @@ def sync(source):
     manifest = {'sourceRepository': 'https://github.com/master-co/master', 'sourceRevision': revision,
                 'assets': entries, 'aliases': aliases()}
     files['manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()
-    files['README.md'] = (ROOT / 'site/content/brand/assets.md').read_bytes()
+    files['README.md'] = (source / 'site/content/brand/master-css/assets.md').read_bytes()
     for name, data in files.items():
         target = DEST / name
+        if not target.exists() and (SHARED / name).is_file():
+            if (SHARED / name).read_bytes() != data:
+                raise SystemExit(f'Upgrade @master/internal-site before importing changed shared artwork: {name}')
+            continue
         target.parent.mkdir(parents=True, exist_ok=True)
         if not target.exists() or target.read_bytes() != data:
             target.write_bytes(data)
@@ -86,14 +100,18 @@ def sync(source):
 def check(source=None):
     manifest = json.loads((DEST / 'manifest.json').read_text())
     for entry in manifest['assets']:
-        data = (PUBLIC / entry['src'].lstrip('/')).read_bytes()
+        data = asset(entry['src'].removeprefix('/brand/v2/')).read_bytes()
         assert digest(data) == entry['sha256'], entry['src']
         if source:
             assert data == (source / entry['source']).read_bytes(), entry['source']
     for name, original in manifest['aliases'].items():
-        assert (ROOT / name).read_bytes() == (DEST / original).read_bytes(), name
-    assert (DEST / 'README.md').read_bytes() == (ROOT / 'site/content/brand/assets.md').read_bytes()
+        assert (ROOT / name).read_bytes() == asset(original).read_bytes(), name
+    if source:
+        assert (DEST / 'README.md').read_bytes() == (source / 'site/content/brand/master-css/assets.md').read_bytes()
     files = {str(p.relative_to(DEST)): p.read_bytes() for p in DEST.rglob('*') if p.is_file() and p.name != KIT}
+    for entry in manifest['assets']:
+        name = entry['src'].removeprefix('/brand/v2/')
+        files[name] = asset(name).read_bytes()
     assert (DEST / KIT).read_bytes() == archive(files), 'Download kit differs from the published assets'
     print(f'Verified {len(manifest["assets"])} assets, {len(manifest["aliases"])} aliases and the complete ZIP.')
 

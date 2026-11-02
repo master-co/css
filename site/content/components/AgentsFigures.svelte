@@ -7,7 +7,7 @@
   import windsurfLogo from '~/site/assets/images/home/clients/windsurf.svg?raw'
   import zedLogo from '~/site/assets/images/home/clients/zedindustries.svg?raw'
   // The same mark `brands.mastercss` names; islands draw it from its markup.
-  import masterCSSLogo from '~/site/public/brand/v2/logo/mark/master-mark-small-on-dark.svg?raw'
+  import masterCSSLogo from '@master/internal-site/assets/brand/v2/logo/mark/master-mark-small-on-dark.svg?raw'
 
   export interface AgentsOrbitCall { key: string, response: boolean }
 
@@ -34,8 +34,8 @@
 
 <script lang="ts">
   import IconBrandOpenai from '@tabler/icons-svelte-runes/icons/brand-openai'
-  import Link from '~/site/docs-shell/components/Link.svelte'
-  import { getSite } from '~/site/docs-shell/site'
+  import Link from '@master/internal-site/components/Link.svelte'
+  import { getSite } from '@master/internal-site/site'
   import type { AgentsCanvas } from './agents-canvas'
 
   interface Props {

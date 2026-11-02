@@ -1,5 +1,4 @@
 import { introductionContent } from '../utils/introduction-content'
-import { brandContent } from '../utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 import { installationGuidesMarkdown } from '../utils/installation-guides'
 import { installationIllustrationMarkdown } from '../content/guide/installation/(main)/illustration'
@@ -13,7 +12,7 @@ import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content
 import { toolingExampleMarkdown, toolingOptionsMarkdown } from '../utils/tooling-guide-data'
 import { packageTreeMarkdown } from '../utils/package-trees'
 import { authoringExampleMarkdown } from '../utils/authoring-examples'
-import { deliveryBlogContent, deliveryBlogSlugs, deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
+import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
 import { deliveryFlowMarkdown } from '../utils/delivery-flows'
 import { firstPaintMarkdown, resourceWaterfallsMarkdown } from '../utils/first-paint-examples'
 import assert from 'node:assert/strict'
@@ -23,7 +22,7 @@ import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
+import { extractSearchNodesFromMdx } from '@master/internal-site/utils/search-pages'
 import { guideOverviewMarkdown, guideOverviewSections } from '../utils/guide-overview'
 import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundation-content'
 import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
@@ -31,10 +30,10 @@ import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-c
 import { migrationGuides } from '../utils/migration-guides'
 import { migrationIllustrationMarkdown } from '../content/guide/migration/illustration'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
-import { projectStyleExamples, projectStyleExample } from '../components/demo/project-style-examples'
-import { configuredExampleCSS, configuredMarkupClasses, configuredMarkupMarkdown } from '../reference/configured-example'
+import { projectStyleExamples, projectStyleExample } from '@master/internal-site/demo/project-style-examples.ts'
+import { configuredExampleCSS, configuredMarkupClasses, configuredMarkupMarkdown } from '@master/internal-site/css/configured-example.ts'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
-import { getThemeVariables, getThemeNumericVariableEntries } from '../utils/theme-variables'
+import { getThemeVariables, getThemeNumericVariableEntries } from '@master/internal-site/css/theme-variables.ts'
 import {
   cleanMdx,
   generate,
@@ -338,8 +337,8 @@ test('all foundation bodies preserve generated CSS and agree with search and llm
 })
 
 test('foundation exports preserve the visual comparisons and explicit token selections in HTML', async () => {
-  const { selectedSpecimensMarkdown } = await import('../common/foundation-data/specimen-content')
-  const { paletteKeys } = await import('../common/foundation-data/tokens')
+  const { selectedSpecimensMarkdown } = await import('@master/internal-site/css/foundation-data/specimen-content.ts')
+  const { paletteKeys } = await import('@master/internal-site/css/foundation-data/tokens.ts')
   const root = fileURLToPath(new URL('../', import.meta.url))
   for (const slug of foundationGuideSlugs) {
     const source = await readFile(`${root}/content/guide/${slug}/content.mdx`, 'utf8')
@@ -423,7 +422,7 @@ test('current public documents keep historical teaching in Migration Guide', asy
   for (const page of pages) {
     const url = page.url.replace(/^\/(en|tw)(?=\/)/, '')
     if (/^\/guide\/migration(?:\/|$)/.test(url)) continue
-    const navigation = ['/guide', '/reference', '/design-system', '/design-system/review/documents'].includes(url)
+    const navigation = ['/guide', '/reference'].includes(url)
     failures.push(...documentationHygieneIssues(page.body, navigation, url === '/guide/ai-coding#connect-the-mcp-server').map(issue => `${url}: ${issue}`))
   }
   const { default: glob } = await import('fast-glob')
@@ -624,33 +623,6 @@ test('literal document navigation exports text and rejects executable attributes
 })
 
 
-test('brand downloads retain their asset URLs, labels and policy in portable and search output', async () => {
-  const root = fileURLToPath(new URL('../', import.meta.url))
-  const content = await brandContent(root)
-  const pages = await loadPages(path.join(root, 'content'))
-  assert.equal(pages.find(page => page.url === '/en/brand')?.body, content.markdown)
-  for (const name of ['css-logotype@dark.svg', 'css-logotype@light.svg', 'logo.svg']) {
-    assert.ok(content.markdown.includes(`/images/${name}`), name)
-    assert.ok(content.markdown.includes('Download '))
-    assert.match(await readFile(path.join(root, 'public/images', name), 'utf8'), /<svg\b/)
-  }
-  for (const title of ['Downloads', 'Logotype', 'Mark', 'Trademark policy', 'Name usage']) assert.ok(content.markdown.includes(title), title)
-  assert.ok(content.markdown.includes('without written consent'))
-  assert.doesNotMatch(content.markdown, /<DemoAsset|MCSS_EXPRESSION/)
-  for (const locale of ['en', 'tw']) {
-    const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
-    const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === '/brand')
-    assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
-  }
-  await generate(root)
-  const guide = await readFile(path.join(root, 'public/brand.md'), 'utf8')
-  assert.ok(guide.startsWith('# Brand\n'))
-  assert.ok(guide.includes('- Canonical: /brand'))
-  assert.ok(guide.includes('- Language: English'))
-  assert.ok(guide.endsWith(content.markdown.trim() + '\n'), 'the standalone guide uses the exact portable brand body')
-})
-
-
 test('introduction retains its panel, class mapping and shared token in portable and search output', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url))
   const content = await introductionContent(root)
@@ -746,25 +718,6 @@ test('all Guide studies retain their full lesson in search and Markdown', async 
   assert.throws(() => guideStudyMarkdown('missing-study'), /Unknown Guide study/)
 })
 
-
-test('delivery blogs preserve the argument, examples and figure descriptions in search and Markdown', async () => {
-  const root = fileURLToPath(new URL('..', import.meta.url))
-  const pages = await loadPages(path.join(root, 'content'))
-  for (const slug of deliveryBlogSlugs) {
-    const content = await deliveryBlogContent(root, slug)
-    assert.deepEqual(content.notes, [])
-    assert.equal(pages.find(page => page.url === `/en/blog/${slug}`)?.body, content.markdown)
-    const source = await readFile(path.join(root, `content/blog/${slug}/content.mdx`), 'utf8')
-    const fences = deliveryFences(content.markdown).map(fence => fence.text.trim())
-    for (const fence of deliveryFences(source)) assert.ok(fences.includes(fence.text.trim()), `${slug}: ${fence.name}`)
-    for (const match of source.matchAll(/<DeliveryFlow name="([^"]+)"/g)) assert.ok(content.markdown.includes(deliveryFlowMarkdown(match[1])))
-    for (const locale of ['en', 'tw']) {
-      const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
-      const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === `/blog/${slug}`)
-      assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
-    }
-  }
-})
 
 test('View transitions retains its five figure lessons and native CSS recipes in portable output', async () => {
   const { transitionIllustration, transitionStudies } = await import('../content/guide/view-transitions/illustration')

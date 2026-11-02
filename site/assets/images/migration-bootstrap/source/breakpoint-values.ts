@@ -1,5 +1,5 @@
 import { bootstrapIllustration as figure } from '../../../../content/guide/migration/bootstrap/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A shared numeric axis compares activation thresholds; track widths are the measured variable.
 export default {

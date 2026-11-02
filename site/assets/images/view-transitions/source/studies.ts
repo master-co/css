@@ -1,7 +1,7 @@
 import { transitionStudies, type TransitionStudyName } from '../../../../content/guide/view-transitions/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
-const photoURL = new URL('../article-aurora.jpg', import.meta.url).href
+const photoURL = new URL('@master/internal-site/examples/images/article-aurora.jpg', import.meta.url).href
 const cssURL = new URL('./illustration.css', import.meta.url).href
 const at = (x: number, y: number, width: number, height: number) => `left:${x}px;top:${y}px;width:${width}px;height:${height}px`
 const photo = (x: number, y: number, width: number, height: number, old = false) => `<img class="vt-photo" alt="" src="${photoURL}" style="${at(x, y, width, height)}"${old ? ' data-old' : ''}>`

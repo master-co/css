@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconPlayerPauseFilled from '@tabler/icons-svelte-runes/icons/player-pause-filled'
   import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
-  import { getSite } from '~/site/docs-shell/site'
+  import { getSite } from '@master/internal-site/site'
   import type { WorkflowFigure } from './workflow-canvas'
 
   /** Only the drawing hydrates. Links, code and native controls stay server rendered. */

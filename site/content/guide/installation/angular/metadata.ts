@@ -1,4 +1,4 @@
-import define from '~/site/docs-shell/utils/metadata'
+import define from '@master/internal-site/utils/metadata'
 
 const metadata = define({
   title: 'Set up Master CSS in Angular',

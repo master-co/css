@@ -2,14 +2,15 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import fg from 'fast-glob'
-import { createStaticPaths, sectionOf } from '../astro/route-paths'
+import { createStaticPaths, sectionOf } from '@master/internal-site/astro/route-paths'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const contentRoot = path.join(siteRoot, 'content')
-const pageFiles = await fg('**/page.astro', { cwd: contentRoot, onlyFiles: true })
+const sourceFiles = await fg(['**/page.astro', '**/content.mdx'], { cwd: contentRoot, onlyFiles: true })
+const pageFiles = [...new Set(sourceFiles.map(file => file.replace(/content\.mdx$/, 'page.astro')))]
 const paramsFiles = await fg('**/params.ts', { cwd: contentRoot, onlyFiles: true })
 const providers = Object.fromEntries(paramsFiles.map(file => [`/content/${file}`, () => import(pathToFileURL(path.join(contentRoot, file)).href)]))
-const paths = await createStaticPaths(pageFiles.map(file => `/content/${file}`), providers)
+const paths = await createStaticPaths(pageFiles.map(file => `/content/${file}`), providers, { locales: ['en', 'tw'], sectionLocales: { examples: ['en'] } })
 interface AuditRoute {
   pathname: string
   locale: string

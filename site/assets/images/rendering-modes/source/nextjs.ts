@@ -1,5 +1,5 @@
 import { deliveryFlow, deliveryFlowDescription, deliveryIllustrations } from '../../../../utils/delivery-flows'
-import { drawing, type Theme } from './materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 export default {
   id: 'nextjs',

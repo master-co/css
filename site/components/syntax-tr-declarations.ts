@@ -1,5 +1,5 @@
 import { parseCSSDeclarations } from '@master/css-tooling/css'
-import { generatePresetClasses } from '../common/preset-css'
+import { generatePresetClasses } from '@master/internal-site/css/preset-css.ts'
 
 export function generateSyntaxTrDeclarations(proxyCode: string, previewSyntax?: string) {
   const classNames = previewSyntax ? [proxyCode, previewSyntax] : [proxyCode]

@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A shared linear time axis isolates duration; it does not depict easing or rendering speed.
 export default {

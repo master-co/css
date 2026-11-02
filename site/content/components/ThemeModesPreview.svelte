@@ -4,7 +4,7 @@
   import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left'
   import IconShoe from '@tabler/icons-svelte-runes/icons/shoe'
   import IconShoppingBag from '@tabler/icons-svelte-runes/icons/shopping-bag'
-  import { getSite } from '~/site/docs-shell/site'
+  import { getSite } from '@master/internal-site/site'
   import { mountThemeSplit } from './theme-split'
 
   /**

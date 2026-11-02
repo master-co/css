@@ -1,4 +1,4 @@
-import { markdownTree } from '../docs-shell/utils/markdown-tree'
+import { markdownTree } from '@master/internal-site/utils/markdown-tree'
 
 // Editorial policy, not a class parser. Current API declarations and ordinary
 // DOM/CSS diffs remain valid; this list records the retired teaching material.

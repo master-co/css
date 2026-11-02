@@ -1,5 +1,6 @@
 ---
-import DocWrapper from '~/site/docs-shell/components/DocWrapper.astro'
+type Props = import('astro/types').ComponentProps<typeof DocLayout>
+import DocWrapper from '@master/internal-site/components/DocWrapper.astro'
 import DocLayout from '~/site/layouts/Doc.astro'
 
 /** A standalone evidence page: the document column without the Guide sidebar. */

@@ -1,1 +1,1 @@
-export { markdownHeadings as documentHeadings } from '~/site/docs-shell/utils/markdown-tree'
+export { markdownHeadings as documentHeadings } from '@master/internal-site/utils/markdown-tree'

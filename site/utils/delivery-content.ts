@@ -5,13 +5,6 @@ import { firstPaintMarkdown, resourceWaterfallsMarkdown } from './first-paint-ex
 
 export const deliveryGuideSlugs = ['rendering-modes', 'scanning-and-pruning', 'route-level-styles'] as const
 
-export const deliveryBlogSlugs = ['master-css-next', 'bootstrapping-master-css-with-vite'] as const
-
-export async function deliveryBlogContent(siteRoot: string, slug: string) {
-  if (!deliveryBlogSlugs.includes(slug as typeof deliveryBlogSlugs[number])) throw new Error(`Unsupported delivery blog: ${slug}`)
-  return deliveryContent(siteRoot, 'blog', slug)
-}
-
 export async function deliveryGuideContent(siteRoot: string, slug: string) {
   if (!deliveryGuideSlugs.includes(slug as typeof deliveryGuideSlugs[number])) throw new Error(`Unsupported delivery guide: ${slug}`)
   return deliveryContent(siteRoot, 'guide', slug)

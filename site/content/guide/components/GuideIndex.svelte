@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { getSite } from '~/site/docs-shell/site'
-  import DocumentationIndex from '~/site/components/DocumentationIndex.svelte'
+  import { getSite } from '@master/internal-site/site'
+  import DocumentationIndex from '@master/internal-site/components/DocumentationIndex.svelte'
   import { guideOverviewSections, type GuideCategory } from '~/site/utils/guide-overview'
 
   let { pageCategories }: { pageCategories: GuideCategory[] } = $props()

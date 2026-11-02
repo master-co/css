@@ -70,8 +70,8 @@
 
 <script lang="ts">
   import IconX from '@tabler/icons-svelte-runes/icons/x'
-  import Image from '~/site/docs-shell/components/Image.svelte'
-  import { getSite } from '~/site/docs-shell/site'
+  import Image from '@master/internal-site/components/Image.svelte'
+  import { getSite } from '@master/internal-site/site'
 
   /** A grid of photos placed by span classes; each opens into a dialog with a view transition. */
   let { class: className }: { class?: string } = $props()

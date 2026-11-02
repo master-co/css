@@ -48,7 +48,9 @@
     "turbo": "bun ./node_modules/turbo/bin/turbo",
     "check:toolchain": "bun scripts/check-toolchain.mjs",
     "test:toolchain": "node --test scripts/toolchain.test.mjs scripts/semantic-release-workspace.test.mjs scripts/tsdown-package.test.mjs scripts/site-toolchain-snapshot.test.mjs",
-    "snapshot:site": "node scripts/site-toolchain-snapshot.mjs"
+    "snapshot:site": "node scripts/site-toolchain-snapshot.mjs",
+    "skills:sync": "master-skills sync",
+    "skills:check": "master-skills check"
   },
   "engines": {
     "node": "^24"
@@ -119,7 +121,8 @@
     "typescript": "7.0.2",
     "typescript-eslint": "^8.72.0",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "@master/internal-skills": "0.1.0"
   },
   "workspaces": [
     "packages/*",
@@ -273,6 +276,21 @@
       }
     },
     "@sveltejs/kit": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@astrojs/check": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@astrojs/language-server": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@volar/kit": {
       "dependencies": {
         "typescript-legacy-api": "npm:typescript@6.0.3"
       }

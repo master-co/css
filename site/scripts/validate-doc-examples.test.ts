@@ -6,7 +6,7 @@ import './release-examples.test'
 import { verifyRuntimeRootExamples } from '../tests/runtime-root-examples'
 import { verifyPackageAuthoringExamples, verifyMonorepoExamples } from '../tests/package-authoring-examples'
 import { stylesheetExamples } from '../tests/stylesheet-examples'
-import { stylesheetExampleCSS } from '../reference/stylesheet-example'
+import { stylesheetExampleCSS } from '@master/internal-site/css/stylesheet-example.ts'
 import { verifyDirectiveExamples } from '../tests/directive-examples'
 import { verifyToolContractExamples } from '../tests/tool-contract-examples'
 import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
@@ -24,7 +24,7 @@ import { createToolingSessionSync } from '@master/css-tooling/node'
 import { validateCSS } from '@master/css-tooling/css'
 import apiCensusJSON from '../../.ai/contracts/api-census.json' with { type: 'json' }
 import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'json' }
-import { configuredExampleCSS } from '../reference/configured-example'
+import { configuredExampleCSS } from '@master/internal-site/css/configured-example.ts'
 import { routeStyles } from '../tests/delivery-examples'
 import { installationGuideSlugs } from '../utils/installation-content'
 

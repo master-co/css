@@ -1,6 +1,6 @@
-import { generatePresetCSS } from '../../../../common/generate-preset-css'
+import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Literal one-rem distances are visible in different regions of matched content.
 // Color is inspection notation; no dimensions are invented to fit text into boxes.

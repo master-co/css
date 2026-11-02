@@ -30,7 +30,7 @@ Judge methods by the writing decisions they improve, not popularity or claimed s
 | [site/AI.md](../../../../site/AI.md) | Authoritative content policy, teaching sequence, examples, locales, and visual guidance |
 | [Reference maintenance](../../../../site/reference/MAINTENANCE.md) | Authored/generated ownership, stable anchors, and search/export consistency |
 | [Container queries](../../../../site/content/guide/containers/content.mdx) and [conditions contract](../../../../site/content/guide/conditional-queries/contract.mdx) | Different teaching and lookup needs for the same subject; distinction between thresholds and tokens |
-| [Vite Blog](../../../../site/content/blog/bootstrapping-master-css-with-vite/content.mdx) and [Next.js Blog](../../../../site/content/blog/master-css-next/content.mdx) | Article sources, structure, and technical subjects; existing prose still requires verification |
+| [Vite Blog](https://master.co/blog/bootstrapping-master-css-with-vite) and [Next.js Blog](https://master.co/blog/master-css-next) | Article sources, structure, and technical subjects; existing prose still requires verification |
 | [site/package.json](../../../../site/package.json) | Actual generation, lint, example, and export commands |
 
 ## Maintenance

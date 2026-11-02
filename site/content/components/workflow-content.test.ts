@@ -9,7 +9,7 @@ import { createToolingSessionSync } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import Color from 'colorjs.io'
 import { planMasterCSSSetup, type MasterCSSSetupFramework } from '../../../packages/create/src/index'
-import preset from '../../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import {
   workflowFrameworks,
   workflowGuides,
@@ -71,24 +71,21 @@ async function swatches(source: string, className: string) {
 
 /** The directory of a guide route, looking through route groups such as `(main)` that add no URL segment. */
 function guideDirectory(pathname: string) {
-  let directory: URL | undefined = new URL('../guide/', import.meta.url)
-  for (const segment of pathname.replace(/^\/guide\//, '').split('/').filter(Boolean)) {
-    const base: URL = directory!
-    const groups = readdirSync(base, { withFileTypes: true }).filter((entry) => entry.isDirectory() && /^\(.+\)$/.test(entry.name))
-    directory = [new URL(`${segment}/`, base), ...groups.map((group) => new URL(`${group.name}/${segment}/`, base))].find((candidate) => existsSync(candidate))
-    if (!directory) return undefined
-  }
-  return directory
+  const root = new URL('../guide/', import.meta.url)
+  const files = readdirSync(root, { recursive: true }) as string[]
+  const file = files.find(file => /(?:^|\/)content\.mdx$/.test(file) &&
+    '/guide/' + file.split('/').slice(0, -1).filter(segment => !/^\(.+\)$/.test(segment)).join('/') === pathname)
+  return file ? new URL(file.slice(0, -'content.mdx'.length), root) : undefined
 }
 
 test('workflow cards link to guide pages and headings that exist', () => {
   for (const [card, href] of Object.entries(workflowGuides)) {
     const [pathname, anchor] = href.split('#')
     const directory = guideDirectory(pathname)
-    assert.ok(directory && existsSync(new URL('page.astro', directory)), `${card}: no page for ${pathname}`)
+    assert.ok(directory && (existsSync(new URL('page.astro', directory)) || (existsSync(new URL('content.mdx', directory)) && existsSync(new URL('metadata.ts', directory)))), `${card}: no page for ${pathname}`)
     if (!anchor) continue
     const headings = readFileSync(new URL('content.mdx', directory), 'utf8').match(/^#{2,4} .+$/gm) ?? []
-    const slugs = headings.map((heading) => heading.replace(/^#+ /, '').toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-'))
+    const slugs = headings.map((heading) => /\\?\{#([\w-]+)\\?\}/.exec(heading)?.[1] ?? heading.replace(/^#+ /, '').toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-'))
     assert.ok(slugs.includes(anchor), `${card}: no heading #${anchor} in ${pathname}`)
   }
 })

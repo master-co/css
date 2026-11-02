@@ -17,6 +17,12 @@
 # Rust binding artifacts copied into npm packages by xtask
 /packages/binding/artifacts
 /packages/binding-wasm-*/artifacts
+/packages/binding-*/mastercss.node
+/packages/binding-*/mcss
+/packages/binding-*/mcss.exe
+/.cache/site-packages/
+/.cache/site-toolchains/
+/release-artifacts/
 
 # monorepo
 **/*.vscode-test
@@ -100,3 +106,7 @@ packages/nuxt/playground/.output
 # generated llms.txt indexes (regenerated at build time)
 site/public/llms.txt
 site/public/llms-full.txt
+
+# Local package validation archives; consumers commit registry pins instead.
+/.cache/site-packages/
+/.cache/site-toolchains/

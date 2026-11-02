@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
-import preset from '../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 
 export const deliverySlugs = ['rendering-modes', 'scanning-and-pruning', 'route-level-styles'] as const
 export const siteRoot = fileURLToPath(new URL('..', import.meta.url))

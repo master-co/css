@@ -1,5 +1,5 @@
 import { transitionIllustration as figure } from '../../../../content/guide/view-transitions/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // The actual demo image retains identity while its bounds change. Contours mark captured images, not DOM identity.
 export default {
@@ -7,7 +7,7 @@ export default {
   render(theme: Theme) {
     const { scene, label, text, route } = drawing(theme)
     const l = figure.labels
-    const photo = new URL('../article-aurora.jpg', import.meta.url).href
+    const photo = new URL('@master/internal-site/examples/images/article-aurora.jpg', import.meta.url).href
     const card = (name: string, size: number, content: string) => `
       <div class="capture-card ${name}" style="--photo-width:${size}px">
         <div class="capture-photo"><img src="${photo}" alt="" /><span class="capture-name">${label(l.name, 'code')}</span></div>

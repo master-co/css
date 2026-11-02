@@ -4,9 +4,9 @@ import { typeIllustrationMarkdown } from '../content/guide/typography/illustrati
 import { colorIllustrationMarkdown } from '../content/guide/colors/illustration'
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
-import { sizingRoles } from '../common/foundation-data/sizing/scale-data'
-import { paletteKeys } from '../common/foundation-data/tokens'
-import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-content'
+import { sizingRoles } from '@master/internal-site/css/foundation-data/sizing/scale-data.ts'
+import { paletteKeys } from '@master/internal-site/css/foundation-data/tokens.ts'
+import { selectedSpecimensMarkdown } from '@master/internal-site/css/foundation-data/specimen-content.ts'
 
 export const foundationGuideSlugs = ['colors', 'typography', 'layout-system', 'responsive-design'] as const
 

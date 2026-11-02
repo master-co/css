@@ -106,13 +106,15 @@
   import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
   import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check'
   import IconTerminal2 from '@tabler/icons-svelte-runes/icons/terminal-2'
-  import Image from '~/site/docs-shell/components/Image.svelte'
-  import { getSite } from '~/site/docs-shell/site'
+  import Image from '@master/internal-site/components/Image.svelte'
+  import { getSite } from '@master/internal-site/site'
   import AgentsOrbit from './AgentsFigures.svelte'
   import type { HomeCodeWindowProblem } from './home-content'
   import { pointerMoved } from './pointer-motion'
 
   interface Props {
+    /** Astro represents the named slots as children during type checking. */
+    children?: Snippet
     /** Decorative themed artwork slots rendered on the server: the edit row's, and each call's. */
     editIcon?: Snippet
     manifestIcon?: Snippet
@@ -292,7 +294,7 @@
 
   /** While the server reads the file, the digest scrambles, then settles on the value it computed. */
   const scrambling = $derived(beat === at.apply && running)
-  let hash = $state(agentSessionResults.beforeHash)
+  let hash = $state<string>(agentSessionResults.beforeHash)
   $effect(() => {
     const value = agentSessionResults.beforeHash
     if (!scrambling) {

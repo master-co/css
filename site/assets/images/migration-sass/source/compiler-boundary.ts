@@ -1,5 +1,5 @@
 import { sassIllustration as figure } from '../../../../content/guide/migration/sass/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Two source languages meet only after Sass becomes ordinary CSS.
 export default {

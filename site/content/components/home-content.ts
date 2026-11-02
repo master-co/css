@@ -1,5 +1,5 @@
-import colorNames from '~/site/docs-shell/data/color-names'
-import { COLOR_LEVELS } from '~/site/docs-shell/data/color-palette'
+import colorNames from '@master/internal-site/data/color-names'
+import { COLOR_LEVELS } from '@master/internal-site/data/color-palette'
 
 export type DeliveryModeId = 'static' | 'progressive' | 'runtime'
 

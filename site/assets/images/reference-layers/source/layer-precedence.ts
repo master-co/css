@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Reader question: which direction wins once importance is known?
 // One ordered list and opposing arrows show reversal; the separated unlayered entry is not a sixth layer.

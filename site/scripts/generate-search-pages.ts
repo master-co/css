@@ -1,5 +1,5 @@
-import i18n from '../docs-shell/common/i18n.config.js'
-import { generateSearchPages } from '../docs-shell/utils/search-pages'
+import i18n from '@master/internal-site/common/i18n.config.js'
+import { generateSearchPages } from '@master/internal-site/utils/search-pages'
 
 await generateSearchPages({
   defaultLocale: i18n.defaultLocale,

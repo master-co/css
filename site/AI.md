@@ -8,19 +8,19 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 ## Document Shell Ownership
 
-- Keep reusable documentation navigation, layouts, contexts, MDX rendering, and page factories in `site/docs-shell/`.
-- Keep Master CSS-specific guides, reference rendering, examples, and demos in their existing `site/` owners. Put shell styles in `site/styles/docs-shell/` and retained public assets in `site/public/`.
-- Shell components render the design system's `ui-*` components (`site/styles/system/`, rules in its `DESIGN.md`): `ui-header`, `ui-sidebar`, `ui-toc`, `ui-pagehead`, `ui-pager`, `ui-dialog`, `ui-code`, `ui-callout` and the `ui-prose` reading column. `site/styles/docs-shell/` only places them on the page and adds the site's own parts; do not reintroduce `doc-*`, `app-*` or `code-*` shell classes.
-- The CSS site owns its implementation and dependency versions. Share brand and interaction principles across Master projects through written design guidance; do not reintroduce a cross-repository source submodule for the full site.
-- Extract a cross-project package only after another active site independently needs the same stable behavior, the API is explicit, and framework/version coupling has been checked. Keep a one-site need local.
+- Master owns reusable navigation, layouts, contexts, MDX rendering, page factories, styles, fonts, artwork and presentation primitives in `@master/internal-site`.
+- Consume an exact published package version. Edit the source in the Master repository and validate a packed consumer before upgrading; do not copy shared implementation back into this repository or use a cross-repository source submodule.
+- Product guides, generated reference, semantic examples, real benchmark inputs, preparation adapters and homepage composition remain here. Master owns organization Blog articles, `/brand` and `/design-system`; preserve old URLs with redirects only after verifying their destinations.
+- The shared `styles/system/DESIGN.md` owns `ui-*` and `--ui-*` contracts. Import component styles at their owning boundary; do not reintroduce `doc-*`, `app-*` or `code-*` shell classes.
+- Shared skills are distributed by `@master/internal-skills`. Run `skills:sync` explicitly and commit the managed files and hash lock. Keep Master CSS-specific extensions in their own skill directories.
 
 ## Owns
 
-- Public guide pages under `site/content`.
-- Documentation copy, code examples, generated CSS examples, and interactive demos.
-- Site-local components, assets, dictionaries, category metadata, and docs verification scripts.
-- The document shell under `site/docs-shell/`, including layouts, MDX components, search, localization, and page factories.
-- Cloudflare/Astro site build configuration.
+- Public guide/reference content and product-specific examples under `site/content`.
+- Product data, navigation, dictionaries, preparation and export adapters.
+- Homepage composition and Master CSS semantic/benchmark demonstrations.
+- Consumer configuration in `site.config.ts` and Cloudflare/Astro build settings.
+- Product verification scripts; shared component tests belong in the Master package.
 
 ## Does Not Own
 
@@ -33,22 +33,22 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro owns routing, the document head, the build and server-rendered markup (`.astro`); Svelte 5 (runes) renders interactive islands (`.svelte`).
 
-- `src/pages/[...path].astro` renders every route in `routes.ts`, which reads `content/<url>/page.astro`. A page component receives `params` and may export `metadata`, `generateMetadata` or `documentStyles` from its frontmatter (hoisted module exports: they may use imports, not frontmatter locals). Dynamic routes export `generateStaticParams()` from a lightweight sibling `params.ts`; route enumeration must not evaluate page, MDX or specimen modules. There are no redirect routes. Nested `layout.astro` modules wrap pages through `<slot />`; `(group)` directories add no URL segment; `index` is not a route segment. Each section shell lives in `sections/*.astro`, which may export `bodyClass` or `bare`.
-- English is unprefixed and Traditional Chinese uses `/tw`. `astro/site-context.ts` derives the locale, canonical pathname and translations from the URL: `.astro` components read them with `siteOf(Astro)`, Svelte components with `getSite()` from `docs-shell/site.ts` (the server renderer `astro/svelte-renderer.ts` provides it as context; hydrated islands read the page's serialized `#site-context`).
-- Components that only render markup are `.astro`. Interactive components are `.svelte` and hydrate with an Astro directive where an `.astro` or MDX file uses them: `client:load` for shell chrome visible at first paint, `client:idle={{ timeout: 500 }}` otherwise (an animated page may never be idle without the timeout). Canvases and figures watch their own visibility before painting; avoid `client:visible`, which waits for the island's own box and leaves surrounding server-rendered parts of a figure inert. Svelte components imported by another Svelte component hydrate with it; Svelte components used from `.astro` without a directive render statically. Island props must be serializable; slots reach Svelte as snippets (`children`, or the slot's name) and stay static HTML. Delegated document behavior lives in `docs-shell/scripts/document.ts`.
-- MDX compiles through `@astrojs/mdx` with the `unified` processor. `docs-shell/remark/markdown-components.js` turns fences, inline code and `(o)`/`(x)`/`(i)`/`(!)` paragraphs into site components and makes every MDX module export `components` from `docs-shell/components/markdown-components.ts`. Markup passed as a prop to an `.astro` component renders with `docs-shell/components/RenderNode.astro`; to a Svelte component, pass it as a named slot.
-- Pages, layouts and sections load through `astro/propagated-assets.ts` so each page links only its own stylesheets. Keep that private Astro contract in one module. Import page content statically (`import * as content from './content.mdx'`): Astro collects the stylesheets when the page module loads, so CSS behind a pending dynamic import is missing in development.
+- `@master/internal-site/astro` injects the route and owns the document shell. `site.config.ts` supplies content, app, sections, navigation, styles and server-only highlighter module URLs. Ordinary guide documents use `content.mdx` and `metadata.ts`; specialized pages retain `page.astro`. Dynamic routes enumerate from lightweight `params.ts` modules without importing page or specimen catalogs. Nested `layout.astro` modules wrap pages; `(group)` directories add no URL segment. The product-specific Reference section remains local; bare examples use the shared section.
+- English is unprefixed and Traditional Chinese uses `/tw`. `@master/internal-site/astro/site-context.ts` derives the locale, canonical pathname and translations from the URL: `.astro` components read them with `siteOf(Astro)`, Svelte components with `getSite()` from `@master/internal-site/site` (the server renderer `@master/internal-site/astro/svelte-renderer.ts` provides it as context; hydrated islands read the page's serialized `#site-context`).
+- Components that only render markup are `.astro`. Interactive components are `.svelte` and hydrate with an Astro directive where an `.astro` or MDX file uses them: `client:load` for shell chrome visible at first paint, `client:idle={{ timeout: 500 }}` otherwise (an animated page may never be idle without the timeout). Canvases and figures watch their own visibility before painting; avoid `client:visible`, which waits for the island's own box and leaves surrounding server-rendered parts of a figure inert. Svelte components imported by another Svelte component hydrate with it; Svelte components used from `.astro` without a directive render statically. Island props must be serializable; slots reach Svelte as snippets (`children`, or the slot's name) and stay static HTML. Delegated document behavior lives in `@master/internal-site/docs-shell/scripts/document.ts`.
+- MDX compiles through `@astrojs/mdx` with the `unified` processor. `@master/internal-site/docs-shell/remark/markdown-components.js` turns fences, inline code and `(o)`/`(x)`/`(i)`/`(!)` paragraphs into site components and makes every MDX module export `components` from `@master/internal-site/docs-shell/components/markdown-components.ts`. Markup passed as a prop to an `.astro` component renders with `@master/internal-site/docs-shell/components/RenderNode.astro`; to a Svelte component, pass it as a named slot.
+- Pages, layouts and sections load through `@master/internal-site/astro/propagated-assets.ts` so each page links only its own stylesheets. Keep that private Astro contract in one module. Import page content statically (`import * as content from './content.mdx'`): Astro collects the stylesheets when the page module loads, so CSS behind a pending dynamic import is missing in development.
 - Island props are serialized into every page's HTML. Pass islands only the fields they render; `define()` metadata carries a repository-relative `sourcePath`, never a machine path.
-- Public build values are `import.meta.env.PUBLIC_*`, resolved by `utils/public-env.js`. Server bundles keep source `import.meta.url` values (`astro/source-url.ts`).
+- Public build values are `import.meta.env.PUBLIC_*`, resolved by `utils/public-env.js`. Server bundles keep source `import.meta.url` values (`@master/internal-site/astro/source-url.ts`).
 - `prepare-app` projects committed benchmark reports into per-suite `.generated/benchmarks/` display data before loading the content generators. Page rendering, search and Markdown share these synchronous aggregates; source timestamps use a separate small index. Import the generated data rather than raw benchmark reports in presentation modules, and rerun `prepare-app` after updating a committed report.
-- SVG imports are Astro SVG components (optimized with the site's SVGO config) usable from `.astro` and MDX; Svelte components import SVG markup with `?raw`. Bitmap imports are Astro image metadata rendered with `docs-shell/components/Image.svelte`. Raw text imports use `?raw`; Node scripts load these through `scripts/bundler-imports.ts`. Icons come from `@tabler/icons-svelte-runes` by deep import (`@tabler/icons-svelte-runes/icons/<name>`).
+- SVG imports are Astro SVG components (optimized with the site's SVGO config) usable from `.astro` and MDX; Svelte components import SVG markup with `?raw`. Bitmap imports are Astro image metadata rendered with `@master/internal-site/components/Image.svelte`. Raw text imports use `?raw`; Node scripts load these through `scripts/bundler-imports.ts`. Icons come from `@tabler/icons-svelte-runes` by deep import (`@tabler/icons-svelte-runes/icons/<name>`).
 
 ## Key Files And Patterns
 
 - Guide pages: `site/content/guide/<slug>/{metadata.ts,page.astro,content.mdx}` plus optional `components/`.
 - Example iframe pages: `site/content/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
-- Brand (`site/content/brand/`) owns the identity only: the mark and logotype, their gold, the typefaces, the voice, artwork downloads and the usage policy. Interface materials, controls, layout and motion belong to `/design-system`; token values belong to Reference. Its facts live in `common/brand.ts`, which feeds the page, search and `/brand.md`.
+- Master owns the organization brand handbook and the Master CSS identity page at `https://master.co/brand/master-css`. Interface materials, controls, layout and motion belong to `https://master.co/design-system`; product token values remain in Reference.
 - Category data is generated; run `bun run --filter site prepare-app` when adding or renaming pages.
 
 ## Risk Areas
@@ -88,13 +88,13 @@ Use this shape:
 
 ```txt
 metadata.ts
-page.astro
 content.mdx
+page.astro (optional specialized page)
 components/
 ```
 
 - `metadata.ts` defines public title, description, category, reference links, and `fileURL`.
-- `page.astro` renders `docs-shell/factories/Page.astro` with `site/layouts/Doc.astro`, `site/dictionaries` and `site/.categories/guide.json`, and exports `generateMetadata = createPageMetadata(metadata, dictionaries)`.
+- Ordinary guides need only `metadata.ts` and `content.mdx`; the shared route renders them using the Guide document configuration in `site.config.ts`. Add `page.astro` only for a specialized page, using the shared Page factory and the local document layout.
 - `content.mdx` contains guide copy, code examples, generated CSS examples, and imported local demos.
 - `components/` contains interactive demos and guide-local presentational components.
 
@@ -147,7 +147,7 @@ A documentation migration moves content, visual specimens and interactions toget
 
 Reference pages are structured sheets (`reference/sheets.ts`; pages, groups and examples in `reference/sheet-editorial.ts`) that document only Master CSS syntax, tokens, recipes and directives, never native CSS behavior. Token and recipe pages read Classes → Values → Usage → Customize: Classes maps each class pattern to its declarations; Values lists one token per line without previews; Usage previews several values in one quiet composition whose displayed source keeps only the page's own classes (`…` stands for the rest) beside their generated CSS; Customize shows the `@theme` or `@utility` change. Tables use `ui-table` and bleed with code; each Usage example is one `ui-tray` (stage, source, Generated CSS), like the Guide's demos. Guide keeps the visual comparisons needed to make a design decision.
 
-`FoundationTokens` renders selected Guide scales and `FoundationPalette` renders the full Guide palette from shared facts; the Reference Color page reuses the same palette matrix. `common/foundation-data/specimens.ts` owns the Guide's presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
+`FoundationTokens` renders selected Guide scales and `FoundationPalette` renders the full Guide palette from shared facts; the Reference Color page reuses the same palette matrix. `@master/internal-site/css/foundation-data/specimens.ts` owns the Guide's presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
 
 For a visual migration, record old → new destinations and compare complete sections at 390, 768 and 1280px in light and dark. Verify actual effects, native keyboard focus, clipboard success/failure, paused motion, reduced motion, responsive controls and anchors. A compiling page without overflow is not sufficient evidence of visual quality. See the [restoration inventory](../.ai/reports/foundation-visual-restoration.md).
 
@@ -173,7 +173,7 @@ Merge `/reference/tokens/containers` into the appropriate destinations: size val
 
 ### Shared facts and presentation
 
-Use preset data for values, scopes and dependencies; Rust-inferred `tokenFamilies()` metadata for families; and public compiler/engine output for CSS examples. `common/foundation-data/tokens.ts` supplies shared facts through existing preset/manifest helpers. Keep shared presentation data under `common/foundation-data/`. Reference renders complete collections; Guide selects explicit keys from the same source. Do not introduce TypeScript semantic parsing or hand-maintained copies of preset values.
+Use preset data for values, scopes and dependencies; Rust-inferred `tokenFamilies()` metadata for families; and public compiler/engine output for CSS examples. `@master/internal-site/css/foundation-data/tokens.ts` supplies shared facts through existing preset/manifest helpers. Keep shared presentation data under `@master/internal-site/css/foundation-data/`. Reference renders complete collections; Guide selects explicit keys from the same source. Do not introduce TypeScript semantic parsing or hand-maintained copies of preset values.
 
 Distinguish curated design advice from executable contracts: a suggested card size is not a fixed meaning of its token. Keep selected keys identical in Guide HTML, search, Markdown and llms output. Relocate shared MDX/data dependencies before retiring a source page, including Typography and Corner Radius imports. Follow [Reference maintenance](reference/MAINTENANCE.md) for URL, anchor and export migration.
 
@@ -203,7 +203,7 @@ Visible documentation examples should be as framework-neutral as practical:
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing framework state or site image components in visible examples unless the section is about that framework integration.
 - Implementation demos are Svelte components; displayed code does not need to match exactly.
-- Import every custom MDX component explicitly in the page or fragment that uses it. Guide-local components can use relative `./components/*` imports; shared presentation components live under `~/site/docs-shell/components`, and site demos under `~/site/components/demo`. The injected MDX `components` only supply Markdown renderers and `Image`.
+- Import every custom MDX component explicitly in the page or fragment that uses it. Guide-local components can use relative `./components/*` imports; shared presentation components live under `@master/internal-site/components`, and site demos under `@master/internal-site/demo`. The injected MDX `components` only supply Markdown renderers and `Image`.
 
 For View Transitions examples, keep `view-transition-name` values unique, prefer article-specific names such as `article-image`, use `view-transition-class` to group related snapshots, and avoid broad `::view-transition-group(*)` in shared demos unless intentionally documenting global behavior.
 
@@ -214,8 +214,8 @@ Before authoring or revising a demo, read the active rules in [the design system
 Interactive demos should be local Svelte components under the guide's `components/` folder, hydrated where the MDX uses them. Use existing site primitives:
 
 - Wrap demos in `<Demo>`: one example is one `ui-tray` with a head (`title`, `description`, `controls`), a `ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
-- Use the specimen primitives from `~/site/components/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they render the `ui-*` components in `styles/system/specimens.css` and `surfaces.css`. Teaching hue uses a named `tone` and is always named by a legend or label.
-- Use `~/site/docs-shell/components/Image.svelte` for local bitmap images.
+- Use the specimen primitives from `@master/internal-site/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they render the `ui-*` components in `styles/system/specimens.css` and `surfaces.css`. Teaching hue uses a named `tone` and is always named by a legend or label.
+- Use `@master/internal-site/components/Image.svelte` for local bitmap images.
 - Use `@tabler/icons-svelte-runes` for icon buttons and icon+text controls when an appropriate icon exists.
 - Use the `ui-*` controls (`ui-button`, `ui-segmented`, `ui-range`, `ui-select`, `ui-check`) and `ui-sheet` panels; do not add demo-specific button, panel or color classes. `styles/system/DESIGN.md` is the markup contract.
 
@@ -237,7 +237,7 @@ For Layout System and similar foundation demos, prefer one polished practical UI
 
 Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant Design Foundations guide pages and follow current patterns.
 
-The site interface (shell, examples, data views, demo primitives) uses the Moonstone system in `site/styles/system/`: `ui-*` components with variants on `data-*` and state on native/ARIA attributes, painted only with `--ui-*` roles. Follow its `DESIGN.md`. `specimens.css` and `data.css` are imported by the components that use them. `--ui-*` roles are not utility tokens: teaching and content markup keeps the preset vocabulary below.
+The site interface (shell, examples, data views, demo primitives) uses the Moonstone system in `@master/internal-site/styles/system/`: `ui-*` components with variants on `data-*` and state on native/ARIA attributes, painted only with `--ui-*` roles. Follow its `DESIGN.md`. `specimens.css` and `data.css` are imported by the components that use them. `--ui-*` roles are not utility tokens: teaching and content markup keeps the preset vocabulary below.
 
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
@@ -295,7 +295,7 @@ site/assets/images/<guide-or-feature>/
 Import them statically and render with the site `<Image>`:
 
 ```astro
-import Image from '~/site/docs-shell/components/Image.svelte'
+import Image from '@master/internal-site/components/Image.svelte'
 import articleImage from '~/site/assets/images/view-transitions/article-aurora.jpg'
 ```
 

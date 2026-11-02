@@ -1,5 +1,5 @@
 import { migrationIllustration } from '../../../../content/guide/migration/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Question: which screens need checking when only one is converted?
 // One shared entry fans out to three consumers. The batch is marked on Account;

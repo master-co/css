@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { agentOptions } from '../utils/agent-options'
 import { agentFixExample } from '../utils/agent-guide-data'
 import { agentStyleExample } from '../utils/agent-style-example'
-import { configuredExampleCSS, configuredMarkupClasses } from '../reference/configured-example'
+import { configuredExampleCSS, configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
 import { deliveryFences, deliverySource } from './delivery-examples'
 
 interface PreviewReport {

@@ -5,6 +5,8 @@ description: "Research, write, edit, translate, and review Master CSS Guide, Ref
 
 # Master CSS writing
 
+Use [Master writing](../master-writing/SKILL.md) for shared editorial decisions; this adapter owns Master CSS semantics, demos, reference sources and validation.
+
 Help readers complete a task, find a reliable contract, or understand a technical argument supported by evidence. Match depth and effort to the request while preserving the author's useful ideas and voice.
 
 ## Choose the work
@@ -18,7 +20,7 @@ Read the requested article, nearby examples, and the applicable [site/AI.md](../
 | Learn an operation, complete a task, or understand design tradeoffs | [Guide](references/guide.md) |
 | Look up syntax, values, inputs, outputs, defaults, or restrictions | [Reference](references/reference.md) |
 | Understand a technical problem, feature, or implementation argument | [Blog](references/blog.md) |
-| Revise wording, paragraphs, titles, summaries, or translations | [Writing style](references/writing-style.md); load the article-type guidance if its structure needs work |
+| Revise wording, paragraphs, titles, summaries, or translations | [Writing style](../master-writing/references/style.md); load the article-type guidance if its structure needs work |
 | Review claims, check examples, or validate a finished change | [Review and validation](references/review-and-validation.md) |
 
 Choose the primary reader need before drafting. Different articles may cover the same topic, but each needs a distinct purpose and an authoritative source for its facts. Guide can include necessary explanation and visual comparisons; Blog does not replace a Reference contract.

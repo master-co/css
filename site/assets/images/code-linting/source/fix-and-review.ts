@@ -1,5 +1,5 @@
 import { lintIllustration as figure } from '../../../../content/guide/code-linting/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Two outcomes: an equivalent edit versus a value whose intended role is unknown to the tool.
 export default {

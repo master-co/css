@@ -2,7 +2,7 @@
   import { onDestroy } from 'svelte'
   import IconCheck from '@tabler/icons-svelte-runes/icons/check'
   import IconCopy from '@tabler/icons-svelte-runes/icons/copy'
-  import { getSite } from '~/site/docs-shell/site'
+  import { getSite } from '@master/internal-site/site'
 
   /** A shell command with a copy button. */
   let { class: className, command, wrap = false }: { class?: string, command: string, wrap?: boolean } = $props()

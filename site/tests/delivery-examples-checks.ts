@@ -3,7 +3,7 @@ import { createRequire } from 'node:module'
 import { compileCSSSync } from '@master/css-compiler/node'
 import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
-import preset from '../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { deliveryFences, deliveryFixture, deliverySource, pruningFixture, routeStyles } from './delivery-examples'
 import { compileMigrationExample } from './migration-examples'
 

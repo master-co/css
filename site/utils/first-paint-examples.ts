@@ -1,5 +1,5 @@
-import { configuredExampleCSS, configuredMarkupClasses } from '../reference/configured-example'
-import type { DemoWaterfallProps } from '../components/demo/demo-waterfall'
+import { configuredExampleCSS, configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
+import type { DemoWaterfallProps } from '@master/internal-site/demo/demo-waterfall.ts'
 
 export const resourceWaterfalls = [
   {

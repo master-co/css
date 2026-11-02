@@ -3,7 +3,7 @@
   import IconPlayerPauseFilled from '@tabler/icons-svelte-runes/icons/player-pause-filled'
   import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
   import IconRotate from '@tabler/icons-svelte-runes/icons/rotate'
-  import { getSite } from '~/site/docs-shell/site'
+  import { getSite } from '@master/internal-site/site'
   import { deliveryAdded, deliveryExplanations, deliveryLateClass, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
 
   /** Give each cause and result time to register, then hold the finished mode for comparison. */

@@ -1,5 +1,5 @@
 import { createRenderSessionSync } from '@master/css/node'
-import preset from '~/site/utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { deliverySourceClasses, type DeliveryRule } from './delivery-content'
 
 let cache: { globals: string, rules: DeliveryRule[] } | undefined

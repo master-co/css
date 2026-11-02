@@ -10,7 +10,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { Linter } from 'eslint'
 import snapshot from '../../../benchmarks/docs-page-css-size/snapshot.json'
 import { getHomePageCSSSize } from '../../utils/home-page-css-size'
-import preset from '../../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { fixMasterCSSContent, lintMasterCSSContent, resolveMasterCSSLintRules } from '@master/css-tooling/lint'
 import { lintRuleReach } from './lint-content'
 import { deliveryLateClass, deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
@@ -23,8 +23,6 @@ import './agents-content.test'
 import './editor-content.test'
 // The Workflow section checks its integrations, monorepo swatches, route samples and impact graph against the packages.
 import './workflow-content.test'
-// The Hero's glass surface must preserve letter counters, coverage and CSS-pixel distances.
-import './hero-title-mask.test'
 import { agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })

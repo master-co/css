@@ -1,5 +1,5 @@
 import { introductionIllustration } from '../../../../content/guide/introduction/illustration'
-import { drawing, escapeHtml, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, escapeHtml, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Reader question: how does a token class connect HTML to a shared CSS value?
 // Repeated, exactly attached names establish correspondence, not execution order.

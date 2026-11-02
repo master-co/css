@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Controlled comparison: same DOM, link text, intrinsic sizing and hovered first link.
 // The changed state attachment changes which links actually gain an underline.

@@ -1,4 +1,4 @@
-import type { IllustrationImages } from './document-types'
+import type { IllustrationImages } from '@master/internal-site/components/document-types.ts'
 import runtimeLight from '../assets/images/rendering-modes/runtime-light.png'
 import runtimeDark from '../assets/images/rendering-modes/runtime-dark.png'
 import progressiveLight from '../assets/images/rendering-modes/progressive-light.png'

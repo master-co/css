@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { getSite } from '~/site/docs-shell/site'
-  import DocumentationIndex from '../components/DocumentationIndex.svelte'
+  import { getSite } from '@master/internal-site/site'
+  import DocumentationIndex from '@master/internal-site/components/DocumentationIndex.svelte'
   import { referenceSections, type ReferenceDocument } from './types'
 
   type Entry = Pick<ReferenceDocument, 'id' | 'kind' | 'title' | 'description' | 'category' | 'url'>

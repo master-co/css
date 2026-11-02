@@ -1,5 +1,5 @@
 import { tailwindIllustration as figure } from '../../../../content/guide/migration/tailwindcss/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Syntax anatomy highlights only the argument whose contract changes.
 export default {

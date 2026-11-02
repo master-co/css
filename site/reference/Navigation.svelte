@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DocSidebar, { type DocSidebarProps } from '~/site/docs-shell/components/DocSidebar.svelte'
+  import DocSidebar, { type DocSidebarProps } from '@master/internal-site/components/DocSidebar.svelte'
 
   let { pageCategories }: Pick<DocSidebarProps, 'pageCategories'> = $props()
 

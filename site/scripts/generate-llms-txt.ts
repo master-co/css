@@ -1,7 +1,5 @@
 import { benchmarkContent } from '../utils/benchmark-content'
 import { introductionContent } from '../utils/introduction-content'
-import { releaseContent } from '../utils/release-content'
-import { brandContent } from '../utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 import { readFile, writeFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
@@ -13,10 +11,9 @@ import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundation-content'
 import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
 import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-content'
-import { deliveryGuideContent, deliveryGuideSlugs, deliveryBlogContent, deliveryBlogSlugs } from '../utils/delivery-content'
+import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
 import { agentGuideContent, agentGuideSlugs } from '../utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content'
-import { designSystemContent, designSystemRoutes } from '../utils/design-system-content'
 
 const DEFAULT_LOCALE = 'en'
 const SITE_URL = resolvePublicEnv().PUBLIC_URL
@@ -216,13 +213,9 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
         ? (await syntaxTutorialContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '..'))).markdown
-        : normalizeRoutePath(rel) === 'blog/v2' ? (await releaseContent(path.resolve(localeRoot, '..'))).markdown
-        : normalizeRoutePath(rel) === 'brand' ? (await brandContent(path.resolve(localeRoot, '..'))).markdown
-        : designSystemRoutes.includes(`/${normalizeRoutePath(rel)}`) ? (await designSystemContent(path.resolve(localeRoot, '..'), `/${normalizeRoutePath(rel)}`)).markdown
         : installation ? (await installationGuideContent(path.resolve(localeRoot, '..'), installationSlug)).markdown
         : agent ? (await agentGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
         : tooling ? (await toolingGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
-        : segments[0] === 'blog' && deliveryBlogSlugs.includes(lastSegment as typeof deliveryBlogSlugs[number]) ? (await deliveryBlogContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
         : delivery ? (await deliveryGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
           : foundation ? (await foundationGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
           : projectStyle ? (await projectStyleGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
@@ -254,11 +247,6 @@ export async function generate(siteRoot: string): Promise<{ index: string; full:
   const publicDir = path.join(siteRoot, 'public')
   await writeFile(path.join(publicDir, 'llms.txt'), index, 'utf8')
   await writeFile(path.join(publicDir, 'llms-full.txt'), full, 'utf8')
-  const brand = pages.find(page => page.url === '/en/brand')
-  if (brand) {
-    const markdown = `# ${brand.title}\n\n${brand.description ?? ''}\n\n- Canonical: /brand\n- Language: English\n- Version: ${catalog.version}\n- Source revision: ${catalog.revision} (${catalog.sourceState})\n\n${brand.body.trim()}\n`
-    await writeFile(path.join(publicDir, 'brand.md'), markdown, 'utf8')
-  }
   return { index, full }
 }
 

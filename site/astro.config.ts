@@ -1,13 +1,7 @@
-import { defineConfig, svgoOptimizer } from 'astro/config'
+import { defineConfig } from 'astro/config'
 import { fileURLToPath } from 'node:url'
-import svelte from '@astrojs/svelte'
-import mdx from '@astrojs/mdx'
-import { unified } from '@astrojs/markdown-remark'
-import masterCSS from '@master/css-astro'
-import site from './astro/integration'
-import remarkSlugAndTOC from './docs-shell/remark/slug-and-toc.js'
-import remarkMarkdownComponents from './docs-shell/remark/markdown-components.js'
-import svgoConfig from './docs-shell/common/svgo.config.js'
+import masterSite from '@master/internal-site/astro'
+import siteConfig from './site.config'
 import { readPublicEnv } from './utils/public-env.js'
 import { shouldUseCloudflareImageLoader } from './utils/cloudflare-image-loader.js'
 
@@ -27,11 +21,6 @@ export default defineConfig({
   server: {
     port: 3000
   },
-  markdown: {
-    // Site components highlight code and typeset prose; Markdown keeps the authored characters.
-    processor: unified({ remarkPlugins: [remarkSlugAndTOC, remarkMarkdownComponents], gfm: true, smartypants: false }),
-    syntaxHighlight: false
-  },
   vite: {
     server: {
       // A build writes thousands of files into outDir while a dev server may be
@@ -39,17 +28,8 @@ export default defineConfig({
       watch: { ignored: [fileURLToPath(new URL('./out/**', import.meta.url))] }
     }
   },
-  experimental: {
-    svgOptimizer: svgoOptimizer(svgoConfig as Parameters<typeof svgoOptimizer>[0])
-  },
   devToolbar: {
     enabled: false
   },
-  // The site renderer must precede @astrojs/svelte, which supplies the Svelte Vite setup.
-  integrations: [
-    site(),
-    svelte(),
-    mdx(),
-    masterCSS({ mode: 'progressive' })
-  ]
+  integrations: [masterSite(siteConfig)]
 })

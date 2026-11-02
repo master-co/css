@@ -5,7 +5,7 @@ import { test } from 'node:test'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { fixMasterCSSContent, lintMasterCSSContent, resolveMasterCSSLintRules, summarizeMasterCSSLintFiles } from '@master/css-tooling/lint'
 import { createToolingSessionSync } from '@master/css-tooling/node'
-import preset from '../../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { agentSessionCalls, agentSessionResults } from './agents-content'
 import { agentSession } from './home-content'
 

@@ -1,12 +1,12 @@
 import FastGlob from 'fast-glob'
 import { dirname, join, resolve } from 'path'
-import { DefinedMetadata } from '../docs-shell/types/Metadata'
+import { DefinedMetadata } from '@master/internal-site/types/Metadata'
 import { existsSync, mkdirSync } from 'fs'
 import { writeIfChangedSync } from './write-if-changed'
 
 const { default: units } = await import(resolve('./units'))
 const metadataPaths = FastGlob.sync('./content/**/*metadata.ts')
-  .filter((metadataPath) => existsSync(join(dirname(metadataPath), 'page.astro')))
+  .filter((metadataPath) => (existsSync(join(dirname(metadataPath), 'page.astro')) || existsSync(join(dirname(metadataPath), 'content.mdx'))))
 export const pages = await Promise.all(
   metadataPaths
     .map(async (metadataPath) => {

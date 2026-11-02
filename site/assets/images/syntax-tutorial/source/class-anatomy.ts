@@ -1,5 +1,5 @@
 import { syntaxIllustration } from '../../../../content/guide/syntax-tutorial/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Teach the exact ranges inside one class. The adjacent prose and generated CSS explain when the combined rule applies.
 // Keep the source contiguous so annotation colours and leaders cannot imply extra spaces, classes or execution steps.

@@ -1,5 +1,5 @@
-import { generatePresetCSS } from '../../../../common/generate-preset-css'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 import { guideStudies, type GuideStudyId } from '../../../../content/guide/studies'
 
 /** Local compositions for the Guide expansion. Equal widths denote a controlled

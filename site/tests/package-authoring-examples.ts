@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import { loadProjectManifest } from '@master/css-compiler/project'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
-import preset from '../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { authoringSource, authoringHTML } from '../utils/authoring-examples'
-import { configuredMarkupClasses } from '../reference/configured-example'
+import { configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
 import { deliveryFences, deliverySource, siteRoot } from './delivery-examples'
 
 function fixture() {

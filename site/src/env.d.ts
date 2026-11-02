@@ -1,3 +1,4 @@
+/// <reference types="@master/internal-site/env" />
 /// <reference types="astro/client" />
 /// <reference types="@master/css/client" />
 

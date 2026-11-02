@@ -1,5 +1,5 @@
 import { referenceIllustrations } from '../../../../reference/illustrations'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Exact range anatomy: a quoted delimiter is value text, not the head boundary.
 // Punctuation stays contiguous; the unannotated outer parentheses remain visible.

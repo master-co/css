@@ -1,5 +1,5 @@
 import { monorepoIllustration as figure } from '../../../../content/guide/monorepo/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Two app boundaries, one imported source. Literal swatches show the actual per-project override.
 export default {

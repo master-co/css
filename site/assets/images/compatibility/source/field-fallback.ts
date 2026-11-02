@@ -1,5 +1,5 @@
 import { compatibilityIllustration } from '../../../../content/guide/compatibility/illustration'
-import { drawing, escapeHtml, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, escapeHtml, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Reader question: what remains usable when the sizing enhancement is unavailable?
 // Render real controls with identical content, width, type and limits; change only field-sizing.

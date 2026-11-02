@@ -1,7 +1,0 @@
-/* A two-column reading comparison inside the shared table: fixed columns, long syntax wraps. */
-@layer components {
-  .document-comparison table { table-layout: fixed; }
-  .document-comparison :is(th, td) { white-space: normal; overflow-wrap: anywhere; }
-  .document-comparison :is(th, td):first-child { width: 40%; }
-  .document-comparison code { white-space: normal; }
-}

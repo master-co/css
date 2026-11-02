@@ -3,6 +3,7 @@
 export const legacyTypeScriptVersion = '6.0.3'
 export const legacyTypeScriptAlias = 'typescript-legacy-api'
 export const legacyTypeScriptPackages = [
+  '@astrojs/check', '@astrojs/language-server', '@volar/kit',
   '@angular-devkit/build-angular', '@angular/build', '@angular/compiler-cli', '@ngtools/webpack',
   '@nuxt/module-builder', '@sveltejs/package', '@sveltejs/kit',
   '@typescript-eslint/eslint-plugin', '@typescript-eslint/parser', '@typescript-eslint/type-utils',

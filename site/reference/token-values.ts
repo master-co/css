@@ -1,4 +1,4 @@
-import { selectFoundationTokens } from '../common/foundation-data/tokens'
+import { selectFoundationTokens } from '@master/internal-site/css/foundation-data/tokens.ts'
 
 export function tokenValuesMarkdown(namespace: string, keys: string[]) {
   return selectFoundationTokens(namespace, keys).map(token =>

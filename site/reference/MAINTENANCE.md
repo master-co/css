@@ -375,13 +375,13 @@ root import makes the server request a manifest asset that TanStack emits only
 for the client. Keep the browser-only guard in both visible and portable examples.
 
 
-Brand asset metadata is exported through utils/brand-content.ts. Keep asset labels,
-URLs and policy in portable/search output; preview components must preserve the
-original artwork and native download behavior. DocumentationIndex group IDs use
-canonical source names, independent of translated labels. Keep both category and
-A–Z destination sets complete. Future browser validation of the large Design
-System SSR workload should run serially, check runtime errors, and use production
-output for concurrent and cold-load checks.
+Master owns Blog, Brand and Design System content, portable exports and browser
+review fixtures. Product navigation links to master.co; keep legacy published
+paths in scripts/organization-redirects.ts. The product importer still verifies
+committed icons and download archives, with authored asset guidance supplied by
+the Master repository. Shared MDX extraction is provided by
+@master/internal-site/css/markdown.ts; reference/markdown.ts supplies only
+product-specific study, illustration and token adapters.
 
 Benchmarks uses utils/benchmark-content.ts to export the authored static chart
 models and complete tables to Markdown and search. Keep its explicit component

@@ -1,5 +1,5 @@
 import { globalIllustration as figure } from '../../../../content/guide/global-styles/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A file graph, not a runtime sequence. One entry collects three distinct source owners.
 export default {

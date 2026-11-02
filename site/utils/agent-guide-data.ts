@@ -1,6 +1,6 @@
-import type { DocumentCodeExampleProps } from '../components/document-types'
-import type { DocumentPromptProps } from '../components/document-types'
-import type { DocumentFlowProps } from '../components/document-types'
+import type { DocumentCodeExampleProps } from '@master/internal-site/components/document-types.ts'
+import type { DocumentPromptProps } from '@master/internal-site/components/document-types.ts'
+import type { DocumentFlowProps } from '@master/internal-site/components/document-types.ts'
 
 export const agentPrompts = {
   "context": {

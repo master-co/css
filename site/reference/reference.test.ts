@@ -4,31 +4,31 @@ import { readFile, readdir, mkdtemp, writeFile, rm, mkdir } from 'node:fs/promis
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createDocumentationSearch } from '~/site/docs-shell/utils/documentation-search'
-import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
+import { createDocumentationSearch } from '@master/internal-site/utils/documentation-search'
+import { extractSearchNodesFromMdx } from '@master/internal-site/utils/search-pages'
 import { generateReference, renderDocumentMarkdown } from './build'
 import { searchTasks } from './search-tasks'
 import type { ReferenceCatalog } from './types'
-import { generatePresetCSS } from '../common/generate-preset-css'
+import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
 import { resolveSyntaxRow } from './syntax'
-import resolveHeading from '~/site/docs-shell/utils/resolve-heading'
+import resolveHeading from '@master/internal-site/utils/resolve-heading'
 import { extractReferenceMdx } from './markdown'
-import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses } from './configured-example'
+import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
 import legacyAnchors from './legacy-anchors.json' with { type: 'json' }
 import { collectCSSVariableReferences } from '../scripts/css-variable-references'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
-import preset from '../utils/preset-manifest'
+import preset from '@master/internal-site/css/preset-manifest.ts'
 import { compileManifestFileSync } from '@master/css-compiler/node'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
-import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
+import { markdownTree } from '@master/internal-site/utils/markdown-tree'
 import { documentHeadings } from './headings'
 import { ungroupedFamilies } from './sheets'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
 import { createReferenceRenderDocument, referenceRenderVersion } from './render-document'
 import { referenceCodeProps, isStylesheetExample } from './code-block'
-import highlightCode from '../docs-shell/utils/highlight-code-core'
-import { prepareCode } from '../docs-shell/utils/prepared-code'
-import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
+import highlightCode from '../adapters/highlight.ts'
+import { prepareCode } from '@master/internal-site/utils/prepared-code'
+import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '@master/internal-site/css/variable-namespace-sources.ts'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 
@@ -49,18 +49,18 @@ before(async () => {
 })
 
 test('Reference and shared search styles use defined site theme variables', async () => {
-  const { manifest } = compileManifestFileSync(path.join(root, 'styles/docs-shell/theme.css'), { baseManifest: preset })
+  const { manifest } = compileManifestFileSync(fileURLToPath(import.meta.resolve('@master/internal-site/styles/docs-shell/theme.css')), { baseManifest: preset })
   const names = new Set(flattenMasterCSSManifestVariables(manifest.variables).map(variable => variable.name))
   // Interface roles come from the site design system, not the theme manifest.
-  for (const [, name] of (await readFile(path.join(root, 'styles/system/tokens.css'), 'utf8')).matchAll(/(?:^|[\s;{])--(ui-[\w-]+)\s*:/g)) names.add(name)
-  for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/docs-shell/documentation-search.css']) {
-    const css = await readFile(path.join(root, file), 'utf8')
+  for (const [, name] of (await readFile(fileURLToPath(import.meta.resolve('@master/internal-site/styles/system/tokens.css')), 'utf8')).matchAll(/(?:^|[\s;{])--(ui-[\w-]+)\s*:/g)) names.add(name)
+  for (const file of [path.join(root, 'styles/reference.css'), fileURLToPath(import.meta.resolve('@master/internal-site/styles/documentation-index.css')), fileURLToPath(import.meta.resolve('@master/internal-site/styles/docs-shell/documentation-search.css'))]) {
+    const css = await readFile(file, 'utf8')
     for (const name of collectCSSVariableReferences(css)) assert.ok(names.has(name), `${file}: --${name}`)
   }
 })
 
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
-  const { foundationFamilies } = await import('../common/foundation-data/tokens')
+  const { foundationFamilies } = await import('@master/internal-site/css/foundation-data/tokens.ts')
   const { recipePages } = await import('./sheet-editorial')
   assert.equal(catalog.documents.length, 32)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, recipePages.length)
@@ -134,7 +134,7 @@ test('current Reference excludes upgrade workflows and obsolete syntax identifie
 })
 
 test('namespace consumer tables cover the registry including color role groups', async () => {
-  const { namespaceFamilies, foundationFamilies } = await import('../common/foundation-data/tokens')
+  const { namespaceFamilies, foundationFamilies } = await import('@master/internal-site/css/foundation-data/tokens.ts')
   const { tokenPages } = await import('./sheet-editorial')
   for (const namespace of [...new Set(foundationFamilies.flatMap(family => family.namespaces)), 'color-line', 'color-surface', 'color-text']) {
     const page = tokenPages.find(page => page.groups.some(group => group.namespace === namespace))
@@ -326,8 +326,8 @@ test('continuing recipe and Guide anchors remain available', async () => {
 
 test('Reference links and preserved Guide anchors resolve to real documents and sections', async () => {
   const guideRoutes = new Set((await readdir(path.join(root, 'content/guide'), { recursive: true }))
-    .filter(file => file.endsWith('page.astro'))
-    .map(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.astro$/, '')))
+    .filter(file => file.endsWith('page.astro') || file.endsWith('content.mdx'))
+    .map(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/(?:page\.astro|content\.mdx)$/, '')))
   for (const doc of catalog.documents) {
     for (const match of doc.markdown.matchAll(/\]\((\/guide\/[^)#]+)(?:#[^)]+)?\)/g)) {
       assert.ok(guideRoutes.has(match[1]), `${doc.id}: ${match[1]}`)
@@ -363,7 +363,7 @@ test('Syntax tutorial preserves its learning path, executable examples and searc
     assert.equal(example.css, configuredExampleCSS(example.configuration ?? '', example.classes), example.title)
     assert.ok(tutorial.markdown.includes(example.css), example.title)
   }
-  const { foundationFamilies } = await import('../common/foundation-data/tokens')
+  const { foundationFamilies } = await import('@master/internal-site/css/foundation-data/tokens.ts')
   for (const [prefix, key] of [['p', 'md'], ['gap', 'md'], ['fg', 'text-muted']]) {
     const family = foundationFamilies.find(family => family.prefix === prefix)!
     assert.ok(tutorial.markdown.includes(`| \`${prefix}-${key}\` | \`${family.property}: var(--${family.namespaces[0]}-${key})\` |`), prefix)
@@ -578,7 +578,7 @@ test('directive contracts keep each definition and example with its content owne
   const sections = documentHeadings(contract.markdown).filter(heading => heading.depth === 2).map(heading => heading.title)
   assert.deepEqual(directivePages.flatMap(page => page.sections).sort(), sections.sort(), 'Every authored section must have exactly one published owner')
   const { directiveExamples } = await import('../tests/directive-examples')
-  const { stylesheetExampleMarkdown } = await import('./stylesheet-example')
+  const { stylesheetExampleMarkdown } = await import('@master/internal-site/css/stylesheet-example.ts')
   const docs = catalog.documents.filter(doc => doc.kind === 'directive')
   assert.equal(docs.length, 6)
   const owners: Record<string, string[]> = {

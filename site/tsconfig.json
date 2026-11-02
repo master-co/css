@@ -18,34 +18,79 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    // Stylesheet side-effect imports resolve to CSS files the bundler owns.
     "noUncheckedSideEffectImports": false,
     "types": [
       "node"
     ],
     "paths": {
-      "@master/css-compiler": [ "../node_modules/@master/css-compiler/src" ],
-      "@master/css-compiler/stylesheet": [ "../node_modules/@master/css-compiler/src/stylesheet/index-public.ts" ],
-      "@master/css-compiler/*": [ "../node_modules/@master/css-compiler/src/*" ],
-      "@master/css": [ "../node_modules/@master/css/src" ],
-      "@master/css/*": [ "../node_modules/@master/css/src/*" ],
-      "@master/css-internal": [ "../node_modules/@master/css-internal/src" ],
-      "@master/css-internal/*": [ "../node_modules/@master/css-internal/src/*" ],
-      "@master/css-tooling": [ "../node_modules/@master/css-tooling/src" ],
-      "@master/css-tooling/*": [ "../node_modules/@master/css-tooling/src/*" ],
-      "@master/css-language-service": [ "../node_modules/@master/css-language-service/src" ],
-      "@master/css-language-service/*": [ "../node_modules/@master/css-language-service/src/*" ],
-      "@master/css-schema": [ "../node_modules/@master/css-schema/src" ],
-      "@master/css-schema/*": [ "../node_modules/@master/css-schema/src/*" ],
-      "@master/css-binding-wasm-compiler": [ "../packages/binding-wasm-compiler/src/provider.ts" ],
-      "@master/css-binding-wasm-engine": [ "../packages/binding-wasm-engine/src/provider.ts" ],
-      "@master/css-engine-js": [ "../packages/engine-js/src/index.ts" ],
-      "@master/css-binding-wasm-tooling": [ "../packages/binding-wasm-tooling/src/provider.ts" ],
-      "@master/css-astro": [ "../node_modules/@master/css-astro/src" ],
-      "~/packages/*": [ "../packages/*" ],
-      "~/site/*": [ "./*" ],
-      "~/*": [ "../*" ]
-    }
+      "@master/css-compiler": [
+        "../node_modules/@master/css-compiler/src"
+      ],
+      "@master/css-compiler/stylesheet": [
+        "../node_modules/@master/css-compiler/src/stylesheet/index-public.ts"
+      ],
+      "@master/css-compiler/*": [
+        "../node_modules/@master/css-compiler/src/*"
+      ],
+      "@master/css": [
+        "../node_modules/@master/css/src"
+      ],
+      "@master/css/*": [
+        "../node_modules/@master/css/src/*"
+      ],
+      "@master/css-internal": [
+        "../node_modules/@master/css-internal/src"
+      ],
+      "@master/css-internal/*": [
+        "../node_modules/@master/css-internal/src/*"
+      ],
+      "@master/css-tooling": [
+        "../node_modules/@master/css-tooling/src"
+      ],
+      "@master/css-tooling/*": [
+        "../node_modules/@master/css-tooling/src/*"
+      ],
+      "@master/css-language-service": [
+        "../node_modules/@master/css-language-service/src"
+      ],
+      "@master/css-language-service/*": [
+        "../node_modules/@master/css-language-service/src/*"
+      ],
+      "@master/css-schema": [
+        "../node_modules/@master/css-schema/src"
+      ],
+      "@master/css-schema/*": [
+        "../node_modules/@master/css-schema/src/*"
+      ],
+      "@master/css-binding-wasm-compiler": [
+        "../packages/binding-wasm-compiler/src/provider.ts"
+      ],
+      "@master/css-binding-wasm-engine": [
+        "../packages/binding-wasm-engine/src/provider.ts"
+      ],
+      "@master/css-engine-js": [
+        "../packages/engine-js/src/index.ts"
+      ],
+      "@master/css-binding-wasm-tooling": [
+        "../packages/binding-wasm-tooling/src/provider.ts"
+      ],
+      "@master/css-astro": [
+        "../node_modules/@master/css-astro/src"
+      ],
+      "~/packages/*": [
+        "../packages/*"
+      ],
+      "~/site/*": [
+        "./*"
+      ],
+      "~/*": [
+        "../*"
+      ],
+      "@tabler/icons-svelte-runes/icons/*": [
+        "../node_modules/@tabler/icons-svelte-runes/dist/icons/*.svelte"
+      ]
+    },
+    "allowImportingTsExtensions": true
   },
   "exclude": [
     "node_modules",
@@ -55,6 +100,8 @@
   "include": [
     "src/env.d.ts",
     "**/*.ts",
-    "**/*.js"
+    "**/*.js",
+    "**/*.astro",
+    "**/*.svelte"
   ]
 }

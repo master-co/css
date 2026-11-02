@@ -1,11 +1,11 @@
 ---
-import Document from '../layouts/Document.astro'
-import RouteLayers from '~/site/docs-shell/components/RouteLayers.astro'
-import NotFound from '~/site/docs-shell/components/NotFound.astro'
-import { withSection } from '~/site/routes'
-import i18n from '~/site/docs-shell/common/i18n.config.js'
+import Document from '@master/internal-site/layouts/Document.astro'
+import RouteLayers from '@master/internal-site/components/RouteLayers.astro'
+import NotFound from '@master/internal-site/components/NotFound.astro'
+import { withSection } from 'virtual:master-site/routes'
+import i18n from '@master/internal-site/common/i18n.config.js'
 
-const route = await withSection('brand', { robots: 'noindex' }, [NotFound], { params: { locale: i18n.defaultLocale } }, [], false)
+const route = await withSection('page', { robots: 'noindex' }, [NotFound], { params: { locale: i18n.defaultLocale } }, [], false)
 ---
 
 <Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass} locales={route.locales}>

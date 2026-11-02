@@ -1,3 +1,0 @@
-/* Controls and shell: every page in the site shell renders them. One local stylesheet emits its theme variables once. */
-@import './system/controls.css';
-@import './system/shell.css';

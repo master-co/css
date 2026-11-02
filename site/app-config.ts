@@ -1,5 +1,5 @@
 import type { Component } from 'svelte'
-import Logotype from '~/site/docs-shell/components/CSSLogotype.svelte'
+import Logotype from '~/site/components/CSSLogotype.svelte'
 import { communityNavs, primaryNavs } from '~/site/navigation'
 
 export declare interface AppNavItem {
@@ -12,6 +12,8 @@ export declare interface AppNavItem {
 }
 
 export declare interface App {
+  name: string
+  brandURL: string
   Logotype: Component<any>
   navs: AppNavItem[]
   communityNavs?: AppNavItem[]
@@ -19,6 +21,10 @@ export declare interface App {
 }
 
 export default {
+  name: 'Master CSS',
+  brandURL: 'https://master.co/brand/master-css',
+  sourceBaseURL: 'https://github.com/master-co/css/blob/rc/',
+  feedbackURL: 'https://github.com/master-co/css/issues/new?template=docs_request.yml',
   navs: primaryNavs,
   communityNavs,
   versions: [

@@ -1,5 +1,5 @@
 import snapshot from '~/site/.generated/benchmarks/interaction-cost.json'
-import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '~/site/components/benchmarks/types'
+import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '@master/internal-site/benchmarks/types.ts'
 
 type ModeId = 'master-static' | 'master-runtime' | 'master-progressive' | 'tailwind-static'
 type ScenarioId =

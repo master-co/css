@@ -1,13 +1,13 @@
 ---
 import './editor-tiles.css'
 import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
-import Link from '~/site/docs-shell/components/Link.svelte'
-import { siteOf } from '~/site/astro/site-context'
+import Link from '@master/internal-site/components/Link.svelte'
+import { siteOf } from '@master/internal-site/astro/site-context'
 import EditorFigures from './EditorFigures.svelte'
 import { editorFeatures } from './editor-content'
 import { getEditorModel } from './editor-document'
 import HomeSectionHeader from './HomeSectionHeader.astro'
-import type { HomeIllustrationId } from './home-illustration'
+import type { HomeIllustrationId } from '@master/internal-site/home/home-illustration.ts'
 import { homeSections } from './home-content'
 
 const featureIcons = {

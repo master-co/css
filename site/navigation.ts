@@ -19,7 +19,7 @@ const discussionsURL = `${repositoryURL}/discussions`
 export const primaryNavs = [
   { name: 'Guide', href: '/guide', Icon: IconCompass },
   { name: 'Reference', fullName: 'Reference', href: '/reference', Icon: IconFileText },
-  { name: 'Blog', href: '/blog', Icon: IconWriting },
+  { name: 'Blog', href: 'https://master.co/blog', Icon: IconWriting },
 ] satisfies AppNavItem[]
 
 export const communityNavs = [
@@ -42,9 +42,9 @@ export const footerNavGroups = [
   {
     name: 'Resources',
     links: [
-      { name: 'Blog', href: '/blog' },
-      { name: 'Design system', href: '/design-system' },
-      { name: 'Brand', href: '/brand' },
+      { name: 'Blog', href: 'https://master.co/blog' },
+      { name: 'Design system', href: 'https://master.co/design-system' },
+      { name: 'Brand', href: 'https://master.co/brand/master-css' },
     ]
   },
   {
@@ -55,7 +55,7 @@ export const footerNavGroups = [
     name: 'Legal',
     links: [
       { name: 'MIT License', href: `${repositoryURL}?tab=MIT-1-ov-file#readme` },
-      { name: 'Trademark Policy', href: '/brand#trademark-policy' },
+      { name: 'Trademark Policy', href: 'https://master.co/brand/master-css#trademark-policy' },
     ]
   },
 ] satisfies FooterNavGroup[]

@@ -1,6 +1,7 @@
 ---
-import Page from '~/site/docs-shell/factories/Page.astro'
-import { createPageMetadata } from '~/site/docs-shell/factories/create-page'
+type Props = import('@master/internal-site/types/Props').Props
+import Page from '@master/internal-site/factories/Page.astro'
+import { createPageMetadata } from '@master/internal-site/factories/create-page'
 import Layout from './components/BenchmarksLayout.astro'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'

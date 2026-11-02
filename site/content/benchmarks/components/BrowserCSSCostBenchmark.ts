@@ -1,5 +1,5 @@
 import snapshot from '~/site/.generated/benchmarks/browser-css-cost.json'
-import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '~/site/components/benchmarks/types'
+import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '@master/internal-site/benchmarks/types.ts'
 
 type CacheMode = 'cold-cache' | 'warm-cache'
 type TraceMetricId = 'styleRecalculationMs' | 'layoutMs' | 'paintMs'

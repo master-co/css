@@ -1,6 +1,6 @@
 import { layoutIllustration as figure } from '../../../../content/guide/layout-system/illustration'
-import { configuredExampleCSS } from '../../../../reference/configured-example'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { configuredExampleCSS } from '@master/internal-site/css/configured-example.ts'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // A measured grid anatomy, not a miniature viewport: eight real equal tracks and exact span relationships.
 export default {

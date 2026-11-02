@@ -1,5 +1,5 @@
 import { cascadeIllustration as figure } from '../../../../content/guide/cascade-layers/illustration'
-import { drawing, type Theme } from '../../rendering-modes/source/materials'
+import { drawing, type Theme } from '@master/internal-site/demo/illustration-materials.ts'
 
 // Priority is vertical order, not card depth. The result measures real 12px padding at a 16px root.
 export default {

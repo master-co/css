@@ -1,4 +1,4 @@
-import type { DocumentOption } from '../components/document-types'
+import type { DocumentOption } from '@master/internal-site/components/document-types.ts'
 
 export const agentOptions = {
   "project": {

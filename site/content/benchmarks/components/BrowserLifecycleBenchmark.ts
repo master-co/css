@@ -1,6 +1,6 @@
 import snapshot from '~/site/.generated/benchmarks/browser-lifecycle.json'
 import evidence from '~/site/.generated/benchmarks/long-session-evidence.json'
-import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '~/site/components/benchmarks/types'
+import type { BenchmarkBarItem, BenchmarkChartModel, BenchmarkColor, BenchmarkMetric } from '@master/internal-site/benchmarks/types.ts'
 
 type ModeId = 'master-static' | 'master-runtime' | 'master-progressive' | 'tailwind-static'
 type ChartMetricId =
