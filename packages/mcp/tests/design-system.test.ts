@@ -8,7 +8,7 @@ import { expect, test } from 'vitest'
 import { createMasterCSSMCPServer } from '../src/server'
 
 test('scan opts into authored stylesheet policy reports with validated MCP transport', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-mcp-design-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-mcp-design-')))
   const nativeSource = '/* 😀 */ @media(width>600px){.card{color:var(--color-brand);background:var(--external, var(--color-next));padding:13px}}'
   writeFileSync(join(root, 'app.css'), '@import "@master/css";@import "./native.css";@theme{--color-brand:red;--color-next:blue;--font-family-brand:Brand;--font-size-brand:1rem}')
   writeFileSync(join(root, 'native.css'), nativeSource)

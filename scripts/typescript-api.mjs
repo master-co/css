@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -6,25 +6,28 @@ import { API } from 'typescript/unstable/sync'
 import { createVirtualFileSystem } from 'typescript/unstable/fs'
 import getTypeScriptExecutable from '../node_modules/typescript/lib/getExePath.js'
 
+// The native TS API sends slash-normalized paths to filesystem callbacks.
+const apiPath = file => resolve(file).replaceAll('\\', '/')
+
 /** Repository tooling only. The native API is pinned with TypeScript itself. */
 export function openTypeScriptProject(files, { configFile, compilerOptions = {}, overlays = {} } = {}) {
-  const directory = join(tmpdir(), 'master-css-typescript-api')
-  const config = join(directory, 'tsconfig.json')
+  const directory = join(realpathSync.native(tmpdir()), 'master-css-typescript-api')
+  const config = apiPath(join(directory, 'tsconfig.json'))
   const virtualFiles = {
-    ...Object.fromEntries(Object.entries(overlays).map(([file, text]) => [resolve(file), text])),
+    ...Object.fromEntries(Object.entries(overlays).map(([file, text]) => [apiPath(file), text])),
     [config]: JSON.stringify({
-      ...(configFile ? { extends: resolve(configFile) } : {}),
+      ...(configFile ? { extends: apiPath(configFile) } : {}),
       compilerOptions: { target: 'ESNext', module: 'ESNext', moduleResolution: 'Bundler', skipLibCheck: true, noEmit: true, ...compilerOptions },
-      files: files.map(file => resolve(file)),
+      files: files.map(apiPath),
       include: [],
       exclude: []
     })
   }
   const virtualFS = createVirtualFileSystem(virtualFiles)
   const api = new API({ cwd: process.cwd(), fs: {
-    readFile: file => Object.hasOwn(virtualFiles, file) ? virtualFiles[file] : undefined,
-    fileExists: file => Object.hasOwn(virtualFiles, file) ? true : undefined,
-    directoryExists: directory => virtualFS.directoryExists(directory) || undefined
+    readFile: file => virtualFS.readFile(apiPath(file)),
+    fileExists: file => virtualFS.fileExists(apiPath(file)) || undefined,
+    directoryExists: directory => virtualFS.directoryExists(apiPath(directory)) || undefined
   } })
   try {
     const snapshot = api.updateSnapshot({ openProjects: [config] })
@@ -33,7 +36,7 @@ export function openTypeScriptProject(files, { configFile, compilerOptions = {},
     return {
       ...project,
       sourceFile(file) {
-        const source = project.program.getSourceFile(resolve(file))
+        const source = project.program.getSourceFile(apiPath(file))
         if (!source) throw new Error(`Unable to parse TypeScript source ${file}`)
         return source
       },
@@ -45,7 +48,7 @@ export function openTypeScriptProject(files, { configFile, compilerOptions = {},
 export function parseTypeScript(file, text = readFileSync(file, 'utf8')) {
   const session = openTypeScriptProject([file], { compilerOptions: { allowJs: true }, overlays: { [file]: text } })
   try {
-    return { sourceFile: session.sourceFile(file), diagnostics: session.program.getSyntacticDiagnostics(resolve(file)) }
+    return { sourceFile: session.sourceFile(file), diagnostics: session.program.getSyntacticDiagnostics(apiPath(file)) }
   } finally { session.close() }
 }
 

@@ -7,7 +7,7 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "bun run build:plugin & bun run build:ui",
+    "build": "bun run build:plugin && bun run build:ui",
     "build:plugin": "bun --bun tsdown",
     "build:ui": "concurrently \"bun run build:ui:export-variables\" \"bun run build:ui:import-variables\"",
     "build:ui:export-variables": "bun --bun vite build --mode export-variables",

@@ -16,7 +16,7 @@ afterAll(() => { for (const directory of temporaries) rmSync(directory, { recurs
 
 /** The same project at a distinct absolute root, as in another checkout or CI runner. */
 function checkout(layout: string, name = 'app') {
-  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'master-keyframe-owner-')))
+  const temporary = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-keyframe-owner-')))
   temporaries.push(temporary)
   const root = join(temporary, layout)
   const write = (file: string, source: string) => {
