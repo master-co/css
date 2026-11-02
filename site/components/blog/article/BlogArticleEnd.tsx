@@ -30,7 +30,7 @@ export default function BlogArticleEnd({ newer, older, showCategory = true }: { 
         <Link className="blog-article-next blog-marks" href={lead.pathname}>
           <span className="blog-article-next-meta">
             {showCategory && lead.category && <span>{$(lead.category)}</span>}
-            <time dateTime={lead.date}>{date(lead.date)}</time>
+            {lead.date && <time dateTime={lead.date}>{date(lead.date)}</time>}
           </span>
           <span className="blog-article-next-title" lang={languageOf(lead.title)}>
             {titleLines($(lead.title), 'blog-article-next-title-line')}

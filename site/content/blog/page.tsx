@@ -9,6 +9,7 @@ import metadata from './metadata'
 import generate from '~/site/docs-shell/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
 import { createTranslation } from '~/site/docs-shell/utils/i18n'
+import { compareBlogDates } from '~/site/components/blog/article/neighbors'
 
 /** A "Subject: question" title breaks at its colon, as the article does: each half is a span the stylesheet sets on its own line. */
 function titleHalves(title: string, className: string) {
@@ -33,7 +34,7 @@ interface BlogPage {
   description: string
   category?: string
   authors: { name: string }[]
-  date: string
+  date?: string
   pathname: string
 }
 
@@ -42,13 +43,13 @@ export default async function Page(props: any) {
   const tw = locale === 'tw'
   const $ = await createTranslation(locale, dictionaries)
   const pages: BlogPage[] = pageCategories
-    .flatMap(({ pages }) => pages)
-    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+    .flatMap<BlogPage>(({ pages }) => pages)
+    .sort(compareBlogDates)
   const latest = pages[0]
   // A category every post shares says nothing about any one of them.
   const showCategory = new Set(pages.map((page) => page.category ?? '')).size > 1
   // The timeline names each year once, beside its posts; a post shows only its day (its full date is still read).
-  const yearOf = (value: string) => dayjs(value).format('YYYY')
+  const yearOf = (value?: string) => value ? dayjs(value).format('YYYY') : ''
   const day = (value: string) => dayjs(value).format(tw ? 'M 月 D 日' : 'MMMM D')
   const years = pages.reduce<{ year: string, pages: BlogPage[] }[]>((groups, page) => {
     const group = groups.at(-1)
@@ -60,7 +61,7 @@ export default async function Page(props: any) {
   // A post not yet translated keeps its English text on /tw; say so, so it is set and read as English.
   const lang = (text: string) => (tw && $(text) === text ? 'en' : undefined)
   // A link is named by its title and described by its date, category (when shown) and description.
-  const describedBy = (page: BlogPage) => [`post-${slug(page)}-date`, showCategory && page.category && `post-${slug(page)}-category`, `post-${slug(page)}-description`].filter(Boolean).join(' ')
+  const describedBy = (page: BlogPage) => [page.date && `post-${slug(page)}-date`, showCategory && page.category && `post-${slug(page)}-category`, `post-${slug(page)}-description`].filter(Boolean).join(' ')
 
   return <>
     <main className="blog-index blog-materials">
@@ -70,7 +71,7 @@ export default async function Page(props: any) {
       {years.map(({ year, pages: posts }) => (
         // A year is a heading, not a landmark: a long archive would otherwise list one region per year.
         <section key={year} className="blog-rails blog-rails-rule blog-year">
-          <h2 className="blog-year-label">{year}</h2>
+          <h2 className="blog-year-label">{year || (tw ? '新訊' : 'New')}</h2>
           {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics when list-style is none. */}
           <ol className="blog-year-posts" role="list">
             {posts.map((page) => (
@@ -78,7 +79,7 @@ export default async function Page(props: any) {
                 {page === latest && <span className="blog-entry-signal blog-signal" aria-hidden="true" />}
                 <Link href={page.pathname} className="blog-entry-link blog-marks" aria-labelledby={`post-${slug(page)}`} aria-describedby={describedBy(page)}>
                   <span className="blog-entry-meta">
-                    <time id={`post-${slug(page)}-date`} dateTime={page.date}>{tw ? <><span className="sr-only">{year} 年 </span>{day(page.date)}</> : <>{day(page.date)}<span className="sr-only">, {year}</span></>}</time>
+                    {page.date && <time id={`post-${slug(page)}-date`} dateTime={page.date}>{tw ? <><span className="sr-only">{year} 年 </span>{day(page.date)}</> : <>{day(page.date)}<span className="sr-only">, {year}</span></>}</time>}
                     {showCategory && page.category && <span id={`post-${slug(page)}-category`}>{$(page.category)}</span>}
                   </span>
                   <h3 id={`post-${slug(page)}`} className="blog-entry-title" lang={lang(page.title)}>{titleHalves($(page.title), 'blog-title-half')}</h3>

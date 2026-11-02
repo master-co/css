@@ -1,5 +1,6 @@
 import { benchmarkContent } from '../utils/benchmark-content'
 import { introductionContent } from '../utils/introduction-content'
+import { releaseContent } from '../utils/release-content'
 import { brandContent } from '../utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 import { readFile, writeFile, readdir } from 'node:fs/promises'
@@ -215,6 +216,7 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
         ? (await syntaxTutorialContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '..'))).markdown
+        : normalizeRoutePath(rel) === 'blog/v2' ? (await releaseContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'brand' ? (await brandContent(path.resolve(localeRoot, '..'))).markdown
         : designSystemRoutes.includes(`/${normalizeRoutePath(rel)}`) ? (await designSystemContent(path.resolve(localeRoot, '..'), `/${normalizeRoutePath(rel)}`)).markdown
         : installation ? (await installationGuideContent(path.resolve(localeRoot, '..'), installationSlug)).markdown
