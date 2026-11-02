@@ -73,3 +73,26 @@ test('missing native artifacts fail before publication', async () => {
     await assert.rejects(stageSnapshot([{ directory: root, manifest: { name: 'native', files: ['mastercss.node', 'mcss'], exports: { '.': './mastercss.node' } } }], join(root, 'stage'), snapshotVersion(revision, '1'), revision), /Missing built export/)
   } finally { await rm(root, { recursive: true, force: true }) }
 })
+
+test('a development binding cannot shadow the platform-specific release binaries', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'master-site-development-binding-'))
+  try {
+    const directory = join(root, 'binding')
+    await mkdir(join(directory, 'dist'), { recursive: true })
+    await mkdir(join(directory, 'artifacts'))
+    await writeFile(join(directory, 'dist/index.js'), 'export {}\n')
+    await writeFile(join(directory, 'artifacts/mastercss.node'), 'wrong-platform-development-binary')
+    const manifest = { name: '@master/css-binding', files: ['dist', 'artifacts'], exports: { '.': './dist/index.js' } }
+    const entries = [{ directory, manifest }]
+    const version = snapshotVersion(revision, '1')
+    await assert.rejects(stageSnapshot(entries, join(root, 'rejected'), version, revision), /local development artifacts/)
+    await rm(join(directory, 'artifacts'), { recursive: true })
+    const stage = join(root, 'accepted')
+    const roots = await stageSnapshot(entries, stage, version, revision)
+    const archive = join(root, 'binding.tgz')
+    await execa('bun', ['pm', 'pack', '--ignore-scripts', '--filename', archive], { cwd: join(stage, roots[0]) })
+    const files = (await execa('tar', ['-tzf', archive])).stdout
+    assert.ok(files.includes('package/dist/index.js'))
+    assert.ok(!files.includes('artifacts/'))
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
