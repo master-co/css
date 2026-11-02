@@ -95,16 +95,20 @@ test('fails open when engine startup exceeds the configured timeout', async ({ p
 test('disposes an eager engine that resolves before hydration startup times out', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const hydrationURL = new URL('/slow-hydration.json', loaderURL).href
+  let releaseHydration!: () => void
+  const hydrationGate = new Promise<void>(resolve => { releaseHydration = resolve })
   await page.route(hydrationURL, async route => {
-    await new Promise(resolve => setTimeout(resolve, 150))
+    await hydrationGate
     await route.fulfill({
       contentType: 'application/json',
       body: JSON.stringify({ version: 2, rules: [], resourceOrder: [] })
     })
   })
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') })
   await gotoRuntimeOrigin(page, loaderURL)
+  await page.clock.pauseAt(new Date('2026-01-01T01:00:00Z'))
 
-  const result = await page.evaluate(async ({ hydrationURL, loaderURL, program }) => {
+  const resultPromise = page.evaluate(async ({ hydrationURL, loaderURL, program }) => {
     await import(loaderURL)
     const style = document.createElement('style')
     style.id = 'master-css'
@@ -130,7 +134,10 @@ test('disposes an eager engine that resolves before hydration startup times out'
     }
     const binding = {
       kind: 'js' as const,
-      createEngine: async () => engine
+      createEngine: async () => {
+        document.documentElement.dataset.eagerEngineCreated = 'true'
+        return engine
+      }
     }
     let code: string | undefined
     try {
@@ -149,6 +156,13 @@ test('disposes an eager engine that resolves before hydration startup times out'
     retry.dispose()
     return { code, disposals, retryBinding }
   }, { hydrationURL, loaderURL, program: compileProgram() })
+
+  // The cold dynamic import is real I/O. Assert the intended ordering only
+  // after the eager engine exists, while hydration remains explicitly pending.
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.eagerEngineCreated)).toBe('true')
+  await page.clock.runFor(26)
+  const result = await resultPromise
+  releaseHydration()
 
   expect(result).toEqual({
     code: 'RUNTIME_STARTUP_TIMEOUT',
