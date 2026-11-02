@@ -6,6 +6,12 @@
   .ui-tray[data-illustration-expandable] .ui-tray-title { flex: 1; }
   .document-illustration-expand { flex: none; }
   .document-illustration-expand[data-scheme="dark"] { display: none; }
+  /* A quiet caption-level entry, independent of the demo's generated-code panel. */
+  .ui-tray > .ui-disclosure[data-variant="text-description"] { margin-top: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  .ui-tray > .ui-disclosure[data-variant="text-description"] > summary { width: fit-content; max-width: calc(100% - 2 * var(--ui-space-sm)); min-height: 2rem; margin-inline: var(--ui-space-sm); padding: 0; gap: var(--ui-space-2xs); color: var(--ui-text-muted); font-size: var(--ui-text-label); font-weight: var(--ui-weight-regular); }
+  .ui-tray > .ui-disclosure[data-variant="text-description"] > summary::before { width: 12px; height: 12px; }
+  .ui-tray > .ui-disclosure[data-variant="text-description"] > summary:hover { color: var(--ui-text-strong); }
+  .ui-tray > .ui-disclosure[data-variant="text-description"] > .ui-disclosure-body { margin-inline: 0; padding-top: var(--ui-space-xs); }
   /* The text description reads at caption size inside the tray. */
   .ui-tray-caption > ol { margin: 0; padding-left: 1.25em; }
   .ui-tray-caption > ol > li + li { margin-top: var(--ui-space-2xs); }

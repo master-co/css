@@ -1,0 +1,21 @@
+[mcp_servers.svelte]
+url = "https://mcp.svelte.dev/mcp"
+startup_timeout_sec = 30
+
+[mcp_servers.astro-docs]
+url = "https://mcp.docs.astro.build/mcp"
+startup_timeout_sec = 30
+
+[mcp_servers.master-css]
+command = "node"
+args = ["/Users/aron/master-css/packages/mcp/dist/bin/index.js", "--root", "/Users/aron/master-css/site"]
+startup_timeout_sec = 30
+
+[mcp_servers.next-devtools]
+command = "npx"
+args = ["-y", "next-devtools-mcp@0.4.0"]
+startup_timeout_sec = 60
+
+[mcp_servers.cloudflare-docs]
+url = "https://docs.mcp.cloudflare.com/mcp"
+startup_timeout_sec = 30

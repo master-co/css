@@ -16,7 +16,8 @@
   /* The rail scrolls and clips, so its rings sit inside the entry. */
   .ui-toc[data-rail] a:focus-visible { outline-offset: -2px; }
   @media (pointer: coarse) {
-    .ui-toc a { display: flex; align-items: center; min-height: 2.75rem; }
+    .ui-toc { --toc-row-padding: .8125rem; }
+    .ui-toc a { min-height: 2.75rem; }
     .ui-toc-actions > a { min-height: 2.75rem; }
   }
   @media (forced-colors: active) { .ui-toc a[aria-current="location"] { text-decoration: underline; } }

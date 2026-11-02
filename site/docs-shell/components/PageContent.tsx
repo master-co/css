@@ -59,7 +59,7 @@ export function PageContentList({ ref, scrollContainerRef, lang, translate = tru
   )
 }
 
-function PageContentNav({ item: { id, title }, translate, currentId, scrollContainerRef }: {
+function PageContentNav({ item: { id, title, level }, translate, currentId, scrollContainerRef }: {
   item: PageContentItem
   translate: boolean
   currentId: string
@@ -90,7 +90,7 @@ function PageContentNav({ item: { id, title }, translate, currentId, scrollConta
   }, [active, scrollContainerRef, currentId])
 
   // The bootstrap script marks the live entry before hydration, so its attribute may differ from the first render.
-  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} lang={lang} suppressHydrationWarning>
+  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} data-level={level} lang={lang} suppressHydrationWarning>
     <PageContentTitle title={title} translate={translate ? $ : undefined} />
   </Link>
 }

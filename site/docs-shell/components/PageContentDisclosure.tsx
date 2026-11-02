@@ -5,7 +5,7 @@ import groupPageContent from '../utils/group-page-content'
 
 /** The same heading inventory as the documentation rail, closed in a disclosure, available without hydration. */
 export default function PageContentDisclosure({ items, label, labelLang }: { items: (PageContentItem & { lang?: string })[], label: string, labelLang?: string }) {
-  const entry = (item: PageContentItem & { lang?: string }) => <a href={`#${item.id}`} lang={item.lang}><PageContentTitle title={item.title} /></a>
+  const entry = (item: PageContentItem & { lang?: string }) => <a href={`#${item.id}`} lang={item.lang} data-level={item.level}><PageContentTitle title={item.title} /></a>
   return <details className="ui-disclosure" data-variant="rule" data-contents-disclosure="">
     <summary lang={labelLang}>{label}</summary>
     <nav className="ui-toc" aria-label={label}>

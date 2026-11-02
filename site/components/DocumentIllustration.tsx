@@ -42,7 +42,7 @@ export default function DocumentIllustration({ title, alt, images, caption, chil
       />)}
     </div>
     <p className="ui-tray-caption">{caption}</p>
-    <details className="ui-disclosure" suppressHydrationWarning>
+    <details className="ui-disclosure" data-variant="text-description" suppressHydrationWarning>
       <summary>Text description</summary>
       <div className="ui-disclosure-body ui-tray-caption">{children}</div>
     </details>
