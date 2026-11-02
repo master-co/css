@@ -1,6 +1,6 @@
 # Final documentation review
 
-Started 2026-11-02 after `65e9a31dc`. This is an in-progress coverage ledger, not a completion claim. Scope: every published Guide, Reference and Blog article, their boundaries, core feature coverage, illustrations, navigation, search and portable exports. View transitions Guide and its assets are excluded at the user's request. Integration articles remain exempt from explanatory images. Preserve unrelated worktree changes.
+Started 2026-11-02 after `65e9a31dc`. The scoped review is complete; final evidence and exclusions are recorded below. Scope: every published Guide, Reference and Blog article, their boundaries, core feature coverage, illustrations, navigation, search and portable exports. View transitions Guide and its assets are excluded at the user's request. Integration articles remain exempt from explanatory images. Preserve unrelated worktree changes.
 
 ## Decisions verified against the checkout
 
@@ -41,13 +41,22 @@ Logs and browser captures: `/tmp/master-docs-final-review/`. These results cover
 | Rendered links | All 241 output HTML routes inspected; 12172 local links checked, no missing anchors/routes/local images |
 | AI context and diff whitespace | Passed |
 
-## Coverage still to complete
+## Second-pass coverage and changes
 
-Commit checkpoint: regenerated content and reran site lint, type-check, MDX imports, Reference (27 tests), documentation examples (30 tests), portable/search exports (37 tests), AI context and whitespace checks successfully. The concurrent View transitions export fixes are now present in the workspace, resolving the two earlier `test:llms` failures; they are outside this batch's commit. The CSS delivery snapshot still needs review during final site validation. This checkpoint does not claim a new full build or completion of the remaining editorial audit.
+- Read all seven migration articles and Compatibility. Retained system-specific conversion responsibilities and original figures; corrected six articles' mode/query links and Tailwind's fixed-utility and `max-md` guidance. Official Sass mixin grammar, Tailwind hover conditions, Bootstrap thresholds and MUI scale behavior were checked against their linked sources.
+- Read all ten integration articles, including their optional modes and deployment caveats. Keep framework setup in Guide and lifecycle contracts in Reference. Existing Astro static, Nuxt artifact portability, Next Turbopack and Lit asset-base caveats remain explicit; this documentation task does not repair integration implementations.
+- Read all twelve token/family sheets, four utility sheets, Named conditions, package editorial and the complete directive source. Retained the complete generated values, recipes and purposeful specimens. Read Cascade layers' diagnosis alongside its contract; its task boundary remains useful.
+- Found six unassigned directive sections after Native CSS preservation: their source prose was never published by the section-based generator. Consolidated useful delivery contracts into Imports, compiler APIs into Packages, and stylesheet request workflows into Vite Guide. Removed duplicate grammar, extraction and token text already owned by published contracts, and obsolete development-history detail. Generation now rejects any top-level directive section without exactly one public owner; the Reference test also compares all authored sections with the registry.
+- Added the asset dependency figure to Imports. Intrinsic file sheets form a dependency tree with the literal import qualifier and relative image reference. This is a publication dependency graph, not a request waterfall; both theme assets and the portable explanation say so. Containers follow content. No preview controls were added.
+- Completed the reference example by including its previously undefined `--manual-dark` mixin in `app.css`; compilation verifies the referenced token and wrapper without importing base CSS. Source evidence for delivery is `packages/compiler/tests/bug-hunt-file-delivery.test.ts` and Vite's inline/SSR suites: 34 tests across six resolved test files passed.
+- Second-pass scoped checks: site lint/type-check, Reference 27, documentation examples 30 passed. Final production build, corpus browser matrix, exports and local destinations also passed; the excluded snapshot differences are recorded below.
 
-- Guide: introduction, installation and all integration children; compatibility; external-system migration; syntax; themes and reuse; color, typography, layout and responsive composition; global styles, layers and route CSS; scanning/pruning and delivery; package authoring and monorepos; language service, lint and AI tools.
-- Reference: all 32 catalog entries, checked against grammar/engine tests, preset definitions, directive tests and public tool/package surfaces. Check missing conditions, failure behavior and ownership, not only page presence.
-- Blog: first-batch integration and figure review complete; include in the final full-site regression pass.
-- Verify each nonintegration article has a meaningful authored figure and complementary working examples; identify any additional explanation that needs a figure.
-- Synchronize generated catalogs, search and Markdown/llms; inspect links, anchors, both themes and narrow/enlarged-text layouts. Run scoped checks, site lint, type-check, build and applicable full-site validation.
-- Record concrete results here and keep View transitions edits outside this task and account for concurrent changes. Existing green validation from the previous commit does not prove this review complete.
+## Final completion audit
+
+All 71 in-scope articles have been read and assessed. Complete preset/API catalogs remain in Reference; task workflows and executable integration setup remain in Guide; Blog duplication has been replaced with causal examples. Unpublished directive sections now have explicit public owners and a generation guard. Valuable examples remain, integration image exemption is respected, and no redirects were introduced.
+
+The full production build passes with 241 routes and 85 assets. All 710 browser profiles passed, covering both themes, mobile/tablet/desktop, enlarged text and both locale routes. New figures were additionally inspected visually. All 12,218 local destinations are valid. Reference search/catalog/export checks, 37 portable-output tests, 30 documentation examples, 14 syntax checks and two MDX import checks pass. Eight manual theme switches, four search checks and four no-JavaScript figure checks pass.
+
+Only four in-scope CSS snapshot routes were refreshed after exact-output review. Four remaining snapshot mismatches belong exclusively to concurrent View transitions work and are not approved here. The manifest and route inventory are unchanged. No excluded source files were edited by this task.
+
+See `site/tests/documentation-final-qa-2026-11-02.md` for the verification matrix, snapshot decisions and limitations. Historical first-batch failures above are superseded by that final record. Chromium checks and focused package tests do not claim deployment verification across every framework host.

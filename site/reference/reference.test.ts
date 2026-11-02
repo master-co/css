@@ -574,12 +574,16 @@ test('tool catalogs retain discovery, effects and source links without copying f
 })
 
 test('directive contracts keep each definition and example with its content owner', async () => {
+  const { directivePages } = await import('./editorial')
+  const contract = await extractReferenceMdx(path.join(root, 'content/guide/directives/contract.mdx'))
+  const sections = documentHeadings(contract.markdown).filter(heading => heading.depth === 2).map(heading => heading.title)
+  assert.deepEqual(directivePages.flatMap(page => page.sections).sort(), sections.sort(), 'Every authored section must have exactly one published owner')
   const { directiveExamples } = await import('../tests/directive-examples')
   const { stylesheetExampleMarkdown } = await import('./stylesheet-example')
   const docs = catalog.documents.filter(doc => doc.kind === 'directive')
   assert.equal(docs.length, 6)
   const owners: Record<string, string[]> = {
-    imports: ['import-mastercss', 'reference'],
+    imports: ['import-mastercss', 'reference', 'publish-stylesheet-assets'],
     theme: ['theme', 'theme-inline', 'theme-static', 'theme-mode'],
     queries: ['custom-media', 'custom-container'],
     definitions: ['utilities', 'reusing-a-matched-value', 'contents', 'whole-definition-replacement'],

@@ -6,6 +6,8 @@ import tool2light from '../assets/images/reference-tools/compiler-output-ownersh
 import tool2dark from '../assets/images/reference-tools/compiler-output-ownership/compiler-output-ownership-dark.png'
 import directive0light from '../assets/images/reference-directives/import-reference-output/import-reference-output-light.png'
 import directive0dark from '../assets/images/reference-directives/import-reference-output/import-reference-output-dark.png'
+import assetsLight from '../assets/images/reference-directives/stylesheet-asset-graph/stylesheet-asset-graph-light.png'
+import assetsDark from '../assets/images/reference-directives/stylesheet-asset-graph/stylesheet-asset-graph-dark.png'
 import directive1light from '../assets/images/reference-directives/theme-modifier-axes/theme-modifier-axes-light.png'
 import directive1dark from '../assets/images/reference-directives/theme-modifier-axes/theme-modifier-axes-dark.png'
 import directive2light from '../assets/images/reference-directives/container-condition-expansion/container-condition-expansion-light.png'
@@ -66,6 +68,7 @@ import shadowDark from '../assets/images/reference-shadow/shadow-footprint-dark.
 import { referenceIllustrations, type ReferenceIllustrationId } from './illustrations'
 
 const images = {
+  'stylesheet-asset-graph': { light: assetsLight, dark: assetsDark },
   'preview-file-identity': { light: tool0light, dark: tool0dark },
   'cli-output-destinations': { light: tool1light, dark: tool1dark },
   'compiler-output-ownership': { light: tool2light, dark: tool2dark },

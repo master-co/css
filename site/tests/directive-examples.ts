@@ -35,6 +35,19 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('A named media condition')!, /@media\(width>=40rem\)/)
   assert.match(output.get('A named container condition')!, /@container\(width>=40rem\)/)
   await assert.rejects(stylesheetExampleCSS('@theme unknown { --color-brand: red; }'), /accepts only static and inline modifiers/)
+  const referenceFixture = deliveryFixture()
+  try {
+    const fences = deliveryFences(directiveSection('reference-context'))
+    referenceFixture.write('app.css', fences.find(fence => fence.name === 'app.css')!.text)
+    const source = fences.find(fence => fence.name === 'Button.module.css')!.text
+    const file = referenceFixture.write('components/Button.module.css', source)
+    const result = await compileRenderedStylesheet(file, source, { baseManifest: preset, projectDir: referenceFixture.root })
+    assert.deepEqual(result.diagnostics.filter(diagnostic => diagnostic.severity === 'error'), [])
+    assert.match(result.css, /padding:var\(--spacing-md\)/)
+    assert.match(result.css, /data-theme=.?dark/)
+    assert.match(result.css, /color:white/)
+    assert.doesNotMatch(result.css, /box-sizing:border-box/, 'Referencing the app must not deliver its base stylesheet')
+  } finally { referenceFixture.dispose() }
   const preservation = deliveryFences(directiveSection('native-css-preservation')).find(fence => fence.text.includes('@preserve native;'))!.text
   const pruningFixture = deliveryFixture()
   const scanner = new MasterCSSScanner({ manifest: preset }, pruningFixture.root)

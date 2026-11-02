@@ -185,3 +185,48 @@ document.querySelector('#master-check').classList.add('underline')
 Server-rendered HTML does not include runtime-generated CSS before JavaScript runs. If the class has no effect, check the console and the emitted program request.
 
 </DocumentDisclosure>
+
+
+## Choose how to load a stylesheet \{#stylesheet-loading\}
+
+Keep the [normal CSS import](https://vite.dev/guide/features#css) for a document stylesheet. Use a different request only when another consumer needs the CSS text or its URL. These requests do not replace the app's Master CSS entry or change its rendering mode.
+
+| Request | Result and responsibility |
+| --- | --- |
+| `import './app.css'` | Vite loads the processed stylesheet for the document. |
+| `import styles from './Card.module.css'` | Vite loads scoped CSS and returns the local class-name mapping. |
+| `import css from './app.css?inline'` | Returns processed CSS text without injecting it; the consumer must attach it. |
+| `import source from './app.css?raw'` | Returns authored source, including any Master directives. It is not browser-ready CSS. |
+| `import href from './local.css?url'` | Returns a URL; attach it as a stylesheet link when the document needs those styles. |
+
+For example, insert trusted build output into a document you own:
+
+```js
+import css from './app.css?inline'
+
+const style = document.createElement('style')
+style.textContent = css
+document.head.append(style)
+```
+
+Processed text can still contain imports. Use `CSSStyleSheet.replaceSync()` only with import-free output; it does not load imported stylesheets. For a shadow root, follow the [Lit setup](/guide/installation/lit), including its stylesheet order and asset-base requirements.
+
+### Sass and CSS Modules
+
+Keep the project's Sass dependency and Vite preprocessing options. Write the Master CSS entry import as a CSS URL import so Sass leaves it for Master CSS:
+
+```scss name=src/app.scss
+@import url("@master/css");
+```
+
+Resolved Sass partials retain their resource directories. Source maps connect diagnostics to the original file where possible; generated or unmapped content can only identify a preprocessed location. Keep Master mixin definitions in `.css`, or use the [Sass interoperability pattern](/reference/directives/definitions#sass-interoperability).
+
+CSS Modules retain their scoped exports and `composes` relationships. Native declarations can use the project's definitions without importing the global output again. Framework HMR or the consuming module must accept changed class-name exports to update them without a page reload. `?inline` returns scoped CSS text; `?raw` returns the original source. Vite 8.3.5 rejects `?url` requests for `.module.css` and `.module.scss`; do not use that path for a module stylesheet.
+
+### Check the deployed assets
+
+Deploy the whole production output, including retained child stylesheets, images, fonts and any runtime program. Master CSS preserves import media, supports and layer qualifiers, and rewrites resource URLs from their original source owner. An inline string can therefore require separate assets too; the [Imports contract](/reference/directives/imports#publish-stylesheet-assets) explains the boundary.
+
+For an SSR `?inline` consumer, URLs use the configured public `base`. Vite does not emit SSR assets by default: deploy the matching client build's assets, or enable [`build.ssrEmitAssets`](https://vite.dev/config/build-options#build-ssremitassets) when the server build must publish them. Inspect the served response and Network panel after moving the build to its deployment location; an in-place build cannot establish URL portability.
+
+During development, deleting a referenced resource reports a compilation error; already published resource versions can remain available until that server context closes. Restore the dependency and confirm that its consumer updates and the error clears. A still-styled page alone does not prove that the latest compilation succeeded.

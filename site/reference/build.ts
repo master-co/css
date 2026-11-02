@@ -49,6 +49,12 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
   // Directive pages regroup the sections of one authored contract by what a reader looks up.
   const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives')
   const sections = new Map(directive.markdown.split(/(?=^## )/m).map(section => [section.match(/^## (.+)/)?.[1]?.replace(/\s+\{#[\w-]+\}$/, ''), section] as const))
+  const assignedSections = directivePages.flatMap(page => page.sections)
+  for (const title of sections.keys()) {
+    if (title && assignedSections.filter(assigned => assigned === title).length !== 1) {
+      throw new Error(`Directive section must have exactly one published owner: ${title}`)
+    }
+  }
   for (const page of directivePages) {
     const markdown = page.sections.map(title => {
       const section = sections.get(title)

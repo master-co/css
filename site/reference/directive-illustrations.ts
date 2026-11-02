@@ -1,5 +1,17 @@
 /** Explanatory figures for stylesheet directive contracts; prose and artwork share these labels. */
 export const directiveIllustrations = {
+  'stylesheet-asset-graph': {
+    title: 'The entry is one file in a delivered asset graph',
+    alt: 'app.css imports print.css under a print condition. print.css refers to mark.svg. All three files must be published at their referenced URLs.',
+    caption: 'Follow the references from the entry to the child stylesheet and then its image. These are separate delivered files; the print qualifier stays on the import. Names are illustrative, not generated filename conventions.',
+    labels: { group: 'Publish the connected files together', entry: '/assets/app.css', import: '@import "./print.css" print;', child: '/assets/print.css', image: 'url("./mark.svg")', resource: '/assets/mark.svg', resourceKind: 'Image resource', scope: 'The entry text alone does not deliver its dependencies.' },
+    description: [
+      'The delivered app.css imports print.css with a print qualifier. The child remains a separate stylesheet, and that qualifier stays on its import.',
+      'A declaration in print.css refers to mark.svg relative to the child stylesheet’s delivered URL.',
+      'Publish the entry, child stylesheet and image at the URLs their references resolve to. Copying only app.css leaves two dependencies unavailable.',
+      'The drawing is a dependency graph, not a request waterfall. Actual generated names and whether an asset remains separate depend on the compilation and host.'
+    ]
+  },
   'import-reference-output': {
     title: 'Import delivers native rules; reference supplies their definitions',
     alt: 'The same tokens.css file feeds two local compilations using bg-brand. The import output includes its native .card rule; the reference output omits .card but still supplies the token used by bg-brand.',
