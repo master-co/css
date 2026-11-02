@@ -26,7 +26,7 @@ Leave half the mark's height around a standalone mark. Leave one wordmark x-heig
 
 ## Refresh the repository copies
 
-The canonical artwork is maintained in the Master repository under `brand/`. Edit its source generators there, then import the approved commit from this repository's root:
+The canonical artwork is maintained in the Master repository under `brand/`. Edit its source generators there and commit the approved brand changes. To refresh the product copies, run these commands from the Master CSS repository root:
 
 ```sh
 python3 site/scripts/sync-brand-assets.py --source /path/to/master
@@ -35,8 +35,8 @@ bun run --filter site prepare-app
 bun run --filter site build:llms
 ```
 
-The importer updates this download kit, the site's existing image URLs, its favicon, example copies, and the Figma and VS Code icons. `/images/logo.svg` retains the dark-background standalone mark; choose an explicit background variant from this kit for new placements. `/images/css-logotype@light.png` is the supplied 2× PNG used to render page sharing images. The source checkout is needed only for importing; verification works from the committed files alone. Keep generated files intact and change this document at `site/content/brand/assets.md` before importing again.
+The importer updates this download kit, the site's existing image URLs, its favicon, example copies, and the Figma and VS Code icons. `/images/logo.svg` retains the dark-background standalone mark; choose an explicit background variant from this kit for new placements. `/images/css-logotype@light.png` is the supplied 2× PNG used to render page sharing images. The source checkout is needed only for importing; verification works from the committed files alone. Keep generated files intact. This document is maintained in the Master repository at `site/content/brand/master-css/assets.md`; the product importer copies it into the download kit. Shared artwork supplied by `@master/internal-site` must be updated through a new package release before importing changed artwork into Master CSS.
 
 ## Usage policy
 
-“Master CSS”, the logo and associated marks are trademarks owned by Aoyue Design. Use the supplied artwork to refer to the project or show integration, preserve its proportions, and do not imply official endorsement. Do not alter its colors, shape or orientation, add effects, or place it on merchandise without written consent. The complete policy is at https://rc.css.master.co/brand#trademark-policy.
+“Master CSS”, the logo and associated marks are trademarks owned by Aoyue Design. Use the supplied artwork to refer to the project or show integration, preserve its proportions, and do not imply official endorsement. Do not alter its colors, shape or orientation, add effects, or place it on merchandise without written consent. The complete policy is at https://master.co/brand/master-css#trademark-policy.
