@@ -7,6 +7,9 @@ on:
       - .github/workflows/site-toolchain-snapshot.yml
       - scripts/site-toolchain-snapshot.mjs
       - scripts/site-toolchain-snapshot.test.mjs
+      - scripts/binding-package-smoke.mjs
+      - .ai/contracts/public-api.json
+      - .ai/contracts/api-census.json
 
 permissions:
   contents: read
