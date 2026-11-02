@@ -137,7 +137,7 @@ test('loads the isolated compiler Wasm surface', async () => {
   )).toEqual(['fg-red'])
 
   const files = Object.fromEntries(await Promise.all(
-    ['index.css', 'base.css', 'theme.css', 'colors.css', 'media.css', 'utilities.css']
+    ['index.css', 'base.css', 'theme.css', 'colors.css', 'media.css', 'container.css', 'utilities.css']
       .map(async file => [`/${file}`, await readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')])
   ))
   const result = compiler.compileCSSStylesheetGraph({
@@ -145,7 +145,7 @@ test('loads the isolated compiler Wasm surface', async () => {
       entry: '/index.css', files,
       resourceOwners: Object.fromEntries(Object.keys(files).map(id => [id, `@master/css-preset/src${id}`])),
       edges: [
-        ...['base.css', 'theme.css', 'media.css', 'utilities.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
+        ...['base.css', 'theme.css', 'media.css', 'container.css', 'utilities.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
         { from: '/theme.css', specifier: './colors.css', resolved: '/colors.css' }
       ]
     },
