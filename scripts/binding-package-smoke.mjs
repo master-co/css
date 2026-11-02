@@ -60,7 +60,7 @@ function exerciseEngineSession(binding) {
 
     const snapshot = JSON.parse(session.snapshot())
     if (snapshot.text.includes('--stripe:')
-      || !snapshot.text.includes('.background\\:var\\(--stripe\\){background:var(--stripe)}')) {
+      || !snapshot.text.includes('.\\(background\\:var\\(--stripe\\)\\){background:var(--stripe)}')) {
       throw new Error('Native engine smoke did not preserve the utility without local theme output.')
     }
   } finally {
