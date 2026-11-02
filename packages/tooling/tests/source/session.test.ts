@@ -53,3 +53,16 @@ test('extracts static classes from JavaScript and TypeScript syntax with Oxc', (
     extractor.dispose()
   }
 })
+
+test('extracts classes after valueless attributes with original UTF-16 ranges', () => {
+  const extractor = createTestToolingSession()
+  try {
+    const content = '中文<div class hidden></div><p class="block"></p>'
+    const result = extractor.extractSource({ files: [{ source: 'page.html', content }] }).files[0]
+    expect(result.diagnostics).toEqual([])
+    expect(result.candidates).toEqual(['block'])
+    expect(result.occurrences[0].range).toEqual({ start: content.indexOf('block'), end: content.indexOf('block') + 5 })
+  } finally {
+    extractor.dispose()
+  }
+})

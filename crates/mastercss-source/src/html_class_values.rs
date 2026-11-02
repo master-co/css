@@ -97,7 +97,9 @@ pub(super) fn parts(source: &str) -> Vec<Part<'_>> {
             while bytes.get(cursor).is_some_and(|b| space(*b)) {
                 cursor += 1;
             }
-            let mut value = "";
+            // Even a valueless attribute must retain an original-source span:
+            // extraction derives its offset from the returned slice's pointer.
+            let mut value = &source[cursor..cursor];
             if bytes.get(cursor) == Some(&b'=') {
                 cursor += 1;
                 while bytes.get(cursor).is_some_and(|b| space(*b)) {

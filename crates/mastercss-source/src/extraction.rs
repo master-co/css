@@ -435,6 +435,42 @@ mod tests {
     }
 
     #[test]
+    fn valueless_class_attributes_preserve_source_offsets() {
+        for content in [
+            "<div class></div><p class=\"block\">中文</p>",
+            "中文<div class hidden></div><p class='block'></p>",
+            "<div class=\"\"></div><p class='block'></p>",
+            "<div class=></div><p class='block'></p>",
+        ] {
+            for source in ["a.html", "a.astro"] {
+                let result = extract(source, content);
+                assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+                assert!(
+                    result
+                        .candidates
+                        .iter()
+                        .any(|candidate| candidate == "block")
+                );
+                let occurrence = result
+                    .occurrences
+                    .iter()
+                    .find(|entry| entry.candidate == "block" && entry.extractor == "html")
+                    .unwrap();
+                let start = content[..content.find("block").unwrap()]
+                    .encode_utf16()
+                    .count() as u32;
+                assert_eq!(
+                    occurrence.range,
+                    SourceRange {
+                        start,
+                        end: start + 5
+                    }
+                );
+            }
+        }
+    }
+
+    #[test]
     fn empty_and_comment_only_mdx_expressions_are_valid() {
         let result = extract(
             "a.mdx",
