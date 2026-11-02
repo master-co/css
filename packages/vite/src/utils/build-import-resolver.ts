@@ -51,7 +51,9 @@ export function getBuildImportResolver(context: MasterCSSVitePluginContext, plug
     const owner = scoped?.owner ?? getSassSourceFile(importer)
     const result = await plugin.resolve!(specifier, scoped?.file ?? owner ?? importer, { skipSelf: true })
     if (!result) return
-    if (result.external) return null
+    // SSR externalizes installed JavaScript packages. These package roots also
+    // own CSS entrypoints, which the compiler's Node fallback resolves.
+    if (result.external) return specifier === '@master/css' || specifier === '@master/css-preset' ? undefined : null
     const sassFile = getSassSourceFile(result.id)
     const original = sassFile ?? result.id.replace(/[?#].*$/, '')
     const originalFile = isAbsolute(original) ? normalizeFilePath(original) : original
