@@ -1,0 +1,75 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import BoxList from '~/components/Css/BoxList'
+import ClassTable from '~/components/Css/ClassTable'
+import StyleColorSchemes from '~/components/Css/StyleColorSchemes'
+import StyleFunctions from '~/components/Css/StyleFunctions'
+import StyleMediaQueries from '~/components/Css/StyleMediaQueries'
+import StyleResponsiveBreakpoints from '~/components/Css/StyleResponsiveBreakpoints'
+import StyleSelectors from '~/components/Css/StyleSelectors'
+import CssDoc from '~/layouts/CssDoc'
+
+export default function StrokeWidth() {
+    const svg =  <svg className="stroke:orange-70 m:auto fill:none"
+                    xmlns="http://www.w3.org/2000/svg" width="103.81"
+                    height="60"
+                    viewBox="0 0 103.81 56.36">
+                    <g>
+                        <path fillRule="evenodd"
+                            d="m91.635984,30.101004c-2.716,-4.806 -5,-5.52 -7.227,-5.52c-3.27,0 -5.542,3.022 -6.994,5.705l-5.8,11.909l1.58,2.591a21.635,21.635 0 0 0 29.112,9.136l1.507,-0.787l-12.178,-23.034z" />
+                        <path fillRule="evenodd"
+                            d="m12.177984,30.101004c2.716,-4.806 5,-5.52 7.228,-5.52c3.268,0 5.54,3.022 6.993,5.705l5.8,11.909l-1.58,2.591a21.635,21.635 0 0 1 -29.112,9.136l-1.507,-0.787l12.178,-23.034z" />
+                        <path fillRule="evenodd"
+                            d="m79.387984,6.487004c-4.229,-8.53 -16.923,-8.723 -21.225,-0.13l-6.252,11.975l-6.253,-11.975c-4.3,-8.593 -16.995,-8.4 -21.225,0.13l-8.134,15.738c3.861,-4.383 9.276,-1.8 11.631,2.66l8.773,16.147l4.487,8.582a11.884,11.884 0 0 0 5.11,5.2a12.405,12.405 0 0 0 11.221,0a11.888,11.888 0 0 0 5.109,-5.2l4.487,-8.582l8.773,-16.147c2.356,-4.461 7.77,-7.043 11.631,-2.66l-8.133,-15.738z" />
+                    </g>
+                </svg>
+
+    return (
+        <>
+            <ClassTable names={[
+                ['stroke-width:`size`','stroke:`size`']
+            ]}>
+            </ClassTable>
+            <h2 id="overview">Overview</h2>
+            <p>
+                The <strong><code>stroke-width</code></strong>&nbsp;attribute is a presentation attribute defining the width of the stroke to be applied to the shape.
+            </p>
+            <BoxList
+                showClasses={
+                    [
+                        'stroke:1',
+                        'stroke:2',
+                        'stroke:3',
+                        'stroke:3.5'
+                    ]
+                }
+            >
+                {svg}
+            </BoxList>
+            <StyleFunctions name="stroke:$(size)"></StyleFunctions>
+            <h2 id="conditionally-apply">Conditionally apply</h2>
+            <StyleSelectors name="stroke:1:hover"></StyleSelectors>
+            <StyleResponsiveBreakpoints name="stroke:1@sm"></StyleResponsiveBreakpoints>
+            <StyleMediaQueries name="stroke:1@print"></StyleMediaQueries>
+            <StyleColorSchemes name="stroke:1@dark"></StyleColorSchemes>
+        </>
+    )
+}
+const localeNamespace = 'docs.css.stroke-width'
+
+StrokeWidth.page = {
+    layout: CssDoc,
+    title: 'Stroke Width',
+    description: 'The stroke-width attribute is a presentation attribute defining the width of the stroke to be applied to the shape.',
+    editors: ['Aron','Lola'],
+    localeNamespace,
+    mdn: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width'
+};
+
+export async function getStaticProps({ locale }: any) {
+    return {
+        props: {
+            ...(await serverSideTranslations(locale, ['common', 'css', localeNamespace])),
+        },
+    };
+};
+

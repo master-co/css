@@ -1,0 +1,12 @@
+@import './core';
+@import './code';
+@import './demo';
+@import './docs';
+
+@keyframes flashOutline {
+    50% {
+        outline-color: rgba(255, 255, 255, 0.35);
+        outline-offset: 4px;
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1)
+    }
+}

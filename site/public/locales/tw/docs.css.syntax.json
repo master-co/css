@@ -1,0 +1,7 @@
+{
+    "Symbol": "符號",
+    "Design Concept": "設計理念",
+    "Using the same curly braces as native to group properties and styles into one CSS rule.": "使用與原生相同的大括號將屬性和樣式群組為一個 CSS 規則。",
+    "Using the same semicolon as native to separate properties and styles.": "使用與原生相同的分號將屬性和樣式做分隔。",
+    "An enhanced and structured CSS syntax for class names.": "一個針對類名的結構化 CSS 增強語法。"
+}

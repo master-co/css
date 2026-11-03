@@ -1,0 +1,451 @@
+@import '@master/css/color';
+
+html.dark {
+    .highlight-pre {
+        .line:before {
+            color: $gray;
+        }
+    }
+
+    .line {
+
+        &.inactive,
+        &.inactive .token {
+            color: $gray;
+        }
+    }
+}
+
+@media(max-width: 599.98px) {
+    .highlight-pre {
+        .line:before {
+            display: none!important
+        }
+    }
+}
+
+.highlight-pre {
+    padding: 1rem 1.25rem;
+    border-radius: .3125rem;
+    font-size: 14px;
+    line-height: 1.5rem;
+    counter-reset: linenumber;
+    white-space: nowrap;
+
+    &.line-numbers {
+        .line:before {
+            content: counter(linenumber);
+            display: inline-block;
+            counter-increment: linenumber;
+            padding-right: 1rem;
+            text-align: right;
+            font-size: .8125rem;
+            color: $fade-66;
+            width: 2rem;
+        }
+    }
+
+    .line {
+        padding: 0 1.25rem;
+        margin: 0 -1.25rem;
+
+        &:empty:after {
+            content: ' ';
+        }
+
+        &.inactive,
+        &.inactive .token {
+            color: $fade-66;
+        }
+    }
+
+    &.animated {
+
+        .line,
+        .line .token {
+            will-change: color;
+            transition: .5s color;
+        }
+    }
+
+    code {
+        display: block;
+        background-color: transparent;
+        text-align: left;
+        white-space: pre;
+        font-weight: 400;
+        font-size: inherit;
+        word-spacing: normal;
+        word-break: normal;
+        line-height: inherit;
+        word-wrap: normal;
+        letter-spacing: -.01em;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+    }
+
+    .mark,
+    .flash {
+        contain: strict;
+        border-radius: 4px;
+    }
+
+    .mark {
+        text-shadow: 0px -1px 0px white;
+        background-color: rgba($blue, .08);
+        outline: 1px solid transparent;
+        padding: 1.5px 2.5px;
+        margin: -1.5px -2.5px;
+    }
+
+    .flash {
+        animation: flashCode 1s forwards ease-in;
+        outline: 1px solid transparent;
+        padding: 0.125rem 0.1875rem;
+        margin: -0.125rem -0.1875rem;
+    }
+
+    .silence {
+        contain: strict;
+        color: $fade-60 !important;
+
+        * {
+            color: $fade-60 !important;
+        }
+    }
+
+    del {
+        color: inherit !important;
+    }
+}
+
+@keyframes flashCode {
+    from {
+        background-color: $blue-94;
+    }
+
+    to {
+        background-color: rgba($blue-94, 0);
+    }
+}
+
+html.dark {
+    .highlight-pre {
+        .mark {
+            background-color: rgba($white, .08);
+            text-shadow: 0px 1px 2px rgb(0 0 0 / 50%);
+        }
+    }
+
+    @keyframes flashCode {
+        from {
+            background-color: rgba($white, .08);
+            color: $blue-82;
+        }
+
+        to {
+            background-color: rgba($white, 0);
+        }
+    }
+}
+
+/* Inline code */
+// :not(pre) code[class*="language-"] {
+//     padding: .1em;
+//     border-radius: .3em;
+//     white-space: normal;
+// }
+.token {
+    contain: content;
+
+    &.treeview-part .entry-line {
+        line-height: 2;
+    }
+
+    &.namespace {
+        opacity: .7;
+    }
+
+    &.comment {
+        font-size: 80%;
+    }
+
+    &.Mspace {
+        color: $fade-70;
+    }
+
+    &.spread {
+        color: $fade-14
+    }
+
+    &.Mcombinator,
+    &.Msemicolon,
+    &.Mbracket,
+    &.Mcomma,
+    &.entity,
+    &.punctuation,
+    &.comment,
+    &.prolog,
+    &.doctype,
+    &.cdata {
+        color: $fade-60;
+    }
+
+    &.Mimportant {
+        color: $gold-60
+    }
+
+    &.Munit,
+    &.Moperator,
+    &.Mcolon,
+    &.Mmedia,
+    &.operator,
+    &.rule,
+    &.tag,
+    &.doctype-tag,
+    &.keyword {
+        color: $pink;
+    }
+
+    &.Mvalue+.Mcolon,
+    &.Mselector+.Mcolon,
+    &.Mcolon+.Mcolon {
+        font-style: italic;
+    }
+
+    &.Mselector {
+        color: $teal;
+        font-style: italic;
+    }
+
+    &.string,
+    &.Mvalue {
+        color: $indigo
+    }
+
+    &.constant,
+    &.attr-name,
+    &.boolean,
+    &.number,
+    &.symbol,
+    &.name,
+    &.deleted {
+        color: $purple;
+    }
+
+    &.function {
+        color: $teal
+    }
+
+    &.function-variable {
+        font-style: italic;
+    }
+
+    &.property,
+    &.Mkey,
+    &.char,
+    &.selector,
+    &.class-name,
+    &.function-variable,
+    &.string-property,
+    &.attr-value,
+    &.inserted {
+        color: $blue;
+    }
+
+}
+
+.language-html {
+
+    .token {
+
+        &.atrule {
+            color: $blue-70;
+        }
+
+        &.builtin,
+        &.constant {
+            color: $blue-70;
+        }
+
+        // &.string,
+        // &.regex,
+        // &.important,
+        // &.variable {
+        //     color: var(--f-yellow);
+        // }
+
+        // &.parameter {
+        //     color: var(--f-yellow);
+        //     font-style: italic;
+        // }
+
+        &.important,
+        &.bold {
+            font-weight: bold;
+        }
+
+        &.italic {
+            font-style: italic;
+        }
+
+        &.entity {
+            cursor: help;
+        }
+    }
+}
+
+.language-css {
+
+    .token {
+
+        &.selector {
+            color: $blue;
+        }
+
+        &.property {
+            color: $indigo
+        }
+    }
+}
+
+.language-bash {
+    .token {
+        &.function {
+            color: $pink;
+        }
+    }
+}
+
+html.dark {
+    .silence {
+        color: $gray !important;
+
+        * {
+            color: $gray !important;
+        }
+    }
+
+    .token {
+
+        &.Mspace {
+            color: $gray;
+        }
+
+        &.Mcombinator,
+        &.Msemicolon,
+        &.Mbracket {
+            color: $gray-70;
+        }
+
+        &.spread {
+            color: $gray-80
+        }
+
+        &.Mcomma,
+        &.entity,
+        &.punctuation,
+        &.comment,
+        &.prolog,
+        &.doctype,
+        &.cdata {
+            color: $gray-60;
+        }
+
+        &.string {
+            color: $indigo-70;
+        }
+
+        &.Mimportant {
+            color: $gold-70
+        }
+
+        &.Munit,
+        &.Moperator,
+        &.Mcolon,
+        &.Mmedia,
+        &.operator,
+        &.rule,
+        &.tag,
+        &.important,
+        &.doctype-tag,
+        &.keyword {
+            color: $pink-70;
+        }
+
+        &.script {
+            color: $gray-80;
+        }
+
+        &.Mselector {
+            color: $teal-70
+        }
+
+        &.Mvalue {
+            color: $indigo-70
+        }
+
+        &.constant,
+        &.boolean,
+        &.number,
+        &.symbol,
+        &.attr-name,
+        &.name,
+        &.deleted {
+            color: $violet-70;
+        }
+
+        &.function {
+            color: $teal-70
+        }
+
+        &.char,
+        &.property,
+        &.selector,
+        &.attr-value,
+        &.function-variable,
+        &.Mkey,
+        &.class-name,
+        &.string-property,
+        &.inserted {
+            color: $blue-70;
+        }
+
+    }
+
+    .language-bash {
+        .token {
+            &.function {
+                color: $pink-70;
+            }
+        }
+    }
+
+    .language-html {
+        .token {
+
+            &.atrule {
+                color: $blue-70;
+            }
+        }
+    }
+
+    .language-css {
+        .token {
+            &.punctuation {
+                color: $gray-60;
+            }
+
+            &.keyword,
+            &.selector {
+                color: $blue-70;
+            }
+
+            &.property {
+                color: $indigo-70
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+    /*
+    By default VS Code will not trigger completions when editing "string" content,
+    for example within JSX attribute values. Updating the editor.quickSuggestions setting may improve your experience:
+    */
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    /*
+    This setting allows you to add additional language support.
+    The key of each entry is the new language ID and the value is any one of the extensions built-in languages,
+    depending on how you want the new language to be treated (e.g. html, css, or javascript):
+    */
+    "masterCSS.proxyLanguages": {
+        "plaintext": "html"
+    },
+    /*
+    Configure glob patterns to exclude from all IntelliSense features.
+    Inherits all glob patterns from the files.exclude setting.
+    */
+    "masterCSS.files.exclude": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/.hg/**"
+    ],
+    /* class="", class=, className="", className={}, $``, ... */
+    "masterCSS.classNameMatches": [
+
+    ],
+    "masterCSS.previewColor": true,
+    "masterCSS.previewOnHover": true,
+    /* Enable autocomplete suggestions. */
+    "masterCSS.suggestions": true
+}

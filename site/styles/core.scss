@@ -1,0 +1,61 @@
+@import '@master/normal.css';
+@import '@master/keyframes.css';
+@import '../public/fonts/inter';
+
+*,
+::before,
+::after {
+    border: 0 solid;
+}
+
+.dark {
+    color-scheme: dark;
+}
+
+.light {
+    color-scheme: light;
+}
+
+@font-face {
+    font-family: 'Fira Code VF';
+    src: url('../public/fonts/FiraCode-VF.woff2') format('woff2-variations');
+    /* font-weight requires a range: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Fonts/Variable_Fonts_Guide#Using_a_variable_font_font-face_changes */
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap
+}
+
+body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+code,
+.f\:mono,
+.font\:mono {
+    font-feature-settings: normal;
+}
+
+:root {
+    --font-sans: "Inter var", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue,
+        Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-mono: "Fira Code VF", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --smooth-shadow:
+        0px 1.3px 2.2px rgba(0, 0, 0, 0.02),
+        0px 3.1px 5.3px rgba(0, 0, 0, 0.028),
+        0px 5.8px 10px rgba(0, 0, 0, 0.035),
+        0px 10.3px 17.9px rgba(0, 0, 0, 0.042),
+        0px 19.2px 33.4px rgba(0, 0, 0, 0.05),
+        0px 46px 80px rgba(0, 0, 0, 0.07)
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

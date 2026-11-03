@@ -1,0 +1,1 @@
+export const isWindowOS = typeof window !== 'undefined' && window.navigator.userAgent.indexOf('Windows') !== -1;

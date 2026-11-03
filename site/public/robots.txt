@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /wp-includes
+Disallow: /wp-login.php
+
+Sitemap: https://master.co/sitemap
+Sitemap: https://css.master.co/sitemap
+Sitemap: https://docs.master.co/sitemap_index

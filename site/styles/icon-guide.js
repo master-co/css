@@ -1,0 +1,1 @@
+export const iconGuide = 'ml:auto mt:-90 w:72 h:72 transform:right'
