@@ -370,6 +370,22 @@ test('foundation extraction fails on missing adapters and recursive includes wit
   } finally { await rm(root, { recursive: true, force: true }) }
 })
 
+test('file trees export their authored names, order and nested hierarchy across guide adapters', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const route = await deliveryGuideContent(root, 'route-level-styles')
+  const authoring = await projectStyleGuideContent(root, 'authoring-packages')
+  const monorepo = await projectStyleGuideContent(root, 'monorepo')
+  for (const [content, tree] of [
+    [route, '└── app/\n    ├── globals.css\n    └── home/\n        ├── page.tsx\n        └── home.css'],
+    [authoring, '└── my-master-theme/\n    ├── package.json\n    ├── master.css\n    └── README.md'],
+    [monorepo, '├── package.json\n└── styles/\n    └── shared.css'],
+  ] as const) {
+    assert.ok(content.markdown.includes(tree))
+    assert.ok(content.searchMarkdown.includes(tree))
+    assert.doesNotMatch(content.markdown, /<ExplorerView|\[object Object\]/)
+  }
+})
+
 test('delivery guides retain ordered process text, complete fences and generated examples in exports', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const pages = await loadPages(path.join(root, 'content'))

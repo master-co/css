@@ -1,5 +1,6 @@
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import PackageIllustration from './components/PackageIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample.astro'
 
 ## Overview [sr-only]
@@ -14,12 +15,13 @@ For this package shape, publish source definitions rather than an app’s genera
 ## Create a package
 This example uses `@acme/ui-theme`; replace the scope with one you own before publishing. Consumers import the package name. Its exported CSS file is `master.css`.
 
-```txt
-my-master-theme/
-  package.json
-  master.css
-  README.md
-```
+<ExplorerView items={[
+  { name: 'my-master-theme', children: [
+    { name: 'package.json' },
+    { name: 'master.css' },
+    { name: 'README.md' }
+  ]}
+]} />
 
 Point the package root to `master.css`:
 

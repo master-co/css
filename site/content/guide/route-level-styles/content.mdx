@@ -1,5 +1,6 @@
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 
 ## Overview [sr-only]
@@ -7,13 +8,15 @@ Keep a page's layout and one-off styles beside that page, and let its route or c
 
 Complete your framework’s [installation guide](/guide/installation) first. The Vite, Next.js and Webpack integrations let these local styles use your project tokens, mixins and custom media:
 
-```txt
-app/
-  globals.css
-  home/
-    page.tsx
-    home.css
-```
+<ExplorerView items={[
+  { name: 'app', children: [
+    { name: 'globals.css' },
+    { name: 'home', children: [
+      { name: 'page.tsx' },
+      { name: 'home.css' }
+    ]}
+  ]}
+]} />
 
 Write ordinary selectors and declarations. Reference a shared token when the value should stay consistent across pages:
 

@@ -154,9 +154,11 @@ recipes registered explicitly in MDX; the client-safe demo barrel exports only
 the presentation components, not the compiler-backed recipes.
 
 
-Package authoring and monorepo guides use `DocumentFileTree` through the shared
-`package-trees` data. Keep its nested-list UI and plain-text export aligned.
-`project-style-content` exports both guides, including the shared literal package
+File and directory structures use the shared `ExplorerView`, including package
+authoring, monorepo and route-level styles. `reference/markdown.ts` reads the
+component's literal `items` and exports that same hierarchy through `fileTreeText`;
+do not map an `ExplorerView` to a fixed, separately maintained tree.
+`project-style-content` exports the first two guides, including the shared literal package
 source, HTML and generated CSS. The package recipe stays outside client barrels.
 Its focused fixtures compile the actual package entry through the public build
 resolver and verify independent app-root overrides. Browser checks exercise the

@@ -136,6 +136,7 @@ Interactivity does not determine ownership. Reference owns complete scales, pale
 
 ### Guide reading flow
 
+- Render file and directory structures with `@master/internal-site/components/ExplorerView.astro`, following [Monorepo](content/guide/monorepo/content.mdx). Do not use plain-text code fences for trees in rendered articles. Keep names and nesting in the component's `items`; the shared product Markdown adapter exports those same items for search and Markdown/llms. Check the rendered tree and exported hierarchy when editing it.
 - Start with the reader's task and its result. For visual subjects, show the comparison beside the lesson; for setup subjects, reach the working configuration before listing every tool or diagnostic field.
 - Keep the main example, its explanation and its code together. Place independent compiler options, machine-readable contracts and contributor details after the ordinary workflow.
 - Use native disclosures for long secondary examples or lookup indexes when they improve reading. Preserve useful content, stable anchors and search/Markdown output; keep the first working task visible.
