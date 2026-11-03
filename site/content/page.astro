@@ -46,3 +46,11 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   <HomeLamp client:idle={{ timeout: 500 }} />
 </main>
 <HomeFooter navGroups={footerNavGroups} wordmark="master css" client:idle={{ timeout: 500 }} />
+
+<style is:global>
+  @layer components {
+    .home-header .ui-version {
+      display: none;
+    }
+  }
+</style>
