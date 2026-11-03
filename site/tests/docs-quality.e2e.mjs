@@ -18,7 +18,7 @@ async function documentRoutes(directory) {
     if (entry.isDirectory()) return documentRoutes(file)
     if (!entry.name.endsWith('.html')) return []
     const url = '/' + path.relative(build, file).split(path.sep).join('/').replace(/\.html$/, '').replace(/\/index$/, '')
-    return /^\/(?:tw\/)?(?:guide|reference|blog|brand|design-system)(?:\/|$)/.test(url) ? [{ url }] : []
+    return /^\/(?:tw\/)?(?:guide|reference|benchmarks|blog|brand|design-system)(?:\/|$)/.test(url) ? [{ url }] : []
   }))).flat().sort((a, b) => a.url.localeCompare(b.url))
 }
 const inventory = await documentRoutes(build)
@@ -49,8 +49,19 @@ try {
         await main.waitFor()
         const frames = []
         for (const iframe of await page.locator('.ui-browser-viewport > iframe').all()) {
+          // A lazy preview inside a closed disclosure cannot enter the viewport.
+          // Reveal it through the same summary control a reader uses first.
+          for (const disclosure of await iframe.locator('xpath=ancestor::details').all()) {
+            if (await disclosure.getAttribute('open') === null) await disclosure.locator(':scope > summary').click()
+          }
           await iframe.scrollIntoViewIfNeeded()
-          await page.waitForFunction(element => element.dataset.ready === 'true' && element.contentDocument?.body.childElementCount > 0, await iframe.elementHandle(), { timeout: 15000 })
+          await page.waitForFunction(element => {
+            if (element.dataset.ready === 'true' && element.contentDocument?.body.childElementCount > 0) return true
+            // Earlier content-sized previews may expand after the first scroll.
+            // Keep this lazy frame in view until its actual document is ready.
+            element.scrollIntoView({ block: 'center', behavior: 'instant' })
+            return false
+          }, await iframe.elementHandle(), { timeout: 15000 })
           frames.push(await iframe.evaluate(element => ({ title: element.title, ready: element.dataset.ready, height: element.clientHeight, contentHeight: element.contentDocument.body.getBoundingClientRect().height })))
         }
         await page.evaluate(() => scrollTo(0, 0))
