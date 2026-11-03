@@ -20,8 +20,6 @@
 /packages/binding-*/mastercss.node
 /packages/binding-*/mcss
 /packages/binding-*/mcss.exe
-/.cache/site-packages/
-/.cache/site-toolchains/
 /release-artifacts/
 
 # monorepo
@@ -107,6 +105,5 @@ packages/nuxt/playground/.output
 site/public/llms.txt
 site/public/llms-full.txt
 
-# Local package validation archives; consumers commit registry pins instead.
-/.cache/site-packages/
-/.cache/site-toolchains/
+# Local caches, validation archives and scratch evidence.
+/.cache/
