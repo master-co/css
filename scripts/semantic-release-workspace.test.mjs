@@ -1,11 +1,19 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { test } from 'node:test'
 import { execa } from 'execa'
 import { createWorkspaceRelease, packedManifest, validatePackedManifest } from './semantic-release-workspace.mjs'
+import { assertNpmOidcEnvironment, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
+
+const githubEnv = {
+  ...process.env,
+  GITHUB_ACTIONS: 'true',
+  ACTIONS_ID_TOKEN_REQUEST_URL: 'https://actions.example.test/oidc',
+  ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture-actions-request-token'
+}
 
 function archive(manifest) {
   const body = Buffer.from(JSON.stringify(manifest))
@@ -19,11 +27,21 @@ test('release versions all workspaces before packing and publishes verified tarb
   const cwd = await mkdtemp(join(tmpdir(), 'master-bun-release-'))
   const roots = ['packages/a', 'packages/b']
   const calls = []
-  const credential = join(cwd, 'auth.npmrc')
+  const sessions = []
   const plugin = createWorkspaceRelease({
-    auth: async () => { await writeFile(credential, '//registry.npmjs.org/:_authToken=test'); return credential },
     run: async (command, args, options) => {
       calls.push({ command, args })
+      if (command === 'npm') {
+        sessions.push(options.cwd)
+        assert.notEqual(options.cwd, cwd)
+        assert.equal(options.extendEnv, false)
+        assert.equal(options.preferLocal, false)
+        assert.equal(options.env.NPM_TOKEN, undefined)
+        assert.equal(await readFile(options.env.NPM_CONFIG_USERCONFIG, 'utf8'), '')
+        assert.equal(await readFile(options.env.NPM_CONFIG_GLOBALCONFIG, 'utf8'), '')
+        assert.equal(options.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN, githubEnv.ACTIONS_ID_TOKEN_REQUEST_TOKEN)
+        assert.equal(args[args.indexOf('--registry') + 1], npmRegistry)
+      }
       if (command === 'bun') {
         for (const root of roots) assert.equal(JSON.parse(await readFile(join(cwd, root, 'package.json'))).version, '1.2.3')
         const manifest = JSON.parse(await readFile(join(options.cwd, 'package.json')))
@@ -33,7 +51,7 @@ test('release versions all workspaces before packing and publishes verified tarb
       return { stdout: '' }
     }
   })
-  const context = { cwd, env: {}, nextRelease: { version: '1.2.3', channel: 'rc' } }
+  const context = { cwd, env: { ...githubEnv, NPM_TOKEN: 'must-not-be-used' }, nextRelease: { version: '1.2.3', channel: 'rc' } }
   try {
     for (const [index, root] of roots.entries()) {
       await mkdir(join(cwd, root), { recursive: true })
@@ -52,8 +70,10 @@ test('release versions all workspaces before packing and publishes verified tarb
     await plugin.addChannel(config, context)
     assert.ok(calls.some(call => call.command === 'npm' && call.args[0] === 'dist-tag'))
     assert.ok(calls.every(call => call.command !== 'pnpm'))
+    assert.deepEqual(calls.filter(call => call.command === 'npm').map(call => call.args[0]), ['publish', 'dist-tag'])
+    assert.equal(new Set(sessions).size, 2, 'every npm operation gets a fresh OIDC context')
     await plugin.success()
-    await assert.rejects(readFile(credential))
+    for (const session of sessions) await assert.rejects(stat(session), { code: 'ENOENT' })
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })
 
@@ -61,6 +81,86 @@ test('unresolved workspace dependencies and incorrect package identity fail vali
   assert.throws(() => validatePackedManifest({ name: 'a', version: '1', dependencies: { b: 'workspace:*' } }, 'a', '1'), /Unresolved workspace/)
   assert.throws(() => validatePackedManifest({ name: 'a', version: '0' }, 'a', '1'), /Incorrect release identity/)
   assert.throws(() => packedManifest(gzipSync(Buffer.alloc(1024))), /missing package/)
+  for (const publishConfig of [{ _authToken: 'fixture' }, { userconfig: '/tmp/legacy.npmrc' }, { '@fixture:registry': 'https://example.test' }, { registry: 'https://example.test' }]) {
+    assert.throws(() => validatePackedManifest({ name: 'a', version: '1', publishConfig }, 'a', '1'), /OIDC|official npm registry/)
+  }
+})
+
+test('legacy tokens cannot substitute for GitHub OIDC identity', () => {
+  for (const env of [
+    {},
+    { NPM_TOKEN: 'fixture-token', NODE_AUTH_TOKEN: 'fixture-token', NPM_ID_TOKEN: 'fixture-token' },
+    { ...githubEnv, GITHUB_ACTIONS: 'false' },
+    { ...githubEnv, ACTIONS_ID_TOKEN_REQUEST_URL: '' },
+    { ...githubEnv, ACTIONS_ID_TOKEN_REQUEST_TOKEN: '' }
+  ]) assert.throws(() => assertNpmOidcEnvironment(env), /requires GitHub Actions OIDC/)
+})
+
+test('real npm config loading ignores project, user, global and environment credentials', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'master-poisoned-npm-'))
+  const originalToken = process.env.NPM_TOKEN
+  let session
+  try {
+    const poison = join(cwd, 'legacy.npmrc')
+    await writeFile(poison, '//registry.npmjs.org/:_authToken=fixture-file-token\nregistry=https://example.test\n')
+    await writeFile(join(cwd, '.npmrc'), '//registry.npmjs.org/:_authToken=fixture-project-token\n')
+    process.env.NPM_TOKEN = 'fixture-parent-token'
+    session = await createNpmOidcSession({
+      ...githubEnv, NPM_TOKEN: 'fixture-token', NODE_AUTH_TOKEN: 'fixture-node-token',
+      NPM_ID_TOKEN: 'fixture-supplied-identity', npm_config_userconfig: poison,
+      NPM_CONFIG_GLOBALCONFIG: poison, NPM_CONFIG_REGISTRY: 'https://example.test',
+      'npm_config_//registry.npmjs.org/:_authToken': 'fixture-env-token'
+    })
+    const { cleanup, ...options } = session
+    const child = await execa(process.execPath, ['-e', 'console.log(JSON.stringify({token:process.env.NPM_TOKEN,nodeToken:process.env.NODE_AUTH_TOKEN,identity:process.env.NPM_ID_TOKEN,oidc:!!process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}))'], options)
+    assert.deepEqual(JSON.parse(child.stdout), { oidc: true })
+    const { stdout } = await execa('npm', ['config', 'list', '--json'], options)
+    const config = JSON.parse(stdout)
+    assert.equal(config.registry, npmRegistry)
+    assert.equal(config.userconfig, session.env.NPM_CONFIG_USERCONFIG)
+    assert.equal(config.globalconfig, session.env.NPM_CONFIG_GLOBALCONFIG)
+    assert.ok(!Object.keys(config).some(key => /:_authToken$|:_password$|:username$/.test(key)))
+    assert.ok(!stdout.includes('fixture-'), 'npm must not load any fixture credential')
+    assert.equal((await stat(session.env.NPM_CONFIG_USERCONFIG)).mode & 0o777, 0o600)
+    await cleanup()
+    await assert.rejects(stat(session.cwd), { code: 'ENOENT' })
+  } finally {
+    if (originalToken === undefined) delete process.env.NPM_TOKEN
+    else process.env.NPM_TOKEN = originalToken
+    await session?.cleanup()
+    await rm(cwd, { recursive: true, force: true })
+  }
+})
+
+test('OIDC command failure propagates without retrying credentials or requiring a logger', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'master-oidc-failure-'))
+  const sessions = [], calls = []
+  const failure = new Error('Fixture: npm rejected the workflow OIDC identity')
+  const plugin = createWorkspaceRelease({ run: async (command, args, options) => {
+    calls.push(args[0])
+    if (command === 'bun') {
+      await writeFile(args[args.indexOf('--filename') + 1], archive({ name: '@fixture/a', version: '1.2.3' }))
+      return { stdout: '' }
+    }
+    sessions.push(options.cwd)
+    assert.equal(options.env.NPM_TOKEN, undefined)
+    throw failure
+  } })
+  const config = { pkgRoot: '.', workspaceRoots: ['.'] }
+  const context = { cwd, env: { ...githubEnv, NPM_TOKEN: 'unused' }, nextRelease: { version: '1.2.3', channel: 'site' } }
+  try {
+    await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@fixture/a', version: '0.0.0' }))
+    const local = { ...context, env: { NPM_TOKEN: 'unused' } }
+    for (const operation of ['verifyConditions', 'publish', 'addChannel']) {
+      await assert.rejects(plugin[operation](config, local), /requires GitHub Actions OIDC/)
+    }
+    assert.deepEqual(calls, [], 'reject local publication before even packing')
+    await plugin.verifyConditions(config, context)
+    await assert.rejects(plugin.publish(config, context), error => error === failure)
+    await assert.rejects(plugin.addChannel(config, context), error => error === failure)
+    assert.deepEqual(calls, ['pm', 'publish', 'dist-tag'])
+    for (const session of sessions) await assert.rejects(stat(session), { code: 'ENOENT' })
+  } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })
 
 test('real Bun packing resolves workspace protocols after every release version is written', async () => {

@@ -5,6 +5,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
+import { assertNpmOidcEnvironment } from './npm-oidc.mjs'
 
 export const siteToolchainRoots = ['@master/css-astro', '@master/css-language-service', '@master/eslint-config-css']
 const dependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']
@@ -110,6 +111,7 @@ export async function stageSnapshot(entries, stage, version, revision) {
 }
 
 export async function createSnapshot({ root, output, sequence, publish = false }) {
+  if (publish) assertNpmOidcEnvironment(process.env)
   const revision = (await execa('git', ['rev-parse', 'HEAD'], { cwd: root })).stdout.trim()
   const dirty = (await execa('git', ['status', '--porcelain', '--untracked-files=no'], { cwd: root })).stdout
   if (dirty) throw new Error('Commit tracked changes before creating a source-pinned toolchain snapshot')

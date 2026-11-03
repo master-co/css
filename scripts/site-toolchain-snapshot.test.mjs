@@ -5,10 +5,21 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import { execa } from 'execa'
 import { packedManifest } from './semantic-release-workspace.mjs'
-import { releaseClosure, snapshotManifest, snapshotVersion, stageSnapshot } from './site-toolchain-snapshot.mjs'
+import { createSnapshot, releaseClosure, snapshotManifest, snapshotVersion, stageSnapshot } from './site-toolchain-snapshot.mjs'
 
 const revision = 'f'.repeat(40)
 const entry = (name, fields = {}) => ({ directory: name, manifest: { name, ...fields } })
+
+test('snapshot publication rejects missing GitHub identity before reading or modifying the repository', async () => {
+  const previous = process.env.GITHUB_ACTIONS
+  try {
+    process.env.GITHUB_ACTIONS = 'false'
+    await assert.rejects(createSnapshot({ root: '/nonexistent-oidc-fixture', output: '/nonexistent-oidc-fixture', sequence: '1', publish: true }), /requires GitHub Actions OIDC/)
+  } finally {
+    if (previous === undefined) delete process.env.GITHUB_ACTIONS
+    else process.env.GITHUB_ACTIONS = previous
+  }
+})
 
 test('snapshot includes optional native packages and peers before consumers, excludes private build helpers', () => {
   const packages = new Map([

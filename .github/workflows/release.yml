@@ -49,14 +49,13 @@ jobs:
       - run: bun run build
       - name: Finalize release checksums
         run: cargo xtask assemble-native-release binding-artifacts release-artifacts/checksums.json --require-assets --verify-staged
-      - name: Verify package publication order
-        run: bun run check:release
       - name: Install publishing npm CLI
         run: npm install --global npm@11.21.0
+      - name: Verify OIDC publication and package order
+        run: bun run check:release && node --test scripts/semantic-release-workspace.test.mjs
       - run: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy-site:
     needs:
