@@ -1,5 +1,5 @@
 /** The editor film's character-cell geometry, color math and deterministic scene clock. */
-import type { EditorModel, EditorSceneId } from './editor-content'
+import type { EditorClass, EditorModel, EditorRole, EditorSceneId } from './editor-content'
 
 /** A color decoration takes two character cells, so every column after it moves two to the right. */
 export const swatchCells = 2
@@ -247,6 +247,26 @@ export function createEditorScenes(model: EditorModel, geometry: Geometry): Reco
       }
     }
   }
+}
+
+/**
+ * The literal class's parts with `hex` in place of its color: only the literal's own characters change,
+ * so the parts around it, such as the closing `)` of `(color:#4f46e5)`, stay.
+ */
+export function literalParts(item: Pick<EditorClass, 'name' | 'parts' | 'swatch'>, hex: string): [string, EditorRole][] {
+  const start = item.swatch!.at
+  const end = start + (item.name.slice(start).match(/^#[\da-f]+/i)?.[0].length ?? 0)
+  const between = (from: number, to: number) => {
+    const slice: [string, EditorRole][] = []
+    let offset = 0
+    for (const [text, role] of item.parts) {
+      const cut = [Math.max(from, offset), Math.min(to, offset + text.length)]
+      if (cut[0] < cut[1]) slice.push([text.slice(cut[0] - offset, cut[1] - offset), role])
+      offset += text.length
+    }
+    return slice
+  }
+  return [...between(0, start), [hex, 'number'], ...between(end, item.name.length)]
 }
 
 export function hexToHsv(hex: string): HSV {

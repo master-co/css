@@ -12,7 +12,7 @@ export function editorCSSParts(line: string): Part[] {
   if (body.startsWith('@')) {
     const keyword = body.match(/^@[\w-]+/)![0]
     const rest = body.slice(keyword.length)
-    return [[indent, 'base'], [keyword, 'keyword'], ...(/^@(?:media|container)$/.test(keyword) ? queryParts(rest) : valueParts(rest))]
+    return [[indent, 'base'], [keyword, 'keyword'], ...(/^@(?:media|container|supports)$/.test(keyword) ? queryParts(rest) : valueParts(rest))]
   }
   if (body.endsWith('{') || body.endsWith(',')) {
     const end = body.endsWith('{') ? body.length - 1 : body.length
@@ -39,20 +39,25 @@ function paint(text: string, pattern: RegExp, role: (match: string) => Role, res
 
 /** Pseudo-classes and pseudo-elements read as keywords; escaped characters stay in the class name. */
 function selectorParts(selector: string): Part[] {
-  return paint(selector, /(?<!\\)::?[a-z-]+|,/gi, (text) => text === ',' ? 'punct' : 'keyword', 'selector')
+  return paint(selector, /(?<!\\)::?[a-z-]+|(?<!\\)[,()]/gi, (text) => /^[,()]$/.test(text) ? 'punct' : 'keyword', 'selector')
 }
 
-/** Query features read as properties and comparisons as punctuation. */
+/** Query features read as properties and comparisons as punctuation; a feature's value, as in `(display: grid)`, stays plain. */
 function queryParts(prelude: string): Part[] {
-  return paint(prelude, /[a-z-]+(?=\s*(?:[<>=:]|\)))|-?(?:\d*\.)?\d+(?:%|[a-z]+)?|[<>]=?|[=:(),{}]/gi, (text) => {
+  return paint(prelude, /[a-z-]+(?=\s*[<>=:])|(?<=\(\s*)[a-z-]+(?=\s*\))|-?(?:\d*\.)?\d+(?:%|[a-z]+)?|[<>]=?|[=:(),{}]/gi, (text) => {
     if (/^-?(?:\d|\.)/.test(text)) return 'number'
     return /^[a-z-]+$/i.test(text) ? 'property' : 'punct'
   }, 'utility')
 }
 
-/** Split paint roles while retaining every character, space, unit and native CSS value; `var()` arguments stay plain. */
+/**
+ * Split paint roles while retaining every character, space, unit and native CSS value; `var()` arguments stay plain.
+ * Quoted strings take the string color, `!important` reads as a keyword and math operators as punctuation.
+ */
 function valueParts(value: string): Part[] {
-  return paint(value, /--[\w-]+|#[\da-f]{3,8}\b|-?(?:\d*\.)?\d+(?:%|[a-z]+)?|[a-z-]+(?=\()|[(){},/]/gi, (text) => {
+  return paint(value, /"[^"]*"?|'[^']*'?|!\s*important\b|--[\w-]+|#[\da-f]{3,8}\b|-?(?:\d*\.)?\d+(?:%|[a-z]+)?|[a-z-]+(?=\()|[(){},/*+]|(?<=\s)-(?=\s)/gi, (text) => {
+    if (/^["']/.test(text)) return 'base'
+    if (text.startsWith('!')) return 'keyword'
     if (text.startsWith('--')) return 'utility'
     if (/^#|^-?(?:\d|\.)/.test(text)) return 'number'
     return /^-?[a-z]/i.test(text) ? 'function' : 'punct'

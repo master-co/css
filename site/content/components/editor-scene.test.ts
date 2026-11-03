@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import { editorFeatures } from './editor-content'
 import { getEditorModel } from './editor-document'
 import { editorCSSParts } from './editor-syntax'
-import { createEditorScenes, hexToHsv, hsvToHex, isDark, measureEditor } from './editor-scene'
+import { createEditorScenes, hexToHsv, hsvToHex, isDark, literalParts, measureEditor } from './editor-scene'
 
 const model = getEditorModel()
 const geometry = measureEditor(model)
@@ -91,4 +91,17 @@ test('syntax paint retains the exact CSS returned for every class, including whi
   assert.deepEqual(roles('    .fg-blue-70\\:hover\\@sm:hover {'), { '.fg-blue-70\\:hover\\@sm': 'selector', ':hover': 'keyword', '{': 'punct' })
   assert.deepEqual(roles('  :root,'), { ':root': 'keyword', ',': 'punct' })
   assert.equal(roles('    color: var(--color-blue-70)')['--color-blue-70'], 'utility')
+  assert.deepEqual(roles('  width: calc(100% - 2rem) !important;'), { width: 'property', ':': 'punct', calc: 'function', '(': 'punct', '100%': 'number', '-': 'punct', '2rem': 'number', ')': 'punct', '!important': 'keyword', ';': 'punct' })
+  assert.equal(roles('  font-family: "Inter", sans-serif;')['"Inter"'], 'base')
+  assert.deepEqual(roles('  @supports (display: grid) {'), { '@supports': 'keyword', '(': 'punct', display: 'property', ':': 'punct', grid: 'utility', ')': 'punct', '{': 'punct' })
+  assert.deepEqual(roles('  .b:not(.c) {'), { '.b': 'selector', ':not': 'keyword', '(': 'punct', '.c': 'selector', ')': 'punct', '{': 'punct' })
+})
+
+test('a picked literal color replaces only the literal and keeps the closing parenthesis', () => {
+  const item = model.classes[model.literalClass]
+  assert.equal(literalParts(item, geometry.literalHex).map(([text]) => text).join(''), item.name)
+  const picked = literalParts(item, '#0ea5e9')
+  assert.equal(picked.map(([text]) => text).join(''), item.name.replace(geometry.literalHex, '#0ea5e9'))
+  assert.deepEqual(picked.at(-1), [')', 'punct'])
+  assert.ok(picked.some(([text, role]) => text === '#0ea5e9' && role === 'number'))
 })

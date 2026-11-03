@@ -12,7 +12,7 @@
   import HomeEditorTab from './HomeEditorTab.svelte'
   import HomeEditorWindow from './HomeEditorWindow.svelte'
   import HomeIllustrationArt from '@master/internal-site/home/HomeIllustrationArt.svelte'
-  import { createEditorScenes, hexToHsv, hsvToHex, isDark, measureEditor, menuRows, picker, pickerStyle, type Frame, type Geometry, type HSV } from './editor-scene'
+  import { createEditorScenes, hexToHsv, hsvToHex, isDark, literalParts, measureEditor, menuRows, picker, pickerStyle, type Frame, type Geometry, type HSV } from './editor-scene'
   import { editorCSSParts } from './editor-syntax'
   import { filterCompletions, type EditorClass, type EditorFeature, type EditorModel, type EditorRole } from './editor-content'
   import type { HomeIllustrationId } from '@master/internal-site/home/home-illustration.ts'
@@ -316,9 +316,7 @@
   function tokenParts(index: number, hex: string) {
     const item = model.classes[index]
     const isLiteral = index === model.literalClass
-    const parts: [string, EditorRole][] = isLiteral
-      ? [...item.parts.slice(0, item.swatch!.at === 0 ? 0 : item.parts.findIndex(([text]) => text === ':') + 1), ['#', 'base'], [hex.slice(1), 'number']]
-      : item.parts
+    const parts = isLiteral ? literalParts(item, hex) : item.parts
     const children: TokenPart[] = []
     let offset = 0
     parts.forEach(([text, role], position) => {
