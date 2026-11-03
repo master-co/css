@@ -8,17 +8,21 @@ Master CSS is a CSS framework for styling interfaces in markup and defining shar
 
 You can start with the supplied colors, spacing and typography. You do not need to design a complete theme before building your first component.
 
-## Style an interface in markup \{#overview\}
+## Build an interface with CSS and utilities \{#overview\}
 
-This card combines local layout choices with shared values. `w-full` sets its width, `p-lg` gives its content named spacing, and `bg-surface-raised` selects a surface color from the preset.
+This card combines a native component class with utilities. `.action` defines the button's base styles in CSS; `w-full`, `mt-md` and `bg-blue-60` choose its width, margin and color for this card. The rest of the markup uses preset utilities for layout, spacing and typography.
 
-<Overview />
-
-The preview and its source use the same markup. After [Installation](/guide/installation), paste it into a source file your integration scans. Your app stylesheet should load the preset:
+After [Installation](/guide/installation), add the example's CSS after the preset import in your app stylesheet, and put its HTML in a source file your integration scans:
 
 ```css name=app.css
 @import '@master/css';
 ```
+
+<Overview />
+
+The preview uses the displayed CSS and HTML together. `.action` is defined by this example in `@layer components`; Master generates the utility rules from the classes in markup. Keep the button's common geometry and focus treatment in `.action`, while this instance keeps its blue colors and full width.
+
+Try changing `p-lg` to `p-md`: the card's content padding becomes smaller without changing the button's base styles.
 
 The image URL assumes your app serves `/building.jpg`. Replace it with your own image and alternative text, and point the link to a page in your app.
 
@@ -32,7 +36,7 @@ Take `p-lg` from the card. The preset connects `p-` to padding and `lg` to the s
 
 The browser applies `padding: var(--spacing-lg)` to the matching element. With the preset's value, that is `1.5rem` on all four sides. The class stays the same if you change the shared value in your theme.
 
-Other classes express different kinds of decisions: `flex` is a fixed utility for `display: flex`, while `bg-blue-70:hover` adds a hover state. The [Syntax tutorial](/guide/syntax-tutorial) walks through values, selectors and conditions in a working example.
+Other classes express different kinds of decisions: `w-full` is a fixed utility for `width: 100%`, while `bg-blue-70:hover` adds a hover state. The [Syntax tutorial](/guide/syntax-tutorial) walks through values, selectors and conditions in a working example.
 
 ## Define what should change together
 
@@ -46,7 +50,7 @@ Add a theme token when several elements should share a project decision. For a p
 
 Changing `--color-brand` updates elements that use it. Share that token because the elements should change together; two unrelated colors can have the same value without needing the same name. [Theme tokens](/guide/theme) explains how to define and override shared values.
 
-Native CSS belongs here too. Keep complex selectors and reusable component styles in your stylesheet, and use ordinary UI components to share repeated markup. [Reusing styles](/guide/reusing-styles) helps you choose between a shared token, a component class and a custom utility.
+Use a component class such as `.action` when several elements should share a styling contract, and a UI component when they should share markup. A long class list alone does not require a new CSS name. [Reusing styles](/guide/reusing-styles) helps you choose between a shared token, a component class and a custom utility.
 
 <GuideStudy id="language-and-delivery" />
 

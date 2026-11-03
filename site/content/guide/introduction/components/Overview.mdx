@@ -1,11 +1,30 @@
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 
-<DemoConfiguredExample name="introduction-panel" title="A card styled in markup" source="" caption="The card uses preset spacing, type and surface colors, with blue-60 for its action. Hover or focus the link to see its interaction state." html={`<article class="overflow-hidden w-full (max-width:22.5rem) mx-auto r-lg bg-surface-raised shadow-sm">
+<DemoConfiguredExample name="introduction-panel" title="A card built with CSS and utilities" source={`@layer components {
+  .action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--text-sm--line-height, normal);
+    letter-spacing: var(--text-sm--letter-spacing, normal);
+    text-decoration-line: none;
+    outline-offset: 3px;
+
+    &:focus-visible {
+      outline: 2px solid;
+    }
+  }
+}`} caption="The action class defines the button's base styles. Utilities give this instance its width, margin and blue colors. Hover or focus the link to see its interaction state." html={`<article class="overflow-hidden w-full (max-width:22.5rem) mx-auto r-lg bg-surface-raised shadow-sm">
   <img src="/building.jpg" width="640" height="360" alt="Sunlit facade of a contemporary building" class="block w-full h-auto (aspect-ratio:16/9) object-cover">
   <div class="p-lg">
     <p class="m(0) text-2xs font-regular tracking-widest uppercase fg-text-blue">Launch panel</p>
     <h2 class="mt-xs mb(0) text-md font-regular fg-text-strong">Build the first screen in markup</h2>
     <p class="mt-xs mb(0) text-sm leading-lg fg-text-muted">Start with local classes, then promote repeated values into your project theme when the interface settles.</p>
-    <a class="flex items-center justify-center w-full mt-md px-md py-xs (min-height:2.75rem) text-sm font-regular r-md bg-blue-60 fg-white bg-blue-70:hover bg-blue-80:active outline(2):focus-visible outline-solid:focus-visible outline-offset(3) outline-blue-60:focus-visible (text-decoration-line:none)" href="/guide/installation" target="_top">Start building</a>
+    <a class="action w-full mt-md bg-blue-60 fg-white bg-blue-70:hover bg-blue-80:active outline-blue-60:focus-visible" href="/guide/installation" target="_top">Start building</a>
   </div>
 </article>`} />
