@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import ColorIllustration from './components/ColorIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -34,6 +35,8 @@ Build interface color from roles: surface, line and text colors whose class stay
 <Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
 
 The role is part of the color key: `bg-surface-raised` reads `--color-surface-raised`, and `b-line-divider` reads `--color-line-divider`. A line role sets only the color, so give the border its width and style separately. See [Color roles](/reference/tokens/color-roles) for every role and [Color palette](/reference/tokens/color) for the palette.
+
+<ReferenceIllustration id="border-ingredients" />
 
 ---
 
@@ -75,6 +78,8 @@ A raised surface combines a surface role, a radius token and a shadow token. Rai
 
 Preset shadows use `light-dark()` for their colors, so `shadow-sm` keeps its geometry and follows the element's color scheme. `pill` is a fixed utility, not a radius token; with equal width and height it draws a circle. Round single corners with `rtl-lg`, `rtr-lg`, `rbl-lg` and `rbr-lg`. See [Radius](/reference/tokens/radius) and [Shadow](/reference/tokens/shadow) for the scales and their customization.
 
+<ReferenceIllustration id="pill-aspect" />
+
 ---
 
 ## Light and dark modes \{#native-color-scheme-and-manual-themes\}
@@ -106,6 +111,8 @@ The `@light` and `@dark` suffixes are `prefers-color-scheme` media queries. A ma
 ```
 
 The mixin also matches inside a nested light region, because it tests the attribute rather than the used color scheme. Prefer adaptive tokens; see [Variables and modes](/reference/rules/modes) for scope and resolution.
+
+<ReferenceIllustration id="manual-wrapper-reach" />
 
 <GuideStudy id="local-color-scheme" />
 

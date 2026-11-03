@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import StepSection from '@master/internal-site/components/StepSection.astro'
@@ -322,12 +323,16 @@ runtime.observe()
 
 Load `master.js` as a module beside the stylesheet, keeping the layout's other tags:
 
+<DocumentComparison>
+
 | Host | Module script |
 | --- | --- |
 | PHP, Express | `<script type="module" src="/assets/master.js"></script>` before `</body>` |
 | Rails | `<%= javascript_include_tag "/assets/master.js", type: "module", "data-turbo-track": "reload" %>` |
 | ASP.NET Core | `<script type="module" src="~/assets/master.js" asp-append-version="true"></script>` |
 | Blazor | `<script type="module" src="assets/master.js"></script>` after the Blazor bootstrap script |
+
+</DocumentComparison>
 
 WordPress 6.5 or later loads the module with [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/) inside the same hook:
 

@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LayoutIllustration from './components/LayoutIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -59,6 +60,14 @@ When a distance becomes a repeated decision, name it by its role. A numeric key 
 <section class="py-section">…</section>
 ```
 
+`px-*` and `py-*` set logical inline and block padding. Their physical direction follows the element's writing mode:
+
+<ReferenceIllustration id="logical-inline-axis" />
+
+`p-*` sets all four sides. Add a side-specific class when just one inset should differ:
+
+<ReferenceIllustration id="padding-coverage" />
+
 ---
 
 ## Cap widths with container sizes \{#use-container-tokens\}
@@ -112,6 +121,8 @@ Keep page alignment on the wrapper and content relationships on the grids inside
 ```
 
 <Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+<ReferenceIllustration id="span-includes-gaps" />
 
 Use `col-gap-*` and `row-gap-*` when the two axes need different spacing tokens. See [Grid tracks](/reference/grid-tracks).
 

@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import DemoViewTransition from '@master/internal-site/demo/DemoViewTransition.astro'
@@ -248,11 +249,15 @@ A `@motion-safe` duration override alone does **not** disable the browser's defa
 
 The transition object exposes three different milestones:
 
+<DocumentComparison>
+
 | Promise | What it tells you |
 | --- | --- |
 | `updateCallbackDone` | The DOM update callback completed, or failed |
 | `ready` | The animation is ready, or was skipped before starting |
 | `finished` | The transition ended, including a skipped animation; rejects if the update failed |
+
+</DocumentComparison>
 
 A resolved `finished` does not prove the animation played through. The main example handles `ready` rejection without repeating the update, and propagates an update error to `reportError`. In an application, replace that reporting with your error boundary or recovery UI. See the [update callback contract](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/updateCallbackDone).
 

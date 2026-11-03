@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import MaterialUIIllustration from './components/MaterialUIIllustration.astro'
 
 Material UI and Master CSS can coexist. Most projects should migrate app-owned layout, product surfaces, and repeated `sx` styles first, while keeping Material UI components where their accessibility, state management, slots, and JavaScript behavior still provide value.
@@ -11,12 +12,16 @@ Use the [shared migration workflow](/guide/migration#migration-strategy) for eac
 
 Choose the boundary before translating `sx`:
 
+<DocumentComparison>
+
 | Styling belongs to… | Migrate or retain |
 | --- | --- |
 | An app-owned layout wrapper | Convert static `sx` values after resolving the actual theme scale. |
 | A repeated product surface | Define shared tokens and, if useful, a native component class. |
 | A MUI slot or owner-state variant | Keep `slotProps`, `classes`, `styleOverrides` or the existing wrapper with its component. |
 | A dialog, menu, select or data grid | Preserve its component behavior and test focus, keyboard and state before considering a replacement. |
+
+</DocumentComparison>
 
 Many projects stop at coexistence: Master CSS owns app layout and custom surfaces, while Material UI continues to own interactive widgets.
 

@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import StepSection from '@master/internal-site/components/StepSection.astro'
@@ -144,11 +145,15 @@ First change `p-md` to `p-lg` in the source while the dev server is running. The
 
 Build with the command for your bundler:
 
+<DocumentComparison>
+
 | Bundler | Production build |
 | --- | --- |
 | Webpack | `npx webpack --mode production` |
 | Rspack | `npx rspack build --mode production` |
 | Rsbuild | `npx rsbuild build` |
+
+</DocumentComparison>
 
 Serve the emitted directory with an HTTP server. The paragraph should have `1rem` padding, a raised surface and rounded corners. In static mode, its utilities come from linked CSS without a Master CSS runtime. HTML-template content stays styled with JavaScript disabled; a client-rendered framework still needs JavaScript to create its content.
 

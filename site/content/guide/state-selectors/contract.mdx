@@ -78,6 +78,10 @@ A combinator moves from the class-bearing element to another element. The declar
 
 <Class2CSS classes={['underline_a', 'underline>a', 'underline+a', 'underline~a', 'underline>*']} />
 
+<ReferenceIllustration id="descendant-depth" />
+
+<ReferenceIllustration id="sibling-direction" />
+
 ### State position \{#state-position\}
 
 The position of a state determines which element must match it. These two classes share the same parent-to-child relationship but test hover at different points:
@@ -124,6 +128,8 @@ Commas inside functions or quoted attribute values stay inside those constructs.
 
 <Class2CSS classes={['underline:is(:hover,:focus-visible)', "underline[data-label='draft,review']"]} />
 
+<ReferenceIllustration id="selector-list-branches" />
+
 ### Selector functions \{#selector-functions\}
 
 <a id="not"></a>
@@ -147,6 +153,8 @@ Commas inside functions or quoted attribute values stay inside those constructs.
 <Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
 
 A relative match can also be a sibling: `underline:has(+input:checked)` underlines the class-bearing element when the next element sibling is a checked input. Native [`:has()` restrictions](https://www.w3.org/TR/selectors-4/#relational) still apply; nesting `:has()` inside itself is invalid. For a working checkbox example and a usable fallback, see [Compatibility](/guide/compatibility#new-selectors).
+
+<ReferenceIllustration id="has-owner-target" />
 
 ## Native states \{#pseudo-classes\}
 
@@ -205,6 +213,8 @@ Attribute suffixes test the DOM value. A boolean-style attribute selector tests 
 | `[lang\|=en]` | Value is `en` or begins `en-` |
 | `[title~=css]` | Whitespace-separated value contains the word `css` |
 
+<ReferenceIllustration id="attribute-word-match" />
+
 Quoted attribute text remains literal: `underline[data-state=':first']:first-child` tests the value `:first` and separately tests the element's position. An underscore in `[data-id='a_b']` stays inside the value; an escaped underscore in `.is\_active` stays in the class identifier.
 
 ```html
@@ -234,6 +244,8 @@ A pseudo-element suffix targets that pseudo-element rather than its originating 
 
 <Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
 
+<ReferenceIllustration id="pseudo-element-origin" />
+
 Write vendor-specific selectors explicitly. Master CSS preserves their spelling; it does not expand a pseudo-element into vendor variants or supply browser support. For quoted values containing parentheses, see [native declaration boundaries](/reference/rules/declarations#declaration-heads).
 
 ## Specificity \{#specificity\}
@@ -251,6 +263,8 @@ The generated selector follows the browser's [specificity rules](https://develop
 `:is()`, `:not()` and `:has()` use the most specific argument in their selector list. `:where()` adds no specificity, including from its arguments. Combinators and the universal selector add none. These weights apply after the cascade has resolved origin, importance and layer precedence; a higher-specificity selector does not automatically defeat a rule in another layer.
 
 <Class2CSS classes={['underline:where(:hover,#selected)', 'underline:is(:hover,#selected)']} />
+
+<ReferenceIllustration id="where-specificity" />
 
 Use [Cascade layers](/reference/rules/layers) for rule ordering and [the Guide's override workflow](/guide/cascade-layers#override-a-component-locally) for practical decisions. Reordering classes in HTML does not change specificity.
 

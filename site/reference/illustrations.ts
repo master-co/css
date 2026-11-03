@@ -1,8 +1,10 @@
+import { studyIllustrations } from './study-illustrations'
 import { toolIllustrations } from './tool-illustrations'
 import { directiveIllustrations } from './directive-illustrations'
 
 /** Shared evidence for authored Reference figures and their portable text. */
 export const referenceIllustrations = {
+  ...studyIllustrations,
   ...directiveIllustrations,
   ...toolIllustrations,
   'grid-track-flow': {

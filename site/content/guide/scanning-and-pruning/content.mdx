@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -20,6 +21,8 @@ Do not assemble a class from fragments such as `'bg-' + tone`: neither result ex
 Both branches are visible even though only one is used at a time. The active project definitions determine what each class generates:
 
 <Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+<ReferenceIllustration id="static-branch-extraction" />
 
 ## Keep changing values out of class names
 
@@ -67,6 +70,8 @@ Native class rules in a Master-managed stylesheet are preserved by default. Add 
 The output keeps `.card` and removes `.unused`. The directive applies only to the file that declares it; imported files keep their own policy. To prune every project-owned stylesheet, set the integration option `pruneNativeCSS: true` instead. Package styles stay preserved unless they opt in.
 
 Pruning checks class names, not DOM structure, and keeps rules without class selectors. See [Native CSS pruning](/reference/directives/pruning) for import graphs, root scope, rule filtering and keyframes.
+
+<ReferenceIllustration id="pruning-global-selectors" />
 
 ### Preserve a vendor stylesheet \{#preserve-native-css\}
 

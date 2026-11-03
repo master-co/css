@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LintIllustration from './components/LintIllustration.astro'
 
@@ -110,6 +111,8 @@ Variant scope matters. Classes with different selectors, modes, or conditions do
 ```mcss
 (margin:2.5rem)@sm (margin:3.125rem)@md
 ```
+
+<ReferenceIllustration id="lint-overlap-context" />
 
 A fully overridden class can be removed automatically. The winner follows generated CSS ordering, not the order of class names in the HTML. Reversing the two margin classes above still leaves `(margin:1.25rem)` as the winner.
 

@@ -721,6 +721,32 @@ test('delivery payload charts count complete responses once and omit absent asse
   assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.1 kB/)
 })
 
+test('additional article figures retain their complete lesson in Markdown and both search indexes', async () => {
+  const { detailIllustrations } = await import('../reference/detail-illustrations')
+  const { generateReference } = await import('../reference/build')
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const pages = await loadPages(path.join(root, 'content'))
+  const catalog = await generateReference(root)
+  const documents = [
+    ...pages.map(page => ({ url: page.url.replace(/^\/en(?=\/)/, ''), markdown: page.body })),
+    ...catalog.documents
+  ]
+  for (const locale of ['en', 'tw']) {
+    const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+    for (const [id, figure] of Object.entries(detailIllustrations)) {
+      const document = documents.find(doc => doc.markdown.includes(`**${figure.title}**`))
+      assert.ok(document, `${id}: portable article`)
+      const entry = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === document.url)
+      assert.ok(entry, `${locale}/${id}: searchable article`)
+      const text = entry.nodes.map((node: { text: string }) => node.text).join('\n')
+      for (const paragraph of [figure.caption, ...figure.description]) {
+        assert.ok(document.markdown.includes(paragraph), `${id}: complete Markdown explanation`)
+        assert.ok(text.includes(paragraph), `${locale}/${id}: complete search explanation`)
+      }
+    }
+  }
+})
+
 test('all Guide studies retain their full lesson in search and Markdown', async () => {
   const { guideStudies, guideStudyMarkdown } = await import('../content/guide/studies')
   const root = fileURLToPath(new URL('..', import.meta.url))

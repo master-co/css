@@ -284,7 +284,8 @@ test('language contracts export portable examples, complete CSS and stable secti
 test('Reference illustrations retain their explanation in portable content and search', async () => {
   const { referenceIllustrations, referenceIllustrationMarkdown } = await import('./illustrations')
   const tokenFigures = catalog.documents.flatMap(doc => doc.sheet?.kind === 'tokens' && doc.sheet.explanation ? [[doc.id, doc.sheet.explanation.illustration] as const] : [])
-  for (const [documentId, figureId] of [...tokenFigures, ...[['rules/declarations', 'native-value-boundary'], ['rules/selectors', 'selector-targets'], ['rules/conditions', 'nested-conditions'], ['rules/modes', 'inline-resolution'], ['rules/layers', 'layer-precedence'], ['rules/extraction', 'shared-source-class'], ['rules/named-conditions', 'condition-domains'], ['tokens/families', 'namespace-lookup']] as const]) {
+  const authoredFigures = catalog.documents.flatMap(doc => [...doc.markdown.matchAll(/<!-- reference-illustration:([\w-]+) -->/g)].map(match => [doc.id, match[1] as keyof typeof referenceIllustrations] as const))
+  for (const [documentId, figureId] of [...tokenFigures, ...authoredFigures, ...[['rules/declarations', 'native-value-boundary'], ['rules/selectors', 'selector-targets'], ['rules/conditions', 'nested-conditions'], ['rules/modes', 'inline-resolution'], ['rules/layers', 'layer-precedence'], ['rules/extraction', 'shared-source-class'], ['rules/named-conditions', 'condition-domains'], ['tokens/families', 'namespace-lookup']] as const]) {
     const doc = catalog.documents.find(doc => doc.id === documentId)!
     const figure = referenceIllustrations[figureId]
     const portable = renderDocumentMarkdown(doc, catalog)
@@ -292,7 +293,12 @@ test('Reference illustrations retain their explanation in portable content and s
     assert.ok(doc.markdown.includes(referenceIllustrationMarkdown(figureId)))
     const tree = markdownTree(doc.markdown)
     const markers = tree.children.filter(node => node.type === 'html' && node.value.includes('reference-illustration'))
-    assert.equal(markers.length, 2)
+    const starts = markers.filter(node => node.type === 'html' && node.value.startsWith('<!-- reference-illustration:'))
+    assert.equal(markers.length, starts.length * 2)
+    for (let index = 0; index < markers.length; index += 2) {
+      assert.match((markers[index] as { value: string }).value, /^<!-- reference-illustration:[\w-]+ -->$/)
+      assert.equal((markers[index + 1] as { value: string }).value, '<!-- /reference-illustration -->')
+    }
     assert.ok(portable.includes(figure.caption))
     for (const text of figure.description) assert.ok(portable.includes(text))
     assert.doesNotMatch(portable, /reference-illustration|<ReferenceIllustration/)

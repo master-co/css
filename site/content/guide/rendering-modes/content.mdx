@@ -1,3 +1,5 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
 import StepSection from '@master/internal-site/components/StepSection.astro'
@@ -129,13 +131,19 @@ The engine needs its program before it can generate the first rules. On a runtim
 </html>
 ```
 
+<DocumentComparison>
+
 | File | Preload? |
 | --- | --- |
 | CDN `default-program.bin` | Yes, on CDN runtime-only pages that use the packaged default preset. |
 | Project program `master-css-program.<hash>.bin` | Yes, on runtime-only pages; official runtime integrations add the hint. No on progressive pages, where the engine and program wait until a class needs them. |
 | Page hydration manifest | No. It is handoff data the browser does not need to paint. |
 
+</DocumentComparison>
+
 Confirm in DevTools that the runtime reuses the preloaded response instead of requesting it again. See [`rel="preload"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload) for the matching rules.
+
+<ReferenceIllustration id="preload-is-data" />
 
 ---
 
@@ -229,12 +237,16 @@ Vite and Webpack cannot add server behavior to a framework merely because it use
 ## Verify the selected mode
 Test a production build as well as development: an integration may use runtime generation during development even when production pre-renders CSS.
 
+<DocumentComparison>
+
 | Mode | What to verify |
 | --- | --- |
 | Static | The generated HTML loads the stylesheet, and representative complete source classes have rules in it. Those styles remain with JavaScript disabled. |
 | Pre-render | The response source contains `style#master-css` with the page's rules. Verify before running JavaScript; the live DOM alone cannot prove pre-rendering occurred. |
 | Runtime | Insert a class absent from the initial DOM and check its computed style and generated CSS rule after the runtime observes it. |
 | Progressive | Verify pre-rendered CSS first, then introduce a class absent from the page manifest and check that its rule is generated. Test dynamic SSR routes separately if the adapter only processes build-time HTML. |
+
+</DocumentComparison>
 
 ### Inspect the running stylesheet \{#running-style-sheet\}
 The runtime owns `style#master-css` and updates its CSSOM. The element's text content is not a reliable live view after startup. Inspect the stylesheet's [cssRules](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/cssRules) instead:
@@ -246,11 +258,15 @@ console.log(sheet.cssRules)
 
 ### Diagnose progressive startup
 
+<DocumentComparison>
+
 | Observation | Meaning and next check |
 | --- | --- |
 | CSS is rebuilt after a warning | The existing rules do not match the hydration data, or the style has no manifest pointer. Check that HTML, CSS and manifest assets belong to the same build. |
 | Startup rejects with `INVALID_HYDRATION_MANIFEST` | A referenced inline or external manifest could not be loaded or validated. Check the asset URL, response and deployed files. |
 | Initial CSS works but new classes do not | The deferred engine may have failed to load. Inspect `onDiagnostic`, the program request and `cssRuntime.snapshot().engine`. Existing pre-rendered CSS is retained; `refresh()` or a new `start()` can retry. |
+
+</DocumentComparison>
 
 When new classes are likely soon after load, `enginePrefetch: 'idle'` starts the engine during idle time. Use `engine: 'eager'` to start it during `start()`. Both change the default deferral tradeoff and should be chosen for the page's actual interactions.
 

@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import TypeIllustration from './components/TypeIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -64,9 +65,13 @@ Set the app typeface once in `@theme`. The preset base layer applies it to the d
 
 The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp` and `pre`. The `--font-feature-*` tokens are optional and fall back to `normal`; form controls inherit the surrounding font. Load the font files with `@font-face` or a provider stylesheet. For a single element, use a class such as `font-mono` instead.
 
+<ReferenceIllustration id="font-loading-boundary" />
+
 ## Verify with real text
 
 Check a short heading, a long heading and a full paragraph at the actual content width. Repeat with narrow screens and larger text. Watch line breaks and clipped accents or descenders, not only the computed font size.
+
+<ReferenceIllustration id="reading-measure" />
 
 <GuideStudy id="type-content-height" />
 

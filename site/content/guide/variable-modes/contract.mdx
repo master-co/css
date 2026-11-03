@@ -31,6 +31,8 @@ A token family determines which namespace to search. The key is the remaining pa
 
 The [family index](/reference/tokens/families) owns the complete prefix-to-namespace mapping. Full CSS property names do not create token families automatically. Register a custom pattern with [`@utility`](/reference/directives/definitions#utilities) when a project needs a new mapping. Fixed spellings such as `w-full` retain their fixed definition even if a token with the same key exists; see [class resolution](/reference/rules/declarations).
 
+<ReferenceIllustration id="registration-boundary" />
+
 ## Dependency delivery \{#variable-lifecycle\}
 
 A generated declaration normally retains its `var()` reference. Used managed tokens emit under `:root, :host` in the `theme` layer, together with their transitive managed dependencies.
@@ -42,6 +44,8 @@ A generated declaration normally retains its `var()` reference. Used managed tok
 When a token is live, its duplicate declarations remain in source order. Dependencies referenced by those values remain live too. Native stylesheet references can retain managed tokens; native custom-property declarations and scoped overrides remain part of their owning stylesheet and follow that file's preservation policy.
 
 Master CSS does not choose a light, dark or viewport-specific value while generating a class. Inspection can report the authored declarations and dependencies; it cannot establish a computed value without the element, its ancestors and the browser environment.
+
+<ReferenceIllustration id="token-dependency-chain" />
 
 ### Missing names and invalid values
 

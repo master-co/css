@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import MonorepoIllustration from './components/MonorepoIllustration.astro'
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
@@ -93,6 +94,8 @@ Shared files define the vocabulary; each app's entry decides what to import. Kee
 A shared CSS import supplies definitions. Class strings inside a shared component still need to reach the consuming app's scanner. Vite can scan imported workspace modules, while a CLI build started inside an app does not follow JavaScript imports into sibling packages.
 
 If components live in `packages/ui`, add `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";` to each consuming app's CSS entry. This explicit path includes the shared source in the app's build. It is relative to the CSS file that declares it, so adjust the path when the entry moves.
+
+<ReferenceIllustration id="source-relative-base" />
 
 Installed dependency directories are excluded from automatic scanning. A packaged component library may need a narrow `@source` pattern targeting its distributed source files. Check a class that appears only in that package against the app's production output. See [source boundaries](/reference/rules/extraction#source-boundaries) for exclusions and other source types.
 

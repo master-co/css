@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TailwindIllustration from './components/TailwindIllustration.astro'
 
 Tailwind CSS v4 and Master CSS both generate CSS from class names and CSS directives, but they are not drop-in replacements for each other. Treat the migration as a change of styling implementation: install Master CSS beside Tailwind, convert one route or component family at a time, and remove Tailwind only after the migrated surfaces build and visually match the intended design.
@@ -29,6 +30,8 @@ converted result.
 
 Use the [shared migration workflow](/guide/migration#migration-strategy) for coexistence, baseline captures and removal checks. During the first batch, inventory these Tailwind-specific contracts:
 
+<DocumentComparison>
+
 | Contract | What to preserve or replace |
 | --- | --- |
 | Compiler input | Keep Tailwind directives with Tailwind’s compiler; import ordinary generated CSS into the Master entry. |
@@ -36,6 +39,8 @@ Use the [shared migration workflow](/guide/migration#migration-strategy) for coe
 | Preflight, plugins and global CSS | Retain the rules that untouched screens still need. |
 | Class processing | Replace Tailwind-specific merging and fragment assembly with deliberate class maps. |
 | Component internals | Keep vendor CSS and complex selectors until the component itself is migrated. |
+
+</DocumentComparison>
 
 Avoid global search-and-replace. The two systems have different resets, scales, ring models and directive contracts. Even an identical keyword can mean a different operation.
 

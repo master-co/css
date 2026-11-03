@@ -149,6 +149,8 @@ A static name wins over a same-spelled token class. For example, `w-full` remain
 
 Use the [token family index](/reference/tokens/families) for complete prefix-to-namespace mappings, and [utility definitions](/reference/directives/definitions#utilities) for registration and replacement rules. [Theme tokens](/guide/theme) owns the workflow for defining and scoping project values.
 
+<ReferenceIllustration id="fixed-name-reservation" />
+
 ### Direct numeric values \{#direct-values\}
 
 Preset functions such as `m(4)`, `b(1)` and `grow(1)` take one static number. Length functions emit a multiplication by `1px`; `grow()`, `shrink()` and `order()` pass the number through, with `order()` requiring an integer. Zero, decimals and negative arguments follow each parameter's declared type.
@@ -195,6 +197,8 @@ Here the native padding follows both utilities, while `mt(0)` and `mx-auto` over
 A final `!` marks the class's declarations important. A trailing native `!important` inside a parenthesized value has the same effect; writing both emits it once. The text `'!important'` inside a string remains content.
 
 <Class2CSS classes={['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]} />
+
+<ReferenceIllustration id="important-recipe" />
 
 ## Fixed utility lookup \{#fixed-utilities\}
 

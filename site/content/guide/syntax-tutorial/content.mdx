@@ -1,3 +1,5 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
@@ -32,9 +34,13 @@ The class has three parts. `fg-blue-60` selects the style, `:hover` selects a st
 
 The generated rule sets `color` through a CSS variable and sits inside a media query. Its selector escapes punctuation to match the literal HTML class name. Write the readable form in HTML; escaped CSS selectors belong in the generated output.
 
+<ReferenceIllustration id="suffix-ownership" />
+
 ## Choose how to supply a value \{#values\}
 
 Use the preset's names for common decisions. When you need an exact local value, pass a number to a supported function or write a native declaration:
+
+<DocumentComparison>
 
 | Write | Decision |
 | --- | --- |
@@ -43,6 +49,8 @@ Use the preset's names for common decisions. When you need an exact local value,
 | `p(12)` | A direct value: 12 pixels of padding |
 | `(max-width:32rem)` | A native declaration with a full CSS property and value |
 | `text-sm` | A recipe coordinating text size, line height and tracking |
+
+</DocumentComparison>
 
 <Class2CSS classes={['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']} />
 
@@ -68,11 +76,15 @@ The color becomes `rgb(30 60 90 / 80%)`. Inside the quoted content string, the p
 
 A token class connects a prefix to a named value. `p-md` and `gap-md` both read the spacing token `--spacing-md`, but set different properties:
 
+<DocumentComparison>
+
 | Class | Declaration |
 | --- | --- |
 | `p-md` | `padding: var(--spacing-md)` |
 | `gap-md` | `gap: var(--spacing-md)` |
 | `fg-text-muted` | `color: var(--color-text-muted)` |
+
+</DocumentComparison>
 
 <Class2CSS classes={['p-md', 'gap-md', 'fg-text-muted']} />
 
@@ -154,11 +166,15 @@ A condition controls when a class applies. Add `@sm` to change a style only whil
 
 `@sm` refers to the preset's custom media query. For a one-off viewport threshold, write a native query such as `p-lg@media(width>=48rem)`. Other condition forms follow the same pattern:
 
+<DocumentComparison>
+
 | Class | Condition |
 | --- | --- |
 | `hidden@media(print)` | Printing |
 | `grid@supports(display:grid)` | Support for the declaration |
 | `grid@sm@supports(display:grid)` | Both the named viewport query and declaration support |
+
+</DocumentComparison>
 
 <Class2CSS classes={['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']} />
 

@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
@@ -78,12 +79,16 @@ Native component rules are emitted with their stylesheet by default; [native pru
 
 Before extracting a repeated class list, identify the shared decision. Similar-looking elements do not always need to change together.
 
+<DocumentComparison>
+
 | Share | Use |
 | --- | --- |
 | A value across styles | A theme token |
 | A product role and its states | A native component class |
 | A capability composed in markup | A utility |
 | Declarations or wrappers inside CSS | A mixin |
+
+</DocumentComparison>
 
 The first example gives the action color and padding their own tokens. Another component can read `--spacing-action-x` through `var()` in CSS or `px-action-x` in markup, without taking on the button's background, shape or states. Change that token when both consumers should change; use separate tokens when the values happen to match but serve different purposes. [Theme tokens](/guide/theme) covers naming, aliases and scoped overrides.
 

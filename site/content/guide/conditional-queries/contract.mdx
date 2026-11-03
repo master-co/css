@@ -8,6 +8,8 @@ A condition suffix limits when a class's rule can apply. Master CSS resolves nam
 
 This page defines accepted suffixes, query encoding and composition. For choosing a viewport or component boundary, see [Responsive design](/guide/responsive-design). For progressive enhancement, see [Compatibility](/guide/compatibility).
 
+<ReferenceIllustration id="condition-eligibility" />
+
 ## Query forms \{#arbitrary-conditions-and-queries\}
 
 Append conditions after the utility and any [selector suffix](/reference/rules/selectors). The parentheses in a class delimit the query; do not add a second pair around a media feature, range or supports declaration.
@@ -86,6 +88,8 @@ A project can replace a query while retaining its native units. The preset's `--
 A compiled manifest already contains expanded queries. Adding a definition to that manifest does not re-expand its existing dependent conditions. A configuration fragment that must replace both ranges should declare both names explicitly:
 
 <ConfiguredExample source={'@custom-media --md (width >= 60rem);\n@custom-media --max-md not (--md);'} classes={['hidden@md', 'hidden@max-md']} />
+
+<ReferenceIllustration id="compiled-query-snapshot" />
 
 ### System color preference \{#light--dark--and-custom-modes\}
 

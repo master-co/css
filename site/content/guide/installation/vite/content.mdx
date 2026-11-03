@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import StepSection from '@master/internal-site/components/StepSection.astro'
@@ -194,6 +195,8 @@ Server-rendered HTML does not include runtime-generated CSS before JavaScript ru
 
 Keep the [normal CSS import](https://vite.dev/guide/features#css) for a document stylesheet. Use a different request only when another consumer needs the CSS text or its URL. These requests do not replace the app's Master CSS entry or change its rendering mode.
 
+<DocumentComparison>
+
 | Request | Result and responsibility |
 | --- | --- |
 | `import './app.css'` | Vite loads the processed stylesheet for the document. |
@@ -201,6 +204,8 @@ Keep the [normal CSS import](https://vite.dev/guide/features#css) for a document
 | `import css from './app.css?inline'` | Returns processed CSS text without injecting it; the consumer must attach it. |
 | `import source from './app.css?raw'` | Returns authored source, including any Master directives. It is not browser-ready CSS. |
 | `import href from './local.css?url'` | Returns a URL; attach it as a stylesheet link when the document needs those styles. |
+
+</DocumentComparison>
 
 For example, insert trusted build output into a document you own:
 

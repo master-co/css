@@ -1,3 +1,4 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import SassIllustration from './components/SassIllustration.astro'
 
 Sass and Master CSS can coexist. Keep Sass for vendor imports, generated selectors, complex nesting, and styles that read better as CSS. Move repeated visual values and markup-owned component styles into Master CSS when the result is easier to maintain.
@@ -11,6 +12,8 @@ CSS `@mixin` and Sass `@mixin` share a keyword. Keep Master CSS definitions in `
 ## Migration strategy
 Start from the Sass entry files the app already builds. Follow the [shared migration workflow](/guide/migration#migration-strategy), and separate compile-time work from values the browser should receive.
 
+<DocumentComparison>
+
 | Existing Sass responsibility | Keep or move |
 | --- | --- |
 | Product colors, spacing and radii | Move shared values to `@theme` when their consumers are ready. |
@@ -18,6 +21,8 @@ Start from the Sass entry files the app already builds. Follow the [shared migra
 | A repeated declaration group | Use native component CSS or a Master CSS mixin, depending on where it is consumed. |
 | Local visual rules | Use markup classes when the result is easier to read. |
 | Structural nesting, print rules and complex animations | Keep useful native CSS. |
+
+</DocumentComparison>
 
 A Sass variable is resolved during preprocessing; a CSS custom property participates in the browser’s cascade. Moving a value between them changes when and where it can vary, so inspect every use before replacing it.
 

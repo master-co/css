@@ -68,11 +68,134 @@ import shadowLight from '../assets/images/reference-shadow/shadow-footprint-ligh
 import shadowDark from '../assets/images/reference-shadow/shadow-footprint-dark.png'
 import { referenceIllustrations, type ReferenceIllustrationId } from './illustrations'
 
+import study0light from '../assets/images/reference-studies/ambiguous-namespace-light.png'
+import study0dark from '../assets/images/reference-studies/ambiguous-namespace-dark.png'
+import study1light from '../assets/images/reference-studies/breakpoint-partition-light.png'
+import study1dark from '../assets/images/reference-studies/breakpoint-partition-dark.png'
+import study2light from '../assets/images/reference-studies/condition-eligibility-light.png'
+import study2dark from '../assets/images/reference-studies/condition-eligibility-dark.png'
+import study3light from '../assets/images/reference-studies/contents-insertion-light.png'
+import study3dark from '../assets/images/reference-studies/contents-insertion-dark.png'
+import study4light from '../assets/images/reference-studies/descendant-depth-light.png'
+import study4dark from '../assets/images/reference-studies/descendant-depth-dark.png'
+import study5light from '../assets/images/reference-studies/fixed-name-reservation-light.png'
+import study5dark from '../assets/images/reference-studies/fixed-name-reservation-dark.png'
+import study6light from '../assets/images/reference-studies/important-recipe-light.png'
+import study6dark from '../assets/images/reference-studies/important-recipe-dark.png'
+import study7light from '../assets/images/reference-studies/independent-registrations-light.png'
+import study7dark from '../assets/images/reference-studies/independent-registrations-dark.png'
+import study8light from '../assets/images/reference-studies/keyframe-reachability-light.png'
+import study8dark from '../assets/images/reference-studies/keyframe-reachability-dark.png'
+import study9light from '../assets/images/reference-studies/layer-token-separation-light.png'
+import study9dark from '../assets/images/reference-studies/layer-token-separation-dark.png'
+import study10light from '../assets/images/reference-studies/mixin-splice-light.png'
+import study10dark from '../assets/images/reference-studies/mixin-splice-dark.png'
+import study11light from '../assets/images/reference-studies/padding-coverage-light.png'
+import study11dark from '../assets/images/reference-studies/padding-coverage-dark.png'
+import study12light from '../assets/images/reference-studies/pruning-selector-branches-light.png'
+import study12dark from '../assets/images/reference-studies/pruning-selector-branches-dark.png'
+import study13light from '../assets/images/reference-studies/registration-boundary-light.png'
+import study13dark from '../assets/images/reference-studies/registration-boundary-dark.png'
+import study14light from '../assets/images/reference-studies/selector-list-branches-light.png'
+import study14dark from '../assets/images/reference-studies/selector-list-branches-dark.png'
+import study15light from '../assets/images/reference-studies/sibling-direction-light.png'
+import study15dark from '../assets/images/reference-studies/sibling-direction-dark.png'
+import study16light from '../assets/images/reference-studies/source-replacement-light.png'
+import study16dark from '../assets/images/reference-studies/source-replacement-dark.png'
+import study17light from '../assets/images/reference-studies/static-branch-extraction-light.png'
+import study17dark from '../assets/images/reference-studies/static-branch-extraction-dark.png'
+import study18light from '../assets/images/reference-studies/suffix-ownership-light.png'
+import study18dark from '../assets/images/reference-studies/suffix-ownership-dark.png'
+import study19light from '../assets/images/reference-studies/token-dependency-chain-light.png'
+import study19dark from '../assets/images/reference-studies/token-dependency-chain-dark.png'
+
+import detail0light from '../assets/images/reference-studies/border-ingredients-light.png'
+import detail0dark from '../assets/images/reference-studies/border-ingredients-dark.png'
+import detail1light from '../assets/images/reference-studies/pill-aspect-light.png'
+import detail1dark from '../assets/images/reference-studies/pill-aspect-dark.png'
+import detail2light from '../assets/images/reference-studies/manual-wrapper-reach-light.png'
+import detail2dark from '../assets/images/reference-studies/manual-wrapper-reach-dark.png'
+import detail3light from '../assets/images/reference-studies/font-loading-boundary-light.png'
+import detail3dark from '../assets/images/reference-studies/font-loading-boundary-dark.png'
+import detail4light from '../assets/images/reference-studies/reading-measure-light.png'
+import detail4dark from '../assets/images/reference-studies/reading-measure-dark.png'
+import detail5light from '../assets/images/reference-studies/span-includes-gaps-light.png'
+import detail5dark from '../assets/images/reference-studies/span-includes-gaps-dark.png'
+import detail6light from '../assets/images/reference-studies/logical-inline-axis-light.png'
+import detail6dark from '../assets/images/reference-studies/logical-inline-axis-dark.png'
+import detail7light from '../assets/images/reference-studies/has-owner-target-light.png'
+import detail7dark from '../assets/images/reference-studies/has-owner-target-dark.png'
+import detail8light from '../assets/images/reference-studies/where-specificity-light.png'
+import detail8dark from '../assets/images/reference-studies/where-specificity-dark.png'
+import detail9light from '../assets/images/reference-studies/pseudo-element-origin-light.png'
+import detail9dark from '../assets/images/reference-studies/pseudo-element-origin-dark.png'
+import detail10light from '../assets/images/reference-studies/attribute-word-match-light.png'
+import detail10dark from '../assets/images/reference-studies/attribute-word-match-dark.png'
+import detail11light from '../assets/images/reference-studies/compiled-query-snapshot-light.png'
+import detail11dark from '../assets/images/reference-studies/compiled-query-snapshot-dark.png'
+import detail12light from '../assets/images/reference-studies/contents-default-vs-empty-light.png'
+import detail12dark from '../assets/images/reference-studies/contents-default-vs-empty-dark.png'
+import detail13light from '../assets/images/reference-studies/parameter-known-vs-live-light.png'
+import detail13dark from '../assets/images/reference-studies/parameter-known-vs-live-dark.png'
+import detail14light from '../assets/images/reference-studies/reference-no-roots-light.png'
+import detail14dark from '../assets/images/reference-studies/reference-no-roots-dark.png'
+import detail15light from '../assets/images/reference-studies/source-relative-base-light.png'
+import detail15dark from '../assets/images/reference-studies/source-relative-base-dark.png'
+import detail16light from '../assets/images/reference-studies/preserve-wins-light.png'
+import detail16dark from '../assets/images/reference-studies/preserve-wins-dark.png'
+import detail17light from '../assets/images/reference-studies/pruning-global-selectors-light.png'
+import detail17dark from '../assets/images/reference-studies/pruning-global-selectors-dark.png'
+import detail18light from '../assets/images/reference-studies/lint-overlap-context-light.png'
+import detail18dark from '../assets/images/reference-studies/lint-overlap-context-dark.png'
+import detail19light from '../assets/images/reference-studies/preload-is-data-light.png'
+import detail19dark from '../assets/images/reference-studies/preload-is-data-dark.png'
+
 interface Props {
   id: ReferenceIllustrationId
 }
 
 const images = {
+  'border-ingredients': { light: detail0light, dark: detail0dark },
+  'pill-aspect': { light: detail1light, dark: detail1dark },
+  'manual-wrapper-reach': { light: detail2light, dark: detail2dark },
+  'font-loading-boundary': { light: detail3light, dark: detail3dark },
+  'reading-measure': { light: detail4light, dark: detail4dark },
+  'span-includes-gaps': { light: detail5light, dark: detail5dark },
+  'logical-inline-axis': { light: detail6light, dark: detail6dark },
+  'has-owner-target': { light: detail7light, dark: detail7dark },
+  'where-specificity': { light: detail8light, dark: detail8dark },
+  'pseudo-element-origin': { light: detail9light, dark: detail9dark },
+  'attribute-word-match': { light: detail10light, dark: detail10dark },
+  'compiled-query-snapshot': { light: detail11light, dark: detail11dark },
+  'contents-default-vs-empty': { light: detail12light, dark: detail12dark },
+  'parameter-known-vs-live': { light: detail13light, dark: detail13dark },
+  'reference-no-roots': { light: detail14light, dark: detail14dark },
+  'source-relative-base': { light: detail15light, dark: detail15dark },
+  'preserve-wins': { light: detail16light, dark: detail16dark },
+  'pruning-global-selectors': { light: detail17light, dark: detail17dark },
+  'lint-overlap-context': { light: detail18light, dark: detail18dark },
+  'preload-is-data': { light: detail19light, dark: detail19dark },
+  'ambiguous-namespace': { light: study0light, dark: study0dark },
+  'breakpoint-partition': { light: study1light, dark: study1dark },
+  'condition-eligibility': { light: study2light, dark: study2dark },
+  'contents-insertion': { light: study3light, dark: study3dark },
+  'descendant-depth': { light: study4light, dark: study4dark },
+  'fixed-name-reservation': { light: study5light, dark: study5dark },
+  'important-recipe': { light: study6light, dark: study6dark },
+  'independent-registrations': { light: study7light, dark: study7dark },
+  'keyframe-reachability': { light: study8light, dark: study8dark },
+  'layer-token-separation': { light: study9light, dark: study9dark },
+  'mixin-splice': { light: study10light, dark: study10dark },
+  'padding-coverage': { light: study11light, dark: study11dark },
+  'pruning-selector-branches': { light: study12light, dark: study12dark },
+  'registration-boundary': { light: study13light, dark: study13dark },
+  'selector-list-branches': { light: study14light, dark: study14dark },
+  'sibling-direction': { light: study15light, dark: study15dark },
+  'source-replacement': { light: study16light, dark: study16dark },
+  'static-branch-extraction': { light: study17light, dark: study17dark },
+  'suffix-ownership': { light: study18light, dark: study18dark },
+  'token-dependency-chain': { light: study19light, dark: study19dark },
+
   'stylesheet-asset-graph': { light: assetsLight, dark: assetsDark },
   'preview-file-identity': { light: tool0light, dark: tool0dark },
   'cli-output-destinations': { light: tool1light, dark: tool1dark },

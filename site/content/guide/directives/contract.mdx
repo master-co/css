@@ -88,6 +88,8 @@ Use a reference when compilation needs definitions from another stylesheet witho
 
 A reference supplies tokens, utilities, mixins, custom media, custom containers and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
 
+<ReferenceIllustration id="reference-no-roots" />
+
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
 Vite, Next.js, and Webpack supply project definition context to local stylesheets, CSS Modules, and SFC styles. An explicit reference is useful for dependencies outside that context or standalone compilation. Local stylesheets do not become scanning or pruning roots. CSS Modules and scoped hosts must deliver generated theme selectors globally.
@@ -290,6 +292,8 @@ Fixed classes take priority over patterns: the complete class spelling is reserv
 
 Negative values and opacity apply to the direct-value subset: one untyped placeholder and one native declaration whose entire value is `var(--parameter)`. `-m-md` negates a numeric spacing token; `-p-md` is invalid because padding does not support negative values. `fg-red/.5` applies opacity to a color token, with opacity between zero and one. These capabilities do not extend to general multi-declaration or string-key recipes.
 
+<ReferenceIllustration id="ambiguous-namespace" />
+
 ### Static arguments \{#dynamic-values\}
 Function utilities and mixins accept positional parameters: untyped, `<integer>`, `<number>`, `<string>`, or `<custom-ident>`. Static defaults use a colon, such as `--cols <integer>: 2`. Numbers must be numeric literals; grid counts and spans must be positive integers. String arguments require quotes.
 
@@ -303,6 +307,8 @@ Function utilities and mixins accept positional parameters: untyped, `<integer>`
 Use `pair(2rem)`. General function arguments must be statically known. A function or mixin with exactly one untyped, default-free parameter and one native declaration whose complete value is `var(--parameter)` also accepts symbolic `var()` expressions. Its caller's reference remains intact for browser evaluation. Other functions reject external `var()`, `attr()`, and browser-dependent arguments. A known outer parameter may be forwarded through `var(--parameter)`.
 
 <StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
+
+<ReferenceIllustration id="parameter-known-vs-live" />
 
 ### `@mixin` and `@apply` \{#reusing-a-matched-value\}
 Master compiles a static subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule). Definitions have dashed names and must be unconditional stylesheet-level rules. A mixin supplies CSS reuse; it does not register a Master class.
@@ -326,6 +332,8 @@ Master compiles a static subset of the experimental [CSS Mixins specification](h
 
 Parameters can be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported types report compilation errors. The static subset does not implement browser-dependent parameter evaluation, private properties or general-purpose functions.
 
+<ReferenceIllustration id="mixin-splice" />
+
 ### Contents and class wrappers \{#contents\}
 Use `@contents` to mark where a caller’s declarations or nested rules enter a reusable wrapper.
 
@@ -337,6 +345,8 @@ Use `@contents` to mark where a caller’s declarations or nested rules enter a 
 ```
 
 `@contents;` inserts supplied content. `@contents { … }` supplies fallback content only when the call omits its block. An explicit empty `@apply --card-wide {}` suppresses fallback. Each contents position inserts the block once, preserving declarations, duplicates and nested rules. A mixin without `@contents` ignores the supplied block.
+
+<ReferenceIllustration id="contents-default-vs-empty" />
 
 Supplied content retains the caller's parameter bindings, including when forwarded through nested applications. Fallback uses the defining mixin's bindings. Ordinary custom properties retain native CSS cascade behavior. Finite nested calls are allowed; recursive definitions and expansion depth/node limit violations are errors.
 
@@ -357,6 +367,8 @@ Supplied content retains the caller's parameter bindings, including when forward
 
 Unused definitions, discarded contents and unused fallback blocks do not retain tokens or keyframes. Delivered native `@apply` remains a resource root through the emitted-globals contract. Declaration locations and relative URLs retain their defining or calling file.
 
+<ReferenceIllustration id="contents-insertion" />
+
 ### Whole-definition replacement \{#whole-definition-replacement\}
 A later definition replaces the complete body of the same registration; declarations are not merged. A static utility and a function utility with the same name are separate registrations. Token patterns replace only the branch with the same decoded prefix and namespace.
 
@@ -370,6 +382,8 @@ A later definition replaces the complete body of the same registration; declarat
 <ReferenceIllustration id="definition-replacement" />
 
 A mixin name has one final definition, including its parameter list, body and dependencies. An empty definition remains registered. Forward nested calls resolve against the final registry; there is no parameter overloading.
+
+<ReferenceIllustration id="independent-registrations" />
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
 `@theme`, `@utility`, `@mixin`, `@custom-media`, and `@custom-container` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
@@ -515,6 +529,8 @@ Use `@preserve native;` when a Master-managed stylesheet contains native CSS cla
 
 The stylesheet is still processed by Master CSS. Native class rules are retained even when no scanned source uses their classes; ordinary compiler normalization still applies. This policy does not force unused managed classes into the generated output and does not mean that the original CSS bytes are preserved.
 
+<ReferenceIllustration id="preserve-wins" />
+
 ### Import graph \{#import-graph\}
 Resolved CSS imports keep their own source boundaries, so each file's policy
 applies to that file alone. An importing file cannot enable pruning in its
@@ -589,6 +605,8 @@ With `card` and `title` used, the output keeps `body`, `.card` and
 selectors, such as `body`, `html` and `:root`, are always kept. At-rule blocks left
 empty by pruning are removed.
 
+<ReferenceIllustration id="pruning-selector-branches" />
+
 ### Manifest references \{#manifest-references\}
 A kept native rule that reads `var(--*)` or names a manifest animation retains the
 matching theme variables and keyframes from the project entry graph. A removed
@@ -638,6 +656,8 @@ Keyframes follow the same file policy as native class rules. By default they are
 ### Keyframe usage roots
 
 Animation utilities, native animation declarations, static animation tokens and keyframe safelists use their matching definitions. Analysis follows shorthand values, animation-name lists, nested variables, fallbacks, scoped overrides and transitive token dependencies. A used definition also uses the tokens its frames read; a native definition supplies only those tokens, since its stylesheet delivers the frames. Unresolved dynamic names conservatively use all candidate definitions in the compilation graph and produce an information diagnostic.
+
+<ReferenceIllustration id="keyframe-reachability" />
 
 ### Keyframe conditions and restrictions
 
