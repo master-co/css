@@ -178,13 +178,39 @@ pub(crate) fn push_value_semantic_tokens(
             byte_index = end;
             continue;
         }
-        let number_start = character.is_ascii_digit()
-            || (character == '.'
-                && suffix
-                    .chars()
-                    .nth(1)
-                    .is_some_and(|next| next.is_ascii_digit()));
-        if number_start {
+        // A hex color is one literal, `#` included, even when it starts with a digit.
+        if character == '#' {
+            let end = value_identifier_end(value, byte_index + 1);
+            if end > byte_index + 1 {
+                push_semantic_token(
+                    tokens,
+                    start,
+                    offset + utf16_len(&value[..end]),
+                    "number",
+                    &[],
+                );
+                byte_index = end;
+                continue;
+            }
+        }
+        let starts_number = |text: &str| {
+            let mut characters = text.chars();
+            match characters.next() {
+                Some(first) if first.is_ascii_digit() => true,
+                Some('.') => characters.next().is_some_and(|next| next.is_ascii_digit()),
+                _ => false,
+            }
+        };
+        // A sign belongs to the number unless it follows an operand, as in `100%-2rem`.
+        let signed = matches!(character, '-' | '+')
+            && starts_number(&suffix[1..])
+            && !value[..byte_index]
+                .chars()
+                .next_back()
+                .is_some_and(|previous| {
+                    previous.is_alphanumeric() || matches!(previous, '%' | ')' | '.')
+                });
+        if signed || starts_number(suffix) {
             let mut end = byte_index + character.len_utf8();
             for next in value[end..].chars() {
                 if next.is_ascii_digit() || next == '.' {
@@ -200,7 +226,11 @@ pub(crate) fn push_value_semantic_tokens(
                 "number",
                 &[],
             );
-            let unit_end = value_identifier_end(value, end);
+            let unit_end = if value[end..].starts_with('%') {
+                end + 1
+            } else {
+                value_identifier_end(value, end)
+            };
             if unit_end > end {
                 push_semantic_token(
                     tokens,
@@ -297,7 +327,7 @@ pub(crate) fn push_value_semantic_tokens(
             push_semantic_token(tokens, start, start + 1, "operator", &["valueSeparator"]);
         } else if character == '!' {
             push_semantic_token(tokens, start, start + 1, "operator", &["important"]);
-        } else if matches!(character, '*' | '-') {
+        } else if matches!(character, '*' | '-' | '+') {
             push_semantic_token(tokens, start, start + 1, "operator", &["valueOperator"]);
         } else if matches!(character, '(' | ')') {
             push_semantic_token(
@@ -406,7 +436,7 @@ pub(crate) fn push_query_semantic_tokens(
         let suffix = &query[byte_index..];
         let character = suffix.chars().next().unwrap_or_default();
         let start = offset + utf16_len(&query[..byte_index]);
-        if matches!(character, '(' | ')' | ':' | ',') {
+        if matches!(character, '(' | ')' | ':' | ',' | '|') {
             push_semantic_token(
                 tokens,
                 start,
@@ -432,7 +462,16 @@ pub(crate) fn push_query_semantic_tokens(
             byte_index = end;
         } else if character.is_alphanumeric() || matches!(character, '-' | '.') {
             let end = value_identifier_end(query, byte_index);
-            push_query_value_token(tokens, query, offset, byte_index, end, expect_property);
+            // A name before a comparison or a `:` is the feature being tested, in any query.
+            let feature = query[end..].trim_start().starts_with(['<', '>', '=', ':']);
+            push_query_value_token(
+                tokens,
+                query,
+                offset,
+                byte_index,
+                end,
+                expect_property || feature,
+            );
             expect_property = false;
             byte_index = end;
         } else {
@@ -446,15 +485,210 @@ pub(crate) fn state_identifier_end(state: &str, start: usize, allow_star: bool) 
     if allow_star && state[end..].starts_with('*') {
         end += 1;
     }
-    for (relative, character) in state[end..].char_indices() {
-        if character.is_alphanumeric() || matches!(character, '_' | '-') {
+    let mut characters = state[end..].chars().peekable();
+    let mut previous = None;
+    while let Some(character) = characters.next() {
+        // `\_` and other escapes stay in the name; a lone `_` is the descendant combinator,
+        // while `__` (as in BEM names) is part of it.
+        if character == '\\' {
+            end += character.len_utf8();
+            if let Some(escaped) = characters.next() {
+                end += escaped.len_utf8();
+            }
+        } else if character.is_alphanumeric()
+            || character == '-'
+            || (character == '_' && (previous == Some('_') || characters.peek() == Some(&'_')))
+        {
             end += character.len_utf8();
         } else {
-            let _ = relative;
             break;
         }
+        previous = Some(character);
     }
     end
+}
+
+/// The end of a query that starts at `start`: the next top-level `@`, or a trailing `!`.
+fn state_query_end(state: &str, start: usize) -> usize {
+    let mut depth = 0_u32;
+    let mut quote = None;
+    for (index, character) in state[start..].char_indices().skip(1) {
+        let index = start + index;
+        if let Some(current) = quote {
+            if character == current {
+                quote = None;
+            }
+            continue;
+        }
+        match character {
+            '\'' | '"' => quote = Some(character),
+            '(' => depth += 1,
+            ')' => depth = depth.saturating_sub(1),
+            '@' if depth == 0 => return index,
+            '!' if depth == 0 && state[index + 1..].is_empty() => return index,
+            _ => {}
+        }
+    }
+    state.len()
+}
+
+/// `[name]`, `[name=value]` and `[name='value' i]`: the name reads as an attribute, the value as a string.
+fn push_attribute_selector_tokens(
+    tokens: &mut Vec<SemanticTokenInputIr>,
+    state: &str,
+    offset: u32,
+    open: usize,
+) -> usize {
+    let at = |byte: usize| offset + utf16_len(&state[..byte]);
+    let punctuation = |tokens: &mut Vec<SemanticTokenInputIr>, from: usize, to: usize| {
+        push_semantic_token(
+            tokens,
+            at(from),
+            at(to),
+            "operator",
+            &["selector", "selectorPunctuation"],
+        );
+    };
+    punctuation(tokens, open, open + 1);
+    let name_start = open + 1;
+    let name_end = state_identifier_end(state, name_start, false);
+    push_semantic_token(
+        tokens,
+        at(name_start),
+        at(name_end),
+        "property",
+        &["selector"],
+    );
+    let mut index = name_end;
+    let operator_end = index
+        + state[index..]
+            .char_indices()
+            .take_while(|(_, character)| matches!(character, '~' | '|' | '^' | '$' | '*' | '='))
+            .map(|(_, character)| character.len_utf8())
+            .sum::<usize>();
+    if operator_end > index {
+        push_semantic_token(
+            tokens,
+            at(index),
+            at(operator_end),
+            "operator",
+            &["selector", "selectorPunctuation"],
+        );
+        index = operator_end;
+        if let Some(quote) = state[index..]
+            .chars()
+            .next()
+            .filter(|character| matches!(character, '\'' | '"'))
+        {
+            let close = state[index + 1..]
+                .find(quote)
+                .map_or(state.len(), |close| index + 1 + close + 1);
+            push_semantic_token(tokens, at(index), at(close), "string", &["quoted"]);
+            index = close;
+        } else {
+            let end = index
+                + state[index..]
+                    .char_indices()
+                    .take_while(|(_, character)| !matches!(character, ']' | '_'))
+                    .map(|(_, character)| character.len_utf8())
+                    .sum::<usize>();
+            push_semantic_token(tokens, at(index), at(end), "string", &[]);
+            index = end;
+        }
+    }
+    // A case flag such as ` i` or `_i`.
+    let flag_start =
+        index + state[index..].len() - state[index..].trim_start_matches([' ', '_']).len();
+    if flag_start > index {
+        let flag_end = state_identifier_end(state, flag_start, false);
+        if state[flag_end..].starts_with(']') {
+            push_semantic_token(
+                tokens,
+                at(flag_start),
+                at(flag_end),
+                "keyword",
+                &["selector"],
+            );
+            index = flag_end;
+        }
+    }
+    if state[index..].starts_with(']') {
+        punctuation(tokens, index, index + 1);
+        index += 1;
+    }
+    index
+}
+
+/// The `An+B [of S]` argument of an `:nth-*()` pseudo-class, up to its closing parenthesis.
+fn push_nth_argument_tokens(
+    tokens: &mut Vec<SemanticTokenInputIr>,
+    state: &str,
+    offset: u32,
+    start: usize,
+) -> usize {
+    let at = |byte: usize| offset + utf16_len(&state[..byte]);
+    let mut index = start;
+    while index < state.len() {
+        let rest = &state[index..];
+        let character = rest.chars().next().unwrap_or_default();
+        if character == ')' {
+            break;
+        }
+        if character.is_ascii_digit() {
+            let end = index + rest.chars().take_while(char::is_ascii_digit).count();
+            let end = if state[end..].starts_with('n') {
+                end + 1
+            } else {
+                end
+            };
+            push_semantic_token(tokens, at(index), at(end), "number", &[]);
+            index = end;
+        } else if character.is_alphabetic() {
+            let end = state_identifier_end(state, index, false);
+            let word = &state[index..end];
+            if word == "of" {
+                push_semantic_token(tokens, at(index), at(end), "keyword", &["selector"]);
+                // The selector after `of` reads like any other selector.
+                let close = state_query_close(state, end);
+                push_state_semantic_tokens(tokens, &state[end..close], at(end));
+                return close;
+            }
+            push_semantic_token(
+                tokens,
+                at(index),
+                at(end),
+                if word == "n" { "number" } else { "enumMember" },
+                &[],
+            );
+            index = end;
+        } else if matches!(character, '+' | '-') {
+            push_semantic_token(
+                tokens,
+                at(index),
+                at(index + 1),
+                "operator",
+                &["valueOperator"],
+            );
+            index += 1;
+        } else {
+            index += character.len_utf8();
+        }
+    }
+    index
+}
+
+/// The index of the `)` closing the group that `start` is in.
+fn state_query_close(state: &str, start: usize) -> usize {
+    let mut depth = 0_u32;
+    for (index, character) in state[start..].char_indices() {
+        match character {
+            '(' => depth += 1,
+            ')' if depth == 0 => return start + index,
+            ')' => depth -= 1,
+            _ => {}
+        }
+    }
+    state.len()
 }
 
 pub(crate) fn push_state_semantic_tokens(
@@ -511,6 +745,22 @@ pub(crate) fn push_state_semantic_tokens(
                 &["selector"],
             );
             byte_index = name_end;
+        } else if character == '('
+            && state[..byte_index]
+                .rsplit(':')
+                .next()
+                .is_some_and(|name| name.starts_with("nth-"))
+        {
+            push_semantic_token(
+                tokens,
+                start,
+                start + 1,
+                "operator",
+                &["selector", "selectorPunctuation"],
+            );
+            byte_index = push_nth_argument_tokens(tokens, state, offset, byte_index + 1);
+        } else if character == '[' {
+            byte_index = push_attribute_selector_tokens(tokens, state, offset, byte_index);
         } else if matches!(character, '(' | ',') {
             push_semantic_token(
                 tokens,
@@ -529,7 +779,7 @@ pub(crate) fn push_state_semantic_tokens(
                 &["selector"],
             );
             byte_index = name_end;
-        } else if matches!(character, ')' | '[' | ']') {
+        } else if matches!(character, ')' | ']') {
             push_semantic_token(
                 tokens,
                 start,
@@ -539,7 +789,7 @@ pub(crate) fn push_state_semantic_tokens(
             );
             byte_index += character_length;
         } else if character == '@' {
-            let end = state.len();
+            let end = state_query_end(state, byte_index);
             push_query_semantic_tokens(tokens, &state[byte_index..end], start);
             byte_index = end;
         } else if character == ':' {

@@ -372,7 +372,8 @@ interface ScopeStyleEntry {
   scope: string
   normalizedScope: string
   style: Record<string, string>
-  stringDelimiter: boolean
+  /** Whether a token's innermost scope supplied the style. */
+  direct: boolean
 }
 
 const SEMANTIC_SCOPE_STYLE_PROBE = [
@@ -429,6 +430,11 @@ function getScopePrefixes(scope: string) {
   return [...new Set(prefixes)]
 }
 
+/**
+ * A scope takes the style of a token whose innermost scope it is. A parent scope only borrows a
+ * nested capture's style until such a token appears: the `:` of `:hover` and the quotes of a string
+ * are captures inside the pseudo-class and string scopes, and must not color their names and text.
+ */
 function collectScopeStyleEntries(tokens: ShikiToken[]): ScopeStyleEntry[] {
   const entries: ScopeStyleEntry[] = []
   const entryIndexes = new Map<string, number>()
@@ -438,23 +444,18 @@ function collectScopeStyleEntries(tokens: ShikiToken[]): ScopeStyleEntry[] {
     for (const explanation of token.explanation ?? []) {
       if (explanation.content && !token.content.includes(explanation.content)) continue
       const scopes = explanation.scopes ?? []
-      const stringDelimiter = scopes.some(({ scopeName }) => scopeName.startsWith('punctuation.definition.string.'))
-      for (const { scopeName } of scopes) {
+      scopes.forEach(({ scopeName }, depth) => {
+        const direct = depth === scopes.length - 1
         const existingIndex = entryIndexes.get(scopeName)
-        if (existingIndex !== undefined && !(scopeName.startsWith('string.quoted.') && entries[existingIndex].stringDelimiter && !stringDelimiter)) continue
-        const entry = {
-          scope: scopeName,
-          normalizedScope: normalizeScope(scopeName),
-          style,
-          stringDelimiter
-        }
+        if (existingIndex !== undefined && (entries[existingIndex].direct || !direct)) return
+        const entry = { scope: scopeName, normalizedScope: normalizeScope(scopeName), style, direct }
         if (existingIndex === undefined) {
           entryIndexes.set(scopeName, entries.length)
           entries.push(entry)
         } else {
           entries[existingIndex] = entry
         }
-      }
+      })
     }
   }
   return entries
@@ -520,7 +521,10 @@ function createSemanticScopeStyleResolver(
           if (style) return style
         }
       }
-      for (const key of getMasterCSSSemanticTokenScopeKeys(decoration.type, decoration.modifiers)) {
+      // The role's own modifier is the most specific scope key, though the decoration's class list omits it.
+      const roleModifier = ROLE_TOKEN_MODIFIERS[decoration.role]
+      const modifiers = roleModifier ? [...decoration.modifiers, roleModifier] : decoration.modifiers
+      for (const key of getMasterCSSSemanticTokenScopeKeys(decoration.type, modifiers)) {
         for (const scope of MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP[key]) {
           const style = findStyleByScope(scopeStyleEntries, scope)
           if (style) return style

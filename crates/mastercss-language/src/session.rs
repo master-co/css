@@ -149,9 +149,15 @@ impl LanguageSession {
                 ) {
                     let end = token_start + utf16_len(key);
                     push_semantic_token(tokens, token_start, end, "function", &[]);
-                    push_semantic_token(tokens, end, end + 1, "operator", &[]);
+                    push_semantic_token(tokens, end, end + 1, "operator", &["functionPunctuation"]);
                     push_value_semantic_tokens(tokens, value, end + 1);
-                    push_semantic_token(tokens, base_end - 1, base_end, "operator", &[]);
+                    push_semantic_token(
+                        tokens,
+                        base_end - 1,
+                        base_end,
+                        "operator",
+                        &["functionPunctuation"],
+                    );
                 }
             }
             ClassSemanticKind::Semantic => {

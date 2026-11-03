@@ -106,7 +106,7 @@ test('highlights class lists and static mixin parameters', () => {
   expectScope(tokens, 'color', 'support.type.property-name.master-css')
   expectScope(tokens, 'red', 'support.constant.property-value.master-css')
   expectScope(tokens, ')', 'punctuation.section.declaration.end.master-css')
-  expectScope(tokens, '--size', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '--size', 'entity.name.function.mixin.master-css')
   expectScope(tokens, '--value', 'variable.css.custom-property.master-css')
   expectScope(tokens, '<integer>', 'support.function.misc.master-css')
   expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
@@ -352,10 +352,10 @@ test('keeps declarations in conditional groups and plain attribute values inside
 test('highlights explicit custom-variant slots and native wrappers', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --hocus { &:is(:hover,:focus) { @contents; } }
 @mixin --card { @apply --hocus { color: red; } @media print { display: block; } }`)
-  expectScope(tokens, '--hocus', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '--hocus', 'entity.name.function.mixin.master-css')
   expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
   expectScope(tokens, '@contents', 'keyword.control.at-rule.master-css')
-  expectScope(tokens, '--card', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '--card', 'entity.name.function.mixin.master-css')
 })
 
 test('colors named conditions and delegates native at-rules', () => {
