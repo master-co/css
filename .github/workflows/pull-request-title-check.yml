@@ -18,7 +18,10 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      # pull_request_target runs base-branch code; keep the token out of the checkout.
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       # Only commitlint runs here, so skip husky and every package postinstall.
       - uses: ./.github/actions/setup-bun
         with:
