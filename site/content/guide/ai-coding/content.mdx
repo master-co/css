@@ -1,3 +1,5 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import AIIllustration from './components/AIIllustration.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
@@ -86,8 +88,7 @@ The installer's `--ai` option prints this command without running it.
 
 Ask the agent to inspect the project before it edits, then make one focused change. For example, ask it to refine an existing card and describe the result you expect:
 
-```text
-Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
+<DocumentPrompt title="Refine one component" text={`Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
 
 You are working in a Master CSS project.
 
@@ -105,8 +106,7 @@ When styling markup:
 - keep semantic HTML and accessibility behavior unchanged
 - explain any value that should become a shared token
 
-After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.
-```
+After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.`} />
 
 
 ---
@@ -119,11 +119,15 @@ useful evidence, but it is not the source to start the next repair from.
 
 Different checks answer different questions:
 
+<DocumentComparison>
+
 | Evidence | What to check |
 | --- | --- |
 | Lint report | Read `coverage.checkedFiles` and the enabled rules. `summary.checkedFiles` counts checked inputs; `summary.filesWithDiagnostics` counts those with diagnostics. Empty diagnostic `files` does not mean nothing ran. |
 | Class inspection | Check the final markup against the loaded project stylesheets. Distinguish generated utilities, native CSS selector hooks and unresolved spellings. |
 | Browser verification | Compare computed values and matched rules in the affected states, including previously working states. A generated rule does not establish which declaration wins. |
+
+</DocumentComparison>
 
 ### A generated rule can still lose
 

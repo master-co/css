@@ -51,7 +51,7 @@ export type ReferenceTable =
   | { kind: 'parameters', parameters: { name: string, type: string, requirement: string, description: any[] }[] }
   | { kind: 'code', label: string, rows: { syntax: string, css: string }[] }
   | { kind: 'namespace', rows: { namespace: string, consumers: string[] }[] }
-  | { kind: 'table', label: string }
+  | { kind: 'table', label: string, comparison: boolean }
 
 /** Tables with a known header become the document components; descriptions stay Markdown nodes. */
 export function referenceTable(node: any): ReferenceTable {
@@ -104,7 +104,7 @@ export function referenceTable(node: any): ReferenceTable {
       }))
     }
   }
-  return { kind: 'table', label: cells.map((cell: any) => cell.children.map((child: any) => child.value ?? '').join('')).join(', ') }
+  return { kind: 'table', label: cells.map((cell: any) => cell.children.map((child: any) => child.value ?? '').join('')).join(', '), comparison: cells.length === 2 }
 }
 
 /** Fenced code: a long declaration, a Generated CSS output, or a complete schema/help disclosure. */

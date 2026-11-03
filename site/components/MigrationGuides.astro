@@ -1,10 +1,16 @@
 ---
+import '@master/internal-site/styles/system/data.css'
 import brands from '@master/internal-site/data/brands'
-import DocumentChoices from '@master/internal-site/components/DocumentChoices.astro'
+import Link from '@master/internal-site/components/Link.svelte'
 import { migrationGuides } from '../utils/migration-guides'
 ---
 
-<DocumentChoices label="Migration guides" entries={migrationGuides.map(guide => {
-  const { src: Icon, className } = brands[guide.brand]
-  return { ...guide, href: `/guide/migration/${guide.slug}`, icon: <Icon class={className} width={20} height={20} aria-hidden="true" /> }
-})} />
+<nav aria-label="Migration guides" class="ui-logos">
+  {migrationGuides.map(guide => {
+    const { src: Logo, className } = brands[guide.brand]
+    return <Link href={`/guide/migration/${guide.slug}`}>
+      <Logo class={className} width={20} height={20} aria-hidden="true" />
+      <span>{guide.title}</span>
+    </Link>
+  })}
+</nav>

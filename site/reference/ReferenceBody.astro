@@ -12,6 +12,7 @@ import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
 import DocumentOptions from '@master/internal-site/components/DocumentOptions.astro'
 import DocumentCodeExampleView from '@master/internal-site/components/DocumentCodeExampleView.astro'
 import DocumentCodeTable from '@master/internal-site/components/DocumentCodeTable.astro'
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import DocumentNamespaceTable from '@master/internal-site/components/DocumentNamespaceTable.astro'
 import type { ReferenceRenderDocument } from './render-document'
 import ReferenceIllustration from './ReferenceIllustration.astro'
@@ -104,6 +105,7 @@ const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
   }))} />
   : table?.kind === 'code' ? <DocumentCodeTable label={table.label} rows={table.rows} />
   : table?.kind === 'namespace' ? <DocumentNamespaceTable rows={table.rows} />
+  : table?.kind === 'table' && table.comparison ? <DocumentComparison><div class="ui-table"><table><thead><tr>{node.children[0].children.map((cell: any) => <th scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div></DocumentComparison>
   // A wide table's overflow region must be focusable for native keyboard scrolling.
   : table?.kind === 'table' ? <div class="ui-table" role="region" aria-label={table.label} tabindex="0"><table><thead><tr>{node.children[0].children.map((cell: any) => <th><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div>
   : type === 'html' || type === 'definition' ? null

@@ -1,3 +1,7 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentOptionList from '@master/internal-site/components/DocumentOptionList.astro'
+import DocumentOptionEntry from '@master/internal-site/components/DocumentOptionEntry.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LanguageIllustration from './components/LanguageIllustration.astro'
 
@@ -114,27 +118,111 @@ Built-in sources include `class` and `className`, framework bindings, common hel
 
 For example, `cn("p-card")` now receives class completion. Language-service arrays **extend** the built-in class sources, so `clsx` still works. ESLint source settings **replace** their defaults instead; configure both tools when introducing a project convention.
 
-<details>
-<summary>Available VS Code settings</summary>
+<DocumentDisclosure title="Available VS Code settings">
 
 Set options in `.vscode/settings.json` or VS Code user settings. The defaults cover HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown and MDX.
 
-| Setting | Default | Use |
-| --- | --- | --- |
-| `masterCSS.includedLanguages` | Common web and template language IDs | Languages that receive language-service features. |
-| `masterCSS.classAttributes` | `class`, `className` | Markup attributes whose values contain class strings. |
-| `masterCSS.classAttributeBindings` | Framework binding defaults | Bound attributes such as `:class`, `v-bind:class`, `[ngClass]` and `class:list`. |
-| `masterCSS.classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | Callees whose string arguments contain class strings; `styled` also accepts member forms such as `styled.button`. |
-| `masterCSS.classDeclarations` | `[]` | Variables or object properties whose strings are class declarations. |
-| `masterCSS.exclude` | `.git`, `node_modules`, `.hg` | Files excluded from all features. |
-| `masterCSS.suggestSyntax` | `true` | Completion items. |
-| `masterCSS.inspectSyntax` | `true` | Hover inspection and generated CSS previews. |
-| `masterCSS.renderSyntaxColors` | `true` | Color decorators for Master CSS color syntax. |
-| `masterCSS.formatDirectives` | `true` | Directive formatting. |
-| `masterCSS.embeddedSyntaxHighlighting` | `active` | `active` highlights the class under the cursor, `always` every embedded class, `off` none; directive syntax stays highlighted. |
-| `masterCSS.workspaces` | `auto` | Workspace detection for project manifests. |
+<DocumentOptionList label="VS Code settings">
 
-</details>
+<DocumentOptionEntry name="masterCSS.includedLanguages">
+
+Default: Common web and template language IDs.
+
+Languages that receive language-service features.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributes">
+
+Default: `class`, `className`.
+
+Markup attributes whose values contain class strings.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributeBindings">
+
+Default: Framework binding defaults.
+
+Bound attributes such as `:class`, `v-bind:class`, `[ngClass]` and `class:list`.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classFunctions">
+
+Default: `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+
+Callees whose string arguments contain class strings; `styled` also accepts member forms such as `styled.button`.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classDeclarations">
+
+Default: `[]`.
+
+Variables or object properties whose strings are class declarations.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.exclude">
+
+Default: `.git`, `node_modules`, `.hg`.
+
+Files excluded from all features.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.suggestSyntax">
+
+Default: `true`.
+
+Completion items.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.inspectSyntax">
+
+Default: `true`.
+
+Hover inspection and generated CSS previews.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.renderSyntaxColors">
+
+Default: `true`.
+
+Color decorators for Master CSS color syntax.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.formatDirectives">
+
+Default: `true`.
+
+Directive formatting.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.embeddedSyntaxHighlighting">
+
+Default: `active`.
+
+`active` highlights the class under the cursor, `always` every embedded class, `off` none; directive syntax stays highlighted.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.workspaces">
+
+Default: `auto`.
+
+Workspace detection for project manifests.
+
+</DocumentOptionEntry>
+
+</DocumentOptionList>
+
+</DocumentDisclosure>
 
 ---
 
@@ -150,9 +238,13 @@ In `auto` mode the language server detects a workspace for each CSS file importi
 Run `Master CSS: Restart Language Server` after dependency changes, workspace-layout changes or manifest edits that VS Code has not picked up.
 
 ## Troubleshooting
+<DocumentComparison>
+
 | Symptom | Fix |
 | --- | --- |
 | Completions do not show inside strings. | Enable `editor.quickSuggestions.strings`. |
 | Project tokens or utilities are missing. | Confirm the token is in the detected CSS entry or one of its imports, fix manifest errors, then restart the language server if needed. |
 | The wrong monorepo package is used. | Set `masterCSS.workspaces` to explicit workspace directories. |
 | Color decorators do not appear. | Enable `masterCSS.renderSyntaxColors` and `editor.colorDecorators`; check language-specific overrides. |
+
+</DocumentComparison>

@@ -76,6 +76,12 @@ Namespace consumers come from `utils/variable-namespace-sources.ts` and build-ti
 
 `DocumentComparison` is an opt-in wrapper for two-column Markdown reading tables. Its native table remains intact; scoped styles fix both columns and wrap long syntax. Put longer multi-part decisions in prose lists. The migration guides use `utils/migration-content.ts` to preserve their complete authored comparisons and code in search and llms output.
 
+Guide authors wrap short two-column reading comparisons explicitly; Reference's
+renderer selects the same component after recognizing API, parameter, namespace
+and code-table shapes. Wider matrices retain the normal scrolling table.
+Language-service settings use the shared option list inside `DocumentDisclosure`;
+AI and migration requests use `DocumentPrompt` with their original text.
+
 `components/demo/specimens/` owns the authored examples still used by the Design System gallery. These are not indexed articles. Do not restore retired property MDX just to feed a gallery; add a focused specimen when a real demonstration needs one.
 
 ## Content migration sequence
@@ -133,9 +139,17 @@ No chat interface, vector database, new docs MCP, new CMS or runtime semantic im
 
 Migration guides use `utils/migration-content.ts` for strict search and portable
 exports, including the overview. `MigrationGuides` reads the literal
-`utils/migration-guides.ts` catalog through `DocumentChoices`; its extraction
-adapter emits the same titles, destinations and descriptions without executing JSX.
+`utils/migration-guides.ts` catalog through the shared `ui-logos` navigation;
+its extraction adapter emits the same titles and destinations, with descriptions
+for the text-only reading context, without executing JSX.
 Use `DocumentChoices` for short related-link groups, outside demo geometry.
+
+`tests/docs-quality.e2e.mjs` enumerates the current build's document routes,
+including localized routes. Run it after building; `MASTER_DOC_BUILD` and
+`MASTER_SITE_URL` also let it audit Master. Historical review JSON files do not
+control route coverage. `MASTER_DOC_CAPTURE=0` runs the geometry and runtime
+checks without retaining screenshots; inspect captures for affected components
+separately before claiming visual approval.
 
 `DocumentFlow` presents short, static ordered processes outside demo geometry.
 `DeliveryFlow` reads six literal recipes from `utils/delivery-flows.ts`;

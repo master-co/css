@@ -1,3 +1,5 @@
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import MigrationGuides from '~/site/components/MigrationGuides.astro'
 import MigrationIllustration from './components/MigrationIllustration.astro'
@@ -22,12 +24,16 @@ An account settings form makes a useful first batch: it has a clear boundary, vi
 
 Inspect these connections before deciding which files to change:
 
+<DocumentComparison>
+
 | Connection | What it changes about the batch |
 | --- | --- |
 | CSS entry, reset and layer order | Setup can affect screens whose markup you leave untouched. |
 | Shared tokens and component classes | A definition may have consumers outside the chosen component. |
 | Source discovery and dynamic class names | The generated CSS must include the states the component actually renders. |
 | Component-library behavior | Replacing a class does not replace a widget's focus management, events or accessibility behavior. |
+
+</DocumentComparison>
 
 The conversion boundary is not a CSS isolation boundary. In an app where Account, Billing and Reports load the same CSS entry, adding Master CSS or changing a shared rule requires checking all three.
 
@@ -74,23 +80,20 @@ Record intentional visual differences and remaining dependencies with the batch.
 
 The [Master CSS MCP server](/guide/ai-coding#connect-the-mcp-server) provides a `migrate-to-mastercss` prompt for planning a conversion from an external styling system. It instructs the agent to inspect the project and return a rendering mode, a first batch, CSS output risks and validation commands. The prompt supplies instructions; it is not an automatic code converter.
 
-```text
-Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+<DocumentPrompt title="Plan a conversion with MCP" text={`Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
 
 Inspect the external styling system, framework, stylesheet entries,
 source discovery, shared tokens and available checks. Do not edit yet.
 
 Return a plan for one component or route: setup changes, conversion
 files, screens affected by shared CSS, validation commands and the
-conditions for removing old styles. Identify uncertainties to inspect.
-```
+conditions for removing old styles. Identify uncertainties to inspect.`} />
 
 ### Without MCP \{#migration-prompt\}
 
 Give a local coding agent the same bounded task. Include the component or route you chose, then use this planning request:
 
-```text
-Plan the first batch of this project's migration to Master CSS.
+<DocumentPrompt title="Plan a conversion without MCP" text={`Plan the first batch of this project's migration to Master CSS.
 Use https://rc.css.master.co and the installed packages to verify
 current syntax, APIs and setup. Do not invent classes or package names.
 
@@ -102,8 +105,7 @@ route. Explain how the old and new CSS will coexist, which screens
 need comparison, and which component behaviors must be preserved.
 
 List the files to change, validation commands, unresolved questions
-and evidence needed before deleting old styles or dependencies.
-```
+and evidence needed before deleting old styles or dependencies.`} />
 
 Review the plan against the actual project, then request implementation of that batch. Keep the same checks whether the edits are written by an agent or by hand.
 
