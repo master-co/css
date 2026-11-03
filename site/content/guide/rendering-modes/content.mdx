@@ -271,4 +271,7 @@ cssRuntime.ensureClassRules(['grid', 'gap-md'])
 
 Measure runtime JavaScript, program delivery, initialization, DOM observation, and CSSOM work together. Compressed JavaScript size alone does not describe interaction cost. See [Benchmarks](/benchmarks) for measurements and their conditions.
 
+### User-generated markup \{#user-generated-markup\}
+Every class the runtime observes or the server renders becomes CSS, so a `class` attribute is as powerful as a `style` attribute: native declarations, `url()` and selectors such as `:has()` included. When pages render markup other people write, such as comments, CMS rich text or chat messages, treat `class` in your HTML sanitizer the way you treat `style`: remove it, or allow only classes you choose. Escaping the attribute value is not enough, because the class name itself is the input.
+
 For runtime state, delivery artifacts, custom startup entries and engine hosts, see the [runtime](/reference/packages#css-runtime), [server](/reference/packages#css-server) and [engine](/reference/packages#css) packages.

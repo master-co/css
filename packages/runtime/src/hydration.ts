@@ -11,10 +11,12 @@ export function isDocumentRoot(root: Document | ShadowRoot): root is Document {
   return rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document'
 }
 
-export function findElementById(root: Document | ShadowRoot, id: string) {
-  return isDocumentRoot(root)
-    ? root.getElementById(id)
-    : root.querySelector(`#${id}`)
+/**
+ * Finds the pre-rendered `<style>`. Sanitized user content may carry any `id`, so other
+ * elements with the same id are skipped rather than trusted.
+ */
+export function findRuntimeStyleElement(root: Document | ShadowRoot) {
+  return root.querySelector<HTMLStyleElement>(`style#${MASTER_CSS_RUNTIME_STYLE_ID}`)
 }
 
 export function getRootHost(root: Document | ShadowRoot) {
@@ -57,12 +59,12 @@ function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
 }
 
 function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
-  const source = findElementById(root, MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)?.textContent?.trim()
+  const source = root.querySelector(`script#${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}`)?.textContent?.trim()
   return source ? parseHydrationManifest(source) : undefined
 }
 
 function readExternalHydrationManifestSource(root: Document | ShadowRoot) {
-  const styleElement = findElementById(root, MASTER_CSS_RUNTIME_STYLE_ID)
+  const styleElement = findRuntimeStyleElement(root)
   return styleElement?.getAttribute(MASTER_CSS_HYDRATION_MANIFEST_ATTR) || undefined
 }
 

@@ -56,7 +56,12 @@ fn content(source: &str, decode: bool) -> Option<String> {
         }
         match character {
             '\'' | '"' => quote = Some(character),
-            '(' | '[' => stack.push(character),
+            '(' | '[' => {
+                stack.push(character);
+                if stack.len() > crate::MAX_CLASS_NESTING {
+                    return None;
+                }
+            }
             ')' if stack.pop() != Some('(') => return None,
             ']' if stack.pop() != Some('[') => return None,
             '{' | '}' | ';' if stack.is_empty() => return None,
@@ -404,6 +409,13 @@ mod tests {
             assert!(parse_native_query(source).is_none(), "{source}");
             assert_eq!(legacy_query(source), None, "{source}");
         }
+    }
+
+    #[test]
+    fn rejects_content_nested_beyond_the_limit() {
+        let nested = |depth: usize| format!("{}.a{}", "(".repeat(depth), ")".repeat(depth));
+        assert!(decode_native_content(&nested(crate::MAX_CLASS_NESTING)).is_some());
+        assert!(decode_native_content(&nested(crate::MAX_CLASS_NESTING + 1)).is_none());
     }
 
     #[test]

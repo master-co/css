@@ -68,6 +68,7 @@ A malformed head generates no rule; it is not retried as a utility or a differen
 | `(width:calc(1px])` | Mismatched delimiters |
 | `(width:)` | Empty value for an ordinary property |
 | `(color:{red})` | A brace block as an ordinary property value |
+| `(width:calc(((…1px…))))` nested 65 levels | Brackets nested more than 64 levels deep |
 
 A custom property may have an empty value or a balanced brace block: `(--slot:)` and `(--state:{open})` are accepted. `(--slot:!important)` is an empty important custom property, while `(width:!important)` is invalid.
 

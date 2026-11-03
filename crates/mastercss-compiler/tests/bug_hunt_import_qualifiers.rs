@@ -307,3 +307,28 @@ fn bh_0004_a_fully_resolved_graph_keeps_its_bytes() {
     let result = resolve_css_import_graph("entry", &AllLocal).unwrap();
     assert!(!result.source.contains("@layer a, b;"), "{}", result.source);
 }
+
+struct DiamondFiles;
+
+impl CssImportProvider for DiamondFiles {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        let level: usize = id.parse().map_err(|_| "missing".to_owned())?;
+        Ok(if level == 30 {
+            ".example{color:red}".into()
+        } else {
+            format!("@import './{next}';@import './{next}';", next = level + 1)
+        })
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok(specifier.strip_prefix("./").map(str::to_owned))
+    }
+}
+
+#[test]
+fn repeated_shared_imports_stop_before_growing_exponentially() {
+    let started = std::time::Instant::now();
+    let error = resolve_css_import_graph("0", &DiamondFiles).unwrap_err();
+    assert!(error.to_string().contains("more than"), "{error}");
+    assert!(started.elapsed() < std::time::Duration::from_secs(5));
+}

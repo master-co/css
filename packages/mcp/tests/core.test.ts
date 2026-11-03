@@ -1,10 +1,11 @@
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { afterEach, describe, expect, it } from 'vitest'
 import MasterCSSMCPContext from '../src/context'
+import { resolveSourceFiles } from '../src/scan'
 import { createMasterCSSMCPServer } from '../src/server'
 
 const tempDirs: string[] = []
@@ -545,6 +546,32 @@ describe('@master/css-mcp', () => {
     writeFileSync(file, "<div class=\"(display:flex)\"></div>")
     await expect(context.applyPreview(preview.confirmToken!)).rejects.toThrow('changed')
     expect(readFileSync(file, 'utf8')).toBe("<div class=\"(display:flex)\"></div>")
+  })
+
+  it('rejects writes through dangling symbolic links and links planted after preview', async () => {
+    const root = createTempDir('master-css-mcp-dangling-')
+    const outside = createTempDir('master-css-mcp-outside-')
+    symlinkSync(join(outside, 'created.css'), join(root, 'linked.css'))
+    const context = new MasterCSSMCPContext({ root })
+
+    await expect(context.createPreview([{ filePath: 'linked.css', afterText: '.a{}' }])).rejects.toThrow('dangling')
+
+    const preview = await context.createPreview([{ filePath: 'generated.css', afterText: '.a{}' }])
+    symlinkSync(join(outside, 'planted.css'), join(root, 'generated.css'))
+    await expect(context.applyPreview(preview.confirmToken!)).rejects.toThrow()
+    expect(existsSync(join(outside, 'created.css'))).toBe(false)
+    expect(existsSync(join(outside, 'planted.css'))).toBe(false)
+  })
+
+  it('does not follow linked directories while resolving source files', async () => {
+    const root = createTempDir('master-css-mcp-loop-')
+    mkdirSync(join(root, 'sub'))
+    writeFileSync(join(root, 'sub/index.html'), '<div class="block"></div>')
+    symlinkSync(root, join(root, 'sub/l1'), 'junction')
+    symlinkSync(root, join(root, 'sub/l2'), 'junction')
+    const context = new MasterCSSMCPContext({ root })
+
+    expect(await resolveSourceFiles(context)).toEqual([join(root, 'sub/index.html')])
   })
 
   it('accepts writable files addressed through the configured root path alias', async () => {

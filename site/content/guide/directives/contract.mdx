@@ -41,6 +41,8 @@ Global Master definitions belong in unqualified imports or references. A qualifi
 @import "./components.css" layer(components);
 ```
 
+Each `@import` inlines its stylesheet again, so a file imported from several places is repeated. One import graph inlines at most 10,000 stylesheets and 64 MiB of CSS; import shared files once instead of from every file that uses them.
+
 Loading definitions and scanning metadata does not publish files. CLI file export and Vite production builds publish the required stylesheet and resource assets. Custom compiler hosts must publish every asset returned by their delivery APIs; a manifest alone does not deliver native rules. See [rendering and stylesheet delivery](/guide/rendering-modes#native-css-entries) and [compiler entrypoints](/reference/packages#css-compiler).
 
 
@@ -440,6 +442,8 @@ Exclude matching files from the source set:
 ```css
 @source not "../content/drafts/**";
 ```
+
+Brace groups such as `{a,b}` expand to separate patterns; one pattern may expand to at most 1,024.
 
 Includes are combined as a union, then all excludes are subtracted. Every relative pattern resolves from the stylesheet that declares it, including bare `src/**`, `./src/**`, imported files, and `@source not`. A reference does not contribute scanning sources.
 

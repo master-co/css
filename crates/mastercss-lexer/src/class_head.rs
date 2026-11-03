@@ -155,6 +155,9 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
                         cursor = skip_url(source, cursor)?;
                     } else {
                         stack.push(')');
+                        if stack.len() > crate::MAX_CLASS_NESTING {
+                            return Err("Native declaration nesting is too deep");
+                        }
                     }
                     if top {
                         items.push(Item::Other);
@@ -179,6 +182,9 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
                     '[' => ']',
                     _ => '}',
                 });
+                if stack.len() > crate::MAX_CLASS_NESTING {
+                    return Err("Native declaration nesting is too deep");
+                }
                 if top {
                     items.push(Item::Other);
                 }
@@ -479,6 +485,28 @@ mod tests {
             head.important,
             &source[head.suffix_start..],
         )
+    }
+
+    #[test]
+    fn rejects_values_nested_beyond_the_limit() {
+        for open in ["calc(", "(", "[", "var(--x,"] {
+            let nested = |depth: usize| {
+                let close = if open == "[" { "]" } else { ")" };
+                format!("(width:{}1px{})", open.repeat(depth), close.repeat(depth))
+            };
+            assert!(
+                parse_native_declaration(&nested(crate::MAX_CLASS_NESTING))
+                    .unwrap()
+                    .is_ok(),
+                "{open}"
+            );
+            assert!(
+                parse_native_declaration(&nested(crate::MAX_CLASS_NESTING + 1))
+                    .unwrap()
+                    .is_err(),
+                "{open}"
+            );
+        }
     }
 
     #[test]

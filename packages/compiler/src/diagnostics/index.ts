@@ -94,7 +94,9 @@ function resolveSourcePaths(cwd: string, sourcePatterns: readonly string[], igno
   return fg.sync(normalizeGlobPatterns(sourcePatterns), {
     cwd,
     ignore: normalizeGlobPatterns(ignore),
-    onlyFiles: true
+    onlyFiles: true,
+    // Linked directories can loop back into the project or walk the whole filesystem.
+    followSymbolicLinks: false
   }).filter(Boolean)
 }
 

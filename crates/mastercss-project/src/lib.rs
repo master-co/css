@@ -36,6 +36,8 @@ pub enum ProjectError {
     },
     #[error(transparent)]
     Compiler(#[from] CompilerError),
+    #[error("Source pattern {pattern} expands to more than {MAX_BRACE_EXPANSIONS} patterns")]
+    PatternExpansion { pattern: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -95,12 +97,23 @@ pub struct ProjectSourceEntryPlanIr {
     pub files: Vec<String>,
 }
 
+/// The largest stylesheet the project loader reads.
+const MAX_CSS_FILE_BYTES: u64 = 16 << 20;
+
 struct FilesystemCssProvider;
 
 impl CssImportProvider for FilesystemCssProvider {
     type Error = String;
 
     fn load(&self, id: &str) -> Result<String, Self::Error> {
+        // Devices, FIFOs and huge files would read forever or exhaust memory.
+        let metadata = fs::metadata(id).map_err(|error| error.to_string())?;
+        if !metadata.is_file() {
+            return Err("not a regular file".into());
+        }
+        if metadata.len() > MAX_CSS_FILE_BYTES {
+            return Err(format!("larger than {} MiB", MAX_CSS_FILE_BYTES >> 20));
+        }
         fs::read_to_string(id).map_err(|error| error.to_string())
     }
 
@@ -174,25 +187,35 @@ fn normalize_path(path: &Path) -> String {
     }
 }
 
-fn expand_braces(pattern: &str) -> Vec<String> {
-    let Some(open) = pattern.find('{') else {
-        return vec![pattern.to_owned()];
-    };
-    let Some(relative_close) = pattern[open + 1..].find('}') else {
-        return vec![pattern.to_owned()];
-    };
-    let close = open + 1 + relative_close;
-    pattern[open + 1..close]
-        .split(',')
-        .flat_map(|choice| {
-            expand_braces(&format!(
-                "{}{}{}",
-                &pattern[..open],
-                choice,
-                &pattern[close + 1..]
-            ))
+/// The most patterns one source pattern may expand to. Each brace group multiplies the
+/// count, and every pattern is matched against every file.
+const MAX_BRACE_EXPANSIONS: usize = 1024;
+
+fn expand_braces(pattern: &str) -> Result<Vec<String>, ProjectError> {
+    let mut expanded = Vec::new();
+    expand_braces_into(pattern, &mut expanded)
+        .then_some(expanded)
+        .ok_or_else(|| ProjectError::PatternExpansion {
+            pattern: pattern.to_owned(),
         })
-        .collect()
+}
+
+/// Appends the expansions of `pattern`; false once they exceed the limit.
+fn expand_braces_into(pattern: &str, expanded: &mut Vec<String>) -> bool {
+    let Some((open, close)) = pattern.find('{').and_then(|open| {
+        pattern[open + 1..]
+            .find('}')
+            .map(|relative_close| (open, open + 1 + relative_close))
+    }) else {
+        expanded.push(pattern.to_owned());
+        return expanded.len() <= MAX_BRACE_EXPANSIONS;
+    };
+    pattern[open + 1..close].split(',').all(|choice| {
+        expand_braces_into(
+            &format!("{}{}{}", &pattern[..open], choice, &pattern[close + 1..]),
+            expanded,
+        )
+    })
 }
 
 fn glob_matches(pattern: &str, path: &str) -> bool {
@@ -365,18 +388,19 @@ fn resolve_source_entry_plan(
     entry: &Path,
     policy: &CssDirectiveExtractionPolicy,
 ) -> Result<ProjectSourceEntryPlanIr, ProjectError> {
-    let include = policy
-        .include
-        .iter()
-        .map(|pattern| resolve_source_pattern(project_dir, entry, pattern))
-        .flat_map(|pattern| expand_braces(&pattern))
-        .collect::<Vec<_>>();
-    let exclude = policy
-        .exclude
-        .iter()
-        .map(|pattern| resolve_source_pattern(project_dir, entry, pattern))
-        .flat_map(|pattern| expand_braces(&pattern))
-        .collect::<Vec<_>>();
+    let expand = |patterns: &[String]| -> Result<Vec<String>, ProjectError> {
+        let mut expanded = Vec::new();
+        for pattern in patterns {
+            expanded.extend(expand_braces(&resolve_source_pattern(
+                project_dir,
+                entry,
+                pattern,
+            ))?);
+        }
+        Ok(expanded)
+    };
+    let include = expand(&policy.include)?;
+    let exclude = expand(&policy.exclude)?;
     let mut candidates = Vec::new();
     for pattern in &include {
         let direct = PathBuf::from(pattern);

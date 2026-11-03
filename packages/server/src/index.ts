@@ -20,3 +20,7 @@ export {
   type MasterCSSHTMLRenderOptions
 } from './render-html'
 export type { MasterCSSServerStylesheet } from './native-stylesheets'
+export {
+  externalizeHydrationManifest,
+  type MasterCSSExternalizedHydrationManifest
+} from './externalize-hydration-manifest'

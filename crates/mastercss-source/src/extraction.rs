@@ -20,6 +20,10 @@ pub struct SourceOccurrenceIr {
 }
 
 pub fn extract_source_result(input: &SourceExtractionInputIr) -> SourceExtractionIr {
+    crate::with_source_stack(input.content.len(), || extract(input))
+}
+
+fn extract(input: &SourceExtractionInputIr) -> SourceExtractionIr {
     let mut output = SourceExtractionIr {
         source: input.source.clone(),
         candidates: Vec::new(),
@@ -530,6 +534,40 @@ mod tests {
             ["block", "hidden", "flex", "grid", "inline", "p:2px"]
         );
         assert!(!result.candidates.contains(&"fg-".into()));
+    }
+
+    #[test]
+    fn deeply_nested_sources_do_not_overflow_the_caller_stack() {
+        let depth = 20_000;
+        let sources = [
+            (
+                "a.js",
+                format!("x={}'block'{}", "[".repeat(depth), "]".repeat(depth)),
+            ),
+            ("a.js", format!("x={}'block'", "a=>".repeat(depth))),
+            ("a.js", format!("x={}'block'", "a?b:".repeat(depth))),
+            (
+                "a.tsx",
+                format!("x={}{}", "<a>".repeat(depth), "</a>".repeat(depth)),
+            ),
+            (
+                "a.ts",
+                format!("let x:{}B{}='block'", "A<".repeat(depth), ">".repeat(depth)),
+            ),
+            ("a.md", ">".repeat(depth)),
+        ];
+        // An ordinary caller stack, far smaller than these sources would need.
+        std::thread::Builder::new()
+            .stack_size(1 << 20)
+            .spawn(move || {
+                for (source, content) in &sources {
+                    extract(source, content);
+                    crate::extract_oxc_classes(source, content);
+                }
+            })
+            .unwrap()
+            .join()
+            .unwrap();
     }
 
     #[test]

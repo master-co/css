@@ -113,7 +113,53 @@ pub fn literal_class_candidates(content: &str) -> Vec<String> {
     candidates
 }
 
+/// Runs a parse on a stack sized to its source. Parsers and AST visitors recurse once per
+/// nesting level, and a stack overflow aborts the host process, so a few kilobytes of
+/// nested brackets, JSX, arrow functions or Markdown quotes must not reach the caller's
+/// stack. Wasm hosts have no threads and trap instead.
+pub(crate) fn with_source_stack<T: Send>(
+    content_len: usize,
+    parse: impl FnOnce() -> T + Send,
+) -> T {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        // Short sources cannot nest deeper than an ordinary stack allows.
+        const INLINE_LEN: usize = 256;
+        const STACK_PER_SOURCE_BYTE: usize = 4096;
+        const MIN_STACK: usize = 16 << 20;
+        const MAX_STACK: usize = 1 << 30;
+        if content_len > INLINE_LEN {
+            let stack_size = content_len
+                .saturating_mul(STACK_PER_SOURCE_BYTE)
+                .clamp(MIN_STACK, MAX_STACK);
+            let mut parse = Some(parse);
+            let spawned = std::thread::scope(|scope| {
+                std::thread::Builder::new()
+                    .stack_size(stack_size)
+                    .spawn_scoped(scope, || parse.take().map(|parse| parse()))
+                    .ok()
+                    .map(|handle| {
+                        handle
+                            .join()
+                            .unwrap_or_else(|panic| std::panic::resume_unwind(panic))
+                    })
+            });
+            // A host that cannot reserve the stack still parses on its own.
+            match (spawned, parse) {
+                (Some(Some(result)), _) => return result,
+                (_, Some(parse)) => return parse(),
+                _ => unreachable!("the spawned parse returns its result"),
+            }
+        }
+    }
+    parse()
+}
+
 pub fn extract_oxc_classes(source: &str, content: &str) -> Vec<String> {
+    with_source_stack(content.len(), || parse_oxc_classes(source, content))
+}
+
+fn parse_oxc_classes(source: &str, content: &str) -> Vec<String> {
     let normalized_source = source.split('?').next().unwrap_or(source);
     let source_type = SourceType::from_path(Path::new(normalized_source))
         .unwrap_or_else(|_| SourceType::unambiguous());

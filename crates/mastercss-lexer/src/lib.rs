@@ -4,6 +4,10 @@ pub mod text;
 mod utf16_index;
 pub use utf16_index::Utf16Index;
 
+/// The deepest bracket nesting a class may carry. Classes can come from untrusted markup,
+/// and nested values cost the engine quadratic work, so deeper classes are invalid.
+pub const MAX_CLASS_NESTING: usize = 64;
+
 mod class_head;
 pub use class_head::{
     NativeDeclarationHead, NativeHeadCursor, decode_native_value, is_class_suffix_start,

@@ -27,7 +27,7 @@ import registerGlobal from './register-global'
 import RuntimeHost, { LAYER_ORDER, getGeneratedRuleNodeTexts, isLayerBlockRule } from './host'
 import { applyDeferredMutationDelta, applyRuntimeMutationDelta } from './mutation'
 import {
-  findElementById,
+  findRuntimeStyleElement,
   getRenderedClassNames,
   getRootHost,
   isDocumentRoot,
@@ -235,7 +235,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
         return loaded
       })
     // Only a pre-rendered stylesheet can defer the engine; its hydration manifest decides.
-    const deferrable = options.engine !== 'eager' && Boolean(findElementById(root, MASTER_CSS_RUNTIME_STYLE_ID))
+    const deferrable = options.engine !== 'eager' && Boolean(findRuntimeStyleElement(root))
     const enginePromise = deferrable ? undefined : startEngine()
     const hydrationPromise = resolveHydrationManifest(root, options.hydrationManifest)
 
@@ -438,9 +438,9 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   private detectRuntimeStyle() {
-    const style = findElementById(this.root, MASTER_CSS_RUNTIME_STYLE_ID)
-    if (style?.constructor.name === 'HTMLStyleElement') {
-      this.style = style as HTMLStyleElement
+    const style = findRuntimeStyleElement(this.root)
+    if (style) {
+      this.style = style
       this.progressive = true
     }
   }

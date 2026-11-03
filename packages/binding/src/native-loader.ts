@@ -223,27 +223,38 @@ function runtimeResolutionBases() {
   return [...new Set(bases)]
 }
 
-function resolveDevelopmentArtifact(name: string) {
+function resolvePackageArtifact(name: string) {
   try {
     const packageArtifact = resolve(dirname(fileURLToPath(import.meta.url)), '../artifacts', name)
     if (existsSync(packageArtifact)) return packageArtifact
   } catch {
     // A server bundler may replace import.meta.url with a non-file module identifier.
   }
+}
 
+/**
+ * Finds a checkout's development artifact for loaders bundled away from their package.
+ * The search starts in the working directory, which a cloned repository controls, so it
+ * runs only after the installed target package and never trusts the filesystem root,
+ * which other local users may write to.
+ */
+function resolveWorkspaceArtifact(name: string) {
   const startDirectories = [process.cwd()]
   if (process.argv[1]) startDirectories.push(dirname(resolve(process.argv[1])))
   for (const startDirectory of new Set(startDirectories)) {
     let directory = startDirectory
     const root = parse(directory).root
-    while (true) {
-      for (const artifact of [
-        resolve(directory, 'node_modules/@master/css-binding/artifacts', name),
-        resolve(directory, 'packages/binding/artifacts', name)
+    while (directory !== root) {
+      for (const packageRoot of [
+        resolve(directory, 'node_modules/@master/css-binding'),
+        resolve(directory, 'packages/binding')
       ]) {
-        if (existsSync(/*turbopackIgnore: true*/ artifact)) return artifact
+        const artifact = resolve(packageRoot, 'artifacts', name)
+        if (
+          existsSync(/*turbopackIgnore: true*/ resolve(packageRoot, 'package.json'))
+          && existsSync(/*turbopackIgnore: true*/ artifact)
+        ) return artifact
       }
-      if (directory === root) break
       directory = dirname(directory)
     }
   }
@@ -279,7 +290,6 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
 
   const executableName = getNativeCLIExecutableName()
   const configuredPath = options.executablePath || process.env.MASTER_CSS_NATIVE_CLI_PATH
-  const developmentPath = resolveDevelopmentArtifact(executableName)
   if (configuredPath) {
     if (!existsSync(configuredPath)) {
       throw new NativeBindingError(
@@ -289,9 +299,13 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
     }
     return configuredPath
   }
-  if (developmentPath) return developmentPath
+  const packagePath = resolvePackageArtifact(executableName)
+  if (packagePath) return packagePath
 
   const target = resolveNativeTarget()
+  const executablePath = (target && resolveTargetArtifact(target.packageName, executableName))
+    || resolveWorkspaceArtifact(executableName)
+  if (executablePath) return executablePath
   if (!target) {
     if (!options.required) return
     throw new NativeBindingError(
@@ -299,19 +313,11 @@ export function resolveNativeCLIPath(options: { required?: boolean, executablePa
       `Master CSS has no native executable for ${process.platform}-${process.arch}.`
     )
   }
-  try {
-    const executablePath = resolveTargetArtifact(target.packageName, executableName)
-    if (!executablePath) {
-      throw new Error(`Missing ${executableName}`)
-    }
-    return executablePath
-  } catch (cause) {
-    throw new NativeBindingError(
-      'NATIVE_LOAD_FAILED',
-      `Cannot resolve the expected Master CSS native executable: ${target.packageName}`,
-      { cause }
-    )
-  }
+  throw new NativeBindingError(
+    'NATIVE_LOAD_FAILED',
+    `Cannot resolve the expected Master CSS native executable: ${target.packageName}`,
+    { cause: new Error(`Missing ${executableName}`) }
+  )
 }
 
 export function assertNativeCLIInfo(executablePath: string): NativeBindingInfo {
@@ -397,12 +403,12 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
   }
 
   const configuredPath = options.bindingPath || process.env.MASTER_CSS_NATIVE_BINDING_PATH
-  const developmentPath = resolveDevelopmentArtifact('mastercss.node')
   const target = resolveNativeTarget()
-  const targetPath = target && resolveTargetArtifact(target.packageName, 'mastercss.node')
+  // The installed target package outranks any artifact found from the working directory.
   const source = configuredPath
-    || developmentPath
-    || targetPath
+    || resolvePackageArtifact('mastercss.node')
+    || (target && resolveTargetArtifact(target.packageName, 'mastercss.node'))
+    || resolveWorkspaceArtifact('mastercss.node')
 
   if (!source) {
     if (target) {

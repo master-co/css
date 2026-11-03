@@ -358,14 +358,32 @@ fn load_css_import_source_mapped<P: CssImportProvider>(
     Ok(mapped)
 }
 
+/// The most stylesheet inclusions one import graph may inline. Every `@import` of a
+/// shared file inlines it again, so a few files importing each other twice would
+/// otherwise grow the work and output exponentially.
+const MAX_CSS_IMPORT_INCLUSIONS: usize = 10_000;
+/// The largest stylesheet one import graph may inline.
+const MAX_CSS_IMPORT_GRAPH_BYTES: usize = 64 << 20;
+
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
     id: &str,
     provider: &P,
     dependencies: &mut Vec<String>,
     dependency_set: &mut HashSet<String>,
     stack: &mut Vec<String>,
+    inclusions: &mut usize,
     references: &mut Vec<CssDirectiveReferenceStatement>,
 ) -> Result<MappedSource, CompilerError> {
+    *inclusions += 1;
+    if *inclusions > MAX_CSS_IMPORT_INCLUSIONS {
+        return Err(CompilerError::Import {
+            message: format!(
+                "CSS imports inline more than {MAX_CSS_IMPORT_INCLUSIONS} stylesheets; import shared files once"
+            ),
+            filename: id.to_owned(),
+        });
+    }
     if stack.iter().any(|entry| entry == id) {
         let mut cycle = stack.clone();
         cycle.push(id.to_owned());
@@ -408,6 +426,7 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
                 dependencies,
                 dependency_set,
                 stack,
+                inclusions,
                 references,
             )?;
             let (prefix, suffix, _) = imported_css_wrappers(&import.statement, &source.text, id)?;
@@ -430,6 +449,15 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
     }
     output.push(mapped.slice(byte_index, source_without_references.len()));
     stack.pop();
+    if output.text.len() > MAX_CSS_IMPORT_GRAPH_BYTES {
+        return Err(CompilerError::Import {
+            message: format!(
+                "CSS imports inline more than {} MiB",
+                MAX_CSS_IMPORT_GRAPH_BYTES >> 20
+            ),
+            filename: id.to_owned(),
+        });
+    }
 
     if preserved_imports.is_empty() {
         return Ok(output);
@@ -476,6 +504,7 @@ pub fn resolve_css_import_graph<P: CssImportProvider>(
         &mut dependencies,
         &mut HashSet::new(),
         &mut Vec::new(),
+        &mut 0,
         &mut references,
     )?;
     Ok(ResolvedCssImportGraph {

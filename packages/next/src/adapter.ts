@@ -2,13 +2,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { basename, dirname, extname, join, resolve } from 'node:path'
 import { createServerRenderer } from '@master/css-server'
 import type { NextAdapter } from 'next'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
-import {
-  MASTER_CSS_HYDRATION_MANIFEST_ATTR,
-  MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME,
-  MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
-  serializeMasterCSSHydrationManifest
-} from '@master/css-schema/hydration-manifest'
+import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from '@master/css-schema/hydration-manifest'
 import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import { getRegisteredOptions, resolveOptions, type MasterCSSNextAdapterOrder, type MasterCSSNextOptions } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'
@@ -24,10 +18,6 @@ interface HTMLBuildOutput {
   filePath: string
   pathname: string
   source: 'static' | 'prerender-fallback'
-}
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export interface RenderedOutput {
@@ -107,42 +97,6 @@ async function writeBuildReport(ctx: BuildCompleteContext, files: RenderedOutput
   await writeFile(buildReportPath, JSON.stringify(data, null, 2))
 }
 
-function createMasterStyleText(cssText: string) {
-  return `<style id="${MASTER_CSS_RUNTIME_STYLE_ID}">${cssText}</style>`
-}
-
-function escapeAttributeValue(value: string) {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-}
-
-function upsertAttribute(openingTag: string, name: string, value: string) {
-  const attributePattern = new RegExp(String.raw`\s${escapeRegExp(name)}(?:=(?:"[^"]*"|'[^']*'|[^\s>]*))?`, 'i')
-  return openingTag
-    .replace(attributePattern, '')
-    .replace(/>$/, ` ${name}="${escapeAttributeValue(value)}">`)
-}
-
-function removeHydrationManifestScripts(html: string) {
-  const scriptPattern = new RegExp(
-    String.raw`<script\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)}\1)[^>]*>[\s\S]*?<\/script>`,
-    'gi'
-  )
-  return html.replace(scriptPattern, '')
-}
-
-function attachHydrationManifestSource(html: string, source: string) {
-  const stylePattern = new RegExp(
-    String.raw`<style\b(?=[^>]*\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\1)[^>]*>`,
-    'i'
-  )
-  return removeHydrationManifestScripts(html).replace(
-    stylePattern,
-    (openingTag) => upsertAttribute(openingTag, MASTER_CSS_HYDRATION_MANIFEST_ATTR, source)
-  )
-}
-
 function toNextHydrationManifestPublicURL(ctx: BuildCompleteContext, fileName: string) {
   const config = ctx.config as { assetPrefix?: string, basePath?: string }
   const pathname = `${config.basePath || ''}/_next/static/master-css/hydration/${fileName}`
@@ -182,21 +136,6 @@ function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, output: HTML
   return join(ctx.distDir, 'static', 'master-css', 'hydration', fileName)
 }
 
-function upsertMasterStyleText(html: string, cssText: string) {
-  const stylePattern = new RegExp(`(<style\\b(?=[^>]*\\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\\2)[^>]*>)([\\s\\S]*?)(<\\/style>)`)
-  if (stylePattern.test(html)) {
-    return html.replace(
-      stylePattern,
-      (_match, open: string, _quote: string, _content: string, close: string) => open + cssText + close
-    )
-  }
-  const headCloseIndex = html.search(/<\/head\s*>/i)
-  const styleText = createMasterStyleText(cssText)
-  return headCloseIndex === -1
-    ? styleText + html
-    : html.slice(0, headCloseIndex) + styleText + html.slice(headCloseIndex)
-}
-
 export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: MasterCSSNextOptions = getRegisteredOptions() ?? {}) {
   const options = resolveOptions(rawOptions)
   if (!options.enabled) return []
@@ -218,30 +157,37 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
 
     for (const output of htmlOutputs) {
       const sourceHTML = await readFile(output.filePath, 'utf-8')
+      let hydrationManifestJSON: string | undefined
       let hydrationManifestFile: string | undefined
       let hydrationManifestBytes = 0
-      const rendered = renderer.renderHTML(sourceHTML, { stylesheets })
-      if (options.mode === 'progressive' && rendered.hydrationManifest && rendered.cssText) {
-        const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
-        const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
-        hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)
-        hydrationManifestBytes = Buffer.byteLength(json)
+      // The server writes the escaped <style> and replaces the inline manifest
+      // through its DOM; rewriting the HTML text here would undo that escaping.
+      const rendered = renderer.renderHTML(sourceHTML, {
+        stylesheets,
+        ...(options.mode === 'progressive'
+          ? {
+            hydrationManifest: {
+              type: 'external' as const,
+              source: (json: string) => {
+                const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
+                hydrationManifestJSON = json
+                hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)
+                return toNextHydrationManifestPublicURL(ctx, fileName)
+              }
+            }
+          }
+          : {})
+      })
+      if (hydrationManifestJSON && hydrationManifestFile) {
+        hydrationManifestBytes = Buffer.byteLength(hydrationManifestJSON)
         if (!hydrationManifestAssets.has(hydrationManifestFile)) {
           await mkdir(dirname(hydrationManifestFile), { recursive: true })
-          await writeFile(hydrationManifestFile, json)
+          await writeFile(hydrationManifestFile, hydrationManifestJSON)
           hydrationManifestAssets.add(hydrationManifestFile)
         }
       }
       const generatedCSS = rendered.cssText
-      let renderedHTML = generatedCSS
-        ? upsertMasterStyleText(rendered.html, generatedCSS)
-        : rendered.html
-      if (generatedCSS && hydrationManifestFile) {
-        renderedHTML = attachHydrationManifestSource(
-          renderedHTML,
-          toNextHydrationManifestPublicURL(ctx, basename(hydrationManifestFile))
-        )
-      }
+      const renderedHTML = rendered.html
       const didRender = renderedHTML !== sourceHTML
 
       if (didRender) {

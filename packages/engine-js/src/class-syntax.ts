@@ -4,6 +4,9 @@
 import { DELIM, FUNCTION, readName, startsIdentifier, tokenize } from './css-syntax'
 import { isAsciiCase, isAsciiDigit, isAsciiWhitespace, trim } from './text'
 
+/** The deepest bracket nesting a class may carry, as `MAX_CLASS_NESTING` in crates/mastercss-lexer. */
+const MAX_CLASS_NESTING = 64
+
 const isOpen = (unit: number) => unit === 0x28 || unit === 0x5b || unit === 0x7b
 const isClose = (unit: number) => unit === 0x29 || unit === 0x5d || unit === 0x7d
 export const isQuote = (unit: number) => unit === 0x22 || unit === 0x27
@@ -38,7 +41,7 @@ function content(source: string, decode: boolean) {
     } else if (isQuote(unit)) {
       quote = unit
     } else if (unit === 0x28 || unit === 0x5b) {
-      stack.push(unit)
+      if (stack.push(unit) > MAX_CLASS_NESTING) return
     } else if (unit === 0x29) {
       if (stack.pop() !== 0x28) return
     } else if (unit === 0x5d) {
@@ -156,8 +159,8 @@ function scanValue(source: string, start: number, custom: boolean): [close: numb
           const url = skipUrl(source, cursor)
           if (url === undefined) return
           cursor = url
-        } else {
-          stack.push(0x29)
+        } else if (stack.push(0x29) > MAX_CLASS_NESTING) {
+          return
         }
         if (top) items.push(OTHER_ITEM)
       } else if (top) {
@@ -174,7 +177,7 @@ function scanValue(source: string, start: number, custom: boolean): [close: numb
     // A block is a component of its own: `a!important{}` is not important.
     if (isOpen(unit)) {
       if (unit === 0x7b && top && !custom) return
-      stack.push(unit === 0x28 ? 0x29 : unit === 0x5b ? 0x5d : 0x7d)
+      if (stack.push(unit === 0x28 ? 0x29 : unit === 0x5b ? 0x5d : 0x7d) > MAX_CLASS_NESTING) return
       if (top) items.push(OTHER_ITEM)
     } else if (unit === 0x29 && top) return [cursor, items]
     else if (isClose(unit)) {

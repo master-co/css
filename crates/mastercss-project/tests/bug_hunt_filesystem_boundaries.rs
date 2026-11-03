@@ -210,3 +210,32 @@ fn reference_native_apply_is_not_a_root_but_called_definitions_remain_available(
     assert_eq!(css(&result.manifest, ""), "");
     assert!(css(&result.manifest, "card").contains(".card{color:red}"));
 }
+
+#[test]
+fn source_brace_patterns_cannot_expand_exponentially() {
+    let project = Project::new();
+    project.file(
+        "entry.css",
+        &format!(
+            "@source './{}.html';@import '@master/css';",
+            "{a,b}".repeat(20)
+        ),
+    );
+    let started = std::time::Instant::now();
+    let error = load_project_manifest(&project.0, json!({"version":6,"languageVersion":18}))
+        .unwrap_err()
+        .to_string();
+    assert!(error.contains("expands to more than"), "{error}");
+    assert!(started.elapsed() < std::time::Duration::from_secs(5));
+}
+
+#[cfg(unix)]
+#[test]
+fn imports_of_devices_are_rejected_without_reading() {
+    let project = Project::new();
+    project.file("entry.css", "@import '/dev/zero';@import '@master/css';");
+    let error = load_project_manifest(&project.0, json!({"version":6,"languageVersion":18}))
+        .unwrap_err()
+        .to_string();
+    assert!(error.contains("not a regular file"), "{error}");
+}

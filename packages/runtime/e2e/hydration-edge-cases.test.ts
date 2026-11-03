@@ -484,6 +484,37 @@ test('runtime start does not import a hydration manifest without a runtime style
   })
 })
 
+test('runtime start ignores non-style and non-script elements that reuse hydration ids', async ({ page }) => {
+  let requests = 0
+  const loaderURL = await getRuntimeLoaderURL()
+  const source = new URL('/_master-css/hydration/clobbered.json', loaderURL).href
+
+  await page.route(source, route => {
+    requests++
+    return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+  })
+  await page.evaluate((source) => {
+    // Sanitized user content may carry any id and data-* attribute.
+    document.body.innerHTML = '<div id="master-css-hydration-manifest">not json</div>'
+      + `<div id="master-css" data-master-css-hydration-manifest="${source}"></div>`
+      + '<p class="(display:block)"></p>'
+  }, source)
+  await startCSSRuntimeAsync(page, undefined, loaderURL)
+
+  const result = await page.evaluate(() => ({
+    progressive: globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive,
+    observing: globalThis.__MASTER_CSS_RUNTIME_TEST__.observing,
+    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
+  }))
+
+  expect(requests).toBe(0)
+  expect(result).toEqual({
+    progressive: false,
+    observing: true,
+    text: "@layer utilities{.\\(display\\:block\\){display:block}}"
+  })
+})
+
 test('progressive hydration fails open when an external style hydration manifest import fails', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/missing.json', loaderURL).href

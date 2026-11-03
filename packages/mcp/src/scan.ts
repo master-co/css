@@ -38,7 +38,9 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
   const sources = await fg(patterns, {
     cwd: context.root,
     ignore,
-    onlyFiles: true
+    onlyFiles: true,
+    // Linked directories can loop back into the workspace or walk the whole filesystem.
+    followSymbolicLinks: false
   })
   const policy = new SourcePolicy(context.root, { exclude: ignore })
   return Promise.all(sources.filter(source => policy.accepts(source, patterns !== DEFAULT_SOURCE_PATTERNS)).map((source) => context.resolveExistingFile(source)))
@@ -52,7 +54,7 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
   let routeStylesheets: string[] | undefined
   if (options.routeStylesheets?.length) {
     context.validateGlobPatterns(options.routeStylesheets)
-    const sources = await fg(options.routeStylesheets, { cwd: context.root, ignore: DEFAULT_IGNORE_PATTERNS, onlyFiles: true })
+    const sources = await fg(options.routeStylesheets, { cwd: context.root, ignore: DEFAULT_IGNORE_PATTERNS, onlyFiles: true, followSymbolicLinks: false })
     if (sources.some(source => !source.endsWith('.css'))) throw new Error('routeStylesheets must match .css files only.')
     routeStylesheets = await Promise.all(sources.sort().map(source => context.resolveExistingFile(source)))
   }

@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { existsSync, realpathSync, statSync } from 'node:fs'
-import { mkdir, readFile, realpath as realpathAsync, stat, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, readFile, realpath as realpathAsync, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { withPreviewWriteLock } from './preview-write-lock'
 
@@ -162,6 +162,10 @@ export default class MasterCSSMCPContext {
       return realPath
     }
     this.assertContained(resolved)
+    // A dangling symbolic link would let the write create its target outside the roots.
+    if ((await lstat(resolved).catch(() => undefined))?.isSymbolicLink()) {
+      throw new Error(`Path is a dangling symbolic link: ${resolved}`)
+    }
     const parent = await realpath(dirname(resolved))
     this.assertContained(parent)
     return join(parent, basename(resolved))
@@ -267,7 +271,8 @@ export default class MasterCSSMCPContext {
 
     for (const change of preview.changes) {
       await mkdir(dirname(change.filePath), { recursive: true })
-      await writeFile(change.filePath, change.afterText)
+      // New files are created exclusively so a link planted after validation is never followed.
+      await writeFile(change.filePath, change.afterText, { flag: change.beforeExists ? 'w' : 'wx' })
     }
     this.previews.delete(confirmToken)
     return {

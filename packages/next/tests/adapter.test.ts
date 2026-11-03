@@ -223,6 +223,19 @@ describe('renderNextBuildOutputs', () => {
     expect(existsSync(join(projectDir, '.next/static/master-css/hydration'))).toBe(false)
   })
 
+  it.each(['pre-render', 'progressive'] as const)('keeps class-derived CSS inside style#master-css in %s mode', async (mode) => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, '.next/server/app/index.html')
+    mkdirSync(dirname(htmlFile), { recursive: true })
+    writeFileSync(htmlFile, '<html><head></head><body><div class="(content:&#x27;&lt;/style&gt;&lt;script&gt;alert(1)&lt;/script&gt;&#x27;)"></div></body></html>')
+    const [output] = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile), { mode })
+    const html = readFileSync(htmlFile, 'utf8')
+    expect(output.cssBytes).toBeGreaterThan(0)
+    // Only the style element itself may close the raw-text context.
+    expect(html.match(/<\/style/gi)).toHaveLength(1)
+    expect(readMasterStyle(html)).toContain(`content:'\\3c /style><script>alert(1)</script>'`)
+  })
+
   it('does not duplicate globals already emitted by project CSS entries', async () => {
     const projectDir = createFixtureDir()
     const htmlFile = join(projectDir, '.next/server/app/index.html')

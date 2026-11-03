@@ -255,6 +255,13 @@ export function valueClasses(count: number, seed: number) {
     if (random() < 0.03) className += '!'
     classes.add(className)
   }
+  // The nesting limit: the deepest accepted classes and the first rejected ones.
+  for (const depth of [64, 65]) {
+    classes.add(`(width:${'calc('.repeat(depth)}1px${')'.repeat(depth)})`)
+    classes.add(`(width:calc(${'('.repeat(depth - 1)}1px+2px${')'.repeat(depth - 1)}))`)
+    classes.add(`(--x:${'['.repeat(depth)}a${']'.repeat(depth)})`)
+    classes.add(`block:is(${'('.repeat(depth - 1)}.a${')'.repeat(depth - 1)})`)
+  }
   return classes
 }
 
