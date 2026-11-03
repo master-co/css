@@ -14,7 +14,7 @@
         "build:cloudflare-pages": "bun run build",
         "build:astro": "cross-env NODE_OPTIONS=--max-old-space-size=16384 MASTER_CSS_PUBLIC_ENV_FILE=.generated/public-env.json astro build",
         "build:llms": "node --import tsx scripts/generate-llms-txt-cli.ts",
-        "postbuild:static": "bun scripts/postbuild-static.ts && bun run test:assets",
+        "postbuild:static": "bun scripts/postbuild-static.ts && bun run test:assets && bun run test:style-delivery",
         "translate:site": "node --import tsx scripts/translate-site.ts",
         "audit:i18n": "node --import tsx scripts/audit-i18n.ts",
         "preview:cloudflare-pages": "bun run build:cloudflare-pages && bun --bun wrangler pages dev site/out --cwd ..",
@@ -36,7 +36,8 @@
         "test:assets": "bun scripts/verify-public-assets.ts",
         "test:atomic-classes": "bun test scripts/atomic-class-authoring.test.ts",
         "check:astro": "astro sync && astro-check --tsconfig ./tsconfig.json",
-        "check:svelte": "svelte-check --tsconfig ./tsconfig.json"
+        "check:svelte": "svelte-check --tsconfig ./tsconfig.json",
+        "test:style-delivery": "node scripts/style-delivery.mjs out .cache/style-delivery.json --budget tests/style-delivery.budget.json"
     },
     "dependencies": {
         "@astrojs/markdown-remark": "^7.3.4",

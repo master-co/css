@@ -15,4 +15,8 @@ Preserve authorship, original publication dates, published slugs and explicit he
 
 Integrate the article through the existing content, metadata and export workflow. A content-only article does not need a custom page component. Import custom MDX components explicitly. Verify useful text equivalents for figures and interactive demonstrations, translated anchors and the affected rendered pages.
 
+Render file and directory structures with `@master/internal-site/components/ExplorerView.astro`, as in the Monorepo guide's “One project, one workspace” section. Use its nested `items` instead of a plain-text code fence in the article. Generate search and portable Markdown trees from those same items; verify names, order and hierarchy alongside the rendered page.
+
+For options, prompts, comparisons and other article surfaces, follow [document components](references/document-components.md). Check the current rendered consumer and its export adapter; a gallery example or successful build alone does not establish that an article uses the intended presentation.
+
 Complete the authorized edit and report substantive changes and verification. Writing or reviewing an article alone does not authorize publication or messages to others.

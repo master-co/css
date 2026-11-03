@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import glob from 'fast-glob'
-import { atomicClassIssue, createAtomicClassAudit } from './atomic-class-authoring'
+import { atomicClassIssue, createAtomicClassAudit, auditAuthoringRoots } from './atomic-class-authoring'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 
@@ -21,33 +21,25 @@ test('policy distinguishes class composition from native CSS and structured valu
 })
 
 test('site and official markup examples use atomic class authoring', async () => {
-  // Historical migration evidence and intentional invalid-input tests are not authoring examples.
-  const files = await glob(['site/{app,components,docs-shell,utils}/**/*.{tsx,ts,mdx,html}', 'examples/**/*.{tsx,jsx,vue,svelte,html}'], {
-    cwd: root,
-    ignore: ['**/node_modules/**', '**/dist/**', '**/.astro/**', '**/*.test.*', '**/*.spec.*', '**/tests/**', '**/guide/migration/**']
-  })
-  const audit = createAtomicClassAudit()
-  const failures: string[] = []
-  try {
-    for (const file of files) {
-      const source = await readFile(path.join(root, file), 'utf8')
-      const language = /\.[jt]sx?$/.test(file) ? 'typescriptreact' : 'html'
-      for (const issue of audit.inspect(source, language)) {
-        failures.push(`${file}:${source.slice(0, issue.range.start).split('\n').length}: ${issue.token}: ${issue.message}`)
-      }
-      // Demo generators also store markup in escaped JavaScript string literals.
-      if (language === 'typescriptreact') {
-        for (const match of source.matchAll(/"(?:\\.|[^"\\])*"/g)) {
-          if (!match[0].includes('class=\\"')) continue
-          const html = JSON.parse(match[0]) as string
-          for (const issue of audit.inspect(html, 'html')) {
-            failures.push(`${file}:${source.slice(0, match.index).split('\n').length}: ${issue.token}: ${issue.message}`)
-          }
-        }
-      }
-    }
-  } finally { audit.dispose() }
-  assert.deepEqual(failures, [])
+  const shared = path.join(path.dirname(fileURLToPath(import.meta.resolve('@master/internal-site/package.json'))), 'src')
+  const result = await auditAuthoringRoots([
+    { name: 'site', directory: path.join(root, 'site'), patterns: ['{content,components,layouts,sections,reference,utils,scripts}/**/*.{astro,svelte,mdx,html,ts,tsx,js,jsx}'] },
+    { name: 'shared', directory: shared },
+    { name: 'examples', directory: path.join(root, 'examples') }
+  ])
+  for (const file of ['site/content/page.astro', 'site/content/components/AgentSession.svelte', 'site/content/guide/route-level-styles/content.mdx', 'site/sections/reference.astro', 'shared/docs-shell/components/DocHeader.svelte']) {
+    assert.ok(result.inventory.includes(file), file)
+  }
+  // Keep independent teaching examples byte-for-byte stable. These exact
+  // legacy examples predate atomic authoring; collision.mdx deliberately
+  // demonstrates the ESLint diagnostic. New failures still fail the audit.
+  assert.deepEqual(result.failures.map(({ file, token }) => ({ file, token })), [
+    { file: 'examples/astro/src/components/Card.astro', token: '(border:1px|solid|#e2e8f0)' },
+    { file: 'examples/astro/src/pages/index.astro', token: '(margin:1rem|0|0)' },
+    { file: 'examples/astro/src/pages/index.astro', token: '(border:1px|solid|#e2e8f0)' },
+    { file: 'examples/astro/src/pages/index.astro', token: '(margin:0.75rem|0|0)' },
+    { file: 'examples/eslint/src/collision.mdx', token: 'm(32)' }
+  ])
 })
 
 test('syntax tables describe single settings and independent properties', async () => {

@@ -1,4 +1,3 @@
-import '@master/internal-site/styles/system/data.css'
 import '~/site/styles/reference-sheet.css'
 
 /**

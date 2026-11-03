@@ -24,12 +24,17 @@ async function documentRoutes(directory) {
 const inventory = await documentRoutes(build)
 assert.ok(inventory.length, `No built document routes found in ${build}; build the site first`)
 const base = process.env.MASTER_SITE_URL ?? 'http://localhost:3000'
-const output = new URL(process.env.MASTER_DOC_OUTPUT ?? 'test-results/docs-quality/', root)
+const output = new URL((process.env.MASTER_DOC_OUTPUT ?? 'test-results/docs-quality').replace(/\/?$/, '/'), root)
 await mkdir(output, { recursive: true })
 const selected = process.env.MASTER_DOC_ROUTES?.split(',')
 if (selected) assert.deepEqual(selected.filter(url => !inventory.some(row => row.url === url)), [], 'selected routes exist in the current build')
 const pages = inventory.filter(row => !selected || selected.includes(row.url))
 const capture = process.env.MASTER_DOC_CAPTURE !== '0'
+// An explicit, separately retained baseline permits the rest of the visual
+// audit to run when an existing ID defect would otherwise hide every check.
+// Compare exact IDs/counts per route; no SVG-wide or pattern-based exclusion.
+const baselineIDs = process.env.MASTER_DOC_BASELINE_IDS
+  ? JSON.parse(await readFile(process.env.MASTER_DOC_BASELINE_IDS, 'utf8')) : {}
 const browser = await chromium.launch()
 const results = []
 const previous = selected ? await readFile(new URL('results.json', output), 'utf8').then(JSON.parse).catch(() => []) : []
@@ -102,7 +107,10 @@ try {
         assert.deepEqual(geometry.comparisonTextOverflow, [], 'comparison text crosses into another cell')
         assert.deepEqual(geometry.brokenImages, [], 'broken article image')
         assert.deepEqual(errors, [], 'browser runtime errors')
-        assert.equal(new Set(geometry.ids).size, geometry.ids.length, 'unique document IDs')
+        const counts = geometry.ids.reduce((counts, id) => { counts[id] = (counts[id] ?? 0) + 1; return counts }, {})
+        const duplicates = Object.fromEntries(Object.entries(counts).filter(([, count]) => count > 1))
+        assert.deepEqual(duplicates, baselineIDs[row.url] ?? {}, 'no new or changed duplicate document IDs')
+        if (Object.keys(duplicates).length) record.existingDuplicateIDs = duplicates
         for (const figure of geometry.figures) assert.equal(figure.visibleImages, 1, figure.title)
         const stem = row.url.slice(1).replaceAll('/', '--') + `-${width}-${theme}`
         if (capture) await page.screenshot({ path: new URL(`${stem}.png`, output).pathname, fullPage: true })

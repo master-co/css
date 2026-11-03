@@ -311,7 +311,7 @@
 </script>
 
 {#snippet statusMark()}
-  {#if tone}<span class={['home-agent-file-status', `home-tone-${tone}`]}>{#if tone === 'warn'}<IconAlertTriangle aria-hidden="true" {...icon} />{:else}<IconCircleCheck aria-hidden="true" {...icon} />{/if}</span>{/if}
+  {#if tone}<span class={['home-agent-file-status', ({ ok: 'home-tone-ok', warn: 'home-tone-warn', error: 'home-tone-error', info: 'home-tone-info' })[tone]]}>{#if tone === 'warn'}<IconAlertTriangle aria-hidden="true" {...icon} />{:else}<IconCircleCheck aria-hidden="true" {...icon} />{/if}</span>{/if}
 {/snippet}
 
 {#snippet diffstat(added: number, removed: number)}
@@ -340,7 +340,7 @@
 
 <!-- Claude speaks on the left; Aron's messages and portrait sit on the right. -->
 {#snippet message(text: string, speaker: 'agent' | 'user')}
-  <div class={['home-agent-message', `home-agent-message-${speaker}`]}><span aria-hidden="true" class="home-agent-avatar">{#if speaker === 'agent'}{@html claudeAvatar}{:else}<Image alt="" height={24} src="/images/authors/aron.jpg" width={24} />{/if}</span><p>{#each streamParts(text) as { part, word }, key (key)}{#if word === undefined}{part}{:else}<span class="home-agent-word" style:--home-agent-word={word}>{part}</span>{/if}{/each}</p></div>
+  <div class={['home-agent-message', ({ agent: 'home-agent-message-agent', user: 'home-agent-message-user' })[speaker]]}><span aria-hidden="true" class="home-agent-avatar">{#if speaker === 'agent'}{@html claudeAvatar}{:else}<Image alt="" height={24} src="/images/authors/aron.jpg" width={24} />{/if}</span><p>{#each streamParts(text) as { part, word }, key (key)}{#if word === undefined}{part}{:else}<span class="home-agent-word" style:--home-agent-word={word}>{part}</span>{/if}{/each}</p></div>
 {/snippet}
 
 <!-- The agent styles the card with its own edit tool; the MCP server never writes without a preview. -->

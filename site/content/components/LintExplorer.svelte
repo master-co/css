@@ -509,7 +509,7 @@
           phase === 'action' && view.kind === 'sort' ? view.sortedKeys.indexOf(token.key) + 1 : undefined,
           view.kind === 'remove' && view.removedKeys.includes(token.key) && (phase === 'apply'),
           view.kind === 'remove' && token.key === view.keptKey && (phase === 'action' || phase === 'apply')
-        )}{/each}</span>{:else}<span class={`home-lint-${segment.kind === 'text' ? 'plain' : segment.kind}`}>{segment.text}</span>{/if}{/each}</code>
+        )}{/each}</span>{:else}<span class={({ text: 'home-lint-plain', punct: 'home-lint-punct', tag: 'home-lint-tag', attr: 'home-lint-attr', string: 'home-lint-string' })[segment.kind]}>{segment.text}</span>{/if}{/each}</code>
       </div>
     {/each}
     {@render children?.()}

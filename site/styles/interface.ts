@@ -1,3 +1,2 @@
-// Product semantic highlighting augments the shared shell interface boundary.
+// Product semantic highlighting is delivered by product code rendering.
 import '@master/internal-site/styles/interface.css'
-import '@master/css-language-service/shiki.css'

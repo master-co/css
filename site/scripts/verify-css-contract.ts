@@ -43,6 +43,9 @@ type SiteCSSContractSnapshot = {
 
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
 const repositoryDir = path.dirname(siteDir)
+// A packed consumer can resolve the same preset through a dependency symlink.
+// Canonicalize that known package root without changing any manifest semantics.
+const presetDir = path.dirname(path.dirname(fileURLToPath(import.meta.resolve('@master/css-preset/default-manifest.json'))))
 const outDir = path.join(siteDir, 'out')
 const snapshotFile = path.join(siteDir, 'tests', 'css-contract.snapshot.json')
 const args = process.argv.slice(2)
@@ -58,6 +61,8 @@ if (update && !dryRun && !qaReference?.trim()) {
 }
 
 const actual = await createSiteCSSContractSnapshot()
+const reportIndex = args.indexOf('--report')
+if (reportIndex !== -1) await writeFile(args[reportIndex + 1], `${JSON.stringify(actual, null, 2)}\n`)
 const expected = await readExpectedSnapshot()
 
 if (update && !dryRun) {
@@ -199,7 +204,9 @@ function repositorySourceFiles(value: JSONValue): JSONValue {
     return Object.fromEntries(Object.entries(value).map(([key, item]) => [
         key,
         key === 'file' && typeof item === 'string' && path.isAbsolute(item)
-            ? path.relative(repositoryDir, item).split(path.sep).join('/')
+            ? (item.startsWith(presetDir + path.sep)
+                ? path.join('packages/preset', path.relative(presetDir, item))
+                : path.relative(repositoryDir, item)).split(path.sep).join('/')
             : repositorySourceFiles(item)
     ]))
 }
@@ -219,7 +226,7 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
     const selectors = {
         // The shell interface (styles/interface.css) and document styles (styles/documents.css) boundaries.
         interface: /\.ui-dialog\s*\{/,
-        documents: /\.ui-tree\s*\{/,
+        tree: /\.ui-tree\s*\{/,
         reference: '.reference-document',
         // Benchmark tables and charts (styles/benchmarks.css).
         benchmark: '.benchmark-value',
@@ -230,14 +237,14 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         specimens: /\.ui-swatch\s*\{/
     }
     const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
-        '/': { interface: true, documents: true, reference: false, benchmark: false, demo: false, button: false, specimens: false },
-        '/guide': { documents: true, reference: false, benchmark: false },
+        '/': { interface: true, tree: false, reference: false, benchmark: false, demo: false, button: false, specimens: false },
+        '/guide': { tree: false, reference: false, benchmark: false },
         // Pages that render only the shell interface.
-        '/404': { interface: true, documents: false },
+        '/404': { interface: true, tree: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/benchmarks': { benchmark: true, reference: false },
-        '/examples/responsive-button': { button: true, interface: false, documents: false, reference: false, benchmark: false, demo: false },
-        '/examples/article-transitions': { interface: false, documents: false },
+        '/examples/responsive-button': { button: true, interface: false, tree: false, reference: false, benchmark: false, demo: false },
+        '/examples/article-transitions': { interface: false, tree: false },
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {
         const selector = selectors[group as keyof typeof selectors]
@@ -415,7 +422,7 @@ function firstSnapshotDifference(
             'projectManifest.value'
         )
         return [
-            `Project Manifest v6 / language v17 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
+            `Project Manifest v6 / language v18 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
             valueDifference || 'Parsed Manifest JSON is equal; only exact serialization bytes changed.'
         ].join('\n')
     }
