@@ -1,17 +1,5 @@
-/* Shared homepage editor chrome. Keep the language-service editor and delivery workbench in sync. */
+/* File-window bars, lights and tabs. */
 @layer components {
-  .home-editor-window {
-    position: relative;
-    overflow: clip;
-    border-radius: var(--home-radius-sheet);
-    background-color: var(--home-sheet);
-    box-shadow:
-      0 0 0 1px var(--home-hairline),
-      var(--home-contact),
-      0 14px 28px -20px var(--home-shade-near),
-      0 40px 80px -48px var(--home-shade-far);
-  }
-
   /* Chrome: a quiet bar whose divider steps up around the open tab, so the tab reads as the file itself. */
   .home-editor-bar {
     display: flex;

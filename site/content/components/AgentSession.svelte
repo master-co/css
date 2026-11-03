@@ -97,6 +97,8 @@
 </script>
 
 <script lang="ts">
+  import './home-window-surface.css'
+  import './home-code-colors.css'
   import { onMount, type Snippet } from 'svelte'
   import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle'
   import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check'
@@ -384,7 +386,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     bind:this={root}
-    class="home-agent home-reveal-item"
+    class="home-agent home-reveal-item home-window-surface"
     onfocusout={(event) => {
       if (!event.currentTarget.contains(event.relatedTarget as Node | null)) focused = false
     }}

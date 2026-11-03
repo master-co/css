@@ -1,4 +1,5 @@
 <script lang="ts">
+  import './home-editor-chrome.css'
   import type { Snippet } from 'svelte'
   import type { HTMLAttributes } from 'svelte/elements'
 

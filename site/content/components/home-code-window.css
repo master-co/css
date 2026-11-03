@@ -1,0 +1,28 @@
+
+@layer components {
+  .home-code-window {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    tab-size: 2;
+
+    .ui-code {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .home-code-window-pre {
+      overflow: hidden;
+      padding: var(--spacing-lg) var(--spacing-sm);
+      border-radius: 0;
+      background-color: transparent;
+    }
+  }
+}
+
+@layer components { @media (forced-colors: active) { .home-code-window { outline: 1px solid CanvasText; } } }
+
+@layer components { .home-code-window-body { flex: auto; min-height: 0; } .home-code-window-body :focus-visible { outline-offset: -2px; } }

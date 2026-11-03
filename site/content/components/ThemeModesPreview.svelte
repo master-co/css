@@ -28,14 +28,14 @@
     <div class="flex flex-col gap-md p-lg r-3xl bg-surface-base fg-text-strong">
       <div class="flex items-center justify-between (height:var(--spacing-xl))">
         <IconChevronLeft size={18} stroke={1.75} />
-        <span class="font-sm font-medium">{t('Shop')}</span>
+        <span class="font-medium home-theme-shop-name">{t('Shop')}</span>
         <span class="relative grid">
           <IconShoppingBag size={18} stroke={1.75} />
           <span class="absolute (right:-0.125rem) (top:-0.125rem) (height:0.4375rem) (width:0.4375rem) pill bg-surface-inverse"></span>
         </span>
       </div>
       <div>
-        <p class="font-mono font-2xs tracking-wider uppercase fg-text-muted">{t('Sunday drop')}</p>
+        <p class="font-mono tracking-wider uppercase fg-text-muted home-theme-caption">{t('Sunday drop')}</p>
         <p class="mt-2xs font-2xl (line-height:1.1) tracking-tight fg-text-strong">{t('Find your daily kit.')}</p>
       </div>
       <div class="flex items-center gap-md font-xs">
@@ -60,7 +60,7 @@
     <div class="grid (place-content:center) (height:5rem) r-xl bg-surface-inset fg-text-muted">{@render icon()}</div>
     <div class="flex items-baseline justify-between gap-xs mt-xs">
       <p class="truncate font-xs font-medium fg-text-strong">{label}</p>
-      <span class="font-mono font-2xs fg-text-muted">{price}</span>
+      <span class="font-mono fg-text-muted home-theme-caption">{price}</span>
     </div>
   </div>
 {/snippet}

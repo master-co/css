@@ -377,3 +377,13 @@
     opacity: 0;
   }
 }
+
+
+@layer components {
+  @media (forced-colors: active) {
+
+    .home-bench-bar {
+      forced-color-adjust: none;
+    }
+  }
+}

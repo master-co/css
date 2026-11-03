@@ -321,3 +321,33 @@ Perspective is `--home-perspective`. A plane that carries content to read tilts 
 ## Matrix
 
 Rows of real classes from `ctaClassRows` (`glyphFieldLines`), which the tests lint, are the one place the page shows classes as texture: the floor of the MCP figure, the project the server reads. Nothing else uses classes as decoration.
+
+## Homepage style ownership
+
+Shared materials and layout remain in `@master/internal-site/home/design.css` and
+`home.css`. Feature rules are explicit dependencies: bento owners import
+`home/bento.css`, segmented-control owners import `home/segmented-control.css`.
+A consumer of `home.css` alone does not receive either feature. The section owns
+any feature class it passes to a child as a prop.
+
+Product file windows share `HomeEditorWindow`, `HomeEditorBar`, `HomeEditorTab`
+and `HomeEditorLights`. Window imports only `home-window-surface.css`; the bar,
+tab and lights import `home-editor-chrome.css`. The three wrapper components
+accept `children` snippets, `class` and native HTML attributes; lights are purely
+decorative. `--home-editor-tab-fill`, `--home-editor-tab-line` and
+`--home-editor-tab-radius` describe tab material without importing scene rules.
+The Agent uses only the `.home-window-surface` outer material and retains its
+own pane layout. Lint tabs retain the well fill while using the Editor contour.
+
+`HomeCodeWindow` owns `home-code-window.css`; its unused `fixPreviewCode` prop
+and overlay layers are removed. Product diagnostics still use
+`HomeCodeWindowProblem`: that shared data type remains in use by Lint and Agent.
+CopyCommand owns its control stylesheet. Agent owns spinner and step forced-color
+rules. The tiny `home-code-colors.css` leaf is imported by Agent and CascadeLayers.
+
+Each scene keeps its playback state machine. Lint has one reactive `phase`, not
+a second imperative mirror. Elapsed time, token geometry and paused-time snapshots
+remain separate because they represent different information.
+
+`site/tests/home-window-fixtures.mjs` verifies these boundaries in a disposable
+packed consumer. It must never create production example routes.

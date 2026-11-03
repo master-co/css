@@ -6,6 +6,7 @@
 </script>
 
 <script lang="ts" generics="Value extends string">
+  import '@master/internal-site/home/segmented-control.css'
   import type { HTMLAttributes } from 'svelte/elements'
 
   interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'onchange' | 'role'> {

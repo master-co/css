@@ -17,6 +17,10 @@
 </script>
 
 <script lang="ts">
+  import HomeEditorWindow from './HomeEditorWindow.svelte'
+  import HomeEditorBar from './HomeEditorBar.svelte'
+  import HomeEditorTab from './HomeEditorTab.svelte'
+  import HomeEditorLights from './HomeEditorLights.svelte'
   import { onMount, tick, untrack, type Snippet } from 'svelte'
   import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle'
   import IconBrandHtml5 from '@tabler/icons-svelte-runes/icons/brand-html5'
@@ -58,7 +62,6 @@
   let held = $state(false)
   let finished = $state(false)
   let elapsed = 0
-  let currentPhase: Phase = 'idle'
   let flip: Map<string, DOMRect> | undefined
   let progressElement = $state<HTMLSpanElement>()
   const tabElements: (HTMLButtonElement | undefined)[] = []
@@ -93,10 +96,9 @@
   })
 
   function goTo(next: Phase) {
-    if (next === currentPhase) return
+    if (next === phase) return
     // The class order fix moves tokens: remember where each one starts before Svelte reorders them.
     if (next === 'apply' && view.kind === 'sort') flip = measureTokens(sourceElements[active])
-    currentPhase = next
     phase = next
   }
 
@@ -110,7 +112,6 @@
       elapsed = 0
       finished = false
       const start: Phase = reduced ? (kind === 'sort' || kind === 'remove' ? 'action' : 'report') : 'idle'
-      currentPhase = start
       phase = start
       // The progress leaf is the chosen rule's own; reset it once the selection has rendered.
       void tick().then(() => progressElement?.style.setProperty('--home-lint-progress', '0'))
@@ -229,7 +230,6 @@
     elapsed = 0
     finished = false
     const start: Phase = reduceMotion ? (view.kind === 'sort' || view.kind === 'remove' ? 'action' : 'report') : 'idle'
-    currentPhase = start
     phase = start
   }
 
@@ -540,15 +540,15 @@
 <!-- A surface beside the editor. It lights up the moment the editor reports, with the same rule at the same line and column. -->
 {#snippet lintPane(Icon: typeof IconTerminal2, litLabel: string, name: string, note: string, output: Snippet<[LintExplorerRule, RuleView]>)}
   {@const state = paneState(phase)}
-  <section class="home-lint-pane" data-state={state}>
-    <header class="home-lint-pane-bar">
-      <span class="home-lint-tab">
+  <section class="home-lint-pane home-window-surface" data-state={state}>
+    <HomeEditorBar class="home-lint-pane-bar">
+      <HomeEditorTab class="home-lint-tab">
         <Icon aria-hidden="true" class="home-lint-tab-icon" size={14} stroke={1.75} />
         <span class="home-lint-tab-label">{name}</span>
-      </span>
+      </HomeEditorTab>
       <span class="home-lint-pane-package">{note}</span>
       {@render lintStatus(state === 'lit' ? rule.problem.severity : state === 'resolved' ? 'ok' : state, state === 'off' ? t('ESLint only') : state === 'resolved' ? t('Fixed') : state === 'lit' ? (rule.problem.severity === 'info' ? litLabel : t('1 problem')) : state === 'running' ? t('Running') : t('Ready'))}
-    </header>
+    </HomeEditorBar>
     <div class="home-lint-pane-body">
       {#each rules as item, index (item.title)}
         <div aria-hidden={index === active ? undefined : 'true'} class="home-lint-pane-cell" data-active={index === active ? '' : undefined}>
@@ -615,13 +615,13 @@
   </div>
 
   <div class="home-lint-stage">
-    <div aria-labelledby={`home-lint-rule-${active}`} class="home-lint-editor" id="home-lint-panel" role="tabpanel">
-      <div class="home-lint-bar">
-        <span aria-hidden="true" class="home-lint-dots"><i></i><i></i><i></i></span>
-        <span class="home-lint-tab">
+    <HomeEditorWindow aria-labelledby={`home-lint-rule-${active}`} class="home-lint-editor" id="home-lint-panel" role="tabpanel">
+      <HomeEditorBar class="home-lint-bar">
+        <HomeEditorLights />
+        <HomeEditorTab class="home-lint-tab">
           <IconBrandHtml5 aria-hidden="true" class="home-lint-tab-icon" size={14} stroke={1.75} />
           <span class="home-lint-tab-label">{rule.file}</span>
-        </span>
+        </HomeEditorTab>
         <span class="home-lint-surface-name">{rule.problem.severity === 'info' ? t('MCP server') : 'ESLint'}</span>
         {@render lintStatus(
           phase === 'idle' ? 'idle' : phase === 'scan' ? 'running' : fixed ? 'ok' : rule.problem.severity,
@@ -633,7 +633,7 @@
                 ? t('No problems')
                 : rule.problem.severity === 'info' ? t('1 file changed') : t('1 problem')
         )}
-      </div>
+      </HomeEditorBar>
 
       <div class="home-lint-code">
         <div class="home-lint-reading">
@@ -676,8 +676,7 @@
           </button>
         {/if}
       </div>
-      <span aria-hidden="true" class="home-edge-light home-lit"></span>
-    </div>
+    </HomeEditorWindow>
 
     <div class="home-lint-surfaces">
       {@render lintPane(IconTerminal2, t('Same fix'), t('CLI'), '@master/css-cli', cliOutput)}

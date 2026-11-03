@@ -1,0 +1,42 @@
+/* Same height and corner as an action beside it; the copy button nests inside with a concentric corner. */
+/* The command fills the field and reads from the left, so the copy button sits at the far edge. */
+@layer components {
+  .home-command {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    box-sizing: border-box;
+    max-width: 100%;
+    height: 2.75rem;
+    padding: 0 0.25rem 0 var(--spacing-md);
+    border-radius: var(--home-radius-control);
+    font-family: var(--home-mono);
+    font-size: 0.875rem;
+    color: var(--home-text);
+  }
+  .home-command > code {
+    flex: auto;
+    text-align: left;
+  }
+
+  .home-command-copy {
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: calc(var(--home-radius-control) - 0.25rem);
+    color: var(--home-text-quiet);
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--easing-smooth), background-color var(--duration-fast) var(--easing-smooth);
+
+    &:hover {
+      color: var(--home-text);
+      background-color: var(--home-well);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+    }
+  }
+}

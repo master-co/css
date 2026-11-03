@@ -1,4 +1,5 @@
 <script lang="ts">
+import './copy-command.css'
   import { onDestroy } from 'svelte'
   import IconCheck from '@tabler/icons-svelte-runes/icons/check'
   import IconCopy from '@tabler/icons-svelte-runes/icons/copy'

@@ -245,7 +245,7 @@ test(`${browserName}: keyboard color editing, reset and Escape return to the sou
     const literal = view.stage.locator('.home-editor-class:has(.home-editor-swatch[data-editable])')
     await literal.hover()
     await view.page.waitForTimeout(150)
-    assert.equal(await view.stage.locator('.home-editor-hover-heading code').innerText(), 'color:#218875')
+    assert.equal(await view.stage.locator('.home-editor-hover-heading code').innerText(), '(color:#218875)')
     assert.match(await view.stage.locator('.home-editor-hover-css').innerText(), /color: #218875/)
     const range = await view.stage.locator('.home-editor-hover-range').boundingBox()
     assert.ok(Math.abs(range.width - (await literal.boundingBox()).width) < 1, 'the source underline includes the inline color decoration')

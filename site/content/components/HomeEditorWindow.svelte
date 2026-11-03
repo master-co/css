@@ -1,5 +1,5 @@
 <script lang="ts">
-  import './home-editor-window.css'
+  import './home-window-surface.css'
   import type { Snippet } from 'svelte'
   import type { HTMLAttributes } from 'svelte/elements'
 
@@ -7,7 +7,7 @@
   let { children, class: className, ...props }: HTMLAttributes<HTMLDivElement> & { children?: Snippet } = $props()
 </script>
 
-<div class={['home-editor-window', className]} {...props}>
+<div class={['home-editor-window home-window-surface', className]} {...props}>
   {@render children?.()}
   <span aria-hidden="true" class="home-edge-light home-lit"></span>
 </div>

@@ -1,0 +1,17 @@
+/* Shared outer material; no editor, lint or agent behavior. */
+@layer components {
+  .home-window-surface {
+    position: relative;
+    overflow: var(--home-window-overflow, clip);
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-sheet);
+    box-shadow:
+      0 0 0 1px var(--home-hairline),
+      var(--home-contact),
+      0 14px 28px -20px var(--home-shade-near),
+      0 40px 80px -48px var(--home-shade-far);
+  }
+
+}
+
+@layer components { @media (forced-colors: active) { .home-window-surface { outline: 1px solid CanvasText; } } }

@@ -972,3 +972,32 @@
     opacity: 0.12;
   }
 }
+
+@layer components {
+
+  .home-dot-grid {
+    background-image: radial-gradient(var(--home-rule) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: 8px 8px;
+  }
+}
+
+
+@layer components {
+  @media (forced-colors: active) {
+    .home-theme-divider {
+      forced-color-adjust: none;
+      background-color: CanvasText !important;
+    }
+
+    .home-theme-knob {
+      outline: 1px solid CanvasText;
+    }
+  }
+}
+
+/* The storefront preview owns its label sizes, including their token dependencies. */
+@layer components {
+  .home-theme-shop-name { font-size: var(--font-size-sm); }
+  .home-theme-caption { font-size: var(--font-size-2xs); }
+}

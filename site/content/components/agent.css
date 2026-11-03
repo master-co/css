@@ -9,15 +9,10 @@
   .home-agent {
     --home-agent-inset: clamp(1rem, 2vw, 1.75rem);
     container: home-agent / inline-size;
-    position: relative;
     z-index: 1;
     isolation: isolate;
-    overflow: hidden;
-    border-radius: var(--home-radius-sheet);
     text-align: left;
-    background-color: var(--home-sheet);
     /* One contour outside the box, so no pane covers it; light from above is drawn over the panes. */
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-3);
 
     &::after {
       position: absolute;
@@ -1650,5 +1645,43 @@
 @keyframes home-agent-step {
   from {
     scale: 0 1;
+  }
+}
+
+
+@layer components {
+
+  .home-spin {
+    animation: home-spin 0.9s linear infinite;
+  }
+
+  @media (--motion-reduce) {
+    .home-marquee-track,
+    .home-spin {
+      animation: none;
+    }
+
+  }
+}
+@layer components {
+  @media (forced-colors: active) {
+    .home-agent-step[aria-current] {
+      outline: 1px solid Highlight;
+    }
+
+    .home-agent-step-track {
+      outline: 1px solid CanvasText;
+    }
+
+    .home-agent-step-fill {
+      background-color: Highlight;
+      forced-color-adjust: none;
+    }
+  }
+}
+
+@keyframes home-spin {
+  to {
+    rotate: 1turn;
   }
 }

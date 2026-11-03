@@ -1,0 +1,6 @@
+@layer components {
+  .home-code-tag { color: var(--home-code-tag); }
+  .home-code-punct { color: var(--home-text-faint); }
+  .home-code-attr { color: var(--home-code-attr); }
+  .home-code-string { color: var(--home-code-string); }
+}

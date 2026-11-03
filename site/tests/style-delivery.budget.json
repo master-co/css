@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "reference": "style-delivery-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md",
+  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md",
   "routes": {
     "/404": {
       "files": 9,
@@ -320,9 +320,9 @@
     "/": {
       "files": 10,
       "depth": 1,
-      "gzip": 63854,
-      "brotli": 49954,
-      "inlineBytes": 13346
+      "gzip": 63126,
+      "brotli": 49510,
+      "inlineBytes": 13266
     },
     "/reference": {
       "files": 15,
@@ -558,9 +558,9 @@
     "/tw": {
       "files": 10,
       "depth": 1,
-      "gzip": 63854,
-      "brotli": 49954,
-      "inlineBytes": 13346
+      "gzip": 63126,
+      "brotli": 49510,
+      "inlineBytes": 13266
     },
     "/tw/benchmarks": {
       "files": 16,
