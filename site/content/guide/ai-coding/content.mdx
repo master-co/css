@@ -71,10 +71,19 @@ The [MCP tool catalog](/reference/tools/mcp) lists every tool, the built-in prom
 
 ---
 
-## Ask for one observable change
-The official `master-css` skill provides a workflow for building, editing and
-debugging UI with project tokens, utilities and native CSS. Install it from your
-project directory and choose your coding agent:
+## Use the Master CSS skill
+
+The official `master-css` skill supports four workflows. It is one skill that reads
+the relevant guidance for your task:
+
+| Workflow | When to use it |
+| --- | --- |
+| Build and edit UI | Create or refine components using project tokens, utilities and native CSS. |
+| Bring in existing styles | Adapt a CSS or Tailwind component to Master CSS while preserving its appearance and behavior. |
+| Review and debug styles | Review styling changes or investigate missing and unexpected styles, from source extraction to browser behavior. |
+| Optimize CSS delivery | Assess production CSS, improve route and component loading boundaries, and verify selective pruning. |
+
+Install it from your project directory and choose your coding agent:
 
 ```sh
 npx skills add master-co/css --skill master-css
@@ -85,6 +94,8 @@ such as Codex, Claude Code or Cursor. Check the skill's compatibility metadata
 against the installed Master CSS version. The skill reads relevant references
 as needed; it does not install Master CSS or register an MCP server for you.
 The installer's `--ai` option prints this command without running it.
+
+## Ask for one observable change
 
 Ask the agent to inspect the project before it edits, then make one focused change. For example, ask it to refine an existing card and describe the result you expect:
 
