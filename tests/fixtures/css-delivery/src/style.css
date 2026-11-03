@@ -1,0 +1,5 @@
+@import '@master/css';
+
+@layer components {
+  .site-nav { display: flex; gap: var(--spacing-md); }
+}

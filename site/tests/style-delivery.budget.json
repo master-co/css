@@ -1072,6 +1072,20 @@
       "gzip": 37137,
       "brotli": 31589,
       "inlineBytes": 3576
+    },
+    "/guide/optimizing-css-delivery": {
+      "files": 20,
+      "depth": 1,
+      "gzip": 31044,
+      "brotli": 26299,
+      "inlineBytes": 1790
+    },
+    "/tw/guide/optimizing-css-delivery": {
+      "files": 20,
+      "depth": 1,
+      "gzip": 31044,
+      "brotli": 26299,
+      "inlineBytes": 1790
     }
   }
 }

@@ -234,6 +234,10 @@ Static rendering is the default for these official adapters. Runtime generation 
 Vite and Webpack cannot add server behavior to a framework merely because it uses that bundler. Webpack's HTML injection also does not rewrite files served directly from a development server's static directory. Astro middleware reads the complete HTML response before returning it; SvelteKit uses its page-chunk hook. Follow the framework guide when choosing the delivery path. PHP, Rails, CMS and .NET hosts build the asset with Vite and load it from their templates; see [Server-rendered apps](/guide/installation/server-rendered).
 
 
+## Native pruning is a separate choice
+
+Progressive rendering can use native pruning without changing when initial CSS is delivered or later utilities are generated. Pruning requires a known usage set and a build path that supplies it; runtime generation cannot restore an arbitrary native selector removed from delivery. See [Optimizing CSS delivery](/guide/optimizing-css-delivery#rendering-and-pruning) for a reproducible comparison.
+
 ## Verify the selected mode
 Test a production build as well as development: an integration may use runtime generation during development even when production pre-renders CSS.
 

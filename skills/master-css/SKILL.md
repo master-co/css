@@ -1,6 +1,6 @@
 ---
 name: master-css
-description: Build, edit, review, and debug UI in Master CSS projects, or bring CSS and Tailwind components into Master CSS when requested. Use project tokens, utilities, native CSS, and compiler-backed checks. Do not switch an unrelated project's styling system without a request.
+description: Build, edit, review, and debug UI in Master CSS projects, optimize their CSS delivery, or bring CSS and Tailwind components into Master CSS when requested. Use project tokens, utilities, native CSS, and compiler-backed checks. Do not switch an unrelated project's styling system without a request.
 license: MIT
 metadata:
   author: master-co
@@ -40,10 +40,17 @@ product tokens and component patterns. Never infer a token's value from its name
   requested. This is not a whole-project automatic migration.
 - **Review or debug:** read [troubleshooting](references/troubleshooting.md) to
   distinguish extraction, matching, CSS validity, and browser behavior.
+- **Optimize or diagnose delivery:** read [delivery](references/delivery.md) for
+  performance assessment, loading-boundary refactors or delivery-related missing
+  CSS. Ordinary component edits keep local ownership and local checks; they do
+  not automatically require a whole-site audit.
 
 Preserve semantic HTML, accessibility, component APIs and interactions while
-changing styles. Write complete class strings; use CSS variables for dynamic
-values rather than constructing utility names from fragments.
+changing styles. Keep feature styles with their owners. Static extraction and
+native pruning need complete names in their source or usage set; prefer literal
+maps for finite alternatives. Runtime/progressive can generate new valid utility
+names after startup. For volatile values, CSS variables often keep one stable rule
+without generating a distinct class for every value.
 
 ## Verify the result
 

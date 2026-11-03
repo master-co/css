@@ -166,3 +166,5 @@ Project custom media work inside native rules, beside ordinary media queries:
 Open the route directly, then navigate to it from another page. Check that its stylesheet loads, the native selectors match and the expected token values are present. Inspect a shared page as well: local source ownership should not accidentally move route-only CSS into the app entry.
 
 If the output is missing, check the route's CSS import and the integration's project context. If the rule is present but the result differs, inspect the matching selector, layer and computed value. Adding another full `@master/css` import does not fix a selector or cascade problem.
+
+For before/after measurements across pages, selective pruning and project budgets, continue with [Optimizing CSS delivery](/guide/optimizing-css-delivery).

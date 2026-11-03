@@ -1,0 +1,8 @@
+{
+  "name": "css-delivery-example",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "@master/css": "rc" },
+  "devDependencies": { "@master/css-vite": "rc", "vite": "^8" }
+}

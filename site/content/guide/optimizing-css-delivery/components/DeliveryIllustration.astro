@@ -1,0 +1,24 @@
+---
+import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
+import { deliveryIllustrations, type DeliveryIllustrationId } from '../illustrations'
+import ownershiplight from '../../../../assets/images/optimizing-css-delivery/ownership-light.png'
+import ownershipdark from '../../../../assets/images/optimizing-css-delivery/ownership-dark.png'
+import evidencelight from '../../../../assets/images/optimizing-css-delivery/evidence-light.png'
+import evidencedark from '../../../../assets/images/optimizing-css-delivery/evidence-dark.png'
+import dimensionslight from '../../../../assets/images/optimizing-css-delivery/dimensions-light.png'
+import dimensionsdark from '../../../../assets/images/optimizing-css-delivery/dimensions-dark.png'
+import verificationlight from '../../../../assets/images/optimizing-css-delivery/verification-light.png'
+import verificationdark from '../../../../assets/images/optimizing-css-delivery/verification-dark.png'
+interface Props { id: DeliveryIllustrationId }
+const { id } = Astro.props
+const figure = deliveryIllustrations[id]
+const images = {
+  ownership: { light: ownershiplight, dark: ownershipdark },
+  evidence: { light: evidencelight, dark: evidencedark },
+  dimensions: { light: dimensionslight, dark: dimensionsdark },
+  verification: { light: verificationlight, dark: verificationdark },
+}[id]
+---
+<DocumentIllustration title={figure.title} alt={figure.alt} images={images} caption={figure.caption}>
+  <ol>{figure.description.map(item => <li><strong>{item.title}.</strong> {item.text}</li>)}</ol>
+</DocumentIllustration>

@@ -1,0 +1,10 @@
+@prune native;
+
+@layer components {
+  .report { padding: var(--spacing-lg); border: 1px solid currentColor; }
+  .report[data-state="ready"] { border-width: 3px; }
+  .report:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .report-idle { opacity: .65; }
+  .report-ready { opacity: 1; }
+  .report-debug { outline: 8px solid red; }
+}

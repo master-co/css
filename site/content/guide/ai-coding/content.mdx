@@ -259,3 +259,10 @@ master-css inspect --design-system --design-system-options design-system.options
 ```
 
 The report lists each `var()` token reference with its source range, selector and at-rule ancestry, importers and shared-prefix collisions. Its `components` list gives each component class's attribute vocabulary, read from selectors such as `.button[data-variant="primary"]`, so an agent can write variants the CSS actually styles. The optional [options file](/reference/tools/cli#design-system-options) adds token descriptions, deprecations with suggested replacements, and a raw-value policy for selected properties; the same object is accepted by `mastercss_scan_project.designSystem`, with route stylesheets in `routeStylesheets`, and the [Language Service](/guide/language-service) `designSystem` setting. These reports are authored-syntax evidence: check affected layouts and states in the browser.
+
+
+## Optimize delivery with an agent
+
+For a loading refactor or performance assessment, give the agent [Optimizing CSS delivery](/guide/optimizing-css-delivery), the target routes, existing rendering mode and checks. Ask it to baseline production assets, move feature styles to their owners, then verify the output and interactions on both the feature page and an unrelated page. Preserve the mode unless the task requires changing it.
+
+The public Master CSS skill routes this work through its delivery reference. Source and manifest inspection remain useful, but neither establishes browser transfer costs or correct later states. An ordinary component change needs its local checks, not an automatic whole-site audit.

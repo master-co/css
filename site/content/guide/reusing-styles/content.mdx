@@ -75,6 +75,8 @@ The normal utility declaration from `px-lg` wins over the component's padding be
 
 Native component rules are emitted with their stylesheet by default; [native pruning](/guide/scanning-and-pruning#prune-native-css) is an explicit opt-in. Write a component's states inside its CSS rule. A native `.action` definition does not register an `action:hover` utility.
 
+Shared appearance and shared delivery are different decisions. See [Optimizing CSS delivery](/guide/optimizing-css-delivery#ownership) when a reusable component makes unrelated pages load its rules.
+
 ## Choose what should change together
 
 Before extracting a repeated class list, identify the shared decision. Similar-looking elements do not always need to change together.

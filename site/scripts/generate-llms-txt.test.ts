@@ -782,3 +782,20 @@ test('View transitions retains its five figure lessons and native CSS recipes in
   assert.match(content.markdown, /image\.style\.viewTransitionName/)
   assert.doesNotMatch(content.markdown, /<TransitionIllustration\b/)
 })
+
+
+test('delivery optimization figures and runnable files survive search and portable export', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const content = await deliveryGuideContent(root, 'optimizing-css-delivery')
+  const { deliveryIllustrations, deliveryIllustrationMarkdown } = await import('../content/guide/optimizing-css-delivery/illustrations')
+  for (const id of Object.keys(deliveryIllustrations)) {
+    assert.ok(content.markdown.includes(deliveryIllustrationMarkdown(id)))
+    assert.ok(content.searchMarkdown.includes(deliveryIllustrationMarkdown(id)))
+  }
+  for (const name of ['package.json', 'vite.config.js', 'index.html', 'reports/index.html', 'src/main.js', 'src/style.css', 'src/reports.js', 'src/reports.css']) {
+    const file = await readFile(path.join(root, '../tests/fixtures/css-delivery', name), 'utf8')
+    assert.ok(content.markdown.includes(file.trim()), `complete reproducible file: ${name}`)
+  }
+  assert.ok(content.markdown.includes('without a usage set for pruning'))
+  assert.doesNotMatch(content.markdown, /<DeliveryIllustration|<DocumentDisclosure|\[object Object\]/)
+})

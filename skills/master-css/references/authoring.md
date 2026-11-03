@@ -70,3 +70,8 @@ CSS value validity; use the separate validation results for that.
 If neither suggestion interface is available, inspect the project definitions
 and use available manifest-query, syntax or inspection tools. Do not invent a replacement converter in
 JavaScript. Apply a small edit, lint it, and check its browser behavior.
+
+Keep component styles at their loading owner; shared definitions need not import
+all native feature rules. Complete class maps support static extraction and native
+pruning. Runtime/progressive may generate valid names first known in the browser.
+Read [delivery](delivery.md) only when optimization or a delivery failure is in scope.

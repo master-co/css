@@ -130,6 +130,8 @@ Put these definitions after the existing Master CSS import, or import a `utiliti
 
 ---
 
+For a cross-page audit and an output-based optimization sequence, see [Optimizing CSS delivery](/guide/optimizing-css-delivery).
+
 ## Keep local delivery local \{#organize-global-files\}
 
 Keep the app entry focused on styles shared across pages. The integration supplies project definitions to a route stylesheet without another full Master CSS import. Use `@reference` for additional definitions outside that graph; it does not deliver the referenced native CSS. The route's loader still owns delivery of its local rules.
