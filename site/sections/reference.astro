@@ -13,7 +13,7 @@ const navigation = referenceNavigationCategories(routeIndex, pageCategories.map(
 ---
 
 <DocumentShell>
-  <DocHeader client:load contained documentNavigation={navigation} documentNavigationTitle="Reference" />
+  <DocHeader client:load contained />
   <DocWrapper>
     <ReferenceNavigation client:load pageCategories={navigation} />
     <slot />
