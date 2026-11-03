@@ -137,7 +137,7 @@ Loading a native rule does not register a new Master CSS utility. Both cards bel
 
 Keeping the rules in `@layer components` lets classes override them; see [Cascade layers](/guide/cascade-layers).
 
-These native rules are emitted with their stylesheet by default. If that source opts into [native CSS pruning](/guide/scanning-and-pruning#prune-native-css), its detected class usage determines which rules remain. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
+These native rules are emitted with their stylesheet by default. If that source opts into [native CSS pruning](/guide/optimizing-css-delivery#native-pruning), its detected class usage determines which rules remain. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
 
 ---
 

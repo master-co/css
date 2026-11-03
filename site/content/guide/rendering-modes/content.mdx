@@ -48,12 +48,12 @@ To see the source-to-CSS process, add this utility definition after the import a
 
 The scanner finds `btn` and `text-center`. The engine resolves the project recipe and the preset's fixed utility, then generates their rules and referenced resources. Defining `btn` alone does not emit its rule: a scanned class or explicit safelist must request it.
 
-Integrations discover ordinary application sources and update CSS during development. Keep complete class names in source and pass changing values through CSS variables; [Scanning and pruning](/guide/scanning-and-pruning) covers both, plus `@source` and safelist exceptions.
+Integrations discover ordinary application sources and update CSS during development. Keep complete class names in source and pass changing values through CSS variables; [Scanning class names](/guide/scanning-and-pruning) covers both, plus `@source` and safelist exceptions.
 
 ### Native CSS entries
 Native selectors in the CSS entry are preserved by default, even when their classes are absent from scanned source. Their `var(--*)` and animation references can retain the matching theme variables and keyframes.
 
-Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or `@prune native;` for one file. `@preserve native;` excludes a file from integration-level pruning. See [pruning unused native CSS](/guide/scanning-and-pruning#prune-native-css).
+Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or `@prune native;` for one file. `@preserve native;` excludes a file from integration-level pruning. See [pruning unused native CSS](/guide/optimizing-css-delivery#native-pruning).
 
 ---
 

@@ -4,7 +4,7 @@ const metadata = define({
   title: 'Route-level styles',
   description: 'Keep route CSS locally delivered while using shared definitions; distinguish reference context, native rules and selector scope.',
   category: 'Authoring',
-  order: 3,
+  order: 4,
   fileURL: import.meta.url
 })
 

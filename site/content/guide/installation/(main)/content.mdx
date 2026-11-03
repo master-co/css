@@ -189,12 +189,12 @@ npx @master/css-cli generate "index.html" --output master.css
 
 Deploy `index.html`, `master.css` and the neighboring CSS assets referenced by the generated stylesheet. Preserve their relative paths: copying only `master.css` can leave its imported styles missing. Keep each generated asset set together when publishing a new build.
 
-Load the deployed page and check that every stylesheet request succeeds. The paragraph should keep its generated padding, border and surface colors with JavaScript disabled. [Scanning and pruning](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
+Load the deployed page and check that every stylesheet request succeeds. The paragraph should keep its generated padding, border and surface colors with JavaScript disabled. [Scanning class names](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
 
 ## If the style does not appear
 
 Check that the page renders the markup you edited and loads the app stylesheet. Then check that the build integration is enabled and scans that source file. Keep class names complete, as in `p-lg`; constructing them from fragments such as `p-${size}` prevents a static scan from seeing the final class.
 
-If the installer reports an unrecognized framework or incomplete setup, follow the matching [integration guide](/guide/installation#integrations) or the [CLI guide](/guide/installation#cli). For files outside the normal application scope, see [Scanning and pruning](/guide/scanning-and-pruning).
+If the installer reports an unrecognized framework or incomplete setup, follow the matching [integration guide](/guide/installation#integrations) or the [CLI guide](/guide/installation#cli). For files outside the normal application scope, see [Scanning class names](/guide/scanning-and-pruning).
 
 Once the spacing change works, continue with the [Syntax tutorial](/guide/syntax-tutorial) to build a card with interaction states and responsive conditions.

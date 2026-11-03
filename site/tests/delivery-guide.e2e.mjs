@@ -16,8 +16,8 @@ for (const [engineName, engine] of [['chromium', chromium], ['webkit', webkit]])
       const response = await page.goto(base + '/guide/optimizing-css-delivery', { waitUntil: 'networkidle' }); assert.equal(response.status(), 200)
       await page.evaluate(() => document.fonts.ready)
       const figures = page.locator('main figure').filter({ has: page.locator('.document-illustration') })
-      assert.equal(await figures.count(), 4)
-      for (let index = 0; index < 4; index++) {
+      assert.equal(await figures.count(), 5)
+      for (let index = 0; index < 5; index++) {
         const figure = figures.nth(index), image=figure.locator(`img[data-scheme="${theme}"]`)
         await figure.scrollIntoViewIfNeeded(); await image.evaluate(e => e.decode())
         assert.ok(await image.isVisible()); assert.ok(!await figure.locator(`img[data-scheme="${theme==='light'?'dark':'light'}"]`).isVisible())
@@ -34,11 +34,11 @@ for (const [engineName, engine] of [['chromium', chromium], ['webkit', webkit]])
       for (const figure of await figures.all()) assert.ok(await figure.locator(`img[data-scheme="${opposite}"]`).isVisible())
       await page.locator('select:has(option[value="system"])').first().selectOption(theme, { force: true })
       // Open the setup code; inspect document-level overflow and enlarged readable descriptions.
-      const setup=page.locator('summary').filter({ hasText:'Project setup and page markup' }); await setup.click()
+      const setup=page.locator('summary').filter({ hasText:'Complete two-page project' }); await setup.click()
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1))
       await page.evaluate(() => document.documentElement.style.fontSize='200%')
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1))
-      assert.deepEqual(errors, []); records.push({ engine:engineName,width,theme,figures:4 }); await page.close()
+      assert.deepEqual(errors, []); records.push({ engine:engineName,width,theme,figures:5 }); await page.close()
     }
     if (engineName==='chromium') {
       const page=await browser.newPage(); await page.goto(base+'/guide/optimizing-css-delivery', {waitUntil:'networkidle'})
@@ -52,4 +52,4 @@ for (const [engineName, engine] of [['chromium', chromium], ['webkit', webkit]])
     }
   } finally { await browser.close() }
 }
-await writeFile(output+'/results.json',JSON.stringify(records,null,2));console.log(`${records.length} browser/theme/width profiles, four figures each; links and locale title verified`)
+await writeFile(output+'/results.json',JSON.stringify(records,null,2));console.log(`${records.length} browser/theme/width profiles, five figures each; links and locale title verified`)

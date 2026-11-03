@@ -134,7 +134,7 @@ Serve the production output with the project's preview or start command. Plain V
 
 Client-rendered applications need JavaScript to create the paragraph. For React Router or TanStack Start routes with server rendering enabled, disable JavaScript and reload to check that the server's HTML receives the same stylesheet.
 
-If the file loads but one class is missing, keep its full name in source; see [Scanning and pruning](/guide/scanning-and-pruning). If no utilities work, confirm the CSS entry is imported and the Vite configuration includes `masterCSS()` beside the framework plugin. If starter styles obscure the result, remove their appearance rules while keeping `@import '@master/css';`.
+If the file loads but one class is missing, keep its full name in source; see [Scanning class names](/guide/scanning-and-pruning). If no utilities work, confirm the CSS entry is imported and the Vite configuration includes `masterCSS()` beside the framework plugin. If starter styles obscure the result, remove their appearance rules while keeping `@import '@master/css';`.
 
 ---
 

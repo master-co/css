@@ -107,4 +107,4 @@ From each application's directory, run its production build. Check both outputs 
 
 If a token is missing, check the CSS import graph. If the definition is available but a shared component's utility is absent, check source selection. These are separate inputs: importing the shared CSS does not automatically include every sibling component file.
 
-Use [Authoring packages](/guide/authoring-packages) when this vocabulary needs a versioned package contract. Use [Scanning and pruning](/guide/scanning-and-pruning) to narrow the files each app scans and the native rules it keeps.
+Use [Authoring packages](/guide/authoring-packages) when this vocabulary needs a versioned package contract. Use [Scanning class names](/guide/scanning-and-pruning) to define the files each app scans, and [Optimizing CSS delivery](/guide/optimizing-css-delivery#native-pruning) to decide which native rules it can remove.

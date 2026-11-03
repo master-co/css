@@ -98,7 +98,7 @@ A shared notification, for example, can live in `components.css`:
 
 This native selector styles `.notice`; it does not register a utility named `notice`. Write shared states and conditions in the component rule. For a class recipe that accepts Master CSS modifiers, use `@utility` instead. [Reusing styles](/guide/reusing-styles) compares those choices with working examples.
 
-Native CSS in the entry graph is emitted by default, including unused component rules. Native pruning is an explicit choice; see [Scanning and pruning](/guide/scanning-and-pruning). Do not move a large route-only stylesheet into the global graph simply to make its definitions visible.
+Native CSS in the entry graph is emitted by default, including unused component rules. Native pruning is an explicit choice; see [native pruning](/guide/optimizing-css-delivery#native-pruning). Do not move a large route-only stylesheet into the global graph simply to make its definitions visible.
 
 ---
 

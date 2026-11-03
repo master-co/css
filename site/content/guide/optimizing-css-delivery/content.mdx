@@ -1,3 +1,4 @@
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import DeliveryIllustration from './components/DeliveryIllustration.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
@@ -8,7 +9,9 @@ Make each page receive the CSS it needs, including the states that appear after 
 
 This guide follows an overview page and a reports page with the same navigation. Only Reports renders a report panel. The desired result is that Overview never downloads the panel's rules, while Reports keeps its ready and keyboard-focus states.
 
-Complete your framework's [installation](/guide/installation) first. Record the installed Master CSS version, CSS entry, rendering mode and pruning policy. Keep the existing mode during a delivery refactor. The reproducible example below uses Vite with progressive rendering to show that initial CSS, later utilities and native pruning are separate concerns. It uses only public packages and preset tokens.
+Complete your framework's [installation](/guide/installation) first. [Route-level styles](/guide/route-level-styles) explains local style ownership and definitions; [Scanning class names](/guide/scanning-and-pruning) explains discoverable class strings and source exceptions. Use those Authoring guides for everyday component work; use this workflow when investigating delivery cost or missing assets.
+
+Record the installed Master CSS version, CSS entry, rendering mode and pruning policy. Keep the existing mode during a delivery refactor. The reproducible example below uses Vite with progressive rendering to show that initial CSS, later utilities and native pruning are separate concerns. It uses only public packages and preset tokens.
 
 ## Establish what each page receives \{#baseline\}
 
@@ -53,7 +56,7 @@ Use an empty directory with the following files. Install the public packages wit
 
 The [Vite multi-page build](https://vite.dev/guide/build.html#multi-page-app) uses two HTML entries. Both contain their initial markup, so Vite's HTML pipeline can pre-render it. An application with custom request-time SSR needs its framework's server integration; this example does not give Vite a request-time renderer.
 
-<DocumentDisclosure title="Project setup and page markup">
+<DocumentDisclosure title="Complete two-page project">
 
 ```json name=package.json
 {
@@ -113,8 +116,6 @@ export default defineConfig({
 </html>
 ```
 
-</DocumentDisclosure>
-
 The common entry imports the one full Master CSS entry. Its navigation rule uses a public spacing token:
 
 ```js name=src/main.js
@@ -156,6 +157,8 @@ document.querySelector('#refresh').addEventListener('click', () => {
 }
 ```
 
+</DocumentDisclosure>
+
 Open `/` and `/reports/` directly. Trace their emitted CSS imports: only Reports should receive `.report`. Refresh the report, then focus its panel using the keyboard. Its border becomes 3px, opacity becomes 1, and keyboard focus has an outline.
 
 The `@prune native` marker opts this file in, but removal also requires a build path that supplies class usage. In the current Vite local-stylesheet transform, the report rules are compiled with project definitions without a usage set for pruning; `.report-debug` therefore remains in that local output. The ownership improvement still works. The next section verifies pruning separately through the public CLI rather than treating a directive in source as proof of a smaller production file.
@@ -168,15 +171,21 @@ Native selectors keep their ordinary document scope after loading. Route ownersh
 
 ## Prune only a known usage set \{#native-pruning\}
 
-First remove unnecessary imports. Then consider files whose classes and states you can account for. Keep project-wide `pruneNativeCSS` off while establishing these boundaries, and opt individual sources in with `@prune native;`.
+Native CSS is preserved by default. First remove unnecessary imports. Then consider files whose classes and states you can account for. Keep project-wide `pruneNativeCSS` off while establishing these boundaries, and opt individual sources in with `@prune native;`.
 
-Pruning applies to the declaring file and uses its root's class usage scope. It does not automatically spread into imported files. Package CSS needs its own opt-in; a consumer's project-wide setting does not make all package styles prunable. The [pruning Reference](/reference/directives/pruning#import-graph) owns the full scope rules.
+Pruning applies to the declaring file and uses its root's class usage scope. It does not automatically spread into imported files. Package CSS needs its own opt-in; a consumer's project-wide setting does not make all package styles prunable. Only consider `pruneNativeCSS: true` when pruning all project-owned stylesheets is intentional and their possible uses are covered. The [pruning Reference](/reference/directives/pruning#import-graph) owns the full scope rules.
 
 In this example, the markup contains `report` and `report-idle`, and the JavaScript map also contains `report-ready`. Those complete names allow a scanner-backed build to retain both status rules. Finding `report` retains its attribute and focus selector branches even before the ready or focus state is active. Class scanning does not prove that a selector matches a reachable DOM relationship; a retained rule may still never match.
 
 <DeliveryIllustration id="evidence" />
 
+Rules without class selectors remain available. Pruning is based on class usage, not a snapshot of the initial DOM.
+
+<ReferenceIllustration id="pruning-global-selectors" />
+
 ### Verify the pruning step independently
+
+<DocumentDisclosure title="Reproduce native pruning with the CLI">
 
 To inspect this file with a build path that supplies scanned usage, install the matching public CLI with `npm install -D @master/css-cli@rc`. Copy the report sources into a disposable check directory:
 
@@ -198,6 +207,8 @@ From the project root, run:
 cd pruning-check
 npx master-css generate 'index.html' 'reports.js' --strict -o output.css
 ```
+
+</DocumentDisclosure>
 
 Follow the imports from `output.css`. The report rules and their spacing dependency remain; `.report-debug` is absent. This check establishes the CLI's output for those inputs. It does not change the app's Vite pipeline. Do not import this second full entry into the application to force pruning: that would restore unrelated shared delivery. Use pruning in your production integration only when its actual output demonstrates the intended filtering.
 

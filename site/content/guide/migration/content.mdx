@@ -58,7 +58,7 @@ Follow the source-system guide for the code conversion. Compare the resulting de
 - Use existing project tokens when their values match the intended design. Define a shared value in [`@theme`](/guide/theme) when it represents a product decision; check its other consumers when changing it.
 - Move local visual styles into markup where that makes the component easier to read. Keep native CSS or CSS Modules when they express the selector or component contract more clearly.
 - Preserve runtime values, component props, event handlers, semantic elements and keyboard behavior. Keep a vendor widget and its required CSS while the app still depends on that widget.
-- For scanned output, make class names available as complete strings. Check conditional variants and generated content against [Scanning and pruning](/guide/scanning-and-pruning).
+- For scanned output, make class names available as complete strings. Check conditional variants and generated content against [Scanning class names](/guide/scanning-and-pruning).
 
 For the account form, completion means that entering a value, submitting, showing an error and disabling the action still work. Matching the form's idle screenshot is only part of the result.
 

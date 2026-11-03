@@ -799,3 +799,37 @@ test('delivery optimization figures and runnable files survive search and portab
   assert.ok(content.markdown.includes('without a usage set for pruning'))
   assert.doesNotMatch(content.markdown, /<DeliveryIllustration|<DocumentDisclosure|\[object Object\]/)
 })
+
+
+test('Guide ownership keeps authoring discoverable and pruning at one workflow owner', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url))
+  const categories = JSON.parse(await readFile(path.join(root, '.categories/guide.json'), 'utf8'))
+  const sections = guideOverviewSections(categories)
+  const authoring = sections.find(section => section.id === 'authoring')!
+  const ordered = authoring.entries.map(entry => entry.url)
+  const expected = ['theme', 'global-styles', 'reusing-styles', 'route-level-styles', 'scanning-and-pruning', 'authoring-packages', 'code-linting']
+  assert.deepEqual(ordered, expected.map(slug => `/guide/${slug}`))
+  assert.equal(authoring.entries.find(entry => entry.url.endsWith('/scanning-and-pruning'))?.title, 'Scanning class names')
+  const build = sections.find(section => section.id === 'build-and-delivery')!
+  assert.deepEqual(build.entries.map(entry => entry.url), ['/guide/optimizing-css-delivery'])
+  const scanning = await deliveryGuideContent(root, 'scanning-and-pruning')
+  const delivery = await deliveryGuideContent(root, 'optimizing-css-delivery')
+  for (const [oldAnchor, target] of [
+    ['prune-native-css', 'native-pruning'],
+    ['preserve-native-css', 'keep-external-and-uncertain-sources-safe'],
+    ['verify-pruning', 'verify-the-pruning-step-independently']
+  ]) {
+    assert.ok(scanning.markdown.includes(`id="${oldAnchor}"`), oldAnchor)
+    assert.ok(scanning.markdown.includes(`/guide/optimizing-css-delivery#${target}`), target)
+  }
+  for (const format of ['markdown', 'searchMarkdown'] as const) {
+    assert.ok(scanning[format].includes('@source "../shared/**/*.tsx";'))
+    assert.ok(scanning[format].includes('@safelist "bg-red-60" "bg-green-60";'))
+    assert.ok(scanning[format].includes('not a ban on dynamic utilities'))
+    assert.ok(delivery[format].includes('Native pruning leaves classless rules available'))
+    assert.ok(delivery[format].includes('@preserve native;'))
+    assert.ok(delivery[format].includes('npx master-css generate'))
+    assert.ok(!scanning[format].includes('npx master-css generate'))
+    assert.ok(!scanning[format].includes('Native pruning leaves classless rules available'))
+  }
+})

@@ -1,4 +1,6 @@
 {
+  "Scanning class names": "掃描 class 名稱",
+  "Write complete class names, handle changing values, and include the sources a static build needs.": "撰寫完整的 class 名稱、處理動態值，並納入靜態建置所需的來源。",
   "Optimizing CSS delivery": "最佳化 CSS 交付",
   "Reduce unrelated CSS with route ownership and selective pruning, then verify production output, runtime behavior and navigation costs.": "透過路由歸屬與選擇性 pruning 減少無關 CSS，並驗證正式建置產物、runtime 行為與導覽成本。",
   "The CSS language and framework for rapidly building modern and high-performance websites.": "一個 CSS 語言兼框架，快速打造現代且具高效能的網站。",

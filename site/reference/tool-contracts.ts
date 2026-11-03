@@ -122,7 +122,7 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
       ...editorial.notes ?? [])
   }
   cli.push('## Check results',
-    'For lint and inspect, the default JSON report is written to stdout; `--format stylish` writes readable diagnostics to stderr. Diagnostic errors normally produce a nonzero exit status. `--exit-code never` suppresses diagnostic-based failure, so read the report before treating the run as successful. See [Code linting](/guide/code-linting) and [Scanning and pruning](/guide/scanning-and-pruning) for troubleshooting. Source links follow the `rc` branch.')
+    'For lint and inspect, the default JSON report is written to stdout; `--format stylish` writes readable diagnostics to stderr. Diagnostic errors normally produce a nonzero exit status. `--exit-code never` suppresses diagnostic-based failure, so read the report before treating the run as successful. See [Code linting](/guide/code-linting) and [Scanning class names](/guide/scanning-and-pruning) for troubleshooting. Source links follow the `rc` branch.')
   return [
     document('tools/mcp', 'MCP tools', 'Choose a tool, understand its file effects, and find the current protocol contract.', mcp, tools.map(tool => tool.name), Object.fromEntries(tools.map(tool => [tool.name, tool.name])), 'packages/mcp/src/server.ts'),
     document('tools/cli', 'CLI commands', 'Choose a command, check its file effects, and find complete options in CLI help and source.', cli, commandNames.map(name => `master-css ${name}`), Object.fromEntries(commandNames.map(name => [`master-css ${name}`, name])), 'packages/cli/src/core.ts')

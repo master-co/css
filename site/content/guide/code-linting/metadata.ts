@@ -9,7 +9,7 @@ const metadata = define({
   other: {
     subject: 'Code linting'
   },
-  order: 5,
+  order: 7,
   openGraph: {
     description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
   },

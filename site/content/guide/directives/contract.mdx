@@ -439,7 +439,7 @@ Native selectors and queries activate theme overrides. A mixin can provide a mat
 Use `(color:white)@apply(--ocean)`. Add explicit `:host(...)` selectors when targeting a shadow host.
 
 ## Source boundaries \{#source-boundaries\}
-File policy chooses where to read candidates; candidate policy chooses which complete class strings remain eligible. These directives do not change the parser or turn arbitrary source text into valid utilities. See [Scanning and pruning](/guide/scanning-and-pruning) for configuration and troubleshooting, and [Extraction](/reference/rules/extraction) for supported source syntax and lifecycle.
+File policy chooses where to read candidates; candidate policy chooses which complete class strings remain eligible. These directives do not change the parser or turn arbitrary source text into valid utilities. See [Scanning class names](/guide/scanning-and-pruning) for configuration and troubleshooting, and [Extraction](/reference/rules/extraction) for supported source syntax and lifecycle.
 
 <ReferenceIllustration id="scanning-two-filters" />
 
@@ -493,7 +493,7 @@ Remove unwanted complete candidates with exact strings or `*` and `?` wildcard p
 The stylesheet grammar does not interpret slash-delimited patterns as regular expressions. Wildcard policy belongs in the blocklist; a safelist supplies complete classes.
 
 ## Native CSS preservation \{#native-css-preservation\}
-Native CSS pruning removes unused class-selector branches and makes keyframes available on demand. It is a stylesheet policy, separate from generating utility classes. [Scanning and pruning](/guide/scanning-and-pruning) teaches when to enable it; [Scanning directives](/reference/directives/scanning) owns the source and candidate filters.
+Native CSS pruning removes unused class-selector branches and makes keyframes available on demand. It is a stylesheet policy, separate from generating utility classes. [Optimizing CSS delivery](/guide/optimizing-css-delivery#native-pruning) teaches when to enable it; [Scanning directives](/reference/directives/scanning) owns the source and candidate filters.
 
 <ReferenceIllustration id="pruning-file-boundary" />
 

@@ -131044,7 +131044,7 @@
         "light"
       ]
     },
-    "e397aef1efa48d2c": {
+    "374ff71c82708515": {
       "cssBytes": 112305,
       "cssSha256": "4d7f872f76f3e57e5f594973aa35fec55c91592933139715d55f39d89ba214c4",
       "cssSegments": [
@@ -131867,8 +131867,8 @@
         "d10b36aa74a59bcf",
         "e6422dea50641f54"
       ],
-      "hydrationBytes": 2953,
-      "hydrationSha256": "76b79dfcef71025e5c24c54b1870073a909e73bc6e5b7d160bbfd44137ef506b",
+      "hydrationBytes": 3018,
+      "hydrationSha256": "3ab99f2744e3aad685ddcc267250f7c25a4c273ecf5231b51719c33143798e5d",
       "hydrationVersion": 5,
       "resourceOrder": {
         "variables": [
@@ -131967,6 +131967,8 @@
         "mcss-host-active-on-hover",
         "ui-code-file",
         "ui-code-bar",
+        "mcss-semantic-enumMember",
+        "mcss-semantic-role-utility-semantic",
         "ui-pager",
         "ui-docs-article",
         "ui-prose",
@@ -135508,7 +135510,7 @@
     "/guide/responsive-design": "cef8de629b79f49e",
     "/guide/reusing-styles": "f026dd0fbf2e784c",
     "/guide/route-level-styles": "351e1a24c1e2f3cc",
-    "/guide/scanning-and-pruning": "e397aef1efa48d2c",
+    "/guide/scanning-and-pruning": "374ff71c82708515",
     "/guide/syntax-tutorial": "1b45edfea9fa0cee",
     "/guide/theme": "cd0d407d5c31b163",
     "/guide/typography": "b3dcdfc192398218",
@@ -135583,7 +135585,7 @@
     "/tw/guide/responsive-design": "cef8de629b79f49e",
     "/tw/guide/reusing-styles": "f026dd0fbf2e784c",
     "/tw/guide/route-level-styles": "351e1a24c1e2f3cc",
-    "/tw/guide/scanning-and-pruning": "e397aef1efa48d2c",
+    "/tw/guide/scanning-and-pruning": "374ff71c82708515",
     "/tw/guide/syntax-tutorial": "1b45edfea9fa0cee",
     "/tw/guide/theme": "cd0d407d5c31b163",
     "/tw/guide/typography": "b3dcdfc192398218",
@@ -135623,6 +135625,6 @@
     "/tw/reference/truncation": "1d282e013581aaec"
   },
   "approval": {
-    "reference": "site/tests/delivery-guide-qa-2026-11-03.md; two new guide routes only, all existing CSS and hydration contracts unchanged"
+    "reference": "site/tests/guide-ownership-qa-2026-11-03.md"
   }
 }

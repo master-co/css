@@ -213,7 +213,7 @@ This card combines the decisions above. It starts in one column; when its named 
   caption="Switch between Narrow and Wide. The named container controls the card's columns and padding. Hover or Tab to Read the guide to check its states; activating it opens Reusing styles."
 />
 
-Keep complete class names in your source when choosing variants, such as `'p-md'` and `'p-lg'`. Building a class from fragments such as `'p-' + size` does not give a source scanner the complete name. For continuous values, use a native custom property with a fixed class such as `(width:var(--progress))`. [Scanning and pruning](/guide/scanning-and-pruning) explains source discovery; [Rendering modes](/guide/rendering-modes) covers when CSS is generated.
+Keep complete class names in your source when choosing variants, such as `'p-md'` and `'p-lg'`. Building a class from fragments such as `'p-' + size` does not give a source scanner the complete name. For continuous values, use a native custom property with a fixed class such as `(width:var(--progress))`. [Scanning class names](/guide/scanning-and-pruning) explains source discovery; [Rendering modes](/guide/rendering-modes) covers when CSS is generated.
 
 If an expected style is missing, open **Generated CSS** and check the class first. Then check which element its selector targets, whether its conditions match, the resolved custom properties, and competing rules in the browser. Reordering classes in HTML is not a fix for the cascade.
 
