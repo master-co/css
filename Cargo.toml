@@ -30,6 +30,7 @@ repository = "https://github.com/master-co/css"
 publish = false
 
 [workspace.dependencies]
+aho-corasick = "1.1.5"
 cssparser = "0.37.0"
 napi = { version = "3.12.2", default-features = false, features = ["napi8", "serde-json"] }
 napi-build = "2.4.1"

@@ -12,7 +12,7 @@ import { atomicShape, NATIVE, RECIPE, type RuleShape, type StoredRule } from './
 import { cssEscape } from './program'
 import type { MixinNode, Program, UtilityLayer } from './program-model'
 import { replaceNestingSelector, selectorPriority, selectorTokenToTemplate, validSelectorStructure } from './selector'
-import { resolveStateBranches, type StateBranch } from './state'
+import { MAX_STATE_BRANCHES, resolveStateBranches, type StateBranch } from './state'
 import { trim } from './text'
 import type { GeneratedRule } from './types'
 import { functionInvocation, matchingUtilities, tokenPrefix } from './utility'
@@ -123,7 +123,11 @@ function expandApplication(className: string, head: string, suffixes: string[], 
   // Every combination of condition branches, the last suffix varying fastest; a
   // condition without branches leaves none.
   let combinations: StateBranch[][] = [[]]
-  for (const branches of options) if (branches) combinations = combinations.flatMap((chosen) => branches.map((branch) => [...chosen, branch]))
+  for (const branches of options) {
+    if (!branches) continue
+    if (combinations.length * branches.length > MAX_STATE_BRANCHES) return
+    combinations = combinations.flatMap((chosen) => branches.map((branch) => [...chosen, branch]))
+  }
   const primary = originals[0]
   const anchor = `.${cssEscape(className)}`
   const stored: StoredRule[] = []

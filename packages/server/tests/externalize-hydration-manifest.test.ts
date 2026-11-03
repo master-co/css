@@ -35,4 +35,15 @@ describe('externalizeHydrationManifest', () => {
     const result = externalizeHydrationManifest(`<html><head>${style}${script}</head><body>${body}</body></html>`, () => '/m.json')
     expect(result?.html).toBe(`<html><head><style id="master-css" data-master-css-hydration-manifest="/m.json">.a{}</style></head><body>${body}</body></html>`)
   })
+
+  it('rebuilds the style tag from its attributes, not from lookalike text in other values', () => {
+    const html = `<head><style title='a data-master-css-hydration-manifest=x"' id="master-css"></style>${script}</head>`
+    expect(externalizeHydrationManifest(html, () => '/m.json')?.html)
+      .toBe('<head><style title="a data-master-css-hydration-manifest=x&quot;" id="master-css" data-master-css-hydration-manifest="/m.json"></style></head>')
+  })
+
+  it('ignores placeholders inside foreign and raw-text containers', () => {
+    const html = `<head>${style}</head><body><svg><style id="master-css"></style>${script}</svg></body>`
+    expect(externalizeHydrationManifest(html, () => '/m.json')).toBeUndefined()
+  })
 })

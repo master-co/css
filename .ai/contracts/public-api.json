@@ -986,6 +986,7 @@
         ".": [
           "MasterCSSExternalHydrationManifestOptions",
           "MasterCSSExternalHydrationManifestSource",
+          "MasterCSSExternalizedHydrationManifest",
           "MasterCSSHTMLDocumentOptions",
           "MasterCSSHTMLRenderOptions",
           "MasterCSSHTMLRenderResult",
@@ -997,10 +998,11 @@
           "MasterCSSServerStylesheet",
           "createHTMLRenderSession",
           "createServerRenderer",
+          "externalizeHydrationManifest",
           "renderHTML"
         ]
       },
-      "surface": "8693c3f027338346"
+      "surface": "a6da383f2fdd9aec"
     },
     "@master/css-svelte": {
       "directory": "svelte",

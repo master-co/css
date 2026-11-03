@@ -9,7 +9,7 @@ import {
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import { Element, Text, type ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
-import type parseHTML from './parse-html'
+import { isPlaceholderContext, type default as parseHTML } from './parse-html'
 import type { MasterCSSServerStylesheet } from './native-stylesheets'
 
 export type MasterCSSExternalHydrationManifestSource =
@@ -55,6 +55,7 @@ function isHydrationScript(node: ChildNode): node is Element {
   return node.type === 'script'
     && node.name === 'script'
     && node.attribs.id === MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+    && isPlaceholderContext(node)
 }
 
 function findHydrationScripts(

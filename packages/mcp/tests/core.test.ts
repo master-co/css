@@ -5,7 +5,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { afterEach, describe, expect, it } from 'vitest'
 import MasterCSSMCPContext from '../src/context'
-import { resolveSourceFiles } from '../src/scan'
+import { previewGeneratedCSS, resolveSourceFiles } from '../src/scan'
 import { createMasterCSSMCPServer } from '../src/server'
 
 const tempDirs: string[] = []
@@ -572,6 +572,15 @@ describe('@master/css-mcp', () => {
     const context = new MasterCSSMCPContext({ root })
 
     expect(await resolveSourceFiles(context)).toEqual([join(root, 'sub/index.html')])
+  })
+
+  it('only previews generated CSS into .css files', async () => {
+    const root = createTempDir('master-css-mcp-generated-')
+    writeFileSync(join(root, '.env'), 'TOKEN=secret')
+    const context = new MasterCSSMCPContext({ root })
+
+    await expect(previewGeneratedCSS(context, { outputPath: '.env' })).rejects.toThrow('.css')
+    await expect(previewGeneratedCSS(context, { outputPath: 'package.json' })).rejects.toThrow('.css')
   })
 
   it('accepts writable files addressed through the configured root path alias', async () => {

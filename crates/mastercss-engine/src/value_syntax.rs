@@ -92,7 +92,7 @@ pub(crate) fn normalize_css_math_functions(source: &str) -> String {
                 .iter()
                 .any(|n| name.eq_ignore_ascii_case(n))
             {
-                normalize_math_expression(&inner)
+                normalize_math_expression(&inner, 0)
             } else {
                 inner
             };
@@ -111,7 +111,14 @@ pub(crate) fn normalize_css_math_functions(source: &str) -> String {
 /// CSS token boundaries protect exponent signs and escaped/quoted identifiers.
 /// Signed adjacent numbers and numeric subtraction within compact dimensions
 /// are the two deliberate extensions to native CSS tokenization.
-fn normalize_math_expression(source: &str) -> String {
+///
+/// Each nested parenthesis and each compact subtraction such as `1px-1px-…`
+/// recurses once, so deeper expressions are left as written instead of
+/// exhausting the stack.
+fn normalize_math_expression(source: &str, depth: usize) -> String {
+    if depth > mastercss_lexer::MAX_CLASS_NESTING {
+        return source.to_owned();
+    }
     let tokens = tokenize_css_syntax(source);
     let mut edits: Vec<(std::ops::Range<usize>, String)> = Vec::new();
     let mut operand = false;
@@ -123,7 +130,10 @@ fn normalize_math_expression(source: &str) -> String {
             // the component-value walker (var names/fallbacks are not math).
             if token.kind == Kind::Delim('(') {
                 let range = token.bytes.end..tokens[close].bytes.start;
-                edits.push((range.clone(), normalize_math_expression(&source[range])));
+                edits.push((
+                    range.clone(),
+                    normalize_math_expression(&source[range], depth + 1),
+                ));
             }
             operand = true;
             index = close + 1;
@@ -169,7 +179,10 @@ fn normalize_math_expression(source: &str) -> String {
                         // exponent sign never becomes another subtraction operator.
                         edits.push((
                             token.bytes.start + at..token.bytes.end,
-                            concat_text!(" - ", normalize_math_expression(&raw[at + 1..])),
+                            concat_text!(
+                                " - ",
+                                normalize_math_expression(&raw[at + 1..], depth + 1)
+                            ),
                         ));
                     }
                 }

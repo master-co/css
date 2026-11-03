@@ -768,6 +768,7 @@ dependencies = [
 name = "mastercss-source"
 version = "0.0.0"
 dependencies = [
+ "aho-corasick",
  "htmlparser",
  "markdown",
  "mastercss-lexer",

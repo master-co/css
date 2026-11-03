@@ -34,7 +34,9 @@ export function collectNativeStylesheets(
     for (const node of nodes) {
       if ('attribs' in node && node.name === 'link' && node.attribs.rel === 'stylesheet' && node.attribs.href
         && node.attribs.disabled === undefined) {
-        collect(new URL(node.attribs.href, documentURL).href)
+        // An unparsable href links nothing, and must not fail the whole render.
+        const href = URL.parse(node.attribs.href, documentURL)?.href
+        if (href) collect(href)
       }
       if ('childNodes' in node) visit(node.childNodes)
     }

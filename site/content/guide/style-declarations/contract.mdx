@@ -100,7 +100,7 @@ An underscore inside the native head is literal, as in `slide_in`. After the hea
 
 ### Functions and explicit variables \{#functions\}
 
-CSS functions remain values of the native property. Master CSS normalizes arithmetic spacing in `calc(100%-2rem)`; the browser evaluates the calculation. It does not infer a token from a bare word or evaluate a CSS function as a utility call.
+CSS functions remain values of the native property. Master CSS normalizes arithmetic spacing in `calc(100%-2rem)`, through at most 64 levels of nested parentheses and chained subtractions such as `1px-2px-3px`, and leaves anything deeper as written; the browser evaluates the calculation. It does not infer a token from a bare word or evaluate a CSS function as a utility call.
 
 <Class2CSS classes={['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']} />
 

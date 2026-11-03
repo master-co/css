@@ -5,6 +5,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
+import { isPlaceholderContext } from './parse-html'
 
 export interface MasterCSSExternalizedHydrationManifest {
   readonly html: string
@@ -35,6 +36,7 @@ export function externalizeHydrationManifest(
   let styleElement: Element | undefined
   const scripts: Element[] = []
   const handler = new DomHandler(undefined, { withStartIndices: true, withEndIndices: true }, (element) => {
+    if (!isPlaceholderContext(element)) return
     if (element.type === 'style' && element.attribs.id === MASTER_CSS_RUNTIME_STYLE_ID) styleElement ??= element
     else if (element.type === 'script' && element.attribs.id === MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID) scripts.push(element)
   })
@@ -53,11 +55,12 @@ export function externalizeHydrationManifest(
   if (styleStart === null || styleEnd === null) return
   // The opening tag ends right before the first child, or before `</style>` when empty.
   const openingTagEnd = styleElement.firstChild?.startIndex ?? html.lastIndexOf('<', styleEnd)
-  const openingTag = html.slice(styleStart, openingTagEnd)
-  const attributePattern = new RegExp(String.raw`\s${MASTER_CSS_HYDRATION_MANIFEST_ATTR}(?:=(?:"[^"]*"|'[^']*'|[^\s>]*))?`, 'i')
-  const nextOpeningTag = openingTag
-    .replace(attributePattern, '')
-    .replace(/\s*\/?>$/, ` ${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="${escapeAttributeValue(source(json))}">`)
+  // Rebuild the tag from parsed attributes; matching its text could hit another attribute's value.
+  const attributes = Object.entries(styleElement.attribs)
+    .filter(([name]) => name !== MASTER_CSS_HYDRATION_MANIFEST_ATTR)
+    .map(([name, value]) => value === '' ? ` ${name}` : ` ${name}="${value.replace(/"/g, '&quot;')}"`)
+    .join('')
+  const nextOpeningTag = `<${styleElement.name}${attributes} ${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="${escapeAttributeValue(source(json))}">`
 
   const edits = [
     { start: styleStart, end: openingTagEnd, text: nextOpeningTag },

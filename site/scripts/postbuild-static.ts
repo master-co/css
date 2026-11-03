@@ -43,6 +43,14 @@ ${pages.map((page) => {
 
 async function writeHeaders() {
     await writeFile(path.join(outDir, '_headers'), [
+        // Demo previews are same-origin srcdoc frames, so framing stays limited to this origin.
+        '/*',
+        '  Strict-Transport-Security: max-age=31536000',
+        '  X-Content-Type-Options: nosniff',
+        '  X-Frame-Options: SAMEORIGIN',
+        '  Referrer-Policy: strict-origin-when-cross-origin',
+        '  Permissions-Policy: camera=(), microphone=(), geolocation=()',
+        '  Content-Security-Policy: frame-ancestors \'self\'; base-uri \'self\'; object-src \'none\'; form-action \'self\'',
         '/_astro/*',
         '  Cache-Control: public, max-age=31536000, immutable',
         '/og/*',
@@ -58,7 +66,8 @@ async function writeRedirects() {
         ...organizationRedirects(),
         '/en/* /:splat 301',
         '/en / 301',
-        '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 200',
+        // Pages cannot proxy another origin; redirect so CDN files are never served from this origin.
+        '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 302',
         ''
     ].join('\n'), 'utf8')
 }

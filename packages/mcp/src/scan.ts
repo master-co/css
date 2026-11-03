@@ -1,5 +1,5 @@
 import { SourcePolicy } from '@master/css-tooling/scanner/node'
-import { resolve } from 'node:path'
+import { extname, resolve } from 'node:path'
 import fg from 'fast-glob'
 import { renderClassNamesSync } from '@master/css/node'
 import { createMasterCSSInspectionReport, captureMasterCSSProject, type MasterCSSDesignSystemOptions } from '@master/css-compiler/diagnostics'
@@ -150,6 +150,8 @@ export async function previewGeneratedCSS(
   context: MasterCSSMCPContext,
   options: ScanProjectOptions & { outputPath: string, ttlMs?: number }
 ) {
+  // Generated CSS replaces the whole file, and the preview diff shows its current text.
+  if (extname(options.outputPath).toLowerCase() !== '.css') throw new Error('outputPath must name a .css file.')
   const report = await scanProject(context, {
     patterns: options.patterns,
     classes: options.classes,

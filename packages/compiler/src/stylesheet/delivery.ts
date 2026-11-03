@@ -3,7 +3,7 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
-import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, normalizeStylesheetGraphID, type PreparedCSSImportGraph, type CSSImportFileResolver } from '../node-imports'
+import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, normalizeStylesheetGraphID, assertRegularResourceFile, type PreparedCSSImportGraph, type CSSImportFileResolver } from '../node-imports'
 import { analyzeCSSDependencies, compileCSS, inspectCSS, resolveCSSReferenceFile, mergeCSSDirectiveExtractionPolicy } from '../node-compiler'
 import { collectStylesheetDirectives, mergeStylesheetDirectives, mergeStylesheetSourceOptions, hasStylesheetSourceDirectives, resolveStylesheetSourcePaths, hasLocalStyleDirectives } from './directives'
 import { hasStylesheetResourceReferences, renderCompiledManifestCSS } from './render'
@@ -56,6 +56,8 @@ function prepareDelivery(graph: PreparedCSSImportGraph, delivery: StylesheetDeli
       if (!baseFile) throw new TypeError(`Relative resource URL requires a source baseFile: ${owner}`)
       const original = new URL(url, pathToFileURL(baseFile))
       const resourceFile = fileURLToPath(original)
+      // Hosts read and publish resource bytes; a device or FIFO would never finish.
+      assertRegularResourceFile(resourceFile)
       if (!metadataOnly) {
         delivery.onDependency?.(resourceFile)
         // Publication verifies assets; metadata collection leaves them to the host.

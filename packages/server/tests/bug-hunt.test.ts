@@ -69,3 +69,27 @@ test('BH-0007: unused theme tokens are absent when HTML has no class attributes'
   const result = renderHTML('<p style="color:var(--color-brand)">text</p>', { manifest: staticManifest })
   expect(result.cssText).toBe('')
 })
+
+test.each(['svg', 'math', 'noscript', 'template', 'iframe', 'noembed', 'noframes', 'xmp'])(
+  'BH-0010: a style placeholder inside <%s> never receives CSS, whose markup browsers would parse there',
+  (container) => {
+    const payload = '<div class="(content:\'&lt;/' + container + '&gt;&lt;img/src/onerror=alert(1)&gt;\')"></div>'
+    const result = renderHTML(`<html><head></head><body>${payload}<${container}><style id="master-css"></style></${container}></body></html>`, { manifest })
+    expect(result.html.slice(result.html.lastIndexOf(`<${container}>`))).not.toContain('onerror')
+    expect(result.html).toMatch(/^<html><head><style id="master-css">@layer utilities\{[^]*onerror[^]*<\/style><\/head>/)
+  }
+)
+
+test('BH-0010: the first safe style placeholder is filled, matching the runtime', () => {
+  const result = renderHTML('<html><head><style id="master-css"></style></head><body><div class="block"></div><style id="master-css"></style></body></html>', { manifest })
+  expect(result.html).toBe('<html><head><style id="master-css">@layer utilities{.block{display:block}}</style></head><body><div class="block"></div><style id="master-css"></style></body></html>')
+})
+
+test('BH-0011: an unparsable stylesheet href does not fail the render', () => {
+  const result = renderHTML('<html><head><link rel="stylesheet" href="http://["></head><body><div class="block"></div></body></html>', {
+    manifest,
+    stylesheets: [{ href: 'https://example.com/a.css', css: '' }],
+    documentURL: 'https://example.com/'
+  })
+  expect(result.cssText).toContain('display:block')
+})

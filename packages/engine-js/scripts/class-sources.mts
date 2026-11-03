@@ -262,6 +262,11 @@ export function valueClasses(count: number, seed: number) {
     classes.add(`(--x:${'['.repeat(depth)}a${']'.repeat(depth)})`)
     classes.add(`block:is(${'('.repeat(depth - 1)}.a${')'.repeat(depth - 1)})`)
   }
+  // Compact subtraction recurses once per segment; past the limit the rest stays as written.
+  for (const segments of [64, 65, 66, 67, 300]) {
+    classes.add(`(width:calc(${Array(segments).fill('1px').join('-')}))`)
+    classes.add(`(width:calc((((${Array(segments).fill('2.5em').join('-')}))))`)
+  }
   return classes
 }
 
@@ -345,7 +350,9 @@ export function themeEngineCases(): EngineCase[] {
     }
   }
   const media = ['@wide', '@screen-wide', '@not-print', '@either', '@never', '@always', '@mixed', '@odd-type', '@media(--wide)', '@media(--either)',
-    '@media(--never)', '@media(--mixed)', '@media((--wide)|and|(--either))', '@wide@either', '@either@mixed', '@wide@layer(components)', '@media(width>=40rem)@wide']
+    '@media(--never)', '@media(--mixed)', '@media((--wide)|and|(--either))', '@wide@either', '@either@mixed', '@wide@layer(components)', '@media(width>=40rem)@wide',
+    // Repeated paths multiply up to the 4096-branch limit, then select nothing.
+    '@either'.repeat(12), '@either'.repeat(13)]
   const mediaClasses = ['fg-red', 'gap-md', '(color:red):hover'].flatMap((base) => media.map((condition) => base + condition))
   const mediaSteps: EngineCaseStep[] = [
     { op: 'ensure', classes: mediaClasses },

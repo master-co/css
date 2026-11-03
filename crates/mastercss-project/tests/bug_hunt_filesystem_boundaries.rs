@@ -239,3 +239,21 @@ fn imports_of_devices_are_rejected_without_reading() {
         .to_string();
     assert!(error.contains("not a regular file"), "{error}");
 }
+
+#[test]
+fn source_patterns_with_many_single_choice_groups_are_rejected() {
+    let project = Project::new();
+    project.file(
+        "entry.css",
+        &format!(
+            "@source './{}.html';@import '@master/css';",
+            "{a}".repeat(50_000)
+        ),
+    );
+    let started = std::time::Instant::now();
+    let error = load_project_manifest(&project.0, json!({"version":6,"languageVersion":18}))
+        .unwrap_err()
+        .to_string();
+    assert!(error.contains("brace groups"), "{error}");
+    assert!(started.elapsed() < std::time::Duration::from_secs(5));
+}

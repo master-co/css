@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 941,
+    "records": 943,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 758,
+      "export": 760,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 17,
@@ -13575,6 +13575,27 @@
       "lifecycle": "renderer-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-server:.#externalizeHydrationManifest",
+      "package": "@master/css-server",
+      "subpath": ".",
+      "name": "externalizeHydrationManifest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-server",
+      "responsibility": "HTML rendering and hydration injection",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-svelte",
+        "@master/css-vite",
+        "master-css-angular-example"
+      ],
+      "platform": "node",
+      "lifecycle": "renderer-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-server:.#MasterCSSExternalHydrationManifestOptions",
       "package": "@master/css-server",
       "subpath": ".",
@@ -13600,6 +13621,27 @@
       "package": "@master/css-server",
       "subpath": ".",
       "name": "MasterCSSExternalHydrationManifestSource"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-server",
+      "responsibility": "HTML rendering and hydration injection",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-svelte",
+        "@master/css-vite",
+        "master-css-angular-example"
+      ],
+      "platform": "node",
+      "lifecycle": "renderer-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-server:.#MasterCSSExternalizedHydrationManifest",
+      "package": "@master/css-server",
+      "subpath": ".",
+      "name": "MasterCSSExternalizedHydrationManifest"
     },
     {
       "kind": "export",

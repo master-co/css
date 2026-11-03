@@ -8,6 +8,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+aho-corasick.workspace = true
 htmlparser.workspace = true
 markdown = "1.0.0"
 mastercss-lexer = { path = "../mastercss-lexer" }

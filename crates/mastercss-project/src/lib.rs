@@ -36,7 +36,9 @@ pub enum ProjectError {
     },
     #[error(transparent)]
     Compiler(#[from] CompilerError),
-    #[error("Source pattern {pattern} expands to more than {MAX_BRACE_EXPANSIONS} patterns")]
+    #[error(
+        "Source pattern {pattern} expands to more than {MAX_BRACE_EXPANSIONS} patterns or has more than {MAX_BRACE_GROUPS} brace groups"
+    )]
     PatternExpansion { pattern: String },
 }
 
@@ -191,9 +193,13 @@ fn normalize_path(path: &Path) -> String {
 /// count, and every pattern is matched against every file.
 const MAX_BRACE_EXPANSIONS: usize = 1024;
 
+/// Each brace group recurses once and copies the pattern, even when it has a single
+/// choice, so the group count is bounded separately from the expansions.
+const MAX_BRACE_GROUPS: usize = 64;
+
 fn expand_braces(pattern: &str) -> Result<Vec<String>, ProjectError> {
     let mut expanded = Vec::new();
-    expand_braces_into(pattern, &mut expanded)
+    (pattern.matches('{').count() <= MAX_BRACE_GROUPS && expand_braces_into(pattern, &mut expanded))
         .then_some(expanded)
         .ok_or_else(|| ProjectError::PatternExpansion {
             pattern: pattern.to_owned(),

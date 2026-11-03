@@ -25,6 +25,14 @@ use super::{
 const MAGIC: &[u8; 4] = b"MCSP";
 /// Nesting deeper than any compiled manifest produces is rejected.
 const MAX_DEPTH: u32 = 512;
+/// Decoded strings may repeat table entries, at most this many bytes per input byte
+/// beyond a fixed allowance. A one-byte reference to a long entry would otherwise
+/// copy it again and again before the program is validated.
+const MAX_STRING_EXPANSION: usize = 64;
+const STRING_ALLOWANCE: usize = 64 << 20;
+/// Items decoded into a vector before its capacity grows on demand; a count only
+/// bounds the remaining bytes, not the memory of the items.
+const MAX_PREALLOCATED_ITEMS: usize = 4096;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ProgramError {
@@ -86,6 +94,8 @@ struct Reader<'a> {
     /// The strings referenced so far, a prefix of `strings`.
     used: usize,
     depth: u32,
+    /// Bytes of every string decoded so far, repeats included.
+    decoded: usize,
 }
 
 impl<'a> Reader<'a> {
@@ -99,6 +109,7 @@ impl<'a> Reader<'a> {
             strings: Vec::new(),
             used: 0,
             depth: 0,
+            decoded: 0,
         };
         if reader.uint()? != u64::from(PROGRAM_VERSION)
             || reader.uint()? != u64::from(mastercss_schema::LANGUAGE_VERSION)
@@ -106,7 +117,7 @@ impl<'a> Reader<'a> {
             return Err(ProgramError::UnsupportedVersion);
         }
         let count = reader.length()?;
-        reader.strings.reserve(count);
+        reader.strings.reserve(count.min(MAX_PREALLOCATED_ITEMS));
         for _ in 0..count {
             let length = reader.length()?;
             let bytes = &reader.bytes[reader.position..reader.position + length];
@@ -177,10 +188,21 @@ impl<'a> Reader<'a> {
                 .filter(|index| *index < self.used)
                 .ok_or(ProgramError::Invalid("unknown string"))?
         };
-        self.strings
+        let string = self
+            .strings
             .get(index)
-            .map(|string| (*string).to_owned())
-            .ok_or(ProgramError::Invalid("unknown string"))
+            .ok_or(ProgramError::Invalid("unknown string"))?;
+        self.decoded += string.len();
+        if self.decoded
+            > self
+                .bytes
+                .len()
+                .saturating_mul(MAX_STRING_EXPANSION)
+                .saturating_add(STRING_ALLOWANCE)
+        {
+            return Err(ProgramError::Invalid("decoded strings exceed the input"));
+        }
+        Ok((*string).to_owned())
     }
 
     fn nested<T>(&mut self, decode: impl FnOnce(&mut Self) -> Result<T>) -> Result<T> {
@@ -260,7 +282,7 @@ impl<T: Decode> Decode for Option<T> {
 impl<T: Decode> Decode for Vec<T> {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         let length = reader.length()?;
-        let mut items = Vec::with_capacity(length);
+        let mut items = Vec::with_capacity(length.min(MAX_PREALLOCATED_ITEMS));
         for _ in 0..length {
             items.push(T::decode(reader)?);
         }
@@ -872,5 +894,36 @@ mod encoding {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn varint(mut value: u64, bytes: &mut Vec<u8>) {
+        while value >= 0x80 {
+            bytes.push(value as u8 | 0x80);
+            value >>= 7;
+        }
+        bytes.push(value as u8);
+    }
+
+    #[test]
+    fn repeated_references_to_a_long_string_stop_at_the_expansion_budget() {
+        let entry = 1 << 20;
+        let mut bytes = MAGIC.to_vec();
+        varint(PROGRAM_VERSION.into(), &mut bytes);
+        varint(mastercss_schema::LANGUAGE_VERSION.into(), &mut bytes);
+        varint(1, &mut bytes);
+        varint(entry as u64, &mut bytes);
+        bytes.resize(bytes.len() + entry, b'a');
+        // One new string, then one-byte references back to it.
+        bytes.push(0);
+        bytes.resize(bytes.len() + 1000, 1);
+        let mut reader = Reader::new(&bytes).unwrap();
+        let copies = (0..1001).take_while(|_| reader.string().is_ok()).count();
+        let budget = bytes.len() * MAX_STRING_EXPANSION + STRING_ALLOWANCE;
+        assert_eq!(copies, budget / entry);
     }
 }

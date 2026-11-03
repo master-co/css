@@ -129,6 +129,36 @@ fn utf16_range(offsets: &Utf16Index, range: Range<usize>) -> SourceRange {
     }
 }
 
+/// The most candidate matches one extracted block may scan. Past it, its candidates
+/// report the whole expression, so a block of many overlapping candidates such as
+/// `a aa aaa …` cannot multiply its occurrences.
+const MAX_BLOCK_MATCHES: usize = 1 << 18;
+
+/// The non-overlapping matches of each candidate in `text`, as `str::match_indices`
+/// finds them, from one pass over the text instead of one per candidate.
+fn candidate_matches(text: &str, candidates: &[String]) -> Vec<Vec<Range<usize>>> {
+    let mut matches = vec![Vec::new(); candidates.len()];
+    // An empty pattern would match inside UTF-8 sequences; candidates are never empty.
+    if candidates.iter().any(String::is_empty) {
+        return matches;
+    }
+    let Ok(automaton) = aho_corasick::AhoCorasick::new(candidates) else {
+        return matches;
+    };
+    for (found, matched) in automaton.find_overlapping_iter(text).enumerate() {
+        if found >= MAX_BLOCK_MATCHES {
+            return vec![Vec::new(); candidates.len()];
+        }
+        let ranges: &mut Vec<Range<usize>> = &mut matches[matched.pattern().as_usize()];
+        // Overlapping matches of one candidate arrive in order; keep the leftmost
+        // non-overlapping ones, as a per-candidate search does.
+        if ranges.last().is_none_or(|last| matched.start() >= last.end) {
+            ranges.push(matched.range());
+        }
+    }
+    matches
+}
+
 impl Collector<'_> {
     fn add(
         &mut self,
@@ -141,16 +171,22 @@ impl Collector<'_> {
     ) {
         let original = &self.input.content[range.clone()];
         let context_range = utf16_range(self.offsets, range.clone());
-        for candidate in candidates.unwrap_or_else(|| extract_class_candidates(value)) {
+        let candidates = candidates.unwrap_or_else(|| extract_class_candidates(value));
+        // Only an unchanged value has token ranges; others report the expression.
+        let mut matches = if original == value {
+            candidate_matches(original, &candidates)
+        } else {
+            vec![Vec::new(); candidates.len()]
+        };
+        for (candidate, matches) in candidates.into_iter().zip(matches.iter_mut()) {
             let url = source_url_literal(&candidate);
             let included = included && !url;
-            let matches = original
-                .match_indices(&candidate)
-                .map(|(offset, _)| range.start + offset..range.start + offset + candidate.len())
-                .collect::<Vec<_>>();
-            let precise = original == value && !matches.is_empty();
+            let precise = !matches.is_empty();
             for matched in if precise {
-                matches
+                std::mem::take(matches)
+                    .into_iter()
+                    .map(|matched| range.start + matched.start..range.start + matched.end)
+                    .collect()
             } else {
                 vec![range.clone()]
             } {
@@ -429,6 +465,24 @@ fn mask_display(node: &markdown::mdast::Node, source: &mut [u8]) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn candidate_matches_equal_a_search_per_candidate() {
+        let text = "aaaa aa:hover a:a:a aa a:hover 中a:hover文 aaaaa";
+        let candidates = [
+            "a", "aa", "aaa", "a:a", "a:hover", "aa:hover", "missing", "aa",
+        ]
+        .map(String::from);
+        let matches = candidate_matches(text, &candidates);
+        for (candidate, matches) in candidates.iter().zip(matches) {
+            let expected = text
+                .match_indices(candidate.as_str())
+                .map(|(start, _)| start..start + candidate.len())
+                .collect::<Vec<_>>();
+            assert_eq!(matches, expected, "{candidate}");
+        }
+    }
+
     fn extract(source: &str, content: &str) -> SourceExtractionIr {
         extract_source_result(&SourceExtractionInputIr {
             source: source.into(),

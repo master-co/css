@@ -7,6 +7,8 @@ import type { Program, Variable } from './program-model'
 import { isAsciiCase, isAsciiDigit, isAsciiWhitespace, trimEnd } from './text'
 
 const MATH_FUNCTIONS = ['calc', 'min', 'max', 'clamp']
+/** `MAX_CLASS_NESTING` in crates/mastercss-lexer, which bounds math recursion in Rust. */
+const MAX_MATH_DEPTH = 64
 const isNumeric = (token: Token | undefined) => token !== undefined && (token.kind === NUMBER || token.kind === DIMENSION || token.kind === PERCENTAGE)
 
 /** Normalizes the math functions of a value, leaving strings, comments and URLs opaque. */
@@ -28,7 +30,7 @@ export function normalizeCssMathFunctions(source: string): string {
     const start = token.end
     const end = tokens[close].start
     let inner = normalizeCssMathFunctions(source.slice(start, end))
-    if (MATH_FUNCTIONS.some((name) => isAsciiCase(token.value, name))) inner = normalizeMathExpression(inner)
+    if (MATH_FUNCTIONS.some((name) => isAsciiCase(token.value, name))) inner = normalizeMathExpression(inner, 0)
     output += source.slice(copied, start) + inner
     copied = end
   }
@@ -39,8 +41,11 @@ export function normalizeCssMathFunctions(source: string): string {
  * Spaces binary operators and commas. Token boundaries protect exponent signs and
  * escaped or quoted identifiers; signed adjacent numbers and numeric subtraction
  * inside compact dimensions are Master's two extensions to CSS tokenization.
+ * Each nested parenthesis and compact subtraction recurses once; deeper expressions
+ * stay as written, as `MAX_CLASS_NESTING` bounds `normalize_math_expression` in Rust.
  */
-function normalizeMathExpression(source: string): string {
+function normalizeMathExpression(source: string, depth: number): string {
+  if (depth > MAX_MATH_DEPTH) return source
   const tokens = tokenize(source)
   const edits: [start: number, end: number, replacement: string][] = []
   let operand = false
@@ -53,7 +58,7 @@ function normalizeMathExpression(source: string): string {
       if (token.kind === DELIM && token.value === '(') {
         const start = token.end
         const end = tokens[token.close].start
-        edits.push([start, end, normalizeMathExpression(source.slice(start, end))])
+        edits.push([start, end, normalizeMathExpression(source.slice(start, end), depth + 1)])
       }
       operand = true
       index = token.close + 1
@@ -69,7 +74,7 @@ function normalizeMathExpression(source: string): string {
             || isAsciiDigit(next)
             || (next === 0x2e && isAsciiDigit(raw.charCodeAt(minus + 2)))) {
             // Re-tokenized, so a later exponent sign never becomes another operator.
-            edits.push([token.start + minus, token.end, ` - ${normalizeMathExpression(raw.slice(minus + 1))}`])
+            edits.push([token.start + minus, token.end, ` - ${normalizeMathExpression(raw.slice(minus + 1), depth + 1)}`])
             break
           }
         }

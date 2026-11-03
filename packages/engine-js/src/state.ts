@@ -15,6 +15,9 @@ export interface StateBranch {
   important: boolean
 }
 
+/** The most branches one class may expand to, as `MAX_STATE_BRANCHES` in the engine's state.rs. */
+export const MAX_STATE_BRANCHES = 4096
+
 /** The branches a state token selects; none when any part of it is invalid or unknown. */
 export function resolveStateBranches(stateToken: string, inheritedImportant: boolean, program: Program): StateBranch[] {
   let important = inheritedImportant
@@ -42,6 +45,8 @@ export function resolveStateBranches(stateToken: string, inheritedImportant: boo
     }
     if (paths) {
       const branchPaths = paths
+      // Each path multiplies the branches before it; repeated conditions grow exponentially.
+      if (branches.length * branchPaths.length > MAX_STATE_BRANCHES) return []
       branches = branches.flatMap((branch) => branchPaths.map((path, index) => ({
         ...branch,
         key: `${branch.key}@${condition}#${index}`,

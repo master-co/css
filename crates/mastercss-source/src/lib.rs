@@ -547,6 +547,7 @@ fn split_by_quotation(source: &str) -> Vec<String> {
 
 fn peel_complete_strings(source: &str) -> Vec<String> {
     let mut result = Vec::new();
+    let mut seen = HashSet::new();
     let mut pending = vec![source.to_owned()];
     while let Some(current) = pending.pop() {
         for range in complete_string_ranges(&current) {
@@ -556,7 +557,7 @@ fn peel_complete_strings(source: &str) -> Vec<String> {
                 continue;
             }
             let inner = quoted[quote_len..quoted.len() - quote_len].to_owned();
-            if !result.contains(&inner) {
+            if seen.insert(inner.clone()) {
                 pending.push(inner.clone());
                 result.push(inner);
             }
@@ -586,21 +587,48 @@ fn protect_complete_strings(source: &str) -> ProtectedStrings {
     ProtectedStrings { text, strings }
 }
 
+/// Replaces each placeholder in one pass; replacing them one string at a time
+/// rescanned the whole block per string.
 fn restore_complete_strings(source: &str, strings: &[String]) -> String {
-    let mut output = source.to_owned();
-    for (index, value) in strings.iter().enumerate() {
-        output = output.replace(&format!("COMPLETE-STRING--{index}--"), value);
+    const MARKER: &str = "COMPLETE-STRING--";
+    let mut output = String::with_capacity(source.len());
+    let mut rest = source;
+    while let Some(at) = rest.find(MARKER) {
+        let after = &rest[at + MARKER.len()..];
+        let digits = after.bytes().take_while(u8::is_ascii_digit).count();
+        let value = (digits > 0
+            && (digits == 1 || !after.starts_with('0'))
+            && after[digits..].starts_with("--"))
+        .then(|| after[..digits].parse::<usize>().ok())
+        .flatten()
+        .and_then(|index| strings.get(index));
+        if let Some(value) = value {
+            output.push_str(&rest[..at]);
+            output.push_str(value);
+            rest = &after[digits + 2..];
+        } else {
+            output.push_str(&rest[..at + MARKER.len()]);
+            rest = after;
+        }
     }
+    output.push_str(rest);
     output
 }
 
 fn complete_string_ranges(source: &str) -> Vec<(usize, usize)> {
     let characters = source.char_indices().collect::<Vec<_>>();
     let mut ranges = Vec::new();
+    // Once a quote finds no closing quote, no later quote of its kind can: both
+    // scans reach the same unescaped state right after that later quote.
+    let mut unclosed = [false; 3];
     let mut position = 0;
     while position < characters.len() {
         let (start, quote) = characters[position];
-        if !matches!(quote, '\'' | '"' | '`') {
+        let Some(kind) = ['\'', '"', '`'].iter().position(|&kind| kind == quote) else {
+            position += 1;
+            continue;
+        };
+        if unclosed[kind] {
             position += 1;
             continue;
         }
@@ -623,6 +651,7 @@ fn complete_string_ranges(source: &str) -> Vec<(usize, usize)> {
             ranges.push((start, end));
             position = next_position;
         } else {
+            unclosed[kind] = true;
             position += 1;
         }
     }
@@ -630,22 +659,21 @@ fn complete_string_ranges(source: &str) -> Vec<(usize, usize)> {
 }
 
 fn trim_candidate(source: &str) -> String {
-    let mut candidate = source.to_owned();
+    // Every step only shortens the slice, so an unchanged length means no change.
+    let mut candidate = source;
     loop {
-        let before = candidate.clone();
+        let before = candidate.len();
         if let Some(equal) = candidate.find('=') {
             let prefix = &candidate[..equal];
             if !prefix.contains([':', '@', '~', '(']) && !prefix.ends_with('@') {
-                candidate = candidate[equal + 1..].to_owned();
+                candidate = &candidate[equal + 1..];
             }
         }
-        candidate = candidate
-            .trim_end_matches(|character| {
-                matches!(character, '(' | '[' | '{' | '\\' | ':' | '#' | '=' | '.')
-            })
-            .to_owned();
-        if candidate == before || candidate.is_empty() {
-            return candidate;
+        candidate = candidate.trim_end_matches(|character| {
+            matches!(character, '(' | '[' | '{' | '\\' | ':' | '#' | '=' | '.')
+        });
+        if candidate.len() == before || candidate.is_empty() {
+            return candidate.to_owned();
         }
     }
 }

@@ -84,3 +84,27 @@ fn host_support_does_not_remove_native_declaration_semantics() {
     );
     assert!(!result.semantic_tokens.is_empty());
 }
+
+#[test]
+fn deeply_nested_template_expressions_do_not_overflow_the_stack() {
+    let mut session = session();
+    let depth = 100_000;
+    let source = format!(
+        "<div className={{`block ${}{}`}}></div><div className={{`${{`flex`}}`}}></div>",
+        "${`".repeat(depth),
+        "`}".repeat(depth)
+    );
+    let tokens = |source: &str, session: &mut LanguageSession| {
+        let analysis = session.analyze_document(&request(source)).unwrap();
+        analysis
+            .class_positions
+            .into_iter()
+            .map(|position| position.token)
+            .collect::<Vec<_>>()
+    };
+    // Classes after the nesting limit are still found, and shallow nesting keeps working.
+    assert!(tokens(&source, &mut session).contains(&"flex".to_owned()));
+    assert!(
+        tokens("<div className={`${`flex`}`}></div>", &mut session).contains(&"flex".to_owned())
+    );
+}

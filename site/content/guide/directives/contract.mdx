@@ -186,7 +186,7 @@ Define named media queries using the [CSS Media Queries specification](https://d
 
 Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, utility and mixin definitions, and markup queries.
 
-Definitions support query lists, forward references, `true`, `false`, nested boolean expressions, negation, and media types. Expansion is logical: a list retains its disjunction, and negation applies to the complete referenced expression. The compiler emits ordinary media queries, using nested blocks where a single query cannot express mixed media types. No browser custom-media API or JavaScript runtime registration is required.
+Definitions support query lists, forward references, `true`, `false`, nested boolean expressions, negation, and media types. Expansion is logical: a list retains its disjunction, and negation applies to the complete referenced expression. Each query in a list becomes a separate branch, and the branches of every condition on a class multiply; a class that expands to more than 4,096 branches, such as one repeating `@reading` a dozen times, generates no rule. The compiler emits ordinary media queries, using nested blocks where a single query cannot express mixed media types. No browser custom-media API or JavaScript runtime registration is required.
 
 Undefined, cyclic, and invalid references are compilation errors. A later same-name definition wins. Media and mixin names are independent: `@name` selects media, while `@apply(--name)` invokes a mixin. `--starting-style` is reserved because `@starting-style` is built in. The preset has no `--breakpoint-*` tokens. A project custom property with that prefix remains ordinary CSS and never implicitly declares a media condition. Use native lengths or independently named layout tokens for width caps. Imports that retain external URLs cannot contain unresolved custom-media queries; resolve those stylesheet imports before lowering or use ordinary native queries on the import.
 
@@ -443,7 +443,7 @@ Exclude matching files from the source set:
 @source not "../content/drafts/**";
 ```
 
-Brace groups such as `{a,b}` expand to separate patterns; one pattern may expand to at most 1,024.
+Brace groups such as `{a,b}` expand to separate patterns; one pattern may contain at most 64 brace groups and expand to at most 1,024 patterns.
 
 Includes are combined as a union, then all excludes are subtracted. Every relative pattern resolves from the stylesheet that declares it, including bare `src/**`, `./src/**`, imported files, and `@source not`. A reference does not contribute scanning sources.
 

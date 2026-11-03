@@ -267,6 +267,13 @@ pub(crate) fn collect_script_string_contexts(
             patterns.push(format!("{declaration}:"));
         }
     }
+    // `index` only moves forward, so the last comment delimiters and line break
+    // before it are tracked incrementally instead of searching the whole prefix
+    // again for every quote.
+    let mut comment_open = None;
+    let mut comment_close = None;
+    let mut line_start = 0;
+    let (mut open_scan, mut close_scan, mut line_scan) = (0, 0, 0);
     let mut index = 0;
     while index < bytes.len() {
         let quote = bytes[index];
@@ -274,18 +281,31 @@ pub(crate) fn collect_script_string_contexts(
             index += 1;
             continue;
         }
-        let inside_html_comment = source[..index].rfind("<!--").is_some_and(|comment_start| {
-            source[..index]
-                .rfind("-->")
-                .is_none_or(|comment_end| comment_end < comment_start)
+        while open_scan + 4 <= index {
+            if bytes[open_scan..].starts_with(b"<!--") {
+                comment_open = Some(open_scan);
+            }
+            open_scan += 1;
+        }
+        while close_scan + 3 <= index {
+            if bytes[close_scan..].starts_with(b"-->") {
+                comment_close = Some(close_scan);
+            }
+            close_scan += 1;
+        }
+        while line_scan < index {
+            if matches!(bytes[line_scan], b'\n' | b'\r') {
+                line_start = line_scan + 1;
+            }
+            line_scan += 1;
+        }
+        let inside_html_comment = comment_open.is_some_and(|comment_start| {
+            comment_close.is_none_or(|comment_end| comment_end < comment_start)
         });
         if inside_html_comment {
             index += 1;
             continue;
         }
-        let line_start = source[..index]
-            .rfind(['\n', '\r'])
-            .map_or(0, |line| line + 1);
         if source[line_start..index].trim_start().starts_with("//") {
             index += 1;
             continue;
@@ -442,6 +462,11 @@ fn has_open_call(source: &str) -> bool {
     depth > 0 && !line_comment && !block_comment
 }
 
+/// The deepest `${…}` template nesting whose strings are class contexts. Each level
+/// recurses and rescans its expression, so an untrusted document cannot nest
+/// thousands of levels into a stack overflow.
+const MAX_TEMPLATE_NESTING: usize = 64;
+
 pub(crate) fn collect_nested_string_contexts(
     source: &str,
     positions: &DocumentIndex,
@@ -449,6 +474,20 @@ pub(crate) fn collect_nested_string_contexts(
     end: usize,
     contexts: &mut Vec<ClassListContextIr>,
 ) {
+    collect_nested_string_contexts_at(source, positions, start, end, contexts, 0);
+}
+
+fn collect_nested_string_contexts_at(
+    source: &str,
+    positions: &DocumentIndex,
+    start: usize,
+    end: usize,
+    contexts: &mut Vec<ClassListContextIr>,
+    nesting: usize,
+) {
+    if nesting > MAX_TEMPLATE_NESTING {
+        return;
+    }
     let bytes = source.as_bytes();
     let mut index = start;
     while index < end {
@@ -494,12 +533,13 @@ pub(crate) fn collect_nested_string_contexts(
                     expression_end += 1;
                 }
                 let inner_end = expression_end.saturating_sub(1);
-                collect_nested_string_contexts(
+                collect_nested_string_contexts_at(
                     source,
                     positions,
                     expression_start,
                     inner_end,
                     contexts,
+                    nesting + 1,
                 );
                 cursor = expression_end;
                 segment_start = cursor;

@@ -149,6 +149,22 @@ impl EngineSession {
                 options.push(Some(branches));
             }
         }
+        // Every combination of condition branches becomes one group.
+        if options
+            .iter()
+            .flatten()
+            .try_fold(1_usize, |count, branches| {
+                count
+                    .checked_mul(branches.len())
+                    .filter(|&count| count <= super::state::MAX_STATE_BRANCHES)
+            })
+            .is_none()
+        {
+            return Err(format!(
+                "Condition expansion exceeds {} branches",
+                super::state::MAX_STATE_BRANCHES
+            ));
+        }
         let template = super::state::selector_token_to_template(&state, &self.compiled);
         let primary = &originals[0];
         let mut groups = Vec::new();

@@ -1,5 +1,5 @@
 /** @internal Node filesystem and package inputs for the Rust import graph. */
-import { existsSync, readFileSync, realpathSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -48,6 +48,23 @@ export function isExpandableImportSource(source: string, fromFile: string) {
   if (source.startsWith('/') || /^[a-z][a-z\d+.-]*:/i.test(source)) return false
   if (extname(decodeURIComponent(new URL(source, 'file:///').pathname)).toLowerCase() !== '.css') return false
   return source.startsWith('./') || source.startsWith('../') || existsSync(resolveRelativeCSSFile(source, fromFile))
+}
+
+/** The largest stylesheet the Node import graph reads, matching the Rust project loader. */
+const MAX_CSS_FILE_BYTES = 16 << 20
+
+/** Devices, FIFOs and huge files would read forever or exhaust memory. */
+export function readCSSFileSync(file: string) {
+  const stats = statSync(file)
+  if (!stats.isFile()) throw new Error(`CSS file is not a regular file: ${file}`)
+  if (stats.size > MAX_CSS_FILE_BYTES) throw new Error(`CSS file is larger than ${MAX_CSS_FILE_BYTES >> 20} MiB: ${file}`)
+  return readFileSync(file, 'utf8')
+}
+
+/** Rejects existing resources that are not regular files; missing files stay the caller's error. */
+export function assertRegularResourceFile(file: string) {
+  const stats = statSync(file, { throwIfNoEntry: false })
+  if (stats && !stats.isFile()) throw new Error(`Stylesheet resource is not a regular file: ${file}`)
 }
 
 export function resolveRelativeCSSFile(source: string, fromFile: string) {
@@ -253,7 +270,7 @@ function prepareCSSImportGraphFile(
   if (visited.has(absoluteFile)) return
   visited.add(absoluteFile)
 
-  const source = sourceOverride ?? readFileSync(absoluteFile, 'utf-8')
+  const source = sourceOverride ?? readCSSFileSync(absoluteFile)
   graph.files[absoluteFile] = source
   ;(graph.resourceOwners ??= {})[absoluteFile] = stylesheetResourceOwner(absoluteFile)
   const analysis = analyzeDependencies(source)
@@ -303,7 +320,7 @@ export async function prepareCSSImportGraphWithResolver(
     if (item.packageCSS && !graph.packageFiles?.includes(item.file)) (graph.packageFiles ??= []).push(item.file)
     if (visited.has(item.file)) continue
     visited.add(item.file)
-    const text = item.source ?? readFileSync(item.file, 'utf8')
+    const text = item.source ?? readCSSFileSync(item.file)
     graph.files[item.file] = text
     ;(graph.resourceOwners ??= {})[item.file] = stylesheetResourceOwner(graph.baseFiles?.[item.file] ?? item.file)
     const children: typeof pending = []

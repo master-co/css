@@ -4,6 +4,10 @@ use super::{
 use mastercss_lexer::concat_text;
 use mastercss_lexer::text::decimal;
 
+/// The most branches one class may expand to. Every custom media path multiplies
+/// the branches of the conditions before it, so repeated conditions grow exponentially.
+pub(crate) const MAX_STATE_BRANCHES: usize = 4096;
+
 pub(crate) fn resolve_state_branches(
     state_token: &str,
     inherited_important: bool,
@@ -58,6 +62,9 @@ pub(crate) fn resolve_state_branches(
         };
         if let Some(paths) = paths {
             let Ok(paths) = paths else { return Vec::new() };
+            if branches.len().saturating_mul(paths.len()) > MAX_STATE_BRANCHES {
+                return Vec::new();
+            }
             branches = branches
                 .into_iter()
                 .flat_map(|branch| {
