@@ -1,0 +1,96 @@
+name: Marketplace authorization check
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marketplace-auth-check-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify Marketplace credentials without publishing
+    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Validate the existing Azure identity configuration
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          set -euo pipefail
+          for name in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Repository variable $name is required."
+              exit 1
+            fi
+          done
+      - name: Install the release-matched VSCE in isolated tools
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/marketplace-auth-tools" --ignore-scripts --no-audit --no-fund @vscode/vsce@4.0.0
+      - name: Azure login for the existing main federated subject
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Verify Marketplace publisher authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          verification_output=$(mktemp)
+          trap 'unlink "$verification_output"' EXIT
+          if timeout 120s node "$RUNNER_TEMP/marketplace-auth-tools/node_modules/@vscode/vsce/vsce" verify-pat --azure-credential masterco </dev/null >"$verification_output" 2>&1; then
+            echo "Marketplace credentials verified for masterco on main. No publication was performed."
+          else
+            verification_status=$?
+            echo "::error::Marketplace authorization check failed (exit $verification_status); no publication was attempted."
+            exit "$verification_status"
+          fi
+
+  verify_open_vsx:
+    name: Verify Open VSX credentials without publishing
+    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Install the release-matched Open VSX CLI in isolated tools
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/open-vsx-auth-tools" --ignore-scripts --no-audit --no-fund ovsx@1.0.2
+      - name: Verify Open VSX namespace authorization
+        shell: bash
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::error::OVSX_PAT is required for the read-only authorization check."
+            exit 1
+          fi
+          umask 077
+          verification_output=$(mktemp)
+          trap 'unlink "$verification_output"' EXIT
+          if timeout 120s node "$RUNNER_TEMP/open-vsx-auth-tools/node_modules/ovsx/bin/ovsx" --registryUrl https://open-vsx.org verify-pat master </dev/null >"$verification_output" 2>&1; then
+            echo "Open VSX credentials verified for the master namespace on main. No publication was performed."
+          else
+            verification_status=$?
+            echo "::error::Open VSX authorization check failed (exit $verification_status); no publication was attempted."
+            exit "$verification_status"
+          fi
