@@ -71,3 +71,16 @@ test('static production builds publish only nonempty stylesheets that retained b
   expect([...visited].sort()).toEqual([...stylesheets].sort())
   expectOrdered(css, ['@layer base', '@import "https://remote.test/font.css";', '.remote', '.after', '.\\(display\\:block\\)'])
 })
+
+test('static production builds move a leading external import of the CSS entry into the single CSS asset', async () => {
+  const output = await buildCSS({
+    'index.html': page,
+    'src/main.ts': main,
+    'src/app.css': `@import url(https://remote.test/a.css);@import "@master/css";${source}.x{color:green}`
+  })
+  const stylesheets = [...output.keys()].filter(file => file.endsWith('.css'))
+  expect(stylesheets).toEqual([expect.stringMatching(/^assets\/index-[\w-]+\.css$/)])
+  const css = output.get(stylesheets[0])!
+  expect(css.match(/@import/g)).toHaveLength(1)
+  expectOrdered(css, ['@import', 'https://remote.test/a.css', '@layer theme', '.x', '.\\(display\\:block\\)'])
+})

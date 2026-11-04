@@ -104,14 +104,17 @@ Production builds flatten managed stylesheet imports into Vite's CSS asset, so a
 page loads one render-blocking stylesheet. Cascade order is unchanged: layer
 statements and ordinary rules before or after the managed entry keep their
 positions, `layer()`, `supports()` and media qualifiers become the equivalent
-`@layer`, `@supports` and `@media` blocks, and empty stylesheets disappear. A
-stylesheet that keeps an external import, a namespace, or an import under a
-qualifier stays a separate `master-css-*` CSS asset, as do the imports before it in
-the same file, because an `@import` cannot follow rules. Deploy the complete output
-directory, including those CSS files and the `master-css-resource-*` files.
-Additional files are placed beside Vite's CSS entry so ordinary relative resource
-URLs retain their base. Managed and Node-resolved package resources receive
-content-sensitive filenames and preserve query strings and fragments.
+`@layer`, `@supports` and `@media` blocks, and empty stylesheets disappear.
+External imports at the top of a stylesheet move up with it when only other
+external imports precede it, so an entry that starts with a font `@import url()`
+still yields one file. A stylesheet that keeps a namespace or an import under a
+qualifier, or whose external imports would follow inlined rules, stays a separate
+`master-css-*` CSS asset, as do the imports before it in the same file, because an
+`@import` cannot follow rules. Deploy the complete output directory, including
+those CSS files and the `master-css-resource-*` files. Additional files are placed
+beside Vite's CSS entry so ordinary relative resource URLs retain their base.
+Managed and Node-resolved package resources receive content-sensitive filenames
+and preserve query strings and fragments.
 
 Node-resolved package CSS imports retain native rules when project CSS is pruned.
 Production CSS import resolution uses Vite's resolver, including string and regular

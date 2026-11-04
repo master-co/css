@@ -203,7 +203,10 @@ nonempty asset `href` values so Rust can reconnect the graph after relocation.
 
 For CSS string delivery, rendering accepts `inlineImports: true`. Rust expands
 import-free local children when import order and namespace scope remain intact;
-a wrapper containing only one unqualified import can also promote its child.
+a wrapper containing only one unqualified import can also promote its child. A
+child whose remaining imports all precede its rules expands through an
+unqualified import that only external imports precede, keeping those imports
+ahead of every inlined rule.
 Select the returned asset whose ID is `bundle.graph.entry` for the CSS string.
 Publish the remaining referenced assets and supply URLs valid at the insertion
 site. Boundaries that protect external imports or separate namespaces remain

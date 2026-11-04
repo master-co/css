@@ -59,7 +59,7 @@ A compiled CSS entry can still import other CSS files or refer to images and fon
 | `compileManifestFileSync()` with `delivery` | The API returns stylesheet contents and resource destinations. The custom host writes or serves them. |
 | A manifest or CSS string | Neither publishes files. The caller still owns native CSS delivery and referenced resources. |
 
-Production flattening keeps the cascade: layer statements stay in place, `layer()`, `supports()` and media qualifiers become the equivalent `@layer`, `@supports` and `@media` blocks, and empty stylesheets disappear. A stylesheet that keeps an external import, a namespace, or an import under a qualifier remains a separate file, as do the imports before it in the same file, because an `@import` cannot follow rules.
+Production flattening keeps the cascade: layer statements stay in place, `layer()`, `supports()` and media qualifiers become the equivalent `@layer`, `@supports` and `@media` blocks, and empty stylesheets disappear. External imports at the top of a stylesheet move up with it when only other external imports precede it. A stylesheet that keeps a namespace or an import under a qualifier, or whose external imports would follow inlined rules, remains a separate file, as do the imports before it in the same file, because an `@import` cannot follow rules.
 
 Images and fonts retain the defining stylesheet as their source owner, including resources used through `@reference`. Publication rewrites their URLs while retaining query strings and fragments. Reference-only stylesheets are not published merely because their definitions were read.
 

@@ -6,8 +6,9 @@ use mastercss_lexer::{
 
 use crate::{CompilerError, CssStylesheetAsset, CssStylesheetGraph};
 
-/// Inline only import-free children whose stylesheet namespace is unchanged.
-/// Retained imports must remain before any newly inserted declaration rules.
+/// Inline namespace-free children that are import-free, or whose imports all
+/// lead and can stay valid in the importer. Retained imports must remain before
+/// any newly inserted declaration rules.
 pub(crate) fn inline_stylesheet_imports(
     graph: &CssStylesheetGraph,
     assets: Vec<CssStylesheetAsset>,
@@ -31,7 +32,7 @@ pub(crate) fn inline_stylesheet_imports_mapped(
         .map(|node| (node.id.as_str(), node))
         .collect();
     let mut done = vec![false; assets.len()];
-    let mut inlineable = vec![false; assets.len()];
+    let mut movable = vec![Movable::No; assets.len()];
     let mut relative_base = vec![false; assets.len()];
     loop {
         let mut progress = false;
@@ -84,53 +85,76 @@ pub(crate) fn inline_stylesheet_imports_mapped(
                     )?;
                     mappings.insert(node.id.clone(), output);
                     assets[index].css = css;
-                    inlineable[index] = inlineable[target];
+                    movable[index] = movable[target];
                     relative_base[index] = relative_base[target];
                     done[index] = true;
                     progress = true;
                     continue;
                 }
             }
-            let (namespace, preamble) = import_context(source);
+            let context = import_context(source);
             let mut retained_later_import = false;
             let mut replacements = Vec::new();
-            for (import, original) in imports.iter().zip(&node.imports).rev() {
-                let target = original.resolved.as_ref().map(|id| indexes[id]);
+            for (position, (import, original)) in
+                imports.iter().zip(&node.imports).enumerate().rev()
+            {
                 let start = utf16_to_byte_offset(source, import.start).expect("import boundary");
-                if !namespace
-                    && !retained_later_import
-                    && start < preamble
-                    && let Some(target) = target
-                    && inlineable[target]
-                    && (!relative_base[target]
-                        || same_resource_base(&assets[index].href, &assets[target].href))
-                {
-                    let (prefix, suffix, _) = crate::imports::imported_css_wrappers(
-                        &import.statement,
-                        &assets[target].css,
-                        &node.id,
-                    )?;
-                    let shift = prefix.encode_utf16().count() as u32;
-                    let child_mappings = mappings
-                        .get(&assets[target].id)
-                        .into_iter()
-                        .flatten()
-                        .cloned()
-                        .map(|mut mapping| {
-                            mapping.generated_start += shift;
-                            mapping.generated_end = mapping.generated_end.map(|end| end + shift);
-                            mapping
-                        })
-                        .collect();
-                    replacements.push(crate::output_edits::OutputEdit {
-                        start: import.start,
-                        end: import.end,
-                        text: format!("{prefix}{}{suffix}", assets[target].css),
-                        mappings: child_mappings,
+                let target = original
+                    .resolved
+                    .as_ref()
+                    .map(|id| indexes[id])
+                    .filter(|&target| {
+                        !context.namespace
+                            && !retained_later_import
+                            && start < context.preamble
+                            && (!relative_base[target]
+                                || same_resource_base(&assets[index].href, &assets[target].href))
                     });
-                } else {
+                let wrappers = match target.map(|target| (target, movable[target])) {
+                    Some((target, Movable::Rules)) => {
+                        let (prefix, suffix, _) = crate::imports::imported_css_wrappers(
+                            &import.statement,
+                            &assets[target].css,
+                            &node.id,
+                        )?;
+                        Some((target, prefix, suffix))
+                    }
+                    // Only retained external imports may precede the moved
+                    // ones, which then bar earlier imports from inlining rules.
+                    Some((target, Movable::LeadingImports { opens_with_import }))
+                        if (opens_with_import || position == 0)
+                            && node.imports[..position]
+                                .iter()
+                                .all(|earlier| earlier.resolved.is_none())
+                            && unqualified(&import.statement, &node.id)? =>
+                    {
+                        retained_later_import = true;
+                        Some((target, String::new(), String::new()))
+                    }
+                    _ => None,
+                };
+                let Some((target, prefix, suffix)) = wrappers else {
                     retained_later_import = true;
-                }
+                    continue;
+                };
+                let shift = prefix.encode_utf16().count() as u32;
+                let child_mappings = mappings
+                    .get(&assets[target].id)
+                    .into_iter()
+                    .flatten()
+                    .cloned()
+                    .map(|mut mapping| {
+                        mapping.generated_start += shift;
+                        mapping.generated_end = mapping.generated_end.map(|end| end + shift);
+                        mapping
+                    })
+                    .collect();
+                replacements.push(crate::output_edits::OutputEdit {
+                    start: import.start,
+                    end: import.end,
+                    text: format!("{prefix}{}{suffix}", assets[target].css),
+                    mappings: child_mappings,
+                });
             }
             replacements.reverse();
             let (css, output) = crate::output_edits::apply_output_edits(
@@ -150,7 +174,13 @@ pub(crate) fn inline_stylesheet_imports_mapped(
                 || crate::analyze_css_resources(&css)
                     .iter()
                     .any(|resource| !crate::stylesheet_resources::independent_url(&resource.url));
-            inlineable[index] = !namespace && remaining_imports.is_empty();
+            movable[index] = if context.namespace {
+                Movable::No
+            } else if remaining_imports.is_empty() {
+                Movable::Rules
+            } else {
+                leading_imports(&css, &remaining_imports)
+            };
             assets[index].css = css;
             done[index] = true;
             progress = true;
@@ -162,10 +192,35 @@ pub(crate) fn inline_stylesheet_imports_mapped(
     }
 }
 
-fn import_context(source: &str) -> (bool, usize) {
+/// What an importer may take in place of its import of a processed stylesheet.
+#[derive(Clone, Copy)]
+enum Movable {
+    /// Namespaces and imports that follow rules keep the file boundary.
+    No,
+    /// Import-free rules move under any import qualifier.
+    Rules,
+    /// Imports that all precede the rules move only through an unqualified
+    /// import. A statement before the first one would separate it from any
+    /// import preceding it in the importer.
+    LeadingImports { opens_with_import: bool },
+}
+
+struct ImportContext {
+    namespace: bool,
+    /// Byte offset of the first top-level statement that ends valid imports.
+    preamble: usize,
+    opens_with_import: bool,
+}
+
+fn import_context(source: &str) -> ImportContext {
     let tokens = tokenize_css_syntax(source);
-    let mut namespace = false;
-    let mut preamble = source.len();
+    let mut context = ImportContext {
+        namespace: false,
+        preamble: source.len(),
+        opens_with_import: false,
+    };
+    let mut opening = true;
+    let mut imported = false;
     for statement in collect_css_syntax_statements(&tokens) {
         if statement.parent.is_some() {
             continue;
@@ -173,21 +228,48 @@ fn import_context(source: &str) -> (bool, usize) {
         let Some(first) = tokens.get(statement.tokens.start) else {
             continue;
         };
-        if let CssSyntaxKind::AtKeyword(name) = &first.kind {
-            if name.eq_ignore_ascii_case("namespace") {
-                namespace = true;
-            }
-            if !statement.has_block
-                && ["charset", "layer", "import"]
-                    .iter()
-                    .any(|allowed| name.eq_ignore_ascii_case(allowed))
-            {
-                continue;
-            }
+        let is = |keyword: &str| {
+            matches!(&first.kind, CssSyntaxKind::AtKeyword(name)
+                if name.eq_ignore_ascii_case(keyword))
+        };
+        context.namespace |= is("namespace");
+        let import = !statement.has_block && is("import");
+        if std::mem::take(&mut opening) {
+            context.opens_with_import = import;
         }
-        preamble = preamble.min(first.bytes.start);
+        // @layer statements may precede imports but not separate them.
+        if import || (!statement.has_block && (is("charset") || (!imported && is("layer")))) {
+            imported |= import;
+            continue;
+        }
+        context.preamble = context.preamble.min(first.bytes.start);
     }
-    (namespace, preamble)
+    context
+}
+
+fn leading_imports(
+    source: &str,
+    imports: &[crate::stylesheet_graph::CssStylesheetImport],
+) -> Movable {
+    let context = import_context(source);
+    if imports.iter().all(|import| {
+        utf16_to_byte_offset(source, import.start).expect("import boundary") < context.preamble
+    }) {
+        Movable::LeadingImports {
+            opens_with_import: context.opens_with_import,
+        }
+    } else {
+        Movable::No
+    }
+}
+
+fn unqualified(statement: &str, id: &str) -> Result<bool, CompilerError> {
+    let import = crate::stylesheet_graph::parse_import(statement, id)?;
+    Ok(
+        import.layer.is_none()
+            && import.supports.is_none()
+            && import.media.media_queries.is_empty(),
+    )
 }
 
 fn top_level_statements(source: &str) -> usize {

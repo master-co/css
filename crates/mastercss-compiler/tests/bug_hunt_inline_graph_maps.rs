@@ -85,3 +85,33 @@ fn inlining_does_not_move_relative_resource_or_import_bases() {
         );
     }
 }
+#[test]
+fn inlining_moves_leading_external_imports_with_their_original_anchors() {
+    let child = "@import 'https://remote.test/font.css';\n.card{padding:3rem}";
+    let entry = "@import './child.css';.after{margin:1px}";
+    let result = compile(entry, child, "/child.css");
+    assert_eq!(result["stylesheets"].as_array().unwrap().len(), 1);
+    let sheet = &result["stylesheets"][0];
+    let css = sheet["css"].as_str().unwrap();
+    assert!(css.starts_with("@import"), "{css}");
+    assert!(css.find("remote.test").unwrap() < css.find(".card").unwrap());
+    for (needle, file, source) in [
+        (".card", "/child.css", child),
+        (".after", "/entry.css", entry),
+    ] {
+        let generated = css[..css.find(needle).unwrap()].encode_utf16().count();
+        let mapping = sheet["outputMappings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|mapping| mapping["generatedStart"] == generated)
+            .unwrap();
+        assert_eq!(mapping["source"]["file"], file);
+        assert_eq!(
+            mapping["source"]["range"]["start"],
+            source[..source.find(needle).unwrap()]
+                .encode_utf16()
+                .count()
+        );
+    }
+}
