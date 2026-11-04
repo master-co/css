@@ -1,0 +1,36 @@
+# Reference prose: illustrations/theme-modifier-axes
+
+## title \{#copy-title\}
+
+
+static 控制保留，inline 控制生成值
+
+## alt \{#copy-alt\}
+
+
+二乘二矩阵比较常规、inline、static 和 static inline 主题块。static 保留两个声明令牌；inline 将生成的 background 值从 var(--color-brand) 改为字面颜色。
+
+## caption \{#copy-caption\}
+
+
+每种情况均声明 brand 与 spare，但仅使用 bg-brand。只有 inline 时，两个令牌均不需要声明。加入 static 保留两者，但不改变代入后的类值。
+
+## description-0 \{#copy-description-0\}
+
+
+四种情况均声明 --color-brand: #4f46e5 和 --color-spare: #0d9488。bg-brand 是唯一引用方，没有原生令牌引用。
+
+## description-1 \{#copy-description-1\}
+
+
+常规 @theme 输出已使用的 brand 令牌和 background-color: var(--color-brand)，省略未使用的 spare 令牌。
+
+## description-2 \{#copy-description-2\}
+
+
+@theme inline 将 #4f46e5 代入生成声明。工具类不再读取任何一个令牌，因此该情况不输出两条令牌声明。
+
+## description-3 \{#copy-description-3\}
+
+
+@theme static 保留两个令牌。@theme static inline 也保留两者，但生成的 background-color 仍为 #4f46e5。保留与代入相互独立。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/container-cap
+
+## title \{#copy-title\}
+
+
+같은 최댓값에서도 너비는 달라질 수 있습니다
+
+## alt \{#copy-alt\}
+
+
+너비가 auto인 두 블록은 16rem의 최댓값인 max-w-3xs를 공유합니다. 부모가 20rem이면 블록 너비는 16rem이고, 부모가 13rem이면 13rem에 맞춰집니다.
+
+## caption \{#copy-caption\}
+
+
+너비가 auto인 일반 블록은 최댓값 안에서 가용 공간에 맞춰집니다. 두 부모 너비는 같은 척도로 그렸으며 루트 글꼴 크기는 16px입니다.
+
+## description-0 \{#copy-description-0\}
+
+
+max-w-3xs는 프리셋 --container-3xs 값인 16rem을 참조합니다. 두 예제 모두 일반 블록 레이아웃에서 auto 너비와 border-box 크기 계산을 사용하며 최소 너비 제약은 없습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+첫 번째 부모는 20rem의 공간을 제공합니다. 자식은 최댓값인 16rem에서 멈추고 뒤에 사용하지 않는 공간이 남습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+두 번째 부모는 13rem의 공간을 제공합니다. 자식은 16rem 너비가 되는 대신 더 작은 공간에 맞춰집니다.
+
+## description-3 \{#copy-description-3\}
+
+
+점선 윤곽은 가용 너비를 표시하며 생성된 테두리나 쿼리 컨테이너가 아닙니다. 두 부모는 루트 글꼴 크기 16px에서 같은 척도로 그렸으며 높이는 같은 콘텐츠에 따라 정해집니다.

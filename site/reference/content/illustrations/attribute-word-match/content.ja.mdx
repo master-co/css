@@ -1,0 +1,31 @@
+# Reference prose: illustrations/attribute-word-match
+
+## title \{#copy-title\}
+
+
+属性の完全一致と単語の一致は異なる
+
+## alt \{#copy-alt\}
+
+
+比較表で title の値 css、master css、css-in-js に対し、完全一致と空白区切りの単語一致を検査する。
+
+## caption \{#copy-caption\}
+
+
+各行では同じ DOM 属性値を 2 つの接尾辞で検査します。ハイフンは空白区切りの単語境界にはなりません。
+
+## description-0 \{#copy-description-0\}
+
+
+[title=css] は値が正確に css の場合だけ一致します。[title~=css] は空白区切りの単語が css と等しい場合に一致します。
+
+## description-1 \{#copy-description-1\}
+
+
+css には両方が一致します。master css には単語セレクターだけが一致し、css-in-js にはどちらも一致しません。
+
+## description-2 \{#copy-description-2\}
+
+
+セレクターは属性を検査するもので、クラス文字列を分割したり属性値を編集したりはしません。

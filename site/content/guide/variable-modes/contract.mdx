@@ -47,7 +47,7 @@ Master CSS does not choose a light, dark or viewport-specific value while genera
 
 <ReferenceIllustration id="token-dependency-chain" />
 
-### Missing names and invalid values
+### Missing names and invalid values \{#missing-names-and-invalid-values\}
 
 An unknown token key cannot produce a matching token-family class. This differs from a valid class whose emitted `var()` later resolves to an invalid value in the browser. Inheritance, cycles, fallbacks and property-value validity follow [native custom-property rules](https://www.w3.org/TR/css-variables-1/); retaining a declaration does not prove that its eventual computed value is valid.
 
@@ -100,7 +100,7 @@ These functions remain CSS expressions. Master CSS does not calculate a separate
 
 Inline substitution removes one level of indirection. References inside the substituted value still resolve in the browser; `inline` does not recursively replace them with constants. It applies to Master-generated declarations, including `@apply` expansion. Handwritten native CSS keeps its original `var()` references.
 
-### Where the remaining variable resolves
+### Where the remaining variable resolves \{#where-the-remaining-variable-resolves\}
 
 Both configurations below define `--color-brand: var(--app-brand)` and use `bg-brand`. Only the `inline` modifier changes. In each case the document root is blue and a nested section overrides `--app-brand` to plum.
 
@@ -127,7 +127,7 @@ A mode is an authored CSS scope or condition, not a second token namespace. Chan
 | Preset `@dark` or `@light` suffix | Whether a rule can apply | System `prefers-color-scheme` media query |
 | Selector mixin via `@apply(--name)` | Where the generated rule matches | Exactly the selector written in the mixin |
 
-### Manual scopes and rule wrappers
+### Manual scopes and rule wrappers \{#manual-scopes-and-rule-wrappers\}
 
 A token class such as `bg-surface` follows the variable it inherits. To apply a different declaration only in an ocean scope, explicitly author that scope in a mixin. `&` stands for the generated selector; the descendant branch below is written deliberately, not inserted by Master CSS.
 
@@ -135,13 +135,13 @@ A token class such as `bg-surface` follows the variable it inherits. To apply a 
 
 The token override changes the background value. The mixin changes where padding applies. Neither mechanism defines the other. For wrapper arguments and placement, see [Utilities and mixins](/reference/directives/definitions#reusing-a-matched-value).
 
-### System preference and manual color schemes
+### System preference and manual color schemes \{#system-preference-and-manual-color-schemes\}
 
 The full preset supplies native `color-scheme` rules: the root allows `light dark`, while `data-theme="light"` or `data-theme="dark"` fixes the scheme on a region. A token can use `light-dark(white, #111827)` to follow that scheme. The browser selects the value; no second class is needed. See [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark) for native behavior.
 
 The preset's `@dark` and `@light` suffixes remain system media queries even inside a manually themed region. Changing `data-theme` does not activate them. [Color](/guide/colors#native-color-scheme-and-manual-themes) demonstrates manual activation and nested regions.
 
-### Local overlap and Shadow DOM
+### Local overlap and Shadow DOM \{#local-overlap-and-shadow-dom\}
 
 Overlapping scopes follow the ordinary cascade, including layer order and specificity. A local value is not automatically stronger merely because its selector describes a theme. See [Cascade layers](/reference/rules/layers).
 

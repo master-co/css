@@ -1,0 +1,120 @@
+---
+{
+  "title": "兼容性",
+  "description": "为新 CSS 功能保留可用的回退方案、验证浏览器行为，并安排第三方样式在层叠中的位置。",
+  "category": "入门",
+  "figures": {
+    "CompatibilityIllustration": {
+      "title": "增强功能改变尺寸，不影响笔记访问",
+      "alt": "功能查询分为两个文本区域，内容都是相同的六行笔记。回退字段较短，可滚动阅读；支持的字段则增高以显示全部六行。",
+      "caption": "笔记、宽度和限制相同。没有增强功能时字段可滚动；有增强功能时先增高，到达最大高度后再滚动。",
+      "description": [
+        {
+          "title": "共享基础",
+          "text": "两个文本区域具有相同六行内容、宽度、内边距和高度限制。控件始终可编辑、可垂直调整大小，并且可以滚动。"
+        },
+        {
+          "title": "查询不匹配",
+          "text": "字段使用普通初始大小。部分行位于可见区域之外，但仍可通过滚动访问。"
+        },
+        {
+          "title": "查询匹配",
+          "text": "field-sizing: content 声明让字段随笔记增高。最大高度会阻止继续增高；更长的笔记则改为滚动。"
+        }
+      ]
+    },
+    "GuideStudy:fallback-addition": {
+      "title": "增强功能从可用的回退方案开始",
+      "alt": "两条分支从同一基础出发。不支持的浏览器保持原状；支持的浏览器添加条件增强功能。",
+      "caption": "@supports 控制增强功能。回退方案仍是条件之外的普通声明。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DemoFeatureSupport from '@master/internal-site/demo/DemoFeatureSupport.svelte'
+import CompatibilityIllustration from './components/CompatibilityIllustration.astro'
+
+Master CSS 生成 CSS；浏览器决定能够应用哪些属性、值和选择器。先建立可用的基础，再在有助改善体验时加入较新的功能，并检查现有样式如何参与层叠。
+
+这些示例假设已完成[安装](/guide/installation)，且应用已加载 `@import '@master/css';`。
+
+## 确认浏览器基础要求 \{#overview\}
+
+默认预设使用层叠层、OKLCH 颜色和 `light-dark()` 生成自适应值。为增强功能提供回退方案不会免除这些基础要求。请按需要支持的浏览器确认[浏览器基础要求和厂商前缀](/reference/rules/declarations#vendor-prefixes)。
+
+类名被识别并不保证浏览器兼容。Master 只会为部分属性输出兼容前缀，不会为每项新功能提供 polyfill。同样，工具返回 `unknown` 表示该检查尚未验证此 CSS，并非证明它无效或可以安全发布。
+
+## 添加功能，保留回退方案 \{#new-css-features\}
+
+### 原生声明 \{#native-declarations\}
+
+即使无法自动调整大小，笔记字段也应保持可编辑。先设置普通 textarea 尺寸并允许垂直调整，再加入 [`field-sizing: content`](https://drafts.csswg.org/css-forms/#field-sizing) 作为增强。此原生属性可根据内容调整控件大小；最小和最大高度将其限制在实用范围内。
+
+<DemoFeatureSupport client:idle={{ timeout: 500 }} condition="field-sizing: content" />
+
+<DemoConfiguredExample name="compatibility-field" title="具有回退方案的笔记字段" source="" caption="增加或删除行数。支持的浏览器会让字段增高，最高到 12rem；否则保持初始大小。两种情况下都能滚动和调整大小。" html={`<div class="w-full (max-width:28rem) mx-auto">
+  <label for="project-note" class="block mb-xs text-sm fg-text-strong">Project notes</label>
+  <textarea id="project-note" name="note" rows="3" class="block w-full p-sm r-md b(1) b-solid b-line-divider bg-surface-inset text-sm fg-text-strong (resize:vertical) (min-height:6rem) (max-height:12rem) outline(2):focus-visible outline-solid:focus-visible outline-offset(3) (field-sizing:content)@supports(field-sizing:content)">Plan the next release.
+Review the draft.
+Check the examples.
+Test with a keyboard.
+Verify the small screen.
+Publish when ready.</textarea>
+</div>`} />
+
+`(field-sizing:content)` 提供原生声明。其 `@supports(field-sizing:content)` 后缀会将声明放入 [CSS 功能查询](https://www.w3.org/TR/css-conditional-3/#at-supports)。查询不匹配时，基础样式和普通 textarea 行为仍会保留。
+
+<CompatibilityIllustration />
+
+预览会检查当前浏览器的语法支持，也请在目标浏览器测试实际编辑行为。要在支持的浏览器检查回退方案，可暂时移除条件类名：字段应停止自动增高，但仍能通过滚动访问所有文本。这是在隔离增强功能，并非模拟旧浏览器。
+
+使用**生成的 CSS** 检查输出条件。[条件](/reference/rules/conditions#supportsfeature)记录了类名语法；原生 CSS 可表达更复杂的功能查询。
+
+<GuideStudy id="fallback-addition" />
+
+### 新的选择器 \{#new-selectors\}
+
+基于选择器的增强也适用相同方法。这里 [`:has(:checked)`](https://www.w3.org/TR/selectors-4/#relational) 会在复选框选中时让标签显示蓝色边框。即使不支持此选择器，原生复选框仍会记录选择：
+
+<DemoConfiguredExample name="compatibility-selector" title="选中状态与可选的强调效果" source="" caption="选中复选框。支持的浏览器还会改变标签边框；勾选标记是选择状态的主要提示。" html={`<label class="flex items-center gap-sm w-fit mx-auto p-sm r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong b-blue-60:has(:checked)">
+  <input type="checkbox" name="updates" class="m(0) shrink(0) (accent-color:currentColor)">
+  <span>Send me release notes</span>
+</label>`} />
+
+让基础样式独立于新选择器。不要让必要控件或内容依赖增强功能。选择器拼写和组合方式请参阅[选择器](/reference/rules/selectors)。
+
+## 将第三方 CSS 纳入层叠 \{#third-party-styles\}
+
+如果普通工具类应覆盖库的普通样式，请将其 CSS 导入较早的 `defaults` 层。在 Master 集成处理的应用 CSS 入口中，于这些导入之前声明层叠层顺序。
+
+如果项目已使用 [Swiper 核心、导航和分页样式](https://swiperjs.com/get-started)，请通过此入口加载，不要再从其他地方导入未分层副本：
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import 'swiper/css' layer(defaults);
+@import 'swiper/css/navigation' layer(defaults);
+@import 'swiper/css/pagination' layer(defaults);
+@import '@master/css';
+
+@layer components {
+  .swiper-slide {
+    background-color: var(--color-surface-raised);
+  }
+}
+```
+
+在轮播现有标记中，一张幻灯片可保留组件表面，另一张则加入局部工具类：
+
+```html
+<div class="swiper-slide">Default surface</div>
+<div class="swiper-slide bg-blue-60 fg-white">Featured slide</div>
+```
+
+`utilities` 中的普通背景声明优先于 `components`，后者又高于 `defaults`。调整 HTML 类名顺序不会改变结果。
+
+添加更强覆盖前，请先在浏览器开发者工具检查竞争声明。同一作者来源和上下文中，普通未分层样式优先于普通已分层样式。厂商 CSS 的 `!important` 声明也会优先于普通工具类；重要声明会反转层叠层顺序。这些是[原生层叠规则](https://www.w3.org/TR/css-cascade-5/#layer-order)，不是 Master 专属的优先级系统。[层叠层](/guide/cascade-layers)提供逐步诊断方法。
+
+Master 管理的样式表默认保留原生选择器。如果启用原生裁剪，请在你能控制的样式表中通过 [`@preserve native`](/reference/directives/pruning#preserve-native) 保护厂商、CMS 和外部注入的选择器，或将这些来源排除在裁剪范围之外。第三方小组件使用的选择器未必出现在应用扫描的标记中。

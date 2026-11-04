@@ -1,0 +1,155 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+テーマトークンには 2 つの役割があります。名前は登録済みのユーティリティファミリーに値を提供し、出力されるカスタムプロパティはネイティブ CSS に参加します。Master CSS はクラスを解決して依存関係を保持し、ブラウザーはカスケードと継承でカスタムプロパティの値を解決します。
+
+このページは、トークンの検索、依存関係の配信、置換、モードの有効化を定義します。トークンを共有する判断とプロジェクトのテーマ作成は[テーマ](/guide/theme)で説明し、プリセット値は[トークン索引](/reference#tokens)に掲載しています。
+
+## 登録と検索 \{#namespace-resolution\}
+
+トークンはトップレベルの `@theme` ブロックに宣言します。`@theme` の外のネイティブカスタムプロパティは CSS で使えますが、それだけではトークンを参照するクラスを登録しません。ネイティブセレクターとクエリーはブロックの外に置きます。スタイルシートの文法は [`@theme`](/reference/directives/theme#theme)を参照してください。
+
+<a id="contextual-token-lookup"></a>
+
+トークンファミリーが検索する名前空間を決めます。キーはトークン名の残りの部分であり、キー内のハイフンは保持されます。
+
+| トークン | クラス | 生成される宣言 |
+| --- | --- | --- |
+| `--spacing-card` | `p-card` | `padding: var(--spacing-card)` |
+| `--radius-card` | `r-card` | `border-radius: var(--radius-card)` |
+| `--color-brand` | `bg-brand` | `background-color: var(--color-brand)` |
+| `--color-text-action` | `fg-text-action` | `color: var(--color-text-action)` |
+| `--color-line-divider` | `b-line-divider` | `border-color: var(--color-line-divider)` |
+
+`text-action` と `line-divider` は `color` 名前空間のキーです。`outline-line-divider` は `--color-line-divider` を使えますが、`outline-divider` が暗黙に `line-` を挿入することはありません。別々の名前空間の同じキーは異なる値を提供でき、`p-card` と `r-card` は独立して解決されます。
+
+<ConfiguredExample source={'@theme {\n  --spacing-card: 1.5rem;\n  --radius-card: .5rem;\n  --color-brand: #1d4ed8;\n  --color-text-action: var(--color-brand);\n  --color-line-divider: rgb(0 0 0 / 12%);\n}'} html={'<article class="p-card r-card b(1) b-solid b-line-divider">\n  <a class="fg-text-action" href="/settings">Settings</a>\n</article>'} />
+
+<a id="default-namespace-sources"></a>
+
+接頭辞と名前空間の完全な対応は[ファミリー索引](/reference/tokens/families)にあります。完全な CSS プロパティ名がトークンファミリーを自動で作ることはありません。新しい対応が必要なら、[`@utility`](/reference/directives/definitions#utilities) で独自のパターンを登録します。`w-full` などの固定の綴りは、同じキーのトークンがあっても固定の定義を保ちます。[クラスの解決](/reference/rules/declarations)を参照してください。
+
+<ReferenceIllustration id="registration-boundary" />
+
+## 依存関係の配信 \{#variable-lifecycle\}
+
+生成宣言は通常 `var()` 参照を保持します。使われる管理対象トークンは、推移的な管理対象の依存関係とともに、`theme` レイヤーの `:root, :host` に出力されます。
+
+<a id="custom-spacing-example"></a>
+
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
+
+トークンが保持されると、その重複した宣言はソース順のまま残り、値が参照する依存関係も保持されます。ネイティブスタイルシートの参照も管理対象トークンを保持できます。ネイティブのカスタムプロパティ宣言やスコープ付きの上書きは所属するスタイルシートに残り、そのファイルの保持ポリシーに従います。
+
+Master CSS はクラス生成時に、ライト、ダーク、特定のビューポート用の値を選びません。検査では記述された宣言と依存関係を報告できますが、要素、その祖先、ブラウザー環境なしでは計算値を確定できません。
+
+<ReferenceIllustration id="token-dependency-chain" />
+
+### 存在しない名前と無効な値 \{#missing-names-and-invalid-values\}
+
+未知のトークンキーでは、一致するトークンファミリーのクラスを生成できません。有効なクラスが出力した `var()` が、後でブラウザー上で無効な値になる場合とは異なります。継承、循環、フォールバック、プロパティ値の有効性は[ネイティブのカスタムプロパティの規則](https://www.w3.org/TR/css-variables-1/)に従います。宣言の保持は、最終的な計算値が有効であることの証明にはなりません。
+
+## 継承とスコープ付きエイリアス \{#mode-buckets\}
+
+ネイティブセレクターでローカルな上書きを宣言すると、同じクラスがスコープごとに異なる値を使えます。
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-panel">Ocean panel</div>
+</section>
+```
+
+### 派生値 \{#derived-mode-aware-values\}
+
+`--color-link: var(--color-brand)` のようなエイリアスは、宣言した要素で解決された後、その計算値が継承されます。子孫で `--color-brand` だけを上書きしても、継承したエイリアスは再束縛されません。その場所の brand から派生させたい場合は、子孫のスコープでエイリアスを再宣言します。
+
+同じスコープの規則は、`color-mix()` などの派生する式にも適用されます。
+
+```css
+@theme {
+  --color-brand: #1d4ed8;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+[data-theme="plum"] {
+  --color-brand: #86198f;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+```
+
+これらの関数は CSS の式のままです。Master CSS が記述されたスコープごとに別の色を計算するわけではありません。継承と再束縛の結果は、[エイリアスの対話例](/guide/theme#alias-and-override-tokens)で並べて確認できます。
+
+## Inline 置換と static 配信 \{#inline-and-static-variables\}
+
+`inline` は生成宣言が参照する対象を変えます。`static` は、トークンのカスタムプロパティ宣言に、探索で見つかる参照元が必要かどうかを変えます。この 2 つの動作は独立しています。
+
+| 定義 | 生成クラスの宣言 | カスタムプロパティの配信 |
+| --- | --- | --- |
+| `@theme` | トークン参照を保持 | 必要な場合に保持 |
+| `@theme inline` | トークン値を一度置換 | 置換したクラス自体はそのトークン宣言を必要としない |
+| `@theme static` | トークン参照を保持 | 参照元が探索されなくても保持 |
+| `@theme static inline` | トークン値を一度置換 | 参照元が探索されなくても保持 |
+
+Inline 置換は間接参照を 1 段だけ取り除きます。置換した値の内部の参照は引き続きブラウザーが解決し、`inline` が再帰的に定数へ置き換えることはありません。`@apply` の展開も含む Master 生成の宣言に適用されますが、手書きのネイティブ CSS は元の `var()` 参照を保ちます。
+
+### 残った変数が解決される場所 \{#where-the-remaining-variable-resolves\}
+
+以下の 2 つの設定は、どちらも `--color-brand: var(--app-brand)` を定義して `bg-brand` を使い、`inline` 修飾子だけが異なります。どちらも文書のルートは青で、入れ子の section が `--app-brand` をプラム色に上書きします。
+
+<ReferenceIllustration id="inline-resolution" />
+
+通常の `@theme` では、生成宣言は `--color-brand` を参照します。そのトークンの `var(--app-brand)` はルートで解決され、入れ子の要素は結果の青い値を継承します。
+
+<ConfiguredExample source={'@theme { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Inherited blue</div>\n</section>'} />
+
+`@theme inline` では、生成宣言はスタイルを適用する要素で `--app-brand` を直接参照し、section からプラム色の値を受け取ります。
+
+<ConfiguredExample source={'@theme inline { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Local plum</div>\n</section>'} />
+
+外部の参照元が、探索では見えないトークンを必要とする場合は、独立して `static` を使います。対応形式と定義スコープは[テーマの修飾子](/reference/directives/theme#theme-static)を参照してください。
+
+## モードの有効化 \{#mode-triggers\}
+
+モードは記述された CSS のスコープまたは条件であり、もう 1 つのトークン名前空間ではありません。トークン値の変更と、ルールをモードに限定することは別の操作です。
+
+| 仕組み | 変わるもの | 有効にするもの |
+| --- | --- | --- |
+| ネイティブカスタムプロパティの上書き | そのスコープで継承する値 | 記述したセレクターまたはネイティブクエリー |
+| `light-dark()` トークン | 選択する色の値 | 要素で実際に使うカラースキーム |
+| プリセットの `@dark` または `@light` 接尾辞 | ルールを適用できるか | システムの `prefers-color-scheme` メディアクエリー |
+| `@apply(--name)` によるセレクターミックスイン | 生成ルールが一致する場所 | ミックスインに記述したセレクターそのもの |
+
+### 手動のスコープとルールのラッパー \{#manual-scopes-and-rule-wrappers\}
+
+`bg-surface` のようなトークンクラスは、継承した変数に従います。ocean スコープだけに別の宣言を適用するには、ミックスインにそのスコープを明示します。`&` は生成セレクターを表します。以下の子孫の分岐は意図して書いたもので、Master CSS が挿入したものではありません。
+
+<ConfiguredExample source={'@theme { --color-surface: white; }\n[data-theme="ocean"] { --color-surface: #082f49; }\n@mixin --ocean {\n  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }\n}'} html={'<section data-theme="ocean">\n  <div class="bg-surface p(16)@apply(--ocean)">Ocean panel</div>\n</section>'} />
+
+トークンの上書きは背景の値を変え、ミックスインは padding が作用する場所を変えます。どちらの仕組みも、もう一方を定義しません。ラッパーの引数と配置は[ユーティリティとミックスイン](/reference/directives/definitions#reusing-a-matched-value)を参照してください。
+
+### システム設定と手動のカラースキーム \{#system-preference-and-manual-color-schemes\}
+
+完全なプリセットはネイティブの `color-scheme` ルールを提供します。ルートは `light dark` を許可し、`data-theme="light"` または `data-theme="dark"` は領域のスキームを固定します。トークンは `light-dark(white, #111827)` でそのスキームに従えます。値はブラウザーが選ぶため、2 つ目のクラスは不要です。ネイティブの動作は [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark)を参照してください。
+
+手動テーマの領域内でも、プリセットの `@dark` と `@light` はシステムのメディアクエリーのままです。`data-theme` を変えても有効になりません。[色](/guide/colors#native-color-scheme-and-manual-themes)で手動の有効化と入れ子の領域を示しています。
+
+### ローカルな重複と Shadow DOM \{#local-overlap-and-shadow-dom\}
+
+重複するスコープは、レイヤー順序と詳細度も含む通常のカスケードに従います。セレクターがテーマを表しているだけで、ローカルな値が自動的に強くなるわけではありません。[カスケードレイヤー](/reference/rules/layers)を参照してください。
+
+既定のテーマ宣言は `:host` を含みます。スコープ付きの host の上書きは明示し、必要なスタイルシートをシャドウツリーに読み込みます。
+
+```css
+@theme { --color-panel: white; }
+:host([data-theme="dark"]) { --color-panel: #111827; }
+```
+
+トークンがリソース配信を代替することはありません。ネイティブキーフレームと依存関係の保持は[キーフレームの仕様](/reference/directives/pruning#native-keyframes)を、スタイルシートの保持は[ネイティブ CSS のプルーニング](/reference/directives/pruning)を参照してください。

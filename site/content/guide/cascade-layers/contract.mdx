@@ -8,7 +8,7 @@ Master CSS emits generated style rules into `utilities` unless a class explicitl
 
 This page defines layer ownership and generated rule ordering. For a component override and a DevTools diagnosis workflow, see [Cascade layers in Guide](/guide/cascade-layers).
 
-## Establishing the order
+## Establishing the order \{#establishing-the-order\}
 
 The base stylesheet, exposed as `@master/css/base.css` and included by the full `@master/css` import, declares:
 
@@ -18,7 +18,7 @@ The base stylesheet, exposed as `@master/css/base.css` and included by the full 
 
 Load it before other rules establish these layers. CSS determines layer order by first appearance; a later order statement cannot rearrange layers already established. Generated layer blocks do not insert this statement themselves.
 
-### Normal and important declarations
+### Normal and important declarations \{#normal-and-important-declarations\}
 
 For competing normal declarations in these layers, `utilities` has the highest priority and `theme` the lowest. Normal unlayered author rules take precedence over all of them. `!important` reverses the order between layers and places important layered rules above important unlayered rules. This comparison is within author stylesheets; it is not the complete cascade across origins, inline styles, animations or transitions. See [CSS layer ordering](https://www.w3.org/TR/css-cascade-5/#layer-order).
 
@@ -69,7 +69,7 @@ Use native `@layer` syntax for project-specific layers and sublayers. Their orde
 
 <ReferenceIllustration id="layer-token-separation" />
 
-### Base and defaults
+### Base and defaults \{#base-and-defaults\}
 
 <a id="base-is-for-normalization"></a>
 
@@ -91,7 +91,7 @@ Here both rules target the first paragraph. Its own native declaration class goe
 
 <ConfiguredExample source="" html={overridingDefaultsTemplate} />
 
-## Native rules and managed utilities
+## Native rules and managed utilities \{#native-rules-and-managed-utilities\}
 
 <a id="a-complete-flow"></a>
 <a id="writing-regular-css"></a>
@@ -110,7 +110,7 @@ An on-demand `@utility` instead registers a managed class. Its ordinary output b
 
 For utility definitions and native preservation, see [Utilities and mixins](/reference/directives/definitions).
 
-### Mixin expansion keeps the surrounding layer
+### Mixin expansion keeps the surrounding layer \{#mixin-expansion-keeps-the-surrounding-layer\}
 
 An `@apply` inside a native rule expands declarations where it appears. It does not move that rule into `utilities`:
 

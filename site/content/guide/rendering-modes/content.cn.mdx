@@ -1,0 +1,376 @@
+---
+{
+  "title": "渲染模式",
+  "description": "选择 CSS 的生成位置，比较静态、预渲染、运行时与渐进式交付，并验证结果。",
+  "category": "基础",
+  "figures": {
+    "GuideStudy:static-late-class": {
+      "title": "稍后出现的类名无法扩展静态样式表",
+      "alt": "静态构建看见 p-md 并输出规则。浏览器稍后添加 p-lg，但该输出中没有它的规则。",
+      "caption": "此示例假设所有构建输入与安全列表都没有 p-lg。动态值可通过自定义属性改变，无须更换类名。"
+    },
+    "GuideStudy:progressive-known-class": {
+      "title": "已知类名复用已交付的 CSS",
+      "alt": "浏览器已有 CSS 与有效页面清单。已知且已连接的类名沿用既有 CSS，清单之外的类名则触发延迟加载引擎的分支。",
+      "caption": "这是预渲染产物有效时的默认渐进式交接，不是性能时间轴。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:runtime": {
+      "title": "运行时交付",
+      "alt": "已连接 DOM 的类名使用情况经过浏览器引擎，转为原生样式表规则。",
+      "caption": "浏览器引擎插入或复用 CSS 规则。缓存规则可能在已连接 DOM 停止使用后继续保留。",
+      "steps": [
+        {
+          "title": "观察",
+          "description": "读取已连接元素，并接收 DOM 类名变化。"
+        },
+        {
+          "title": "确保规则可用",
+          "description": "通过编译后的项目程序执行完整类名。"
+        },
+        {
+          "title": "更新",
+          "description": "在运行时样式表中插入或复用原生 CSS 规则。"
+        }
+      ]
+    },
+    "DeliveryFlow:progressive": {
+      "title": "渐进式交付",
+      "alt": "HTML 将初始 CSS 带到浏览器，未覆盖类名则触发延迟启动的引擎并生成额外 CSS。",
+      "caption": "初始 CSS 随 HTML 抵达。预渲染样式表与页面清单有效时，引擎会持续延迟启动，直到出现清单之外的已连接类名。",
+      "steps": [
+        {
+          "title": "渲染",
+          "description": "从渲染后页面 HTML 的类名生成 CSS。"
+        },
+        {
+          "title": "交付",
+          "description": "将初始 CSS 随 HTML 发送，让浏览器在运行时启动前就能应用。"
+        },
+        {
+          "title": "继续运行",
+          "description": "读取页面 hydration 清单并跟踪已连接 DOM 类名。默认情况下，清单之外的类名会加载浏览器引擎与项目程序、采用匹配的既有规则，再生成额外 CSS。"
+        }
+      ]
+    },
+    "DeliveryFlow:hydration": {
+      "title": "CSS hydration",
+      "alt": "既有 CSS 与引擎重放页面清单的结果比较；匹配规则会被采用，不符则重建 CSS。",
+      "caption": "引擎启动时采用匹配规则，不符则重建 CSS。引用的清单若无法加载或验证，启动会在此比较之前被拒绝。",
+      "steps": [
+        {
+          "title": "读取",
+          "description": "加载页面 hydration 清单，并继续使用既有样式表。"
+        },
+        {
+          "title": "验证",
+          "description": "浏览器引擎启动时，使用项目程序按服务器规则顺序重放清单类名、验证资源，并比较生成规则与既有 CSSOM。"
+        },
+        {
+          "title": "采用或重建",
+          "description": "将匹配规则复用为运行时管理的规则对象；不符时则重建 CSS。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 概览 [sr-only] \{#overview\}
+根据应用何时能够确定完整类名来选择渲染模式。名称能在源代码中找到时，先使用静态渲染。预渲染从完成的页面 HTML 生成 CSS；运行时渲染处理浏览器中创建的新类名；渐进式渲染则结合页面 CSS 与运行时支持。
+
+请先完成框架的[安装指南](/guide/installation)。官方集成会加载 CSS 入口并配置所选模式；下方示例说明各模式的行为与验证方式。框架支持及可供处理的 HTML 取决于所用集成。
+
+## 选择渲染模式 \{#comparisons\}
+
+| 模式 | 类名来源 | 初始 CSS | 浏览器中的 Master CSS |
+| --- | --- | --- | --- |
+| [静态](#static-rendering) | 源文件中的完整字符串 | 生成的样式表 | 不需要运行时或引擎 |
+| [预渲染](#pre-rendering--ssg-ssr) | 渲染完成的页面 HTML | 随该页面交付的规则 | 不需要运行时或引擎 |
+| [运行时](#runtime-rendering) | 已连接的 DOM 元素 | 运行时启动后生成规则 | 运行时与引擎 |
+| [渐进式](#progressive-rendering) | 渲染完成的 HTML，接着是后续 DOM 变化 | 随该页面交付的规则 | 运行时跟踪使用情况；引擎可等到出现未覆盖类名时再启动 |
+
+交互式应用也可以使用静态 CSS。切换已知类名、修改 CSS 变量及使用原生选择器，都不需要运行时引擎。完整类名在构建后才首次出现时，才需要考虑运行时生成。
+
+预渲染需要真实的页面标记。客户端渲染应用中的空根元素无法提供应用类名供服务器渲染器处理。还应检查集成的适用边界：[Next.js 渐进式适配器](/guide/installation/nextjs#rendering-modes)处理构建时 HTML，因此请求时的动态 SSR 响应依赖浏览器运行时生成规则。
+
+---
+
+## 静态渲染 \{#static-rendering\}
+构建会扫描源代码中的完整类名字符串，再根据项目定义生成 CSS，不会运行应用代码或观察 DOM。浏览器加载输出的样式表，不需要 Master CSS 运行时。
+
+### 生成样式表的入口 \{#generated-stylesheet-entry\}
+在应用原本就会加载的样式表中导入 Master CSS：
+
+```css name=src/style.css
+@import '@master/css';
+```
+
+这个导入是生成工具类、其必要资源与预设基础样式的插入位置。每个生成样式表根入口使用一个导入。请将其保留在顶层导入块中、普通样式规则之前；该块中的其他 CSS 导入会在生成的 Master CSS 之前输出。
+
+要观察从源代码到 CSS 的流程，请在导入之后添加这个工具类定义，并把按钮放在会被扫描的源文件中：
+
+<ConfiguredExample source={`@utility btn {
+  display: inline-flex;
+  padding-inline: var(--spacing-md);
+}`} html={'<button class="btn text-center">Save</button>'} />
+
+扫描器会找到 `btn` 与 `text-center`。引擎解析项目组合样式与预设中的固定工具类，再生成规则与引用的资源。只定义 `btn` 不会输出规则，必须由扫描到的类名或显式安全列表发出请求。
+
+集成会发现常规应用源文件，并在开发时更新 CSS。源代码中应保留完整类名，变化的值则通过 CSS 变量传递；[扫描类名](/guide/scanning-and-pruning)介绍这两种方式，以及 `@source` 与安全列表的例外处理。
+
+### 原生 CSS 入口 \{#native-css-entries\}
+CSS 入口中的原生选择器默认保留，即使扫描源文件中没有其类名也是如此。它们的 `var(--*)` 与动画引用可以保留匹配的主题变量与关键帧。
+
+确定要裁剪项目自有的原生 CSS 时，使用 `pruneNativeCSS: true`；只针对单个文件则使用 `@prune native;`。`@preserve native;` 可将文件排除在集成级裁剪之外。请参阅[裁剪未使用的原生 CSS](/guide/optimizing-css-delivery#native-pruning)。
+
+---
+
+<GuideStudy id="static-late-class" />
+
+## 运行时渲染 \{#runtime-rendering\}
+类名在浏览器中才能确定时，例如可视化编辑器或构建后加载的内容，请使用运行时渲染。运行时通过 [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) 跟踪已连接元素及其类名变化，再插入或复用匹配的 CSS 规则。
+
+<DeliveryFlow name="runtime" />
+
+通过集成选择运行时模式，例如 [Vite 运行时配置](/guide/installation/vite#rendering-modes)。启动后，在浏览器控制台逐一运行下列片段：
+
+<StepSection>
+  <Step>
+    #### 插入元素 \{#insert-an-element\}
+    ```js
+    const h1 = document.createElement('h1')
+    h1.className = 'text-center'
+    h1.textContent = 'Hello World'
+    document.body.append(h1)
+    ```
+    运行时生成规则后，已连接的标题就会居中。
+  </Step>
+  <Step>
+    #### 添加类名 \{#add-a-class\}
+    ```js
+    h1.classList.add('(font-size:3rem)')
+    ```
+    标题增大至 `3rem`，原有对齐规则仍继续使用。
+  </Step>
+  <Step>
+    #### 移除类名 \{#remove-a-class\}
+    ```js
+    h1.classList.remove('text-center')
+    ```
+    标题不再匹配对齐规则，会恢复为继承的对齐方式，即使运行时暂时仍保留未使用的规则也是如此。
+  </Step>
+  <Step>
+    #### 移除元素 \{#remove-the-element\}
+    ```js
+    h1.remove()
+    ```
+    这个标题不再使用这两个类名。若没有其他已连接元素使用它们，规则即可在空闲清理期间移除。
+  </Step>
+</StepSection>
+
+两个类名同时存在时，使用下列规则：
+
+<Class2CSS classes={['text-center', '(font-size:3rem)']} />
+
+运行时生成依赖 JavaScript 启动。若页面初始规则必须随响应提供，请使用预渲染 CSS；只有后续类名需要时，才加入运行时支持。
+
+### 运行时启动前隐藏页面 \{#prevent-premature-rendering\}
+仅使用运行时的页面在生成之前没有规则。可在根元素添加 `hidden`，避免先绘制未应用样式的页面：
+
+```html
+<html lang="en" hidden>
+  <!-- Load the stylesheet and runtime using your integration's setup. -->
+</html>
+```
+
+运行时启动后会移除 `hidden`，其已处理的启动错误路径也会取消根元素隐藏。但如果禁用 JavaScript，或运行时脚本被阻止、下载失败，页面会一直隐藏。这些情况下仍须可读的内容应使用静态或预渲染 CSS。渐进式页面已带有首屏 CSS，因此保持可见。
+
+### 预加载运行时程序 \{#preload-runtime-engine\}
+引擎取得程序后才能生成第一批规则。仅使用运行时的页面应预加载程序，让请求在解析文档时就开始。使用 `as="fetch"` 与 `crossorigin` 匹配运行时请求，同源时也一样：
+
+```html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+  <link rel="preload" as="fetch" crossorigin href="/master-css/default-program.bin"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="/master-css/base.css">
+  <script src="/master-css/global.min.js"></script>
+</head>
+</html>
+```
+
+<DocumentComparison>
+
+| 文件 | 是否预加载？ |
+| --- | --- |
+| CDN `default-program.bin` | 是，适用于使用打包默认预设的 CDN 运行时专用页面。 |
+| 项目程序 `master-css-program.<hash>.bin` | 运行时专用页面需要，官方运行时集成会添加提示。渐进式页面不需要，引擎与程序会等到某个类名需要它们时再加载。 |
+| 页面水合清单 | 不需要。这是交接数据，浏览器不依赖它绘制页面。 |
+
+</DocumentComparison>
+
+在开发者工具中确认运行时复用预加载的响应，没有重新请求。匹配规则请参阅 [`rel="preload"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload)。
+
+<ReferenceIllustration id="preload-is-data" />
+
+---
+
+## 预渲染 — SSG、SSR \{#pre-rendering--ssg-ssr\}
+构建或服务器取得最终页面 HTML，且后续类名不需要浏览器生成时，请使用预渲染。服务器渲染器读取 HTML、生成规则，并插入 `style#master-css`。它从标记生成 CSS，不会将应用组件渲染为 HTML。
+
+官方集成会对支持的 HTML 输出执行此步骤。自定义服务器或构建流水线可参考此示例，使用构建集成提供的 `virtual:master-css-manifest`。服务器代码运行前，构建工具必须先解析这个虚拟模块。
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+写入或返回取得的 `html`。其中的 `style#master-css` 包含标题规则与所需 font-size 令牌：
+
+<Class2CSS classes={'font-5xl'} />
+
+此输出不需要 Master CSS 运行时或水合清单。只在稍后出现的类名，需要另外提供 CSS，或选择支持运行时的模式。
+
+在有限的静态构建中，渲染器可以复用缓存规则，同时生成各页面专属 CSS。清单变化时重新创建渲染器，构建结束后则释放。长期运行的服务器应设置有上限的 `maxCachedClasses`，不要沿用构建示例的 `Infinity`；请参阅[服务器 API](/reference/packages#css-server)。
+
+---
+
+## 渐进式渲染 \{#progressive-rendering\}
+服务器或构建可以生成页面初始 CSS，且浏览器稍后可能引入新类名时，请使用渐进式渲染。响应通过 `style#master-css` 带有 CSS；运行时读取页面水合清单，区分已覆盖类名与需要引擎的类名。
+
+<DeliveryFlow name="progressive" />
+
+常见输出会让 style 元素指向外部清单：
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+实际资源 URL 由集成提供。无法发布稳定 JSON 资源的自定义 SSR 宿主也可改用行内 `script#master-css-hydration-manifest`。页面若没有生成规则或受管理资源，就不需要清单指针。
+
+浏览器可在运行时或清单加载前应用行内 CSS。这说明 CSS 何时可用；实际绘制时机仍取决于页面其他资源。不要预加载页面水合清单或延迟加载的项目程序；请参阅[预加载](#preload-runtime-engine)。
+
+清单中列出的类名可直接复用，无须启动引擎。这包括普通编写的类名，以及由生成选择器或项目选择器引用、自身没有规则的状态或主题类名。改变已渲染选择器使用的属性也不需要新的类规则。完整类名若不在清单中，即使曾出现在项目其他源代码中，仍会启动引擎。
+
+<GuideStudy id="progressive-known-class" />
+
+### CSS 水合 \{#css-hydration\}
+水合让运行时采用既有 CSS 规则。启动时会读取显式设置的 `hydrationManifest` 选项，或查找行内清单、`style#master-css` 上的 URL。引擎延迟启动期间，运行时跟踪使用情况，不重建样式表。
+
+<DeliveryFlow name="hydration" />
+
+新类名或 `cssRuntime.ready()` 启动引擎时，浏览器引擎会按服务器规则顺序重放清单中的类名、验证资源，再将生成结果与既有 CSSOM 比较。匹配规则成为运行时管理的规则，新类名随后可以生成额外 CSS。移除的类名可能在交接前仍保留预渲染规则，交接后才进入常规保留规则清理流程。
+
+清单带有资源顺序，以及页面样式表已输出的全局资源，不会重复 CSS 文本，也不替代项目程序。请将它与同一次构建的 HTML、资源一同提供。
+
+---
+
+## 集成支持 \{#integration-support\}
+
+这些官方适配器默认使用静态渲染。构建时尚未确定的类名需要显式选择运行时生成。`pre-render` 从 HTML 生成 CSS，不需要客户端运行时；`progressive` 则结合 HTML 渲染与支持后续类名的运行时。各适配器能够处理的 HTML 取决于宿主：
+
+| 适配器 | 静态 | 运行时 | `pre-render` 与服务器 HTML | `progressive` |
+| --- | --- | --- | --- | --- |
+| [Vite](/guide/installation/vite) | 构建时提取 | 通过 Vite HTML 流水线注入 | Vite 钩子处理的 HTML；自定义 SSR 需要服务器集成 | Vite HTML 渲染加运行时；自定义 SSR 需自行渲染 HTML |
+| [Webpack](/guide/installation/webpack) | 构建时提取 | 注入编译的 HTML 资源 | HTML 宿主必须调用 `@master/css-server`；插件没有请求时服务器钩子 | 提供运行时交付；宿主提供渲染后 HTML 与水合数据 |
+| [Next.js](/guide/installation/nextjs) | 构建时提取 | 客户端 instrumentation | 构建后处理 HTML 输出；不转换请求时动态 SSR | 构建渲染 HTML 加运行时；动态 SSR 不自动注入服务器 CSS |
+| [Astro](/guide/installation/astro) | 通过 Vite 在构建时提取 | 注入页面脚本 | Astro 中间件处理预渲染页面与服务器 HTML 响应 | 中间件渲染加运行时 |
+| [Nuxt](/guide/installation/nuxtjs) | 通过 Vite 在构建时提取 | Nuxt 客户端插件 | 主体为字符串的 Nitro HTML 响应；不转换流式主体 | Nitro HTML 渲染加客户端运行时 |
+| [SvelteKit](/guide/installation/svelte) | 通过 Vite 在构建时提取 | 需要文档所述的客户端钩子 | 需要 Master CSS 服务器 handle；在 SSR 与预渲染期间处理页面块 | 同时需要服务器 handle 与客户端钩子 |
+
+框架采用 Vite 或 Webpack，并不代表该打包器能为它添加服务器行为。Webpack 的 HTML 注入也不会重写由开发服务器静态目录直接提供的文件。Astro 中间件在返回前读取完整 HTML 响应，SvelteKit 则使用页面块钩子。选择交付方式时，请遵循框架指南。PHP、Rails、CMS 与 .NET 宿主通过 Vite 构建资源，再从模板加载；请参阅[服务器渲染应用](/guide/installation/server-rendered)。
+
+
+## 原生裁剪是另一项选择 \{#native-pruning-is-a-separate-choice\}
+
+渐进式渲染可以搭配原生裁剪，不改变初始 CSS 交付或后续工具类生成的时机。裁剪需要已知使用集合，以及会提供该集合的构建流程；运行时生成无法还原已从交付内容中移除的任意原生选择器。可复现的比较请参阅[优化 CSS 交付](/guide/optimizing-css-delivery#rendering-and-pruning)。
+
+## 验证所选模式 \{#verify-the-selected-mode\}
+除了开发环境，还应测试生产构建：集成即使在生产环境预渲染 CSS，开发时仍可能使用运行时生成。
+
+<DocumentComparison>
+
+| 模式 | 验证项目 |
+| --- | --- |
+| 静态 | 生成 HTML 加载了样式表，且具有代表性的完整源类名在其中有规则。禁用 JavaScript 后，这些样式仍保留。 |
+| 预渲染 | 响应源代码包含带有页面规则的 `style#master-css`。请在运行 JavaScript 前验证，仅检查实时 DOM 无法证明已发生预渲染。 |
+| 运行时 | 插入初始 DOM 中没有的类名，在运行时观察到后检查计算样式与生成的 CSS 规则。 |
+| 渐进式 | 先验证预渲染 CSS，再添加页面清单中没有的类名并检查其规则是否生成。适配器若只处理构建时 HTML，请另外测试动态 SSR 路由。 |
+
+</DocumentComparison>
+
+### 检查运行中的样式表 \{#running-style-sheet\}
+运行时拥有 `style#master-css` 并更新其 CSSOM。启动后，元素文本内容无法作为可靠的实时视图，请改查样式表的 [cssRules](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/cssRules)：
+
+```js
+const sheet = document.querySelector('style#master-css').sheet
+console.log(sheet.cssRules)
+```
+
+### 诊断渐进式启动 \{#diagnose-progressive-startup\}
+
+<DocumentComparison>
+
+| 观察结果 | 含义与下一项检查 |
+| --- | --- |
+| 警告后重建 CSS | 既有规则与水合数据不符，或 style 没有清单指针。请确认 HTML、CSS 与清单资源来自同一次构建。 |
+| 启动以 `INVALID_HYDRATION_MANIFEST` 拒绝 | 引用的行内或外部清单无法加载或通过验证。请检查资源 URL、响应与部署文件。 |
+| 初始 CSS 正常，新类名却无效 | 延迟启动的引擎可能加载失败。请检查 `onDiagnostic`、程序请求与 `cssRuntime.snapshot().engine`。既有预渲染 CSS 会保留；`refresh()` 或重新 `start()` 可以重试。 |
+
+</DocumentComparison>
+
+新类名很可能在加载后不久出现时，`enginePrefetch: 'idle'` 会在空闲时启动引擎。使用 `engine: 'eager'` 则在 `start()` 期间启动。两者都改变默认延迟启动的权衡，应根据页面实际交互选择。
+
+### 交互密集的界面 \{#interaction-heavy-screens\}
+一次交互若添加大量首次出现的类名，浏览器就必须同时处理 DOM 变化与新样式表规则。对于编辑器、数据网格、构建工具或其他大型动态视图：
+
+- 将稳定的布局、排版与组件状态保留在共享类名中。
+- 引擎就绪后、插入视图之前，先预热可预期的运行时类名。
+- 坐标、用户生成颜色等每个元素频繁变化的值，使用 CSS 变量或行内样式。
+- 重复状态若不需要为每个值生成不同类名，请使用原生选择器。
+
+要预热视图中可预期的类名，请使用 `MasterCSSRuntime.start()` 返回的 handle：
+
+```js
+await cssRuntime.ready()
+cssRuntime.ensureClassRules(['grid', 'gap-md'])
+```
+
+请一同测量运行时 JavaScript、程序交付、初始化、DOM 观察与 CSSOM 处理。仅看压缩后 JavaScript 大小无法说明交互成本。测量结果与条件请参阅[基准测试](/benchmarks)。
+
+### 用户生成的标记 \{#user-generated-markup\}
+运行时观察或服务器渲染的每个类名都会成为 CSS，因此 `class` 属性与 `style` 属性一样强大，包括原生声明、`url()` 以及 `:has()` 等选择器。页面渲染他人编写的标记，例如评论、CMS 富文本或聊天消息时，HTML 清理器应像处理 `style` 一样处理 `class`：移除，或只允许自行选择的类名。仅转义属性值并不足够，因为类名本身就是输入。
+
+运行时状态、交付产物、自定义启动入口与引擎宿主，请参阅 [runtime](/reference/packages#css-runtime)、[server](/reference/packages#css-server) 与 [engine](/reference/packages#css) 软件包。

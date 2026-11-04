@@ -1,0 +1,240 @@
+---
+{
+  "title": "Master CSS をインストールする",
+  "description": "フレームワークのインテグレーションを選び、CDN の提供状況を確認するか、CLI でスタイルシートを生成します。",
+  "category": "はじめに",
+  "figures": {
+    "InstallationIllustration": {
+      "title": "ソースからページまでを接続する",
+      "alt": "アプリのマークアップとスタイルシートがビルドインテグレーションに渡り、生成された CSS が Hello World を表示するページに届く。",
+      "caption": "インテグレーションはソースからクラス名、スタイルシートから定義を読み取ります。生成した CSS をページに届けるには、アプリがそのスタイルシートを読み込む必要があります。",
+      "description": [
+        {
+          "title": "ソース",
+          "text": "p-md のような完全なクラスが、インテグレーションの走査するソースファイルに現れます。アプリのスタイルシートは @master/css をインポートし、プリセットの定義を供給します。"
+        },
+        {
+          "title": "ビルドインテグレーション",
+          "text": "二つのソースを設定済みインテグレーションに渡し、認識したクラス用の CSS を生成します。インストーラーが接続を設定し、以後の開発とビルドはインテグレーションが担います。"
+        },
+        {
+          "title": "ページ",
+          "text": "アプリがスタイルシートを読み込み、生成 CSS をブラウザーに届けます。プリセットでは p-md のルールが 1rem のパディングを適用します。パッケージのインストールだけでは、スタイルシートのインポートは設定されません。"
+        }
+      ]
+    },
+    "GuideStudy:installation-observation": {
+      "title": "小さな変更で経路全体を確認する",
+      "alt": "ソースの p-md を p-lg に変更すると、コンパイルされたパディングが変わり、ブラウザーのボックスが目に見えて大きくなる。",
+      "caption": "インストールの成功は最初の一歩です。クラスの変更で、検出、生成、スタイルシート配信をまとめて確認できます。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import InstallationGuides from '~/site/components/InstallationGuides.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import InstallationIllustration from './components/InstallationIllustration.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/installation/cover-light.webp'
+import dark from '~/site/assets/images/integrations/installation/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Astro、Vite、Nuxt、Svelte、Next.js、Angular、Lit、webpack、Storybook と Master CSS" />
+
+プロジェクトに合う設定方法を選んでください。[インテグレーション](#integrations)は Master CSS をフレームワークやビルドツールに接続し、[CLI](#cli) はバンドラーのないプロジェクトにスタイルシートを生成します。[CDN](#cdn) は既定のプリセットを使うプレーン HTML の設定を提供しますが、CSS-first 版はまだ公開待ちです。
+
+## インテグレーション \{#integrations\}
+
+既存のアプリにはインテグレーションを使います。既定は静的レンダリングで、ビルドがソースから完全なクラス名を見つけ、ブラウザーにスタイルシートを配信します。フレームワークを選んで設定ファイルと手順を確認するか、以下の自動インストーラーを使ってください。
+
+<InstallationGuides />
+
+ランタイムやサーバーレンダリングの設定は、[インテグレーションごとのレンダリング対応](/guide/rendering-modes#integration-support)を参照してください。
+
+### 始める前に \{#installation\}
+
+Node.js 24 を使い、`package.json` があるアプリのルートディレクトリーを開きます。インストーラーは既存プロジェクトを更新するもので、フレームワークのスターターは作成しません。アプリには動作する開発コマンドがすでに必要です。
+
+### パッケージの提供状況 \{#package-availability\}
+
+この手順には、インストーラー、インテグレーション、依存パッケージをそろえたリリースが必要です。そのパッケージ一式は、まだ npm にすべて公開されていません。以下の `@rc` コマンドは予定するインストールチャネルを示し、現時点でこの候補版をインストールできると検証された方法ではありません。対応するパッケージの公開後に実行してください。別のタグでパッケージが存在しても、この設定との互換性は確認できません。
+
+ローカルでランタイムを評価するには、[ビルド済みチェックアウトを使う CDN の例](#cdn)を使ってください。スクリプト、コンパイル済みプログラム、ベーススタイルシートは同じビルドのものをそろえます。
+
+手動設定やフレームワーク固有のファイルは、[インテグレーションガイド](/guide/installation#integrations)を参照してください。対応するビルドインテグレーションがない場合は、[単独の CLI 設定](/guide/installation#cli)に従います。
+
+<StepSection>
+  <Step>
+    ### Master CSS を追加する \{#add-master-css\}
+
+    プロジェクトのルートでインストーラーを実行します。フレームワークとパッケージマネージャーを検出し、設定ファイルを更新して、`rc` チャネルから対応する Master CSS パッケージをインストールします。
+
+    ```bash
+    npm create @master/css@rc -- --yes
+    ```
+
+    <DocumentDisclosure title="設定内容を確認・制限する">
+
+    `--yes` は推奨の既定値を受け入れます。コアのインテグレーション、ESLint 設定、MCP パッケージ、`AGENTS.md` の Master CSS のガイダンスが含まれます。表示される MCP 登録やスキルインストールのコマンドは、コーディングツール用の任意の次の手順であり、インストーラー自身は実行しません。
+
+    `--dry-run` を追加すると、プロジェクトのファイルを変更せず、予定する依存関係もインストールせずに計画を確認できます：
+
+    ```bash
+    npm create @master/css@rc -- --yes --dry-run
+    ```
+
+    フレームワークのコア設定だけが必要なら、インストールコマンドに `--minimal` を追加します。ESLint、MCP、エージェント向けガイダンスの追加を省きます。依存関係を自分でインストールしたい場合は `--no-install` を追加してください。
+
+    </DocumentDisclosure>
+  </Step>
+  <Step>
+    ### スタイルシートの接続を確認する \{#check-the-stylesheet-connection\}
+
+    設定の概要を読み、表示されたフレームワーク固有の手順を完了します。追加の設定コマンドや独立した CSS 生成プロセスが必要なインテグレーションもあります。手順は[フレームワークのガイド](/guide/installation#integrations)を参照してください。
+
+    インストーラーが作成または更新したスタイルシートを、アプリが読み込んでいるか確認します。そのスタイルシートには次が必要です：
+
+    ```css
+    @import '@master/css';
+    ```
+
+    たとえばプレーン Vite アプリは、通常 `src/main.js` から `./style.css` をインポートします。CSS のファイル名とインポート位置はフレームワークにより異なります。パッケージをインストールするだけでは、ページにスタイルシートは読み込まれません。
+
+    <InstallationIllustration />
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+
+    `npm run dev` など、アプリの既存コマンドで開発サーバーを起動または再起動します。次のマークアップを表示されるページかコンポーネントに置いてください。JSX では `class` の代わりに `className` を使います。
+
+    <DemoConfiguredExample name="installation-check" title="最初のスタイルを確認する" source="" caption="プリセットでは、p-md がテキストの四辺に 1rem のパディングを加えます。" html={`<p class="w-fit mx-auto my(0) p-md r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong">
+  Hello World
+</p>`} />
+
+    境界線のある小さな面の中にテキストが表示されるはずです。`p-md` を `p-lg` に変えて保存すると、四辺のパディングが `1rem` から `1.5rem` に増えます。これにより、インストーラーの完了だけでなく、ソースの変更がページまで届くことを確認できます。
+  </Step>
+</StepSection>
+
+<GuideStudy id="installation-observation" />
+
+## CDN \{#cdn\}
+
+CDN インストールは、ビルドツールなしでブラウザー内で Master CSS を実行します。プレーン HTML の試作に適しますが、生成スタイルは JavaScript に依存します。JavaScript なしでスタイルが必要なページには、インテグレーションか CLI を使ってください。
+
+CSS-first の CDN 版はまだ公開されていません。テンプレートを使う前に、以下のすべての `VERSION` を、公開済みの同じ CSS-first のランタイムとプリセットのバージョンに置き換えてください。公開までは、以下のローカルビルドを使います。[インテグレーション](#integrations)と [CLI](#cli) にも同じ[パッケージの提供要件](#package-availability)が適用されます。
+
+このテンプレートを `index.html` として保存します：
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en" hidden>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
+</head>
+
+<body>
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-strong">Hello World</h1>
+</body>
+
+</html>
+```
+
+見出しには `3rem` のマージン、`2.5rem` の斜体、ウェイト `900`、プリセットの強いテキスト色が適用されるはずです。`font-5xl` を `font-6xl` に変えると、文字が `3rem` になります。ランタイムは JavaScript によるクラス変更も監視します。
+
+スタイルシートがベースルールとレイヤー順序を供給します。クラシックスクリプトは自動で起動して対応するコンパイル済みプログラムを読み込み、ドキュメントの解析完了後に初期クラスを生成します。ルールの準備ができると `hidden` を削除します。三つのプリロードリンクは、スタイルシート、スクリプト、プログラムのリクエストを早く開始します。ランタイムが取得するのはモジュールではなくデータなので、バイナリーには `as="fetch" crossorigin` を使います。Master CDN のリダイレクトには CORS ヘッダーがないため、バイナリーのプリロードとランタイムの取得には、jsDelivr の宛先を直接指定します。CDN の設定は既定のプリセットを使うため、独自の `@theme` や `@utility` 定義はインテグレーションでコンパイルしてください。
+
+<DocumentDisclosure title="CDN 版の公開前にローカルビルドを試す">
+
+ビルド済みチェックアウトから、`packages/preset/src/base.css`、`packages/runtime/dist/global.min.js`、`packages/runtime/dist/default-program.bin` を、`index.html` と同じディレクトリーにコピーします。スクリプトとプログラムは同じビルドのものをそろえてください。
+
+二つのスタイルシート URL を `./base.css`、二つのスクリプト URL を `./global.min.js`、プログラムのプリロード URL を `./default-program.bin` に置き換えます。ディレクトリーを HTTP で配信し、`index.html` を開いてください。明示したスクリプトファイルの場合、ランタイムはその隣のプログラムを解決します。Master CDN または jsDelivr の npm パッケージエントリーでは、そのパッケージ内の `dist/default-program.bin` を解決します。
+
+</DocumentDisclosure>
+
+`hidden` は任意で、スタイルのない初回描画を防ぎます。処理済みのプログラム読み込みエラーや、ランタイムの三秒の起動タイムアウトでは内容を表示します。ただし JavaScript が無効、またはスクリプト自体をダウンロードできない場合、属性を削除できません。その場合にも読める必要があるなら、`hidden` を省くか静的 CSS を配信してください。
+
+Content Security Policy では、スクリプト、スタイルシートの読み込み、プログラムの取得（`connect-src`）について CDN とリダイレクト先の jsDelivr を許可し、ランタイムが生成するスタイルシートも許可します。Wasm は取得しません。読み込みとハイドレーションの動作は[ランタイムレンダリング](/guide/rendering-modes#runtime-rendering)を参照してください。
+
+## CLI \{#cli\}
+
+バンドラーを追加せずに HTML から静的スタイルシートを生成します。CLI が完全なクラス名を走査して CSS を書き出し、通常のスタイルシートリンクで読み込みます。対応する[フレームワークのインテグレーション](/guide/installation#integrations)がないプロジェクトでは、この設定を使ってください。
+
+<StepSection>
+  <Step>
+    ### Master CSS をインストールする \{#install-master-css\}
+    Master CSS の [CLI](https://www.npmjs.com/package/@master/css-cli) を開発依存関係としてインストールします。
+
+    ```bash
+    npm install -D @master/css-cli@rc
+    ```
+  </Step>
+  <Step>
+    ### CSS エントリーを作成する \{#create-your-css-entry\}
+    既定の Master CSS エントリーをインポートするスタイルシートを作成します。
+
+    ```css name=main.css
+    @import "@master/css";
+    ```
+  </Step>
+  <Step>
+    ### ビルドコマンドを実行する \{#run-the-build-command\}
+    コマンドを実行してソースを走査し、`master.css` を書き出します。
+
+    ```bash
+    npx @master/css-cli generate "index.html" --output master.css --watch
+    ```
+  </Step>
+  <Step>
+    ### 生成したスタイルシートを読み込む \{#load-the-generated-stylesheet\}
+    以下のドキュメントを `index.html` として保存します。監視プロセスがクラス名から `master.css` を生成します。ディレクトリーを配信してページを開くと、スタイル付きの段落を確認できます。
+    <InstallationPreview>
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
+</head>
+<body>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello World</p>
+</body>
+</html>
+```
+
+    </InstallationPreview>
+  </Step>
+</StepSection>
+
+### デプロイ用にビルドする \{#build-for-deployment\}
+
+監視コマンドは動き続け、選択したソースが変わると出力を更新します。本番ビルドでは `--watch` を省き、出力を書いて終了するようにします：
+
+```bash
+npx @master/css-cli generate "index.html" --output master.css
+```
+
+`index.html`、`master.css`、生成スタイルシートが参照する隣接の CSS アセットをデプロイします。相対パスを保持してください。`master.css` だけをコピーすると、インポートしたスタイルが欠ける場合があります。新しいビルドの公開時は、生成したアセット一式をまとめて扱います。
+
+デプロイしたページを読み込み、すべてのスタイルシートのリクエストが成功するか確認します。JavaScript を無効にしても、段落の生成されたパディング、境界線、面の色が保たれるはずです。通常のアプリ範囲外のソースを含める方法は、[クラス名の走査](/guide/scanning-and-pruning)で説明しています。
+
+## スタイルが表示されない場合 \{#if-the-style-does-not-appear\}
+
+編集したマークアップがページにレンダリングされ、アプリのスタイルシートが読み込まれるか確認します。次に、ビルドインテグレーションが有効で、そのソースファイルを走査するか確認してください。`p-lg` のような完全なクラス名を記述します。`p-${size}` のように断片から組み立てると、静的走査では最終的なクラスを認識できません。
+
+インストーラーが未認識のフレームワークや不完全な設定を報告した場合は、対応する[インテグレーションガイド](/guide/installation#integrations)か [CLI ガイド](/guide/installation#cli)に従ってください。通常のアプリ範囲外のファイルは、[クラス名の走査](/guide/scanning-and-pruning)を参照します。
+
+間隔の変更が動いたら、[構文チュートリアル](/guide/syntax-tutorial)に進み、操作状態とレスポンシブ条件を備えたカードを作ります。

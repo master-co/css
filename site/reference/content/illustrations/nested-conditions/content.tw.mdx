@@ -1,0 +1,31 @@
+# Reference prose: illustrations/nested-conditions
+
+## title \{#copy-title\}
+
+
+兩個查詢包覆同一個宣告
+
+## alt \{#copy-alt\}
+
+
+媒體查詢包住 supports 查詢，再由 supports 查詢包住 grid 規則。兩個 class 後綴對應到這些巢狀 CSS 邊界。
+
+## caption \{#copy-caption\}
+
+
+第一個查詢位於最外層。只有兩個條件都相符，display 宣告才會參與階層串接；巢狀結構不是執行時間軸。
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem)@supports(display:grid) 會將 grid 規則放在 @supports (display:grid) 內，再將其放在 @media (width>=40rem) 內。
+
+## description-1 \{#copy-description-1\}
+
+
+媒體查詢測試檢視區寬度，supports 查詢測試瀏覽器是否支援 display: grid。兩者都必須相符，這個宣告才會參與階層串接。
+
+## description-2 \{#copy-description-2\}
+
+
+生成選擇器會比對帶有完整 class 的元素。圖中省略外圍 utilities 串接層，但生成 CSS 範例仍會保留它。

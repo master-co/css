@@ -1,0 +1,358 @@
+---
+{
+  "title": "ベンチマーク",
+  "description": "ページが配信する CSS の一致範囲を調べ、同じ UI の生成 CSS を比較し、制約とともにビルドとランタイムのコストを確認します。",
+  "category": "検証データ"
+}
+---
+
+import BenchmarkChart from '@master/internal-site/benchmarks/BenchmarkChart.astro'
+import PageCSSSizeBenchmark from './components/PageCSSSizeBenchmark.astro'
+import { BenchmarkSummaryTable } from './components/BenchmarkSummary'
+import { PageCSSSampleTable, PageCSSSiteTable } from './components/PageCSSSizeSample'
+import { RevisionComparisonTable } from './components/RevisionComparison'
+import {
+  StaticBuildChart,
+  StaticBuildTable,
+  StaticComparisonSummary,
+  StaticCSSBytesTable,
+  StaticCSSOutputChart,
+  StaticStructureChart,
+  StaticStructureTable
+} from './components/StaticTailwindComparison'
+import {
+  BrowserCSSCostSummary,
+  BrowserCSSCostTables,
+  BrowserCSSVolumeTraceChart,
+  BrowserDOMScalingTraceChart
+} from './components/BrowserCSSCostBenchmark'
+import {
+  MasterDeliveryLoadChart,
+  MasterDeliveryModesSummary,
+  MasterDeliveryModesTables,
+  MasterDeliveryPayloadChart,
+  MasterDeliveryRuntimeChart
+} from './components/MasterDeliveryModesBenchmark'
+import {
+  InteractionCostSummary,
+  InteractionCostTables,
+  InteractionPrimaryCharts,
+  InteractionRuntimeCharts
+} from './components/InteractionCostBenchmark'
+import {
+  BrowserLifecycleLongSessionCharts,
+  BrowserLifecycleLongSessionTable,
+  BrowserLifecycleSummary
+} from './components/BrowserLifecycleBenchmark'
+import {
+  BuildPathDiagnosticsCharts,
+  BuildPathDiagnosticsSummary,
+  BuildPathDiagnosticsTable
+} from './components/BuildPathDiagnosticsBenchmark'
+
+## 概要 [sr-only] \{#overview\}
+まず、ドキュメントページが配信する CSS のどれだけがページに一致するかと、同じ UI で Master CSS と Tailwind CSS がそれぞれどれだけの CSS を生成するかを測定します。技術付録ではビルド時間、CSS の量に対する Chromium の反応、各 Master CSS レンダリングモードのコストを扱います。他のアプリへ結果を当てはめる前に、各節の条件と制約を確認してください。
+
+スナップショットは2026年11月4日に、同じマシン（Apple M5 Max、macOS）と Chromium 156 で記録しました。Master CSS のパッケージはリビジョン `add10eec6` からビルドしています。ブラウザーライフサイクルの記録は同日早い時刻の `3fc239c6c` に基づきます。`add10eec6` の変更はコンパイラーと静的ビルドのホストで、ランタイム、プリセット、エンジンは変えていません。Master CSS のドキュメントは同じチェックアウトの本番ビルドから測定し、他のサイトは同日の公開ページを取得しました。
+
+<figure>
+  <BenchmarkChart chart={BenchmarkSummaryTable} />
+  <figcaption>主要結果はコミット済みスナップショットから算出しています。以下の各節に、条件と完全なデータを示します。</figcaption>
+</figure>
+
+---
+
+## ドキュメントページの CSS \{#page-css-size\}
+検証する問い：各ドキュメントページの初期 HTML から見つかるインライン style とリンク先スタイルシートはどれだけの大きさで、そのうち何個のスタイルルールがページに一致するか。
+
+<PageCSSSizeBenchmark />
+
+グラフは各サイトの掲載ページのインライン `style` とリンク先スタイルシートを合計します。Brotli 表示では各本文を個別に圧縮します。1ページだけではサイトを代表できない場合があるため、表では各サイトに4ページを加えて範囲を示します。
+
+<figure>
+  <BenchmarkChart chart={PageCSSSampleTable} />
+  <figcaption>各サイト5ページを測定します。一致するスタイルルールとは、1280 × 800 のビューポートで読み込んだページの要素にセレクターが一致するルールです。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={PageCSSSiteTable} />
+  <figcaption>Master CSS サイトのサイトマップにある全ドキュメントページを同じ方法で測定します。</figcaption>
+</figure>
+
+Master CSS のドキュメントは2種類の CSS を使います。ページごとの `style#master-css` には、そのページが使うユーティリティがあり、掲載ページでは1 kB未満です。リンク先スタイルシートにはサイトのデザインシステムのコンポーネント、プリセットの基盤、それらが参照するトークンがあり、バイトの大部分を占めます。各スタイルシートはコンポーネントに属して全体が届くため、コンポーネントの多いページほどファイルが増え、合計も異なります。閉じた検索ダイアログや記事コンポーネントの一部など、コンポーネントの一部分しか描画しなくても全ルールを受け取ることが、一致しないルールの主な理由です。他のサイトのいくつかは全ページで同じスタイルシートを配信します。
+
+一致したルールは、サイズとは独立に CSS がページへどれだけ適合するかを測ります。状態疑似クラスと疑似要素を除いたセレクターが、読み込み後の要素に一致すれば数えます。他のビューポート、配色、後の操作のルールも、対象要素がない場合だけ不一致となります。割合は各サイト自身のスタイルシートの性質であり、CSS フレームワークだけの性質ではありません。
+
+制約：収集した CSS 本文のサイズであり、ブラウザーの転送量や時間ではありません。収集ツールは CSS import グラフをたどらず、JavaScript が挿入するスタイルも数えません。レスポンス全体の圧縮、キャッシュ再利用、ヘッダー、CDN、フォント、画像、アプリのランタイム処理は対象外です。各サイトの設計とビルドの判断も反映されるので、CSS フレームワークのコストだけを分離したサンプルではありません。同じ UI でのフレームワーク比較は下の静的フィクスチャで行います。
+
+---
+
+## 同じ UI の生成 CSS \{#static-css-output\}
+検証する問い：等価な静的 Master CSS と Tailwind CSS v4 のフィクスチャで、生成 CSS のバイト数、ファイル、CSS AST 構造はどう異なるか。
+
+まとめたスナップショットは `css-output-size`、`build-performance`、`css-structure` の結果を統合しています。最初は静的アーティファクト出力に集中できるよう、主要グラフに `docs` フィクスチャの CLI 版を使います。本番コマンドの時間は[技術付録](#production-build)にあります。
+
+<figure>
+  <BenchmarkChart chart={StaticComparisonSummary} />
+  <figcaption>測定した全フィクスチャの静的比較をまとめたスナップショット。</figcaption>
+</figure>
+
+### 代表的なフィクスチャ \{#representative-fixture\}
+`docs` フィクスチャは、ナビゲーション、コードブロック、表を持つ情報量の多い記事・ドキュメントレイアウトを表します。
+
+<figure>
+  <BenchmarkChart chart={StaticCSSOutputChart} />
+  <figcaption>CLI 構成の `docs` フィクスチャの Brotli 圧縮 CSS 出力。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticStructureChart} />
+  <figcaption>CSS AST の解析で取得した `docs` フィクスチャの生成宣言数。</figcaption>
+</figure>
+
+### 完全なデータ \{#complete-data\}
+完全な表には、測定した全フィクスチャと CLI／Vite 両構成を残しています。
+
+<figure>
+  <BenchmarkChart chart={StaticCSSBytesTable} />
+  <figcaption>全フィクスチャ・構成の、生、gzip、brotli の CSS バイト数と CSS ファイル数。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticStructureTable} />
+  <figcaption>生成 CSS から解析したルール、セレクター、宣言、at-rule、レイヤー、セレクター形状のデータ。</figcaption>
+</figure>
+
+解釈：ブラウザーコストを論じる前に、CSS 構造の指標がバイト数の差を説明します。Tailwind CSS と Master CSS のフィクスチャは、同じクラス文字列ではなく等価な描画 UI を目指しています。
+
+測定したすべての構成は CSS を1ファイル出力します。Master CSS の静的ビルドは、プリセットを含めエントリーが import するスタイルシートをインライン化するため、Tailwind CSS と同様に1リクエストで生成 CSS が届きます。外部 import、名前空間、あるいは自身に import を持つファイルへの条件付き import を保持するスタイルシートは別ファイルのままですが、今回のフィクスチャにその例はありません。
+
+制約：ブラウザーの解析、スタイル再計算、レイアウト、描画、操作コスト、watch モード、HMR は測っていません。フィクスチャはユーティリティクラスだけを使います。記述したコンポーネント CSS の追加量は、[ページ CSS](#page-css-size)のサンプルで確認できます。
+
+---
+
+## 7月のスナップショットからの変化 \{#changes\}
+前回の2026年7月1日のスナップショット以降、エンジンは Rust へ移り、クラス構文も変わりました。コード変更の影響をマシン、ブラウザー、測定ハーネスから分けるため、7月のリビジョン `cd5a3972a` を再ビルドし、その版自身のランナーを現在と同じマシン・Chromium ビルドで再実行しました。マシンのバックグラウンド負荷が両方へ同様に影響するよう、本番ビルドを2つのチェックアウトで3回交互に実行しました。
+
+再実行では7月の静的 CSS 出力をバイト単位で再現できたため、以前の数値はそのリビジョンでは有効でした。現在のフィクスチャは現行のクラス構文で同じ描画値を表し、すべてのクラスが CSS を生成して CLI の `--strict` を通過します。
+
+<figure>
+  <BenchmarkChart chart={RevisionComparisonTable} />
+  <figcaption>同じマシン・Chromium ビルドで各リビジョン自身のランナーが得た中央値です。本番ビルドは両方で同じ Node.js を使い、各中央値は3回の交互実行に含まれる15コマンドをまとめています。</figcaption>
+</figure>
+
+このマシンでは現行版のブラウザーランタイム起動が速く、少ないデータでプログレッシブページをハイドレーションします。一方、ランタイムのダウンロード量は増え、コールドな本番コマンドは長くなります。`docs` の生成 CSS は約5%増え、7月と同様に1ファイルで届きます。各チェックアウトは独自の Tailwind CSS と Vite を入れるため、Tailwind CSS の対照結果はアップグレードと実行間のノイズも反映します。
+
+両リビジョンとも Tailwind CSS を含む各モードの操作準備時間はほぼ同じです。Master CSS の処理ではなくハーネスのフレーム待ちで制約されるため、値は約1フレーム（17 ms）刻みで動きます。7月版で低い Tailwind CSS の値も、その1刻みです。
+
+---
+
+## 技術付録 \{#current-results\}
+ここでは本番コマンド、CSS の量に対する Chromium の反応、各 Master CSS モードがブラウザーへ送り実行する内容など、上の結果の背後にあるコストを説明します。モードの選択やビルド時間の診断時に参照してください。
+
+### 中心となる仮説 \{#core-hypothesis\}
+配信上の問いは、少ない CSS ルールを読み込むことで省けるブラウザーの処理が、ランタイム生成のコストを相殺できるかです。初期読み込み、後の操作、長時間セッションのクリーンアップまで、ページのライフサイクル全体を比較します。
+
+ランタイムとプログレッシブのレンダリングは、観測したクラスからルールを生成する JavaScript 処理を加えます。クラス集合が静的ソース由来の集合より小さければ、初期 CSS と CSSOM のルール量を減らせます。その削減が起動や変更処理を相殺するかは負荷次第です。Tailwind CSS は、ランタイムのない静的 CSS 対照として有用です。等価なランタイム実装はありませんが、大きな静的 CSS 側のトレードオフを表せます。
+
+現在の証拠は方向性として読むべきです。測定したフィクスチャで、ランタイム／プログレッシブが CSSOM・ルール量やスタイル再計算を十分に減らし、起動、監視、変更処理を相殺できれば仮説を支持します。すべてのアプリが速くなるという証明ではありません。
+
+これらのスイートは、セレクター照合を安定した Chromium 指標として直接測っていません。配信セレクター、CSSOM ルール数、ランタイム生成ルール数、トレース由来のスタイル再計算から推測しています。
+
+### 結果の読み方 \{#how-to-read-these-results\}
+ベンチマークは限定した問いに答えるときに役立ちます。配信のトレードオフを評価する際は、次の順で測定結果を読みます。
+
+1. ページ CSS と静的 CSS 出力で、ページや静的構成が配信するバイト、ファイル、セレクター、宣言、ルールの数を確認します。
+2. ブラウザー CSS コストで、DOM を固定し CSS ルール量を増やしたときの Chromium の反応を校正します。
+3. 配信モードで Master の静的、ランタイム、プログレッシブと Tailwind 静的が初回読み込みで送信・実行する内容を確認します。
+4. 操作コストで、ランタイムのルール処理を含む、読み込み後の DOM とクラス変更を測定します。
+5. ブラウザーライフサイクルの証拠で、長時間セッションの処理、CSSOM・ルール量、ランタイムの計測を組み合わせます。
+
+各グラフを測定したフィクスチャとコマンドの証拠として読み、他のアプリへ適用する前に完全な表とコミット済みスナップショットを照合してください。
+
+| 問い | 主な証拠 |
+|----------|------------------|
+| 各ドキュメントページで見つかる CSS 本文の大きさと使用量はどれだけか | ページ CSS サイズのスナップショット |
+| 同じ UI の生成静的 CSS はどれだけ大きいか | 静的 CSS 出力と CSS 構造のスナップショット |
+| 本番コマンドにどれだけ時間がかかるか | 本番ビルド |
+| Master CSS のビルド時間はどこに使われるか | ビルド経路の診断 |
+| CSS ルール量の Chromium コストは何か | ブラウザー CSS コストの校正 |
+| 各モードは初回読み込みで何を送り実行するか | Master CSS 配信モード |
+| 読み込み後のクラス・DOM 変更で何が起きるか | 操作コスト |
+| ランタイム処理は長時間セッションのコストを変えるか | ブラウザーライフサイクルの証拠 |
+| リビジョン間で何が変わったか | リビジョン比較 |
+
+Tailwind CSS は等価なランタイムの比較対象ではありません。ランタイム向けスイートでは、仮説のうちランタイムなし・大きな静的 CSS 側を表す、静的なブラウザー対照です。
+
+数値が小さければ常に良いわけではありません。CSS アーティファクトの縮小はランタイムへの処理移動かもしれず、速いコールドコマンドは有用な出力の少なさを隠すかもしれません。ローカル Chromium のトレースは実際の本番テレメトリーの代わりにもなりません。
+
+時間とともに正しさも確認します。フィクスチャが意図した UI を描画してこそ、小ささや速さに意味があります。スイートが記録している場合は、表に算出スタイルとプログレッシブの採用確認を含めます。
+
+### 本番ビルド \{#production-build\}
+検証する問い：各静的フィクスチャ・構成で、コールドまたは反復の本番コマンド全体にどれだけかかるか。
+
+<figure>
+  <BenchmarkChart chart={StaticBuildChart} />
+  <figcaption>CLI 構成の `docs` フィクスチャのコールド本番コマンド中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticBuildTable} />
+  <figcaption>全フィクスチャ・構成のコールドと反復の本番コマンド時間。</figcaption>
+</figure>
+
+解釈：各コマンド経路の時間にはプロセス、CLI または Vite、パッケージの起動が含まれるため、小さいフィクスチャでは主に固定起動コストを測ります。反復の本番ビルドは同じワークスペースでの2回目のコマンドで、watch や HMR ではありません。
+
+### ビルド経路の診断 \{#build-path-diagnostics\}
+検証する問い：Master CSS の起動、インテグレーション、抽出、コンパイラーのどの下位処理がコマンド全体のコストを説明するか。
+
+`startup-diagnostics`、`build-diagnostics`、`compiler-diagnostics`、`extraction-diagnostics` を統合したスナップショットです。Master CSS のビルド経路を説明するもので、フレームワーク間の本番ベンチマークではありません。
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsSummary} />
+  <figcaption>Master CSS のビルド経路診断をまとめたスナップショット。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsCharts} />
+  <figcaption>`docs` フィクスチャの診断中央値。起動プローブは方向性を示すもので、足し合わせられるフレームグラフではありません。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsTable} />
+  <figcaption>測定した全フィクスチャの完全なビルド経路診断データ。</figcaption>
+</figure>
+
+解釈：通常のフィクスチャのコマンドでは、モジュール import とソーススキャンは数ミリ秒です。スタイルシートエントリーの登録と出力の合成はそれぞれ数十ミリ秒で、同じ構成で再合成しても初回の約5分の3がかかります。1回の CLI 実行の CPU プロファイル（`node --cpu-prof`）では、コマンドの最大部分、約3分の1が、import したプリセットのスタイルシートグラフのコンパイルに割り当てられます。これはフィクスチャのクラスに依存せず、小さな例も大きな例とほぼ同じ固定費を負担します。
+
+制約：診断プローブは別々の範囲や下位処理を測定します。1つの本番トレースのように時間を足し合わせないでください。
+
+### ブラウザーの CSS コスト \{#browser-css-cost\}
+検証する問い：DOM を固定した場合、CSS ルール量は Chromium のスタイル再計算、レイアウト、描画へどう影響するか。CSS を固定して DOM を増やすとどうなるか。
+
+ローカルのフィクスチャ、決定的な外部 CSS、Playwright、Chromium トレースを使います。ブラウザーだけの校正スイートであり、Master CSS と Tailwind CSS の比較ではありません。
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSCostSummary} />
+  <figcaption>ブラウザー CSS コストをまとめたスナップショット。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSVolumeTraceChart} />
+  <figcaption>CSS ルール量を増やし、可視 DOM を固定したウォームキャッシュのトレース中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserDOMScalingTraceChart} />
+  <figcaption>DOM を増やし、CSS を固定したウォームキャッシュのトレース中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSCostTables} />
+  <figcaption>CSS 量と DOM 拡大の各条件の完全なブラウザー CSS コストデータ。</figcaption>
+</figure>
+
+解釈：CSS 量の曲線は、各配信モードが操作前に Chromium へ読み込ませる CSS の量を判断する主な材料です。DOM 拡大の対照は、DOM、スタイル、レイアウトの拡大を CSS ペイロードのサイズから分離する助けになります。
+
+制約：ランタイムのルール生成、実アプリの JavaScript、Firefox、WebKit、CDN、公開実ページのばらつきは測定していません。Chromium のトレースイベント名はブラウザーの版によって変わる場合があります。
+
+### Master CSS の配信モード \{#master-css-delivery-modes\}
+検証する問い：各配信モードの初期ペイロード、ローカル Chromium の読み込みコスト、ランタイムの起動コスト、プログラム読み込み、プログレッシブの採用動作はどうなるか。
+
+静的フィクスチャ全体で、Master CSS の静的、ランタイム、プログレッシブと、Tailwind CSS 静的のブラウザー対照を比較します。
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryModesSummary} />
+  <figcaption>Master CSS の配信モードをまとめたスナップショット。</figcaption>
+</figure>
+
+#### 代表的なフィクスチャ \{#delivery-representative-fixture\}
+主要グラフは `docs` フィクスチャを示します。
+
+ペイロードのグラフは、完全な HTML レスポンスと初回読み込みで要求した各外部アセットを1回ずつ数えます。インライン CSS と挿入した hydration マニフェストは HTML 内にあるため、別区分ではありません。空のアセット欄は圧縮コンテナーのバイトを合計へ加えません。
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryPayloadChart} />
+  <figcaption>`docs` フィクスチャで記録したレスポンスアセットを個別に Brotli 圧縮しています。すべてのバーはゼロから最大合計までの共通スケールで、各区分がアセットの寄与を示します。</figcaption>
+</figure>
+
+合計は記録したアセット欄からの推定で、実測ネットワーク転送量ではありません。ヘッダーと転送オーバーヘッドを含まず、各ページの HTML には測定ハーネスのスクリプトもあります。詳細表は、個別に圧縮したインライン CSS と hydration 断片を診断用に残しています。これらをレスポンス合計へ足すと二重計上になります。
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryLoadChart} />
+  <figcaption>`docs` フィクスチャのローカル Chromium 読み込み時間の中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryRuntimeChart} />
+  <figcaption>Master のランタイム・プログレッシブモードの、ランタイム起動と監視の中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryModesTables} />
+  <figcaption>測定した全フィクスチャ・モードの完全な配信モードデータ。</figcaption>
+</figure>
+
+解釈：ランタイムモードは生成 CSS を配信しませんが、ページにスタイルを付ける前にブラウザーランタイムとコンパイル済み既定プログラムを取得します。プログレッシブは HTML 内のサーバー／ビルド時 CSS から始まり、ランタイムが採用します。hydration データにないクラスが現れたときだけプログラムを取得しますが、今回の初期読み込みでは起きませんでした。
+
+制約：ローカルフィクスチャの初期読み込みだけを測定しています。読み込み後の変更は操作スイートで扱います。Master 静的と Tailwind 静的は、同じクラス文字列でなく等価なフィクスチャ意図で作った CLI 生成スタイルシートを1つずつ読み込みます。ランタイムとプログレッシブのページは自己完結したグローバル runtime バンドルを読み込みます。バンドラー統合ではより小さなプログレッシブエントリーも使え、[ランタイムサイズの契約](https://github.com/master-co/css/blob/rc/.ai/contracts/runtime-bundle-size.json)で測定しています。各モードの起動は[レンダリングモード](/reference/packages#css-runtime)を参照してください。
+
+### 操作コスト \{#interaction-cost\}
+検証する問い：読み込み後のクラス切り替え、初回のランタイムルール生成、DOM の追加・削除、配色切り替え、ビューポート変更、クリーンアップにはどれだけのコストがあるか。
+
+`dynamic`、`dashboard`、`stress-dom` のフィクスチャでローカル Chromium の操作を測ります。Tailwind CSS 静的はスタイル・レイアウト・描画のブラウザー対照で、クライアントのランタイムルール生成に相当する実装はありません。
+
+<figure>
+  <BenchmarkChart chart={InteractionCostSummary} />
+  <figcaption>操作コストをまとめたスナップショット。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionPrimaryCharts} />
+  <figcaption>主要な `dynamic` フィクスチャの各シナリオで、変更後に準備が整うまでの中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionRuntimeCharts} />
+  <figcaption>Master ランタイム・プログレッシブの `dynamic` シナリオでの、ランタイムルール更新の中央値。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionCostTables} />
+  <figcaption>対応するフィクスチャ・モード・シナリオの組み合わせの完全な操作コストデータ。</figcaption>
+</figure>
+
+解釈：ランタイムとプログレッシブは、ユーザーに見える変更後の準備完了と、その後のランタイムのスタイルシート処理という2層で読みます。準備時間はハーネスのフレーム待ちを含みモード間でほぼ同じなので、追加コストはランタイム変更処理とスタイル再計算で比較します。ルール差分は公開 runtime スナップショットのルールを数えます。エンジン遅延中のプログレッシブではそこにルールはなく、hydration データにない最初のクラスがエンジンを起動し、サーバーのルールを状態へ採用します。そのため、その操作の差分には採用分も入ります。CSSOM コストはランタイム変更処理とスタイル再計算を比較してください。
+
+制約：ルート遷移、HMR、開発フロー、CDN、Firefox、WebKit、公開実アプリのばらつきは測定しません。
+
+### ブラウザーライフサイクルと長時間セッション \{#browser-lifecycle-and-inp-style-interactions\}
+検証する問い：記録した各5分間のセッションで、描画とランタイムの処理がどれだけ蓄積したか。
+
+ライフサイクルのスイートは Master CSS の静的、ランタイム、プログレッシブと Tailwind CSS 静的対照を比較します。下のグラフは5分間の長時間シナリオです。各モードは**測定1回だけ**で、1サンプルの中央値はその1回の観察そのものであり、再現性の証拠ではありません。
+
+表の経過時間はスクリプトによるセッション全体と、最後に安定を待つフレームを含みます。指標名は `inp-style-interaction-ms` ですが、このシナリオでは設計上約5分です。個別の入力遅延や Web Vitals INP を測るものではありません。
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleSummary} />
+  <figcaption>ブラウザーライフサイクルの証拠の網羅性と正しさの確認。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleLongSessionCharts} />
+  <figcaption>各モード1回の5分間実行で観測した、ブラウザーの描画とランタイム処理。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleLongSessionTable} />
+  <figcaption>全モードの完全な5分間セッションの証拠。</figcaption>
+</figure>
+
+解釈：スタイル再計算の合計と、各モードが加えるランタイム変更処理を比較します。各1回の実行では安定した高速化は証明できません。レイアウト、描画、応答性、全体性能の結論を出す前に、同じマシンで反復実行を比較してください。
+
+制約：Chromium が安定したトレース指標を提供しない限り、セレクター照合の時間は CSSOM・ルール量とスタイル再計算からの推測です。CSSOM メモリーと GC 負荷は、同じブラウザー版で再現できるほど収集方法が安定した場合だけ報告します。
+
+---
+
+## データソース \{#data-sources\}
+グラフは2026年11月4日付の、`benchmarks/**/snapshot.json` と `benchmarks/browser-lifecycle/long-session-evidence.json` にコミットされたスナップショットを読みます。フィクスチャ、指標群、公開規則、記録したコマンド、検証手順は[ベンチマーク README](https://github.com/master-co/css/tree/rc/benchmarks#readme)にあります。再現には対応するソースリビジョンとロックファイルが必要で、現行パッケージのインストールだけでは足りません。

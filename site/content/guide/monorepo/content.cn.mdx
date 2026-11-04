@@ -1,0 +1,144 @@
+---
+{
+  "title": "Monorepo",
+  "description": "让每个应用拥有自己的项目上下文，并在工作区软件包之间共享 CSS 词汇。",
+  "category": "基础",
+  "figures": {
+    "MonorepoIllustration": {
+      "title": "共享源代码，保留两个项目上下文",
+      "alt": "admin 和 shop 项目都导入 styles/shared.css，各自在 index.css 中覆盖 color-primary。相同的 bg-primary 类名在 admin 中解析为紫色，在 shop 中解析为青绿色，两边的覆盖互不影响。",
+      "caption": "导入会共享定义。每个应用仍拥有自己的入口、覆盖、源代码选择范围和生成输出。",
+      "description": [
+        {
+          "title": "共享定义",
+          "text": "两个应用入口都导入 styles/shared.css。"
+        },
+        {
+          "title": "Admin 上下文",
+          "text": "projects/admin/index.css 将 color-primary 覆盖为 #4f46e5。其 bg-primary 类名使用这个紫色值。"
+        },
+        {
+          "title": "Shop 上下文",
+          "text": "projects/shop/index.css 将 color-primary 覆盖为 #0f766e。其 bg-primary 类名独立使用这个青绿色值。"
+        }
+      ]
+    },
+    "GuideStudy:shared-source-inputs": {
+      "title": "共享 CSS 与共享标记是独立输入",
+      "alt": "CSS 定义文件和组件源文件分别通过导入与源代码选择两条路径进入使用方应用。",
+      "caption": "导入共享 CSS 不会自动选择所有同级组件文件进行扫描。"
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MonorepoIllustration from './components/MonorepoIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 概览 [sr-only] \{#overview\}
+让每个应用拥有独立的项目边界，再通过导入共享 CSS 词汇。[语言服务](/guide/language-service)、[代码 lint](/guide/code-linting) 和构建集成都可以使用同一份应用专属的项目上下文。
+
+导入 `@master/css` 的项目 CSS 入口，或声明 Master CSS 依赖的软件包，都可标识一个工作区。这些边界独立于包管理器的工作区列表。请从各应用的项目目录开始构建，并将 CSS 入口保留在该目录中。仅属于包管理器的同一工作区，不会建立共享的 Master CSS 配置。
+
+<MonorepoIllustration />
+
+---
+
+## 一个项目，一个工作区 \{#one-project-one-workspace\}
+每个 `package.json` 项目都有一个 Master CSS 工作区：一份项目 manifest 图、源代码扫描上下文和一组工具集成。
+
+独立应用请使用分开的软件包项目，例如 `projects/admin` 和 `projects/shop`。各自拥有 CSS 入口和应用配置：
+
+<ExplorerView items={[
+  { name: 'projects', children: [
+    { name: 'admin', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]},
+    { name: 'shop', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]}
+  ]},
+  { name: 'package.json' },
+  { name: 'styles', children: [{ name: 'shared.css' }] }
+]} />
+
+在每个应用中完成对应的[框架配置](/guide/installation#integrations)。从该应用目录启动开发服务器和生产构建，让生成 CSS、源代码扫描、诊断和编辑器状态都与项目根目录保持一致。
+
+将共享定义放在专用源文件中。本示例由共享文件提供令牌，各应用自行导入完整的 Master CSS 入口：
+
+```css name=styles/shared.css
+@theme {
+  --color-primary: #123456;
+}
+```
+
+### 共享 CSS 定义 \{#share-css-definitions\}
+在每个工作区导入共享的项目 CSS 文件，再于其后添加工作区专属定义。
+```css name=projects/admin/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #4f46e5;
+}
+
+@layer components {
+  .app-shell {
+    background-color: var(--color-surface-base);
+    min-height: 100vh;
+  }
+}
+```
+共享导入之后的定义可以覆盖共享令牌和工具类。同一层叠层中的原生组件规则遵循 CSS 源代码顺序。
+
+shop 导入相同的共享源代码，再选择自己的颜色：
+
+```css name=projects/shop/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #0f766e;
+}
+```
+
+两个应用都可以使用相同类名：
+
+```html
+<p class="flex items-center gap-xs text-sm">
+  <span aria-hidden="true" class="h(8) w(8) pill bg-primary"></span>
+  Workspace
+</p>
+```
+
+admin 构建会输出自己的 `#4f46e5` 主色值；shop 则输出 `#0f766e`。更改 admin 的覆盖不应改变 shop 输出。构建两个应用，检查各自生成样式表中的 `--color-primary`，确认边界正常工作。
+
+共享文件定义词汇；各应用入口决定导入内容。应用专属的扫描指令和交付选择应保留在所属应用中，不要放入共享样式表。
+
+---
+
+## 纳入共享组件源代码 \{#include-shared-component-sources\}
+
+共享 CSS 导入提供的是定义。共享组件中的类名字符串仍需要到达使用方应用的扫描器。Vite 可以扫描导入的工作区模块；在应用内部启动的 CLI 构建不会沿 JavaScript 导入追踪到同级软件包。
+
+如果组件位于 `packages/ui`，请在每个使用方应用的 CSS 入口加入 `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";`。此显式路径将共享源代码纳入应用构建。它相对于声明该指令的 CSS 文件，因此入口移动时也应调整路径。
+
+<ReferenceIllustration id="source-relative-base" />
+
+已安装的依赖目录不会自动扫描。打包后的组件库可能需要范围精确的 `@source` 模式，指向其分发的源文件。请选择仅出现在该包中的类名，检查应用的生产输出。[源代码边界](/reference/rules/extraction#source-boundaries)列出了排除规则和其他来源类型。
+
+<GuideStudy id="shared-source-inputs" />
+
+## 扩大共享范围前先验证边界 \{#verify-the-boundary-before-sharing-more\}
+
+从各应用目录运行生产构建。更改一个局部覆盖后检查两份输出：admin 的值应只在 admin 中改变。接着加入仅由共享组件使用的完整类名，确认使用方应用会输出该规则。
+
+如果缺少令牌，请检查 CSS 导入图。如果定义可用但共享组件的工具类缺失，请检查源代码选择范围。这是两项独立输入：导入共享 CSS 不会自动纳入所有同级组件文件。
+
+词汇需要版本化软件包契约时，请参阅[编写软件包](/guide/authoring-packages)。通过[扫描类名](/guide/scanning-and-pruning)定义各应用扫描的文件，再通过[优化 CSS 交付](/guide/optimizing-css-delivery#native-pruning)决定可以移除的原生规则。

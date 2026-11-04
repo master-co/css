@@ -1,11 +1,14 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel, referenceHeader } from './ui'
 import './sheet-blocks'
+import { referenceEditorial } from './copy'
 import Link from '@master/internal-site/components/Link.svelte'
 import InlineText from './InlineText.astro'
 import SheetExampleBlock from './SheetExampleBlock.astro'
 import SheetTable from './SheetTable.astro'
 import ReferenceIllustration from './ReferenceIllustration.astro'
-import { namedConditionText } from './named-conditions'
+import { namedConditionText as sourceNamedConditionText } from './named-conditions'
 import type { NamedConditionsSheet } from './sheets'
 
 interface Props {
@@ -13,18 +16,22 @@ interface Props {
 }
 
 const { sheet } = Astro.props
+const namedConditionText = referenceEditorial(sourceNamedConditionText, 'rules/named-conditions', siteOf(Astro).locale)
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, string | number>) => referenceLabel(locale, key, values)
+
 ---
 
 <p><InlineText text={namedConditionText.intro} /></p>
-<h2 id="conditions">Media conditions</h2>
+<h2 id="conditions">{l('media')}</h2>
 <p><InlineText text={namedConditionText.media} /></p>
 {sheet.groups.map((group, index) => <Fragment>
   {index === 3 && <Fragment>
-    <h2 id="container-conditions">Container conditions</h2>
+    <h2 id="container-conditions">{l('container')}</h2>
     <p><InlineText text={namedConditionText.container} /></p>
   </Fragment>}
   <h3 id={group.id}>{group.title}</h3>
-  <SheetTable class="ref-value-table" head={['Suffix', 'Expanded query']}>
+  <SheetTable class="ref-value-table" head={['Suffix', 'Expanded query'].map(header => referenceHeader(locale, header))}>
     {group.rows.map(row => <tr id={row.id}>
       <th scope="row"><code>{row.suffix}</code></th>
       <td><code>{row.query}</code></td>
@@ -32,12 +39,12 @@ const { sheet } = Astro.props
   </SheetTable>
 </Fragment>)}
 <p><InlineText text={namedConditionText.complement} /></p>
-<h2 id="scope">Same name, different scope</h2>
+<h2 id="scope">{l('sameName')}</h2>
 <p><InlineText text={namedConditionText.scope} /></p>
 <ReferenceIllustration id="condition-domains" />
-<h2 id="usage">Usage</h2>
+<h2 id="usage">{l('usage')}</h2>
 <SheetExampleBlock example={sheet.usage} />
-<h2 id="customize">Customize</h2>
+<h2 id="customize">{l('customize')}</h2>
 <p><InlineText text={namedConditionText.customize} /></p>
 <SheetExampleBlock example={sheet.customize} preview={false} />
-<p class="ref-links">See <Link href="/reference/rules/conditions">condition grammar</Link>, <Link href="/reference/rules/conditions#compiled-condition-definitions">condition definition scope</Link>, <Link href="/reference/directives/queries#custom-container">query definitions</Link>, <Link href="/reference/tokens/container">container sizing tokens</Link> and <Link href="/guide/responsive-design">Responsive design</Link>.</p>
+<p class="ref-links">{l('see')} <Link href="/reference/rules/conditions">{l('grammar')}</Link>, <Link href="/reference/rules/conditions#compiled-condition-definitions">{l('conditionScope')}</Link>, <Link href="/reference/directives/queries#custom-container">{l('queryDefinitions')}</Link>, <Link href="/reference/tokens/container">{l('containerTokens')}</Link> {l('and')} <Link href="/guide/responsive-design">{l('responsive')}</Link>.</p>

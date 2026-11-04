@@ -1,0 +1,25 @@
+# Reference prose: illustrations/condition-domains
+
+## title \{#copy-title\}
+
+The same name measures different boundaries
+
+## alt \{#copy-alt\}
+
+A viewport drawn at 64rem contains a smaller 28rem query container. The md media condition refers to the viewport, while the md container condition refers to the inner container.
+
+## caption \{#copy-caption\}
+
+The preset’s @md threshold is 64rem; @container(--md) is 28rem. These independent definitions query different boundaries even though both use the name md.
+
+## description-0 \{#copy-description-0\}
+
+The outer boundary represents a viewport at the preset @md minimum width of 64rem.
+
+## description-1 \{#copy-description-1\}
+
+The inner boundary represents a query container at the independent @container(--md) minimum width of 28rem. The queried element is inside that container.
+
+## description-2 \{#copy-description-2\}
+
+The two widths use one drawing scale with a 16px initial and root font size. Changing a container sizing token does not change either condition definition.

@@ -1,0 +1,66 @@
+# Reference prose: truncation
+
+## title \{#copy-title\}
+
+
+文本截断
+
+## summary \{#copy-summary\}
+
+
+将文本限制为一行或指定行数，并以省略号结尾。
+
+## note \{#copy-note\}
+
+
+两种形式都需要受限的宽度。在 Flex 或 Grid 项目内，请为该项目设置 `min-w(0)`，使其能够缩小。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+限制可见文本，同时保留阅读全文的方式
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`truncate` 结合隐藏溢出、省略号和不换行设置。它需要具有有限行内宽度的块容器，才会产生溢出；应用到宽度未受限的行内 span 上，不会形成单行预览。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`clamp-lines(2)` 使用带前缀的 line-clamp 组合：`display: -webkit-box`、垂直盒子方向、两行限制和隐藏溢出。行数必须是正整数。此形式允许换行，因此不要与 `truncate` 及其 `white-space: nowrap` 合并使用。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+文本仍保留在 DOM 中。裁剪只是视觉限制，不会缩短字符串，也不是展开内容的机制。请通过实际链接或可展开的全文视图保留重要信息的访问方式；不要只依赖鼠标悬停时才显示的 title。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+Flex 或 Grid 项目的自动最小尺寸可能使它比可用空间更宽。请在需要缩小的项目上设置 `min-w(0)`，再限制其内部文本。使用多行截断时，请将 padding 放在外层容器，避免内边距让已裁剪的行露出。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+这个组合样式会设置自己的 display 和 overflow 声明。用 `flex`、`grid` 或可见溢出覆盖它们，可能破坏行数限制。需要自定义截断规则时，请明确使用原生属性。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+原生文本溢出
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+传统多行截断
+
+## usage-lead \{#copy-usage-lead\}
+
+
+让文件名保持一行、摘要限制为两行，并可展开详细内容阅读全文。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

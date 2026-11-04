@@ -1,0 +1,148 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import { baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
+
+<a id="how-layers-control-the-cascade"></a>
+
+클래스가 지원되는 다른 레이어를 명시적으로 선택하지 않는 한 Master CSS는 생성한 스타일 규칙을 `utilities`에 출력합니다. 관리되는 테마 선언은 `theme`을 사용합니다. 네이티브 CSS는 `@apply`로 믹스인을 확장하는 규칙을 포함해 작성된 레이어를 유지합니다.
+
+이 페이지는 레이어의 소유 범위와 생성 규칙의 순서를 정의합니다. 컴포넌트를 덮어쓰거나 DevTools로 진단하는 절차는 가이드의 [캐스케이드 레이어](/guide/cascade-layers)를 참고하세요.
+
+## 순서 확립하기 \{#establishing-the-order\}
+
+`@master/css/base.css`로 제공되며 전체 `@master/css` 가져오기에도 포함되는 기본 스타일시트는 다음을 선언합니다.
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+다른 규칙이 이 레이어들을 확립하기 전에 불러오세요. CSS는 처음 나타난 순서로 레이어 순서를 정하므로 나중에 순서를 선언해도 이미 확립된 레이어를 재배치할 수 없습니다. 생성된 레이어 블록은 이 선언을 직접 삽입하지 않습니다.
+
+### 일반 선언과 중요 선언 \{#normal-and-important-declarations\}
+
+이 레이어들 안에서 일반 선언이 경쟁하면 `utilities`의 우선순위가 가장 높고 `theme`이 가장 낮습니다. 레이어에 속하지 않는 일반 작성자 규칙은 이들 모두보다 우선합니다. `!important`는 레이어 간 순서를 뒤집으며, 레이어 안의 중요 규칙을 레이어 밖의 중요 규칙보다 우선시합니다. 이는 작성자 스타일시트 내부의 비교이며 출처, 인라인 스타일, 애니메이션, 전환까지 포함하는 전체 캐스케이드는 아닙니다. [CSS 레이어 순서](https://www.w3.org/TR/css-cascade-5/#layer-order)를 참고하세요.
+
+<ReferenceIllustration id="layer-precedence" />
+
+레이어 우선순위는 선택자 명시도보다 먼저 평가됩니다. 따라서 명시도가 높은 컴포넌트 선택자도 명시도만으로 일반 유틸리티 선언을 이길 수 없습니다. 같은 레이어의 선언 사이에서는 나머지 캐스케이드 기준도 여전히 적용됩니다. [선택자 명시도](/reference/rules/selectors#specificity)를 참고하세요.
+
+## 레이어 소유 범위 \{#the-five-layers\}
+
+<a id="theme"></a>
+<a id="base"></a>
+<a id="defaults"></a>
+<a id="components"></a>
+<a id="utilities"></a>
+
+| 레이어 | 생성 콘텐츠 | 네이티브 CSS 관례 |
+| --- | --- | --- |
+| `theme` | `:root, :host` 아래 유지되는 관리 대상 토큰 선언 | 토큰 기본값 |
+| `base` | `@layer(base)`가 있는 클래스 | 정규화와 문서 기본 스타일 |
+| `defaults` | `@layer(defaults)`가 있는 클래스 | 프로젝트나 콘텐츠에 폭넓게 적용하는 기본 스타일 |
+| `components` | `@layer(components)`가 있는 클래스 | 재사용 가능한 제품 클래스 |
+| `utilities` | 일반 유틸리티, 조합 스타일, 네이티브 선언 클래스, 명시적 `@layer(utilities)` | 로컬 유틸리티 규칙 |
+
+네이티브 CSS 열은 의도한 역할을 설명하며, 레이어에서 CSS가 허용하는 속성을 제한하지 않습니다. `defaults`는 프로젝트 레이어이지 브라우저의 사용자 에이전트 스타일시트가 아닙니다. 토큰 의존 항목의 전달은 [변수와 모드](/reference/rules/modes#variable-lifecycle)에서 다룹니다.
+
+## 생성 규칙의 레이어 선택하기 \{#layer-checklist\}
+
+클래스 접미사는 다음 네 가지 레이어 이름만 허용합니다.
+
+```txt
+@layer(base)
+@layer(defaults)
+@layer(components)
+@layer(utilities)
+```
+
+이 접미사는 생성 클래스 전체의 레이어를 선택합니다. 하위 레이어를 만들거나 클래스가 의존하는 테마 변수를 옮기지 않습니다. 다른 접미사와 함께 끝의 `!` 앞에 배치하세요.
+
+| 형식 | 결과 |
+| --- | --- |
+| `block@layer(defaults)` | display 규칙이 `defaults`에 배치됨 |
+| `block@layer(base)@layer(base)` | base 레이어 규칙 하나. 같은 선택을 반복할 수 있음 |
+| `block@layer(base)@layer(utilities)` | `CLASS_SYNTAX_ERROR`: 한 클래스가 서로 다른 레이어를 선택할 수 없음 |
+| `block@layer(theme)` | `UNKNOWN_CONDITION`: `theme`은 생성 스타일 규칙의 대상 레이어가 아님 |
+| `block@layer(custom)` | `UNKNOWN_CONDITION`: 임의의 네이티브 레이어 이름은 클래스 접미사의 대상이 아님 |
+
+프로젝트 고유의 레이어와 하위 레이어에는 네이티브 `@layer` 구문을 사용하세요. 순서는 네이티브 CSS를 따르며 클래스 접미사는 새 레이어 이름을 등록하지 않습니다.
+
+<ReferenceIllustration id="layer-token-separation" />
+
+### Base와 defaults \{#base-and-defaults\}
+
+<a id="base-is-for-normalization"></a>
+
+base 레이어의 하위 요소 규칙으로 구조적 기본값을 설정할 수 있습니다.
+
+<ConfiguredExample source="" html={baseStylesTemplate} />
+
+<a id="defaults-are-for-broad-defaults"></a>
+
+defaults 레이어의 하위 요소 규칙은 로컬 컴포넌트와 유틸리티의 선택을 더 높은 우선순위로 유지하면서 코드 타이포그래피를 설정할 수 있습니다.
+
+<ConfiguredExample source="" html={defaultStylesTemplate} />
+
+`font-mono` 클래스는 `defaults`에 남고 필요한 글꼴 토큰은 `theme`에 남습니다. 선택자 접미사는 어떤 하위 요소가 선언을 받는지 결정하며 레이어 선택과 독립적입니다.
+
+### 기본 스타일보다 로컬 선택을 우선하기 \{#summary\}
+
+여기서는 두 규칙 모두 첫 번째 문단을 대상으로 합니다. 문단 자체의 네이티브 선언 클래스는 `utilities`에 들어가므로 문서의 defaults 레이어 글꼴 크기를 덮어씁니다.
+
+<ConfiguredExample source="" html={overridingDefaultsTemplate} />
+
+## 네이티브 규칙과 관리 대상 유틸리티 \{#native-rules-and-managed-utilities\}
+
+<a id="a-complete-flow"></a>
+<a id="writing-regular-css"></a>
+
+`@layer components` 안의 네이티브 클래스는 여전히 네이티브 CSS입니다. 기본적으로 전달되며 해당 레이어 안의 네이티브 소스 순서를 따르고, Master의 선택자 또는 조건 접미사를 얻지 않습니다. 사용하지 않는 네이티브 선택자를 제거할 수 있는지는 [`@prune native`](/reference/directives/pruning)가 제어합니다.
+
+<a id="utilities-can-override-components"></a>
+
+이 예제에서 `.btn`은 `inline-flex`를 선언하고 `flex`는 일반 유틸리티 선언을 생성합니다. 기본 순서가 확립되면 버튼은 `display: flex`를 사용합니다.
+
+<ConfiguredExample source={'@layer components {\n  .btn { display: inline-flex; }\n}'} classes={['btn', 'flex']} element="button" label="Save" />
+
+반면 필요할 때 생성하는 `@utility`는 관리 대상 클래스를 등록합니다. 일반 출력은 `utilities`에 속하지만 접미사로 지원되는 다른 레이어를 선택할 수 있습니다.
+
+<ConfiguredExample source={'@utility flow {\n  display: grid;\n  gap: var(--spacing-md);\n}'} classes={['flow@layer(defaults)']} />
+
+유틸리티 정의와 네이티브 규칙 유지 방식은 [유틸리티와 믹스인](/reference/directives/definitions)을 참고하세요.
+
+### 믹스인 확장은 바깥 레이어를 유지합니다 \{#mixin-expansion-keeps-the-surrounding-layer\}
+
+네이티브 규칙 안의 `@apply`는 작성된 위치에 선언을 확장하며 규칙을 `utilities`로 옮기지 않습니다.
+
+<ConfiguredExample source={'@mixin --inset { padding: 1.5rem; }\n@layer components {\n  .card { @apply --inset; }\n}'} classes={['card', 'p(8)']} />
+
+기본 순서가 확립되면 유틸리티의 `8px` padding이 컴포넌트의 `1.5rem`보다 우선합니다. 바깥 레이어가 없으면 네이티브 `.card` 규칙은 레이어에 속하지 않으며 일반 padding 선언이 일반 유틸리티보다 우선합니다.
+
+레이어 블록은 믹스인 본문과 `@apply` 내용 밖에 두세요. 이 위치에서는 레이어 블록을 허용하지 않습니다. 레이어는 선언 일부를 감싸는 것이 아니라 생성 규칙 전체의 소유 범위를 선택합니다.
+
+## 같은 레이어 안의 우선순위 \{#priority-matrix\}
+
+HTML의 클래스 순서는 우선순위를 정하지 않습니다. Master CSS는 생성 규칙에 안정적인 순서를 부여하고, 브라우저가 일치하는 선언에 캐스케이드를 적용합니다. 비교 가능한 레이어, 선택자, 조건 문맥에서 생성 규칙은 다음 순서로 정렬됩니다.
+
+1. 여러 선언 또는 내부 선택자와 조건을 포함하는 조합 스타일.
+2. 고정형, 토큰 참조형, 직접 값 형식을 포함하는 단일 선언 유틸리티.
+3. 네이티브 선언 클래스.
+
+단일 선언 유틸리티는 속성 계열과 적용 범위로 정렬됩니다. 한쪽 면이나 축의 규칙은 전체 계열 뒤에 옵니다. 속성과 범위가 같으면 이름이 있는 토큰 값이 직접 값보다 먼저 옵니다. 중요도, 선택자 명시도, 조건도 여전히 적용되므로 직접 값이 다른 범위나 레이어의 토큰을 항상 이기는 것은 아닙니다.
+
+다음 예제는 프리셋, 기본 레이어 선언, `16px`의 루트 글꼴 크기를 사용합니다. 경쟁하는 선언은 같은 요소를 대상으로 하며 조건이 일치합니다.
+
+| 경쟁하는 클래스 또는 규칙 | 결과 | 이유 |
+| --- | --- | --- |
+| `p-md p(8)`, 순서 무관 | `padding: 8px` | 같은 속성과 범위에서 직접 값이 토큰 뒤에 옴 |
+| `p(8) (padding:2rem)`, 순서 무관 | `padding: 2rem` | 네이티브 선언이 단일 선언 유틸리티 뒤에 옴 |
+| `m-md mt(0)`, 순서 무관 | 위쪽 마진 `0`, 나머지 마진 `1rem` | 한쪽 면의 지정이 전체 마진 계열 뒤에 옴 |
+| `b(2) bt(0) b-solid b-red-60` | 위쪽 너비 `0`, 나머지 너비 `2px`, 빨간 실선 테두리 | 너비, 스타일, 색상은 독립된 계열 |
+| `p-md! p(8)` | `padding: 1rem` | 중요도가 값의 출처에 따른 순서보다 우선함 |
+| `p-md! p(8)!` | `padding: 8px` | 중요도가 같으므로 직접 값이 토큰 뒤에 옴 |
+| `p(8)@layer(base) p(12)` | `padding: 12px` | 일반 유틸리티가 base보다 우선함 |
+| `p(8)@layer(base)! p(12)!` | `padding: 8px` | 중요 선언이 레이어 우선순위를 뒤집음 |
+| 레이어 밖의 `.outside { padding: 32px; }`와 `p(8)` | `padding: 32px` | 레이어 밖의 일반 선언이 레이어 안의 선언보다 우선함 |
+| components 레이어의 `padding: 24px !important`와 `p(8)!` | `padding: 24px` | 중요 선언 사이에서는 먼저 오는 레이어가 우선함 |
+
+레이어 안의 네이티브 규칙은 작성 순서를 유지하며 위의 생성 유틸리티 정렬이 이 규칙들을 재배치하지 않습니다. 선언이 겹치면 출력된 CSS를 확인하고 [코드 린트](/guide/code-linting#no-conflicting-classes)로 작성 중에 충돌하는 클래스를 찾으세요.

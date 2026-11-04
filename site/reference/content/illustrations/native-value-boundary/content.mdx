@@ -1,0 +1,25 @@
+# Reference prose: illustrations/native-value-boundary
+
+## title \{#copy-title\}
+
+A quoted parenthesis stays inside the value
+
+## alt \{#copy-alt\}
+
+The content property, quoted closing parenthesis and before pseudo-element are marked within one intact class.
+
+## caption \{#copy-caption\}
+
+The first closing parenthesis is quoted value text. The next one closes the declaration; ::before begins outside it.
+
+## description-0 \{#copy-description-0\}
+
+In (content:')')::before, content is the property and ')' is its quoted value.
+
+## description-1 \{#copy-description-1\}
+
+The ) inside the string is preserved. The next ) closes the native declaration head.
+
+## description-2 \{#copy-description-2\}
+
+The ::before suffix targets the pseudo-element. Its generated declaration is content: ')';.

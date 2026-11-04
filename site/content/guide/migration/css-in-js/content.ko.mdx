@@ -1,0 +1,219 @@
+---
+title: "CSS-in-JS에서 마이그레이션"
+description: "정적 스타일을 변환하고 동적 값을 보존하며 재사용 컴포넌트의 계약을 명확히 유지하면서 styled-components와 Emotion 스타일을 Master CSS로 옮깁니다."
+figures: {"CSSInJSIllustration": {"title": "하나의 클래스와 변하는 값", "alt": "두 미터가 같은 width 클래스로 로컬 사용자 정의 속성을 읽습니다. 25%는 트랙의 4분의 1, 75%는 4분의 3을 채우며 클래스는 같습니다.", "caption": "변하는 데이터는 사용자 정의 속성으로 전달합니다. 완전한 클래스 문자열을 스캐너에 보이고 상태 검증은 컴포넌트에 유지하세요.", "description": [{"title": "안정된 클래스", "text": "두 인스턴스 모두 (width:var(--value))를 요청하며 클래스 이름에 백분율을 보간하지 않습니다."}, {"title": "로컬 데이터", "text": "각 인스턴스가 자체 요소에 --value를 설정해 같은 선언이 다른 너비를 만듭니다."}, {"title": "동작 보존", "text": "컴포넌트가 값의 범위를 제한하고 일치하는 aria-valuenow를 제공합니다."}]}}
+---
+import CSSInJSIllustration from './components/CSSInJSIllustration.astro'
+
+CSS-in-JS 마이그레이션은 정적 시각 스타일을 먼저 옮기고 런타임 동작을 나중에 옮길 때 원활합니다. Styled Components와 Emotion을 프로젝트에 남겨 두고 Master CSS가 컴포넌트 그룹별로 클래스 스타일을 맡게 할 수 있습니다.
+
+이 가이드는 `styled-components`, `@emotion/react`, `@emotion/styled`를 다룹니다. 런타임에 생성하는 선택자나 값이 필요한 컴포넌트에서 CSS-in-JS를 제거할 필요는 없습니다.
+
+---
+
+## 마이그레이션 전략 \{#migration-strategy\}
+[공통 마이그레이션 절차](/guide/migration#migration-strategy)로 기준 상태를 정한 뒤 각 스타일 래퍼에 섞인 역할을 나눕니다.
+
+| 입력 | 이동 대상 | 컴포넌트에 남는 것 |
+| --- | --- | --- |
+| 정적 선언 | 완전한 마크업 클래스 또는 `@layer components` | DOM 구조와 이벤트 핸들러 |
+| 유한한 시각 변형 | 완전한 클래스 문자열 맵 | 공개 변형 prop과 기본값 |
+| 연속적으로 변하는 값 | `style`로 전달하는 CSS 사용자 정의 속성 | 측정, 검증, 상태 |
+| 생성 선택자 또는 키프레임 | 명확한 대안이 생길 때까지 기존 CSS-in-JS | 이를 생성하는 런타임 로직 |
+
+래퍼를 바꾸기 전에 `as`, ref, prop 필터링, SSR 설정을 확인하세요. 스타일 블록이 작아도 공개 계약은 넓을 수 있습니다.
+
+<CSSInJSIllustration />
+
+---
+
+## 정적 스타일 컴포넌트 변환 \{#convert-static-styled-components\}
+안정적인 시각 스타일만 적용하는 래퍼부터 시작합니다.
+
+```tsx name=Button.tsx
+import styled from 'styled-components'
+
+const Button = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: .5rem;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+`
+```
+
+재사용할 값을 `@theme`으로 옮기고 버튼을 렌더링하는 곳에서 클래스 문자열을 사용합니다.
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+}
+
+```
+
+```tsx name=Button.tsx
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { className, type = 'button', ...buttonProps } = props
+  return (
+    <button
+      className={['inline-flex items-center gap-xs (min-height:2.5rem) py(0) px-md r-lg bg-primary fg-white', className].filter(Boolean).join(' ')}
+      type={type}
+      {...buttonProps}
+    />
+  )
+}
+```
+
+원래 `.5rem` 반경은 프리셋의 `r-md`가 아니라 `r-lg`에 해당합니다. 리터럴을 명명된 토큰으로 바꿀 때 계산값을 비교하세요. 이 래퍼의 기본값은 `type="button"`이며 폼 제출 시 `type="submit"`을 전달합니다. type이 없는 네이티브 버튼은 기본적으로 제출하므로 기존 폼 호출부를 확인하세요.
+
+이 예는 시각 래퍼를 교체합니다. 더 넓은 계약의 컴포넌트를 바꾸기 전에 기존 ref 전달, 다형성 `as` prop, 이벤트 동작을 별도로 보존하세요.
+
+명명된 컴포넌트 클래스가 필요하다면 위의 `@theme` 블록을 유지하고 아래에 컴포넌트 레이어를 추가합니다.
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    gap: var(--spacing-xs);
+    padding-block: 0;
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+}
+```
+
+```html
+<button type="button" class="btn">Save</button>
+```
+
+---
+
+## 변형을 클래스 맵으로 변환 \{#convert-variants-to-class-maps\}
+문자열 조각으로 Master CSS 클래스 이름을 만들지 마세요. 정적 렌더링과 린트에는 완전한 클래스 문자열이 가장 적합합니다.
+
+```tsx
+const toneClasses = {
+  neutral: 'bg-surface-base fg-text-body b-line-divider b-solid b(1)',
+  primary: 'bg-blue-60 fg-white bg-blue-70:hover',
+  danger: 'bg-red-70 fg-white bg-red-80:hover'
+}
+
+const sizeClasses = {
+  sm: '(min-height:2rem) px-sm font-sm',
+  md: '(min-height:2.5rem) px-md font-sm',
+  lg: '(min-height:3rem) px-lg font-md'
+}
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  tone?: keyof typeof toneClasses
+  size?: keyof typeof sizeClasses
+}
+
+export function Button({ tone = 'neutral', size = 'md', className, type = 'button', ...props }: ButtonProps) {
+  return (
+    <button
+      className={['inline-flex items-center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
+      type={type}
+      {...props}
+    />
+  )
+}
+```
+
+래퍼는 나머지 네이티브 props를 펼치기 전에 `tone`과 `size`를 소비합니다. styled-components의 [transient props 또는 `shouldForwardProp`](https://styled-components.com/docs/api)를 바꿀 때도 이 필터링을 유지하세요. 스타일 전용 props가 네이티브 요소로 새어 나가면 안 됩니다. 기존 공개 API가 `$tone`을 쓴다면 호출부를 명시적으로 마이그레이션할 때까지 이름을 유지합니다.
+
+변형이 시각 스타일 이외의 동작도 제어한다면 prop을 유지하고 시각 선언만 옮깁니다. 최소 높이를 쓰면 레이블이 줄 바꿈되거나 커져도 고정 높이에 갇히지 않습니다.
+
+`className`을 덧붙이면 호출자의 클래스는 보존되지만 충돌하는 유틸리티보다 우선하지는 않습니다. HTML 클래스 순서는 [캐스케이드](/guide/cascade-layers)를 결정하지 않습니다. 변형 props로 하나의 값을 선택하거나 재정의 가능한 기본값을 `@layer components`에 두어 호출자 유틸리티가 덮어쓰게 하세요.
+
+---
+
+## 동적 값에 CSS 변수 사용 \{#use-css-variables-for-dynamic-values\}
+런타임 값을 생성 클래스 이름으로 만들지 마세요. 클래스는 고정하고 변하는 값은 CSS 변수로 전달합니다. [Emotion의 동적 스타일 지침](https://emotion.sh/docs/best-practices#use-the-style-prop-for-dynamic-styles)과 같은 분리입니다. 변하는 값은 요소가 갖고 재사용 선언은 안정적으로 유지합니다.
+
+```tsx
+export function Meter({ value }: { value: number }) {
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
+  return (
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow-hidden (height:0.5rem) pill bg-surface-inset">
+      <div
+        className="h-full (width:var(--value)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        style={{ '--value': `${percent}%` } as React.CSSProperties}
+      />
+    </div>
+  )
+}
+```
+
+25%와 75% 모두 안쪽 요소는 `(width:var(--value))`를 사용하며 `--value`만 바뀝니다. 범위를 제한한 수치를 `aria-valuenow`에도 전달하므로 시각 값과 접근성 값이 일치합니다.
+
+CSS 변수로 명확하게 표현할 수 없는 런타임 데이터로 선택자, 키프레임, 스타일 블록을 만들어야 한다면 CSS-in-JS를 유지하세요.
+
+---
+
+## 전역 스타일을 신중히 이동 \{#move-global-styles-carefully\}
+전역 스타일에는 앱의 기반 구조가 포함되는 경우가 많습니다. 작은 단위로 옮기세요.
+
+```tsx name=GlobalStyles.tsx
+import { Global, css } from '@emotion/react'
+
+export function GlobalStyles() {
+  return <Global styles={css`
+    body {
+      margin: 0;
+      background: var(--color-surface-base);
+    }
+  `} />
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@layer base {
+  body {
+    margin: 0;
+  }
+}
+
+@layer defaults {
+  body { background: var(--color-surface-base); }
+}
+```
+
+이전에 전역 스타일을 받던 모든 라우트, 셸, 서버 렌더링 경로가 대체 CSS 진입점을 읽을 때까지 CSS-in-JS 전역 스타일을 유지하세요.
+
+---
+
+## 마이그레이션 검증 \{#validate-the-migration\}
+- 각 작업 후 포매터, lint, 타입 검사, 테스트, 프로덕션 빌드를 실행합니다.
+- CSS-in-JS 설정에 SSR 추출이나 하이드레이션 로직이 있었다면 서버 렌더링 출력을 비교합니다.
+- 다크 모드, 반응형 중단점, 호버, focus-visible, 비활성, 선택, 다형성 `as` 상태를 확인합니다.
+- 남은 어떤 컴포넌트도 필요로 하지 않을 때만 Babel 플러그인, Emotion 캐시 설정, styled-components SSR 연결, 패키지 의존성을 제거합니다.
+
+---
+
+## 관련 참고 자료 \{#useful-references\}
+- [설치](/guide/installation): 프로젝트에 Master CSS 추가.
+- [렌더링 모드](/guide/rendering-modes): 정적, 런타임, 점진적 렌더링.
+- [스타일 선언](/reference/rules/declarations): 클래스 구문.
+- [테마 토큰](/guide/theme): 디자인 토큰, [변수와 모드](/reference/rules/modes): 모드.
+- [클래스 이름 스캔](/guide/scanning-and-pruning): 클래스 맵과 정적 추출.
+- [전역 스타일](/guide/global-styles#shared-vocabulary): 마크업 클래스, 테마 토큰, 사용자 정의 유틸리티, 컴포넌트 선택.

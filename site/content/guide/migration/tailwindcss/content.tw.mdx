@@ -1,0 +1,485 @@
+---
+title: "從 Tailwind CSS 遷移"
+description: "逐批轉換 Tailwind CSS v4 的主題、utility 與變體，保留原有值、狀態與建置邊界。"
+figures: {"TailwindIllustration": {"title": "相同關鍵字，不同輸入", "alt": "Tailwind 以 @apply px-4 py-2 套用 utility 清單；Master CSS 以 @apply --control 套用具名 CSS mixin。標示的引數顯示各編譯器期待的輸入。", "caption": "Tailwind utility 清單不是 Master CSS mixin 名稱。修改套用語法前，先撰寫原生宣告或定義 mixin。", "description": [{"title": "Tailwind 輸入", "text": "@apply px-4 py-2 在目前規則中展開 Tailwind utility 宣告。"}, {"title": "Master CSS 輸入", "text": "@apply --control 展開一個先前定義的 @mixin --control。"}, {"title": "保留值", "text": "文章先明確定義 padding-inline: 1rem 與 padding-block: .5rem，再套用 mixin。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import TailwindIllustration from './components/TailwindIllustration.astro'
+
+Tailwind CSS v4 與 Master CSS 都會從 class 名稱與 CSS 指令生成 CSS，但無法直接互換。請將遷移視為樣式實作的改變：在 Tailwind 旁安裝 Master CSS，一次轉換一個路由或一組元件，等轉換區域建置成功、視覺也符合設計後，才移除 Tailwind。
+
+本指南著重 Tailwind CSS v4 的 CSS 優先流程：`@import "tailwindcss"`、`@theme`、`@utility`、`@variant`、`@custom-variant`、`@source` 與 `@apply`。Tailwind 行為請依官方[函式與指令](https://tailwindcss.com/docs/functions-and-directives)、[主題變數](https://tailwindcss.com/docs/theme)、[從來源偵測 class](https://tailwindcss.com/docs/detecting-classes-in-source-files)及[狀態與變體](https://tailwindcss.com/docs/hover-focus-and-other-states)文件確認。
+
+---
+
+## 遷移策略 \{#migration-strategy\}
+代理協作時，將單一靜態 HTML 或 JSX 元件、樣式表進入點與原始 Tailwind 版本交給官方 `master-css` skill。要求保留外觀與互動，並回報保留的 CSS 及剩餘 Tailwind 相依性。此 skill 提供經複核的流程，並非自動轉換整個專案的工具。
+
+轉換 class 名稱前，先用來源專案安裝的 Tailwind 工具鏈建置。編譯後 CSS 才能提供實際值、變體與變數相依性。片段若未附主題或外掛設定，應先補齊背景，再宣稱轉換忠於原稿。`mastercss_suggest_classes` 僅用於獨立宣告區塊；複雜選擇器與尚未解析的動態運算式保留為原生 CSS。將 Master class 傳給 `tailwind-merge` 或其他 Tailwind 專用 class 處理工具前，先檢查其行為。
+
+以相同重設樣式、字型、主題與瀏覽器狀態比較兩個版本。Tailwind v4 的 `hover:` 還要求 `(hover: hover)` 媒體條件；只複製偽類別會改變行為。`mastercss_css_compare` 比較的是 Master 輸出；原始元件與轉換結果仍要在瀏覽器比較。
+
+依[共用遷移流程](/guide/migration#migration-strategy)處理並存、基準截圖與移除檢查。第一批工作先盤點下列 Tailwind 專屬契約：
+
+<DocumentComparison>
+
+| 契約 | 應保留或替換的部分 |
+| --- | --- |
+| 編譯器輸入 | Tailwind 指令交由 Tailwind 編譯器處理；將生成的一般 CSS 匯入 Master 進入點。 |
+| 主題與變體 | 選擇 Master class 前，先解析實際 token 值與條件。 |
+| Preflight、外掛與全域 CSS | 保留未轉換畫面仍需要的規則。 |
+| class 處理 | 將 Tailwind 專用合併與片段組合，改為明確的 class 對照表。 |
+| 元件內部 | 元件本身完成遷移前，保留第三方 CSS 與複雜選擇器。 |
+
+</DocumentComparison>
+
+避免全域搜尋取代。兩個系統的重設、刻度、ring 模型與指令契約不同；相同關鍵字也可能代表不同操作。
+
+<TailwindIllustration />
+
+---
+
+## 在 Tailwind 旁安裝 Master CSS \{#install-master-css-beside-tailwind\}
+Tailwind 進入點繼續由 Tailwind 編譯器負責。先將它編譯成一般 CSS，再與 Master CSS 進入點一同載入。兩者都使用 `@theme`、`@utility` 與 `@apply` 等名稱，但契約不同；不要將未處理的 Tailwind 定義交給 Master CSS 編譯器。
+
+```css name=app.css
+@import "./legacy-tailwind.generated.css";
+@import "@master/css";
+```
+
+在此進入點編譯前，確保既有 Tailwind 建置先產生 `legacy-tailwind.generated.css`。兩個系統可能定義相同 class 名稱；並存期間請比較串接層、重設樣式與重疊名稱。
+
+多數整合在此不需要 Master CSS 來源指令。整合或 CLI 掃描器會探索一般應用程式檔案；只有遷移標記在預設範圍外時，才新增 `@source`。
+
+接著依專案框架或建置工具完成[安裝](/guide/installation)。React 依所用打包工具的指南；Laravel 與 Blazor 則依[伺服器渲染應用程式](/guide/installation/server-rendered)中的專屬章節。
+
+此時不要移除 Tailwind。第一個里程碑是專案外觀維持不變，同時 Master CSS 能為新增或轉換的標記生成規則。
+
+---
+
+## 選擇渲染模式 \{#choose-a-rendering-mode\}
+從[靜態渲染](/guide/rendering-modes)開始：多數 Tailwind 專案已將完整 class 字串放在來源中。切換這些 class 或更新元素的 CSS 變數，都不需要瀏覽器執行階段。
+
+只有應用程式確實會在建置後建立新 class 名稱時，才使用執行階段或漸進式渲染。選擇前，先以完整 class 對照表取代片段組合，並檢查既有建置依賴的來源邊界。
+
+---
+
+## 轉換 CSS 優先的主題值 \{#translate-css-first-theme-values\}
+Tailwind v4 的 `@theme` 變數會建立 utility class 與變體；Master CSS 的 `@theme` 變數為其命名空間定義設計 token。形式相近，但生成的 class 語法不同。
+
+```css name=tailwind.css
+@import "tailwindcss";
+
+@theme {
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+  --breakpoint-dashboard: 72rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+}
+
+@custom-media --dashboard (width >= 72rem);
+```
+
+```html
+<article class="grid r-card grid-cols(3)@dashboard bg-brand p-card">
+  ...
+</article>
+```
+
+Master CSS 依命名空間解析 token 名稱。`--color-brand` 可用於 `bg-brand`、`fg-brand` 與邊框色彩 utility；`--spacing-card` 可用於 `p-card`、`gap-card` 與 `m-card` 等間距 utility。
+
+| Tailwind v4 主題概念 | Master CSS 對應 | 說明 |
+| --- | --- | --- |
+| `--color-*` | `--color-*` | 色彩 token 用於 `bg-*`、`fg-*`、邊框與外框色彩 utility。`text-*` 是文字樣式配方，不是色彩別名。 |
+| `--spacing-*` 或基礎間距 | `--spacing-*` | 產品間距使用具名 token；直接值使用明確的原生單位。 |
+| `--radius-*` | `--radius-*` | 搭配 `r-card` 等具名圓角 utility，或撰寫完整 `border-radius` 宣告 class。 |
+| `--shadow-*` | `--shadow-*` | 搭配 `shadow-card` 等具名陰影 utility，或撰寫完整 `box-shadow` 宣告 class。 |
+| `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | 字型、文字、行高與字距命名空間 | 需要共用完整文字設定時，優先使用 `text-*`。 |
+| `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | 定義 `@md` 等檢視區後綴；自訂屬性不會註冊條件。 |
+
+`@theme inline` 在生成宣告中替換一次 token 值；`@theme static` 則在沒有使用處時，仍保留 token 與相依性。兩個修飾詞可以合用。主題區塊只接受自訂屬性宣告。關鍵影格放在原生 CSS，若要依使用情況輸出，在其所屬檔案加上 `@prune native;`。
+
+手動切換主題時，將明確的 `.light` 與 `.dark` 選擇器放在 `@theme` 外。標記使用 `@apply(--manual-light)` 或 `@apply(--manual-dark)` 後綴時，另外定義選擇器 mixin。
+
+```css name=app.css
+@import "@master/css";
+
+@mixin --manual-light { &:where(.light, .light *) { @contents; } }
+@mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
+
+@theme {
+  --color-panel:#fff;
+  --color-text-body:#111827;
+}
+
+.light {
+  --color-panel: #fff;
+  --color-text-body: #111827;
+}
+
+.dark {
+  --color-panel: #111827;
+  --color-text-body: #f9fafb;
+}
+
+```
+
+```html
+<section class="fg-text-body bg-panel">
+  ...
+</section>
+```
+
+Tailwind 與 Master CSS 的預設主題不同。先轉換自訂產品 token，再有意識地檢查預設色盤與刻度的替換。
+
+---
+
+## 轉換 utility \{#translate-utilities\}
+先使用明確的 Master CSS 宣告，局部詞彙清楚時再縮短。
+
+| Tailwind v4 模式 | Master CSS 模式 | 說明 |
+| --- | --- | --- |
+| `p-6`, `px-4`, `mt-8` | `(padding:1.5rem)`, `(padding-inline:1rem)`, `(margin-top:2rem)` | 假設 Tailwind 預設 .25rem 刻度；請檢查原專案設定。產品間距使用 `p-card` 等已定義 token。 |
+| `-mt-4` | `(margin-top:-1rem)` | 使用負的原始值，或以 `-mt-card` 引用已定義的數值 token。 |
+| `w-full`, `h-screen`, `min-w-0` | `w-full`, `(height:100vh)`, `min-w(0)` | 像素與零值使用直接值函式；其他單位維持原生形式。 |
+| `rounded-lg` | `r-lg` | 兩者預設皆為 .5rem；重用名稱前先確認專案覆寫。 |
+| `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS 預設色階與 Tailwind 色盤不同。 |
+| `bg-zinc-50`, `text-zinc-500` | `bg-zinc-5`, `fg-zinc-60` | 兩者刻度不同。較深文字色階讓固定淺色表面維持可讀；請比較實際值，不要將 Tailwind 色階直接除以十。 |
+| `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `(line-height:1.75rem)` | 只有需要完整文字設定時才使用 `text-*`。 |
+| `flex`, `items-center`, `justify-between` | `flex`, `items-center`, `justify-between` | 這些固定 utility 的名稱與宣告相同。退回 `(property:value)` 前先查[固定 utility 目錄](/reference/rules/declarations#fixed-utilities)。 |
+| `grid-cols-3`, `gap-4` | `grid-cols(3)`, `(gap:1rem)` | 使用明確的網格配方與原生 `gap` 屬性。 |
+| 任意值，例如 `w-[min(100%,72rem)]` | `(width:min(100%,72rem))` | 直接撰寫原生 CSS 函式值。 |
+| 任意屬性，例如 `[scroll-margin-top:4rem]` | `(scroll-margin-top:4rem)` | Master CSS 的每個原生宣告都以小括號包住。 |
+| important 修飾詞，例如 `mt-0!` | `mt(0)!` | 目前 Tailwind v4 與 Master CSS 都將 important 標記放在 class 最後。 |
+
+以下 Master CSS 版面使用預設值，並非對未指定的 Tailwind 版面進行像素完全相同的轉換：
+
+```html
+<section class="grid gap-lg w-full max-w-5xl mx-auto px-md py-2xl grid-cols(3)@md">
+  <article class="p-lg r-lg bg-surface-base shadow-sm">
+    <h2 class="m(0) font-2xl font-regular fg-text-neutral">Account</h2>
+    <p class="mt-xs fg-text-muted">Review profile settings.</p>
+  </article>
+</section>
+```
+
+Tailwind class 沒有簡短 Master CSS 別名時，直接使用 CSS 屬性：
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) (text-wrap:balance)">
+  ...
+</div>
+```
+{ }
+
+---
+
+## 轉換變體與狀態 \{#translate-variants-and-states\}
+Tailwind 將變體寫在 utility 前；Master CSS 將選擇器與條件接在宣告後。
+
+| Tailwind v4 模式 | Master CSS 模式 | 說明 |
+| --- | --- | --- |
+| `hover:bg-blue-700` | `bg-blue-70:hover@media(hover:hover)` | 保留 Tailwind v4 的懸停能力條件。此色彩是新的預設選擇；要精確保留顏色，請複製原 token。 |
+| `focus-visible:outline-2` | `outline(2):focus-visible` | 只對應寬度。仍須保留外框樣式與色彩，僅有寬度無法得到相同焦點外觀。 |
+| `disabled:opacity-50` | `(opacity:.5):disabled` | 支援屬性與偽類別選擇器。 |
+| `md:grid-cols-3` | `grid-cols(3)@tailwind-md` | 以明確條件保留原門檻；兩個預設的 `md` 值不同。 |
+| `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | 依明確的 `--manual-dark` 選擇器 mixin 輸出。 |
+| `motion-safe:animate-spin` | `animate-rotate@motion-safe` | 預設旋轉為 1s、線性、無限重複；`@motion-safe` 尊重減少動態效果偏好。 |
+| `supports-[display:grid]:grid` | `grid@supports(display:grid)` | 局部條件可直接使用 `@supports()`。 |
+| `data-[state=open]:...` | `bg-blue-5[data-state=open]` | 直接接上原生屬性選擇器。 |
+| `has-[:checked]:...` | `bg-blue-5:has(:checked)` | 支援原生 `:has()`。 |
+
+```html
+<button type="button" class="inline-flex items-center (min-height:2.5rem) px-md r-md bg-blue-60 fg-white bg-blue-70:hover@media(hover:hover) (opacity:.5):disabled">
+  Save
+</button>
+```
+
+Tailwind 預設 `md` 從 48rem 開始；Master CSS 預設 `md` 從 64rem 開始。上方響應式範例透過具名條件保留 Tailwind 門檻：
+
+```css name=app.css
+@custom-media --tailwind-md (width >= 48rem);
+```
+
+以 `@custom-media --max-tailwind-md not (--tailwind-md);` 與 `@max-tailwind-md` 後綴保留 Tailwind 的 `max-md:` 門檻。Master 預設 `@max-md` 則是自身 64rem 門檻的補集。可重用媒體查詢使用 `@custom-media`，其他包覆條件使用含 `@contents` 的 mixin；選擇器狀態維持為後綴或巢狀選擇器。
+
+```css name=app.css
+@import "@master/css";
+
+@custom-media --compact (width < 48rem);
+
+```
+
+{ }
+```html
+<button type="button" class="bg-blue-70:hover@media(hover:hover) fg-white:hover@media(hover:hover) px-sm@compact">
+  Save
+</button>
+```
+{ }
+
+對 Tailwind 的 `group-*` 與 `peer-*` 模式，可行時優先使用原生選擇器。Master CSS 可選取後代、子元素、同層元素、屬性與 `:has()`，但未實作 Tailwind 的 group 與 peer 變體命名。
+
+```html
+<article class="bg-blue-5:hover_h2@media(hover:hover) fg-blue-60:hover_h2@media(hover:hover)">
+  <h2 class="fg-text-neutral">Project</h2>
+</article>
+```
+
+---
+
+## 以原生 CSS 取代 utility 組合 \{#replace-utility-composition-with-native-css\}
+將 Tailwind utility 組合改寫為原生宣告與選擇器，保留 token 引用與狀態。Master utility 直接用在標記中。Master CSS 的 `@apply` 展開一個具名 `@mixin`，不接受 utility class 清單；不支援 `@compose`。
+
+```css name=tailwind.css
+.btn {
+  @apply inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+.btn {
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  box-shadow: var(--shadow-sm);
+  color: oklch(100% 0 none);
+  align-items: center;
+}
+```
+
+範例採用 Master 預設色盤與陰影，並非完全符合 Tailwind 預設外觀。需要忠實轉換時，請保留原本解析後的色彩與陰影值，直到專案明確調整設計。
+
+宣告群組需要在 CSS 中重用時，為它定義 mixin 名稱。這才是 Master CSS 中 `@apply` 的含義：
+
+```css name=app.css
+@mixin --control {
+  padding-inline: 1rem;
+  padding-block: .5rem;
+}
+
+.btn {
+  @apply --control;
+}
+```
+
+元件專用樣式可以用原生宣告表達整條規則：
+
+```css name=app.css
+.form-panel {
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background-color: oklch(100% 0 none);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+}
+```
+
+Vite、Next.js 與 Webpack 整合會自動為 CSS Modules 與框架樣式區塊提供專案 token、mixin 與自訂媒體。只有額外定義檔或獨立編譯才需要 `@reference`。
+
+```css name=Button.module.css
+.button {
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  align-items: center;
+  height: 2.5rem;
+}
+```
+
+引號字串、複雜 content 值與特殊選擇器，保留為一般 CSS 宣告或巢狀 CSS。
+
+---
+
+## 遷移自訂 utility 與元件 \{#migrate-custom-utilities-and-components\}
+Tailwind `@utility` 建立可搭配變體的自訂 utility。在 Master CSS 中，class 配方使用 `@utility`，CSS 宣告重用使用 `@mixin`，產品用途使用 `@layer components`。
+
+```css name=tailwind.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">
+  ...
+</section>
+```
+
+名稱描述產品介面用途，而非底層基本功能時，請使用 `@layer components`。
+
+```css name=app.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-blue-60);
+    color: oklch(100% 0 none);
+
+    &:disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    @media (--md) {
+      padding-inline: var(--spacing-lg);
+    }
+  }
+}
+```
+
+```html
+<button class="btn">
+  Submit
+</button>
+```
+
+utility 組合會讓規則更難閱讀時，複雜第三方覆寫保留為原生 CSS。
+
+---
+
+## 處理動態 class \{#handle-dynamic-classes\}
+Tailwind 與 Master CSS 靜態渲染都依賴頁面執行前可找到的 class 名稱。完整字串是最穩妥的遷移目標。
+
+(x) 避免片段組合。
+
+```ts
+const className = '(background:' + tone + ')'
+```
+
+(o) 使用完整 class 對照表。
+
+```ts
+const toneClasses = {
+  neutral: 'bg-surface-base fg-text-neutral',
+  success: 'bg-green-80 fg-white',
+  danger: 'bg-red-70 fg-white'
+}
+```
+
+只有值是動態時，class 保持固定，透過 CSS 變數傳入執行階段值。
+
+```tsx
+function Progress({ value }: { value: number }) {
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
+  return (
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow-hidden (height:1rem) pill bg-surface-inset">
+      <div
+        className="h-full (width:var(--progress)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        style={{ '--progress': `${percent}%` } as React.CSSProperties}
+      />
+    </div>
+  )
+}
+```
+
+改用 Master CSS 時，多數 Tailwind `@source` 邊界可以刪除。只有整合或 CLI 原本不會掃描的來源，例如共用 workspace 套件或外部內容，才保留或新增 Master CSS `@source`。
+
+```css name=app.css
+@import "@master/css";
+
+@source "../content/**/*.mdx";
+@source "../packages/ui/**/*.{ts,tsx}";
+@source not "../packages/ui/**/*.stories.tsx";
+```
+
+用 `@safelist` 指定有限且未出現在掃描來源中的 class，用 `@blocklist` 排除誤判。
+
+```css name=app.css
+@import "@master/css";
+
+@safelist "bg-blue-60 bg-red-60@dark";
+@blocklist "debug-*";
+```
+
+Tailwind `@source inline()` 可從內嵌字串與大括號展開生成 class。Master CSS 的 `@safelist` 採明確列舉：列出專案需要的 class。
+
+---
+
+## 驗證遷移結果 \{#validate-the-migration\}
+每批工作都要檢查程式碼與介面。
+
+- 執行專案格式化、lint、型別檢查、測試與正式建置。
+- 使用[程式碼檢查](/guide/code-linting)驗證 Master CSS class 字串並找出衝突。
+- 將遷移頁面與原 Tailwind 版本比較，涵蓋明暗主題、響應式斷點、懸停／焦點，必要時也檢查列印。
+- 檢查依賴 Tailwind Preflight、預設主題值、ring utility、`container`、官方外掛或 group／peer 變體的路由。
+- 轉換後頁面不再依賴 Tailwind class 或外掛輸出前，繼續載入 Tailwind。
+
+每批檢查通過後，只移除已不再使用的 Tailwind utility。漸進遷移可以讓 Tailwind 與 Master CSS 依產品需要持續並存。
+
+---
+
+## 移除 Tailwind \{#remove-tailwind\}
+只有轉換後路徑建置成功、視覺也符合設計後，才移除 Tailwind。
+
+1. 從應用程式進入點移除生成的 Tailwind CSS 匯入，再停用獨立 Tailwind 建置輸入。
+2. 移除已被取代的 Tailwind 專用 `@theme`、`@utility`、`@custom-variant`、`@variant`、`@apply`、`@source inline()` 與 `@plugin` 用法。
+3. 所有樣式表都不再匯入 Tailwind 後，移除 Tailwind 套件與 PostCSS 或 Vite 整合程式碼。
+4. 執行專案完整驗證。
+5. 在瀏覽器重新檢查重要頁面。
+
+第三方外掛或樣式表若仍提供有用的 CSS，就保留為一般 CSS，直到有產品專用的替代方案。
+
+---
+
+## 相關參考 \{#useful-references\}
+- [安裝](/guide/installation)：加入 Master CSS。
+- [渲染模式](/guide/rendering-modes)：選擇靜態、執行階段或漸進式渲染。
+- [樣式宣告](/reference/rules/declarations)：class 語法。
+- [主題 token](/guide/theme)：`@theme` token；[變數與模式](/reference/rules/modes)：模式；[條件](/reference/rules/conditions)：查詢語法。
+- [CSS 指令](/reference#directives)：`@source`、`@safelist`、`@blocklist` 與 `@apply`。
+- [掃描 class 名稱](/guide/scanning-and-pruning)：靜態來源掃描行為。
+- [全域樣式](/guide/global-styles#shared-vocabulary)：選擇標記 utility、主題 token、自訂 utility 與元件 class。
+- [程式碼檢查](/guide/code-linting)：遷移時驗證 Master CSS class。
+
+---
+
+## 沒有直接對應 Master CSS 功能的 Tailwind CSS 能力 \{#tailwind-css-capabilities-without-a-direct-master-css-equivalent\}
+| Tailwind 能力 | Master CSS 狀態 | 遷移路徑 |
+| --- | --- | --- |
+| Tailwind class 語法與直接相容 | 不讀取 Tailwind class 語法。 | 改寫為 Master CSS 語法，或保留 Tailwind，直到各區域遷移完成。 |
+| 透過 `@plugin` 載入 Tailwind CSS 外掛 | 不執行 Tailwind 外掛。 | 以原生 CSS、`@theme`、`@mixin` 或 `@layer components` 重建所需輸出；必要時暫時保留外掛 CSS。 |
+| Tailwind CSS 優先的主題解析行為 | 使用自己的 token 命名空間與 utility 比對。 | 將共用值移到 Master CSS `@theme`，並檢查生成的 class 名稱。 |
+| Tailwind `prefix(...)` | 沒有 class 前綴模式。 | 直接使用 Master CSS 語法；需要限定應用程式根節點範圍時，使用原生選擇器。 |
+| Tailwind `@source inline()` 大括號展開 safelist | 沒有對等的大括號展開指令。 | 使用明確 `@safelist` 項目與完整 class 字串。 |
+| 完全相同的 Tailwind Preflight | 基礎樣式並非 Tailwind Preflight。 | 比較介面；專案依賴 Tailwind 重設細節時，補上原生 CSS。 |
+| typography、forms 等官方外掛輸出 | 不會自動重建 Tailwind 外掛 CSS。 | 暫時保留外掛 CSS，或撰寫產品專用元件與 utility。 |
+| Tailwind `container` utility 語意 | 使用原生 `container-type` 宣告建立查詢邊界。 | 頁面包裝層使用 `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`，祖先查詢容器使用 `container-inline`。 |
+| Tailwind ring utility 模型 | 沒有相同的 ring utility 家族。 | 使用 `(outline:*)`、`(outline-offset:*)`、`(box-shadow:*)` 或自訂 utility。 |
+| Tailwind group 與 peer 變體語法 | 未實作 `group-*` 或 `peer-*` 變體。 | 使用原生選擇器、`:has()` 與組合器。 |

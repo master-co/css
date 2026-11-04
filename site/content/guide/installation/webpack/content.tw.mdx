@@ -1,0 +1,194 @@
+---
+{
+  "title": "在 Webpack、Rspack 與 Rsbuild 設定 Master CSS",
+  "description": "在 Webpack、Rspack 或 Rsbuild 連接 CSS 進入點與 HTML 外掛，並驗證正式環境樣式表。",
+  "category": "整合"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/webpack/cover-light.webp'
+import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × webpack" />
+
+將 Master CSS 建置到 Webpack、Rspack 或 Rsbuild 應用程式中。三者都使用 `@master/css-webpack`：CSS 進入點提供定義，外掛產生 utility 規則，HTML 外掛則將輸出連結至頁面。請從已有進入點、HTML 範本且可正常運作的應用程式開始。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 加入 Master CSS \{#add-master-css\}
+      在既有的 [Webpack](https://webpack.js.org/guides/getting-started/)、[Rspack](https://rspack.dev/guide/start/quick-start) 或 [Rsbuild](https://rsbuild.rs/guide/start/quick-start) 專案中，從專案根目錄執行安裝程式，並指定 `--framework webpack`、`rspack` 或 `rsbuild`。預設使用靜態模式：註冊外掛並建立 `src/index.css`。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework webpack --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 匯入 CSS 進入點 \{#import-the-css-entry\}
+      安裝程式會建立包含 `@import '@master/css';` 的 `src/index.css`。從應用程式的 JavaScript 或 TypeScript 進入點匯入它，並保留既有的掛載程式碼。請使用全域進入點，讓每個需要這些 utility 的頁面都能載入。
+    </StepL>
+    <StepR>
+      ```js name=src/index.js
+      import './index.css'
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+    啟動開發伺服器，將段落放進 HTML 外掛處理的 HTML 範本，或框架元件中。
+  </Step>
+  <InstallationPreview>
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Master CSS with Webpack</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 打包工具設定 \{#configuration\}
+安裝程式會寫入設定中屬於 Master CSS 的部分。請將其合併至既有設定，保留框架外掛、進入點與 HTML 產生設定，並且只註冊一次外掛。
+
+### Webpack \{#webpack\}
+外掛需要原生 CSS 處理與 `HtmlWebpackPlugin`，才能傳遞產生的樣式表：
+
+```js name=webpack.config.mjs
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  experiments: { css: true },
+  module: {
+    rules: [{ test: /\.css$/i, type: 'css/auto' }]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rspack \{#rspack\}
+Rspack 使用相同的 Webpack 相容外掛，搭配內建 CSS 支援與 `HtmlRspackPlugin`：
+
+```js name=rspack.config.mjs
+import { HtmlRspackPlugin } from '@rspack/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        type: 'css/auto'
+      }
+    ]
+  },
+  plugins: [
+    new HtmlRspackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rsbuild \{#rsbuild\}
+Rsbuild 透過 `tools.rspack` 掛鉤註冊外掛。保留框架外掛與掛載應用程式的進入點；此掛鉤只加入 Master CSS 處理。
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default defineConfig({
+  tools: {
+    rspack(config) {
+      config.plugins ||= []
+      config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+      return config
+    }
+  }
+})
+```
+
+在 React 起始專案中，請將段落放在 `src/App.tsx`：
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 檢查設定 \{#check-the-setup\}
+先在開發伺服器執行時，將原始碼中的 `p-md` 改成 `p-lg`。段落內距應從 `1rem` 增加為 `1.5rem`；確認後改回原值。
+
+使用對應打包工具的指令建置：
+
+<DocumentComparison>
+
+| 打包工具 | 正式環境建置 |
+| --- | --- |
+| Webpack | `npx webpack --mode production` |
+| Rspack | `npx rspack build --mode production` |
+| Rsbuild | `npx rsbuild build` |
+
+</DocumentComparison>
+
+以 HTTP 伺服器提供輸出目錄。段落應有 `1rem` 內距、浮起的表面與圓角。靜態模式的 utility 來自連結的 CSS，不使用 Master CSS 執行階段。停用 JavaScript 時，HTML 範本內容仍應有樣式；用戶端渲染的框架則仍需要 JavaScript 建立內容。
+
+HTML 外掛會輸出樣式表連結與所需的執行階段指令碼。直接從開發伺服器靜態目錄提供的檔案，不會取得這些內容。若缺少 CSS 請求，先檢查 HTML 產生流程；若檔案有載入卻沒有 utility，請檢查 CSS 進入點、原生 CSS 處理與外掛註冊。
+
+---
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+預設使用靜態模式。外掛的 `mode` 選項可選擇其他傳遞方式，HTML 外掛會加入其執行階段指令碼：
+
+| 模式 | 外掛選項 | 安裝程式選項 |
+| --- | --- | --- |
+| 靜態 | `mode: 'static'` | 無 |
+| 執行階段 | `mode: 'runtime'` | `--mode runtime` |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+執行安裝程式時，指定 `--mode runtime` 與你的 `--framework` 值。它會將外掛選項設為 `mode: 'runtime'`：
+
+```bash
+npm create @master/css@rc -- --framework webpack --mode runtime --yes
+```
+
+建置並提供正式環境輸出。輸出的 HTML 應載入 Master CSS 執行階段指令碼。啟動後，在瀏覽器主控台執行以下程式碼；無須重新建置，段落就應出現底線：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

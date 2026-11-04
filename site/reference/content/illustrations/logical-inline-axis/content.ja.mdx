@@ -1,0 +1,31 @@
+# Reference prose: illustrations/logical-inline-axis
+
+## title \{#copy-title\}
+
+
+インラインの余白は書字方向に従う
+
+## alt \{#copy-alt\}
+
+
+px(16) は横書きで左右、縦書きでは上下の内側の余白を作る。
+
+## caption \{#copy-caption\}
+
+
+両正方形の内容ボックスは同じ寸法です。色付きの帯は実際の 16px の padding-inline 領域です。
+
+## description-0 \{#copy-description-0\}
+
+
+px(16) は padding-inline: calc(16 * 1px) を出力します。horizontal-tb では左右に余白が付きます。
+
+## description-1 \{#copy-description-1\}
+
+
+vertical-rl ではインライン軸が縦方向なので、同じクラスで上下に余白が付きます。
+
+## description-2 \{#copy-description-2\}
+
+
+Master CSS の x と y はインライン軸とブロック軸を指します。物理的な t、r、b、l は実際の辺を保ちます。

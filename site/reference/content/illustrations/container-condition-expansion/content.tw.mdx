@@ -1,0 +1,36 @@
+# Reference prose: illustrations/container-condition-expansion
+
+## title \{#copy-title\}
+
+
+具名條件展開不會決定容器
+
+## alt \{#copy-alt\}
+
+
+--dense 條件結合具名寬度條件與樣式查詢。在 @container card 使用時會展開條件，並保留 card 為容器名稱。
+
+## caption \{#copy-caption\}
+
+
+定義保存條件。使用處提供容器名稱 card。展開 --dense 會同時保留寬度與樣式檢查。
+
+## description-0 \{#copy-description-0\}
+
+
+--md 定義寬度條件 (width >= 28rem)。--dense 結合該參照與 style(--density: compact)。
+
+## description-1 \{#copy-description-1\}
+
+
+使用處 @container card (--dense) 選取名為 card 的容器。
+
+## description-2 \{#copy-description-2\}
+
+
+展開產生 @container card (width >= 28rem) and style(--density: compact)。容器名稱不變，也不成為定義的一部分。
+
+## description-3 \{#copy-description-3\}
+
+
+相同條件可搭配另一個容器名稱，或最近的合格容器重複使用。圖示呈現編譯階段代入，不是 DOM 樹。

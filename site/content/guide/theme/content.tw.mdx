@@ -1,0 +1,184 @@
+---
+{
+  "title": "主題 token",
+  "description": "定義共用設計值、觀察 token 變更如何影響使用端，並選擇區域覆寫、靜態傳遞與 inline 替換。",
+  "category": "撰寫",
+  "figures": {
+    "ThemeIllustration": {
+      "title": "一個共用值，同時改變內距與間隔",
+      "alt": "將 --spacing-card 從 1.5rem 改為 2rem 前後：p-card 內距由 24 增加為 32 像素，gap-card 在兩個清單項目間的間隔也等幅增加。",
+      "caption": "兩欄的標記完全相同。量測假設根字型大小為 16px；醒目區域以實際相對尺寸呈現內距與間隔。",
+      "description": [
+        {
+          "title": "變更前",
+          "text": "根字型為 16px 時，--spacing-card: 1.5rem 透過 p-card 提供 24px 內距，並透過 gap-card 提供 24px 間隔。"
+        },
+        {
+          "title": "變更後",
+          "text": "將 token 改為 2rem，兩個量測值都增至 32px，無須編輯類別。"
+        },
+        {
+          "title": "選擇連動關係",
+          "text": "只有這些間距應一起改變時，才共用一個 token。不同設計決策需要不同 token，即使目前數值相同也一樣。"
+        }
+      ]
+    },
+    "GuideStudy:inherited-alias": {
+      "title": "繼承的別名保留其計算值",
+      "alt": "根元素將 action 別名解析為藍色。子元素把 brand 改為梅紫色：繼承的別名仍是藍色，直到在該子元素重新宣告。",
+      "caption": "藍色與紫色標記指出兩條值解析路徑。這是作用範圍圖，不是額外的主題切換。"
+    },
+    "GuideStudy:delivery-substitution": {
+      "title": "分別選擇保留與替換",
+      "alt": "兩條互相垂直的軸，區分沒有使用端時保留 token，以及將 token 值替換至產生的宣告。",
+      "caption": "static 控制保留；inline 控制替換。使用其中一種，不代表同時啟用另一種。"
+    }
+  },
+  "demos": {
+    "FoundationDialog": {
+      "title": "動態效果由實際操作觸發",
+      "caption": "對話方塊開啟時只進場一次。按 Escape 或 Close details 會將焦點還給觸發按鈕。啟用減少動態效果時會立即開啟。模態邊界限制在這個預覽內。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ThemeIllustration from './components/ThemeIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DemoDialogEntrance from './components/DemoDialogEntrance.astro'
+
+## 概覽 [sr-only] \{#overview\}
+多個元素應一同改變時，就定義 token，例如卡片間距、操作顏色或閱讀欄寬。將它放進應用程式樣式表既有 `@import '@master/css'` 之後的 `@theme`，再於標記使用相符類別。
+
+<DemoConfiguredExample name="theme-first-card" title="三個共用值，一張卡片" source={`@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+  --radius-card: 0.5rem;
+}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><p class="flex items-center gap-xs m(0) text-xs fg-text-muted"><span aria-hidden="true" class="h(8) w(8) pill bg-brand"></span>Brand color</p><h2 class="mt-sm mb-xs text-lg font-regular">Field notes</h2><p class="m(0) text-sm fg-text-muted">Keep the details that matter.</p></article>'} caption="p-card 與 r-card 設定共用內距及圓角。小標記使用 bg-brand，讓顏色 token 可見，同時保留卡片的中性色表面。" />
+
+`p-card` 會產生 `padding: var(--spacing-card)`；瀏覽器在卡片元素上解析自訂屬性。所有使用端應一起改變時，就修改 token；變更只屬於單一元素時，則使用區域值。
+
+## 改變一個值，更新所有使用端 \{#change-one-value-across-its-consumers\}
+
+`--spacing-card` 可同時提供卡片內距與清單間隔。將值從 `1.5rem` 改為 `2rem`，兩處用途都會改變，無須編輯標記：
+
+```html
+<article class="p-card">Field notes</article>
+<ul class="flex gap-card">
+  <li>Draft</li>
+  <li>Ready</li>
+</ul>
+```
+
+<ThemeIllustration />
+
+這種連動是設計決策。若卡片應更寬鬆、清單間隔卻要維持不變，請為兩者使用不同 token。今天共用同一數值，不代表介面的兩個部分永遠都應一起改變。
+
+---
+
+## 依命名空間命名 token \{#define-tokens\}
+
+token 前綴決定命名空間，各類別家族讀取自己支援的命名空間。`--spacing-card` 提供給 `p-card`、`m-card` 與 `gap-card`；`--radius-card` 提供給 `r-card`；`--container-panel` 提供給 `max-w-panel`。相同鍵名在不同家族可代表不同值：`p-lg` 讀取間距，`r-lg` 讀取圓角。
+
+```css name=index.css
+@theme {
+  --color-text-action: var(--color-brand);
+  --font-family-sans: Geist, ui-sans-serif, system-ui, sans-serif;
+  --container-panel: 28rem;
+}
+```
+
+只有 `@theme` 宣告會註冊類別 token；其他位置的原生自訂屬性不會。依共用的設計決策命名，例如 `brand` 或 `card`，不要依首次使用它的元件命名。重新定義 `--spacing-lg` 等預設集鍵名，即可改變整個專案的值。[家族索引](/reference/tokens/families)列出各類別讀取的命名空間；解析方式請參閱[變數與模式](/reference/rules/modes#namespace-resolution)。
+
+---
+
+## token 別名與覆寫 \{#alias-and-override-tokens\}
+
+需要讓一個 token 跟隨另一個時，使用 `var()`。[別名會先解析，再繼承](https://www.w3.org/TR/css-variables-1/#cycles)：若 `--color-text-action` 宣告在根元素，於後代覆寫 `--color-brand`，不會重新綁定繼承的別名。請在該作用範圍重新宣告別名。
+
+<DemoConfiguredExample name="theme-local-alias" title="區域品牌色與繼承的別名" source={`@theme {
+  --color-brand: light-dark(#1d4ed8, #93c5fd);
+  --color-text-action: var(--color-brand);
+}
+
+@layer components {
+  [data-brand="plum"] {
+    --color-brand: light-dark(#86198f, #f0abfc);
+  }
+  [data-rebind-action] {
+    --color-text-action: var(--color-brand);
+  }
+}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-regular fg-brand">Plum brand scope</h2><p class="mt-md mb(0) text-sm font-regular fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) text-sm font-regular fg-text-action">Rebound action: plum</p></section>'} caption="兩個操作標籤都使用 fg-text-action。第一個繼承根元素計算的別名；第二個在 --color-brand 為梅紫色的範圍內重新宣告別名。" />
+
+<GuideStudy id="inherited-alias" />
+
+需要跟隨淺色與深色模式的顏色時，讓 token 使用 `light-dark()` 值，並保留不指向特定模式的名稱，例如 `--color-surface-card`。啟用模式請參閱[色彩](/guide/colors#native-color-scheme-and-manual-themes)。
+
+---
+
+<a id="use-inline-and-static-tokens" />
+
+## 選擇 token 傳遞與值替換方式 \{#choose-token-delivery-and-value-substitution\}
+這兩個修飾詞回答的是不同問題：
+
+| 需求 | 選擇 | 結果 |
+| --- | --- | --- |
+| 專案使用時才輸出值 | 一般 `@theme` | 隨需輸出宣告；類別保留 token 參照。 |
+| 即使未發現使用端也保留值 | `@theme static` | token 宣告仍可供外部整合等用途使用。 |
+| 在每個套用樣式的元素上解析參照變數 | `@theme inline` | 在產生的宣告中替換一次 token 值。 |
+
+整合讀取的值若無法被靜態探索發現，請使用 `static`：
+
+```css
+@theme static { --color-integration-brand: #4f46e5; }
+```
+
+需要在使用類別的元素上解析原生變數時，可使用 `inline` 建立銜接：
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-brand">Ocean background</div>
+</section>
+```
+
+此處 `bg-brand` 會輸出 `background-color: var(--app-brand)`，因此內層元素會讀取從 section 繼承的 ocean 值。替換移除了中間的 `--color-brand` 參照，並非將固定顏色複製到每個元素。
+
+兩種行為都需要時，使用 `@theme static inline` 組合修飾詞。Inline 替換適用於類別與 `@apply`；手寫原生 CSS 會保留原本的參照。請參閱[主題契約](/reference/directives/theme#theme-static)。
+
+---
+
+<GuideStudy id="delivery-substitution" />
+
+## 定義動態效果 token \{#define-motion-tokens\}
+
+<a id="animation-tokens-and-definitions"></a>
+
+`--animate-*` token 是完整的 `animation` 簡寫，因此可組合關鍵影格名稱、持續時間與緩動 token。在旁邊以原生 CSS 撰寫關鍵影格：
+
+<DemoDialogEntrance />
+
+```css name=index.css
+@theme {
+  --duration-enter: 180ms;
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+}
+
+@keyframes dialog-in {
+  from { translate: 0 0.5rem; opacity: 0; }
+}
+```
+
+```html
+<!-- @MARK animate-dialog-in@motion-safe -->
+<dialog class="animate-dialog-in@motion-safe">…</dialog>
+```
+
+此 token 未指定重複次數，因此進場只執行一次；預設集的 `animate-*` token 則會重複。使用者要求減少動態效果時，`@motion-safe` 會讓對話方塊保持靜止。關鍵影格預設保留在樣式表中；使用 `@prune native` 時，被參照的動畫 token 會保留其關鍵影格。若名稱只由 JavaScript 套用，請加入 `@safelist keyframes "dialog-in";`。參閱[動態效果](/reference/tokens/motion)與[關鍵影格契約](/reference/directives/pruning#native-keyframes)。

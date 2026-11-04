@@ -8,6 +8,6 @@ export const migrationGuides = [
   { slug: 'sass', brand: 'sass', title: 'Sass', description: 'Compiler inputs, variables, mixins and useful native CSS.' },
 ] as const
 
-export function migrationGuidesMarkdown() {
-  return migrationGuides.map(guide => `- [${guide.title}](/guide/migration/${guide.slug}) — ${guide.description}`).join('\n')
+export function migrationGuidesMarkdown(t: (text: string) => string = text => text) {
+  return migrationGuides.map(guide => `- [${t(guide.title)}](/guide/migration/${guide.slug}) — ${t(guide.description)}`).join('\n')
 }

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/source-relative-base
+
+## title \{#copy-title\}
+
+
+ソースパスの起点は宣言元のスタイルシート
+
+## alt \{#copy-alt\}
+
+
+インポートされた styles/shared.css が ./views/*.html を宣言し、styles/views を指しています。アプリケーションの作業ディレクトリーは別に示しています。
+
+## caption \{#copy-caption\}
+
+
+ツリーは 1 つのファイルシステムを示します。apps/shop からスタイルシートをインポートしても、その @source パターンの基準がアプリに変わることはありません。
+
+## description-0 \{#copy-description-0\}
+
+
+リポジトリーには styles/shared.css と styles/views/card.html があり、shared.css は @source "./views/*.html" を宣言します。
+
+## description-1 \{#copy-description-1\}
+
+
+相対パターンは styles/shared.css を起点に解決されるため、利用側のアプリが apps/shop で動いていても styles/views/card.html が含まれます。
+
+## description-2 \{#copy-description-2\}
+
+
+スキャナーにプログラムから別途渡す cwd オプションには、独自の仕様があります。この図が説明するのは、CSS に記述するディレクティブです。

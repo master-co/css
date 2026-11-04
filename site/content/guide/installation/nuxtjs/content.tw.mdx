@@ -1,0 +1,120 @@
+---
+{
+  "title": "在 Nuxt 設定 Master CSS",
+  "description": "透過 Nuxt 載入專案 CSS 進入點，並驗證靜態樣式、瀏覽器產生樣式或 Nitro 回應渲染。",
+  "category": "整合"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/nuxtjs/cover-light.webp'
+import dark from '~/site/assets/images/integrations/nuxtjs/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Nuxt" />
+
+安裝 Master CSS Nuxt 模組，並透過 Nuxt 的 `css` 選項載入 CSS 進入點。模組會處理 CSS 傳遞，不會改變 Nuxt 的 HTML 渲染模式。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 加入 Master CSS \{#add-master-css\}
+      在既有的 [Nuxt 專案](https://nuxt.com/docs/getting-started/installation)中，從專案根目錄執行安裝程式。預設使用靜態模式：掃描完整的類別字串，並輸出一般 CSS。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework nuxt --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 載入專案樣式表 \{#load-the-project-stylesheet\}
+
+    保留模組註冊，並明確載入安裝程式建立的 CSS 進入點。`~~/` 指向專案根目錄，即使 Nuxt 專案的應用程式目錄為 `app/` 也一樣。
+
+    ```ts name=nuxt.config.ts
+    export default defineNuxtConfig({
+      modules: [['@master/css-nuxt', { mode: 'static' }]],
+      css: ['~~/assets/css/master.css']
+    })
+    ```
+
+    ```css name=assets/css/master.css
+    @import '@master/css';
+    ```
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+    啟動開發伺服器，為第一個元件套用樣式。這些範例使用 Nuxt 4 的 `app/` 目錄。
+  </Step>
+  <InstallationPreview>
+
+```vue name=app/app.vue
+<template>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+</template>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 檢查設定 \{#check-the-setup\}
+
+開發伺服器執行時，將 `app/app.vue` 中的 `p-md` 改成 `p-lg`：內距應從 `1rem` 增加為 `1.5rem`。改回原值後，建置並提供應用程式。使用 Nuxt 預設的 Node 伺服器預設組態時：
+
+```bash
+npm run build
+node .output/server/index.mjs
+```
+
+若使用其他 Nitro 部署預設組態，請依其程序啟動服務。啟用 Nuxt SSR 時，停用 JavaScript 並重新載入：段落應保有內距、圓角與浮起的表面。靜態模式描述的是 CSS 產生方式，不會將僅在用戶端執行的 Nuxt 頁面改成伺服器渲染頁面。
+
+若頁面沒有樣式，先確認 `css` 選項有載入根樣式表，再檢查模組是否只註冊一次。在已載入的 CSS 中尋找 `.p-md`；僅建置成功，不能證明進入點已載入頁面。
+
+---
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+預設使用靜態模式。安裝程式選項會設定模組的 `mode`；切換模式時，請保留 CSS 進入點：
+
+| 模式 | 安裝程式選項 | 傳遞方式 |
+| --- | --- | --- |
+| 靜態 | 無 | 掃描原始碼後產生的樣式表 |
+| 執行階段 | `--mode runtime` | 瀏覽器執行階段，不提供伺服器端的初始頁面 CSS |
+| 漸進式 | `--mode progressive` | Nitro 提供首次回應 CSS，再交由執行階段接手 |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+```bash
+npm create @master/css@rc -- --framework nuxt --mode runtime --yes
+```
+
+安裝程式會註冊 `['@master/css-nuxt', { mode: 'runtime' }]`。啟用 SSR 時，Nuxt 仍會在伺服器渲染 HTML，而執行階段則在瀏覽器提供產生的類別規則。建置並啟動 Nitro 輸出後，在瀏覽器主控台執行：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+無須重新建置，段落就應出現底線。若未出現，請檢查執行階段程式的請求與主控台診斷訊息。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="包含伺服器渲染的樣式">
+
+```bash
+npm create @master/css@rc -- --framework nuxt --mode progressive --yes
+```
+
+漸進式模式會為字串形式的 Nitro HTML 回應本文加入首次回應 CSS；串流本文不會轉換。先停用 JavaScript 檢查初始樣式，再依上述方式測試頁面 manifest 中未包含的後續類別。
+
+也請在目標目錄測試複製後的部署產物：只在原地建置，無法證明所有 manifest 與程式路徑都可移轉。若複製後的伺服器回報原專案 `node_modules/.master-css/manifest/` 下的 `ENOENT` 路徑錯誤，代表它仍依賴建置機器上的 manifest，尚無法獨立部署。若靜態或執行階段模式能滿足應用程式的傳遞需求，請改用其中一種，並在移動輸出後再次驗證。
+
+</DocumentDisclosure>

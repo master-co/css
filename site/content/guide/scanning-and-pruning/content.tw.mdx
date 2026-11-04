@@ -1,0 +1,141 @@
+---
+{
+  "title": "掃描類別名稱",
+  "description": "撰寫完整類別名稱、處理變動值，並納入靜態建置所需的原始檔。",
+  "category": "撰寫",
+  "figures": {
+    "GuideStudy:stable-dynamic-value": {
+      "title": "改變變數，保留穩定規則",
+      "alt": "相同 font-size 類別出現在兩個標題上方。將 --headline-size 從 2rem 改為 3rem，會讓第二個標題變大，不必引入其他類別。",
+      "caption": "瀏覽器解析更新後的自訂屬性。靜態樣式表中已包含完整規則。"
+    },
+    "GuideStudy:source-and-policy": {
+      "title": "來源探索與保留政策回答不同問題",
+      "alt": "原始檔先提供完整類別候選，再由獨立政策關卡決定是否保留；缺少來源，就無法提供其中的類別。",
+      "caption": "先檢查來源有無納入，再檢查類別政策。圖解不表示類別字串會當作 JavaScript 求值。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:scanning": {
+      "title": "從原始碼到 utility",
+      "alt": "從原始檔擷取完整字串，再依專案定義解析並生成 CSS。",
+      "caption": "原生類別使用情況也會供修剪使用，即使該類別不是 Master CSS utility。",
+      "steps": [
+        {
+          "title": "探索",
+          "description": "透過整合預設方式或明確的來源指令尋找應用程式原始檔。"
+        },
+        {
+          "title": "擷取",
+          "description": "讀取完整候選字串，不執行應用程式碼。"
+        },
+        {
+          "title": "解析",
+          "description": "使用目前啟用的 manifest，為辨識出的 Master CSS 類別生成規則。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 概覽 [sr-only] \{#overview\}
+讓靜態建置取得類別名稱，同時避免將變動值變成新的類別。撰寫完整的候選類別、以 CSS 變數處理連續值，並且只在輸入超出整合的一般範圍時調整來源探索。原生 CSS 的移除另有[傳遞流程](/guide/optimizing-css-delivery#native-pruning)。
+
+## 在原始碼中保留完整類別 \{#keep-complete-classes-in-source\}
+
+掃描器讀取原始碼文字，不會執行應用程式。元件需要選擇狀態色時，請將每個類別完整寫出：
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+靜態擷取無法從 `'bg-' + tone` 這類片段取得完整結果。多種狀態會選擇不同類別時，請使用有限的對照表：
+
+```js
+const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
+const className = statusClasses[status]
+```
+
+掃描器不必執行這次查找，就能找到兩個候選類別。執行階段與漸進式渲染可為首次在瀏覽器得知的有效 utility 名稱生成規則；原始碼中的完整字串是靜態掃描的要求，不代表禁止動態 utility。選擇方式請參閱[渲染模式](/guide/rendering-modes#comparisons)。
+
+<DeliveryFlow name="scanning" />
+
+即使同時只使用其中一個分支，兩個分支仍都能被掃描器看到。各類別生成的內容取決於目前啟用的專案定義：
+
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+<ReferenceIllustration id="static-branch-extraction" />
+
+## 不要將變動值放進類別名稱 \{#keep-changing-values-out-of-class-names\}
+
+假設標題大小來自編輯器控制項。請保留完整類別，並修改元素上的自訂屬性：
+
+```html
+<h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+document.getElementById('headline').style.setProperty('--headline-size', '3rem')
+```
+
+<Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+完成靜態建置後，在瀏覽器主控台執行這段 JavaScript。標題會變大，但不會加入類別或生成新規則。區域自訂屬性不需要註冊 `@theme`，也不需要 Master CSS 執行階段。如果類別名稱本身是在啟動後才首次出現，請使用[執行階段或漸進式渲染](/guide/rendering-modes#comparisons)。
+
+<GuideStudy id="stable-dynamic-value" />
+
+## 納入一般探索範圍之外的來源 \{#include-sources-outside-normal-discovery\}
+
+先使用整合或 CLI 的一般來源探索。共用元件目錄若在其範圍之外，再於負責掃描的樣式表中明確加入來源。路徑以該樣式表為相對基準：
+
+```css name=src/style.css
+@import '@master/css';
+@source "../shared/**/*.tsx";
+@source not "../shared/**/*.test.tsx";
+```
+
+此範例納入同層的 `shared/` 目錄，並排除其測試。比對模式應只涵蓋必要輸入。`@source` 提供類別候選，不會匯入樣式表，也不決定階層串接優先順序。不要只因缺少一個元件，就加入整個儲存庫。
+
+外部內容提供的 utility 名稱若是有限集合，請列出完整候選：
+
+```css
+@safelist "bg-red-60" "bg-green-60";
+```
+
+安全清單讓這些候選可供生成，不會將類別加入元素，也不會讓無效名稱變成有效。無上限的值應使用變數，不要嘗試逐一列舉。[`@blocklist`](/reference/directives/scanning#blocklist) 會排除候選；找到類別卻仍未生成 CSS 時，請檢查這項政策。
+
+<GuideStudy id="source-and-policy" />
+
+路徑模式、候選篩選與其優先順序請參閱[掃描指令](/reference/directives/scanning)。請區分原始檔從未被讀取，以及候選被政策移除這兩種情況。
+
+## 找出樣式缺漏的原因 \{#find-why-a-style-is-missing\}
+
+1. 使用[類別檢查工具](/reference/tools/mcp#mastercss_inspect_class)，依目前啟用的專案 manifest 檢查完整類別。
+2. 確認原始檔有納入掃描。一般應用程式檔案使用整合或 CLI 的預設探索；只有明確例外才加入 [`@source`](/reference/directives/scanning)。
+3. 檢查候選政策。`@source not` 可排除檔案，`@blocklist` 可移除類別。已知且有限的外部類別集合可使用 `@safelist`。
+4. 規則已生成時，確認此頁已載入所屬樣式表。已載入時，先檢查選擇器是否符合，以及勝出的階層串接宣告，再調整來源探索。
+5. 缺少的是原生規則時，請依[原生修剪檢查](/guide/optimizing-css-delivery#native-pruning)處理，包含外部類別與稍後出現的狀態。執行階段 utility 生成無法重建任意被移除的原生選擇器。
+
+來源邊界、候選掃描與驗證請參閱[擷取](/reference/rules/extraction)。
+
+## 接著處理原生 CSS 傳遞 \{#continue-to-native-css-delivery\}
+
+### 修剪未使用的原生 CSS \{#prune-native-css\}
+
+原生 CSS 預設保留。若要移除未使用的原生類別規則，請依照[只修剪已知的使用集合](/guide/optimizing-css-delivery#native-pruning)。該流程先確立傳遞的負責範圍，再說明檔案明確啟用、套件邊界、保留狀態與關鍵影格相依關係。
+
+### 保留廠商樣式表 \{#preserve-native-css\}
+
+類別由外部提供時，可選擇有限的安全清單，或保留擁有這些原生規則的檔案。[保護外部與不確定的來源](/guide/optimizing-css-delivery#keep-external-and-uncertain-sources-safe)包含範例與政策限制。
+
+### 驗證輸出 \{#verify-pruning\}
+
+原始碼中存在指令，不代表整合已提供使用集合。[獨立驗證修剪步驟](/guide/optimizing-css-delivery#verify-the-pruning-step-independently)提供可重現的 CLI 檢查，並說明該檢查能證明什麼。

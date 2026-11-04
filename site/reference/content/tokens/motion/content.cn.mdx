@@ -1,0 +1,96 @@
+# Reference prose: tokens/motion
+
+## title \{#copy-title\}
+
+
+动态效果
+
+## summary \{#copy-summary\}
+
+
+动画简写、持续时间值和缓动曲线。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+动画
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+持续时间
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+缓动
+
+## note \{#copy-note\}
+
+
+`animation-` 和 `transition-` 前缀都同时读取 duration 和 easing 命名空间。自定义键必须在两个命名空间之间保持不同，否则相同的键会产生歧义。`animate-` 读取的则是完整动画简写。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+十个动画令牌包含关键帧名称，并会无限重复。七个持续时间提供时间长度，九条缓动曲线将时间进度映射为值进度。视觉比较只播放一次，初始状态为暂停，并遵循减少动态效果偏好。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+覆盖动画的一个部分
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`animate-pulse` 设置完整的 `animation` 简写，包括 1s 的持续时间。条件相同时，`animation-slow` 排在简写之后，将持续时间替换为 300ms。关键帧名称与迭代次数保持不变；调整 class 属性中的顺序也不会改变结果。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+使用持续时间或缓动族调整其中一个部分，或用它们的变量组成自定义动画令牌。`(animation-duration:450ms)` 这类显式原生声明可以提供字面值覆盖。两条长条以相同时间尺度呈现一次迭代，并非比较渲染性能。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+动画令牌会保留其值所引用的关键帧。单独的持续时间或缓动类不会指定动画名称。过渡也需要属性值发生变化；`transition-fast` 提供的是持续时间，不是 hover 状态或属性列表。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+延迟改变的是效果开始时间，不会延长持续时间。缓动改变持续时间内的进度。控制点超出垂直 0–1 范围的曲线可能产生超出端点或回退的效果；不过动画属性本身仍可能限制实际渲染的值。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+请为非必要的动态效果加上 `@motion-safe` 条件。要让预设动画只播放一次，请在相同条件下添加 `(animation-iteration-count:1)`。为组件组合入场动画的方法，见主题指南；捕获页面状态之间的过渡，则由视图过渡指南说明。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+生成规则的顺序
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生动画简写
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+视图过渡
+
+## usage-lead \{#copy-usage-lead\}
+
+
+允许动态效果时，为链接 hover 后的背景变化添加缓动。链接会返回值对照表。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+用持续时间和缓动令牌组成动画，并在原生 CSS 中声明关键帧：`--animate-reveal` 会创建 `animate-reveal`。
+
+## guide-label \{#copy-guide-label\}
+
+
+主题令牌

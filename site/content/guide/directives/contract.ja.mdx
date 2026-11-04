@@ -1,0 +1,635 @@
+import StylesheetExample from '@master/internal-site/css/StylesheetExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+## エントリーマーカー \{#entry-markers\}
+`@import` はスタイルシートを配信し、その定義を利用可能にします。ローカルのコンパイルに定義が必要でも、ネイティブスタイルシートを別の出力が配信する場合は `@reference` を使います。アプリの設定は[インストール](/guide/installation)、ルート別の所有関係は[ルート単位のスタイル](/guide/route-level-styles)を参照してください。
+
+<ReferenceIllustration id="import-reference-output" />
+
+### `@import "@master/css"` \{#import-mastercss\}
+このパッケージのインポートが唯一のプロジェクトエントリーマーカーです。安定したレイヤー順序とベーススタイルを含むプリセットのネイティブ CSS を読み込み、生成ユーティリティ CSS を受け取るスタイルシートを特定します。
+
+```css
+@import "@master/css";
+```
+
+明示的な単独のコンパイラー API と manifest API も利用できます。manifest だけではネイティブ CSS を読み込みません。ランタイムやサーバーレンダリングを使うアプリも、必要なネイティブスタイルシートを配信する必要があります。
+
+### ローカルファイル URL \{#local-file-urls\}
+
+Node のファイルコンパイルは CSS のエスケープと大文字小文字の規則でインポート名を読みます。相対 `@import` と `@reference` のパス名はソースファイルを基準に解決し、パーセントエスケープはファイル名の文字を表し、クエリ文字列とフラグメントはファイルシステムのパスから除きます。たとえば `"./tokens%20%23.css?v=1#theme"` は同じディレクトリの `tokens #.css` を読みます。既存の `"tokens.css"` のような接頭辞なしの相対 CSS パスも展開します。対応するローカルファイルのないパッケージインポートはホストのリゾルバーで引き続き解決できます。参照ファイルはコンパイル時の文脈であり、ネイティブ CSS は出力しません。用意された仮想スタイルシートでは、ホストが明示したファイルシステムのソース所有者が相対 CSS 参照の基準にもなります。参照されたテーマトークンのリソースは、別の場所で使っても参照ファイルを基準とします。
+
+### スタイルシートの境界とリソース URL \{#stylesheet-boundaries-and-resource-urls\}
+
+インポートの media、supports、layer 修飾は読み込むスタイルシートに適用されます。CSS の公開時もこの境界を保ち、画像とフォントの URL は元のソースファイルから解決してください。`@reference` で使うトークンも定義ファイルをリソースの所有者として保持します。
+
+グローバルな Master 定義は修飾のないインポートまたは参照に置きます。修飾付きインポートには、すでに利用可能な ミックスイン を適用するネイティブ規則を含め、ネイティブ CSS を入れられます。ただし `@theme`、`@utility`、`@mixin`、`@custom-media`、`@custom-container` の定義は登録できません。
+
+```css
+@import "./tokens.css";
+@import "./print.css" print;
+@import "./components.css" layer(components);
+```
+
+各 `@import` はスタイルシートを再びインライン化するため、複数箇所から読み込むと同じファイルが繰り返されます。1 つのインポートグラフでインライン化できる上限は 10,000 スタイルシート、64 MiB の CSS です。共有ファイルは利用する各ファイルからではなく 1 回だけ読み込んでください。
+
+定義やスキャン用メタデータを読み込んでもファイルは公開されません。CLI のファイル書き出しと Vite の本番ビルドは必要なスタイルシートとリソースを公開します。独自のコンパイラーホストは配信 API が返す全アセットを公開する必要があり、manifest だけではネイティブ規則を配信しません。[レンダリングとスタイルシート配信](/guide/rendering-modes#native-css-entries)および[コンパイラーのエントリーポイント](/reference/packages#css-compiler)を参照してください。
+
+
+### 全アセットを公開する \{#publish-stylesheet-assets\}
+
+コンパイルした CSS エントリーにも他の CSS インポートや画像・フォントの参照が残る場合があります。エントリーのテキストだけを公開すると依存先を取得できません。返された各 URL とインポート修飾を保ってください。外部インポートを含む子を平坦化すると、読み込み順や条件のスコープが変わる場合があります。
+
+<ReferenceIllustration id="stylesheet-asset-graph" />
+
+| 配信方法 | 公開の担当 |
+| --- | --- |
+| CLI `generate --output dist/app.css` | CLI がローカルインポートをエントリーに平坦化し、リソースと保持した境界に必要な別 CSS を書き出します。一式をデプロイします。 |
+| Vite 本番ビルド | 統合が管理対象のインポートを Vite の CSS アセットに平坦化し、残りのアセットもビルドに出力します。設定した公開ベースで全出力をデプロイします。 |
+| `delivery` 付きの `compileManifestFileSync()` | API はスタイルシートの内容とリソースの出力先を返し、独自ホストが書き込みまたは配信します。 |
+| manifest または CSS 文字列 | どちらもファイルを公開しません。呼び出し元がネイティブ CSS と参照リソースの配信を担当します。 |
+
+本番での平坦化はカスケードを保ちます。レイヤー文は元の位置に残り、`layer()`、`supports()`、media 修飾は同等の `@layer`、`@supports`、`@media` ブロックに変わり、空のスタイルシートは消えます。先行するものが他の外部インポートだけなら、先頭の外部インポートはスタイルシートとともに上に移動します。修飾の下に namespace やインポートを保持する場合、または外部インポートがインライン化した規則の後になる場合、そのスタイルシートは別ファイルのままです。`@import` は規則の後に置けないため、同じファイルでその前にあるインポートも別ファイルに残します。
+
+画像とフォントは、`@reference` 経由のリソースも含め、定義元のスタイルシートをソース所有者として保ちます。公開時に URL を書き換え、クエリ文字列とフラグメントは保持します。参照専用のスタイルシートは、定義を読んだだけでは公開しません。
+
+CLI の `--no-export` はアセットをコピーせず CSS を表示します。ファイル書き出しの監視モードでは、インポート先やリソースがない場合、最後に成功した出力を保ち、エラーを報告し、復旧後に再ビルドします。古い出力を最新ビルドの成功とみなさないでください。
+
+独自ホストは[コンパイラーの配信契約](/reference/packages#css-compiler)を参照してください。Vite の処理済みテキスト、元ソース、URL のインポートは[スタイルシートの読み込み](/guide/installation/vite#stylesheet-loading)、ローカルスタイルシートを所有するページは[ルート単位のスタイル](/guide/route-level-styles)で説明します。
+
+## 参照の文脈 \{#reference-context\}
+### `@reference` \{#reference\}
+別のスタイルシートの定義がコンパイルに必要でも、ネイティブ規則はインポートしない場合に参照を使います。この例はアプリのエントリーから余白トークンとセレクターの ミックスイン を読み込みます。
+
+```css name=app.css
+@import "@master/css";
+
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+  padding: var(--spacing-md);
+  @apply --manual-dark { color: white; }
+}
+```
+
+参照はトークン、ユーティリティ、ミックスイン、独自メディア、独自コンテナー、ネイティブキーフレームの定義を解決に供給します。参照先のネイティブ CSS を配信せず、クラスを生成せず、スキャン元も加えません。使用する管理対象トークンやキーフレームの依存先はローカル出力に含まれ得ます。参照されたネイティブ規則は使用の起点になりません。ネイティブの上書きには実際の `@import` か別途配信するスタイルシートが必要です。参照されたキーフレームはローカルで使う場合だけ出力します。
+
+<ReferenceIllustration id="reference-no-roots" />
+
+参照は引用符付きのリソースを 1 つ持つ最上位の文でなければなりません。相対パスは宣言元のスタイルシートのディレクトリが基準です。パッケージ参照はエクスポートされた CSS エントリーを解決します。参照はエントリーマーカーではありません。
+
+Vite、Next.js、Webpack はローカルスタイルシート、CSS Modules、SFC のスタイルにプロジェクトの定義文脈を供給します。その外の依存先や単独のコンパイルには明示的な参照が便利です。ローカルスタイルシートはスキャンやプルーニングの起点にはなりません。CSS Modules やスコープ付きホストは、生成するテーマセレクターをグローバルに配信する必要があります。
+
+定義文脈はローカル定義の前に読み込むため、ローカル定義がインポートや参照の定義を置き換えられます。CSS 出力を分割するコンパイラーホストは、共有変数とキーフレームをどの出力が配信するかも追跡する必要があります。[コンパイラーのリソース所有権](/reference/packages#css-compiler)を参照してください。
+
+## テーマ宣言 \{#theme-declarations\}
+`@theme` はユーティリティ定義用のトークンを登録します。修飾子は、配信するトークン宣言と、生成値に `var()` を使うか宣言値を代入するかを独立して制御します。プロジェクトの設定は[テーマトークン](/guide/theme)、スコープ、継承、解決は[変数とモード](/reference/rules/modes)を参照してください。
+
+### `@theme` \{#theme\}
+ユーティリティトークンはカスタムプロパティで宣言します。テーマブロックは最上位に置き、カスタムプロパティのトークン宣言だけを受け付けます。キーフレームはブロックの外のネイティブ CSS で宣言してください。
+
+```css
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+```
+
+未知または重複した修飾子はエラーです。`static` と `inline` の順序は問いません。
+
+| 宣言 | トークンの配信 | 生成値 |
+| --- | --- | --- |
+| `@theme` | 必要時のみ | `var(--token)` |
+| `@theme static` | 常に配信 | `var(--token)` |
+| `@theme inline` | 別の参照や依存関係で保持される場合のみ | 宣言値 |
+| `@theme static inline` | 常に配信 | 宣言値 |
+
+トークンは `@layer theme` 内の `:root, :host` に出力します。コンパイラーは宣言順と重複値を保持します。使用するトークンは推移的な変数依存を保持します。セレクターと条件規則はブロック外のネイティブ CSS に置きます。
+
+ユーティリティパターン用の名前付きトークンを登録するのは `@theme` だけです。`:root { --app-brand: red; }` のようなネイティブ宣言は通常の CSS のままです。`(color:var(--app-brand))` で直接使うか、inline テーマトークンで橋渡しします。
+
+<ReferenceIllustration id="theme-modifier-axes" />
+
+### `@theme inline` \{#theme-inline\}
+`inline` はトークンの宣言値を Master が生成する宣言に代入します。
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+`bg-brand` は `background-color:var(--app-brand)` を出力し、クラスを使う要素上でネイティブ変数を解決します。直接宣言クラス、ユーティリティクラス、ネイティブ `@apply` の展開にも同じ代入を適用します。手書きのネイティブ宣言は元の `var()` 参照を保持します。
+
+代入は 1 回だけです。置換値内の変数、関数、代替値はネイティブ CSS の意味を保ちます。依存関係は結果の宣言から収集するため、inline ユーティリティを使うだけでは置き換えたトークンの出力を強制しません。トークンへの直接のネイティブ参照では、その宣言を保持できます。
+
+テーマ定義が重複すると、重要度、次にソース順で inline 値とモードを選びます。カスタムプロパティの `!important` は生成ユーティリティを重要にしません。通常の別名は宣言したスコープで解決するため、使用箇所で別の変数を読む橋渡しには inline を使います。
+
+### `@theme static` \{#theme-static\}
+クラスやネイティブ参照がなくてもトークンを出力するには `static` を使います。
+
+```css
+@theme static { --color-integration: #4f46e5; }
+@theme static inline { --color-brand: var(--app-brand); }
+```
+
+`static` はトークンの配信、`inline` は生成値を制御し、どちらの順でも組み合わせられます。static 宣言が 1 つでもあるトークンは、定義を除くまで依存先とともに保持します。参照先のスタイルシートは、トークンが static というだけで出力の起点にはなりません。
+
+### ネイティブのテーマ上書き \{#theme-mode\}
+既定値を `@theme` に登録し、ネイティブのセレクターやクエリで変数を上書きします。
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+@media (prefers-color-scheme: dark) {
+  :root { --color-panel: #111827; }
+}
+```
+
+ネイティブの上書きは元のスコープ、レイヤー、スタイルシート配信を保ちます。同じ要素では、レイヤー外の通常の上書きが theme レイヤーの通常宣言より優先します。`defaults` など後のレイヤーでも上書きを優先しつつ、`components` と `utilities` のレイヤーに優先させられます。必要な場所にネイティブスタイルシートをインポートしてください。`@reference` は定義だけを供給し、規則は配信しません。
+
+プリセットは適応型の色と影にネイティブの `light-dark()` を使い、両変数の分岐を依存先として保持します。ネイティブのベース CSS はルートに `color-scheme: light dark` を設定し、要素とシャドウホストに明暗の `data-theme` セレクターを用意します。[色](/guide/colors#native-color-scheme-and-manual-themes)を参照してください。
+
+<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
+
+## クエリ定義 \{#query-definitions\}
+再利用する条件に一度名前を付け、ネイティブ CSS やクラスの接尾辞で使います。メディア名はビューポートやデバイスの条件、コンテナー名は使用箇所で選んだコンテナーに対する条件を表します。定義は最上位かつ無条件でなければなりません。
+
+クラスの接尾辞構文は[条件](/reference/rules/conditions)、プリセットの全条件は[名前付き条件](/reference/rules/named-conditions)、レイアウトの境界の選び方は[レスポンシブデザイン](/guide/responsive-design)を参照してください。
+
+<ReferenceIllustration id="container-condition-expansion" />
+
+### `@custom-media` \{#custom-media\}
+[CSS Media Queries 仕様](https://drafts.csswg.org/mediaqueries-5/#custom-mq)に従って名前付きメディアクエリを定義します。
+
+```css
+@custom-media --wide (width >= 60rem);
+@custom-media --reading (--wide), print;
+@custom-media --outside not (--reading);
+@custom-media --enabled true;
+@custom-media --disabled false;
+
+@media (--reading) { .article { max-width: 70ch; } }
+```
+
+名前は `--` で始まります。CSS の参照は `(--name)`、マークアップは `@name`、ローカルの名前付きブロックは `@media (--name)` を使います。ネイティブ CSS、ユーティリティと ミックスイン の定義、マークアップのクエリは同じ登録情報を使います。
+
+定義はクエリリスト、前方参照、`true`、`false`、入れ子の論理式、否定、メディアタイプに対応します。展開は論理的で、リストの論理和を保ち、否定は参照式全体に適用します。リスト内の各クエリは別分岐となり、クラス上の全条件の分岐数は掛け合わせられます。`@reading` を12 回繰り返すなど、4,096 分岐を超えるクラスは規則を生成しません。コンパイラーは通常のメディアクエリを出力し、混在するメディアタイプを 1 クエリで表せない場合は入れ子のブロックを使います。ブラウザーの custom-media API や JavaScript ランタイムの登録は不要です。
+
+未定義、循環、無効な参照はコンパイルエラーです。同名の定義は後のものが優先します。メディア名と ミックスイン 名は独立し、`@name` はメディアを選び、`@apply(--name)` は ミックスイン を呼びます。`@starting-style` が組み込みのため `--starting-style` は予約名です。プリセットに `--breakpoint-*` トークンはありません。その接頭辞を持つプロジェクトのカスタムプロパティは通常の CSS であり、暗黙のメディア条件にはなりません。幅の上限にはネイティブの長さか独立した名前のレイアウトトークンを使います。外部 URL を保持するインポートには未解決の custom-media クエリを含められません。変換前にそのスタイルシートのインポートを解決するか、インポートで通常のネイティブクエリを使ってください。
+
+<StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
+
+### `@custom-container` \{#custom-container\}
+Master CSS はコンパイル時に `@custom-container` 定義を展開し、ブラウザーには通常の `@container` 規則を渡します。定義が持つのは条件だけで、測定するコンテナーは条件の使用箇所で選びます。
+
+```css
+@custom-container --md (width >= 28rem);
+@custom-container --max-md not (--md);
+@custom-container --compact style(--density: compact);
+@custom-container --dense (--md) and (--compact);
+
+@container card (--md) { .title { font-size: 1.25rem; } }
+```
+
+名前は `--` で始まります。CSS の参照は任意のコンテナー名の後に `(--name)` を置き、`@container card not (--md)` のように書きます。マークアップもクエリ内で同じ参照を使い、`@container(--md)` は最も近いコンテナー、`@container(card|--md)` は名前付きコンテナーを測ります。ネイティブ CSS、ユーティリティと ミックスイン の定義、マークアップは同じ登録情報を共有します。
+
+定義にはサイズ・スタイルクエリ、`not`、`and`、`or`、前方参照を含む他の独自コンテナーの参照など、任意のコンテナー条件を使えます。展開時は参照条件を代入し、すでに 1 グループか条件全体でなければ括弧で囲みます。そのため `@container card (--dense)` は `@container card (width >= 28rem) and style(--density: compact)` を出力します。コンテナー条件は常に 1 つの前置部に収まり、展開で分岐は増えません。コンパイラーは通常のコンテナークエリを出力し、各展開条件を manifest の `customContainers` に保存します。
+
+未定義、循環、空の参照や、コンテナー名から始まる定義はコンパイルエラーです。同名では後の定義が優先し、それを参照する定義も最終版を使います。コンテナー名は独自メディアや ミックスイン と独立し、単独の `@md` は常に独自メディアを選び、コンテナー条件は選びません。`--container-*` トークンは要素のサイズ用で、コンテナーのしきい値にはなりません。
+
+<StylesheetExample title="A named container condition" source={"@custom-container --roomy (width >= 40rem); .card { @container (--roomy) { display: grid; } }"} />
+
+## ユーティリティとネイティブスタイル \{#managed-definitions\}
+`@utility` は必要時に生成するクラスを登録します。`@mixin` は再利用する CSS 本体に名前を付け、`@apply` は呼び出し位置で展開します。ネイティブセレクターは通常の CSS のままです。形式の選び方は[スタイルの再利用](/guide/reusing-styles)で説明し、このページでは文法と置換規則を定義します。
+
+### `@utility` \{#utilities\}
+最上位でクラスの形式を明示的に宣言します。
+
+```css
+@utility card-layout {
+  display: grid;
+  gap: var(--spacing-md);
+  &:hover { outline: 1px solid currentColor; }
+}
+
+@utility col-gap-(--spacing) {
+  column-gap: var(--spacing);
+}
+
+@utility grid-cols(--cols <integer>) {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+```
+
+マークアップでは `card-layout`、`col-gap-sm`、`grid-cols(3)@sm` を使います。ヘッダーで固定クラス、トークンパターン、関数のどれを登録するかが決まります。各形式はその形式だけを登録し、トークンパターンは関数呼び出しも作るわけではありません。宣言や対応する入れ子規則を加えても登録は変わりません。
+
+ユーティリティ名とトークンの接頭辞には `_` を含められません。クラス内では `_` が子孫セレクターを始めるため、その定義のソース位置でエラーを報告します。トークンキーには `_` を含められ、`var()` で使える変数として有効ですが、単独のトークンクラスや補完は作りません。ミックスイン 名、カスタムプロパティ、ネイティブスタイルシートのクラスは引き続き `_` を使えます。
+
+### 登録とプリセット \{#named-and-enumerated-classes\}
+テーマはトークンを供給し、ユーティリティ定義はそこから生成できるクラスを決めます。完全なプリセットには `"@master/css"` をインポートします。スタイルシートを明示的に組み立てる場合は、独自トークンとともに `"@master/css/utilities.css"` を読み込めます。
+
+トークンとプロパティの完全な対応は[ファミリー一覧](/reference/tokens/families)、それぞれの登録は[固定ユーティリティ](/reference/rules/declarations#fixed-utilities)と[直接数値](/reference/direct-values)を参照してください。すべてここで説明する同じ定義形式を使います。
+
+### トークンパターン \{#named-token-patterns\}
+パターンは末尾にプレースホルダーを 1 つ持ちます。パラメーターがトークンの名前空間、固定部分がクラスの接頭辞を指定します。型なしのプレースホルダーはトークン値を束縛します。
+
+```css
+@utility p-(--spacing) { padding: var(--spacing); }
+@utility m-(--spacing) { margin: var(--spacing); }
+@utility fg-(--color) { color: var(--color); }
+@utility size-(--spacing) {
+  width: var(--spacing);
+  height: var(--spacing);
+}
+```
+
+`p-md` は `var(--spacing-md)` を束縛し、`size-md` は両宣言でその参照を使います。通常のトークンはブラウザー評価の参照を保持し、inline トークンは宣言値を一度代入します。未知のトークンはクラスを作りません。値パターンは数値や Unicode のキーを受け付け、`--` を含むキーも可能です。
+
+`<string>` のプレースホルダーはトークンキーを束縛し、補助値の明示的な参照を可能にします。
+
+```css
+@theme {
+  --text-hero: var(--font-size-5xl);
+  --text-hero--line-height: 1.15;
+  --text-hero--letter-spacing: -.03em;
+}
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
+}
+```
+
+`text-hero` は文字列 `"hero"` を束縛し、対応する主トークンが必要です。`--` を含む補助キーはクラスを作らず、補助値がなければ記述した代替値を使います。`ident()` は静的に通常の CSS 識別子へ畳み込みます。名前空間はパラメーターから取るため、`@utility type-(--text <string>)` は同じトークンを別のクラス接頭辞で使います。トークンのプレースホルダーは既定値や他の型を受け付けません。
+
+共通の接頭辞で複数の名前空間を明示的に公開できます。
+
+```css
+@utility font-(--font-family) { font-family: var(--font-family); }
+@utility font-(--font-size) { font-size: var(--font-size); }
+@utility font-(--font-weight) { font-weight: var(--font-weight); }
+```
+
+`font-sans`、`font-sm`、`font-bold` は、そのキーを持つ唯一の名前空間をそれぞれ選びます。複数分岐に同じキーがあれば、使用時に `AMBIGUOUS_TOKEN` を報告し CSS は生成しません。キーを分けるか、`(font-size:var(--font-size-brand))` などのネイティブ宣言を使います。この規則は文字列キーのレシピや複数宣言の本体にも適用します。負の値と不透明度は一意な分岐の選択後に検査します。
+
+固定クラスはパターンに優先します。予約されるのはトークンキーではなくクラスの完全な綴りです。そのため `--text-center` があっても `text-center` は `text-align` を設定しますが、`fg-solid`、`b-solid/.5`、`-mx-auto` は `solid` や `auto` というトークンを使えます。パターンは最長の接頭辞を選び、選んだファミリーにトークンがなければ短い接頭辞を再試行せずエラーを報告します。パラメーターの名前空間が異なるパターンは同じ接頭辞で共存できます。後のパターンは、デコード後の接頭辞と名前空間が同じ定義を、パラメーターモード、本体、ソース、依存先ごと完全に置換します。静的登録と関数登録は、同形式・同名の定義を独立して置き換えます。
+
+負の値と不透明度は直接値の部分集合に適用します。型なしのプレースホルダー 1 個と、値全体が `var(--parameter)` であるネイティブ宣言 1 個が条件です。`-m-md` は数値の余白トークンを負にし、`-p-md` は padding が負に対応しないため無効です。`fg-red/.5` は色トークンに 0 から 1 の不透明度を適用します。通常の複数宣言や文字列キーのレシピには広がりません。
+
+<ReferenceIllustration id="ambiguous-namespace" />
+
+### 静的な引数 \{#dynamic-values\}
+関数ユーティリティと ミックスイン は、型なし、`<integer>`、`<number>`、`<string>`、`<custom-ident>` の位置パラメーターを受け付けます。静的な既定値は `--cols <integer>: 2` のようにコロンで指定します。数値は数値リテラルで、グリッド数とスパンは正の整数が必要です。文字列引数には引用符が必要です。
+
+```css
+@utility pair(--size) {
+  width: var(--size);
+  height: var(--size);
+}
+```
+
+`pair(2rem)` のように使います。一般の関数引数は静的に確定する必要があります。関数または ミックスイン が、型なし・既定値なしのパラメーターを 1 つだけ持ち、値全体が `var(--parameter)` のネイティブ宣言 1 個だけで構成される場合は、記号的な `var()` 式も受け付けます。呼び出し元の参照はブラウザー評価用にそのまま保ちます。他の関数は外部の `var()`、`attr()`、ブラウザー依存の引数を拒否します。既知の外側のパラメーターは `var(--parameter)` で転送できます。
+
+<StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
+
+<ReferenceIllustration id="parameter-known-vs-live" />
+
+### `@mixin` と `@apply` \{#reusing-a-matched-value\}
+Master は実験的な [CSS Mixins 仕様](https://drafts.csswg.org/css-mixins-1/#mixin-rule)の静的な部分集合をコンパイルします。定義は二重ハイフンで始まる名前を持ち、無条件のスタイルシートレベルの規則でなければなりません。ミックスイン は CSS の再利用用で、Master クラスは登録しません。
+
+```css
+@mixin --caption {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+.caption {
+  color: currentColor;
+  @apply --caption;
+  font-weight: 600;
+}
+@utility caption {
+  @apply --caption;
+}
+```
+
+`@apply` はネイティブ規則、ユーティリティ、別の ミックスイン 内で ミックスイン 呼び出しを 1 つ受け付けます。ユーティリティ名やクラスリストは受け付けません。元の宣言位置で展開し、重複、重要度、セレクター、条件、URL の所有権を保持します。
+
+パラメーターは `&:hover` や条件ラッパーを含め、適用先の要素で使えます。別要素での使用、再代入、セレクターや条件への補間、再帰定義、オーバーロード、`@private`、未対応の型はコンパイルエラーです。この静的部分集合はブラウザー依存のパラメーター評価、私有プロパティ、汎用関数を実装しません。
+
+<ReferenceIllustration id="mixin-splice" />
+
+### 内容とクラスラッパー \{#contents\}
+`@contents` は、呼び出し元の宣言や入れ子規則を再利用ラッパーのどこに入れるかを示します。
+
+```css
+@mixin --card-wide() {
+  @container card (width >= 40rem) { @contents { display: grid; } }
+}
+.card { @apply --card-wide { gap: 1rem; } }
+```
+
+`@contents;` は渡された内容を挿入します。`@contents { … }` は呼び出しでブロックを省略した場合だけ代替内容を供給します。明示的に空の `@apply --card-wide {}` を渡すと代替内容を抑制します。各 contents 位置にブロックを 1 回挿入し、宣言、重複、入れ子規則を保持します。`@contents` のない ミックスイン は渡されたブロックを無視します。
+
+<ReferenceIllustration id="contents-default-vs-empty" />
+
+渡された内容は、入れ子の適用で転送しても呼び出し元のパラメーター束縛を保ちます。代替内容は定義元 ミックスイン の束縛を使います。通常のカスタムプロパティはネイティブ CSS のカスケード動作を保ちます。有限の入れ子呼び出しは可能ですが、再帰定義や展開の深さ・ノード数の上限超過はエラーです。
+
+```css
+@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+@utility emphasis { color: red; display: block; }
+```
+
+```html
+<button class="(color:red)@apply(--hocus)">Save</button>
+<div class="grid-cols(3)@apply(--card-wide)"></div>
+<div class="emphasis@apply(--hocus)!"></div>
+```
+
+`@apply(--name(...))` は静的な引数を受け付けます。複数の `@` ラッパーは左から右へ入れ子になり、`(color:red)@apply(--a)@apply(--b)` では `--a` が `--b` の外側です。ユーティリティは宣言を 1 ブロックとして渡すため、ラッパー自身の宣言はクラスごとに 1 回出力します。セレクター接尾辞は位置を保ち、末尾の `!` は展開した全宣言を重要にします。クラスの先頭部分と `@apply` 以外の条件接尾辞が並び順を決めます。外側の条件分岐はそれぞれ独立して並ぶ規則となり、ミックスイン 内のセレクターや条件は出力テキストに残ってクラスを後の段階へ移さず、展開は記述順を保ちます。宣言、セレクター、条件を加えない展開は単一宣言ユーティリティと、先頭部分が `(property:value)` ならネイティブ宣言と並びます。それ以外はレシピとして並びます。検査と競合判定は展開後の規則を使います。
+
+未使用の定義、破棄された contents、未使用の代替ブロックはトークンやキーフレームを保持しません。配信されるネイティブ `@apply` は emitted-globals 契約を通じてリソースの起点となります。宣言位置と相対 URL は定義元または呼び出し元のファイルを保持します。
+
+<ReferenceIllustration id="contents-insertion" />
+
+### 定義全体の置換 \{#whole-definition-replacement\}
+後の定義は同じ登録の本体全体を置き換え、宣言を結合しません。同名の静的ユーティリティと関数ユーティリティは別登録です。トークンパターンはデコード後の接頭辞と名前空間が同じ分岐だけを置き換えます。
+
+```css
+@utility badge { color: red; padding: 1rem; }
+@utility badge { color: blue; }
+```
+
+`badge` は `color: blue` だけを出力します。前の padding とその依存先はなくなります。
+
+<ReferenceIllustration id="definition-replacement" />
+
+ミックスイン 名にはパラメーター一覧、本体、依存先を含む最終定義が 1 つだけあります。空の定義も登録は残ります。前方への入れ子呼び出しは最終的な登録情報で解決し、パラメーターのオーバーロードはありません。
+
+<ReferenceIllustration id="independent-registrations" />
+
+### 定義のスコープとインポート \{#definition-scope-and-imports\}
+`@theme`、`@utility`、`@mixin`、`@custom-media`、`@custom-container` は最上位の定義です。レイヤーや条件ラッパー内での登録はエラーです。ミックスイン 本体には宣言、入れ子セレクター、対応するネイティブ条件、入れ子の `@apply`、`@contents` を含められます。レイヤーへの配置は呼び出し箇所で決めます。
+
+ソーススキャン、セーフリスト、エンジン API、ランタイムの DOM 変更によるクラスが使用の起点です。配信するネイティブ CSS 内の `@apply` も起点ですが、未使用のユーティリティや ミックスイン、未配信の `@reference` スタイルシート内のものは違います。依存収集はパラメーター束縛と `ident()` の畳み込み後です。使用するトークンは宣言順と推移的な依存を保持します。静的トークンは参照元がなくても起点のままです。最後の起点を除くとリソースを解放し、ネイティブ CSS のリソースは `emittedGlobals` で固定します。
+
+ランタイム manifest は将来の DOM クラス用に未使用定義を保持します。オンデマンド生成の対象は CSS とリソース出力です。ネイティブ CSS のプルーニングは明示的な有効化が必要で、キーフレームは宣言ファイルのネイティブ保持・プルーニング方針に従います。修飾付きインポートにはネイティブ CSS だけを含め、定義は修飾なしのインポートや参照で読み込みます。
+
+### ネイティブプロパティの優先順 \{#literal-and-raw-values\}
+ネイティブの `(property:value)` クラスは、ユーティリティ登録と独立して CSS プロパティの意味を保ちます。同条件では単一宣言ユーティリティやネイティブ宣言クラスでレシピの一部を上書きできます。完全な並び順と上書き規則は[宣言と値](/reference/rules/declarations#combining-declarations)を参照してください。
+
+### ネイティブの既定スタイル \{#defaults\}
+ネイティブの既定スタイルは `@layer defaults` に書きます。
+
+### ネイティブコンポーネント \{#components\}
+ネイティブのコンポーネントセレクターは `@layer components` に書きます。
+
+```css
+@layer components {
+  .button {
+    display: inline-flex;
+    padding: var(--spacing-md);
+    &:focus-visible { outline: 2px solid currentColor; }
+  }
+}
+```
+
+ネイティブ規則はスタイルシートのインポートグラフに従って配信します。ユーティリティ定義はクラス名を登録し、ミックスイン 定義は `@apply` による CSS の再利用を提供します。どちらもコンパイル時に処理し、使用時だけ CSS を出力します。
+
+### Sass との相互運用 \{#sass-interoperability\}
+
+Sass を使う場合は CSS ミックスイン 定義を `.css` ファイルに置きます。現在の Dart Sass は将来の CSS 対応のため `@mixin --name` を予約し、Sass ミックスイン として拒否します。[Sass の互換性に関する告知](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/)を参照してください。SCSS ファイルでは Master CSS のコンパイル前に、補間でネイティブ at-rule を出力できます。
+
+```scss
+@#{'mixin'} --card {
+  padding: 1rem;
+}
+
+.card { @apply --card; }
+```
+
+これは Sass の補間であり、追加の Master CSS 構文ではありません。Sass の `@include` と CSS の `@apply` は別の構造です。
+
+### テーマセレクターのラッパー \{#theme-wrappers\}
+ネイティブのセレクターとクエリがテーマの上書きを有効にします。ミックスイン で対応するクラス条件を提供できます。
+
+```css
+@mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
+}
+```
+
+`(color:white)@apply(--ocean)` を使います。シャドウホストを対象にする場合は `:host(...)` セレクターを明示的に加えてください。
+
+## ソースの境界 \{#source-boundaries\}
+ファイルの方針は候補を読む場所を選び、候補の方針はどの完全なクラス文字列を有効に保つかを選びます。これらのディレクティブはパーサーを変えず、任意のソース文字列を有効なユーティリティにはしません。設定とトラブルシューティングは[クラス名のスキャン](/guide/scanning-and-pruning)、対応するソース構文とライフサイクルは[抽出](/reference/rules/extraction)を参照してください。
+
+<ReferenceIllustration id="scanning-two-filters" />
+
+### `@source` \{#source\}
+通常のアプリケーションソースには統合と CLI の既定の検出を使います。必要に応じて明示的な例外を加えます。
+
+```css
+@source "../content/**/*.mdx";
+```
+
+### `@source not` \{#source-not\}
+一致するファイルをソース集合から除外します。
+
+```css
+@source not "../content/drafts/**";
+```
+
+`{a,b}` などの波括弧グループは別々のパターンに展開します。1 パターンに含められるグループは最大 64 個、展開後は最大 1,024 パターンです。
+
+包含パターンの和集合から全除外パターンを引きます。各相対パターンは宣言元のスタイルシートを基準に解決し、単独の `src/**`、`./src/**`、インポートしたファイル、`@source not` も同様です。参照はスキャン元を供給しません。
+
+ファイルを解決する API には宣言ファイルまたは明示的な基準ファイルが必要です。ソースのみのディレクティブ検査は未解決のメタデータを返せますが、ファイルシステムの基準を推測で作ってはいけません。スキャナーのプログラム用 `cwd` オプションは、その API に直接渡したスキャナーオプションに対して従来の意味を保ちます。
+
+## 候補の方針 \{#candidate-policy\}
+### `@safelist` \{#safelist\}
+スキャンするソースにリテラルとして置けない完全なクラス候補を加えます。
+
+```css
+@safelist "(opacity:1)";
+@safelist "bg-blue-60@dark";
+```
+
+候補は検出クラスと同じ一致・診断方針を使います。動的な選択肢は範囲を限定して明示してください。
+
+クラスやアニメーション宣言を生成せず名前付きアニメーション定義を保持するには、明示的な キーフレーム対象を使います。
+
+```css
+@safelist keyframes "fade" "pop";
+```
+
+引用符付き文字列はそれぞれ完全な CSS アニメーション名です。名前は大文字小文字を区別し CSS エスケープに対応し、文字列内の空白は名前の一部です。ワイルドカードの展開やクラスの分割はしません。名前の欠落、引用符なしの名前、カンマ、入れ子のセーフリストディレクティブはエラーです。インポート・参照グラフ全体に名前がなければ警告します。セーフリストは各エントリーのグラフ内で結合し、ソースやディレクティブの削除時に撤回します。`@reference` はセーフリストの起点を読み込みません。キーフレーム用のブロックリストや独立したプルーニング／保持の対象はありません。
+
+### `@blocklist` \{#blocklist\}
+完全一致の文字列または `*` と `?` のワイルドカードパターンで、不要な完全候補を除きます。
+
+```css
+@blocklist "debug-*";
+@blocklist "example-token";
+```
+
+スタイルシートの文法はスラッシュで囲んだパターンを正規表現と解釈しません。ワイルドカードの方針はブロックリストで扱い、セーフリストは完全なクラスを供給します。
+
+## ネイティブ CSS の保持 \{#native-css-preservation\}
+ネイティブ CSS のプルーニングは未使用のクラスセレクター分岐を除き、キーフレームをオンデマンドで利用可能にします。ユーティリティクラスの生成とは別のスタイルシート方針です。有効化の判断は [CSS 配信の最適化](/guide/optimizing-css-delivery#native-pruning)、ソースと候補のフィルターは[スキャンディレクティブ](/reference/directives/scanning)を参照してください。
+
+<ReferenceIllustration id="pruning-file-boundary" />
+
+クラスリストを渡しても、ネイティブ CSS は既定で保持します。統合やスタイルシート API で `pruneNativeCSS: true` を設定すると、プロジェクト所有のソースをプルーニングできます。パッケージ CSS は自身のソースが明示的に有効化しない限り保持します。
+
+### `@prune native` \{#prune-native\}
+
+```css
+@prune native;
+.used { color: red; }
+.unused { color: blue; }
+```
+
+このディレクティブは宣言ファイルだけでプルーニングを有効にし、インポート先には伝わりません。統合がプロジェクト全体で有効化していても、同じファイルの `@preserve native;` が優先します。ネイティブ出力のスイッチ `preserveNativeCSS: false` は別で、両ディレクティブに関係なくネイティブ出力を抑制します。
+
+### `@preserve native` \{#preserve-native\}
+Master 管理のスタイルシートに、ネイティブ CSS のプルーニングで除去してはいけないネイティブクラス規則がある場合は `@preserve native;` を使います。
+
+```css
+@import "@master/css";
+@preserve native;
+
+.injected-by-payment-widget {
+  color: blue;
+}
+```
+
+スタイルシートは引き続き Master CSS で処理します。スキャン元がクラスを使わなくてもネイティブクラス規則を保持し、通常のコンパイラー正規化は適用します。この方針は未使用の管理クラスを生成出力に強制せず、元の CSS のバイト列を保つという意味でもありません。
+
+<ReferenceIllustration id="preserve-wins" />
+
+### インポートグラフ \{#import-graph\}
+解決した CSS インポートは各ソース境界を保ち、各ファイルの方針はそのファイルだけに適用します。読み込み元は依存先のプルーニングを有効にできません。`pruneNativeCSS: true` では、`@preserve native;` を宣言しないプロジェクト所有の依存先が対象です。パッケージやリモートのスタイルは、プロジェクトが読み込むだけで所有対象にはなりません。修飾付きインポートは media、supports、layer のラッパーを保ちます。
+
+```css name=src/style.css
+@prune native;
+@import "@master/css";
+@import "./cards.css";
+```
+
+```css name=src/cards.css
+@prune native;
+.card { border: 1px solid rgb(0 0 0 / 12%); }
+.unused-card { color: red; }
+```
+
+スキャン元に `card` があれば、出力は `.card` を保持し `.unused-card` を除きます。`cards.css` にディレクティブがなければ両方残ります。
+
+### 起点のスコープ \{#root-scope\}
+有効化は各ソースファイルに属し、フィルターはそれを読み込む起点の使用スコープを使います。そのため有効化した同じ共有ファイルも、起点ごとに別のクラスを保持できます。JavaScript やフレームワークのルートが直接読み込むファイルは、そのインポートが Master CSS のパイプラインに入った場合だけ自身の起点になります。
+
+起点は既定でグローバルなスキャナースコープを使います。インポートグラフ内のどこにある `@source`、`@source not`、`@safelist`、`@blocklist` でも範囲を狭めたり広げたりできます。インポート先のディレクティブは、それを読み込む全起点に結合し、相対パターンは宣言ファイルを基準に解決します。
+
+```css name=app/a/a.css
+@prune native;
+@import "@master/css";
+@source "./page.html";
+@import "../shared.css";
+```
+
+```css name=app/shared.css
+@prune native;
+@blocklist "debug-*";
+.shared-card { border: 1px solid rgb(0 0 0 / 12%); }
+.only-used-in-b { color: blue; }
+.debug-outline { outline: 1px solid red; }
+```
+
+`app/a/page.html` が `shared-card` だけを使う場合、`a.css` の出力は `.shared-card` を残し、`.only-used-in-b` と `.debug-outline` を除きます。別の起点 `b.css` のページが `only-used-in-b` を使えば、同じファイルからその規則を保持します。
+
+### 規則のフィルター \{#rule-filtering\}
+クラスセレクター規則は、分岐内のいずれかのクラスを使えば保持し、未使用の分岐はリストから除きます。検査は DOM 関係ではなくクラス名によります。`.card .title` なら `card` か `title` のどちらかがあれば分岐を保持するため、保持された規則がどの要素にも一致しない場合もあります。
+
+```css
+@prune native;
+body { margin: 0; }
+.card, .unused:hover { border: 1px solid rgb(0 0 0 / 12%); }
+@media (width >= 48rem) {
+  .card .title { font-weight: 700; }
+  .debug-card { outline: 1px solid red; }
+}
+```
+
+`card` と `title` を使うと、出力は `body`、`.card`、`.card .title` を残し、`.unused:hover` と `.debug-card` を除きます。`body`、`html`、`:root` のようなクラスセレクターのない規則は常に保持します。プルーニングで空になった at-rule ブロックは除きます。
+
+<ReferenceIllustration id="pruning-selector-branches" />
+
+### manifest の参照 \{#manifest-references\}
+保持されたネイティブ規則が `var(--*)` を読むか manifest のアニメーションを指定すると、プロジェクトのエントリーグラフ内の対応するテーマ変数とキーフレームを保持します。除去した規則は何も保持しません。
+
+```css
+@prune native;
+@import "@master/css";
+@theme { --color-primary: #175cff; }
+
+.notice { color: var(--color-primary); }
+.unused-notice { color: var(--color-primary); }
+```
+
+`notice` だけを使うと、`.notice` を保持するため `--color-primary` を出力し、`.unused-notice` は除きます。
+
+### 含めるクラス \{#included-classes\}
+`@safelist` は範囲が限定された外部ソースのネイティブクラスを使用済みとし、プルーニングで規則を保持します。スキャン元に書いたアプリのクラスを置き換えるものではありません。
+
+```css
+@prune native;
+@safelist "dialog-open dialog-closing";
+.dialog-open { overflow: hidden; }
+.dialog-closing { pointer-events: none; }
+```
+
+### ネイティブキーフレーム \{#native-keyframes\}
+ネイティブ CSS でキーフレームを宣言し、所有ファイルで使用状況に応じた出力を有効にします。
+
+```css
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@safelist keyframes "external-enter" "external-exit";
+@keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes external-exit { from { opacity: 1; } to { opacity: 0; } }
+```
+
+キーフレームはネイティブクラス規則と同じファイル方針に従います。既定ではネイティブ CSS として元の位置にそのまま残り、Master CSS が再出力することはありません。`@prune native;` はそのファイルのキーフレームをトークンのようなオンデマンド定義にします。ネイティブ出力から外れ、使用する出力が生成 CSS とともに出力します。両ディレクティブがあれば `@preserve native;` が優先します。方針は宣言ファイルだけに適用し、インポートでは伝わりません。`pruneNativeCSS` はプロジェクト所有ファイルの範囲を保ちます。パッケージ CSS は明示的にプルーニングを有効にしない限り保持します。`preserveNativeCSS: false` はネイティブ配信を抑制しますが、オンデマンド定義は使用箇所で出力します。
+
+### キーフレーム使用の起点 \{#keyframe-usage-roots\}
+
+アニメーションのユーティリティ、ネイティブ宣言、静的アニメーショントークン、キーフレームのセーフリストが対応する定義を使います。解析は一括指定値、animation-name のリスト、入れ子の変数、代替値、スコープ付き上書き、推移的なトークン依存を追います。使用する定義はフレームが読むトークンも使います。ネイティブ定義は、フレームをスタイルシート自身が配信するため、そのトークンだけを供給します。未解決の動的な名前は保守的にコンパイルグラフ内の全候補定義を使い、情報診断を出します。
+
+<ReferenceIllustration id="keyframe-reachability" />
+
+### キーフレームの条件と制約 \{#keyframe-conditions-and-restrictions\}
+
+出力するオンデマンド定義は、修飾付きインポートのレイヤーを含め、宣言時の条件とレイヤー規則で包み、生成レイヤーの後に置きます。同じコンテナー内の定義はラッパーを共有します。同名の定義も宣言順に別々に保ち、どれが勝つかはブラウザーが決めます。名前はデコードし、大文字小文字を区別します。匿名レイヤーには再入できないため、その中にある、またはそこへ読み込むオンデマンドキーフレームはコンパイルエラーです。レイヤーに名前を付けるかファイルを保持してください。フレームは元のスタイルシートから離して出力するため、内部の相対 `url()` もエラーです。絶対 URL を使うかファイルを保持します。定義 ID は宣言ファイルに最も近い名前付き `package.json` とパッケージ相対パスから作るため、同じプロジェクトはチェックアウト先やインストール先によらず同一の CSS を出力します。パッケージ名を変えると ID が変わり、名前付きパッケージ外のファイルは絶対パスを代わりに使います。
+
+### キーフレームリソースの所有権 \{#keyframe-resource-ownership\}
+
+フレームにはネイティブ宣言を含め、フレーム内の入れ子ディレクティブと `@apply` は未対応です。未使用のユーティリティと ミックスイン、除去したネイティブ規則、未配信の参照スタイルは使用の起点になりません。`@reference` は保持方針やセーフリストを読み込まず、定義をオンデマンドで利用可能にします。相対 URL を持つネイティブキーフレームは元のスタイルシートとともに残ります。プロジェクトやベース manifest のネイティブキーフレームも、それを配信しないスタイルシートではオンデマンドです。emitted globals は出力がネイティブまたはオンデマンドで配信するキーフレームを列挙し、他の出力の重複を防ぎます。JavaScript だけで導入するアニメーション名には `@safelist keyframes "reveal";` を使います。
+
+### ランタイムのキーフレーム寿命 \{#runtime-keyframe-lifetime\}
+
+ランタイムは定義 ID と名前を別に追跡し、オンデマンド定義を自身のスタイルシートに挿入します。DOM の削除で定義を解放するのは、ネイティブの使用、静的トークン、セーフリストのどれも使用しなくなった場合だけです。HMR は定義と emitted globals を一緒に置き換え、SSR ハイドレーションは同じ ID とリソース順を使います。リンクされたスタイルシートは通常の CSS のままで、付随ファイルやマーカーはありません。
+
+<StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />

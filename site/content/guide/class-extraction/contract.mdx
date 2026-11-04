@@ -81,7 +81,7 @@ A host can register an executable example as a virtual source with `parentSource
 
 A malformed source reports `SOURCE_PARSE_ERROR`. Development retains the previous successful contribution, while a production build fails. Parsing or reading failure is not equivalent to an empty-source update.
 
-### Source locations
+### Source locations \{#source-locations\}
 
 Extraction can report candidate occurrences as well as strings: original UTF-16 ranges, extractor, content kind, owner and inclusion or exclusion reasons. Encoded attributes retain ranges in the original source. Complete URL literals are excluded; an unknown native declaration can remain a candidate for later validation.
 

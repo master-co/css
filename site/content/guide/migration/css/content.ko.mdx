@@ -1,0 +1,188 @@
+---
+title: "CSS와 CSS Modules에서 마이그레이션"
+description: "클래스 문자열, 토큰, 조합이 유지보수에 도움이 되는 부분부터 전역 CSS와 CSS Modules를 Master CSS로 옮깁니다."
+figures: {"CSSMigrationIllustration": {"title": "작성 위치를 바꾸고 결과 유지", "alt": "CSS 규칙의 gap 1rem, padding 1.5rem, 반경 0.5rem을 프리셋 gap-md, p-lg, r-lg가 동일하게 제공합니다. 두 경로는 같은 중립색 Account 카드를 만듭니다.", "caption": "선언과 계산 결과를 비교하세요. 이름이 비슷한 것만으로는 부족하며 값, 색상 모드, 상호작용 상태가 일치해야 합니다.", "description": [{"title": "값부터 확인", "text": "CSS 규칙은 간격 1rem, 패딩 1.5rem, 반경 0.5rem을 제공합니다."}, {"title": "프리셋 대응", "text": "gap-md, p-lg, r-lg가 같은 값을 제공하며 두 버전의 표면과 텍스트 역할도 같습니다."}, {"title": "결과 보존", "text": "카드 레이아웃, 콘텐츠, 색상은 유지하고 스타일 결정 위치만 바꿉니다."}]}}
+---
+import CSSMigrationIllustration from './components/CSSMigrationIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+일반 CSS와 CSS Modules는 프로젝트에 필요한 만큼 Master CSS와 함께 사용할 수 있습니다. 마이그레이션을 정리 과정으로 생각하세요. 모든 선언을 클래스로 바꿔야 하는 것은 아닙니다.
+
+반복되는 시각 스타일 중 마크업에서 관리하기 적합한 것을 Master CSS 클래스로 옮깁니다. 전역 리셋, 외부 스타일, 복잡한 선택자, 생성 CSS, 읽기 어려운 일회성 규칙은 일반 CSS로 유지합니다.
+
+---
+
+## 마이그레이션 전략 \{#migration-strategy\}
+원래 CSS와 렌더링 상태를 살펴볼 수 있는 작은 컴포넌트를 선택하세요. 기준 상태와 작업별 검사는 [공통 마이그레이션 절차](/guide/migration#migration-strategy)를 따릅니다. 이 가이드는 마크업에 넣을 선언과 유지해야 할 로컬 CSS 계약을 판단하는 데 집중합니다.
+
+첫 작업은 시각 선언이 안정적이고 외부 선택자가 없는 것이 좋습니다. 로컬 클래스 이름이 API이거나 내부 구조를 대상으로 하거나, 교체 시 복잡한 선택자가 여러 호출부에 퍼진다면 모듈을 유지하세요.
+
+<CSSMigrationIllustration />
+
+---
+
+## 기존 CSS와 함께 Master CSS 추가 \{#add-master-css-beside-existing-css\}
+Master CSS가 새 마크업이나 변환한 마크업의 규칙을 생성해도 기존 CSS 파일은 계속 읽습니다. 로컬 규칙을 삭제하기 전에 캐스케이드를 확인하세요. 기존 비레이어 선언은 일반 레이어 유틸리티보다 우선하며, Master CSS import가 나중에 와도 같습니다. 같은 요소에 두 선택자를 남기면 변환 결과를 가릴 수 있습니다.
+
+```css name=app.css
+@import "@master/css";
+```
+
+대부분의 프로젝트에는 기본 소스 탐색으로 충분합니다. 명시적인 스캔 경계가 필요하거나 클래스가 완전한 문자열로 소스에 없는 경우에만 `@source`, `@source not`, `@safelist`, `@blocklist`를 추가합니다.
+
+많은 파일을 변환하기 전에 [렌더링 모드](/guide/rendering-modes)를 참고해 정적, 런타임, 점진적 렌더링 중 프로젝트에 맞는 방식을 선택하세요.
+
+---
+
+## 로컬 CSS를 마크업 클래스로 변환 \{#convert-local-css-to-markup-classes\}
+별도 선택자보다 클래스 목록을 검토하기 쉬울 때 로컬 시각 선언을 마크업으로 옮깁니다. 이 예는 설치된 프리셋의 공유 표면과 텍스트 역할을 이미 사용하며 변환 후에도 유지합니다.
+
+```css name=Card.module.css
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .5rem;
+  background: var(--color-surface-raised);
+  color: var(--color-text-body);
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+      {children}
+    </section>
+  )
+}
+```
+
+<DemoConfiguredExample
+  name="migration-card-equivalence"
+  title="두 스타일 방식으로 같은 카드 만들기"
+  source={`@layer components {
+  .legacy-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: .5rem;
+    background: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+}`}
+  html={`<div class="container-inline">
+  <div class="grid gap-md grid-cols(2)@container(--md)">
+    <div class="grid gap-xs">
+      <p class="m(0) font-sm">CSS rule</p>
+      <section class="legacy-card">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
+      </section>
+    </div>
+    <div class="grid gap-xs">
+      <p class="m(0) font-sm">Markup classes</p>
+      <section class="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
+      </section>
+    </div>
+  </div>
+</div>`}
+  caption="두 카드는 간격, 패딩, 모서리 반경, 배경이 같습니다. 리터럴 .5rem 반경은 프리셋의 r-lg 토큰에 해당합니다. 두 버전 모두 같은 적응형 표면과 텍스트 역할을 사용합니다."
+  code={false}
+/>
+
+값이 제품의 설계 결정을 나타내면 `bg-surface-card`, `p-card`, `r-card` 같은 명명된 테마 토큰을 우선하세요. 새 추상화를 만드는 것보다 CSS 속성이 명확하다면 `(scroll-margin-top:4rem)` 같은 직접적인 네이티브 선언 클래스를 사용합니다.
+
+---
+
+## CSS Modules가 컴포넌트 API라면 유지 \{#keep-css-modules-when-they-are-the-component-api\}
+안정적인 로컬 클래스 이름을 공개하거나 내부 구조를 선택하거나 로컬 변형에 프로젝트 토큰을 쓰는 컴포넌트에는 CSS Modules가 여전히 유용합니다.
+
+Vite, Next.js, Webpack은 로컬 스타일시트에 프로젝트 테마 정의를 자동으로 제공합니다. 네이티브 선언은 필요한 변수를 출력하므로 앱의 CSS 출력 전체를 다시 가져올 필요가 없습니다.
+
+```css name=Button.module.css
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  min-height: 2.5rem;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+```
+
+```tsx name=Button.tsx
+import styles from './Button.module.css'
+
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { className, type = 'button', ...buttonProps } = props
+  return <button className={[styles.button, className].filter(Boolean).join(' ')} type={type} {...buttonProps} />
+}
+```
+
+모듈을 제거하면 너무 많은 호출부를 한꺼번에 변경해야 할 때 이 패턴을 사용하세요. 나중에 로컬 클래스가 더 이상 도움이 되지 않으면 모듈을 없앨 수 있습니다.
+
+위 모듈은 비레이어이므로 일반 선언이 `className`으로 전달한 레이어 유틸리티보다 우선합니다. 호출자가 유틸리티로 컴포넌트 기본값을 재정의해야 한다면 기본값을 `@layer components`에 두고 [캐스케이드](/guide/cascade-layers)를 검증하세요.
+
+이 래퍼의 기본값은 `type="button"`입니다. 폼을 제출하려면 `type="submit"`을 전달하세요. 적용할 때 기존 컴포넌트의 ref 전달과 이벤트 계약을 보존합니다.
+
+---
+
+## 공유 값을 `@theme`으로 이동 \{#move-shared-values-into--theme\}
+대규모 클래스 변환 전에 프로젝트 소유 사용자 정의 속성을 보통 `@theme`에 둡니다. 그러면 마크업에서 고정값 대신 토큰 이름을 사용할 수 있습니다.
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-surface-card: var(--color-surface-raised);
+  --color-body: var(--color-text-body);
+  --spacing-card: 1.5rem;
+  --radius-card: .5rem;
+}
+
+```
+
+```html
+<article class="grid r-card fg-body grid-cols(3)@md bg-surface-card p-card">
+  ...
+</article>
+```
+
+런타임이 관리하거나 컴포넌트 전용이거나 의도적으로 디자인 시스템 밖에 둔 값은 일반 CSS 사용자 정의 속성으로 유지합니다.
+
+```tsx
+<div className="(width:var(--progress)) bg-blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
+```
+
+---
+
+## 마이그레이션 검증 \{#validate-the-migration\}
+각 작업을 코드와 UI 양쪽에서 검토하세요.
+
+- 프로젝트의 포매터, 린터, 타입 검사, 테스트, 프로덕션 빌드를 실행합니다.
+- [코드 린트](/guide/code-linting)로 Master CSS 클래스 문자열을 검증합니다.
+- 라이트·다크 테마, 반응형 중단점, 호버·포커스 상태에서 화면을 비교합니다.
+- 클래스 문자열로 바꾸면 이해하기 어려워지는 선택자, 애니메이션, 외부 출력의 CSS는 유지합니다.
+- 어떤 컴포넌트나 페이지도 의존하지 않을 때만 이전 CSS를 제거합니다.
+
+---
+
+## 관련 참고 자료 \{#useful-references\}
+- [설치](/guide/installation): 프로젝트에 Master CSS 추가.
+- [렌더링 모드](/guide/rendering-modes): 정적, 런타임, 점진적 렌더링 선택.
+- [스타일 선언](/reference/rules/declarations): 클래스 구문.
+- [테마 토큰](/guide/theme): `@theme` 토큰, [변수와 모드](/reference/rules/modes): 모드, [조건](/reference/rules/conditions): 쿼리 구문.
+- [CSS 지시문](/reference#directives): `@reference`, `@source`, `@safelist`, `@blocklist`.
+- [라우트별 스타일](/guide/route-level-styles): 프로젝트 정의를 조합하는 로컬 CSS Modules와 라우트 스타일.
+- [전역 스타일](/guide/global-styles#shared-vocabulary): 마크업 유틸리티, 테마 토큰, 사용자 정의 유틸리티, 컴포넌트 클래스 선택.

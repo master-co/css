@@ -1,0 +1,36 @@
+# Reference prose: illustrations/direct-number-units
+
+## title \{#copy-title\}
+
+
+直接數字會轉成像素長度或無單位係數
+
+## alt \{#copy-alt\}
+
+
+p(12) 在內容盒子周圍產生 12 像素內距。grow(1) 與 grow(2) 則以一比二的比例，分配同一個零基底 flex 橫列中的剩餘空間。
+
+## caption \{#copy-caption\}
+
+
+左側數字會轉為像素長度。右側數字是 flex 係數：零基底與沒有內容最小尺寸限制的設定，讓 1:2 分配得以單獨呈現。其他基底或最小尺寸可能改變最終寬度。
+
+## description-0 \{#copy-description-0\}
+
+
+內距範例套用真正的 p(12)，讓內容到各個外緣之間恰好為 12px。藍色標註用來顯示這段內距。
+
+## description-1 \{#copy-description-1\}
+
+
+flex 範例在寬 252px、間隙 12px 的橫列中，為兩個 flex 基底與最小寬度都為零的項目，分別套用 grow(1) 與 grow(2)。
+
+## description-2 \{#copy-description-2\}
+
+
+剩下的 240px 分配為 80px 與 160px。係數仍然無單位，不是像素寬度。
+
+## description-3 \{#copy-description-3\}
+
+
+這些比較刻意控制其他條件。若基底不是零，或存在內容最小尺寸，最終寬度就不一定符合擴張比例。各個函式的宣告都列在文章中。

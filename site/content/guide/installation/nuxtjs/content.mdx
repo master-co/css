@@ -12,12 +12,12 @@ import dark from '~/site/assets/images/integrations/nuxtjs/cover-dark.webp'
 
 Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css` option. The module handles CSS delivery without changing Nuxt’s HTML rendering mode.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [Nuxt project](https://nuxt.com/docs/getting-started/installation), run the installer from the project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
@@ -27,7 +27,7 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
     </StepR>
   </Step>
   <Step>
-    ### Load the project stylesheet
+    ### Load the project stylesheet \{#load-the-project-stylesheet\}
 
     Keep the module registration and explicitly load the CSS entry created by the installer. `~~/` points to the project root, including in Nuxt projects whose application directory is `app/`.
 
@@ -43,7 +43,7 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
     ```
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     Start the dev server and style your first component. These examples use Nuxt 4's `app/` directory.
   </Step>
   <InstallationPreview>
@@ -59,7 +59,7 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
   </InstallationPreview>
 </StepSection>
 
-## Check the setup
+## Check the setup \{#check-the-setup\}
 
 Change `p-md` to `p-lg` in `app/app.vue` with the dev server running: padding should grow from `1rem` to `1.5rem`. Restore it, then build and serve the app. For Nuxt's default Node server preset:
 

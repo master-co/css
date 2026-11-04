@@ -1,0 +1,36 @@
+# Reference prose: illustrations/shared-source-class
+
+## title \{#copy-title\}
+
+
+移除一个源，不会移除仍在共享的规则
+
+## alt \{#copy-alt\}
+
+
+页面 A 已移除，页面 B 仍包含 p-md。只有页面 B 与保留的 padding 规则之间仍有有效连接。
+
+## caption \{#copy-caption\}
+
+
+定义和策略不变时，移除页面 A 仍会留下页面 B 对 p-md 的引用。即使生成的 CSS 可以保持相同，源文件归属仍有变化。
+
+## description-0 \{#copy-description-0\}
+
+
+最初 page-a.tsx 和 page-b.tsx 都包含完整的 p-md 类。
+
+## description-1 \{#copy-description-1\}
+
+
+移除 page-a.tsx 只会移除该源提供的结果。page-b.tsx 的有效连接会保留共享工具类与其 --spacing-md 依赖项。
+
+## description-2 \{#copy-description-2\}
+
+
+当前没有任何源或安全列表保留时，工具类才可能移除。更新源会替换它原本提供的结果，不会累积历史类。
+
+## description-3 \{#copy-description-3\}
+
+
+图中显示保留的工具类声明，主题依赖项则另以文字说明，不会重现整份样式表。

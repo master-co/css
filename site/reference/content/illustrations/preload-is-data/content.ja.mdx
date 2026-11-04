@@ -1,0 +1,31 @@
+# Reference prose: illustrations/preload-is-data
+
+## title \{#copy-title\}
+
+
+プリロードはプログラムを取得し起動時に利用
+
+## alt \{#copy-alt\}
+
+
+プリロードリンクがプログラムのバイト列をブラウザーに取得する。後からランタイムがその応答を使い、接続されたクラスの使用に応じた規則を生成する。
+
+## caption \{#copy-caption\}
+
+
+図はランタイムのみのページと対応する fetch プリロードを示します。接続線の長さはリクエスト時間や起動速度を表しません。
+
+## description-0 \{#copy-description-0\}
+
+
+as="fetch" と一致する crossorigin を持つプリロードは、文書の解析中にプログラムのリクエストを開始します。
+
+## description-1 \{#copy-description-1\}
+
+
+このヒントはエンジンを実行せず、DOM のクラスを調べず、CSS も生成しません。ランタイムの初期化が一致する応答を使い、その処理を行います。
+
+## description-2 \{#copy-description-2\}
+
+
+エンジンとプログラムの読み込みを意図的に遅らせるプログレッシブページには、このプリロードを加えないでください。ページのハイドレーション manifest は別のリソースです。

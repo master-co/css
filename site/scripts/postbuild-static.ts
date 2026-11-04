@@ -4,10 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPublicEnv } from '../utils/public-env.js'
 import { organizationRedirects } from './organization-redirects'
-
-type PageMetadata = {
-    pathname: string
-}
+import { locales, languageOf } from '@master/internal-site/common/locales.js'
 
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
 const outDir = path.join(siteDir, 'out')
@@ -16,26 +13,37 @@ Object.assign(process.env, publicEnv)
 process.chdir(siteDir)
 
 await generateSitemap()
-await generateStaticSocialImages({ siteDir, outDir, origin: publicEnv.PUBLIC_URL, logo: new URL('../public/images/css-logotype@light.png', import.meta.url), locales: ['en', 'tw'] })
+await generateStaticSocialImages({ siteDir, outDir, origin: publicEnv.PUBLIC_URL, logo: new URL('../public/images/css-logotype@light.png', import.meta.url), locales })
 await writeHeaders()
 await writeRedirects()
 await validateHydrationManifestReferences()
 await validateInlineScripts()
 
 async function generateSitemap() {
-    const pages = JSON.parse(await readFile(path.join(siteDir, '.pages.json'), 'utf8')) as PageMetadata[]
     const baseUrl = publicEnv.PUBLIC_URL.replace(/\/$/, '')
+    const groups = new Map<string, Map<string, string>>()
+    for (const file of (await listFiles(outDir)).filter(file => file.endsWith('.html'))) {
+        const html = await readFile(file, 'utf8')
+        const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? ''
+        if (/<meta\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(head)) continue
+        const tag = [...head.matchAll(/<link\b[^>]*>/gi)].find(match => /\brel=["']canonical["']/i.test(match[0]))?.[0]
+        const canonical = tag?.match(/\bhref=["']([^"']+)["']/i)?.[1]
+        if (!canonical || !canonical.startsWith(baseUrl + '/')) continue
+        const pathname = new URL(canonical).pathname
+        const segment = pathname.split('/')[1]
+        const locale = locales.includes(segment as typeof locales[number]) ? segment : 'en'
+        const identity = locale === 'en' ? pathname : pathname.slice(locale.length + 1) || '/'
+        if (!groups.has(identity)) groups.set(identity, new Map())
+        groups.get(identity)!.set(locale, canonical)
+    }
+    const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${pages.map((page) => {
-        const pathname = page.pathname === '/' ? '' : page.pathname
-        return `  <url>
-    <loc>${baseUrl}${pathname}</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${pathname}"/>
-    <xhtml:link rel="alternate" hreflang="zh-TW" href="${baseUrl}/tw${pathname}"/>
-  </url>`
-    }).join('\n')}
+${[...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).flatMap(([, variants]) => [...variants.values()].map(canonical => `  <url>
+    <loc>${escape(canonical)}</loc>
+${[...variants.entries()].map(([locale, url]) => `    <xhtml:link rel="alternate" hreflang="${languageOf(locale)}" href="${escape(url)}"/>`).join('\n')}
+${variants.has('en') ? `    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(variants.get('en')!)}"/>\n` : ''}  </url>`)).join('\n')}
 </urlset>
 `
     await writeFile(path.join(outDir, 'sitemap.xml'), xml, 'utf8')

@@ -1,0 +1,273 @@
+# Reference prose: tools/cli
+
+## editorial-suggest-examples-0-description \{#copy-editorial-suggest-examples-0-description\}
+
+
+使用当前项目 manifest，从声明建议类：
+
+## editorial-suggest-examples-1-description \{#copy-editorial-suggest-examples-1-description\}
+
+
+从 stdin 读取声明块：
+
+## editorial-suggest-notes-0 \{#copy-editorial-suggest-notes-0\}
+
+
+传入一个带引号的声明块，或使用 `--stdin`，不可同时使用。以 `--cwd` 选择项目根目录（默认为当前目录）。参数若以 `--` 开头，请用 stdin 或在参数前加 `--`。输入仅能包含声明，不可包含选择器或外层花括号。
+
+## editorial-suggest-notes-1 \{#copy-editorial-suggest-notes-1\}
+
+
+版本 1 JSON 包含 `cwd`、`manifest`、`result`、`validation` 和 `diagnostics`。`manifest.entries` 列出发现的 Master CSS 入口；若完全未找到，建议结果会使用默认预设。已发现但加载失败的入口会报错，绝不回退至预设。依赖项目令牌或工具类覆盖前，请先检查入口。
+
+## editorial-suggest-notes-2 \{#copy-editorial-suggest-notes-2\}
+
+
+`result` 是带版本的声明建议报告，包含类、生成 CSS、`remainingCss`、注释及验证。`preserved` 结果保留整个原始块并成功退出；请保留 CSS 并阅读注释。`suggested` 结果检查声明对应关系，不检查层叠或浏览器渲染。类专属诊断以 `className` 标识；`validation` 分别呈现匹配、CSS 语法、CSS 值和浏览器支持。
+
+## editorial-suggest-notes-3 \{#copy-editorial-suggest-notes-3\}
+
+
+报告始终以 JSON 写入 stdout。错误也写入 stderr，并以状态 1 退出。输入、manifest 或执行失败返回 `result: null`；已知无效的建议 CSS 会报错，但仍保留提案。未知值不视为错误，浏览器支持保持 `not-checked`。未知标志等参数解析错误使用常规 CLI 帮助诊断。
+
+## editorial-generate-notes-0 \{#copy-editorial-generate-notes-0\}
+
+
+`--output` 指定 CSS 入口名（默认 `master.css`）。同级样式表与资源也须一同发布；为保留顺序、条件与 URL 所有权，本地导入和资源可能保持独立文件。仅复制入口可能不完整。样式表边界见[导入](/reference/directives/imports)。
+
+## editorial-generate-notes-1 \{#copy-editorial-generate-notes-1\}
+
+
+`--strict` 在发布资源前拒绝已知 CSS 语法或值错误。未知浏览器能力不视为已验证支持。`--prune-native-css` 使项目拥有的文件参与原生裁剪；包文件保持自身策略，`@preserve native` 在本地优先。[原生 CSS 裁剪](/reference/directives/pruning)定义规则和关键帧行为。
+
+## editorial-generate-notes-2 \{#copy-editorial-generate-notes-2\}
+
+
+`--no-export` 打印一份 CSS 结果，不发布其引用资源；须自行保留所需样式表与资源 URL 基准。`--verbose 0` 隐藏进度日志。Ctrl+C 可停止监视模式；监视进程仍在运行时，重新构建也可能失败并保留上次成功导出。
+
+## editorial-generate-examples-0-description \{#copy-editorial-generate-examples-0-description\}
+
+
+检查生成 CSS，不写入输出文件：
+
+## editorial-generate-examples-1-description \{#copy-editorial-generate-examples-1-description\}
+
+
+将 CSS 发布到明确指定的文件：
+
+## editorial-generate-examples-2-description \{#copy-editorial-generate-examples-2-description\}
+
+
+项目源变更时重新生成输出；Ctrl+C 停止：
+
+## editorial-lint-notes-0 \{#copy-editorial-lint-notes-0\}
+
+
+Lint 报告 v5 将已检查输入与有诊断的文件分开。`coverage.checkedFiles` 列出所有传给 lint 的输入，包括无问题文件及 stdin 虚拟路径。`summary.checkedFiles` 统计这些输入；`summary.filesWithDiagnostics` 统计有诊断的已检查文件。`files` 数组仍仅包含诊断结果；空数组不代表没有执行检查。
+
+## editorial-lint-notes-1 \{#copy-editorial-lint-notes-1\}
+
+
+解读零诊断前请先读取 `coverage.status`：`complete` 表示已检查所选输入，`no-inputs` 表示没有匹配的源输入，`not-run` 表示 manifest 加载阻止了源 lint。manifest 诊断不计入已检查源文件。使用 `--fix` 时，诊断数量描述重新检查后的内容。无问题 stdin 仍算一个输入，不创建磁盘文件。stylish 输出在 stderr 包含覆盖范围摘要。
+
+## editorial-lint-notes-2 \{#copy-editorial-lint-notes-2\}
+
+
+`coverage.description` 说明结果，并区分 manifest 样式表入口与已 lint 的源输入。空 `manifest.entries` 不表示没有执行源检查。覆盖范围仅适用于所选输入和已启用 lint 规则，不验证浏览器行为，也不证明整个项目已检查。`no-inputs` 配合零退出状态并非源检查成功的证据。
+
+## editorial-lint-examples-0-description \{#copy-editorial-lint-examples-0-description\}
+
+
+检查现有源文件中的类排序提案：
+
+## editorial-lint-examples-1-description \{#copy-editorial-lint-examples-1-description\}
+
+
+审阅提案后应用类排序修复：
+
+## editorial-lint-examples-2-description \{#copy-editorial-lint-examples-2-description\}
+
+
+检查 stdin 源缓冲区，不修改其虚拟文件：
+
+## editorial-inspect-examples-0-description \{#copy-editorial-inspect-examples-0-description\}
+
+
+检查现有源文件使用的类，并包含生成 CSS：
+
+## editorial-inspect-examples-1-description \{#copy-editorial-inspect-examples-1-description\}
+
+
+在 stderr 阅读易读报告：
+
+## editorial-inspect-examples-2-description \{#copy-editorial-inspect-examples-2-description\}
+
+
+保存 JSON 供自动化使用，并保留由诊断决定的退出状态：
+
+## editorial-inspect-examples-3-description \{#copy-editorial-inspect-examples-3-description\}
+
+
+检查受管理项目 CSS 中的令牌引用与冲突：
+
+## editorial-inspect-examples-4-description \{#copy-editorial-inspect-examples-4-description\}
+
+
+从现有版本 1 选项文件读取元数据与原始值策略：
+
+## editorial-inspect-examples-5-description \{#copy-editorial-inspect-examples-5-description\}
+
+
+加入从 JavaScript 导入、但 CSS 入口图无法触及的路由与组件样式表：
+
+## editorial-inspect-notes-0 \{#copy-editorial-inspect-notes-0\}
+
+
+### 项目快照 \{#project-snapshots\}
+
+## editorial-inspect-notes-1 \{#copy-editorial-inspect-notes-1\}
+
+
+`--snapshot` 将解析后的项目快照写入 stdout。变更前先保存，再用 `--compare` 比较快照与当前项目。两种模式互斥且始终返回 JSON。它们比较定义和已知引用方，不比较浏览器像素。
+
+## editorial-inspect-notes-2 \{#copy-editorial-inspect-notes-2\}
+
+
+```sh
+master-css inspect --snapshot > before.json
+# After the intended source change:
+master-css inspect --compare before.json > comparison.json
+```
+
+## editorial-inspect-notes-3 \{#copy-editorial-inspect-notes-3\}
+
+
+### 设计系统选项 \{#design-system-options\}
+
+## editorial-inspect-notes-4 \{#copy-editorial-inspect-notes-4\}
+
+
+`--design-system-options` 读取 JSON 文件，且须搭配 `--design-system`。MCP `mastercss_scan_project` 的 `designSystem` 输入（仅项目上下文）及语言服务器 `designSystem` 设置也接受相同对象；三者返回相同报告。
+
+## editorial-inspect-notes-5 \{#copy-editorial-inspect-notes-5\}
+
+
+```json name=design-system.json
+{
+  "version": 1,
+  "metadata": {
+    "--color-brand-old": {
+      "description": "Previous brand color",
+      "deprecated": true,
+      "replacement": "--color-brand"
+    }
+  },
+  "rawValuePolicy": {
+    "requireProperties": ["color", "background-color"]
+  }
+}
+```
+
+## editorial-inspect-notes-6 \{#copy-editorial-inspect-notes-6\}
+
+
+| 字段 | 契约 |
+| --- | --- |
+| `version` | 必填；`1`。 |
+| `metadata` | 可选映射，将当前项目的令牌名称映射至 `description`、`deprecated` 与 `replacement`。弃用警告覆盖编写的 CSS `var()` 引用；替换值是审阅建议，绝不自动应用。 |
+| `rawValuePolicy.requireProperties` | 可选。这些有令牌支持的属性，其原生声明必须使用令牌；完整 `var()` 组件（含回退值）不受限制。省略策略则不检查原始值。 |
+
+## editorial-inspect-notes-7 \{#copy-editorial-inspect-notes-7\}
+
+
+不识别的字段会被拒绝。选项仅影响检查报告，绝不影响生成 CSS 或浏览器程序。`components` 从同一复合选择器中的属性选择器列出各类的属性词汇，例如 `.button[data-variant="primary"]`：包含精确 `values` 和是否存在裸 `[name]` 选择器（`presence`）；不收集 `:where()` 这类函数伪类内的属性。报告覆盖项目入口、本地依赖文件及以源路径指定的样式表（列于 `project.routeStylesheets`，没有导入方）；使用 `--design-system` 时源路径必须匹配 `.css` 文件。包 CSS 和项目根目录外文件排除；`@reference` 边提供定义上下文但不交付，`browser` 保持 `not-checked`。
+
+## body-23 \{#copy-body-23\}
+
+
+通过[设置指南](/guide/installation#cli)安装 CLI，再从项目根目录执行。generate、lint 和 inspect 无需源参数即可发现常规应用源；显式路径参数替换该选择范围。suggest 接受 CSS 声明块。
+
+## body-24 \{#copy-body-24\}
+
+
+源 glob 请加引号，让 CLI 而非 shell 展开。这些命令作用于当前工作目录，仅 `suggest` 提供 `--cwd`。[提取](/reference/rules/extraction)定义源解析，[扫描](/reference/directives/scanning)定义样式表源策略。
+
+## body-25 \{#copy-body-25\}
+
+
+执行 `master-css --help` 列出命令，以 `master-css <command> --help` 阅读已安装版本的全部选项。当前命令定义位于 [CLI 源码](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts)。
+
+## body-26 \{#copy-body-26\}
+
+
+建议类并验证生成声明，不编辑文件。使用当前项目 manifest，不确定的块保留为 CSS。应用提案前请审阅层叠与浏览器行为。
+
+## body-27 \{#copy-body-27\}
+
+
+发布 CSS 与相关样式表资源。用 `--no-export --verbose 0` 仅打印 CSS，不发布文件。`--watch` 持续运行直至中断；进程仍运行时也要检查重新构建错误。
+
+## body-28 \{#copy-body-28\}
+
+
+默认报告类诊断，不写入源。`--fix` 应用支持的修复；`--fix-dry-run` 返回提案而不应用。stdin 内容绝不写回虚拟路径。
+
+## body-29 \{#copy-body-29\}
+
+
+报告源发现、样式表入口与缺失 CSS，不发布 CSS 或重写源文件。`--classes` 检查扫描结果，不会将这些类加入安全列表。解读空结果前请先阅读诊断与覆盖范围。
+
+## body-30 \{#copy-body-30\}
+
+
+## 命令效果 \{#command-effects\}
+
+## body-31 \{#copy-body-31\}
+
+
+| 命令 | 默认输出 | 文件效果 |
+
+## body-32 \{#copy-body-32\}
+
+
+| [`generate`](#generate) | CSS 入口与所需资源 | 发布输出；`--no-export` 改为打印 CSS。 |
+
+## body-33 \{#copy-body-33\}
+
+
+| [`lint`](#lint) | JSON 诊断 | 读取源；`--fix` 写入支持的修复。 |
+
+## body-34 \{#copy-body-34\}
+
+
+| [`inspect`](#inspect) | JSON 检查报告 | 读取源；shell 重定向可保存报告。 |
+
+## body-35 \{#copy-body-35\}
+
+
+| [`suggest`](#suggest) | JSON 声明提案 | 读取声明；不应用提案。 |
+
+## body-36 \{#copy-body-36\}
+
+
+## 检查结果 \{#check-results\}
+
+## body-37 \{#copy-body-37\}
+
+
+lint 与 inspect 默认将 JSON 报告写入 stdout；`--format stylish` 将易读诊断写入 stderr。诊断错误通常产生非零退出状态。`--exit-code never` 会抑制诊断导致的失败，因此判定成功前请先阅读报告。排错见[代码检查](/guide/code-linting)和[扫描类名](/guide/scanning-and-pruning)。源链接指向 `rc` 分支。
+
+## title \{#copy-title\}
+
+
+CLI 命令
+
+## description \{#copy-description\}
+
+
+选择命令、确认文件影响，并从 CLI 帮助和源码查找完整选项。
+
+## command-help \{#copy-command-help\}
+
+
+执行 `master-css %%command%% --help` 查看全部选项。[实现](https://github.com/master-co/css/blob/rc/packages/cli/src/%%command%%.ts)。

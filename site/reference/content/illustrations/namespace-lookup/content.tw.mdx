@@ -1,0 +1,36 @@
+# Reference prose: illustrations/namespace-lookup
+
+## title \{#copy-title\}
+
+
+相同的鍵可以選取不同 token
+
+## alt \{#copy-alt\}
+
+
+三列各自獨立：p-md 對應 spacing-md 與 padding，max-w-md 對應 container-md 與 max-width，font-md 對應 font-size-md 與 font-size。每列都在不同 token 名稱中使用相同的 md 鍵。
+
+## caption \{#copy-caption\}
+
+
+每列分別解析。重複出現的 md 是命名空間內的鍵，不是這些 class 共用的單一全域值。
+
+## description-0 \{#copy-description-0\}
+
+
+p-md 選取 --spacing-md，並設定 padding: var(--spacing-md)。
+
+## description-1 \{#copy-description-1\}
+
+
+max-w-md 選取 --container-md，並設定 max-width: var(--container-md)。
+
+## description-2 \{#copy-description-2\}
+
+
+font-md 選取 --font-size-md，並設定 font-size: var(--font-size-md)。在預設集的 font- 家族中，md 只會選出 font-size 命名空間。
+
+## description-3 \{#copy-description-3\}
+
+
+醒目標示的 md 片段，是不同命名空間中的同一個鍵。箭頭表示查找與屬性對應，不是三列之間的相依關係。圖中省略主題值與串接層包覆，下方的生成範例會包含兩者。

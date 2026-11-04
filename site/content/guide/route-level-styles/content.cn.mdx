@@ -1,0 +1,206 @@
+---
+{
+  "title": "路由级样式",
+  "description": "使用共享定义支持按路由交付 CSS，并区分引用上下文、原生规则与选择器作用域。",
+  "category": "编写",
+  "figures": {
+    "GuideStudy:delivery-not-scope": {
+      "title": "加载路由样式表不会限制选择器作用域",
+      "alt": "路由文件加载一条 .note 规则。文档中两个区域都有匹配的 .note 元素，两者都被突出显示。",
+      "caption": "导入控制 CSS 的交付时机。加载后，原生类选择器可匹配文档中的各处元素。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:route": {
+      "title": "共享定义，局部 CSS 交付",
+      "alt": "共享 spacing-lg 定义为 home.css 提供上下文。pricing-card 规则与所需间距变量出现在框架加载的局部输出中。引用定义不会加载无关原生规则。",
+      "caption": "定义上下文不会加载全局原生规则。框架负责交付路由 CSS，导入不会隔离选择器。",
+      "steps": [
+        {
+          "title": "引用",
+          "description": "编译时读取项目令牌与共享词汇。"
+        },
+        {
+          "title": "编译",
+          "description": "输出路由原生规则及其使用的变量或受管理关键帧，不复制无关全局原生规则。"
+        },
+        {
+          "title": "加载",
+          "description": "由框架或打包器交付路由 CSS 输出。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概览 [sr-only] \{#overview\}
+页面布局与一次性样式应放在该页面旁，由所属路由或组件加载样式表。值仍可来自共享令牌；共享定义并不要求全局交付所有原生规则。
+
+请先完成框架的[安装指南](/guide/installation)。Vite、Next.js 与 Webpack 集成让这些局部样式能够使用项目令牌、混入与自定义媒体：
+
+<ExplorerView items={[
+  { name: 'app', children: [
+    { name: 'globals.css' },
+    { name: 'home', children: [
+      { name: 'page.tsx' },
+      { name: 'home.css' }
+    ]}
+  ]}
+]} />
+
+编写普通选择器与声明。值需要在各页面保持一致时，请引用共享令牌：
+
+```css name=app/home/home.css
+.home-section {
+  padding-block: var(--spacing-5xl);
+}
+```
+
+从负责该样式的路由、页面模块或组件入口加载路由样式表：
+
+```tsx name=app/home/page.tsx
+import "./home.css"
+```
+
+应用外壳仍须加载全局样式表，以提供层叠层顺序与共享样式。全局样式表以既有的 `@import '@master/css'` 开头；不要在 `home.css` 中再次添加这个完整导入。
+
+路由导入控制的是**交付方式**，而不是选择器作用域。加载后，`.home-section` 可以匹配文档中任何具有该类名的元素。请用名称表达归属范围；需要局部作用域的类名时，可使用框架的 CSS Modules 支持。框架还决定路由 CSS 的加载时机，以及导航后是否保留。
+
+---
+
+<GuideStudy id="delivery-not-scope" />
+
+## 使用项目定义 \{#use-project-definitions\}
+
+<DeliveryFlow name="route" />
+集成为局部样式表提供项目定义上下文。可在普通原生 CSS 中使用这些令牌、混入与具名条件，输出样式表的加载仍由框架负责。
+
+```css name=app/home/home.css
+.pricing-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-raised);
+}
+```
+
+路由输出包含这些原生规则，以及它们使用的主题变量或受管理关键帧。即使其他入口也使用相同资源，此输出仍是自包含的。全局原生规则与工具类不会被复制进来。
+
+### 引用定义，不加载其原生规则 \{#reference-definitions-without-loading-their-native-rules\}
+
+定义位于应用入口依赖图之外时，请使用 `@reference`。例如，局部营销样式表可以同时提供颜色令牌与自己的组件：
+
+```css name=styles/marketing.css
+@theme {
+  --color-campaign: var(--color-blue-60);
+}
+
+@layer components {
+  .campaign-root { color: var(--color-campaign); }
+}
+```
+
+从路由样式表引用该文件，再把其中的令牌用于路由负责的规则：
+
+```css name=app/home/home.css
+@reference "../../styles/marketing.css";
+
+@layer components {
+  .campaign-banner {
+    border-color: var(--color-campaign);
+  }
+}
+```
+
+路由输出包含 `.campaign-banner` 与所需颜色资源，**不包含** `.campaign-root`。若也需要该原生组件，请通过适当的应用或路由导入来加载营销样式表。软件包导出的样式表也适用相同区分。只提供定义的行为请参阅[引用指令](/reference/directives/imports#reference)。
+
+---
+
+## 编写原生选择器 \{#write-native-selectors\}
+将路由原生规则写在 `app/home/home.css` 中，再在路由标记中使用其类名。若要让工具类能够覆盖个别选择，请将规则放在 `@layer components`。
+
+加载原生规则不会注册新的 Master CSS 工具类。下方两张卡片使用相同的原生类名，第二张添加 `p-md`，因此工具类会覆盖组件的 `var(--spacing-lg)` 内边距。这个类名不需要注册 `@utility`。
+
+<DemoConfiguredExample
+  name="route-native-card"
+  title="用局部工具类调整路由 CSS"
+  source={`@layer components {
+  .home-bento {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: minmax(0, 1fr);
+    overflow-wrap: anywhere;
+  }
+
+  .home-bento-card {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+
+  .home-bento-card > h2 {
+    font-size: var(--font-size-lg);
+    line-height: 1.4;
+    font-weight: var(--font-weight-regular);
+    margin-block: 0 0.5rem;
+  }
+
+  .home-bento-card > p {
+    color: var(--color-text-muted);
+    line-height: var(--leading-lg);
+    margin: 0;
+  }
+}`}
+  html={`<section class="home-bento" aria-label="Workspace options">
+  <article class="home-bento-card">
+    <h2>Team workspace</h2>
+    <p>Shared route styles set the card's surface, typography and spacing.</p>
+  </article>
+  <article class="home-bento-card p-md">
+    <h2>Compact workspace</h2>
+    <p>A utility adjusts padding without another native class.</p>
+  </article>
+</section>`}
+  caption="比较卡片内部的空间。两张卡片共享路由原生 CSS，只有第二张使用工具类改变内边距。"
+/>
+
+将规则保留在 `@layer components`，就能用类名覆盖；请参阅[层叠层](/guide/cascade-layers)。
+
+这些原生规则默认随样式表输出。若源文件显式启用[原生 CSS 裁剪](/guide/optimizing-css-delivery#native-pruning)，检测到的类名使用情况将决定保留哪些规则。选择器开始被多个页面复用时，请将共享角色移至[全局样式](/guide/global-styles#shared-vocabulary)。
+
+---
+
+## 在局部样式中使用变体 \{#use-variants-locally\}
+项目自定义媒体可与普通媒体查询一起用于原生规则中：
+
+```css name=app/home/home.css
+.home-note {
+  color: var(--color-blue-60);
+
+  @media (--dark) {
+    color: var(--color-blue-40);
+  }
+
+  @media (width < 52.125rem) {
+    width: 100%;
+  }
+}
+```
+
+`--dark` 遵循系统的 `prefers-color-scheme` 偏好。手动设置的 `data-theme` 属性不会改变该查询；表面若应跟随手动选择的配色模式，请使用[自适应颜色令牌](/guide/colors#native-color-scheme-and-manual-themes)。
+
+
+## 验证路由交付 \{#verify-route-delivery\}
+
+先直接打开路由，再从其他页面导航到该路由。检查样式表是否加载、原生选择器是否匹配，以及预期令牌值是否存在。还应检查共享页面：源文件归属于局部，不应意外让路由专用 CSS 进入应用入口。
+
+缺少输出时，请检查路由 CSS 导入与集成的项目上下文。规则存在但结果不同时，请检查匹配的选择器、层叠层与计算值。再次添加完整 `@master/css` 导入无法解决选择器或层叠问题。
+
+跨页面比较前后测量、选择性裁剪与项目预算，请继续阅读[优化 CSS 交付](/guide/optimizing-css-delivery)。

@@ -36,7 +36,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
 
 <StepSection>
   <Step>
-    ### Add Master CSS
+    ### Add Master CSS \{#add-master-css\}
 
     Run the installer from the project root. It detects the framework and package manager, updates the setup files, and installs the matching Master CSS packages from the `rc` channel.
 
@@ -59,7 +59,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
     </DocumentDisclosure>
   </Step>
   <Step>
-    ### Check the stylesheet connection
+    ### Check the stylesheet connection \{#check-the-stylesheet-connection\}
 
     Read the setup summary and finish any framework-specific instructions it prints. Some integrations need a follow-up setup command or a separate CSS generation process; see your [framework's guide](/guide/installation#integrations) for those steps.
 
@@ -74,7 +74,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
     <InstallationIllustration />
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
 
     Start or restart your app's development server with its existing command, such as `npm run dev`. Put this markup in a visible page or component. In JSX, write `className` in place of `class`.
 
@@ -139,7 +139,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
 
 <StepSection>
   <Step>
-    ### Install Master CSS
+    ### Install Master CSS \{#install-master-css\}
     Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) as a development dependency.
 
     ```bash
@@ -147,7 +147,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
     ```
   </Step>
   <Step>
-    ### Create your CSS entry
+    ### Create your CSS entry \{#create-your-css-entry\}
     Create a stylesheet that imports the default Master CSS entry.
 
     ```css name=main.css
@@ -155,7 +155,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
     ```
   </Step>
   <Step>
-    ### Run the build command
+    ### Run the build command \{#run-the-build-command\}
     Run the command to scan sources and write `master.css`.
 
     ```bash
@@ -163,7 +163,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
     ```
   </Step>
   <Step>
-    ### Load the generated stylesheet
+    ### Load the generated stylesheet \{#load-the-generated-stylesheet\}
     Save the document below as `index.html`. The watcher generates `master.css` from its class names. Serve the directory and open the page to see the styled paragraph.
     <InstallationPreview>
 
@@ -185,7 +185,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
   </Step>
 </StepSection>
 
-### Build for deployment
+### Build for deployment \{#build-for-deployment\}
 
 The watch command stays running and updates the output when a selected source changes. For a production build, omit `--watch` so the command writes its output and exits:
 
@@ -197,7 +197,7 @@ Deploy `index.html`, `master.css` and the neighboring CSS assets referenced by t
 
 Load the deployed page and check that every stylesheet request succeeds. The paragraph should keep its generated padding, border and surface colors with JavaScript disabled. [Scanning class names](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
 
-## If the style does not appear
+## If the style does not appear \{#if-the-style-does-not-appear\}
 
 Check that the page renders the markup you edited and loads the app stylesheet. Then check that the build integration is enabled and scans that source file. Keep class names complete, as in `p-lg`; constructing them from fragments such as `p-${size}` prevents a static scan from seeing the final class.
 

@@ -1,0 +1,222 @@
+---
+title: "從 Bootstrap 遷移"
+description: "將 Bootstrap 畫面逐步移向 Master CSS，同時保留第三方 CSS、JavaScript 驅動元件與依賴階層串接的覆寫。"
+figures: {"BootstrapIllustration": {"title": "保留門檻，而非名稱", "alt": "同一寬度軸上，Bootstrap md 從 768px 開始；初始字級為 16px 時，Master CSS 預設 md 從 1024px 開始。自訂 bootstrap-md 讓轉換版面維持原 768px 門檻。", "caption": "此比較使用 Bootstrap 5.3 預設值與 16px 初始字級。轉換斷點名稱前，先閱讀已安裝主題。", "description": [{"title": "原始門檻", "text": "未修改 Sass 設定時，Bootstrap 5.3 md 從 768px 開始。"}, {"title": "不同預設值", "text": "Master CSS md 從 64rem 開始，此處顯示為 1024px。沿用名稱會改變版面邊界。"}, {"title": "明確遷移條件", "text": "在 768px 定義 --bootstrap-md，並以 grid-cols(3)@bootstrap-md 保留原門檻。"}]}}
+---
+import BootstrapIllustration from './components/BootstrapIllustration.astro'
+
+Bootstrap 與 Master CSS 可以並存。既有標記仍依賴 Bootstrap 的網格、utility、元件、JavaScript 行為、Sass 變數或選擇器覆寫時，請繼續載入 Bootstrap。一次轉換一個畫面或一組元件，等產品不再依賴它後才移除。
+
+本指南著重應用程式自行管理的 Bootstrap 用法。第三方標記、外掛、生成 HTML 與 Bootstrap JavaScript 元件，可以留在 Bootstrap，直到專案有明確替代方案。
+
+---
+
+## 遷移策略 \{#migration-strategy\}
+依[共用遷移流程](/guide/migration#migration-strategy)，從既有元件外圍、由應用程式管理的版面開始。只要剩餘元件仍依賴 Bootstrap CSS、JavaScript 或 Sass 輸出，就保留它們。
+
+轉換畫面前，先界定三個邊界：
+
+- **值：**檢查自訂 `$spacers`、`$grid-breakpoints` 與容器寬度。刻度名稱相同，不代表值相同。
+- **選擇器：**第三方標記與依賴 Bootstrap 內部結構的覆寫應一起保留，直到替換該元件。
+- **行為：**焦點處理、ARIA 狀態與事件有明確替代方案前，對話框、下拉選單與摺疊區域繼續使用 Bootstrap。
+
+第一個實用成果，是在正常運作的元件外圍完成版面轉換。元件有替代方案後，才處理移除相依性。
+
+<BootstrapIllustration />
+
+---
+
+## 在 Bootstrap 旁加入 Master CSS \{#add-master-css-beside-bootstrap\}
+從應用程式原本就會載入的樣式表匯入 Master CSS。暫時不要移除 Bootstrap 匯入。
+
+```css name=app.css
+@import "bootstrap/dist/css/bootstrap.css";
+@import "@master/css";
+```
+
+一般應用程式檔案使用預設來源探索即可。只有需要自訂納入、排除、safelist 或 blocklist 行為時，才新增明確的來源指令。
+
+單靠匯入順序，無法讓未分層的 Bootstrap 規則低於一般分層 utility。若要讓 Master CSS 元件與 utility 優先，請先宣告串接層順序，再將 Bootstrap 匯入 `defaults`：
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import "bootstrap/dist/css/bootstrap.css" layer(defaults);
+@import "@master/css";
+```
+
+這會改變串接行為。在整個應用程式採用前，先於瀏覽器比較既有覆寫。Bootstrap utility 也可能使用 `!important`；一般 Master CSS 宣告不會只因位於較後的層就覆寫它們。
+
+---
+
+## 將 Bootstrap Sass 值移到 `@theme` \{#move-bootstrap-sass-values-into--theme\}
+Bootstrap Sass 變數常承載產品決策。若 Bootstrap 元件以外的標記也需要使用，請將這些決策移為 Master CSS token。
+
+```scss name=bootstrap-theme.scss
+$primary: #2563eb;
+$body-color: #172033;
+$border-radius: .5rem;
+$spacer: 1rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --spacing-page: 1rem;
+}
+
+```
+
+```html
+<section class="bg-white fg-body p-page r-control">
+  ...
+</section>
+```
+
+不要假設 Bootstrap 的刻度名稱與 Master CSS 預設樣式集相同。搬移對產品重要的值，再選擇描述用途的 Master CSS token 名稱。
+
+---
+
+## 轉換網格與 utility class \{#convert-grid-and-utility-classes\}
+先處理版面包裝層與單純使用 utility 的標記。
+
+保留版面意圖，而非 Bootstrap class 的拼法：
+
+```html
+<!-- Before: container py-5 -->
+<!-- Before: row g-4 -->
+<!-- Before: col-md-4 -->
+```
+
+Bootstrap 預設 [`md` 斷點](https://getbootstrap.com/docs/5.3/layout/breakpoints/#available-breakpoints)從 768px 開始；Master CSS 預設的 `md` 從 64rem 開始。在應用程式 CSS 進入點定義具名條件，以保留原本的欄數切換門檻：
+
+```css name=app.css
+@custom-media --bootstrap-md (width >= 768px);
+```
+
+```html
+<section class="w-full max-w-6xl mx-auto px-md py-2xl">
+  <div class="grid gap-lg grid-cols(3)@bootstrap-md">
+    <article class="p-lg b(1) b-solid b-line-divider r-lg bg-white fg-body">
+      ...
+    </article>
+  </div>
+</section>
+```
+
+這保留三欄門檻，同時改用新的容器寬度與網格間距。使用三個真實項目檢查 767px 與 768px；直接複製 `@md`，在預設樣式集下會一直堆疊到 64rem。替換 Bootstrap 的容器與欄間距規則前，先比較尺寸。明確的 `fg-body` 讓固定白底卡片搭配產品的深色文字。
+
+原生宣告語法比 utility 別名更清楚時，請直接使用：
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) contents@md">
+  ...
+</div>
+```
+{ }
+
+範本仍需要 Bootstrap 容器寬度、欄間距假設或元件內部結構時，保留其版面 class。
+
+---
+
+## 轉換簡單元件 \{#convert-simple-components\}
+按鈕、卡片、提示與徽章常是應用程式自行管理的視覺模式。專案擁有其行為時，可轉為標記 class 或 Master CSS 元件 class。並存期間請使用新 class 名稱，以免改到未轉換的 Bootstrap 按鈕。保留上方定義的主題 token。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+
+  .panel {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+}
+```
+
+```html
+<button type="button" class="action-button">Save</button>
+<article class="panel">...</article>
+```
+
+下拉選單、對話框、頁籤、輪播與摺疊區域等，若仍依賴 Bootstrap 的行為、無障礙支援或內部結構，就保留元件。只要元件會轉送 class 且串接清楚，仍可在 Bootstrap 根元素加入少量 Master CSS class。
+
+---
+
+## 保留由 JavaScript 驅動的元件 \{#preserve-javascript-driven-components\}
+Bootstrap JavaScript 元件不只是 CSS。依元件不同，還會管理焦點、ARIA 屬性、轉場、頁面捲動鎖定、Popper 定位與事件。請依[元件 JavaScript API](https://getbootstrap.com/docs/5.3/getting-started/javascript/)盤點必須保留的行為。
+
+替代行為完成實作與測試前，含 `data-bs-*` 屬性的標記繼續使用 Bootstrap。先轉換外圍版面或產品自行管理的包裝層。
+
+```html
+<section class="grid gap-md">
+  <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
+</section>
+```
+
+替換元件時，在同一批可審查變更中移除其 Bootstrap JavaScript 匯入與相關資料屬性。
+
+---
+
+## 處理覆寫與第三方 CSS \{#handle-overrides-and-vendor-css\}
+許多 Bootstrap 專案依賴元件狀態 class、巢狀標記選擇器或權重修正等覆寫。不要盲目轉換。
+
+若覆寫指向 Bootstrap 內部結構，就保留為 CSS：
+
+```css name=bootstrap-overrides.css
+.navbar .dropdown-menu {
+  min-width: 16rem;
+}
+```
+
+只有標記已由應用程式自行管理後，才將覆寫移到 Master CSS：
+
+```html
+<nav class="flex items-center gap-md">
+  <div class="min-w-3xs">...</div>
+</nav>
+```
+
+第三方 CSS 與 Bootstrap 主題應保留為一般 CSS，直到專案替換了第三方契約。
+
+---
+
+## 驗證遷移結果 \{#validate-the-migration\}
+- 每批工作後執行專案格式化、lint、型別檢查、測試與正式建置。
+- 比較使用 Bootstrap 網格、容器、表單、對話框、下拉選單、摺疊、工具提示、彈出提示與響應式 utility 的頁面。
+- 若專案支援，請測試懸停、focus-visible、停用、展開、選取、驗證與深色模式狀態。
+- 所有剩餘範本、元件、外掛與覆寫都不再依賴 Bootstrap 前，繼續載入它。
+- 完整驗證全部通過後，才移除 Bootstrap Sass、CSS、JavaScript 匯入與套件。
+
+---
+
+## 相關參考 \{#useful-references\}
+- [安裝](/guide/installation)：加入 Master CSS。
+- [渲染模式](/guide/rendering-modes)：選擇靜態、執行階段或漸進式渲染。
+- [樣式宣告](/reference/rules/declarations)：class 語法。
+- [主題 token](/guide/theme)：token；[變數與模式](/reference/rules/modes)：模式；[條件](/reference/rules/conditions)：查詢語法。
+- [全域樣式](/guide/global-styles#shared-vocabulary)：選擇標記 class、主題 token、自訂 utility 與元件 class。
+- [程式碼檢查](/guide/code-linting)：遷移時驗證 class 字串。

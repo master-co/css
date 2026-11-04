@@ -1,0 +1,36 @@
+# Reference prose: illustrations/stylesheet-asset-graph
+
+## title \{#copy-title\}
+
+
+エントリーは配信アセットグラフの 1 ファイル
+
+## alt \{#copy-alt\}
+
+
+app.css が print 条件で print.css を読み込み、print.css が mark.svg を参照する。3 ファイルとも参照 URL で公開する必要がある。
+
+## caption \{#copy-caption\}
+
+
+エントリーから子スタイルシート、その画像へ参照をたどります。それぞれ別の配信ファイルで、print 修飾はインポートに残ります。名前は例であり、生成ファイル名の規則ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+配信する app.css は print 修飾で print.css を読み込みます。子は別のスタイルシートのままで、修飾もインポートに残ります。
+
+## description-1 \{#copy-description-1\}
+
+
+print.css 内の宣言は、子スタイルシートの配信 URL を基準に mark.svg を相対参照します。
+
+## description-2 \{#copy-description-2\}
+
+
+エントリー、子スタイルシート、画像を各参照先の URL で公開します。app.css だけをコピーすると依存先 2 つが取得できません。
+
+## description-3 \{#copy-description-3\}
+
+
+図は依存グラフであり、リクエストのウォーターフォールではありません。実際の生成名やアセットを別に保つかはコンパイルとホストで決まります。

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/reference-no-roots
+
+## title \{#copy-title\}
+
+
+被引用的原生规则不会保留其令牌
+
+## alt \{#copy-alt\}
+
+
+被引用样式表定义令牌和 remote 规则。没有本地引用方时均不交付；加入本地令牌引用方后，仅交付令牌和本地规则。
+
+## caption \{#copy-caption\}
+
+
+两种情况引用相同文件，仅本地使用情况改变。输出节选省略外层 theme 层。
+
+## description-0 \{#copy-description-0\}
+
+
+被引用文件定义 --color-accent 和 .remote \{ color: var(--color-accent); \}。未交付的原生规则不是使用根节点。
+
+## description-1 \{#copy-description-1\}
+
+
+仅有引用时，令牌可供使用，但不交付该原生规则，也不会仅为它保留令牌。
+
+## description-2 \{#copy-description-2\}
+
+
+加入 .local \{ color: var(--color-accent); \} 后，本地引用方保留令牌。输出仍不复制 .remote。

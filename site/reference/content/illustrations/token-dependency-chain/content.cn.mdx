@@ -1,0 +1,31 @@
+# Reference prose: illustrations/token-dependency-chain
+
+## title \{#copy-title\}
+
+
+使用令牌会一并保留其依赖项
+
+## alt \{#copy-alt\}
+
+
+fg-action 连接到 color-action，再连接到 color-brand。另一个 color-unused 令牌与这条链没有连接。
+
+## caption \{#copy-caption\}
+
+
+箭头表示“引用”，不是执行顺序或层叠优先级。此例没有 static 令牌、安全列表或其他引用方。
+
+## description-0 \{#copy-description-0\}
+
+
+主题定义 --color-action: var(--color-brand)、--color-brand: #175cff，以及不相关的 --color-unused。
+
+## description-1 \{#copy-description-1\}
+
+
+使用 fg-action 会在 theme 层保留 --color-action，以及其传递依赖项 --color-brand。
+
+## description-2 \{#copy-description-2\}
+
+
+此例中，不相关的令牌没有使用根，因此不会输出。生成的 color 声明保留 var(--color-action)，其值由浏览器解析。

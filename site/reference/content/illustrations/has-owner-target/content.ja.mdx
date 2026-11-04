@@ -1,0 +1,26 @@
+# Reference prose: illustrations/has-owner-target
+
+## title \{#copy-title\}
+
+
+has() は子を検査し起点にスタイルを適用
+
+## alt \{#copy-alt\}
+
+
+2 つの label コントロールが未チェックとチェック済みの input を含む。チェック済みの子だけが囲む label の枠線を青くする。
+
+## caption \{#copy-caption\}
+
+
+クラスは label にあります。検査するのは input のチェック状態で、border-color を受け取るのは label です。
+
+## description-0 \{#copy-description-0\}
+
+
+b-blue-60:has(>input:checked) は、クラスを持つ要素にチェック済みの直下の子 input があるかを検査します。
+
+## description-1 \{#copy-description-1\}
+
+
+一致すると、input ではなく起点の label の枠線の色が変わります。検査する場所とスタイルの対象を区別するため、input は同じ境界の内側に描いています。

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-domains
+
+## title \{#copy-title\}
+
+
+相同名稱，量測不同邊界
+
+## alt \{#copy-alt\}
+
+
+圖中寬 64rem 的檢視區內，包含較小的 28rem 查詢容器。md 媒體條件參照檢視區，md 容器條件則參照內部容器。
+
+## caption \{#copy-caption\}
+
+
+預設的 @md 門檻為 64rem，@container(--md) 則為 28rem。雖然兩者都使用 md 名稱，這兩份獨立定義查詢的卻是不同邊界。
+
+## description-0 \{#copy-description-0\}
+
+
+外側邊界代表寬度達到預設 @md 最小值 64rem 的檢視區。
+
+## description-1 \{#copy-description-1\}
+
+
+內側邊界代表寬度達到獨立 @container(--md) 最小值 28rem 的查詢容器。被查詢的元素位於該容器內。
+
+## description-2 \{#copy-description-2\}
+
+
+兩種寬度採用相同繪圖比例，初始字型大小與根元素字型大小都是 16px。修改容器尺寸 token 不會改變任一條件定義。

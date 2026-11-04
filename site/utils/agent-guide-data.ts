@@ -55,12 +55,11 @@ export function agentPrompt(name: string): DocumentPromptProps {
   if (!Object.hasOwn(agentPrompts, name)) throw new Error(`Unknown agent prompt: ${name}`)
   return agentPrompts[name as keyof typeof agentPrompts]
 }
-export function agentPromptMarkdown(name: string) {
-  const prompt = agentPrompt(name)
+export function agentPromptMarkdown(name: string, prompt = agentPrompt(name)) {
   return `${prompt.title}\n\n\`\`\`text\n${prompt.text}\n\`\`\``
 }
-export function previewWorkflowMarkdown() {
-  return [previewWorkflow.title, ...previewWorkflow.steps.map((step, index) => `${index + 1}. **${step.title}** — ${step.description}`), previewWorkflow.caption].join('\n\n')
+export function previewWorkflowMarkdown(workflow = previewWorkflow) {
+  return [workflow.title, ...workflow.steps.map((step, index) => `${index + 1}. **${step.title}** — ${step.description}`), workflow.caption].join('\n\n')
 }
 
 export const agentFixExample = {

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/contents-default-vs-empty
+
+## title \{#copy-title\}
+
+
+contents 블록 생략과 빈 블록은 다름
+
+## alt \{#copy-alt\}
+
+
+같은 믹스인의 세 호출이 기본 grid 선언, 명시적 빈 블록의 선언 없음, 제공한 flex 콘텐츠의 기본값 대체를 보여 준다.
+
+## caption \{#copy-caption\}
+
+
+믹스인에는 @contents \{ display: grid; \}가 있습니다. 호출 위치의 중괄호가 의도적인 빈 블록과 생략을 구분합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+@apply --panel;은 contents 블록을 생략하고 display: grid 대체 콘텐츠를 사용합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+@apply --panel \{\}는 빈 블록을 제공해 대체 콘텐츠를 억제하며 이 예제에서는 선언을 추가하지 않습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+@apply --panel \{ display: flex; \}는 자신의 콘텐츠로 대체 콘텐츠를 바꾸며 두 display 선언을 병합하지 않습니다.

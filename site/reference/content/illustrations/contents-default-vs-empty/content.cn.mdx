@@ -1,0 +1,31 @@
+# Reference prose: illustrations/contents-default-vs-empty
+
+## title \{#copy-title\}
+
+
+省略 contents 块与空块不同
+
+## alt \{#copy-alt\}
+
+
+相同混入的三次调用分别呈现默认 grid 声明、显式空块不产生声明，以及提供 flex 内容替换默认值。
+
+## caption \{#copy-caption\}
+
+
+混入包含 @contents \{ display: grid; \}。调用处的花括号区分刻意留空与省略块。
+
+## description-0 \{#copy-description-0\}
+
+
+@apply --panel; 省略 contents 块，使用 display: grid 回退内容。
+
+## description-1 \{#copy-description-1\}
+
+
+@apply --panel \{\} 提供空块，抑制回退，因此本例不添加声明。
+
+## description-2 \{#copy-description-2\}
+
+
+@apply --panel \{ display: flex; \} 提供自身内容替换回退内容，两条 display 声明不会合并。

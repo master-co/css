@@ -1,0 +1,72 @@
+# Reference prose: rules/named-conditions
+
+
+## intro \{#copy-intro\}
+
+
+프리셋은 독립적인 미디어 조건과 컨테이너 조건을 정의합니다. 짧은 이름을 공유하지만 두 등록 목록 모두 테마 토큰 집합은 아닙니다. 단독 `@md`는 뷰포트를 쿼리하고 `@container(--md)`는 자격을 갖춘 상위 컨테이너를 쿼리합니다.
+
+## media \{#copy-media\}
+
+
+미디어 이름은 `media.css`에서 가져옵니다. 너비 조건은 작성된 rem 값을 사용하고 방향 및 환경설정 조건은 네이티브 미디어 기능을 사용합니다. `@dark`와 `@light`는 수동으로 고른 사이트 테마가 아니라 시스템 환경설정을 확인합니다.
+
+## container \{#copy-container\}
+
+
+컨테이너 이름은 `container.css`에서 가져옵니다. 정의는 쿼리 조건만 제공합니다. `@container(--md)`는 가장 가까운 적격 컨테이너를 사용하고 `@container(card|--md)`는 이름이 `card`인 적격 컨테이너를 선택합니다. 두 형식 모두 컨테이너를 만들지 않습니다.
+
+## scope \{#copy-scope\}
+
+
+같은 키가 서로 다른 쿼리 영역에서 다른 임계값을 나타낼 수 있습니다. `--container-md` 같은 컨테이너 크기 토큰은 세 번째 독립 역할로, 크기 유틸리티에 길이를 제공합니다.
+
+## complement \{#copy-complement\}
+
+
+각 프리셋 `max-` 조건은 대응하는 최소 조건의 여집합입니다. 아래 확장 쿼리는 경계에서 겹치지 않습니다. 원본 정의는 `not (--name)`으로 대응하는 이름을 참조합니다.
+
+## customize \{#copy-customize\}
+
+
+뷰포트나 환경설정 쿼리에는 사용자 지정 미디어 이름을, 컴포넌트 쿼리에는 사용자 지정 컨테이너 이름을 선언하세요. 네이티브 단위는 유지됩니다. 이미 컴파일된 manifest에서 조건을 대체할 때 두 임계값을 모두 바꾸려면 상보 조건도 다시 선언하세요.
+
+## viewport-widths-title \{#copy-viewport-widths-title\}
+
+
+최소 뷰포트 너비
+
+## below-viewport-widths-title \{#copy-below-viewport-widths-title\}
+
+
+지정 너비 미만의 뷰포트
+
+## media-features-title \{#copy-media-features-title\}
+
+
+방향과 환경설정
+
+## container-widths-title \{#copy-container-widths-title\}
+
+
+최소 컨테이너 너비
+
+## below-container-widths-title \{#copy-below-container-widths-title\}
+
+
+지정 너비 미만의 컨테이너
+
+## usage-lead \{#copy-usage-lead\}
+
+
+이 레이아웃은 프리셋 md 뷰포트 임계값 미만에서 한 열을 사용하고 임계값부터 세 열을 사용합니다.
+
+## title \{#copy-title\}
+
+
+이름이 있는 조건
+
+## description \{#copy-description\}
+
+
+모든 프리셋 미디어 및 컨테이너 조건과 확장된 쿼리, 각각 측정하는 범위입니다.

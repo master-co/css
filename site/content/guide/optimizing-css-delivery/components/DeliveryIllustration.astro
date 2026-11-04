@@ -1,4 +1,6 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import { deliveryIllustrations, type DeliveryIllustrationId } from '../illustrations'
 import ownershiplight from '../../../../assets/images/optimizing-css-delivery/ownership-light.png'
@@ -11,7 +13,7 @@ import verificationlight from '../../../../assets/images/optimizing-css-delivery
 import verificationdark from '../../../../assets/images/optimizing-css-delivery/verification-dark.png'
 interface Props { id: DeliveryIllustrationId }
 const { id } = Astro.props
-const figure = deliveryIllustrations[id]
+const figure = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, `DeliveryIllustration:${id}`, deliveryIllustrations[id])
 const images = {
   ownership: { light: ownershiplight, dark: ownershipdark },
   evidence: { light: evidencelight, dark: evidencedark },

@@ -1,0 +1,245 @@
+---
+title: "Sass에서 마이그레이션"
+description: "유용한 CSS 구조를 유지하며 Sass 변수, 맵, 믹스인, 플레이스홀더, 중첩 컴포넌트 스타일을 Master CSS로 옮깁니다."
+figures: {"SassIllustration": {"title": "각 컴파일러에 고유 언어 전달", "alt": "Sass가 legacy.scss를 일반 legacy.css로 컴파일합니다. 별도의 app.css가 결과를 가져오고 Master CSS 정의를 포함합니다. Sass 출력이 만들어진 뒤 Master CSS가 앱 진입점을 컴파일합니다.", "caption": "Master CSS 정의는 .css 진입점에 유지합니다. Sass 컴파일 결과를 가져오고 개발·프로덕션에서 같은 빌드 순서를 지키세요.", "description": [{"title": "Sass 전처리", "text": "Sass 컴파일러가 @mixin stack과 @include stack을 일반 CSS로 펼칩니다."}, {"title": "출력 가져오기", "text": "생성 파일이 존재한 뒤 app.css가 legacy.css를 가져옵니다."}, {"title": "앱 진입점 컴파일", "text": "Master CSS가 app.css의 자체 정의를 읽고 가져온 네이티브 규칙을 유지합니다."}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import SassIllustration from './components/SassIllustration.astro'
+
+Sass와 Master CSS는 공존할 수 있습니다. 외부 import, 생성 선택자, 복잡한 중첩, CSS로 읽기 쉬운 스타일에는 Sass를 유지하세요. 반복되는 시각 값과 마크업 소유 컴포넌트 스타일은 유지보수하기 쉬워지는 경우 Master CSS로 옮깁니다.
+
+이 가이드는 변수, 맵, 믹스인, 함수, 플레이스홀더, 파셜, 중첩 선택자를 쓰는 `.scss`와 `.sass` 프로젝트를 다룹니다.
+
+---
+
+CSS `@mixin`과 Sass `@mixin`은 같은 키워드를 사용합니다. Master CSS 정의는 `.css`에 두거나 Sass에서 출력할 때 [SCSS 보간 패턴](/reference/directives/definitions#sass-interoperability)을 사용하세요. [Sass 믹스인 문법](https://sass-lang.com/documentation/at-rules/mixin/)은 `--`로 시작하는 이름을 거부합니다. Master CSS 정의는 Sass 믹스인으로 해석되지 않은 채 Master 컴파일러에 도달해야 합니다.
+
+## 마이그레이션 전략 \{#migration-strategy\}
+앱이 이미 빌드하는 Sass 진입점부터 시작합니다. [공통 마이그레이션 절차](/guide/migration#migration-strategy)에 따라 컴파일 시 작업과 브라우저가 받아야 하는 값을 나누세요.
+
+<DocumentComparison>
+
+| 기존 Sass 역할 | 유지 또는 이동 |
+| --- | --- |
+| 제품 색상, 간격, 반경 | 사용처가 준비되면 공유 값을 `@theme`으로 옮깁니다. |
+| 루프, 생성 선택자, 외부 import, 함수 | 명확한 대안이 생길 때까지 Sass로 컴파일합니다. |
+| 반복 선언 그룹 | 사용 위치에 따라 네이티브 컴포넌트 CSS나 Master CSS 믹스인을 사용합니다. |
+| 로컬 시각 규칙 | 읽기 쉬워진다면 마크업 클래스를 사용합니다. |
+| 구조적 중첩, 인쇄 규칙, 복잡한 애니메이션 | 유용한 네이티브 CSS를 유지합니다. |
+
+</DocumentComparison>
+
+Sass 변수는 전처리 중 해석되고 CSS 사용자 정의 속성은 브라우저 캐스케이드에 참여합니다. 둘 사이에 값을 옮기면 값이 변할 수 있는 시점과 위치도 바뀌므로 교체 전에 모든 사용처를 확인하세요.
+
+<SassIllustration />
+
+---
+
+## Sass와 함께 Master CSS 추가 \{#add-master-css-beside-sass\}
+앱이 이미 읽는 스타일시트에서 Master CSS를 가져오고 Sass 컴파일은 유지합니다.
+
+```css name=app.css
+@import "@master/css";
+@import "./legacy.css";
+```
+
+Master CSS가 import 그래프를 해석하기 전에 기존 Sass 진입점을 `legacy.css`로 컴파일합니다. Sass 구문은 별도 입력에 두고 가져오는 결과는 일반 CSS여야 합니다. 감시 모드에서도 Sass 수정으로 `legacy.css`를 갱신한 뒤 앱 CSS를 다시 빌드하는 순서를 유지하세요. 생성 파일을 직접 편집하지 마세요.
+
+일반 앱 파일에는 기본 소스 탐색으로 충분합니다. 사용자 정의 포함, 제외, safelist, blocklist가 필요할 때만 명시적 소스 지시문을 추가합니다.
+
+Sass가 전역 리셋, 외부 CSS, 생성 선택자를 출력한다면 마이그레이션 중에도 import를 유지합니다. 컴파일 시 Sass 변수와 런타임 CSS 사용자 정의 속성은 다르게 동작합니다. 루프, 선택자 구성, 계산에 쓰는 Sass 값은 해당 사용의 대안이 생길 때까지 유지하세요.
+
+---
+
+## 변수와 맵을 `@theme`으로 이동 \{#move-variables-and-maps-into--theme\}
+제품 값을 정의하는 Sass 변수와 맵은 보통 Master CSS 테마 토큰이 됩니다.
+
+```scss name=_tokens.scss
+$color-primary: #2563eb;
+$color-body: #172033;
+$space-card: 1.5rem;
+$radius-card: .75rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
+}
+
+```
+
+```html
+<article class="b(1) b-solid b-line-divider r-card bg-white fg-body p-card">
+  ...
+</article>
+```
+
+제품 역할을 설명하는 토큰 이름을 사용하세요. 단순 구현 세부 사항이었던 Sass 변수 이름은 유지하지 않아도 됩니다.
+
+---
+
+## 로컬 컴포넌트 스타일 변환 \{#convert-local-component-styles\}
+하나의 요소나 컴포넌트 인스턴스에 속한 로컬 시각 규칙은 마크업으로 옮깁니다.
+
+```scss name=Card.module.scss
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .75rem;
+  background: #fff;
+  color: #172033;
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md r-card bg-white fg-body p-card">
+      {children}
+    </section>
+  )
+}
+```
+
+선택자가 문서 구조, 생성 콘텐츠, 인쇄 규칙, 복잡한 애니메이션 타임라인, 외부 마크업을 설명한다면 Sass나 일반 CSS를 유지합니다.
+
+---
+
+## 플레이스홀더와 믹스인을 의도적으로 교체 \{#replace-placeholders-and-mixins-intentionally\}
+Sass 플레이스홀더와 믹스인은 제품 역할이나 저수준 기본 기능을 나타내는 경우가 많습니다. 소유 범위에 따라 Master CSS 대상을 선택하세요.
+
+제품 역할에는 `@layer components`를 사용합니다. 이전 예의 `@theme` 값도 같은 프로젝트 진입점에 유지하세요.
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .card {
+    display: grid;
+    border-radius: var(--radius-card);
+    gap: var(--spacing-md);
+    padding: var(--spacing-card);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    color: var(--color-body);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+  }
+}
+```
+
+```html
+<article class="card">...</article>
+<button type="button" class="btn">Save</button>
+```
+
+재사용 클래스 레시피에는 `@utility`를, CSS 규칙 안에서 선언을 재사용할 때는 `@mixin`을 사용합니다.
+
+```css name=app.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">...</section>
+```
+
+CSS에 남아야 할 반복 선언 그룹은 `@include`를 Master CSS 믹스인 적용으로 바꿉니다.
+
+```scss name=_stack.scss
+@mixin stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.article-summary {
+  @include stack;
+}
+```
+
+```css name=app.css
+@mixin --stack {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.article-summary {
+  @apply --stack;
+}
+```
+
+이 정의는 Master CSS `.css` 진입점에 둡니다. `stack` 유틸리티 클래스를 만들지는 않습니다. 그 역할은 별도의 `@utility`가 담당합니다.
+
+많은 선택자를 생성하거나 브라우저 우회 처리를 담거나 클래스로 바꾸면 이해하기 어려워지는 Sass 믹스인은 유지합니다.
+
+---
+
+## 유용한 중첩을 CSS로 유지 \{#keep-useful-nesting-as-css\}
+대상이 단일 요소라면 중첩 Sass를 Master CSS 상태에 명확히 대응시킬 수 있습니다.
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+내부 구조를 표현하는 중첩 선택자는 CSS에 유지합니다.
+
+```css name=app.css
+.article-content {
+  h2 {
+    margin-top: 2rem;
+  }
+
+  pre code {
+    white-space: pre;
+  }
+}
+```
+
+Vite, Next.js, Webpack 통합에서는 Sass 전처리 후 프로젝트 테마 변수를 자동으로 사용할 수 있습니다.
+
+```css name=Article.module.css
+.article {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+```
+
+---
+
+## 마이그레이션 검증 \{#validate-the-migration\}
+- 각 작업 후 Sass 컴파일러, 포매터, 린터, 타입 검사, 테스트, 프로덕션 빌드를 실행합니다.
+- 반응형 중단점, 다크 모드, 호버, focus-visible, 비활성, 인쇄 상태에서 변환한 페이지를 비교합니다.
+- 외부 import, 생성 CSS, 복잡한 중첩, 브라우저 우회 처리 믹스인, CSS가 더 명확한 일회성 규칙에는 Sass를 유지합니다.
+- 어떤 가져온 스타일시트, 컴포넌트, 패키지도 Sass에 의존하지 않을 때만 Sass 패키지와 빌드 설정을 제거합니다.
+
+---
+
+## 관련 참고 자료 \{#useful-references\}
+- [설치](/guide/installation): Master CSS 추가.
+- [렌더링 모드](/guide/rendering-modes): 정적, 런타임, 점진적 렌더링 선택.
+- [스타일 선언](/reference/rules/declarations): 클래스 구문.
+- [테마 토큰](/guide/theme): 토큰, [변수와 모드](/reference/rules/modes): 모드, [조건](/reference/rules/conditions): 쿼리 구문.
+- [CSS 지시문](/reference#directives): `@theme`, `@mixin`, `@reference`, [캐스케이드 레이어](/guide/cascade-layers): 네이티브 컴포넌트 레이어.
+- [라우트별 스타일](/guide/route-level-styles): 프로젝트 정의와 네이티브 선언을 사용하는 로컬 CSS 파일.
+- [전역 스타일](/guide/global-styles#shared-vocabulary): 마크업 클래스, 테마 토큰, 사용자 정의 유틸리티, 컴포넌트 클래스 선택.

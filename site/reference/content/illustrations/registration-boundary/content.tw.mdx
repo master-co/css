@@ -1,0 +1,31 @@
+# Reference prose: illustrations/registration-boundary
+
+## title \{#copy-title\}
+
+
+原生變數不會註冊 token class
+
+## alt \{#copy-alt\}
+
+
+相同的 spacing-card 宣告分別放在 theme 與 root 內。只有 theme 定義會連到 p-card；兩者都能供明確的原生 var 參照使用。
+
+## caption \{#copy-caption\}
+
+
+兩個範例都載入預設 utility 家族。註冊與瀏覽器變數可用性是兩種獨立能力。
+
+## description-0 \{#copy-description-0\}
+
+
+@theme \{ --spacing-card: 1.5rem; \} 在 spacing 命名空間註冊 card 鍵，讓 p-card 可以使用。
+
+## description-1 \{#copy-description-1\}
+
+
+:root \{ --spacing-card: 1.5rem; \} 提供原生 CSS 變數，但不會註冊 p-card。
+
+## description-2 \{#copy-description-2\}
+
+
+明確的原生 class (padding:var(--spacing-card)) 可以使用任一設定提供的變數。

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/lint-overlap-context
+
+## title \{#copy-title\}
+
+
+충돌 분석은 같은 변형 범위의 선언을 비교
+
+## alt \{#copy-alt\}
+
+
+같은 범위의 두 margin 클래스는 공유 셀 하나에 있고 sm과 md의 margin 클래스는 서로 다른 범위 열에 있다.
+
+## caption \{#copy-caption\}
+
+
+쿼리 범위가 다르다고 브라우저 구간이 겹치지 않는 것은 아닙니다. md에서는 두 최소 너비 쿼리가 모두 일치할 수 있으며 캐스케이드가 계속 적용됩니다.
+
+## description-0 \{#copy-description-0\}
+
+
+같은 선택자와 조건 범위의 두 margin 선언은 no-conflicting-classes가 충돌로 진단할 수 있습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+여기의 sm과 md 변형은 범위가 달라 위의 같은 범위 충돌로 보고되지 않습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+이는 진단 그룹이며 두 미디어 구간이 절대 겹치지 않거나 작성한 값이 자동으로 좋은 디자인 선택이라는 뜻이 아닙니다.

@@ -1,0 +1,65 @@
+# Reference prose: tokens/color
+
+## title \{#copy-title\}
+
+Color palette
+
+## summary \{#copy-summary\}
+
+Every numbered palette step, fixed hue alias and other preset color token.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+Palette
+
+## groups-1-title \{#copy-groups-1-title\}
+
+Hue aliases
+
+## groups-2-title \{#copy-groups-2-title\}
+
+Other colors
+
+## note \{#copy-note\}
+
+A color class sets only the named property. For a visible border, combine a width such as `b(1)`, a style such as `b-solid` and a color such as `b-blue-60`. Color roles use these same families and have their own value tables.
+
+## valuesLead \{#copy-valuesLead\}
+
+Palette numbers are token keys, not opacity or lightness percentages. Higher numbered steps have lower OKLCH lightness. Each swatch copies its CSS value or variable reference; hue aliases below retain their authored token reference.
+
+## explanation-title \{#copy-explanation-title\}
+
+Hue aliases select a fixed step
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`bg-blue` reads `--color-blue`, whose preset value is `var(--color-blue-60)`. `bg-yellow` instead reaches `--color-yellow-40`. The alias does not imply a common step number across hues.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+Numbered steps and hue aliases do not switch with the color scheme. Adaptive text aliases such as `fg-text-blue` belong to Color roles. Redefining a token can change either behavior.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+`bg-current` reads `currentColor`, so its result follows the element’s text color. There is no preset `--color-transparent` token. For transparency or another literal color, use a native declaration such as `(background-color:transparent)` or `(background-color:#175fe9)`.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Color roles
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native values and opacity
+
+## usage-lead \{#copy-usage-lead\}
+
+These status labels use explicit foreground and background steps. The words retain their meaning without color, and the selected colors stay fixed in both schemes.
+
+## customize-lead \{#copy-customize-lead\}
+
+Register a color in `@theme` to make its key available to the color families. Here `brand` is available as `bg-brand`, `fg-brand` and `b-brand`, among others.
+
+## guide-label \{#copy-guide-label\}
+
+Color

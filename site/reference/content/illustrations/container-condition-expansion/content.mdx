@@ -1,0 +1,29 @@
+# Reference prose: illustrations/container-condition-expansion
+
+## title \{#copy-title\}
+
+A named condition expands without choosing the container
+
+## alt \{#copy-alt\}
+
+The --dense condition combines a named width condition with a style query. Its use at @container card expands the condition while retaining card as the container name.
+
+## caption \{#copy-caption\}
+
+The definition stores the condition. The use site supplies card, the container name. Expanding --dense preserves both the width test and the style test.
+
+## description-0 \{#copy-description-0\}
+
+--md defines the width condition (width >= 28rem). --dense combines that reference with style(--density: compact).
+
+## description-1 \{#copy-description-1\}
+
+The use site @container card (--dense) chooses a container named card.
+
+## description-2 \{#copy-description-2\}
+
+Expansion produces @container card (width >= 28rem) and style(--density: compact). The container name is unchanged; it does not become part of the definition.
+
+## description-3 \{#copy-description-3\}
+
+The same condition can be reused with another container name or with the nearest eligible container. The figure shows compile-time substitution, not a DOM tree.

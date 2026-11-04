@@ -1,0 +1,36 @@
+# Reference prose: illustrations/compiler-output-ownership
+
+## title \{#copy-title\}
+
+
+編譯後的 manifest 不含交付的原生樣式表
+
+## alt \{#copy-alt\}
+
+
+編譯 app.css 分別產生原生 CSS 與 manifest。Node 渲染工作階段使用 manifest 與 bg-brand 生成 utility 規則；原生 .card 規則留在編譯器 CSS 輸出。
+
+## caption \{#copy-caption\}
+
+
+編譯器分別回傳原生 CSS 與定義。Node 渲染工作階段將提供的 class 轉成 utility CSS，不會再次交付編譯器的原生 .card 規則。
+
+## description-0 \{#copy-description-0\}
+
+
+app.css 包含主題 token 與原生 .card 規則。@master/css-compiler/node 的 compileManifestSync 以明確的基底 manifest 編譯它。
+
+## description-1 \{#copy-description-1\}
+
+
+result.css 帶有原生規則。result.manifest 帶有供後續 class 生成使用的定義。
+
+## description-2 \{#copy-description-2\}
+
+
+@master/css/node 的 Node createRenderSessionSync 接受該 manifest。確保 bg-brand 可用時，會生成其 background-color 規則與所需 token 資源。
+
+## description-3 \{#copy-description-3\}
+
+
+應用程式必須同時交付原生與生成 CSS，並協調共用資源所有權。瀏覽器引擎使用編譯後的執行階段程式，不採用此 Node manifest 路徑。

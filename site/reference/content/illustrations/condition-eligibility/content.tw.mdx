@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-eligibility
+
+## title \{#copy-title\}
+
+
+查詢相符，規則才有資格參與階層串接
+
+## alt \{#copy-alt\}
+
+
+同一個已編譯媒體規則連到兩種檢視區情況。低於門檻時不生效，達到門檻時則參與階層串接。
+
+## caption \{#copy-caption\}
+
+
+編譯器會在兩種瀏覽器情況評估前就輸出查詢。查詢相符不保證能在階層串接中勝出。
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem) 會輸出包含 display: grid 的 @media 規則，不會測試目前檢視區。
+
+## description-1 \{#copy-description-1\}
+
+
+39rem 時，瀏覽器不會套用該規則；40rem 時條件相符，宣告會參與階層串接。
+
+## description-2 \{#copy-description-2\}
+
+
+其他階層串接規則仍可能決定最終 display 值。編譯、查詢比對與最終計算樣式，是不同的檢查。

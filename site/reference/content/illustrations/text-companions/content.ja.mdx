@@ -1,0 +1,36 @@
+# Reference prose: illustrations/text-companions
+
+## title \{#copy-title\}
+
+
+テキストスタイルは常に 3 つのプロパティを設定する
+
+## alt \{#copy-alt\}
+
+
+独自の text-card クラスが font-size、line-height、letter-spacing の 3 つに分岐します。サイズは主要トークンを参照し、存在しない 2 つの付随値はそれぞれ normal を使います。
+
+## caption \{#copy-caption\}
+
+
+ここでは主要な --text-card トークンだけを定義しています。付随する 2 つの宣言も生成され、normal を使って、継承した行の高さや文字間隔を置き換えます。
+
+## description-0 \{#copy-description-0\}
+
+
+独自のテーマは --text-card を 1.5rem と定義し、付随トークンはどちらも定義しません。
+
+## description-1 \{#copy-description-1\}
+
+
+text-card は font-size: var(--text-card)、line-height: var(--text-card--line-height, normal)、letter-spacing: var(--text-card--letter-spacing, normal) を出力します。
+
+## description-2 \{#copy-description-2\}
+
+
+3 本の実線の分岐は、すべて出力される宣言です。付随値がない場合は normal にフォールバックし、別の行の高さや文字間隔を継承するのではありません。
+
+## description-3 \{#copy-description-3\}
+
+
+付随トークンだけでは text-card は登録されません。ファミリー、ウェイト、色は、この組み合わせスタイルの対象外です。

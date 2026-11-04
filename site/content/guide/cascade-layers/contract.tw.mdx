@@ -1,0 +1,148 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import { baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
+
+<a id="how-layers-control-the-cascade"></a>
+
+除非 class 明確選取另一個支援的串接層，Master CSS 都會將生成的樣式規則放進 `utilities`。受管理的主題宣告使用 `theme`。原生 CSS 則保留原本撰寫的串接層，包括透過 `@apply` 展開 mixin 的原生規則。
+
+本頁定義串接層的歸屬與生成規則的排序。若要覆寫元件或透過 DevTools 診斷，請見指南中的[串接層](/guide/cascade-layers)。
+
+## 建立順序 \{#establishing-the-order\}
+
+基底樣式表透過 `@master/css/base.css` 提供，也包含在完整的 `@master/css` 匯入中；它會宣告：
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+請在其他規則建立這些串接層之前載入它。CSS 會依首次出現的順序決定層次，後來的順序宣告無法重新排列已建立的串接層。生成的串接層區塊本身不會加入這段宣告。
+
+### 一般宣告與重要宣告 \{#normal-and-important-declarations\}
+
+這些串接層的一般宣告互相競爭時，`utilities` 的優先順序最高，`theme` 最低。不屬於任何串接層的一般作者規則優先於所有這些層。`!important` 會反轉串接層之間的順序，並讓層內的重要規則優先於無層的重要規則。此處比較的是作者樣式表內部的順序，並非涵蓋來源、行內樣式、動畫與轉場的完整階層串接。請見 [CSS 串接層排序](https://www.w3.org/TR/css-cascade-5/#layer-order)。
+
+<ReferenceIllustration id="layer-precedence" />
+
+串接層優先順序先於選擇器權重判定，因此權重更高的元件選擇器，無法單靠權重勝過一般 utility 宣告。同一層內的宣告仍受其他階層串接條件影響，請見[選擇器權重](/reference/rules/selectors#specificity)。
+
+## 串接層歸屬 \{#the-five-layers\}
+
+<a id="theme"></a>
+<a id="base"></a>
+<a id="defaults"></a>
+<a id="components"></a>
+<a id="utilities"></a>
+
+| 串接層 | 生成內容 | 原生 CSS 慣例 |
+| --- | --- | --- |
+| `theme` | 保留在 `:root, :host` 下的受管理 token 宣告 | Token 預設值 |
+| `base` | 帶有 `@layer(base)` 的 class | 正規化與文件基底 |
+| `defaults` | 帶有 `@layer(defaults)` 的 class | 廣泛的專案或內容預設樣式 |
+| `components` | 帶有 `@layer(components)` 的 class | 可重用的產品 class |
+| `utilities` | 一般 utilities、組合樣式與原生宣告 class；明確的 `@layer(utilities)` | 區域 utility 規則 |
+
+原生 CSS 欄說明的是預期職責，不是限制 CSS 在某個串接層可使用哪些屬性。`defaults` 是專案串接層，不是瀏覽器的使用者代理樣式表。token 相依項目的傳遞方式請見[變數與模式](/reference/rules/modes#variable-lifecycle)。
+
+## 選取生成規則的串接層 \{#layer-checklist\}
+
+class 後綴只接受以下四個串接層名稱：
+
+```txt
+@layer(base)
+@layer(defaults)
+@layer(components)
+@layer(utilities)
+```
+
+這個後綴會選取整個生成 class 所屬的串接層，不會建立子層，也不會移動該 class 相依的主題變數。請將它與其他後綴一起放在結尾 `!` 之前。
+
+| 形式 | 結果 |
+| --- | --- |
+| `block@layer(defaults)` | display 規則放進 `defaults` |
+| `block@layer(base)@layer(base)` | 一個 base 層規則；允許重複相同選擇 |
+| `block@layer(base)@layer(utilities)` | `CLASS_SYNTAX_ERROR`：一個 class 不能選取不同串接層 |
+| `block@layer(theme)` | `UNKNOWN_CONDITION`：`theme` 不是生成樣式規則可選的串接層 |
+| `block@layer(custom)` | `UNKNOWN_CONDITION`：任意原生串接層名稱不能作為 class 後綴目標 |
+
+專案自有的串接層與子層請使用原生 `@layer` 語法。它們的順序遵循原生 CSS；class 後綴不會註冊新的串接層名稱。
+
+<ReferenceIllustration id="layer-token-separation" />
+
+### Base 與 defaults \{#base-and-defaults\}
+
+<a id="base-is-for-normalization"></a>
+
+base 層的後代規則可以建立結構基底：
+
+<ConfiguredExample source="" html={baseStylesTemplate} />
+
+<a id="defaults-are-for-broad-defaults"></a>
+
+defaults 層的後代規則可以建立程式碼排版，並讓區域元件與 utility 的選擇保有較高優先順序：
+
+<ConfiguredExample source="" html={defaultStylesTemplate} />
+
+`font-mono` class 留在 `defaults` 中，它需要的字型 token 仍在 `theme`。選擇器後綴決定哪些後代元素取得宣告，與串接層選擇互相獨立。
+
+### 預設樣式的優先順序低於區域選擇 \{#summary\}
+
+這裡的兩個規則都指向第一個段落。段落自己的原生宣告 class 放在 `utilities`，因此會覆寫文章在 defaults 層的字型大小：
+
+<ConfiguredExample source="" html={overridingDefaultsTemplate} />
+
+## 原生規則與受管理的 utilities \{#native-rules-and-managed-utilities\}
+
+<a id="a-complete-flow"></a>
+<a id="writing-regular-css"></a>
+
+位於 `@layer components` 內的原生 class 仍是原生 CSS。它預設會被傳遞，並遵循該層內的原生來源順序，不會取得 Master 的選擇器或條件後綴。[`@prune native`](/reference/directives/pruning) 控制未使用的原生選擇器是否可以移除。
+
+<a id="utilities-can-override-components"></a>
+
+此例的 `.btn` 宣告 `inline-flex`，`flex` 則產生一般 utility 宣告。建立基底順序後，按鈕會使用 `display: flex`：
+
+<ConfiguredExample source={'@layer components {\n  .btn { display: inline-flex; }\n}'} classes={['btn', 'flex']} element="button" label="Save" />
+
+隨需產生的 `@utility` 則會註冊受管理的 class。它的一般輸出屬於 `utilities`，但可以透過後綴選取另一個支援的串接層：
+
+<ConfiguredExample source={'@utility flow {\n  display: grid;\n  gap: var(--spacing-md);\n}'} classes={['flow@layer(defaults)']} />
+
+utility 定義與原生規則保留方式，請見 [Utilities 與 mixins](/reference/directives/definitions)。
+
+### Mixin 展開會保留所在的串接層 \{#mixin-expansion-keeps-the-surrounding-layer\}
+
+原生規則內的 `@apply` 會在出現的位置展開宣告，不會將該規則移到 `utilities`：
+
+<ConfiguredExample source={'@mixin --inset { padding: 1.5rem; }\n@layer components {\n  .card { @apply --inset; }\n}'} classes={['card', 'p(8)']} />
+
+建立基底順序後，utility 的 `8px` 內距會勝過元件的 `1.5rem`。若沒有外層串接層，原生 `.card` 規則就不屬於任何層，其一般內距宣告會優先於一般 utility。
+
+串接層區塊必須放在 mixin 主體與 `@apply` 內容之外，這些位置不接受串接層區塊。串接層決定整個生成規則的歸屬，不是用來包覆部分宣告。
+
+## 同一串接層內的優先順序 \{#priority-matrix\}
+
+HTML 中的 class 順序不會決定誰優先。Master CSS 為生成規則提供穩定順序，再由瀏覽器對相符宣告套用階層串接。在可比較的串接層、選擇器與條件情境中，生成規則依下列順序排列：
+
+1. 包含多個宣告，或包含內部選擇器與條件的組合樣式。
+2. 單一宣告 utilities，包括固定、以 token 提供值，以及直接值的 utilities。
+3. 原生宣告 class。
+
+單一宣告 utilities 依屬性家族與涵蓋範圍排序：單一邊或軸的規則會排在整個家族之後。屬性與作用範圍相同時，具名 token 值會排在直接值之前。重要性、選擇器權重與條件仍會參與判定；直接值不會在所有情況下都勝過其他作用範圍或串接層中的 token。
+
+以下範例使用預設集、基底串接層宣告，以及 `16px` 的根元素字型大小。競爭的宣告指向同一個元素，而且條件都相符。
+
+| 競爭的 class 或規則 | 結果 | 原因 |
+| --- | --- | --- |
+| `p-md p(8)`，順序不限 | `padding: 8px` | 相同屬性與作用範圍中，直接值排在 token 之後 |
+| `p(8) (padding:2rem)`，順序不限 | `padding: 2rem` | 原生宣告排在單一宣告 utility 之後 |
+| `m-md mt(0)`，順序不限 | 上外距 `0`；其他外距 `1rem` | 單一邊排在整個外距家族之後 |
+| `b(2) bt(0) b-solid b-red-60` | 上邊寬 `0`；其他邊寬 `2px`；紅色實線邊框 | 寬度、樣式與色彩是獨立家族 |
+| `p-md! p(8)` | `padding: 1rem` | 重要性先於值來源排序 |
+| `p-md! p(8)!` | `padding: 8px` | 重要性相同；直接值排在 token 之後 |
+| `p(8)@layer(base) p(12)` | `padding: 12px` | 一般 utilities 優先於 base |
+| `p(8)@layer(base)! p(12)!` | `padding: 8px` | 重要宣告會反轉串接層優先順序 |
+| 無層的 `.outside { padding: 32px; }` 與 `p(8)` | `padding: 32px` | 無層的一般宣告優先於層內宣告 |
+| components 層的 `padding: 24px !important` 與 `p(8)!` | `padding: 24px` | 重要宣告之間，以較早的串接層優先 |
+
+串接層內的原生規則會保留撰寫時的順序，上述生成 utility 的排序不會重新排列它們。宣告重疊時請檢查輸出的 CSS，並使用[程式碼 lint](/guide/code-linting#no-conflicting-classes)，在撰寫時找出衝突的 class。

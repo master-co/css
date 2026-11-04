@@ -1,0 +1,155 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+主题令牌有两个角色：名称让已注册的工具类族可以使用某个值，输出的自定义属性则参与原生 CSS。Master CSS 负责解析类并保留依赖项，浏览器则通过层叠与继承解析自定义属性的值。
+
+本页定义令牌查找、依赖项交付、替换和模式启用。[主题](/guide/theme)说明何时应共享令牌，以及如何创建项目主题；[令牌索引](/reference#tokens)则列出预设值。
+
+## 注册与查找 \{#namespace-resolution\}
+
+在顶层 `@theme` 块声明令牌。声明在 `@theme` 外的原生自定义属性可用于 CSS，但本身不会注册令牌驱动的类。原生选择器与查询应放在块外。样式表语法见 [`@theme`](/reference/directives/theme#theme)。
+
+<a id="contextual-token-lookup"></a>
+
+令牌族决定要查找哪个命名空间。键是令牌名称剩余的部分，键内的连字符会保留。
+
+| 令牌 | 类 | 生成声明 |
+| --- | --- | --- |
+| `--spacing-card` | `p-card` | `padding: var(--spacing-card)` |
+| `--radius-card` | `r-card` | `border-radius: var(--radius-card)` |
+| `--color-brand` | `bg-brand` | `background-color: var(--color-brand)` |
+| `--color-text-action` | `fg-text-action` | `color: var(--color-text-action)` |
+| `--color-line-divider` | `b-line-divider` | `border-color: var(--color-line-divider)` |
+
+`text-action` 和 `line-divider` 都是 `color` 命名空间中的键。`outline-line-divider` 可以使用 `--color-line-divider`，但 `outline-divider` 不会自动插入 `line-`。两个命名空间中的同一个键可以提供不同值：`p-card` 和 `r-card` 分别解析。
+
+<ConfiguredExample source={'@theme {\n  --spacing-card: 1.5rem;\n  --radius-card: .5rem;\n  --color-brand: #1d4ed8;\n  --color-text-action: var(--color-brand);\n  --color-line-divider: rgb(0 0 0 / 12%);\n}'} html={'<article class="p-card r-card b(1) b-solid b-line-divider">\n  <a class="fg-text-action" href="/settings">Settings</a>\n</article>'} />
+
+<a id="default-namespace-sources"></a>
+
+[族索引](/reference/tokens/families)提供完整的前缀与命名空间映射。完整 CSS 属性名称不会自动创建令牌族。项目需要新映射时，请用 [`@utility`](/reference/directives/definitions#utilities) 注册自定义模式。即使存在同键令牌，`w-full` 这类固定拼写仍保留固定定义；见[类解析](/reference/rules/declarations)。
+
+<ReferenceIllustration id="registration-boundary" />
+
+## 依赖项交付 \{#variable-lifecycle\}
+
+生成声明通常保留 `var()` 引用。被使用的受管理令牌会与其传递依赖的受管理令牌一起，输出到 `theme` 层的 `:root, :host` 下。
+
+<a id="custom-spacing-example"></a>
+
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
+
+令牌被保留时，其重复声明仍按源顺序保留，这些值引用的依赖项也会保留。原生样式表的引用可以保留受管理令牌；原生自定义属性声明与局部覆盖仍属于原本的样式表，并遵循该文件的保留策略。
+
+Master CSS 生成类时不会选择浅色、深色或特定视口的值。检查功能可以报告原始声明与依赖项；没有元素、祖先与浏览器环境，就无法确定计算值。
+
+<ReferenceIllustration id="token-dependency-chain" />
+
+### 缺失名称与无效值 \{#missing-names-and-invalid-values\}
+
+未知令牌键无法生成匹配的令牌族类。这与合法类输出的 `var()` 后来在浏览器中解析为无效值不同。继承、循环、回退值和属性值合法性均遵循[原生自定义属性规则](https://www.w3.org/TR/css-variables-1/)；保留声明不代表最终计算值一定合法。
+
+## 继承与限定作用域的别名 \{#mode-buckets\}
+
+用原生选择器声明局部覆盖，相同类就能在不同作用域获得不同值：
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-panel">Ocean panel</div>
+</section>
+```
+
+### 派生值 \{#derived-mode-aware-values\}
+
+`--color-link: var(--color-brand)` 这类别名先在声明该别名的元素上解析，再继承计算值。仅在后代元素覆盖 `--color-brand`，不会重新绑定已继承的别名。如果别名应由局部 brand 派生，请在后代作用域重新声明它。
+
+相同作用域规则也适用于 `color-mix()` 这类派生表达式：
+
+```css
+@theme {
+  --color-brand: #1d4ed8;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+[data-theme="plum"] {
+  --color-brand: #86198f;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+```
+
+这些函数仍是 CSS 表达式。Master CSS 不会为每个编写的作用域分别计算颜色。[交互别名示例](/guide/theme#alias-and-override-tokens)会并排显示继承与重新绑定的结果。
+
+## Inline 替换与 static 交付 \{#inline-and-static-variables\}
+
+`inline` 改变生成声明引用的内容。`static` 改变令牌的自定义属性声明是否需要被发现的引用方。这两种行为相互独立。
+
+| 定义 | 生成的类声明 | 自定义属性交付 |
+| --- | --- | --- |
+| `@theme` | 保留令牌引用 | 需要时保留 |
+| `@theme inline` | 将令牌值替换一次 | 替换后的类本身不再需要该令牌声明 |
+| `@theme static` | 保留令牌引用 | 即使未发现引用方也保留 |
+| `@theme static inline` | 将令牌值替换一次 | 即使未发现引用方也保留 |
+
+Inline 替换会移除一层间接引用。替换值内的引用仍由浏览器解析，`inline` 不会递归地将它们替换为常量。它适用于 Master 生成的声明，包括 `@apply` 展开；手写原生 CSS 保留原有的 `var()` 引用。
+
+### 剩余变量在哪里解析 \{#where-the-remaining-variable-resolves\}
+
+以下两份配置都定义 `--color-brand: var(--app-brand)` 并使用 `bg-brand`，只有 `inline` 修饰符不同。两种情况下，文档根元素都是蓝色，嵌套 section 将 `--app-brand` 覆盖为紫红色。
+
+<ReferenceIllustration id="inline-resolution" />
+
+使用普通 `@theme` 时，生成声明读取 `--color-brand`。该令牌的 `var(--app-brand)` 在根元素解析，嵌套元素继承最终得到的蓝色值。
+
+<ConfiguredExample source={'@theme { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Inherited blue</div>\n</section>'} />
+
+使用 `@theme inline` 时，生成声明直接在应用样式的元素上读取 `--app-brand`，获得其 section 提供的紫红色值。
+
+<ConfiguredExample source={'@theme inline { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Local plum</div>\n</section>'} />
+
+外部引用方需要发现流程看不到的令牌时，可独立使用 `static`。支持的形式与定义作用域见[主题修饰符](/reference/directives/theme#theme-static)。
+
+## 模式启用 \{#mode-triggers\}
+
+模式是编写的 CSS 作用域或条件，不是第二个令牌命名空间。更改令牌值与将规则限制于某个模式，是独立操作。
+
+| 机制 | 改变的内容 | 启用条件 |
+| --- | --- | --- |
+| 原生自定义属性覆盖 | 该作用域中继承的值 | 编写的选择器或原生查询 |
+| `light-dark()` 令牌 | 选取的颜色值 | 元素实际使用的配色方案 |
+| 预设 `@dark` 或 `@light` 后缀 | 规则是否可应用 | 系统 `prefers-color-scheme` 媒体查询 |
+| 通过 `@apply(--name)` 使用的选择器混入 | 生成规则在哪里匹配 | 与混入中编写的选择器完全一致 |
+
+### 手动作用域与规则包裹 \{#manual-scopes-and-rule-wrappers\}
+
+`bg-surface` 这类令牌类跟随其继承的变量。若只想在 ocean 作用域应用其他声明，请在混入中明确编写该作用域。`&` 表示生成的选择器，下方后代分支是有意编写的，不是 Master CSS 插入的。
+
+<ConfiguredExample source={'@theme { --color-surface: white; }\n[data-theme="ocean"] { --color-surface: #082f49; }\n@mixin --ocean {\n  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }\n}'} html={'<section data-theme="ocean">\n  <div class="bg-surface p(16)@apply(--ocean)">Ocean panel</div>\n</section>'} />
+
+令牌覆盖改变背景值，混入改变内边距应用的位置，两种机制都不会定义另一种。包裹参数与放置方式见[工具类与混入](/reference/directives/definitions#reusing-a-matched-value)。
+
+### 系统偏好与手动配色方案 \{#system-preference-and-manual-color-schemes\}
+
+完整预设提供原生 `color-scheme` 规则：根元素允许 `light dark`，`data-theme="light"` 或 `data-theme="dark"` 则将区域固定为指定配色方案。令牌可用 `light-dark(white, #111827)` 跟随该方案。由浏览器选择值，不需要第二个类。原生行为见 [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark)。
+
+即使位于手动主题区域，预设的 `@dark` 和 `@light` 后缀仍是系统媒体查询。更改 `data-theme` 不会启用它们。[颜色](/guide/colors#native-color-scheme-and-manual-themes)会演示手动启用与嵌套区域。
+
+### 局部重叠与 Shadow DOM \{#local-overlap-and-shadow-dom\}
+
+重叠作用域遵循普通层叠，包括层顺序与选择器优先级。选择器描述了主题，并不代表局部值就自动具有更高优先级。见[层叠层](/reference/rules/layers)。
+
+默认主题声明包含 `:host`。请明确编写限定作用域的 host 覆盖，并在 shadow tree 中加载所需样式表：
+
+```css
+@theme { --color-panel: white; }
+:host([data-theme="dark"]) { --color-panel: #111827; }
+```
+
+令牌不会替代资源交付。原生关键帧及其依赖保留方式，见[关键帧契约](/reference/directives/pruning#native-keyframes)；样式表保留方式则见[原生 CSS 裁剪](/reference/directives/pruning)。

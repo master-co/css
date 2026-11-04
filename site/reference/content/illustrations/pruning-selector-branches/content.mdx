@@ -1,0 +1,25 @@
+# Reference prose: illustrations/pruning-selector-branches
+
+## title \{#copy-title\}
+
+Pruning keeps branches by class usage
+
+## alt \{#copy-alt\}
+
+A selector list loses unused:hover but keeps card. A separate card title descendant selector stays whole when card is used, even without evidence of a matching DOM relationship.
+
+## caption \{#copy-caption\}
+
+The retained highlight follows selector branches. Pruning checks used class names, not whether the complete selector currently matches an element.
+
+## description-0 \{#copy-description-0\}
+
+With @prune native and card used, .card, .unused:hover keeps only its .card branch.
+
+## description-1 \{#copy-description-1\}
+
+The separate .card .title branch is retained because card appears in the used set; title need not also be found.
+
+## description-2 \{#copy-description-2\}
+
+Retention does not prove that the DOM contains a title descendant. Rules without class selectors remain preserved.

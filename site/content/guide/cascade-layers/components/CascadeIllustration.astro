@@ -1,8 +1,12 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import light from '../../../../assets/images/cascade-layers/local-padding-light.png'
 import dark from '../../../../assets/images/cascade-layers/local-padding-dark.png'
-import { cascadeIllustration as figure } from '../illustration'
+import { cascadeIllustration as sourceFigure } from '../illustration'
+const figure = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'CascadeIllustration', sourceFigure)
+
 ---
 
 <DocumentIllustration title={figure.title} alt={figure.alt} images={{ light, dark }} caption={figure.caption}>

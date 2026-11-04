@@ -1,0 +1,166 @@
+---
+{
+  "title": "Lit で Master CSS を設定する",
+  "description": "静的 CSS、またはコンポーネントのライフサイクルに従うブラウザーランタイムで、Lit のシャドウルートにスタイルを付けます。",
+  "category": "インテグレーション"
+}
+---
+
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/lit/cover-light.webp'
+import dark from '~/site/assets/images/integrations/lit/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Lit" />
+
+Lit コンポーネントは通常、シャドウルート内にレンダリングします。ドキュメントのスタイルはその中の要素に届かないため、生成した CSS を各コンポーネントのシャドウツリー内へ配信します。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      Vite でビルドする既存の [Lit プロジェクト](https://lit.dev/docs/getting-started/)のルートでインストーラーを実行します。Lit の既定は Vite の静的モードです。ソースに完全なクラス名を記述してください。ブラウザーで初めて現れる名前からクラスを生成する必要がある場合は、ランタイムモードを明示的に指定します。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework lit --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### CSS のソースエントリーを保持する \{#keep-a-css-source-entry\}
+    インストーラーは `src/index.css` を作成し、Vite インテグレーションを登録します。定義はこのソースファイルに置いてください：
+
+    ```css name=src/index.css
+    @import '@master/css';
+    ```
+
+    以下のコンポーネントは、Vite の `?inline` インポートで処理済み CSS をテキストとして取得します。通常のドキュメントレベルのスタイルシートインポートでは、シャドウルートの内部にスタイルを付けられません。
+
+    現在のインライン CSS 配信では、Vite の `base` を相対パスにしてください。ルート相対のアセット URL は、本番のコンポーネント読み込み時に `Invalid base URL` を起こす場合があります。以下を既存の Vite 設定に統合し、ほかのプラグインを保持して、Master CSS を一度だけ登録します：
+
+    ```ts name=vite.config.ts
+    import { defineConfig } from 'vite'
+    import masterCSS from '@master/css-vite'
+
+    export default defineConfig({
+      base: './',
+      plugins: [masterCSS()]
+    })
+    ```
+  </Step>
+  <Step $row>
+    <StepL>
+      ### シャドウルートにスタイルを含める \{#include-styles-in-the-shadow-root\}
+      生成したスタイルシートをテキストとしてインポートし、Lit の [`unsafeCSS`](https://lit.dev/docs/components/styles/#static-styles) で取り込みます。CSS は自分のビルド入力から取得し、信頼できないユーザーのテキストを `unsafeCSS` に渡さないでください。インストーラーはこのスタイルシートの追加時に、標準コンポーネントの既存のスタイルを保持します。
+    </StepL>
+    <StepR>
+      ```ts name=src/my-element.ts
+      import { LitElement, html, unsafeCSS } from 'lit'
+      import { customElement } from 'lit/decorators.js'
+      import masterCSSStyles from './index.css?inline'
+
+      @customElement('my-element')
+      export class MyElement extends LitElement {
+        static styles = [unsafeCSS(masterCSSStyles)]
+
+        render() {
+          return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    アプリのエントリーからコンポーネントモジュールをインポートしたままにし、登録済みの要素をページに置きます：
+
+    ```ts name=src/main.ts
+    import './my-element'
+    ```
+
+    ```html
+    <my-element></my-element>
+    ```
+
+    既存の `index.html` は `src/main.ts` をモジュールとして読み込む必要があります。`npm run dev` を実行すると、Lit が要素のシャドウルート内に段落を作成します。
+  </Step>
+  <DemoConfiguredExample
+    name="lit-shadow-check"
+    title="シャドウルート内のスタイルを確認する"
+    source=""
+    html={'<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>'}
+    caption="プレビューは、段落と同じ実際のシャドウルート内に生成したスタイルシートを読み込みます。"
+    shadow
+    code={false}
+  />
+</StepSection>
+
+## シャドウツリーのスタイルシートを確認する \{#check-the-shadow-stylesheet\}
+Lit テンプレートの `p-md` を `p-lg` に変えます。パディングが `1rem` から `1.5rem` に増えるはずです。元に戻してから、本番ビルドを確認します：
+
+```bash
+npm run build
+npm run preview
+```
+
+ブラウザーの開発者ツールで `<my-element>` 内の段落を調べます。`1rem` のパディング、浮き上がった面、角丸が適用されているはずです。ドキュメントレベルの要素だけにスタイルが付く場合は、コンポーネントの `?inline` インポートと `static styles` を確認してください。
+
+静的モードに Master CSS のブラウザーランタイムは不要です。ただし、このクライアントレンダリングのコンポーネントを作成するために、Lit には引き続き JavaScript が必要です。
+
+<DocumentDisclosure title="シャドウルート内で新しいクラスを生成する">
+
+ブラウザーで初めて現れるクラス名には、ランタイムモードでインストーラーを実行します：
+
+```bash
+npm create @master/css@rc -- --framework lit --mode runtime --yes
+```
+
+インストーラーは標準の `src/my-element.ts` コンポーネントにランタイムデコレーターを追加し、Vite に `masterCSS({ mode: 'runtime' })` を設定します。上記の相対 `base` を保持してください。ほかのコンポーネントにも同じ設定が必要です。ルールの生成前にレイヤー順序を確立するため、CSS テキストをランタイムのスタイルシートより先に読み込みます：
+
+```ts name=src/my-element.ts
+/// <reference types="@master/css/client" />
+
+import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+import { withMasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import masterCSSStyles from './index.css?inline'
+
+@customElement('my-element')
+@withMasterCSSRuntime({ program, emittedGlobals })
+export class MyElement extends LitElement {
+  protected createRenderRoot() {
+    const root = super.createRenderRoot()
+    const styles = document.createElement('style')
+    styles.textContent = masterCSSStyles
+    root.append(styles)
+    return root
+  }
+
+  render() {
+    return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
+  }
+}
+```
+
+この例はランタイムの起動前に、ベーススタイルシートを `<style>` 要素として挿入します。Lit の `static styles` は adopted stylesheets を使います。[CSSOM のスタイルシート順序](https://drafts.csswg.org/cssom/#css-style-sheet-collections)では通常の `<style>` 要素より後に置かれるため、そこにレイヤー順序の宣言を書くと、ベースレイヤーがランタイムのユーティリティより後になる場合があります。
+
+デコレーターを付けた各コンポーネントは、自身のシャドウルート用にランタイムを起動し、ドキュメントから切り離されると破棄します。ドキュメントレベルのランタイムでは、そのルート内のクラスを監視できません。
+
+コンポーネントの表示後、ブラウザーのコンソールで次を実行します。再ビルドせずに段落に下線が付くはずです：
+
+```js
+document.querySelector('my-element').shadowRoot
+  .querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

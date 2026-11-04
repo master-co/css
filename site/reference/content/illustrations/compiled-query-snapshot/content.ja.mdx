@@ -1,0 +1,31 @@
+# Reference prose: illustrations/compiled-query-snapshot
+
+## title \{#copy-title\}
+
+
+コンパイル済みの補集合には展開したクエリーが入っている
+
+## alt \{#copy-alt\}
+
+
+元の max-md から md への参照は、コンパイル済み manifest 内で具体的な 64rem の補集合になります。md だけを 60rem に変えても、既存の補集合は 64rem のままです。
+
+## caption \{#copy-caption\}
+
+
+これは定義を読み込む 2 つの段階の比較であり、両方の元の定義を一緒にコンパイルする場合の動作ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+--md と --max-md を一緒にコンパイルすると、not (--md) は対応する最小幅の定義を使って展開されます。
+
+## description-1 \{#copy-description-1\}
+
+
+コンパイル済み manifest には展開したクエリーが入っています。新しい --md: 60rem の定義を加えても、古い 64rem の --max-md の補集合は再展開されません。
+
+## description-2 \{#copy-description-2\}
+
+
+両方の範囲を一緒に変える必要がある場合は、後の設定フラグメントで両方の名前を再宣言します。

@@ -1,0 +1,326 @@
+# Reference prose: tools/mcp
+
+## editorial-mastercss_suggest_classes-purpose \{#copy-editorial-mastercss_suggest_classes-purpose\}
+
+
+有効な manifest を使い、単独の CSS 宣言ブロック用のクラスを提案します。`remainingCss` と `validation` は分けて読んでください。宣言の対応は周囲のカスケードやブラウザー動作の証明ではありません。
+
+## editorial-mastercss_suggest_classes-lifecycle \{#copy-editorial-mastercss_suggest_classes-lifecycle\}
+
+
+ファイルは書きません。不確実なブロックはネイティブ CSS として全体を保持します。
+
+## editorial-mastercss_workspace_info-purpose \{#copy-editorial-mastercss_workspace_info-purpose\}
+
+
+プロジェクト依存の結果を解釈する前に、ここでサーバールート、パッケージ解決、検出した CSS エントリーを確認します。
+
+## editorial-mastercss_workspace_info-lifecycle \{#copy-editorial-mastercss_workspace_info-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_setup_audit-purpose \{#copy-editorial-mastercss_setup_audit-purpose\}
+
+
+ワークスペースルートを確認した後、不足パッケージ、未検出の CSS エントリー、統合設定を調べます。
+
+## editorial-mastercss_setup_audit-lifecycle \{#copy-editorial-mastercss_setup_audit-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_inspect_class-purpose \{#copy-editorial-mastercss_inspect_class-purpose\}
+
+
+有効な manifest が 1 つのクラスをどう解釈するか調べます。プロジェクトのスキャンで実際に検出したかを調べるには `mastercss_trace_class` を使います。
+
+## editorial-mastercss_inspect_class-lifecycle \{#copy-editorial-mastercss_inspect_class-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_trace_class-purpose \{#copy-editorial-mastercss_trace_class-purpose\}
+
+
+ソース検出、スキャナー状態、生成 CSS を通じてクラスを追跡し、存在または欠落の理由を説明します。
+
+## editorial-mastercss_trace_class-lifecycle \{#copy-editorial-mastercss_trace_class-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_extract_classes-purpose \{#copy-editorial-mastercss_extract_classes-purpose\}
+
+
+バッファー内の正確なクラストークンとソース位置を探すか、選択したプロジェクトファイルの抽出を調べます。
+
+## editorial-mastercss_extract_classes-lifecycle \{#copy-editorial-mastercss_extract_classes-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_inspect_directives-purpose \{#copy-editorial-mastercss_inspect_directives-purpose\}
+
+
+エントリースタイルシートまたは CSS バッファーからディレクティブの構造とコンパイル効果を調べます。`entryPath` または `content` が必要で、空の引数オブジェクトはコンパイルできません。
+
+## editorial-mastercss_inspect_directives-lifecycle \{#copy-editorial-mastercss_inspect_directives-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_render_css-purpose \{#copy-editorial-mastercss_render_css-purpose\}
+
+
+接続したプロジェクト文脈で、小さなリテラルのクラスリストや HTML 断片の CSS を生成します。
+
+## editorial-mastercss_render_css-lifecycle \{#copy-editorial-mastercss_render_css-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_scan_project-purpose \{#copy-editorial-mastercss_scan_project-purpose\}
+
+
+選んだソース範囲のスキャンファイル、スタイルシートエントリー、生成 CSS、任意の不足クラス検査を調べます。デザインシステム検査を加えると、管理対象のプロジェクト CSS のトークン参照と方針も調べられます。
+
+## editorial-mastercss_scan_project-lifecycle \{#copy-editorial-mastercss_scan_project-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_manifest_query-purpose \{#copy-editorial-mastercss_manifest_query-purpose\}
+
+
+有効な manifest のトークン、ユーティリティ、ネイティブミックスイン、独自メディア、標準トークンファミリーを検索します。
+
+## editorial-mastercss_manifest_query-lifecycle \{#copy-editorial-mastercss_manifest_query-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_css_compare-purpose \{#copy-editorial-mastercss_css_compare-purpose\}
+
+
+両プロジェクトスナップショットを渡すと、マークアップが変わらない編集も含め、独立した定義と既知の参照元を比較します。それ以外は同じ有効 manifest で 2 つのクラス選択を比較します。結果は生成 CSS の違いを説明し、見た目の等価性は証明しません。
+
+## editorial-mastercss_css_compare-lifecycle \{#copy-editorial-mastercss_css_compare-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_lint_project-purpose \{#copy-editorial-mastercss_lint_project-purpose\}
+
+
+選択ファイルにネイティブのクラス診断を実行します。lint ペイロード v5 は `coverage.checkedFiles` に検査入力、`summary.checkedFiles` に件数、`summary.filesWithDiagnostics` に診断のある件数を示します。`files` は診断結果だけです。`coverage.status` は `complete` または `no-inputs` で、入力なしの診断ゼロはソースの検証ではありません。`coverage.description` が説明するように manifest のエントリーは lint したソースではありません。manifest 失敗は MCP エラーのままです。プロジェクトのパーサー、プラグイン設定、チーム規則には別途その ESLint コマンドを使います。
+
+## editorial-mastercss_lint_project-lifecycle \{#copy-editorial-mastercss_lint_project-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_lint_content-purpose \{#copy-editorial-mastercss_lint_content-purpose\}
+
+
+未保存のソースバッファーをネイティブ診断と接続ワークスペースの manifest で調べます。lint ペイロード v5 は問題がなくても `coverage.checkedFiles` に仮想パスを示し、`summary.checkedFiles: 1` を報告します。問題がなければ `summary.filesWithDiagnostics` はゼロ、`files` は空です。対象はこのバッファーと有効な lint 規則であり、ブラウザー動作や全プロジェクトではありません。
+
+## editorial-mastercss_lint_content-lifecycle \{#copy-editorial-mastercss_lint_content-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_suggest_syntax-purpose \{#copy-editorial-mastercss_suggest_syntax-purpose\}
+
+
+未保存文書の位置に対し、言語サービスの補完候補とホバー情報を取得します。
+
+## editorial-mastercss_suggest_syntax-lifecycle \{#copy-editorial-mastercss_suggest_syntax-lifecycle\}
+
+
+ワークスペースのファイルは書きません。
+
+## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
+
+
+ネイティブ lint 修正や生成 CSS 出力のレビュー可能な差分を作ります。この要求では適用しません。
+
+## editorial-mastercss_preview_fixes-lifecycle \{#copy-editorial-mastercss_preview_fixes-lifecycle\}
+
+
+`mastercss_apply_preview` までファイルは変わりません。空でないプレビューはこのサーバープロセスにトークンを保存し、期限切れ、再起動、適用成功後は再プレビューが必要です。未変更の結果には確認トークンがありません。
+
+## editorial-mastercss_preview_directive_format-purpose \{#copy-editorial-mastercss_preview_directive_format-purpose\}
+
+
+ソースバッファーのディレクティブを整形するか、ファイル整形のプレビューを作ります。内容モードは整形文字列を直接返し、適用トークンは作りません。
+
+## editorial-mastercss_preview_directive_format-lifecycle \{#copy-editorial-mastercss_preview_directive_format-lifecycle\}
+
+
+内容モードはファイルもトークンも保存しません。ファイルモードでは `mastercss_apply_preview` までファイルは変わりません。空でないプレビューはサーバープロセスにトークンを保存し、期限切れ、再起動、適用成功後は再プレビューが必要です。未変更の結果には確認トークンがありません。
+
+## editorial-mastercss_apply_preview-purpose \{#copy-editorial-mastercss_apply_preview-purpose\}
+
+
+同じ稼働中サーバーセッションで、レビュー済みプレビューの変更をそのまま適用します。このツールはワークスペースのファイルを書きます。
+
+## editorial-mastercss_apply_preview-lifecycle \{#copy-editorial-mastercss_apply_preview-lifecycle\}
+
+
+サーバーは提案内容を書く前に全元ファイルのハッシュと書き込み可能パスを検証します。成功でトークンを消費します。ファイルは逐次書き込みで、複数ファイルのトランザクション型ロールバックではありません。適用後にプロジェクトの検査と変更 UI の確認を行ってください。
+
+## prompts-0-use \{#copy-prompts-0-use\}
+
+
+クラスが CSS を生成しない場合に、スキャン範囲、manifest 読み込み、構文、ネイティブ CSS のプルーニング、エントリー設定を調べます。
+
+## prompts-1-use \{#copy-prompts-1-use\}
+
+
+クラス診断を実行し、安全で範囲を絞った書き込みプレビューだけを提案します。
+
+## prompts-2-use \{#copy-prompts-2-use\}
+
+
+外部のスタイルシステムを監査し、レンダリングモード、検証コマンド、視覚的リスクを含む段階的な作業を計画します。ファイルは編集しません。
+
+## results-0 \{#copy-results-0\}
+
+
+全ツールは `metadata`、`diagnostics`、必須の `result` を含むバージョン 3 オブジェクトを返します。成功は `result: { status: 'success', data }`、失敗は `result: { status: 'error', error: { code, message } }` で、MCP の `isError` も設定します。JSON テキストと `structuredContent` は同じオブジェクトです。両分岐をツールの `outputSchema` で検証します。
+
+## results-1 \{#copy-results-1\}
+
+
+`metadata` はパッケージ・言語・バインディングのバージョン、実際の文脈、manifest の指紋、エントリー、依存先を報告し、取得不能値は null または空配列です。既定はプロジェクト文脈で、エントリー欠落やコンパイル失敗はエラーとなり、暗黙にプリセットへ切り替えません。プリセットのみの検索は `context: 'preset'` を明示します。
+
+## results-2 \{#copy-results-2\}
+
+
+クラス検査は `matchStatus`、`cssSyntaxStatus`、`cssValueStatus`、`browserSupport` を別々に報告し、各記録にバージョン、段階、スコープを示します。CSS 文法エラーと未知の将来機能は別で、`var()` は計算値の確定を意味せず、ブラウザー検査を実行しなければ `browserSupport` は `not-checked` です。既知の CSS 数学型を調べますが長さの計算や単位変換はせず、別々のトークン定義は同値でも曖昧なままです。
+
+## results-3 \{#copy-results-3\}
+
+
+Markdown と MDX の抽出は有効なマークアップ・コードと表示テキストを分け、元の UTF-16 範囲と包含・除外理由を返します。CLI、エディター、MCP は同じ Rust の抽出と一致処理を共有します。CLI レポートのバージョンはこのエンベロープと独立です。MCP の `root` は設定したワークスペースルート、CLI の `cwd` はコマンドのルートです。
+
+## results-4 \{#copy-results-4\}
+
+
+プロジェクト比較では編集前後に `includeSnapshot: true` で `mastercss_scan_project` を呼び、両 `result.data.snapshot` を `beforeSnapshot` と `afterSnapshot` として `mastercss_css_compare` に渡します。class、content、`filePath`、`context` 入力とは混在できません。結果は `{ version: 3, mode: 'project', comparison }` で、`comparison.version` は 1。変更定義、既知の参照元とファイル、前後の規則、ネイティブ参照、出力アセット、配信順、`coverage` を列挙します。ネイティブの参照元はスタイルシート単位で保守的に扱います。
+
+## results-5 \{#copy-results-5\}
+
+
+デザインシステム検査では `mastercss_scan_project.designSystem` に[デザインシステムのオプション](/reference/tools/cli#design-system-options)を渡し、`context: 'preset'` とは併用できません。`result.data.designSystem` のバージョン 1 レポートは、記述した `var()` 参照とソース範囲、セレクターと at-rule の祖先、インポート元、トークンファミリーの衝突、コンポーネント属性語彙（`components`）、方針診断を示します。JavaScript から読み込む CSS は `routeStylesheets` の glob に加え、`project.routeStylesheets`、`project.excluded`、`coverage` を読みます。未登録のカスタムプロパティもネイティブ CSS で解決可能で、自動的なエラーではありません。
+
+## body-1 \{#copy-body-1\}
+
+
+[MCP セットアップガイド](/guide/ai-coding#connect-the-mcp-server)でクライアントをプロジェクトに接続します。接続先で `tools/list` を要求し、現在の入出力スキーマを読んでください。この一覧はツール選択用で、全登録とスキーマは[サーバーソース](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)にあります。
+
+## body-2 \{#copy-body-2\}
+
+
+サーバーは `--root` で渡したワークスペースを使います。最初に `mastercss_workspace_info` でルートとエントリーを確認します。接続できただけでは意図した manifest の読み込みは確定しません。
+
+## body-3 \{#copy-body-3\}
+
+
+## ツールの選択 \{#choose-a-tool\}
+
+## body-4 \{#copy-body-4\}
+
+
+| 問い | ツール |
+
+## body-5 \{#copy-body-5\}
+
+
+| 意図したプロジェクトと設定か？ | [`workspace_info`](#mastercss_workspace_info), [`setup_audit`](#mastercss_setup_audit) |
+
+## body-6 \{#copy-body-6\}
+
+
+| どの定義を利用できるか？ | [`manifest_query`](#mastercss_manifest_query), [`inspect_directives`](#mastercss_inspect_directives) |
+
+## body-7 \{#copy-body-7\}
+
+
+| クラスの意味と検出状況は？ | [`inspect_class`](#mastercss_inspect_class), [`extract_classes`](#mastercss_extract_classes), [`trace_class`](#mastercss_trace_class), [`scan_project`](#mastercss_scan_project) |
+
+## body-8 \{#copy-body-8\}
+
+
+| どの CSS やクラス構文を使うか？ | [`render_css`](#mastercss_render_css), [`suggest_classes`](#mastercss_suggest_classes), [`suggest_syntax`](#mastercss_suggest_syntax) |
+
+## body-9 \{#copy-body-9\}
+
+
+| 何が変わり、修正が必要か？ | [`css_compare`](#mastercss_css_compare), [`lint_project`](#mastercss_lint_project), [`lint_content`](#mastercss_lint_content) |
+
+## body-10 \{#copy-body-10\}
+
+
+| 編集をどう確認して適用するか？ | [`preview_fixes`](#mastercss_preview_fixes), [`preview_directive_format`](#mastercss_preview_directive_format), [`apply_preview`](#mastercss_apply_preview) |
+
+## body-11 \{#copy-body-11\}
+
+
+表ではツール名を略記しています。以下のプロトコル名はすべて `mastercss_` で始まります。要求例は `tools/call` に渡す引数オブジェクトで、完全な JSON-RPC エンベロープではありません。
+
+## body-12 \{#copy-body-12\}
+
+
+## プレビューの寿命 \{#preview-lifetime\}
+
+## body-13 \{#copy-body-13\}
+
+
+プレビューは 1 サーバープロセスに元ファイルの同一性と提案内容を記録し、ファイルの予約や後の編集の追跡はしません。空でないファイルプレビューは `confirmToken` と `expiresAt` を返し、未変更結果やメモリー内整形は返しません。適用前に有効期限、ワークスペース内のパス、全元ファイルを検証します。成功するとトークンを消費します。書き込みは逐次で、トランザクション型ロールバックは保証しません。
+
+## body-14 \{#copy-body-14\}
+
+
+[AI コーディングの手順](/guide/ai-coding#safe-write-previews)で具体的な変更を確認し、描画結果を検証します。ここではツールが受け付けるものと書き込むものを定義します。
+
+## body-15 \{#copy-body-15\}
+
+
+## プロンプト \{#prompts\}
+
+## body-16 \{#copy-body-16\}
+
+
+接続したクライアントで `prompts/get` からプロンプトを取得します。
+
+## body-17 \{#copy-body-17\}
+
+
+| プロンプト | 用途 |
+
+## body-18 \{#copy-body-18\}
+
+
+## 結果 \{#results\}
+
+## body-19 \{#copy-body-19\}
+
+
+## 完全な契約を読む \{#read-the-full-contract\}
+
+## body-20 \{#copy-body-20\}
+
+
+同じ接続サーバーセッションの `tools/list` で受付引数を確認します。GitHub には[ツール登録](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)、[出力スキーマ](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts)、[結果エンベロープ](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts)があります。[ワークフローガイド](/guide/ai-coding#safe-write-previews)はプレビューから適用までを示します。ソースリンクは `rc` ブランチで、接続サーバーはインストール済み版を説明します。
+
+## title \{#copy-title\}
+
+
+MCP ツール
+
+## description \{#copy-description\}
+
+
+ツールを選び、ファイルへの作用を把握し、現在のプロトコル契約を調べます。

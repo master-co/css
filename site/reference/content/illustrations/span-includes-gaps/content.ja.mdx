@@ -1,0 +1,31 @@
+# Reference prose: illustrations/span-includes-gaps
+
+## title \{#copy-title\}
+
+
+複数トラックにまたがる項目は間隔も含む
+
+## alt \{#copy-alt\}
+
+
+96px の 3 列の間に 16px の間隔がある。最初の 2 列にまたがる項目の幅は 208px になる。
+
+## caption \{#copy-caption\}
+
+
+320px のグリッドは grid-cols(3)、gap(16)、grid-col-span(2) を使います。定規は任意の縮尺ではなく実際の CSS の寸法です。
+
+## description-0 \{#copy-description-0\}
+
+
+使用可能な幅は 320px です。16px の間隔 2 つを引いた 288px を、均等な 96px の 3 トラックに分けます。
+
+## description-1 \{#copy-description-1\}
+
+
+2 トラックにまたがる項目は 96px + 16px + 96px、つまり 208px を覆います。3 番目のトラックとの間には次の 16px の間隔が残ります。
+
+## description-2 \{#copy-description-2\}
+
+
+列数を変えるとトラック幅も変わるため、関連するスパンも同じブレークポイントで更新します。

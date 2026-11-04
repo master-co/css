@@ -1,0 +1,25 @@
+# Reference prose: illustrations/where-specificity
+
+## title \{#copy-title\}
+
+where() and is() can match the same states with different weight
+
+## alt \{#copy-alt\}
+
+Two aligned selector decompositions keep the owner’s 0-1-0 contribution. where adds zero; is adds the most specific argument, 1-0-0.
+
+## caption \{#copy-caption\}
+
+The figures compare specificity only. Origin, importance and layer precedence are considered earlier in the cascade.
+
+## description-0 \{#copy-description-0\}
+
+The escaped complete class owner contributes 0-1-0 in both generated selectors.
+
+## description-1 \{#copy-description-1\}
+
+For :where(:hover,#selected), the suffix contributes 0-0-0, so the total is 0-1-0.
+
+## description-2 \{#copy-description-2\}
+
+For :is(:hover,#selected), the ID argument supplies the maximum argument specificity of 1-0-0, giving a total of 1-1-0 even when the hover alternative is the one matching.

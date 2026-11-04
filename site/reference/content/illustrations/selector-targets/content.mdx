@@ -1,0 +1,29 @@
+# Reference prose: illustrations/selector-targets
+
+## title \{#copy-title\}
+
+The same hover, different targets
+
+## alt \{#copy-alt\}
+
+Two identical articles have their first link hovered. Testing hover on the article underlines both links; testing hover on each link underlines only the first.
+
+## caption \{#copy-caption\}
+
+The first link is hovered in both specimens. Dashed blue contours identify the element matching the suffix’s :hover test, not a generated border.
+
+## description-0 \{#copy-description-0\}
+
+Both articles carry the utility class and contain the same two direct child links. Their first link is hovered; both ancestor articles therefore also match :hover.
+
+## description-1 \{#copy-description-1\}
+
+underline:hover>a tests the article, then selects its direct child links. Both links receive text-decoration-line: underline.
+
+## description-2 \{#copy-description-2\}
+
+underline>a:hover selects direct child links, then tests each link. Only the hovered first link receives the declaration.
+
+## description-3 \{#copy-description-3\}
+
+The dashed blue contours identify the element matching the hover test. They do not represent a generated border or imply that the second article is not hovered.

@@ -1,0 +1,153 @@
+---
+{
+  "title": "Astro で Master CSS を設定する",
+  "description": "Astro インテグレーションと共通の CSS エントリーを接続し、本番のスタイルと、任意のランタイムまたはプログレッシブ配信を確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/astro/cover-light.webp'
+import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
+
+共通の CSS エントリーで Astro サイトに Master CSS を接続します。インテグレーションは静的、ランタイム、プログレッシブ配信に対応し、ページのレンダリングは引き続き Astro が担います。
+
+(i) **静的な本番出力の制限：**現在のインテグレーションは、走査したユーティリティルールを含めず、ベーススタイルだけを出力する場合があります。以下の手順で本番の結果を確認してください。このインテグレーション経路に依存しない静的スタイルシートには、[CLI ビルド](#cli-build)を使います。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      既存の [Astro プロジェクト](https://docs.astro.build/en/install-and-setup/)のルートでインストーラーを実行します。既定の静的モードは、完全なクラス文字列を走査して通常の CSS を出力します。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework astro --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### スタイルシートを接続する \{#connect-the-stylesheet\}
+    インストーラーは独立した CSS エントリーを作成します：
+
+    ```css name=src/styles/global.css
+    @import '@master/css';
+    ```
+
+    [ページまたはレイアウトの frontmatter からインポート](https://docs.astro.build/en/guides/imports/#import-statements)します。共通レイアウトは、それを使うすべてのページにスタイルを配信します。`astro.config.mjs` では、プロジェクトの既存のインテグレーションとともに Master CSS を登録したままにしてください。
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    開発サーバーを起動します。ページの frontmatter から `src/styles/global.css` をインポートし、段落を追加します。複数のページで必要なら、共通レイアウトに同じインポートを置いてください。
+  </Step>
+  <InstallationPreview>
+
+```astro name=src/pages/index.astro
+---
+import '../styles/global.css'
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Hello Master CSS</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 設定を確認する \{#check-the-setup\}
+`npm run dev` を実行し、`p-md` を `p-lg` に変えて、パディングが `1rem` から `1.5rem` に増えるか確認します。元に戻してから、本番のページをテストします：
+
+```bash
+npm run build
+npm run preview
+```
+
+JavaScript を無効にして再読み込みします。段落のパディング、角丸、浮き上がった面が保たれるはずです。スタイルがない場合は、ページまたはレイアウトが `global.css` をインポートし、Astro の設定に Master CSS インテグレーションが含まれるか確認します。独自の定義やスコープ付きスタイルは[グローバルスタイル](/guide/global-styles)を参照してください。
+
+本番ビルドがベーススタイルにリンクしていてもユーティリティルールがない場合は、出力 CSS の `.p-md` ルールと計算済みパディングを確認してください。以下の独立した CLI ビルドを使うか、ランタイムへの引き継ぎがアプリに適する場合はプログレッシブレンダリングを選びます。
+
+## CLI で静的 CSS をビルドする \{#cli-build\}
+
+Astro インテグレーションの代替として使います。ほかのインテグレーションは残して `astro.config.mjs` から Master CSS の登録を削除し、ページやレイアウトの `global.css` インポートも削除します。CLI をインストールします：
+
+```bash
+npm install -D @master/css-cli@rc
+```
+
+プロジェクトのルートにソースエントリーを作成します。プロジェクトの定義もここに置いてください：
+
+```css name=master.css
+@import '@master/css';
+```
+
+ページまたは共通レイアウトの `<head>` から、生成したスタイルシートにリンクします：
+
+```html
+<link rel="stylesheet" href="/master.css" />
+```
+
+Astro をビルドする前に CSS を生成します：
+
+```bash
+npx @master/css-cli generate "src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}" --output public/master.css
+npm run build
+npm run preview
+```
+
+開発中は生成コマンドに `--watch` を加え、別のターミナルで `npm run dev` を実行します。Astro は `public/` をビルド出力へコピーするため、生成したスタイルシートと付随するインポートを一緒にデプロイしてください。ベースパスが設定されたサイトでは、そのパスをスタイルシート URL の先頭に付けます。JavaScript を無効にして段落を確認してください。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定は静的モードです。ほかのモードではインテグレーションがページにランタイムスクリプトを挿入するため、別途ブラウザーの起動コードは不要です：
+
+| モード | インストーラーのオプション | 配信方法 |
+| --- | --- | --- |
+| 静的 | なし | ソースの走査で生成したスタイルシート |
+| ランタイム | `--mode runtime` | Astro ミドルウェアで事前レンダリングしないブラウザーランタイム |
+| プログレッシブ | `--mode progressive` | ミドルウェアでレンダリングした CSS をランタイムへ引き継ぐ |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+```bash
+npm create @master/css@rc -- --framework astro --mode runtime --yes
+```
+
+ビルドとプレビューのスクリプトを実行します。ランタイムの起動後に、段落にスタイルが付くはずです。ランタイムモードは JavaScript とコンパイル済みプログラムの読み込み成功に依存するため、スタイルが付かない場合はコンソールとネットワークリクエストを確認してください。ページ生成後に追加するクラスを試すには、次を実行します：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+再ビルドせずに段落に下線が付くはずです。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="サーバーでレンダリングしたスタイルを含める">
+
+```bash
+npm create @master/css@rc -- --framework astro --mode progressive --yes
+```
+
+Astro ミドルウェアが事前レンダリングするページとサーバーの HTML レスポンスへ CSS をレンダリングし、後からのクラス変更をランタイムが処理します。JavaScript を無効にして再読み込みしても、段落にスタイルが付くはずです。JavaScript を再び有効にして読み込み直し、上記のようにコンソールから `underline` を追加してください。
+
+</DocumentDisclosure>

@@ -1,0 +1,96 @@
+# Reference prose: tokens/motion
+
+## title \{#copy-title\}
+
+
+モーション
+
+## summary \{#copy-summary\}
+
+
+アニメーションのショートハンド、継続時間、イージング曲線。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+アニメーション
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+継続時間
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+イージング
+
+## note \{#copy-note\}
+
+
+`animation-` と `transition-` は、どちらも duration と easing の名前空間を参照します。独自のキーはこの 2 つの名前空間で重複させないでください。同じキーがあると曖昧になります。一方、`animate-` はアニメーションのショートハンド全体を参照します。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+10 個のアニメーショントークンはキーフレーム名を含み、無限に繰り返します。7 つの継続時間は時間の長さを、9 つのイージング曲線は時間の進行と値の進行の対応を指定します。比較用の表示は 1 回だけ再生し、初期状態では一時停止し、動きを抑える設定にも従います。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+アニメーションの一部分を上書きする
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`animate-pulse` は、1s の継続時間を含む `animation` ショートハンド全体を設定します。同じ条件では `animation-slow` がショートハンドより後になり、継続時間を 300ms に置き換えます。キーフレーム名と繰り返し回数は変わらず、class 属性を並べ替えても結果は変わりません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+継続時間やイージングのファミリーで一部分を調整するか、その変数を使って独自のアニメーショントークンを組み立てます。`(animation-duration:450ms)` のような明示的なネイティブ宣言でも、値を直接上書きできます。2 本のバーは同じ時間軸で 1 回の反復を示しており、レンダリング性能を比較するものではありません。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+アニメーショントークンは、その値が参照するキーフレームを保持します。継続時間やイージングのクラスだけでは、アニメーション名は指定しません。トランジションにはプロパティ値の変化も必要です。`transition-fast` が指定するのは継続時間であり、ホバー状態やプロパティのリストではありません。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+遅延が変えるのは効果の開始時刻であり、継続時間を延ばすわけではありません。イージングは継続時間内の進行を変えます。制御点が縦方向の 0–1 の範囲を超える曲線は、オーバーシュートや逆戻りを起こすことがあります。ただし、アニメーション対象のプロパティが描画値を制約する場合もあります。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+必須でない動きには `@motion-safe` を付けます。プリセットアニメーションを 1 回だけ再生するには、同じ条件で `(animation-iteration-count:1)` を追加します。コンポーネントの登場アニメーションを組み立てる方法はテーマガイドで、キャプチャーしたページ状態間の遷移はビューの遷移ガイドで説明しています。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+生成ルールの順序
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+ネイティブの animation ショートハンド
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+ビューの遷移
+
+## usage-lead \{#copy-usage-lead\}
+
+
+動きが許可されている場合に、ホバーによるリンクの背景色の変化をなめらかにします。リンク先は値の表です。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+継続時間とイージングのトークンからアニメーションを組み立て、キーフレームをネイティブ CSS に宣言します。`--animate-reveal` を定義すると `animate-reveal` が使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+テーマトークン

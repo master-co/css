@@ -1,0 +1,36 @@
+# Reference prose: illustrations/namespace-lookup
+
+## title \{#copy-title\}
+
+
+相同的键可以选择不同令牌
+
+## alt \{#copy-alt\}
+
+
+三行各自独立：p-md 对应 spacing-md 与 padding，max-w-md 对应 container-md 与 max-width，font-md 对应 font-size-md 与 font-size。每行都在不同令牌名称中使用相同的 md 键。
+
+## caption \{#copy-caption\}
+
+
+每行分别解析。重复出现的 md 是命名空间内的键，不是这些类共享的单一全局值。
+
+## description-0 \{#copy-description-0\}
+
+
+p-md 选择 --spacing-md，并设置 padding: var(--spacing-md)。
+
+## description-1 \{#copy-description-1\}
+
+
+max-w-md 选择 --container-md，并设置 max-width: var(--container-md)。
+
+## description-2 \{#copy-description-2\}
+
+
+font-md 选择 --font-size-md，并设置 font-size: var(--font-size-md)。在预设的 font- 族中，md 只会选出 font-size 命名空间。
+
+## description-3 \{#copy-description-3\}
+
+
+高亮的 md 片段是不同命名空间中的同一个键。箭头表示查找与属性映射，不是三行之间的依赖关系。图中省略主题值与层包裹，下方的生成示例会包含两者。

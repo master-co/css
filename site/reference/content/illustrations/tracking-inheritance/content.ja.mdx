@@ -1,0 +1,36 @@
+# Reference prose: illustrations/tracking-inheritance
+
+## title \{#copy-title\}
+
+
+em の文字間隔は再適用すると長さを計算し直す
+
+## alt \{#copy-alt\}
+
+
+16px の親要素が tracking-widest を使います。32px の子要素 2 つは同じ単語を表示し、一方は 1.92px の文字間隔を継承します。もう一方は tracking-widest を再適用して 3.84px を使い、テキストボックスが広くなります。
+
+## caption \{#copy-caption\}
+
+
+両方の子要素は同じフォントとサイズを使います。継承する letter-spacing の長さは 1.92px のままです。クラスを再適用すると、子要素の 32px のフォントサイズで .12em を評価します。
+
+## description-0 \{#copy-description-0\}
+
+
+親要素は font-md と tracking-widest を使います。ルートのフォントサイズが 16px なら、.12em の文字間隔は 1.92px と計算されます。
+
+## description-1 \{#copy-description-1\}
+
+
+両方の子の見本は font-3xl、つまり 32px を使い、単語とフォントも同じです。
+
+## description-2 \{#copy-description-2\}
+
+
+最初の子は、計算済みの 1.92px の文字間隔を継承します。2 番目の子は tracking-widest を再適用するため、.12em を 32px に対して計算し、3.84px になります。
+
+## description-3 \{#copy-description-3\}
+
+
+字形のサイズが同じでも、2 番目のテキストボックスは広くなります。色付きのガイドはレイアウト上の幅を示し、字形の描画範囲や tracking が出力するボーダーではありません。

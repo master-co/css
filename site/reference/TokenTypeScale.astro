@@ -1,4 +1,6 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel } from './ui'
 import '@master/internal-site/styles/system/stage.css'
 import '@master/internal-site/styles/system/tray.css'
 import '@master/internal-site/styles/system/tray-code.css'
@@ -17,8 +19,9 @@ function resolved(value: string) {
 
 /** Full-sized specimens use the exact lookup values, including text's companions. */
 const { group } = Astro.props
+const { locale } = siteOf(Astro)
 const shown = ['font-family', 'font-size', 'font-weight', 'text', 'leading', 'tracking'].includes(group.namespace)
-const title = `Compare all ${({ 'font-family': 'font families', 'font-size': 'font sizes', 'font-weight': 'font weights', text: 'text treatments', leading: 'line heights', tracking: 'tracking values' } as Record<string, string>)[group.namespace]}`
+const title = referenceLabel(locale, ({ 'font-family': 'familyScale', 'font-size': 'fontSizeScale', 'font-weight': 'fontWeightScale', text: 'textScale', leading: 'leadingScale', tracking: 'trackingScale' } as const)[group.namespace as 'font-family' | 'font-size' | 'font-weight' | 'text' | 'leading' | 'tracking'] ?? 'textScale')
 const compact = group.namespace === 'font-size' || group.namespace === 'text'
 const styleOf = (value: SheetGroup['values'][number]): Record<string, string> => group.namespace === 'text'
   ? { fontSize: resolved(value.cells![0]), lineHeight: value.cells![1], letterSpacing: value.cells![2] }

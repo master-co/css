@@ -1,0 +1,31 @@
+# Reference prose: illustrations/nested-conditions
+
+## title \{#copy-title\}
+
+
+두 쿼리가 같은 선언을 감쌉니다
+
+## alt \{#copy-alt\}
+
+
+미디어 쿼리가 supports 쿼리를 감싸고 supports 쿼리는 grid 규칙을 감쌉니다. 두 클래스 접미사는 이 중첩 CSS 경계에 대응합니다.
+
+## caption \{#copy-caption\}
+
+
+첫 쿼리가 가장 바깥에 있습니다. 두 조건이 모두 일치할 때만 display 선언이 캐스케이드에 참여하며, 중첩 구조는 실행 순서를 나타내는 시간축이 아닙니다.
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem)@supports(display:grid)는 @supports (display:grid) 안에 grid 규칙을 출력하고 이를 다시 @media (width>=40rem) 안에 둡니다.
+
+## description-1 \{#copy-description-1\}
+
+
+미디어 쿼리는 뷰포트 너비를, supports 쿼리는 브라우저의 display: grid 지원을 확인합니다. 두 쿼리가 모두 일치해야 이 선언이 캐스케이드에 참여합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+생성 선택자는 완전한 클래스를 가진 요소와 일치합니다. 그림에서는 바깥 utilities 레이어를 생략했지만 생성 CSS 예제에는 유지됩니다.

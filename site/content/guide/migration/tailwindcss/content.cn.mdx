@@ -1,0 +1,485 @@
+---
+title: "从 Tailwind CSS 迁移"
+description: "分批转换 Tailwind CSS v4 主题、工具类和变体，保留原有值、状态及构建边界。"
+figures: {"TailwindIllustration": {"title": "相同关键字，不同输入", "alt": "Tailwind 用 @apply px-4 py-2 应用工具类列表；Master CSS 用 @apply --control 应用具名 CSS 混入。高亮参数显示各编译器期待的输入。", "caption": "Tailwind 工具类列表不是 Master CSS 混入名称。修改应用语法前，先写原生声明或定义混入。", "description": [{"title": "Tailwind 输入", "text": "@apply px-4 py-2 在当前规则展开 Tailwind 工具类声明。"}, {"title": "Master CSS 输入", "text": "@apply --control 展开一个预先定义的 @mixin --control。"}, {"title": "保留值", "text": "文章先明确设置 padding-inline: 1rem 和 padding-block: .5rem，再应用混入。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import TailwindIllustration from './components/TailwindIllustration.astro'
+
+Tailwind CSS v4 与 Master CSS 都从类名和 CSS 指令生成 CSS，但不能直接互换。请将迁移视为样式实现的改变：在 Tailwind 旁安装 Master CSS，每次转换一个路由或一组组件，等转换区域构建成功、视觉符合预期设计后，再移除 Tailwind。
+
+本指南聚焦 Tailwind CSS v4 的 CSS 优先流程：`@import "tailwindcss"`、`@theme`、`@utility`、`@variant`、`@custom-variant`、`@source` 和 `@apply`。Tailwind 行为请参考官方[函数与指令](https://tailwindcss.com/docs/functions-and-directives)、[主题变量](https://tailwindcss.com/docs/theme)、[从源码检测类](https://tailwindcss.com/docs/detecting-classes-in-source-files)及[状态与变体](https://tailwindcss.com/docs/hover-focus-and-other-states)文档。
+
+---
+
+## 迁移策略 \{#migration-strategy\}
+借助代理时，将单个静态 HTML 或 JSX 组件、样式入口和原始 Tailwind 版本交给官方 `master-css` 技能。要求保留外观和交互，并报告保留的 CSS 与剩余 Tailwind 依赖。技能提供经过审查的工作流，不是全项目自动转换器。
+
+转换类名前，先用来源项目安装的 Tailwind 工具链构建。编译后的 CSS 才能提供真实值、变体和变量依赖。片段没有主题或插件配置时，应先确认上下文，再声称转换忠实于原始效果。`mastercss_suggest_classes` 仅用于独立声明块；复杂选择器和未解析的动态表达式继续用原生 CSS。向 `tailwind-merge` 或其他 Tailwind 专用类处理工具传入 Master 类之前，先检查它们的行为。
+
+用相同重置、字体、主题和浏览器状态比较两版。Tailwind v4 的 `hover:` 还要求 `(hover: hover)` 媒体条件，只复制伪类会改变行为。`mastercss_css_compare` 比较的是 Master 输出；原始组件与转换结果仍需在浏览器比较。
+
+按照[共用迁移流程](/guide/migration#migration-strategy)处理共存、基线截图和移除检查。第一批工作先盘点以下 Tailwind 专属契约：
+
+<DocumentComparison>
+
+| 契约 | 保留或替换的部分 |
+| --- | --- |
+| 编译器输入 | Tailwind 指令交给 Tailwind 编译器；将生成的普通 CSS 导入 Master 入口。 |
+| 主题和变体 | 选择 Master 类之前，先解析实际令牌值和条件。 |
+| Preflight、插件和全局 CSS | 保留未转换页面仍需的规则。 |
+| 类处理 | 将 Tailwind 专用合并和片段拼接替换为明确的类映射。 |
+| 组件内部 | 组件本身迁移前，保留第三方 CSS 和复杂选择器。 |
+
+</DocumentComparison>
+
+避免全局搜索替换。两个系统的重置、刻度、ring 模型和指令契约不同，相同关键字也可能代表不同操作。
+
+<TailwindIllustration />
+
+---
+
+## 在 Tailwind 旁安装 Master CSS \{#install-master-css-beside-tailwind\}
+Tailwind 入口继续由 Tailwind 编译器负责。先编译成普通 CSS，再与 Master CSS 入口一起加载。两个系统都使用 `@theme`、`@utility`、`@apply` 等名称，但契约不同；不要将未处理的 Tailwind 定义交给 Master CSS 编译器。
+
+```css name=app.css
+@import "./legacy-tailwind.generated.css";
+@import "@master/css";
+```
+
+在此入口编译前，确保原 Tailwind 构建先生成 `legacy-tailwind.generated.css`。两者可能定义同名类，共存时请比较层叠层、重置和重叠名称。
+
+多数集成此处不需要 Master CSS 源指令。集成或 CLI 扫描器会发现普通应用文件；仅对默认范围以外的已迁移标记添加 `@source`。
+
+接着按项目框架或构建工具完成[安装](/guide/installation)。React 使用打包工具指南；Laravel 和 Blazor 使用[服务端渲染应用](/guide/installation/server-rendered)中的宿主专属章节。
+
+此时不要删除 Tailwind。首个里程碑是项目外观不变，同时 Master CSS 能为新标记或转换后的标记生成规则。
+
+---
+
+## 选择渲染模式 \{#choose-a-rendering-mode\}
+从[静态渲染](/guide/rendering-modes)开始：多数 Tailwind 项目已经将完整类字符串保留在源码里。切换这些类、更新元素的 CSS 变量都无需浏览器运行时。
+
+只有应用确实在构建后创建新类名时，才使用运行时或渐进式渲染。选择前，用完整类映射代替片段拼接，并检查现有构建依赖的来源边界。
+
+---
+
+## 转换 CSS 优先的主题值 \{#translate-css-first-theme-values\}
+Tailwind v4 的 `@theme` 变量创建工具类和变体；Master CSS 的 `@theme` 为其命名空间定义设计令牌。形式相似，但生成类的语法不同。
+
+```css name=tailwind.css
+@import "tailwindcss";
+
+@theme {
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+  --breakpoint-dashboard: 72rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+}
+
+@custom-media --dashboard (width >= 72rem);
+```
+
+```html
+<article class="grid r-card grid-cols(3)@dashboard bg-brand p-card">
+  ...
+</article>
+```
+
+Master CSS 按命名空间解析令牌名。`--color-brand` 可供 `bg-brand`、`fg-brand` 和边框颜色工具类使用；`--spacing-card` 可供 `p-card`、`gap-card`、`m-card` 等间距工具类使用。
+
+| Tailwind v4 主题概念 | Master CSS 对应 | 说明 |
+| --- | --- | --- |
+| `--color-*` | `--color-*` | 颜色令牌用于 `bg-*`、`fg-*`、边框和轮廓颜色工具类。`text-*` 是排版配方，不是颜色别名。 |
+| `--spacing-*` 或基础间距 | `--spacing-*` | 产品间距使用具名令牌；直接值使用明确的原生单位。 |
+| `--radius-*` | `--radius-*` | 使用 `r-card` 等具名圆角工具类，或完整 `border-radius` 声明类。 |
+| `--shadow-*` | `--shadow-*` | 使用 `shadow-card` 等具名阴影工具类，或完整 `box-shadow` 声明类。 |
+| `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | 字体、文本、行高和字距命名空间 | 需要共享完整排版设置时，优先使用 `text-*`。 |
+| `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | 定义 `@md` 等视口后缀；自定义属性不注册条件。 |
+
+`@theme inline` 在生成声明中替换一次令牌值；`@theme static` 即使没有使用方也保留令牌和依赖。两种修饰符可以合用。主题块只允许自定义属性声明。关键帧放入原生 CSS；需要按使用情况输出时，在所属文件中添加 `@prune native;`。
+
+手动切换主题时，将显式 `.light`、`.dark` 选择器放在 `@theme` 外。标记使用 `@apply(--manual-light)` 或 `@apply(--manual-dark)` 后缀时，单独定义选择器混入。
+
+```css name=app.css
+@import "@master/css";
+
+@mixin --manual-light { &:where(.light, .light *) { @contents; } }
+@mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
+
+@theme {
+  --color-panel:#fff;
+  --color-text-body:#111827;
+}
+
+.light {
+  --color-panel: #fff;
+  --color-text-body: #111827;
+}
+
+.dark {
+  --color-panel: #111827;
+  --color-text-body: #f9fafb;
+}
+
+```
+
+```html
+<section class="fg-text-body bg-panel">
+  ...
+</section>
+```
+
+Tailwind 与 Master CSS 默认主题不同。先转换自定义产品令牌，再有计划地检查默认调色板和刻度的替换。
+
+---
+
+## 转换工具类 \{#translate-utilities\}
+先写明确的 Master CSS 声明，在局部词汇清楚的地方再缩短。
+
+| Tailwind v4 模式 | Master CSS 模式 | 说明 |
+| --- | --- | --- |
+| `p-6`, `px-4`, `mt-8` | `(padding:1.5rem)`, `(padding-inline:1rem)`, `(margin-top:2rem)` | 假设 Tailwind 默认 .25rem 刻度；请检查原项目配置。产品间距使用 `p-card` 等已定义令牌。 |
+| `-mt-4` | `(margin-top:-1rem)` | 使用负的原始值，或用 `-mt-card` 引用已定义的数值令牌。 |
+| `w-full`, `h-screen`, `min-w-0` | `w-full`, `(height:100vh)`, `min-w(0)` | 像素和零值用直接值函数，其他单位保留原生形式。 |
+| `rounded-lg` | `r-lg` | 两者默认都是 .5rem；复用名称前确认项目覆盖。 |
+| `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS 预设色阶与 Tailwind 默认调色板不同。 |
+| `bg-zinc-50`, `text-zinc-500` | `bg-zinc-5`, `fg-zinc-60` | 两者刻度不同。较深文本色阶让固定浅色表面保持可读；请比较真实值，不要将 Tailwind 色阶直接除以十。 |
+| `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `(line-height:1.75rem)` | 仅在需要完整排版设置时使用 `text-*`。 |
+| `flex`, `items-center`, `justify-between` | `flex`, `items-center`, `justify-between` | 这些固定工具类的名称与声明相同。退回 `(property:value)` 前检查[固定工具类目录](/reference/rules/declarations#fixed-utilities)。 |
+| `grid-cols-3`, `gap-4` | `grid-cols(3)`, `(gap:1rem)` | 使用明确的网格配方和原生 `gap` 属性。 |
+| 任意值，如 `w-[min(100%,72rem)]` | `(width:min(100%,72rem))` | 直接编写原生 CSS 函数值。 |
+| 任意属性，如 `[scroll-margin-top:4rem]` | `(scroll-margin-top:4rem)` | Master CSS 的每个原生声明都用圆括号包围。 |
+| important 修饰符，如 `mt-0!` | `mt(0)!` | 当前 Tailwind v4 与 Master CSS 都将 important 标记置于类名末尾。 |
+
+以下 Master CSS 布局使用预设值，并非将未指定的 Tailwind 布局转换为像素完全一致的结果：
+
+```html
+<section class="grid gap-lg w-full max-w-5xl mx-auto px-md py-2xl grid-cols(3)@md">
+  <article class="p-lg r-lg bg-surface-base shadow-sm">
+    <h2 class="m(0) font-2xl font-regular fg-text-neutral">Account</h2>
+    <p class="mt-xs fg-text-muted">Review profile settings.</p>
+  </article>
+</section>
+```
+
+Tailwind 类没有简短 Master CSS 别名时，直接使用 CSS 属性：
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) (text-wrap:balance)">
+  ...
+</div>
+```
+{ }
+
+---
+
+## 转换变体和状态 \{#translate-variants-and-states\}
+Tailwind 将变体放在工具类前，Master CSS 将选择器和条件放在声明后。
+
+| Tailwind v4 模式 | Master CSS 模式 | 说明 |
+| --- | --- | --- |
+| `hover:bg-blue-700` | `bg-blue-70:hover@media(hover:hover)` | 保留 Tailwind v4 的悬停能力条件。此颜色是新的预设选择；精确还原时复制原令牌。 |
+| `focus-visible:outline-2` | `outline(2):focus-visible` | 只映射宽度。仍需保留轮廓样式和颜色，仅宽度不能形成相同焦点效果。 |
+| `disabled:opacity-50` | `(opacity:.5):disabled` | 支持属性和伪类选择器。 |
+| `md:grid-cols-3` | `grid-cols(3)@tailwind-md` | 用明确条件保留原阈值，两套预设的 `md` 不同。 |
+| `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | 输出遵循显式 `--manual-dark` 选择器混入。 |
+| `motion-safe:animate-spin` | `animate-rotate@motion-safe` | 预设旋转为 1s、线性、无限重复；`@motion-safe` 尊重减少动态效果设置。 |
+| `supports-[display:grid]:grid` | `grid@supports(display:grid)` | 局部条件直接用 `@supports()`。 |
+| `data-[state=open]:...` | `bg-blue-5[data-state=open]` | 直接追加原生属性选择器。 |
+| `has-[:checked]:...` | `bg-blue-5:has(:checked)` | 支持原生 `:has()`。 |
+
+```html
+<button type="button" class="inline-flex items-center (min-height:2.5rem) px-md r-md bg-blue-60 fg-white bg-blue-70:hover@media(hover:hover) (opacity:.5):disabled">
+  Save
+</button>
+```
+
+Tailwind 默认 `md` 从 48rem 开始，Master CSS 预设 `md` 从 64rem 开始。上面的响应式示例通过具名条件保留 Tailwind 阈值：
+
+```css name=app.css
+@custom-media --tailwind-md (width >= 48rem);
+```
+
+使用 `@custom-media --max-tailwind-md not (--tailwind-md);` 与 `@max-tailwind-md` 后缀保留 Tailwind 的 `max-md:` 阈值。Master 预设 `@max-md` 是自身 64rem 阈值的补集。可复用媒体查询用 `@custom-media`，其他包装条件用包含 `@contents` 的混入；选择器状态保留为后缀或嵌套选择器。
+
+```css name=app.css
+@import "@master/css";
+
+@custom-media --compact (width < 48rem);
+
+```
+
+{ }
+```html
+<button type="button" class="bg-blue-70:hover@media(hover:hover) fg-white:hover@media(hover:hover) px-sm@compact">
+  Save
+</button>
+```
+{ }
+
+处理 Tailwind `group-*`、`peer-*` 模式时，尽可能优先使用原生选择器。Master CSS 支持后代、子元素、兄弟、属性和 `:has()`，但不实现 Tailwind group 与 peer 变体命名。
+
+```html
+<article class="bg-blue-5:hover_h2@media(hover:hover) fg-blue-60:hover_h2@media(hover:hover)">
+  <h2 class="fg-text-neutral">Project</h2>
+</article>
+```
+
+---
+
+## 用原生 CSS 替代工具类组合 \{#replace-utility-composition-with-native-css\}
+将 Tailwind 工具类组合改写为原生声明和选择器，保留令牌引用与状态。Master 工具类直接用于标记。Master CSS `@apply` 展开一个具名 `@mixin`，不接受工具类列表；不支持 `@compose`。
+
+```css name=tailwind.css
+.btn {
+  @apply inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+.btn {
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  box-shadow: var(--shadow-sm);
+  color: oklch(100% 0 none);
+  align-items: center;
+}
+```
+
+示例采用 Master 预设调色板和阴影，并非与 Tailwind 默认外观完全一致。需要忠实转换时，保留原先解析出的颜色和阴影值，直到项目明确改变设计。
+
+声明组需要在 CSS 内复用时，为其定义混入名称。这才是 Master CSS 中 `@apply` 的含义：
+
+```css name=app.css
+@mixin --control {
+  padding-inline: 1rem;
+  padding-block: .5rem;
+}
+
+.btn {
+  @apply --control;
+}
+```
+
+组件专用样式可以用原生声明表达整条规则：
+
+```css name=app.css
+.form-panel {
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background-color: oklch(100% 0 none);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+}
+```
+
+Vite、Next.js 和 Webpack 集成自动为 CSS Modules 与框架样式块提供项目令牌、混入和自定义媒体。仅额外定义文件或独立编译需要 `@reference`。
+
+```css name=Button.module.css
+.button {
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  align-items: center;
+  height: 2.5rem;
+}
+```
+
+引号字符串、复杂 content 值和特殊选择器，保留为普通 CSS 声明或嵌套 CSS。
+
+---
+
+## 迁移自定义工具类和组件 \{#migrate-custom-utilities-and-components\}
+Tailwind `@utility` 创建支持变体的自定义工具类。Master CSS 中，类配方用 `@utility`，CSS 声明复用用 `@mixin`，产品角色用 `@layer components`。
+
+```css name=tailwind.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">
+  ...
+</section>
+```
+
+名称描述产品 UI 角色而非底层基础功能时，使用 `@layer components`。
+
+```css name=app.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-blue-60);
+    color: oklch(100% 0 none);
+
+    &:disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    @media (--md) {
+      padding-inline: var(--spacing-lg);
+    }
+  }
+}
+```
+
+```html
+<button class="btn">
+  Submit
+</button>
+```
+
+工具类组合会让规则更难读时，复杂第三方覆盖继续使用原生 CSS。
+
+---
+
+## 处理动态类 \{#handle-dynamic-classes\}
+Tailwind 与 Master CSS 静态渲染都依赖页面运行前可找到的类名。完整字符串是最稳妥的迁移目标。
+
+(x) 避免片段拼接。
+
+```ts
+const className = '(background:' + tone + ')'
+```
+
+(o) 使用完整类映射。
+
+```ts
+const toneClasses = {
+  neutral: 'bg-surface-base fg-text-neutral',
+  success: 'bg-green-80 fg-white',
+  danger: 'bg-red-70 fg-white'
+}
+```
+
+仅值是动态时，保持类名固定，通过 CSS 变量传递运行时值。
+
+```tsx
+function Progress({ value }: { value: number }) {
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
+  return (
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow-hidden (height:1rem) pill bg-surface-inset">
+      <div
+        className="h-full (width:var(--progress)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        style={{ '--progress': `${percent}%` } as React.CSSProperties}
+      />
+    </div>
+  )
+}
+```
+
+切换到 Master CSS 后，多数 Tailwind `@source` 边界可以删除。仅对集成或 CLI 默认不扫描的来源，如共享 workspace 包或外部内容，保留或添加 Master CSS `@source`。
+
+```css name=app.css
+@import "@master/css";
+
+@source "../content/**/*.mdx";
+@source "../packages/ui/**/*.{ts,tsx}";
+@source not "../packages/ui/**/*.stories.tsx";
+```
+
+用 `@safelist` 指定有限且不存在于扫描来源的类，用 `@blocklist` 排除误判。
+
+```css name=app.css
+@import "@master/css";
+
+@safelist "bg-blue-60 bg-red-60@dark";
+@blocklist "debug-*";
+```
+
+Tailwind `@source inline()` 能从内联字符串和大括号展开生成类。Master CSS `@safelist` 需要明确列出项目所需类名。
+
+---
+
+## 验证迁移 \{#validate-the-migration\}
+每批工作都检查代码和 UI。
+
+- 运行项目格式化工具、lint、类型检查、测试和生产构建。
+- 使用[代码检查](/guide/code-linting)验证 Master CSS 类字符串并发现冲突。
+- 在明暗主题、响应式断点、悬停／焦点状态下比较原 Tailwind 版；相关时也检查打印。
+- 检查依赖 Tailwind Preflight、默认主题值、ring 工具类、`container`、官方插件或 group／peer 变体的路由。
+- 转换页面不再依赖 Tailwind 类或插件输出之前，继续加载 Tailwind。
+
+每批通过检查后，只移除不再使用的 Tailwind 工具类。渐进迁移允许两个系统按产品需要长期共存。
+
+---
+
+## 删除 Tailwind \{#remove-tailwind\}
+仅在转换后的路径构建成功、视觉符合预期设计后删除 Tailwind。
+
+1. 从应用入口移除生成的 Tailwind CSS 导入，再停用单独的 Tailwind 构建输入。
+2. 删除已替代的 Tailwind 专用 `@theme`、`@utility`、`@custom-variant`、`@variant`、`@apply`、`@source inline()`、`@plugin` 用法。
+3. 所有样式表都不再导入 Tailwind 时，移除 Tailwind 包及 PostCSS 或 Vite 集成代码。
+4. 运行项目完整验证。
+5. 在浏览器复查重要页面。
+
+第三方插件或样式表若仍提供有用 CSS，继续保留为普通 CSS，直到有产品专用替代方案。
+
+---
+
+## 相关参考 \{#useful-references\}
+- [安装](/guide/installation)：将 Master CSS 加入项目。
+- [渲染模式](/guide/rendering-modes)：选择静态、运行时或渐进式渲染。
+- [样式声明](/reference/rules/declarations)：类语法。
+- [主题令牌](/guide/theme)：`@theme` 令牌；[变量与模式](/reference/rules/modes)：模式；[条件](/reference/rules/conditions)：查询语法。
+- [CSS 指令](/reference#directives)：`@source`、`@safelist`、`@blocklist`、`@apply`。
+- [扫描类名](/guide/scanning-and-pruning)：静态源码扫描行为。
+- [全局样式](/guide/global-styles#shared-vocabulary)：选择标记工具类、主题令牌、自定义工具类和组件类。
+- [代码检查](/guide/code-linting)：迁移时验证 Master CSS 类。
+
+---
+
+## Master CSS 没有直接对应的 Tailwind CSS 功能 \{#tailwind-css-capabilities-without-a-direct-master-css-equivalent\}
+| Tailwind 能力 | Master CSS 状态 | 迁移路径 |
+| --- | --- | --- |
+| Tailwind 类语法与直接兼容 | 不读取 Tailwind 类语法。 | 改写为 Master CSS 语法，或保留 Tailwind 直到各区域完成迁移。 |
+| 通过 `@plugin` 加载 Tailwind CSS 插件 | 不执行 Tailwind 插件。 | 用原生 CSS、`@theme`、`@mixin` 或 `@layer components` 重建所需输出，必要时暂留插件 CSS。 |
+| Tailwind CSS 优先的主题解析 | 使用自身的令牌命名空间与工具类匹配。 | 将共享值移到 Master CSS `@theme`，并检查生成类名。 |
+| Tailwind `prefix(...)` | 没有类前缀模式。 | 直接使用 Master CSS 语法；使用原生选择器限定到应用根节点。 |
+| `@source inline()` 大括号展开 safelist | 没有对等的大括号展开指令。 | 使用明确的 `@safelist` 条目和完整类字符串。 |
+| 完全相同的 Tailwind Preflight | 基础样式不是 Tailwind Preflight。 | 比较 UI，针对依赖 Tailwind 重置细节的部分添加原生 CSS。 |
+| typography、forms 等官方插件输出 | 不自动重建 Tailwind 插件 CSS。 | 暂留插件 CSS，或编写产品专用组件和工具类。 |
+| Tailwind `container` 工具类语义 | 以原生 `container-type` 声明建立查询边界。 | 页面包装层使用 `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`，祖先查询容器使用 `container-inline`。 |
+| Tailwind ring 工具类模型 | 没有相同的 ring 工具类家族。 | 使用 `(outline:*)`、`(outline-offset:*)`、`(box-shadow:*)` 或自定义工具类。 |
+| Tailwind group 与 peer 变体语法 | 不实现 `group-*` 或 `peer-*` 变体。 | 使用原生选择器、`:has()` 和组合器。 |

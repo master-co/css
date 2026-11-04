@@ -4,12 +4,12 @@ import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import AIIllustration from './components/AIIllustration.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Give your coding agent the same styling context you use: the CSS entry, theme tokens, component classes and the project's checks. Connect the Master CSS MCP server, ask for a scoped UI change, and require evidence from the final source and the rendered result. This guide takes you from project setup through a first repair and a later change to a shared definition.
 
 ---
 
-## Set up the project first
+## Set up the project first \{#set-up-the-project-first\}
 The [installer](/guide/installation) prepares a project for agents by default. Alongside the framework integration, `npm create @master/css@rc` adds:
 
 - `@master/eslint-config-css` and an `eslint.config.js` that spreads it, so agent output is checked by [Code linting](/guide/code-linting).
@@ -71,7 +71,7 @@ The [MCP tool catalog](/reference/tools/mcp) lists every tool, the built-in prom
 
 ---
 
-## Use the Master CSS skill
+## Use the Master CSS skill \{#use-the-master-css-skill\}
 
 The official `master-css` skill reads the relevant guidance for your task. Use it
 for these workflows in a Master CSS project:
@@ -94,7 +94,7 @@ against the installed Master CSS version. The skill reads relevant references
 as needed; it does not install Master CSS or register an MCP server for you.
 The installer's `--ai` option prints this command without running it.
 
-## Ask for one observable change
+## Ask for one observable change \{#ask-for-one-observable-change\}
 
 Ask the agent to inspect the project before it edits, then make one focused change. For example, ask it to refine an existing card and describe the result you expect:
 
@@ -139,7 +139,7 @@ Different checks answer different questions:
 
 </DocumentComparison>
 
-### A generated rule can still lose
+### A generated rule can still lose \{#a-generated-rule-can-still-lose\}
 
 Both classes in this example reach valid CSS. The preset's `p-md` generates 1rem of padding, but `.notice` sets 8px in an **unlayered** native rule. For normal declarations, that rule wins over the layered utility:
 
@@ -151,7 +151,7 @@ Both classes in this example reach valid CSS. The preset's `p-md` generates 1rem
 
 Generating another `p-md` rule would not fix this result. If the notice should follow the shared spacing, remove the competing padding declaration, or intentionally place the component rule in `@layer components`. Check other notices before changing a shared rule. See [CSS layer ordering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description).
 
-### Read inspection coverage
+### Read inspection coverage \{#read-inspection-coverage\}
 
 Default lint permits unknown authored CSS names, so a clean lint result does not
 prove every class is a registered utility. CLI inspection can report a native
@@ -212,7 +212,7 @@ If a file changes after the preview, applying it fails instead of overwriting ne
 
 ---
 
-## Translate a declaration when the class is unclear
+## Translate a declaration when the class is unclear \{#translate-a-declaration-when-the-class-is-unclear\}
 
 When reading an MCP class inspection, check `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately: an unknown value is not a failed match, and `not-checked` browser support is not verified support.
 
@@ -271,7 +271,7 @@ master-css inspect --design-system --design-system-options design-system.options
 The report lists each `var()` token reference with its source range, selector and at-rule ancestry, importers and shared-prefix collisions. Its `components` list gives each component class's attribute vocabulary, read from selectors such as `.button[data-variant="primary"]`, so an agent can write variants the CSS actually styles. The optional [options file](/reference/tools/cli#design-system-options) adds token descriptions, deprecations with suggested replacements, and a raw-value policy for selected properties; the same object is accepted by `mastercss_scan_project.designSystem`, with route stylesheets in `routeStylesheets`, and the [Language Service](/guide/language-service) `designSystem` setting. These reports are authored-syntax evidence: check affected layouts and states in the browser.
 
 
-## Optimize delivery with an agent
+## Optimize delivery with an agent \{#optimize-delivery-with-an-agent\}
 
 For a loading refactor or performance assessment, give the agent [Optimizing CSS delivery](/guide/optimizing-css-delivery), the target routes, existing rendering mode and checks. Ask it to baseline production assets, move feature styles to their owners, then verify the output and interactions on both the feature page and an unrelated page. Preserve the mode unless the task requires changing it.
 

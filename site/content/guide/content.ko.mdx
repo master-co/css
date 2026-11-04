@@ -1,0 +1,8 @@
+---
+title: "Master CSS 시작하기"
+description: "클래스 구문, 디자인 토큰, CSS 전달 방식을 익히고 사용 중인 프레임워크에 적용하세요."
+---
+import GuideIndex from './components/GuideIndex.svelte'
+import { guideIndexCategories } from './components/guide-index'
+
+<GuideIndex client:idle={{ timeout: 500 }} pageCategories={guideIndexCategories(props.pageCategories)} />

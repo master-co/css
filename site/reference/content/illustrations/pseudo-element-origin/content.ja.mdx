@@ -1,0 +1,26 @@
+# Reference prose: illustrations/pseudo-element-origin
+
+## title \{#copy-title\}
+
+
+生成コンテンツは疑似要素に属する
+
+## alt \{#copy-alt\}
+
+
+1 つの span の描画行で、before に開き引用符、中央にテキスト、after に閉じ引用符がある。
+
+## caption \{#copy-caption\}
+
+
+引用符は実際の ::before と ::after の content 宣言が生成します。3 つの括弧は 1 つの描画要素の部分を示し、3 個の DOM の子ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+span は Keep the interface clear というテキストを含みます。(content:open-quote)::before と (content:close-quote)::after のクラスが可視の引用符を提供します。
+
+## description-1 \{#copy-description-1\}
+
+
+各宣言はそれぞれの疑似要素を対象にします。Master CSS は別の子要素を作らず、疑似要素の接尾辞があるだけで content 宣言を追加することもありません。

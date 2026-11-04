@@ -1,0 +1,25 @@
+# Reference prose: illustrations/token-dependency-chain
+
+## title \{#copy-title\}
+
+A used token brings its dependencies
+
+## alt \{#copy-alt\}
+
+fg-action reaches color-action and then color-brand. A separate color-unused token has no connection to that chain.
+
+## caption \{#copy-caption\}
+
+Arrows mean “references”, not execution or cascade priority. This example has no static tokens, safelists or other consumers.
+
+## description-0 \{#copy-description-0\}
+
+The theme defines --color-action: var(--color-brand), --color-brand: #175cff and an unrelated --color-unused.
+
+## description-1 \{#copy-description-1\}
+
+Using fg-action retains --color-action and its transitive dependency --color-brand in the theme layer.
+
+## description-2 \{#copy-description-2\}
+
+The unrelated token has no usage root in this example and is not emitted. The generated color declaration keeps var(--color-action); the browser resolves its value.

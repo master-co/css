@@ -1,0 +1,261 @@
+# Reference prose: tools/mcp
+
+## editorial-mastercss_suggest_classes-purpose \{#copy-editorial-mastercss_suggest_classes-purpose\}
+
+Suggest classes for an isolated CSS declaration block using the active manifest. Read `remainingCss` and `validation` separately; declaration correspondence does not prove surrounding cascade or browser behavior.
+
+## editorial-mastercss_suggest_classes-lifecycle \{#copy-editorial-mastercss_suggest_classes-lifecycle\}
+
+This operation does not write files. Uncertain blocks are preserved in full as native CSS.
+
+## editorial-mastercss_workspace_info-purpose \{#copy-editorial-mastercss_workspace_info-purpose\}
+
+Start here to confirm the server root, package resolution, and discovered CSS entries before interpreting project-dependent results.
+
+## editorial-mastercss_workspace_info-lifecycle \{#copy-editorial-mastercss_workspace_info-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_setup_audit-purpose \{#copy-editorial-mastercss_setup_audit-purpose\}
+
+Investigate missing packages, undiscovered CSS entries, and integration configuration after checking the workspace root.
+
+## editorial-mastercss_setup_audit-lifecycle \{#copy-editorial-mastercss_setup_audit-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_inspect_class-purpose \{#copy-editorial-mastercss_inspect_class-purpose\}
+
+Check how one class is interpreted by the active manifest. Use `mastercss_trace_class` when the question is whether project scanning actually finds it.
+
+## editorial-mastercss_inspect_class-lifecycle \{#copy-editorial-mastercss_inspect_class-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_trace_class-purpose \{#copy-editorial-mastercss_trace_class-purpose\}
+
+Trace a class through source discovery, scanner state, and generated CSS to explain why it is present or missing.
+
+## editorial-mastercss_trace_class-lifecycle \{#copy-editorial-mastercss_trace_class-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_extract_classes-purpose \{#copy-editorial-mastercss_extract_classes-purpose\}
+
+Find exact class tokens and source positions in a buffer, or inspect extraction across selected project files.
+
+## editorial-mastercss_extract_classes-lifecycle \{#copy-editorial-mastercss_extract_classes-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_inspect_directives-purpose \{#copy-editorial-mastercss_inspect_directives-purpose\}
+
+Inspect directive structure and compilation effects from an entry stylesheet or a CSS buffer. Provide `entryPath` or `content`; an empty arguments object cannot be compiled.
+
+## editorial-mastercss_inspect_directives-lifecycle \{#copy-editorial-mastercss_inspect_directives-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_render_css-purpose \{#copy-editorial-mastercss_render_css-purpose\}
+
+Generate CSS for a small literal class list or HTML fragment using the connected project context.
+
+## editorial-mastercss_render_css-lifecycle \{#copy-editorial-mastercss_render_css-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_scan_project-purpose \{#copy-editorial-mastercss_scan_project-purpose\}
+
+Inspect scanned files, stylesheet entries, generated CSS, and optional missing-class checks for a chosen source scope. Add design-system inspection to check token references and policies in managed project CSS.
+
+## editorial-mastercss_scan_project-lifecycle \{#copy-editorial-mastercss_scan_project-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_manifest_query-purpose \{#copy-editorial-mastercss_manifest_query-purpose\}
+
+Look up tokens, utilities, native mixins, custom media and canonical token families in the active manifest.
+
+## editorial-mastercss_manifest_query-lifecycle \{#copy-editorial-mastercss_manifest_query-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_css_compare-purpose \{#copy-editorial-mastercss_css_compare-purpose\}
+
+Supply both project snapshots to compare independent definitions and known consumers, including edits with unchanged markup. Otherwise, compare two class selections using the same active manifest. The result explains generated CSS differences; it does not establish visual equivalence.
+
+## editorial-mastercss_css_compare-lifecycle \{#copy-editorial-mastercss_css_compare-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_lint_project-purpose \{#copy-editorial-mastercss_lint_project-purpose\}
+
+Run native class diagnostics over selected files. In lint payload v5, `coverage.checkedFiles` lists checked inputs, `summary.checkedFiles` counts them, and `summary.filesWithDiagnostics` counts files with diagnostics. `files` contains diagnostic results only. `coverage.status` is `complete` or `no-inputs`; zero diagnostics with no inputs does not verify source. `coverage.description` explains these fields: manifest stylesheet entries are not linted source inputs. Manifest failures remain MCP error results. Use the project’s ESLint command separately for its parser, plugin settings, and team rules.
+
+## editorial-mastercss_lint_project-lifecycle \{#copy-editorial-mastercss_lint_project-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_lint_content-purpose \{#copy-editorial-mastercss_lint_content-purpose\}
+
+Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest. Lint payload v5 reports its virtual path in `coverage.checkedFiles` and `summary.checkedFiles: 1`, even when clean. `summary.filesWithDiagnostics` is zero for a clean buffer, and `files` is then empty. Coverage describes this buffer and the enabled lint rules, not browser behavior or the whole project.
+
+## editorial-mastercss_lint_content-lifecycle \{#copy-editorial-mastercss_lint_content-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_suggest_syntax-purpose \{#copy-editorial-mastercss_suggest_syntax-purpose\}
+
+Request language-service completion candidates and hover information at a position in an unsaved document.
+
+## editorial-mastercss_suggest_syntax-lifecycle \{#copy-editorial-mastercss_suggest_syntax-lifecycle\}
+
+This operation does not write workspace files.
+
+## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
+
+Prepare a reviewable diff for native lint fixes or generated CSS output. This request does not apply its changes.
+
+## editorial-mastercss_preview_fixes-lifecycle \{#copy-editorial-mastercss_preview_fixes-lifecycle\}
+
+Workspace files stay unchanged until `mastercss_apply_preview`. A nonempty preview stores a token in this server process; expiry, restart, or successful application requires a new preview. An unchanged result has no confirmation token.
+
+## editorial-mastercss_preview_directive_format-purpose \{#copy-editorial-mastercss_preview_directive_format-purpose\}
+
+Format directives in a source buffer or create a file-formatting preview. Content mode returns formatted text directly and does not create an apply token.
+
+## editorial-mastercss_preview_directive_format-lifecycle \{#copy-editorial-mastercss_preview_directive_format-lifecycle\}
+
+Content mode does not write files or store a token. In file mode, workspace files stay unchanged until `mastercss_apply_preview`. A nonempty preview stores a token in this server process; expiry, restart, or successful application requires a new preview. An unchanged result has no confirmation token.
+
+## editorial-mastercss_apply_preview-purpose \{#copy-editorial-mastercss_apply_preview-purpose\}
+
+Apply the exact changes from a reviewed preview in the same running server session. This tool writes workspace files.
+
+## editorial-mastercss_apply_preview-lifecycle \{#copy-editorial-mastercss_apply_preview-lifecycle\}
+
+The server validates all original file hashes and writable paths before writing the proposed contents. Successful application consumes the token. File writes are sequential; this is not a transactional multi-file rollback mechanism. Run project checks and inspect the changed UI afterward.
+
+## prompts-0-use \{#copy-prompts-0-use\}
+
+Inspect scanner coverage, manifest loading, syntax, native CSS pruning and stylesheet entry configuration when classes do not produce CSS.
+
+## prompts-1-use \{#copy-prompts-1-use\}
+
+Run class diagnostics and propose only safe, scoped write previews.
+
+## prompts-2-use \{#copy-prompts-2-use\}
+
+Audit an external styling system and plan incremental batches with a rendering mode, validation commands and visual risks; it does not edit files.
+
+## results-0 \{#copy-results-0\}
+
+Every tool returns a version 3 object with `metadata`, `diagnostics` and a required `result`. Success has `result: { status: 'success', data }`; failure has `result: { status: 'error', error: { code, message } }` and also sets MCP `isError`. JSON text and `structuredContent` contain the same object; validate both branches with the tool's `outputSchema`.
+
+## results-1 \{#copy-results-1\}
+
+`metadata` reports package, language and binding versions, the context actually used, the manifest fingerprint, entries and dependencies; unavailable values are null or empty arrays. Project context is the default: a missing entry or failed compilation is an error, never a silent switch to the preset. Pass `context: 'preset'` explicitly for preset-only queries.
+
+## results-2 \{#copy-results-2\}
+
+Class inspection reports `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately, and each check record names its version, phase and scope. A CSS grammar error differs from an unknown future capability, `var()` does not establish a computed value, and `browserSupport` stays `not-checked` unless a browser check ran. Known CSS math types are checked without computing lengths or converting units; distinct token definitions stay ambiguous even when their values are equal.
+
+## results-3 \{#copy-results-3\}
+
+Markdown and MDX extraction separates live markup and code from display text and returns original UTF-16 ranges with inclusion or exclusion reasons; the CLI, editor and MCP share the same Rust extraction and matching. CLI report versions are independent of this envelope. In MCP payloads `root` is the configured workspace root; in CLI reports `cwd` is the command root.
+
+## results-4 \{#copy-results-4\}
+
+Project comparison: call `mastercss_scan_project` with `includeSnapshot: true` before and after editing, then pass both `result.data.snapshot` objects to `mastercss_css_compare` as `beforeSnapshot` and `afterSnapshot`; they cannot be mixed with class, content, `filePath` or `context` inputs. The result is `{ version: 3, mode: 'project', comparison }`, where `comparison.version` is 1 and lists changed definitions, known consumers and files, before/after rules, native references, output assets, delivery order and `coverage`. Native consumers are conservative at stylesheet granularity.
+
+## results-5 \{#copy-results-5\}
+
+Design-system inspection: `mastercss_scan_project.designSystem` takes the [design-system options](/reference/tools/cli#design-system-options) object and cannot be combined with `context: 'preset'`. The version 1 report in `result.data.designSystem` lists authored `var()` references with source ranges, selector and at-rule ancestry, importers, token-family collisions, component attribute vocabulary (`components`) and policy diagnostics; add `routeStylesheets` globs for stylesheets imported from JavaScript; read `project.routeStylesheets`, `project.excluded` and `coverage`. An unregistered custom property can still resolve through native CSS and is not automatically an error.
+
+## body-1 \{#copy-body-1\}
+
+Use the [MCP setup guide](/guide/ai-coding#connect-the-mcp-server) to connect a client to your project. Ask the connected server for `tools/list` to read its current input and output schemas. This catalog helps you choose a tool; complete registrations and schemas live in the [server source](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts).
+
+## body-2 \{#copy-body-2\}
+
+The server uses the workspace passed to `--root`. Start with `mastercss_workspace_info` to verify the root and stylesheet entries. A connected server does not by itself establish that the intended project manifest is loaded.
+
+## body-3 \{#copy-body-3\}
+
+## Choose a tool \{#choose-a-tool\}
+
+## body-4 \{#copy-body-4\}
+
+| Question | Tools |
+
+## body-5 \{#copy-body-5\}
+
+| Is this the intended project and setup? | [`workspace_info`](#mastercss_workspace_info), [`setup_audit`](#mastercss_setup_audit) |
+
+## body-6 \{#copy-body-6\}
+
+| Which definitions are available? | [`manifest_query`](#mastercss_manifest_query), [`inspect_directives`](#mastercss_inspect_directives) |
+
+## body-7 \{#copy-body-7\}
+
+| What does a class mean, and was it found? | [`inspect_class`](#mastercss_inspect_class), [`extract_classes`](#mastercss_extract_classes), [`trace_class`](#mastercss_trace_class), [`scan_project`](#mastercss_scan_project) |
+
+## body-8 \{#copy-body-8\}
+
+| What CSS or class syntax should I use? | [`render_css`](#mastercss_render_css), [`suggest_classes`](#mastercss_suggest_classes), [`suggest_syntax`](#mastercss_suggest_syntax) |
+
+## body-9 \{#copy-body-9\}
+
+| What changed or needs repair? | [`css_compare`](#mastercss_css_compare), [`lint_project`](#mastercss_lint_project), [`lint_content`](#mastercss_lint_content) |
+
+## body-10 \{#copy-body-10\}
+
+| How do I review and apply edits? | [`preview_fixes`](#mastercss_preview_fixes), [`preview_directive_format`](#mastercss_preview_directive_format), [`apply_preview`](#mastercss_apply_preview) |
+
+## body-11 \{#copy-body-11\}
+
+The table abbreviates tool names; every protocol name below starts with `mastercss_`. Request examples show the arguments object passed to `tools/call`, not a complete JSON-RPC envelope.
+
+## body-12 \{#copy-body-12\}
+
+## Preview lifetime \{#preview-lifetime\}
+
+## body-13 \{#copy-body-13\}
+
+A preview records the original file identities and proposed contents in one server process. It does not reserve a file or follow subsequent edits. A nonempty file preview returns `confirmToken` and `expiresAt`; unchanged results and in-memory formatting do not. Apply validates token lifetime, workspace containment and every original file before writing. Successful application consumes the token. Writes are sequential, so this is not a transactional rollback guarantee.
+
+## body-14 \{#copy-body-14\}
+
+Use the [AI coding workflow](/guide/ai-coding#safe-write-previews) to review a concrete change and verify the rendered result. The contract here defines what the tool accepts and writes.
+
+## body-15 \{#copy-body-15\}
+
+## Prompts \{#prompts\}
+
+## body-16 \{#copy-body-16\}
+
+Request a prompt through `prompts/get` in a connected client.
+
+## body-17 \{#copy-body-17\}
+
+| Prompt | Use |
+
+## body-18 \{#copy-body-18\}
+
+## Results \{#results\}
+
+## body-19 \{#copy-body-19\}
+
+## Read the full contract \{#read-the-full-contract\}
+
+## body-20 \{#copy-body-20\}
+
+Use `tools/list` in the same connected server session for accepted arguments. On GitHub, read the [tool registrations](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts), [output schemas](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts), and [result envelope](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts). The [workflow guide](/guide/ai-coding#safe-write-previews) shows a complete preview and apply sequence. Source links follow the `rc` branch; the connected server describes your installed version.
+
+## title \{#copy-title\}
+
+MCP tools
+
+## description \{#copy-description\}
+
+Choose a tool, understand its file effects, and find the current protocol contract.

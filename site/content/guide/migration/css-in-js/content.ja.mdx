@@ -1,0 +1,219 @@
+---
+title: "CSS-in-JS からの移行"
+description: "styled-components と Emotion の静的スタイルを Master CSS に変換し、動的な値を保ち、再利用するコンポーネントの契約を明確にします。"
+figures: {"CSSInJSIllustration": {"title": "一つのクラスで値を変える", "alt": "二つのメーターが同じ width クラスでローカル変数を読みます。25% は四分の一、75% は四分の三を満たします。クラスは同じです。", "caption": "変わるデータをカスタムプロパティで渡します。完全なクラス文字列をスキャナーに見せ、状態の検証はコンポーネントに残します。", "description": [{"title": "安定したクラス", "text": "両方が (width:var(--value)) を要求し、クラス名に割合を補間しません。"}, {"title": "ローカルなデータ", "text": "各要素が自身の --value を設定するので、同じ宣言で幅が変わります。"}, {"title": "動作を維持する", "text": "コンポーネントは値の範囲を制限し、対応する aria-valuenow を供給します。"}]}}
+---
+import CSSInJSIllustration from './components/CSSInJSIllustration.astro'
+
+CSS-in-JS の移行では、静的な視覚スタイルを先に移し、実行時の動作を最後に扱うと進めやすくなります。Styled Components や Emotion は残し、Master CSS がコンポーネントの一群ずつ、クラスによるスタイル指定を引き継げます。
+
+このガイドは `styled-components`、`@emotion/react`、`@emotion/styled` を扱います。実行時に生成するセレクターや値が必要なコンポーネントから、CSS-in-JS を削除する必要はありません。
+
+---
+
+## 移行方針 \{#migration-strategy\}
+[共通の移行手順](/guide/migration#migration-strategy)で基準を用意し、各スタイルラッパーに混在する役割を分けます。
+
+| 入力 | 移行先 | コンポーネントに残すもの |
+| --- | --- | --- |
+| 静的な宣言 | 完全なマークアップクラスまたは `@layer components` | DOM 構造とイベントハンドラー |
+| 有限の視覚的な派生形 | 完全なクラス文字列のマップ | 公開する派生形の prop と既定値 |
+| 連続的に変わる値 | `style` で渡す CSS カスタムプロパティ | 測定、検証、状態 |
+| 生成するセレクターやキーフレーム | 明確な代替手段ができるまで既存の CSS-in-JS | それらを作る実行時ロジック |
+
+ラッパーを置き換える前に、`as`、ref、prop のフィルタリング、SSR 設定を調べます。スタイルが少ないコンポーネントでも、公開する契約は大きい場合があります。
+
+<CSSInJSIllustration />
+
+---
+
+## 静的なスタイルコンポーネントを変換する \{#convert-static-styled-components\}
+安定した視覚スタイルだけを適用するラッパーから始めます。
+
+```tsx name=Button.tsx
+import styled from 'styled-components'
+
+const Button = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: .5rem;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+`
+```
+
+再利用する値を `@theme` に移し、ボタンを描画する場所でクラス文字列を使います。
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+}
+
+```
+
+```tsx name=Button.tsx
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { className, type = 'button', ...buttonProps } = props
+  return (
+    <button
+      className={['inline-flex items-center gap-xs (min-height:2.5rem) py(0) px-md r-lg bg-primary fg-white', className].filter(Boolean).join(' ')}
+      type={type}
+      {...buttonProps}
+    />
+  )
+}
+```
+
+元の角丸 `.5rem` は、プリセットの `r-lg` に対応し、`r-md` ではありません。固定値を名前付きトークンに変えるときは計算値を比較します。このラッパーは `type="button"` が既定です。送信時は `type="submit"` を渡してください。type のないネイティブボタンは送信が既定なので、既存フォームの使用箇所を確認します。
+
+この例は視覚的なラッパーを置き換えます。より広い契約のコンポーネントを置き換える前に、ref 転送、多態的な `as` prop、イベントの動作を別途維持してください。
+
+名前付きコンポーネントクラスが必要なら、上の `@theme` を残し、その下にコンポーネントレイヤーを追加します。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    gap: var(--spacing-xs);
+    padding-block: 0;
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+}
+```
+
+```html
+<button type="button" class="btn">Save</button>
+```
+
+---
+
+## 派生形をクラスマップに変換する \{#convert-variants-to-class-maps\}
+文字列の断片から Master CSS のクラス名を組み立てないでください。静的レンダリングや lint には完全なクラス文字列が適しています。
+
+```tsx
+const toneClasses = {
+  neutral: 'bg-surface-base fg-text-body b-line-divider b-solid b(1)',
+  primary: 'bg-blue-60 fg-white bg-blue-70:hover',
+  danger: 'bg-red-70 fg-white bg-red-80:hover'
+}
+
+const sizeClasses = {
+  sm: '(min-height:2rem) px-sm font-sm',
+  md: '(min-height:2.5rem) px-md font-sm',
+  lg: '(min-height:3rem) px-lg font-md'
+}
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  tone?: keyof typeof toneClasses
+  size?: keyof typeof sizeClasses
+}
+
+export function Button({ tone = 'neutral', size = 'md', className, type = 'button', ...props }: ButtonProps) {
+  return (
+    <button
+      className={['inline-flex items-center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
+      type={type}
+      {...props}
+    />
+  )
+}
+```
+
+ラッパーは残りのネイティブ props を展開する前に `tone` と `size` を取り出します。styled-components の[一時的な props や `shouldForwardProp`](https://styled-components.com/docs/api) を置き換える際も、このフィルタリングを維持します。スタイル専用 props をネイティブ要素に渡さないでください。旧 API が `$tone` を使う場合は、呼び出し側を意図的に移行するまで綴りを維持します。
+
+派生形が視覚スタイル以外も制御する場合は、prop を残して視覚宣言だけを移します。最小高さなら、固定高の枠に押し込めずにラベルを折り返したり拡大したりできます。
+
+`className` の追加は呼び出し側のクラスを維持しますが、競合するユーティリティより優先する保証はありません。HTML のクラス順は[カスケード](/guide/cascade-layers)を決めません。派生形の props で一つの値を選ぶか、上書き可能な既定値を `@layer components` に置いて呼び出し側のユーティリティで上書きできるようにします。
+
+---
+
+## 動的な値に CSS 変数を使う \{#use-css-variables-for-dynamic-values\}
+実行時の値からクラス名を生成しないでください。クラスは固定し、変わる値を CSS 変数で渡します。[Emotion の動的スタイルの指針](https://emotion.sh/docs/best-practices#use-the-style-prop-for-dynamic-styles)と同じ分離です。変わる値は要素に持たせ、再利用する宣言は安定させます。
+
+```tsx
+export function Meter({ value }: { value: number }) {
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
+  return (
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow-hidden (height:0.5rem) pill bg-surface-inset">
+      <div
+        className="h-full (width:var(--value)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        style={{ '--value': `${percent}%` } as React.CSSProperties}
+      />
+    </div>
+  )
+}
+```
+
+25% でも 75% でも、内側の要素は `(width:var(--value))` を使い、変わるのは `--value` だけです。範囲内に制限した数値を `aria-valuenow` にも渡すため、見た目とアクセシビリティの値が一致します。
+
+CSS 変数では明確に表せない実行時データから、セレクター、キーフレーム、スタイルブロックを作る必要がある場合は CSS-in-JS を残します。
+
+---
+
+## グローバルスタイルを慎重に移す \{#move-global-styles-carefully\}
+グローバルスタイルにはアプリの基盤が含まれることが多いため、小さな単位で移します。
+
+```tsx name=GlobalStyles.tsx
+import { Global, css } from '@emotion/react'
+
+export function GlobalStyles() {
+  return <Global styles={css`
+    body {
+      margin: 0;
+      background: var(--color-surface-base);
+    }
+  `} />
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@layer base {
+  body {
+    margin: 0;
+  }
+}
+
+@layer defaults {
+  body { background: var(--color-surface-base); }
+}
+```
+
+以前そのスタイルを受け取っていたすべてのルート、シェル、サーバーレンダリング経路で代替 CSS エントリーが読み込まれるまで、CSS-in-JS のグローバルスタイルを残します。
+
+---
+
+## 移行を検証する \{#validate-the-migration\}
+- 各作業後にフォーマッター、lint、型チェック、テスト、本番ビルドを実行します。
+- CSS-in-JS に SSR 抽出やハイドレーションの処理がある場合は、サーバー描画出力を比較します。
+- ダークモード、レスポンシブ境界、ホバー、focus-visible、無効、選択、多態的な `as` の状態を確認します。
+- 残るコンポーネントのどれにも不要になってから、Babel プラグイン、Emotion キャッシュ設定、styled-components の SSR 設定、依存パッケージを削除します。
+
+---
+
+## 関連資料 \{#useful-references\}
+- [インストール](/guide/installation)：プロジェクトへの導入。
+- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、プログレッシブ。
+- [スタイル宣言](/reference/rules/declarations)：クラス構文。
+- [テーマトークン](/guide/theme)：デザイントークン、[変数とモード](/reference/rules/modes)：モード。
+- [クラス名のスキャン](/guide/scanning-and-pruning)：クラスマップと静的抽出。
+- [グローバルスタイル](/guide/global-styles#shared-vocabulary)：マークアップクラス、テーマトークン、独自ユーティリティ、コンポーネントの選択。

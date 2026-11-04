@@ -1,0 +1,29 @@
+# Reference prose: illustrations/theme-modifier-axes
+
+## title \{#copy-title\}
+
+Static controls retention; inline controls the generated value
+
+## alt \{#copy-alt\}
+
+A two-by-two matrix compares ordinary, inline, static and static inline theme blocks. Static retains both declared tokens; inline changes the generated background value from var(--color-brand) to the literal color.
+
+## caption \{#copy-caption\}
+
+Each case declares brand and spare; only bg-brand is used. With inline alone, neither token needs a declaration. Adding static retains both without changing the substituted class value.
+
+## description-0 \{#copy-description-0\}
+
+All four cases declare --color-brand: #4f46e5 and --color-spare: #0d9488. bg-brand is their only consumer; there are no native token references.
+
+## description-1 \{#copy-description-1\}
+
+Ordinary @theme emits the used brand token and background-color: var(--color-brand). The unused spare token is omitted.
+
+## description-2 \{#copy-description-2\}
+
+@theme inline substitutes #4f46e5 into the generated declaration. That utility no longer reads either token, so neither token declaration is emitted in this case.
+
+## description-3 \{#copy-description-3\}
+
+@theme static retains both tokens. @theme static inline also retains both, while the generated background-color remains #4f46e5. Retention and substitution are independent.

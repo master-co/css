@@ -1,0 +1,72 @@
+# Reference prose: rules/named-conditions
+
+
+## intro \{#copy-intro\}
+
+
+プリセットは、独立したメディア条件とコンテナー条件を定義します。短い名前を共有しますが、どちらの登録一覧もテーマトークンの集合ではありません。単独の `@md` はビューポートを、`@container(--md)` は条件を満たす祖先コンテナーをクエリーします。
+
+## media \{#copy-media\}
+
+
+メディア名は `media.css` に由来します。幅の条件は記述された rem 値を使い、向きや設定の条件はネイティブのメディア機能を使います。`@dark` と `@light` が調べるのはシステムの設定であり、手動で選んだサイトテーマではありません。
+
+## container \{#copy-container\}
+
+
+コンテナー名は `container.css` に由来します。定義が提供するのはクエリー条件だけです。`@container(--md)` は最も近い適格なコンテナーを使い、`@container(card|--md)` は名前が `card` の適格なコンテナーを選びます。どちらもコンテナーを作成しません。
+
+## scope \{#copy-scope\}
+
+
+同じキーでも、クエリーの領域ごとに異なるしきい値を表せます。`--container-md` のようなコンテナーサイズのトークンには、さらに独立した別の役割があります。サイズのユーティリティに長さを提供します。
+
+## complement \{#copy-complement\}
+
+
+プリセットの各 `max-` 条件は、対応する最小幅の条件の補集合です。下に展開したクエリーは境界で重複しません。元の定義は `not (--name)` で対応する名前を参照します。
+
+## customize \{#copy-customize\}
+
+
+ビューポートや設定のクエリーには独自のメディア名を、コンポーネントのクエリーには独自のコンテナー名を宣言します。ネイティブの単位は保持されます。コンパイル済みの manifest で条件を置き換える際、両方のしきい値を変えたい場合は、補集合の条件も再宣言してください。
+
+## viewport-widths-title \{#copy-viewport-widths-title\}
+
+
+ビューポートの最小幅
+
+## below-viewport-widths-title \{#copy-below-viewport-widths-title\}
+
+
+指定幅未満のビューポート
+
+## media-features-title \{#copy-media-features-title\}
+
+
+向きと設定
+
+## container-widths-title \{#copy-container-widths-title\}
+
+
+コンテナーの最小幅
+
+## below-container-widths-title \{#copy-below-container-widths-title\}
+
+
+指定幅未満のコンテナー
+
+## usage-lead \{#copy-usage-lead\}
+
+
+このレイアウトは、プリセットの md のビューポートしきい値未満では 1 列、しきい値以上では 3 列を使います。
+
+## title \{#copy-title\}
+
+
+名前付き条件
+
+## description \{#copy-description\}
+
+
+プリセットのすべてのメディア条件とコンテナー条件、その展開したクエリー、測定するスコープ。

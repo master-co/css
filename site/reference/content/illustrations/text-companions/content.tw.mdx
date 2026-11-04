@@ -1,0 +1,36 @@
+# Reference prose: illustrations/text-companions
+
+## title \{#copy-title\}
+
+
+文字樣式一律設定三個屬性
+
+## alt \{#copy-alt\}
+
+
+自訂的 text-card class 分成 font-size、line-height 與 letter-spacing 三個分支。大小讀取主要 token，另外兩個未提供的配套值各自使用 normal。
+
+## caption \{#copy-caption\}
+
+
+這裡只定義主要的 --text-card token。兩個配套宣告仍會存在並使用 normal，取代任何繼承的行高或字距。
+
+## description-0 \{#copy-description-0\}
+
+
+自訂主題將 --text-card 定義為 1.5rem，未定義任何配套 token。
+
+## description-1 \{#copy-description-1\}
+
+
+text-card 會輸出 font-size: var(--text-card)、line-height: var(--text-card--line-height, normal) 與 letter-spacing: var(--text-card--letter-spacing, normal)。
+
+## description-2 \{#copy-description-2\}
+
+
+三條實線分支都代表會輸出的宣告。缺少的配套值會使用 normal 備援值，而不是繼承其他行高或字距。
+
+## description-3 \{#copy-description-3\}
+
+
+單獨的配套 token 不會註冊 text-card。字型家族、字重與色彩都不屬於這個組合樣式。

@@ -1,0 +1,288 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+セレクターの接尾辞は、クラスの宣言を受け取る要素または疑似要素を決めます。完全なクラスを持つ要素が起点です。接尾辞はその要素を検査したり、関係する要素を選択したり、その両方を行ったりできます。
+
+このページではセレクターの付加、エンコード、グループ化、詳細度を定義します。コンポーネントにホバーとキーボードフォーカスのスタイルを付ける方法は[構文チュートリアル](/guide/syntax-tutorial#states)、ネイティブの一致動作は [CSS セレクター](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selectors_and_combinators)を参照してください。
+
+## セレクターの付加 \{#basic-selectors\}
+
+登録済みユーティリティ、またはネイティブ宣言の閉じ括弧の後ろにセレクターを付けます。[条件](/reference/rules/conditions)はセレクターの後、重要度は末尾に置きます。
+
+```txt
+utility<selector><conditions>!
+(property:value)<selector><conditions>!
+```
+
+上の山括弧の部分と `!` は省略可能な構文のプレースホルダーです。たとえば `underline:hover@sm` は、クラスを持つ要素がホバーされ、ビューポートが `@sm` に一致するときに下線を付けます。条件によってセレクターの対象要素は変わりません。
+
+<Class2CSS classes={['underline:hover@sm', '(text-decoration-thickness:2px):hover@sm']} />
+
+Master CSS は生成する CSS セレクター内で完全なクラス名をエスケープします。`.underline\:hover` のコロンはクラス名そのものの一部で、後ろに付く `:hover` が実際の疑似クラスです。HTML には例のようにエスケープしていないクラスを書きます。
+
+## クラスを持つ要素への一致 \{#matching-the-owner\}
+
+結合子がなければ、接尾辞はクラスを持つ要素に要件を追加します。`underline.active` はクラス一覧に `underline.active` と `active` の両方を持つ要素だけに一致します。
+
+```html
+<a class="underline.active active" href="/guide/installation">Installation</a>
+```
+
+<a id="class"></a>
+<a id="id"></a>
+<a id="attribute"></a>
+<a id="pseudo-class"></a>
+<a id="element"></a>
+<a id="--universal"></a>
+
+| クラス | クラスを持つ要素への要件 |
+| --- | --- |
+| `underline.active` | `active` クラスも持つ |
+| `underline#current` | ID が `current` |
+| `underline[data-current]` | `data-current` 属性を持つ |
+| `underline:hover` | ブラウザーのホバー状態に一致する |
+| `underline:is(a)` | `a` 要素である |
+
+<Class2CSS classes={['underline.active', 'underline#current', 'underline[data-current]', 'underline:hover', 'underline:is(a)']} />
+
+同じ要素の型を検査するには `:is(a)` または `:where(a)` を使います。子を選ぶには `>a` または `>*` を使います。ユーティリティ名の直後にタグ名だけを付けても、別のセレクター接尾辞にはなりません。
+
+### 要件の組み合わせ \{#combined-requirements\}
+
+隣接する単純セレクターは同じ要素を表します。`underline:hover:not([aria-disabled=true])` はホバーを要求し、`aria-disabled` 属性が `true` の要素を除外します。その属性を設定したり更新したりはしません。
+
+<Class2CSS classes={['underline:hover:not([aria-disabled=true])']} />
+
+セレクターは DOM とブラウザーの状態に反応するもので、操作の動作は作りません。ネイティブ属性と ARIA はそれぞれの意味を保ちます。特に `aria-disabled="true"` は無効状態を表すだけで、それ自体では実行を防ぎません。
+
+## 関係する要素 \{#combinators\}
+
+結合子はクラスを持つ要素から別の要素へ移動します。宣言はセレクターの終点の要素に適用され、クラスを持つ要素から継承されるわけではありません。
+
+<a id="_--descendant"></a>
+<a id="--child"></a>
+<a id="--adjacent-sibling"></a>
+<a id="--general-sibling"></a>
+
+| クラス | 対象 |
+| --- | --- |
+| `underline_a` | 深さを問わず子孫のリンク |
+| `underline>a` | 直下の子リンク |
+| `underline+a` | 次の兄弟要素がリンクならその要素 |
+| `underline~a` | 同じ親を持つ後続の兄弟リンクすべて |
+| `underline>*` | 直下の子要素すべて |
+
+`_` はセレクター間の子孫を表す空白をエンコードします。HTML に実際の空白を書くと別のクラスが始まります。`>`、`+`、`~` は CSS 本来の意味を保ちます。
+
+<Class2CSS classes={['underline_a', 'underline>a', 'underline+a', 'underline~a', 'underline>*']} />
+
+<ReferenceIllustration id="descendant-depth" />
+
+<ReferenceIllustration id="sibling-direction" />
+
+### 状態の位置 \{#state-position\}
+
+状態の位置によって、どの要素がその状態に一致する必要があるかが決まります。次の 2 つのクラスは同じ親子関係を持ちますが、ホバーを検査する位置が異なります。
+
+| article 上のクラス | ホバーの要件 | 下線を付けるリンク |
+| --- | --- | --- |
+| `underline:hover>a` | article がホバーされている | 直下の子リンクすべて |
+| `underline>a:hover` | 直下の子リンクがホバーされている | そのリンクのみ |
+
+<ReferenceIllustration id="selector-targets" />
+
+```html
+<article class="underline:hover>a">
+  <p>Documentation</p>
+  <a class="(text-decoration-line:none)" href="/guide/installation">Installation and setup</a>
+  <a class="(text-decoration-line:none)" href="/reference/packages">API reference</a>
+</article>
+
+<article class="underline>a:hover">
+  <p>Documentation</p>
+  <a class="(text-decoration-line:none)" href="/guide/installation">Installation and setup</a>
+  <a class="(text-decoration-line:none)" href="/reference/packages">API reference</a>
+</article>
+```
+
+<Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
+
+リンクをホバーすると祖先の article もホバーされます。そのため最初の例では両リンクが対象になり、2 番目の例ではもう一方のリンクは自身の `:hover` 検査に一致しません。各クラスは article が持ちますが、宣言の対象はそのリンクです。リンクのクラスが既定の下線を消し、より詳細度の高い親子セレクターがホバー条件の一致時に下線を戻します。
+
+## セレクターリスト \{#selector-groups\}
+
+最上位のカンマは、同じクラスを持つ要素から別の分岐を始めます。各分岐に結合子を繰り返してください。`block>div,>span` は直下の `div` と直下の `span` を選びます。2 番目の分岐は最初の分岐の対象から続くわけではありません。
+
+```html
+<section class="block>div,>span">
+  <div>First child</div>
+  <span>Second child</span>
+</section>
+```
+
+<Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+関数内や引用符付きの属性値内のカンマは、その構造の中に残ります。`underline:is(:hover,:focus-visible)` は選択肢を 2 つ持つ 1 個のセレクター接尾辞で、最上位の分岐が 2 つあるわけではありません。
+
+<Class2CSS classes={['underline:is(:hover,:focus-visible)', "underline[data-label='draft,review']"]} />
+
+<ReferenceIllustration id="selector-list-branches" />
+
+### セレクター関数 \{#selector-functions\}
+
+<a id="not"></a>
+<a id="has"></a>
+
+| 関数 | 一致の動作 |
+| --- | --- |
+| `:is(...)` | リストの少なくとも 1 つのセレクターに一致する |
+| `:where(...)` | `:is()` と同じく一致するが、関数と引数の詳細度はゼロ |
+| `:not(...)` | リストのどれかに一致する要素を除外する |
+| `:has(...)` | 選択する要素から相対的な一致を検査する |
+
+`:has()` は関係を検査しますが、一致した関連要素に宣言を移しません。`b-blue-60:has(>input:checked)` は、label の直下の input がチェックされているときに label の枠線の色を設定します。
+
+```html
+<label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
+  <input type="checkbox" /> Include archived items
+</label>
+```
+
+<Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+相対的な一致は兄弟要素でも可能です。`underline:has(+input:checked)` は、次の兄弟要素がチェック済みの input なら、クラスを持つ要素に下線を付けます。ネイティブの [`:has()` の制限](https://www.w3.org/TR/selectors-4/#relational)も適用され、`:has()` の中に自身を入れ子にするのは無効です。動くチェックボックスの例と代替手段は[互換性](/guide/compatibility#new-selectors)を参照してください。
+
+<ReferenceIllustration id="has-owner-target" />
+
+## ネイティブの状態 \{#pseudo-classes\}
+
+<a id="hover--active--focus"></a>
+<a id="first--last--odd--even"></a>
+<a id="valid--invalid--required"></a>
+<a id="disabled"></a>
+<a id="checked--indeterminate"></a>
+<a id="rtl--ltr"></a>
+
+Master CSS はネイティブの疑似クラス名を保持します。以下はよく使う接尾辞であり、状態の完全な登録一覧ではありません。
+
+| 接尾辞 | ネイティブの一致の文脈 |
+| --- | --- |
+| `:hover`, `:active` | ポインターのホバーまたはアクティブ状態 |
+| `:focus`, `:focus-visible`, `:focus-within` | 要素のフォーカス、可視のフォーカス表示、内部のフォーカス |
+| `:first-child`, `:last-child`, `:nth-child(even)` | 兄弟要素の中での位置 |
+| `:valid`, `:invalid`, `:required` | ネイティブフォームの制約 |
+| `:disabled` | 無効なフォームコントロール |
+| `:checked`, `:indeterminate` | ネイティブコントロールの状態 |
+| `:dir(rtl)`, `:dir(ltr)` | 解決されたテキストの方向 |
+
+`:first-child` や `:nth-child(odd)` などの完全な名前を使ってください。Master CSS が出力できる綴りでも、ブラウザーでは未対応または無効な場合があります。各状態の詳細な動作は[ネイティブの疑似クラスリファレンス](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes)を参照してください。
+
+```html
+<ul>
+  <li class="bg-surface-inset:nth-child(even)">Draft</li>
+  <li class="bg-surface-inset:nth-child(even)">In review</li>
+  <li class="bg-surface-inset:nth-child(even)">Published</li>
+</ul>
+```
+
+<Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+## 属性セレクター \{#attribute-selectors\}
+
+属性の接尾辞は DOM の値を検査します。真偽値形式の属性セレクターは存在を検査し、`[open]` は開いた `details` 要素に、`[data-active]` は属性が存在すれば一致します。特定の状態値を検査するには `[aria-pressed=true]` のように値を含めます。
+
+<a id="open"></a>
+<a id="aria-keyvalue"></a>
+<a id="data-keyvalue"></a>
+<a id="attrvalue"></a>
+<a id="attrvalue-1"></a>
+<a id="attrvalue-2"></a>
+<a id="attrvalue-3"></a>
+<a id="attrvalue-4"></a>
+<a id="attrvalue-5"></a>
+
+| 接尾辞 | 一致の条件 |
+| --- | --- |
+| `[data-active]` | 値が空でも属性が存在する |
+| `[aria-pressed=true]` | 値が正確に `true` |
+| `[href^=https]` | 値が `https` で始まる |
+| `[href$='.pdf']` | 値が `.pdf` で終わる |
+| `[title*=master]` | 値に `master` を含む |
+| `[lang\|=en]` | 値が `en` または `en-` で始まる |
+| `[title~=css]` | 空白区切りの値に単語 `css` を含む |
+
+<ReferenceIllustration id="attribute-word-match" />
+
+引用符付きの属性テキストは文字どおりです。`underline[data-state=':first']:first-child` は値 `:first` と、要素の位置を別々に検査します。`[data-id='a_b']` のアンダースコアは値の中に、`.is\_active` のエスケープされたアンダースコアはクラス識別子の中に残ります。
+
+```html
+<a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
+<a class="underline.is\_active is_active" href="/reference">Reference</a>
+```
+
+<Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+CSS の引用符でも、HTML の空白によるクラスの分割は防げません。属性値に実際の空白が必要なら `[data-label='New\000020collection']` のように CSS エスケープを使います。引用符付きの値の直後には、ASCII の大文字小文字を区別しない `[data-kind='draft'i]` のようにフラグを付けられます。演算子と大小文字の一致は[属性セレクター](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors)を参照してください。
+
+<Class2CSS classes={["underline[data-label='New\\000020collection']", "underline[data-kind='draft'i]"]} />
+
+## 疑似要素 \{#pseudo-elements\}
+
+<a id="pseudo-element"></a>
+<a id="before--after"></a>
+<a id="scrollbar"></a>
+
+疑似要素の接尾辞は、元の要素ではなくその疑似要素を対象にします。生成コンテンツには `content` 宣言を明示的に書きます。
+
+```html
+<span class="(content:open-quote)::before (content:close-quote)::after">
+  Keep the interface clear.
+</span>
+```
+
+<Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+<ReferenceIllustration id="pseudo-element-origin" />
+
+ベンダー固有のセレクターは明示的に書きます。Master CSS は綴りを保持し、疑似要素をベンダー別の形に展開したりブラウザーの対応を補ったりしません。括弧を含む引用符付きの値は[ネイティブ宣言の境界](/reference/rules/declarations#declaration-heads)を参照してください。
+
+## 詳細度 \{#specificity\}
+
+生成されるセレクターはブラウザーの[詳細度の規則](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity)に従います。エスケープされたクラス名は、名前内の記号に関係なくクラスセレクター 1 個分で、後ろに付けた接尾辞は別に寄与します。
+
+| クラス | ID – クラス・属性・状態 – 型・疑似要素 |
+| --- | --- |
+| `underline` | `0-1-0` |
+| `underline:hover` | `0-2-0` |
+| `underline>a` | `0-1-1` |
+| `underline:where(:hover,#selected)` | `0-1-0` |
+| `underline:is(:hover,#selected)` | `1-1-0` |
+
+`:is()`、`:not()`、`:has()` はセレクターリスト内で最も高い引数の詳細度を使います。`:where()` は引数を含めて詳細度を加えません。結合子と全称セレクターも加えません。この重みはカスケードが出所、重要度、レイヤーの優先順を解決した後に適用されるため、詳細度が高いだけで別レイヤーの規則に勝つわけではありません。
+
+<Class2CSS classes={['underline:where(:hover,#selected)', 'underline:is(:hover,#selected)']} />
+
+<ReferenceIllustration id="where-specificity" />
+
+規則の並び順は[カスケードレイヤー](/reference/rules/layers)、実際の選び方は [ガイドの上書き手順](/guide/cascade-layers#override-a-component-locally)を参照してください。HTML のクラスを並べ替えても詳細度は変わりません。
+
+## 外側の文脈 \{#external-context\}
+
+<a id="of"></a>
+
+接尾辞はクラスを持つ要素を起点とします。祖先や先行する兄弟に基づくスタイルが必要な場合は、ネイティブ CSS の規則で関係を直接書けます。
+
+```css
+@layer components {
+  .active .contextual { display: none; }
+  .active > .child-contextual { display: none; }
+  .active + .adjacent-contextual { display: none; }
+  .active ~ .sibling-contextual { display: none; }
+}
+```
+
+複数のユーティリティ宣言を同じ関係で包むには、ネイティブセレクターと `@contents` を持つ ミックスイン を使います。展開と転送は [ミックスイン の内容契約](/reference/directives/definitions#contents)、この形式の選び方は[スタイルの再利用](/guide/reusing-styles#share-a-wrapper-with-contents)を参照してください。
+
+生成 CSS は出力の証拠であり、ブラウザーがそのセレクターをサポートし、一致する証明ではありません。DOM の関係、実際の状態、ネイティブセレクターの有効性を確認してください。通常の CSS セレクターリストでは無効な分岐がリスト全体を無効にする場合がありますが、`:is()` と `:where()` は[寛容なリスト](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Selector_list)を使います。ブラウザーの確認と代替設計は[互換性](/guide/compatibility)を参照してください。

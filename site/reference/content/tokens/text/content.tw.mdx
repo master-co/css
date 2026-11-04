@@ -1,0 +1,81 @@
+# Reference prose: tokens/text
+
+## title \{#copy-title\}
+
+
+文字
+
+## summary \{#copy-summary\}
+
+
+同時設定字型大小、行高與字距的文字樣式。
+
+## note \{#copy-note\}
+
+
+主要的 `--text-<name>` token 會建立 class；其 `--line-height` 與 `--letter-spacing` 配套 token 為選用，未提供時使用 `normal`。字型家族、字重與色彩仍由獨立 class 設定。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+每列顯示一個 class 讀取的三個值。預設大小會參照對應的 font-size token，表格則解析參照以利閱讀。所有預設文字樣式都包含兩個配套 token。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+一個主要 token，三個宣告
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`--text-card` 註冊 `text-card`。這個 class 一律輸出字型大小、行高與字距。如果沒有 `--text-card--line-height` 或 `--text-card--letter-spacing`，對應宣告就會使用 `normal`，不會保留繼承的值。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+只有配套 token 不會註冊文字樣式。即使只想自訂行高或字距，也必須加入主要的大小 token。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+配套 token 是這個組合樣式使用的值，不是另一個 class 名稱。若要獨立調整，請使用 `font-<size>`、`leading-<name>` 或 `tracking-<name>`。條件相同時，這些單一屬性 utilities 會排在文字組合樣式之後，可覆寫對應的宣告；class 屬性中的順序不會決定結果。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+這個組合樣式不會載入字型、選擇字型家族或字重、加入外距，或決定段落寬度。如何選擇並組合文字樣式建立層級，請見文字排版指南。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+字型
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+行高
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+字距
+
+## explanation-links-3-label \{#copy-explanation-links-3-label\}
+
+
+生成規則的順序
+
+## usage-lead \{#copy-usage-lead\}
+
+
+為段落套用一組文字樣式，字型家族、字重與色彩仍可獨立設定。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+加入文字樣式及其配套 token：`--text-display` 會建立 `text-display`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

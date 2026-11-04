@@ -1,0 +1,81 @@
+# Reference prose: tokens/color
+
+## title \{#copy-title\}
+
+
+色盤
+
+## summary \{#copy-summary\}
+
+
+所有附編號的色階、固定色相別名，以及其他預設色彩 token。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+色盤
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+色相別名
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+其他色彩
+
+## note \{#copy-note\}
+
+
+色彩 class 只會設定指定的屬性。要顯示邊框，請同時設定寬度，例如 `b(1)`、樣式，例如 `b-solid`，以及色彩，例如 `b-blue-60`。色彩角色使用相同的家族，並有各自的值對照表。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+色盤編號是 token 的鍵，不是透明度或明度百分比。編號越大，OKLCH 明度越低。每個色票都可複製 CSS 值或變數參照；下方的色相別名會保留原始 token 參照。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+色相別名會選取固定色階
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`bg-blue` 讀取 `--color-blue`，其預設值為 `var(--color-blue-60)`。`bg-yellow` 則會取得 `--color-yellow-40`。使用別名不代表不同色相會對應到相同的色階編號。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+附編號的色階與色相別名不會隨配色方案切換。`fg-text-blue` 這類自適應文字別名屬於色彩角色。重新定義 token 可以改變其中任一種行為。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`bg-current` 讀取 `currentColor`，因此結果會跟隨元素的文字色彩。預設集沒有 `--color-transparent` token。需要透明色或其他字面色彩值時，請使用原生宣告，例如 `(background-color:transparent)` 或 `(background-color:#175fe9)`。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+色彩角色
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生值與透明度
+
+## usage-lead \{#copy-usage-lead\}
+
+
+這些狀態標籤明確指定了前景與背景色階。即使沒有色彩，文字仍能傳達狀態，而且所選色彩在兩種配色方案中都維持不變。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+在 `@theme` 中註冊色彩後，色彩家族就能使用它的鍵。這裡的 `brand` 可用於 `bg-brand`、`fg-brand`、`b-brand` 等 class。
+
+## guide-label \{#copy-guide-label\}
+
+
+色彩

@@ -1,0 +1,194 @@
+---
+{
+  "title": "在 Webpack、Rspack 和 Rsbuild 中配置 Master CSS",
+  "description": "在 Webpack、Rspack 或 Rsbuild 中连接 CSS 入口和 HTML 插件，并验证生产样式表。",
+  "category": "集成"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/webpack/cover-light.webp'
+import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × webpack" />
+
+将 Master CSS 构建到 Webpack、Rspack 或 Rsbuild 应用中。三者都使用 `@master/css-webpack`：CSS 入口提供定义，插件生成工具类规则，HTML 插件则将输出链接到页面。请从已有入口、HTML 模板且正常工作的应用开始。
+
+## 安装 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 添加 Master CSS \{#add-master-css\}
+      在现有的 [Webpack](https://webpack.js.org/guides/getting-started/)、[Rspack](https://rspack.dev/guide/start/quick-start) 或 [Rsbuild](https://rsbuild.rs/guide/start/quick-start) 项目中，从项目根目录运行安装程序，并指定 `--framework webpack`、`rspack` 或 `rsbuild`。默认使用静态模式：注册插件并创建 `src/index.css`。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework webpack --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 导入 CSS 入口 \{#import-the-css-entry\}
+      安装程序会创建包含 `@import '@master/css';` 的 `src/index.css`。从应用的 JavaScript 或 TypeScript 入口导入它，并保留现有挂载代码。请使用全局入口，让每个需要这些工具类的页面都能加载。
+    </StepL>
+    <StepR>
+      ```js name=src/index.js
+      import './index.css'
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 开始使用 Master CSS \{#start-using-master-css\}
+    启动开发服务器，将段落放入 HTML 插件处理的 HTML 模板或框架组件中。
+  </Step>
+  <InstallationPreview>
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Master CSS with Webpack</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 打包工具配置 \{#configuration\}
+安装程序会写入配置中属于 Master CSS 的部分。请将其合并到现有配置，保留框架插件、入口和 HTML 生成配置，并且只注册一次插件。
+
+### Webpack \{#webpack\}
+插件需要原生 CSS 处理和 `HtmlWebpackPlugin`，才能交付生成的样式表：
+
+```js name=webpack.config.mjs
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  experiments: { css: true },
+  module: {
+    rules: [{ test: /\.css$/i, type: 'css/auto' }]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rspack \{#rspack\}
+Rspack 使用相同的 Webpack 兼容插件，搭配内置 CSS 支持和 `HtmlRspackPlugin`：
+
+```js name=rspack.config.mjs
+import { HtmlRspackPlugin } from '@rspack/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        type: 'css/auto'
+      }
+    ]
+  },
+  plugins: [
+    new HtmlRspackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rsbuild \{#rsbuild\}
+Rsbuild 通过 `tools.rspack` 钩子注册插件。保留框架插件和挂载应用的入口；此钩子只添加 Master CSS 处理。
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default defineConfig({
+  tools: {
+    rspack(config) {
+      config.plugins ||= []
+      config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+      return config
+    }
+  }
+})
+```
+
+在 React 初始项目中，请将段落放在 `src/App.tsx`：
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 检查配置 \{#check-the-setup\}
+先在开发服务器运行时，将源代码中的 `p-md` 改为 `p-lg`。段落内边距应从 `1rem` 增加到 `1.5rem`；确认后恢复原值。
+
+使用对应打包工具的命令构建：
+
+<DocumentComparison>
+
+| 打包工具 | 生产构建 |
+| --- | --- |
+| Webpack | `npx webpack --mode production` |
+| Rspack | `npx rspack build --mode production` |
+| Rsbuild | `npx rsbuild build` |
+
+</DocumentComparison>
+
+使用 HTTP 服务器提供输出目录。段落应具有 `1rem` 内边距、凸起表面和圆角。静态模式的工具类来自链接的 CSS，不使用 Master CSS 运行时。禁用 JavaScript 时，HTML 模板内容仍应具有样式；客户端渲染框架仍需要 JavaScript 创建内容。
+
+HTML 插件会输出样式表链接和所需的运行时脚本。直接从开发服务器静态目录提供的文件不会获取这些内容。如果缺少 CSS 请求，请先检查 HTML 生成流程；如果文件已加载却没有工具类，请检查 CSS 入口、原生 CSS 处理和插件注册。
+
+---
+
+## 选择其他渲染模式 \{#rendering-modes\}
+默认使用静态模式。插件的 `mode` 选项可选择其他交付方式，HTML 插件会加入其运行时脚本：
+
+| 模式 | 插件选项 | 安装程序选项 |
+| --- | --- | --- |
+| 静态 | `mode: 'static'` | 无 |
+| 运行时 | `mode: 'runtime'` | `--mode runtime` |
+
+<DocumentDisclosure title="在浏览器中生成新类名">
+
+运行安装程序时，指定 `--mode runtime` 和你的 `--framework` 值。它会将插件选项设为 `mode: 'runtime'`：
+
+```bash
+npm create @master/css@rc -- --framework webpack --mode runtime --yes
+```
+
+构建并提供生产输出。输出 HTML 应加载 Master CSS 运行时脚本。启动后，在浏览器控制台运行以下代码；无需重新构建，段落就应出现下划线：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

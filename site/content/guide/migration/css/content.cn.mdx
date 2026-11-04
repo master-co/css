@@ -1,0 +1,188 @@
+---
+title: "从 CSS 和 CSS Modules 迁移"
+description: "在类字符串、令牌或组合方式有助于维护时，将全局 CSS 和 CSS Modules 逐步移向 Master CSS。"
+figures: {"CSSMigrationIllustration": {"title": "改变编写方式，保留结果", "alt": "CSS 规则定义 gap 1rem、padding 1.5rem 和圆角 0.5rem；gap-md、p-lg、r-lg 从预设提供同样的值。两条路径生成相同的中性色 Account 卡片。", "caption": "比较声明与计算结果。令牌名称相似还不够，值、配色和交互状态都必须匹配。", "description": [{"title": "从值开始", "text": "CSS 规则提供 1rem 间距、1.5rem 内边距和 0.5rem 圆角。"}, {"title": "匹配预设", "text": "gap-md、p-lg、r-lg 提供相同值，两个版本使用相同表面和文本角色。"}, {"title": "保留结果", "text": "卡片布局、内容和颜色保持不变，只改变样式决策的编写位置。"}]}}
+---
+import CSSMigrationIllustration from './components/CSSMigrationIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+普通 CSS 和 CSS Modules 可以按项目需要长期与 Master CSS 共存。将迁移视为一次整理，不必把每条声明都改成类。
+
+将重复的、用于视觉呈现且适合由标记管理的样式移到 Master CSS 类中。全局重置、第三方样式、复杂选择器、生成的 CSS 和难读的一次性规则继续放在普通 CSS 中。
+
+---
+
+## 迁移策略 \{#migration-strategy\}
+选择一个能检查原始 CSS 和渲染状态的小组件。按照[共用迁移流程](/guide/migration#migration-strategy)建立基线并检查每批工作；本指南重点判断哪些声明适合放在标记里，哪些局部 CSS 契约应该保留。
+
+合适的首批工作具有稳定的视觉声明，不涉及第三方选择器。如果局部类名是 API、需要选中内部结构，或者替换会使复杂选择器散落到各调用处，就保留模块。
+
+<CSSMigrationIllustration />
+
+---
+
+## 在现有 CSS 旁加入 Master CSS \{#add-master-css-beside-existing-css\}
+Master CSS 为新增或已转换标记生成规则时，继续加载现有 CSS 文件。删除局部规则前先检查层叠：未分层的旧声明优先于普通分层工具类，即使 Master CSS 后导入也一样。因此，同一元素同时保留两种选择器，可能掩盖转换是否有效。
+
+```css name=app.css
+@import "@master/css";
+```
+
+默认源文件发现足以满足多数项目。只有迁移需要明确扫描范围，或类名未以完整字符串出现在源码中时，才添加 `@source`、`@source not`、`@safelist` 或 `@blocklist`。
+
+大量转换文件前，先根据[渲染模式](/guide/rendering-modes)决定使用静态、运行时还是渐进式渲染。
+
+---
+
+## 将局部 CSS 转为标记中的类 \{#convert-local-css-to-markup-classes\}
+当类名列表比独立选择器更容易审查时，将局部视觉声明移到标记。此例已使用安装预设中的共享表面和文本角色，转换时保持不变。
+
+```css name=Card.module.css
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .5rem;
+  background: var(--color-surface-raised);
+  color: var(--color-text-body);
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+      {children}
+    </section>
+  )
+}
+```
+
+<DemoConfiguredExample
+  name="migration-card-equivalence"
+  title="用两种样式方式创建相同卡片"
+  source={`@layer components {
+  .legacy-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: .5rem;
+    background: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+}`}
+  html={`<div class="container-inline">
+  <div class="grid gap-md grid-cols(2)@container(--md)">
+    <div class="grid gap-xs">
+      <p class="m(0) font-sm">CSS rule</p>
+      <section class="legacy-card">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
+      </section>
+    </div>
+    <div class="grid gap-xs">
+      <p class="m(0) font-sm">Markup classes</p>
+      <section class="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
+      </section>
+    </div>
+  </div>
+</div>`}
+  caption="两张卡片的间距、内边距、圆角和背景相同。固定的 .5rem 圆角对应预设的 r-lg 令牌。两个版本使用相同的自适应表面和文本角色。"
+  code={false}
+/>
+
+值代表产品决策时，优先使用 `bg-surface-card`、`p-card` 或 `r-card` 这类具名主题令牌。如果 CSS 属性本身比新的抽象更清楚，则使用 `(scroll-margin-top:4rem)` 这类直接的原生声明类。
+
+---
+
+## 当 CSS Modules 是组件 API 时保留 \{#keep-css-modules-when-they-are-the-component-api\}
+组件公开稳定的局部类名、需要选中内部结构，或在局部变体中使用项目令牌时，CSS Modules 依然有用。
+
+Vite、Next.js 和 Webpack 会自动为局部样式表提供项目主题定义。原生声明会输出所需变量，不必再次导入应用的 CSS 输出。
+
+```css name=Button.module.css
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  min-height: 2.5rem;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+```
+
+```tsx name=Button.tsx
+import styles from './Button.module.css'
+
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { className, type = 'button', ...buttonProps } = props
+  return <button className={[styles.button, className].filter(Boolean).join(' ')} type={type} {...buttonProps} />
+}
+```
+
+如果移除模块会迫使太多调用处同时修改，就使用此模式。以后局部类不再有价值时，再移除模块。
+
+上方模块未分层，因此普通声明优先于通过 `className` 传入的分层工具类。若调用方需要使用工具类覆盖组件默认值，请将默认值放进 `@layer components`，并验证[层叠结果](/guide/cascade-layers)。
+
+该包装组件默认使用 `type="button"`；提交表单时传入 `type="submit"`。采用时保留既有组件的 ref 转发和事件契约。
+
+---
+
+## 将共享值移入 `@theme` \{#move-shared-values-into--theme\}
+大规模转换类名之前，通常先把项目拥有的自定义属性放入 `@theme`，让标记使用令牌名称而非硬编码值。
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-surface-card: var(--color-surface-raised);
+  --color-body: var(--color-text-body);
+  --spacing-card: 1.5rem;
+  --radius-card: .5rem;
+}
+
+```
+
+```html
+<article class="grid r-card fg-body grid-cols(3)@md bg-surface-card p-card">
+  ...
+</article>
+```
+
+由运行时管理、组件私有或刻意放在设计系统之外的值，继续使用普通 CSS 自定义属性。
+
+```tsx
+<div className="(width:var(--progress)) bg-blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
+```
+
+---
+
+## 验证迁移 \{#validate-the-migration\}
+每批工作都要同时检查代码和 UI。
+
+- 运行项目的格式化工具、lint、类型检查、测试和生产构建。
+- 使用[代码检查](/guide/code-linting)验证 Master CSS 类字符串。
+- 比较迁移后页面在明暗主题、响应式断点、悬停和焦点状态下的表现。
+- 如果选择器、动画和第三方输出改成类字符串后更难理解，则保留 CSS。
+- 确认没有组件或页面依赖旧 CSS 后，才将其删除。
+
+---
+
+## 相关参考 \{#useful-references\}
+- [安装](/guide/installation)：将 Master CSS 加入项目。
+- [渲染模式](/guide/rendering-modes)：选择静态、运行时或渐进式渲染。
+- [样式声明](/reference/rules/declarations)：类语法。
+- [主题令牌](/guide/theme)：`@theme` 令牌；[变量与模式](/reference/rules/modes)：模式；[条件](/reference/rules/conditions)：查询语法。
+- [CSS 指令](/reference#directives)：`@reference`、`@source`、`@safelist` 和 `@blocklist`。
+- [路由级样式](/guide/route-level-styles)：组合项目定义的局部 CSS Modules 和路由样式。
+- [全局样式](/guide/global-styles#shared-vocabulary)：选择标记工具类、主题令牌、自定义工具类和组件类。

@@ -1,0 +1,267 @@
+---
+{
+  "title": "スタイルの再利用",
+  "description": "まとめて変える対象に応じてトークン、コンポーネントクラス、ユーティリティ、ミックスインを選び、ローカルな違いも表しやすく保ちます。",
+  "category": "記述",
+  "figures": {
+    "ReuseIllustration": {
+      "title": "一つの定義、二つの利用箇所",
+      "alt": "一つの action 定義から二つの Save changes ボタンを作る。二つ目は px-lg も使うため横のパディングが広く、青い計測ガイドで示す。",
+      "caption": "両方のボタンは .action を共有します。ガイドは横方向のパディングを示し、コンポーネントでは片側 1rem、px-lg では 1.5rem です。青いガイドは注釈で、ボタンのスタイルではありません。",
+      "description": [
+        {
+          "title": "共通の定義",
+          "text": "components レイヤーのネイティブな .action ルールが、両方のボタンに外観、操作状態、既定のパディングを供給します。"
+        },
+        {
+          "title": "一つ目のインスタンス",
+          "text": "class=\"action\" はコンポーネントの左右各 1rem のパディングを使います。"
+        },
+        {
+          "title": "二つ目のインスタンス",
+          "text": "class=\"action px-lg\" は左右各 1.5rem のパディングを要求します。utilities レイヤーは components の後なので、px-lg はこのインスタンスの横パディングを上書きし、ほかのコンポーネントスタイルは残ります。図の青い帯と物差しはパディングを示す計測注釈で、ユーティリティが追加するスタイルではありません。"
+        }
+      ]
+    },
+    "GuideStudy:reuse-ownership": {
+      "title": "クラスを持つユーティリティ、セレクターを埋めるミックスイン",
+      "alt": "stack ユーティリティを要求すると display:grid を持つ .stack を出力する。.card 内で --stack ミックスインを適用すると同じ宣言を .card の下へ出力し、セレクターは呼び出し側が持つ。",
+      "caption": "箱は CSS の成果物です。@apply の展開は別のマークアップクラスを登録しません。"
+    },
+    "GuideStudy:independent-parameters": {
+      "title": "一つの定義、別々の呼び出し値",
+      "alt": "同じ action-size ユーティリティを既定の 2.5rem と 3rem で呼び出す。二つ目は最小高さと横パディングが大きく、それぞれが自身の引数を保つ。",
+      "caption": "ルートサイズ 16px では最小高さは 40px と 48px で、padding-inline は選んだ高さの半分です。強調した内側の領域は計測ガイドです。"
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReuseIllustration from './components/ReuseIllustration.astro'
+
+二つの画面で保存ボタンを共有しながら、一方だけに広い間隔を与えられます。共通の外観はコンポーネントクラスへ、ローカルな調整はマークアップに残します。小さな単位でも同じです。利用箇所を一緒に変える値には名前を付け、複数のルールに必要な CSS は共有します。
+
+先に[インストール](/guide/installation)と[構文チュートリアル](/guide/syntax-tutorial)を完了してください。各例は自身の CSS とマークアップを含みます。CSS をアプリの既存プリセットインポートの後へ、マークアップをインテグレーションが走査するソースファイルへ追加します：
+
+```css name=app.css
+@import '@master/css';
+```
+
+## コンポーネントの共通の外観をまとめる \{#keep-a-components-shared-appearance-together\}
+
+アクションボタンのような製品上の役割には、どこで使っても認識できる外観が必要です。`@layer components` 内のネイティブクラスとして定義し、すべてのインスタンスに属する状態も含めてください。
+
+<DemoConfiguredExample
+  name="reuse-component"
+  title="同じボタンの間隔をローカルに調整する"
+  source={`@theme {
+  --spacing-action-x: 1rem;
+  --color-action: var(--color-surface-raised);
+}
+
+@layer components {
+  .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.375rem;
+    padding: .5rem var(--spacing-action-x);
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-action);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    line-height: 1.2;
+
+    &:is(:hover, :focus-visible) {
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      background-color: var(--color-surface-inset);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-text-strong);
+      outline-offset: 3px;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap items-start gap-lg">
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Shared component</p>
+    <button type="button" class="action">Save changes</button>
+  </div>
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Local adjustment</p>
+    <button type="button" class="action px-lg">Save changes</button>
+  </div>
+</div>`}
+  caption="横方向のパディングを比べ、各ボタンにホバーするか Tab で移動してください。操作状態は共通で、二つ目だけが px-lg を使います。スタイルの例であり、データは保存しません。"
+/>
+
+`px-lg` の通常のユーティリティ宣言は、プリセットで `utilities` が `components` より後にあるため、コンポーネントのパディングに優先します。HTML のクラス順序では決まりません。ローカルな調整は二つ目のボタンに残し、すべてのインスタンスで必要な場合だけ `.action` に置いてください。競合する宣言は[カスケードレイヤー](/guide/cascade-layers)を参照します。
+
+<ReuseIllustration />
+
+ネイティブのコンポーネントルールは、既定でスタイルシートとともに出力されます。[ネイティブの枝刈り](/guide/optimizing-css-delivery#native-pruning)は明示的に有効化します。コンポーネントの状態は CSS ルール内に書いてください。ネイティブの `.action` 定義は `action:hover` ユーティリティを登録しません。
+
+外観の共有と配信の共有は別の判断です。再利用コンポーネントのルールが無関係なページにも読み込まれる場合は、[CSS 配信の最適化](/guide/optimizing-css-delivery#ownership)を参照してください。
+
+## 一緒に変えるものを選ぶ \{#choose-what-should-change-together\}
+
+繰り返すクラス一覧を抽出する前に、共通の判断を特定してください。似た見た目の要素が、常に一緒に変わる必要はありません。
+
+<DocumentComparison>
+
+| 共有するもの | 使うもの |
+| --- | --- |
+| スタイル間の値 | テーマトークン |
+| 製品上の役割と状態 | ネイティブのコンポーネントクラス |
+| マークアップで組み合わせる機能 | ユーティリティ |
+| CSS 内の宣言やラッパー | ミックスイン |
+
+</DocumentComparison>
+
+最初の例は、操作の色とパディングにそれぞれトークンを与えます。ほかのコンポーネントは、ボタンの背景、形、状態を引き受けずに、CSS の `var()` やマークアップの `px-action-x` で `--spacing-action-x` を読めます。両方を変える場合はトークンを変更し、値が偶然同じで目的が違う場合は別のトークンにしてください。命名、別名、スコープ付きの上書きは[テーマトークン](/guide/theme)で説明します。
+
+繰り返し使うコンポーネントのクラス一覧は、フレームワークのコンポーネント内に置いても構いません。有用な共通スタイルの契約を提供するときに CSS 名を導入し、クラス属性の長さだけを抽出の理由にしないでください。
+
+## スタイルの機能をユーティリティとして登録する \{#register-a-utility-for-a-styling-capability\}
+
+複数のコントロールで、内容を中央にそろえた小さな間隔のインライン行が必要でも、外観と余白は別に保ちたい場合を考えます。共通のレイアウトだけを `@utility` として登録します：
+
+<DemoConfiguredExample
+  name="reuse-utility"
+  title="同じレイアウト、異なるコントロール"
+  source={`@utility action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-row px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm shadow-md:hover bg-surface-inset:active">
+    <span aria-hidden="true">＋</span> Add note
+  </button>
+  <a href="/guide/theme" target="_top" class="action-row px-sm py-xs text-sm fg-text-body fg-text-strong:hover underline">
+    Choose tokens <span aria-hidden="true">→</span>
+  </a>
+</div>`}
+  caption="action-row が両方の配置と間隔をそろえ、ほかのクラスが外観を供給します。Add note はスタイルの例で、Choose tokens はテーマガイドを開きます。"
+/>
+
+完全なクラスで要求するとユーティリティがルールを生成します。`action-row@sm` のように、プリセットと同じセレクターや条件の接尾辞も使えます。名前はレイアウトの機能を表し、ボタン全体のスタイルを決めるものではありません。
+
+既存のプリセットユーティリティで共通の判断を表せるなら、そのまま使ってください。間隔だけの変更には `gap-sm` や `gap(8)` があり、新しいユーティリティは不要です。呼び出し側で一緒に再利用すべき機能を宣言が作る場合に、レシピを定義します。登録と置換は[ユーティリティの仕様](/reference/directives/definitions#utilities)を参照してください。
+
+## ミックスインで CSS を再利用する \{#reuse-css-with-a-mixin\}
+
+ネイティブ CSS のルールで同じ行レイアウトが必要なら、ミックスインを定義し `@apply` で展開します。次の例では、アクションとツールバーリンクを別々のコンポーネントの役割として保ち、配置を共有します：
+
+<ConfiguredExample source={`@mixin --action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+@layer components {
+  .action {
+    @apply --action-row;
+    padding: .5rem 1rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+  }
+
+  .toolbar-link {
+    @apply --action-row;
+    color: var(--color-text-body);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    text-decoration-line: underline;
+  }
+}`} html={`<button type="button" class="action">
+  <span aria-hidden="true">＋</span> Add note
+</button>
+<a href="/guide/theme" class="toolbar-link">
+  Choose tokens <span aria-hidden="true">→</span>
+</a>`} />
+
+**生成された CSS** を開くと、両方のネイティブルールに行の宣言が入り、残りの独自宣言も保持されます。`--action-row` の定義はマークアップのクラスを作りません。`@apply` が指定するのはミックスインで、ユーティリティクラスの一覧は受け取りません。
+
+CSS とマークアップの両方に同じ機能が必要なら、宣言元をミックスインに保ち、それを呼ぶユーティリティを加えます：
+
+```css
+@utility action-row {
+  @apply --action-row;
+}
+```
+
+この定義をミックスインの例のスタイルシートに追加します。先ほどの独立したユーティリティ本体を置き換え、`--action-row` の編集がネイティブコンポーネントとユーティリティの両方へ届くようになります。[グローバルスタイル](/guide/global-styles#organize-global-files)で、アプリのエントリーグラフ内の整理方法を参照してください。
+
+<GuideStudy id="reuse-ownership" />
+
+## contents でラッパーを共有する \{#share-a-wrapper-with-contents\}
+
+繰り返すのが、異なる宣言を囲む条件の場合もあります。ホバーとキーボードフォーカスのミックスインでセレクターを供給し、各呼び出し側が `@contents` にスタイルを渡せます：
+
+<DemoConfiguredExample
+  name="reuse-wrapper"
+  title="一つの操作ラッパー、二つの呼び出し箇所"
+  source={`@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+
+@layer components {
+  .action {
+    @apply --hocus {
+      text-decoration-line: underline;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap gap-md">
+  <button type="button" class="action px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">CSS call site</button>
+  <button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm underline@apply(--hocus) outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">Class call site</button>
+</div>`}
+  caption="どちらのボタンもホバーまたは Tab でラベルに下線が付きます。一方はネイティブ CSS 内で宣言を渡し、もう一方は underline ユーティリティを包みます。フォーカスの輪郭は別途指定しています。"
+/>
+
+CSS では `@apply --hocus` の後のブロックが `@contents` を埋めます。マークアップでは `@apply(--hocus)` がそのクラスの生成宣言を包みます。ラッパーはトークンを登録せず、隣のクラスを本体に集めることもありません。宣言の組を再利用するならユーティリティかミックスインを使い、共通セレクターや条件の中身を呼び出し側で選ぶときに contents を使います。転送とフォールバックは[ミックスインの contents](/reference/directives/definitions#contents)を参照してください。
+
+## 呼び出し側が必要とするときにパラメーターを公開する \{#expose-a-parameter-when-callers-need-one\}
+
+共通のコントロールサイズは複数のプロパティを連動させる場合があります。別々のプリセットユーティリティでは呼び出し側が計算を繰り返す必要があるなら、パラメーターで関係を表します：
+
+<DemoConfiguredExample
+  name="reuse-parameter"
+  title="一つのサイズで高さとパディングを制御する"
+  source={`@utility action-size(--height: 2.5rem) {
+  min-height: var(--height);
+  padding-inline: calc(var(--height) / 2);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-size() text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Default size</button>
+  <button type="button" class="action-size(3rem) text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Larger size</button>
+</div>`}
+  caption="action-size() は 2.5rem、action-size(3rem) は 3rem を使います。最小高さと横方向のパディングが引数に従います。ボタンはサイズの例です。"
+/>
+
+<GuideStudy id="independent-parameters" />
+
+空の呼び出しは宣言した既定値を使います。引数はコンパイル時に分かっている必要があるため、サイズ選択には完全なクラス文字列を使ってください。JavaScript で連続的に変わる値は、ネイティブ CSS のカスタムプロパティに置きます。対応する型と制限は[パラメーターの仕様](/reference/directives/definitions#dynamic-values)を参照します。
+
+共通定義を変える前に、ローカルな上書きがあるものを含め、少なくとも二つの呼び出し箇所を比べます。ホバーとキーボード状態を確認し、生成 CSS を調べてください。同じ動作が不要になったなら、各インスタンスに例外を足すのではなく定義を分けます。プロジェクト間で安定した語彙を共有するには、[パッケージの作成](/guide/authoring-packages)へ進んでください。

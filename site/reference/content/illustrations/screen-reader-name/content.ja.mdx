@@ -1,0 +1,36 @@
+# Reference prose: illustrations/screen-reader-name
+
+## title \{#copy-title\}
+
+
+切り取ったテキストでも見えるコントロールに名前を付けられる
+
+## alt \{#copy-alt\}
+
+
+1 つのリンクに見える矢印と sr-only のテキストが入っています。画面上は矢印だけが見え、アクセシビリティ上は Read the utility definition という名前のリンクになります。
+
+## caption \{#copy-caption\}
+
+
+矢印には aria-hidden="true" を指定しています。ラベルテキストは sr-only で視覚的に切り取られ、リンクのアクセシブルな名前を提供します。リンク自体は見えるままで、フォーカスできます。
+
+## description-0 \{#copy-description-0\}
+
+
+リンクは、アクセシブルな名前の計算から除外した矢印と、Read the utility definition を含む span を持ちます。
+
+## description-1 \{#copy-description-1\}
+
+
+span は実際の sr-only プリセットを使い、絶対配置、1px のボックス、オーバーフローの非表示、切り取りを指定します。aria-hidden は付けず、DOM に残ります。
+
+## description-2 \{#copy-description-2\}
+
+
+見えるリンクは引き続き 40px の正方形を占め、矢印を表示します。アクセシブルなロールは link、名前は Read the utility definition です。
+
+## description-3 \{#copy-description-3\}
+
+
+2 つの分岐は同じコントロールの異なる表現であり、順番に行う操作ではありません。祖先をアクセシビリティツリーから隠すと、その子孫も隠れます。

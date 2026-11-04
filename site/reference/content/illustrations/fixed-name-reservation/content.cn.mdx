@@ -1,0 +1,31 @@
+# Reference prose: illustrations/fixed-name-reservation
+
+## title \{#copy-title\}
+
+
+固定拼写保留自身定义
+
+## alt \{#copy-alt\}
+
+
+w-full 填满父元素；另一个相同的子元素则通过显式原生 width 声明读取自定义的 12rem container-full 令牌来确定宽度。
+
+## caption \{#copy-caption\}
+
+
+两个父元素均宽 240px。自定义 --container-full 为 12rem（根字号为 16px 时是 192px）；w-full 仍是固定的 100% 工具类。
+
+## description-0 \{#copy-description-0\}
+
+
+配置定义 @theme \{ --container-full: 12rem; \}。预设已将完整固定名称 w-full 注册为 width: 100%。
+
+## description-1 \{#copy-description-1\}
+
+
+因此 w-full 填满 240px 的父元素。显式的 (width:var(--container-full)) 类读取 --container-full，使第二个块宽 192px。
+
+## description-2 \{#copy-description-2\}
+
+
+令牌仍可通过显式 var() 引用使用；定义它不会替换固定的 w-full 注册。

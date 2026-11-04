@@ -1,0 +1,36 @@
+# Reference prose: illustrations/definition-replacement
+
+## title \{#copy-title\}
+
+
+後の定義が登録全体を置換
+
+## alt \{#copy-alt\}
+
+
+順序付きの 2 つの badge ユーティリティ定義から最終規則へ進む。最初は赤色と padding、次は青色だけを持ち、出力には青色だけが残る。
+
+## caption \{#copy-caption\}
+
+
+両定義は同じ静的ユーティリティを登録します。2 番目の定義が最初の定義全体を置き換え、元の padding も残りません。生成前の定義置換であり、2 つの CSS 規則がカスケードで競う場面ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+最初の静的 badge 定義は color: red と padding: 1rem を持ちます。
+
+## description-1 \{#copy-description-1\}
+
+
+後の静的 badge 定義は color: blue だけを持ち、最初の定義全体を置換します。
+
+## description-2 \{#copy-description-2\}
+
+
+badge を使うと color: blue を持つ 1 規則を生成し、前の padding と依存先は残りません。
+
+## description-3 \{#copy-description-3\}
+
+
+静的登録と関数登録は独立です。トークンパターンは同じ接頭辞と名前空間の分岐だけを、ミックスインは名前付き定義全体を置換します。

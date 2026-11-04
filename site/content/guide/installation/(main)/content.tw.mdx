@@ -1,0 +1,240 @@
+---
+{
+  "title": "安裝 Master CSS",
+  "description": "選擇框架整合、確認 CDN 是否可用，或透過 CLI 產生樣式表。",
+  "category": "入門",
+  "figures": {
+    "InstallationIllustration": {
+      "title": "連接原始碼與頁面",
+      "alt": "應用程式標記與樣式表一同交給建置整合，產生的 CSS 傳遞至顯示 Hello World 的頁面。",
+      "caption": "整合會從原始碼讀取類別名稱，並從樣式表讀取定義。應用程式必須載入該樣式表，產生的 CSS 才能傳到頁面。",
+      "description": [
+        {
+          "title": "原始碼",
+          "text": "p-md 這類完整類別會出現在整合掃描的原始檔中。應用程式樣式表匯入 @master/css，提供預設集定義。"
+        },
+        {
+          "title": "建置整合",
+          "text": "兩份原始資料交給已設定的整合，為辨識出的類別產生 CSS。安裝程式負責設定這個連接；整合負責後續的開發與建置工作。"
+        },
+        {
+          "title": "頁面",
+          "text": "應用程式載入樣式表，讓產生的 CSS 到達瀏覽器。使用預設集時，p-md 規則會套用 1rem 內距。單純安裝套件，並不會建立樣式表匯入。"
+        }
+      ]
+    },
+    "GuideStudy:installation-observation": {
+      "title": "透過一個小修改驗證完整流程",
+      "alt": "原始碼從 p-md 改成 p-lg，編譯後的內距跟著改變，瀏覽器中的方框明顯變大。",
+      "caption": "安裝成功只是第一步。修改類別能同時檢查類別探索、CSS 產生與樣式表傳遞。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import InstallationGuides from '~/site/components/InstallationGuides.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import InstallationIllustration from './components/InstallationIllustration.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/installation/cover-light.webp'
+import dark from '~/site/assets/images/integrations/installation/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS 搭配 Astro、Vite、Nuxt、Svelte、Next.js、Angular、Lit、webpack 與 Storybook" />
+
+選擇適合專案的設定方式：[整合](#integrations)將 Master CSS 接入框架或建置工具，[CLI](#cli) 則為沒有打包工具的專案產生樣式表。[CDN](#cdn) 提供使用預設集的純 HTML 設定；其 CSS-first 版本尚待發布。
+
+## 整合 \{#integrations\}
+
+既有應用程式請使用整合。預設為靜態渲染：建置時會在原始碼尋找完整類別名稱，並將樣式表傳遞到瀏覽器。選擇你的框架以查看設定檔與步驟，或使用下方的自動安裝程式。
+
+<InstallationGuides />
+
+執行階段與伺服器渲染設定，請參閱[各整合的渲染支援](/guide/rendering-modes#integration-support)。
+
+### 開始之前 \{#installation\}
+
+使用 Node.js 24，並開啟應用程式根目錄，也就是 `package.json` 所在的位置。安裝程式會更新既有專案，不會建立框架起始專案。你的應用程式應已具備可正常運作的開發指令。
+
+### 套件發布狀態 \{#package-availability\}
+
+這些步驟需要安裝程式、整合與其相依套件協同發布。目前這組套件尚未完整上架 npm。下方的 `@rc` 指令描述預定的安裝通道，並非目前已驗證可安裝此候選版本的方式。請等相符套件發布後，再執行這些指令。其他標籤下已存在的套件，不代表與本設定相容。
+
+若要在本地評估執行階段，請使用[已建置原始碼的 CDN 範例](#cdn)。其中的指令碼、編譯後的程式與基礎樣式表必須來自同一次建置。
+
+手動設定或框架專用檔案，請參閱[整合指南](/guide/installation#integrations)。若專案沒有對應的建置整合，請依[獨立 CLI 設定](/guide/installation#cli)操作。
+
+<StepSection>
+  <Step>
+    ### 加入 Master CSS \{#add-master-css\}
+
+    從專案根目錄執行安裝程式。它會偵測框架與套件管理工具、更新設定檔，並從 `rc` 通道安裝相符的 Master CSS 套件。
+
+    ```bash
+    npm create @master/css@rc -- --yes
+    ```
+
+    <DocumentDisclosure title="檢視或限制設定內容">
+
+    `--yes` 會接受建議的預設值，包括核心整合、ESLint 設定、MCP 套件，以及 `AGENTS.md` 中的 Master CSS 指引。輸出的 MCP 註冊與 skill 安裝指令，是編碼工具可選的後續步驟；安裝程式不會執行它們。
+
+    加入 `--dry-run`，即可在不變更專案檔案、不安裝預定相依套件的情況下，檢視計畫：
+
+    ```bash
+    npm create @master/css@rc -- --yes --dry-run
+    ```
+
+    若只要核心框架設定，請在安裝指令加入 `--minimal`。它會略過 ESLint、MCP 與代理程式指引的新增內容。若想自行安裝相依套件，請加入 `--no-install`。
+
+    </DocumentDisclosure>
+  </Step>
+  <Step>
+    ### 檢查樣式表連接 \{#check-the-stylesheet-connection\}
+
+    閱讀設定摘要，完成其中列出的框架專用步驟。有些整合需要後續設定指令，或獨立的 CSS 產生程序；請參閱你的[框架指南](/guide/installation#integrations)。
+
+    確認應用程式有載入安裝程式建立或更新的樣式表。該樣式表應包含：
+
+    ```css
+    @import '@master/css';
+    ```
+
+    例如，純 Vite 應用程式通常從 `src/main.js` 匯入 `./style.css`。CSS 檔名與匯入位置會依框架而異。只安裝套件，不會自動將樣式表載入頁面。
+
+    <InstallationIllustration />
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+
+    使用應用程式原本的指令，例如 `npm run dev`，啟動或重新啟動開發伺服器。將以下標記放進可見的頁面或元件。JSX 中請以 `className` 取代 `class`。
+
+    <DemoConfiguredExample name="installation-check" title="檢查第一個樣式" source="" caption="使用預設集時，p-md 會在文字四邊各加入 1rem 內距。" html={`<p class="w-fit mx-auto my(0) p-md r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong">
+  Hello World
+</p>`} />
+
+    你應看到文字位於帶邊框的小面板內。將 `p-md` 改成 `p-lg` 並儲存：四邊內距都應從 `1rem` 增加為 `1.5rem`。這不只是確認安裝程式成功完成，也驗證了原始碼變更確實傳到頁面。
+  </Step>
+</StepSection>
+
+<GuideStudy id="installation-observation" />
+
+## CDN \{#cdn\}
+
+CDN 安裝會直接在瀏覽器執行 Master CSS，不需要建置工具。它適合純 HTML 原型；產生的樣式依賴 JavaScript。若頁面必須在沒有 JavaScript 時仍有樣式，請使用整合或 CLI。
+
+CSS-first CDN 版本尚未發布。使用範本前，請將下方所有 `VERSION` 替換成相同、已發布的 CSS-first 執行階段與預設集版本。在該版本可用之前，請依下文使用本地建置。[整合](#integrations)與 [CLI](#cli) 也有相同的[套件發布要求](#package-availability)。
+
+將這個範本儲存為 `index.html`：
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en" hidden>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
+</head>
+
+<body>
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-strong">Hello World</h1>
+</body>
+
+</html>
+```
+
+標題應有 `3rem` 外距、`2.5rem` 斜體字型、`900` 字重，以及預設集的強調文字色。將 `font-5xl` 改成 `font-6xl`：文字會增大至 `3rem`。執行階段也會觀察 JavaScript 造成的類別變更。
+
+樣式表提供基礎規則與串接層順序。傳統指令碼會自動啟動、載入相符的編譯程式，並在文件解析完成後產生初始類別。規則準備好後，它會移除 `hidden`。三個預先載入連結會提早開始樣式表、指令碼與程式請求；二進位檔使用 `as="fetch" crossorigin`，因為執行階段擷取的是資料，不是模組。二進位檔預先載入與執行階段擷取會直接使用 jsDelivr 目的網址，因為 Master CDN 重新導向未附帶 CORS 標頭。CDN 設定使用預設集；自訂 `@theme` 或 `@utility` 定義請透過整合編譯。
+
+<DocumentDisclosure title="在 CDN 發布前試用本地建置">
+
+從已建置的原始碼工作目錄，將 `packages/preset/src/base.css`、`packages/runtime/dist/global.min.js` 與 `packages/runtime/dist/default-program.bin` 複製到 `index.html` 旁的同一個目錄。指令碼與程式必須來自同一次建置。
+
+將兩個樣式表網址替換為 `./base.css`、兩個指令碼網址替換為 `./global.min.js`，並將程式預先載入網址替換為 `./default-program.bin`。透過 HTTP 提供目錄並開啟 `index.html`。使用明確的指令碼檔案時，執行階段會在檔案旁解析程式；若使用 Master CDN 或 jsDelivr 的 npm 套件進入點，則會解析該套件內的 `dist/default-program.bin`。
+
+</DocumentDisclosure>
+
+`hidden` 為可選屬性，可避免首次繪製時出現無樣式內容；已處理的程式載入錯誤，以及執行階段三秒啟動逾時，都會顯示內容。若停用 JavaScript 或指令碼本身無法下載，就無法移除該屬性。若這些情況下內容仍必須可讀，請省略 `hidden`，或提供靜態 CSS。
+
+若有內容安全政策，請允許 CDN 與其 jsDelivr 重新導向目標載入指令碼、樣式表及擷取程式（`connect-src`），並允許執行階段產生的樣式表。不會擷取 Wasm。載入與 hydration 行為請參閱[執行階段渲染](/guide/rendering-modes#runtime-rendering)。
+
+## CLI \{#cli\}
+
+不加入打包工具，也能從 HTML 產生靜態樣式表。CLI 會掃描完整類別名稱並寫入 CSS，再透過一般樣式表連結載入。專案沒有對應的[框架整合](/guide/installation#integrations)時，請使用此設定。
+
+<StepSection>
+  <Step>
+    ### 安裝 Master CSS \{#install-master-css\}
+    將 Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) 安裝為開發相依套件。
+
+    ```bash
+    npm install -D @master/css-cli@rc
+    ```
+  </Step>
+  <Step>
+    ### 建立 CSS 進入點 \{#create-your-css-entry\}
+    建立匯入預設 Master CSS 進入點的樣式表。
+
+    ```css name=main.css
+    @import "@master/css";
+    ```
+  </Step>
+  <Step>
+    ### 執行建置指令 \{#run-the-build-command\}
+    執行指令掃描原始碼，並寫入 `master.css`。
+
+    ```bash
+    npx @master/css-cli generate "index.html" --output master.css --watch
+    ```
+  </Step>
+  <Step>
+    ### 載入產生的樣式表 \{#load-the-generated-stylesheet\}
+    將下方文件儲存為 `index.html`。監看程序會依其中的類別名稱產生 `master.css`。提供此目錄並開啟頁面，即可看到已套用樣式的段落。
+    <InstallationPreview>
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
+</head>
+<body>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello World</p>
+</body>
+</html>
+```
+
+    </InstallationPreview>
+  </Step>
+</StepSection>
+
+### 建置以部署 \{#build-for-deployment\}
+
+監看指令會持續執行，並在選定原始檔變更時更新輸出。正式環境建置請省略 `--watch`，讓指令寫入輸出後結束：
+
+```bash
+npx @master/css-cli generate "index.html" --output master.css
+```
+
+部署 `index.html`、`master.css`，以及產生的樣式表所參照、位於旁邊的 CSS 資產。請保留相對路徑：只複製 `master.css` 可能造成其匯入樣式缺少。發布新建置時，請將每一組產生的資產放在一起。
+
+載入部署後的頁面，確認每個樣式表請求都成功。停用 JavaScript 時，段落應保有產生的內距、邊框與表面顏色。[掃描類別名稱](/guide/scanning-and-pruning)說明如何納入一般應用程式範圍之外的原始檔。
+
+## 若沒有出現樣式 \{#if-the-style-does-not-appear\}
+
+確認頁面渲染的是你編輯的標記，並已載入應用程式樣式表。接著確認建置整合已啟用，且有掃描該原始檔。請保留 `p-lg` 這樣的完整類別名稱；透過 `p-${size}` 等片段組合，會讓靜態掃描無法看到最終類別。
+
+若安裝程式回報無法辨識框架，或設定未完成，請依對應的[整合指南](/guide/installation#integrations)或 [CLI 指南](/guide/installation#cli)操作。一般應用程式範圍之外的檔案，請參閱[掃描類別名稱](/guide/scanning-and-pruning)。
+
+間距變更正常運作後，接著閱讀[語法教學](/guide/syntax-tutorial)，製作具有互動狀態與響應式條件的卡片。

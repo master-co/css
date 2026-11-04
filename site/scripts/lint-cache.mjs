@@ -44,7 +44,7 @@ function workspaceRuntimeInputs(root) {
 export function lintCacheFingerprint({ site = join(repository, 'site'), root = repository } = {}) {
   const inputs = new Set([
     ...['package.json', 'bun.lock', 'bunfig.toml', '.gitignore', 'scripts/toolchain-policy.mjs', 'scripts/isolate-tooling-typescript.mjs'].map(file => join(root, file)),
-    ...['package.json', '.gitignore', 'scripts/lint.mjs', 'scripts/lint-cache.mjs'].map(file => join(site, file)),
+    ...['package.json', '.gitignore', 'scripts/lint.mjs', 'scripts/lint-cache.mjs', 'scripts/mdx-lint-parser.mjs'].map(file => join(site, file)),
     ...glob.sync(['**/eslint.config.*', 'eslint.rules.*'], { cwd: site, absolute: true, dot: true, ignore: ['node_modules/**', '.astro/**', 'out/**', '.cache/**'] }),
     ...workspaceRuntimeInputs(root)
   ])

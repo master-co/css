@@ -1,0 +1,57 @@
+# Reference prose: tokens/container
+
+## title \{#copy-title\}
+
+Container sizes
+
+## summary \{#copy-summary\}
+
+Preset lengths for width, height, minimum and maximum sizes.
+
+## note \{#copy-note\}
+
+Container tokens set lengths; they do not define viewport or container queries. Full and intrinsic sizes such as `w-full`, `max-w-fit` and `basis-min` are fixed utilities, independent of these tokens.
+
+## valuesLead \{#copy-valuesLead\}
+
+Each value is a length consumed by sizing properties. Pixel equivalents assume a 16px root font size. These are not viewport breakpoints or container-query definitions.
+
+## explanation-title \{#copy-explanation-title\}
+
+A maximum is an upper bound
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`max-w-3xs` sets `max-width: var(--container-3xs)`, whose preset value is `16rem`. An ordinary block with auto width can be narrower when its containing block has less room.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+`w-3xs` instead sets the width. Neither class adds centering, padding or query containment. Changing `--container-md` does not redefine `@container(--md)` or an explicit query threshold. Use native `container-type` and `container-name` when establishing a query container.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+The native layout still matters: minimum sizes, box sizing, Flexbox and Grid can affect the used size. A maximum does not change text-wrapping or overflow rules. For a page wrapper and responsive layout decisions, continue with the Layout guide.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+named query conditions
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+container query grammar
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+native sizing rules
+
+## usage-lead \{#copy-usage-lead\}
+
+Cap a dialog and the measure of its text.
+
+## customize-lead \{#copy-customize-lead\}
+
+Change a preset value or add a size: `--container-prose` creates `max-w-prose`, `w-prose` and the other size classes.
+
+## guide-label \{#copy-guide-label\}
+
+Layout

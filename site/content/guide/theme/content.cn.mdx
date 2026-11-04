@@ -1,0 +1,184 @@
+---
+{
+  "title": "主题令牌",
+  "description": "定义共享设计值，观察令牌变更如何影响使用方，并选择局部覆盖、静态交付和 inline 替换。",
+  "category": "编写",
+  "figures": {
+    "ThemeIllustration": {
+      "title": "一个共享值，同时改变内边距和间隔",
+      "alt": "将 --spacing-card 从 1.5rem 改为 2rem 前后：p-card 内边距由 24 增加到 32 像素，gap-card 在两个列表项之间的间隔也等量增加。",
+      "caption": "两列的标记完全相同。测量假设根字体大小为 16px；高亮区域以实际相对尺寸显示内边距和间隔。",
+      "description": [
+        {
+          "title": "变更前",
+          "text": "根字体为 16px 时，--spacing-card: 1.5rem 通过 p-card 提供 24px 内边距，并通过 gap-card 提供 24px 间隔。"
+        },
+        {
+          "title": "变更后",
+          "text": "将令牌改为 2rem，两个测量值都增至 32px，无需编辑类名。"
+        },
+        {
+          "title": "选择联动关系",
+          "text": "只有这些间距应一起变化时，才共享一个令牌。不同设计决策需要不同令牌，即使当前数值相同也一样。"
+        }
+      ]
+    },
+    "GuideStudy:inherited-alias": {
+      "title": "继承的别名保留其计算值",
+      "alt": "根元素将 action 别名解析为蓝色。子元素将 brand 改为梅紫色：继承的别名仍为蓝色，直到在该子元素重新声明。",
+      "caption": "蓝色和紫色标记表示两条值解析路径。这是作用域图，不是额外的主题切换。"
+    },
+    "GuideStudy:delivery-substitution": {
+      "title": "分别选择保留与替换",
+      "alt": "两条互相垂直的轴区分没有使用方时保留令牌，以及将令牌值替换到生成声明中。",
+      "caption": "static 控制保留；inline 控制替换。使用其中一种并不代表同时启用另一种。"
+    }
+  },
+  "demos": {
+    "FoundationDialog": {
+      "title": "动效由实际操作触发",
+      "caption": "对话框打开时只入场一次。按 Escape 或 Close details 会将焦点还给触发按钮。启用减少动态效果时会立即打开。模态边界限制在此预览内部。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ThemeIllustration from './components/ThemeIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DemoDialogEntrance from './components/DemoDialogEntrance.astro'
+
+## 概览 [sr-only] \{#overview\}
+当多个元素应一起变化时，就定义令牌，例如卡片间距、操作颜色或阅读列宽。将其放入应用样式表中现有 `@import '@master/css'` 之后的 `@theme`，再在标记中使用匹配类名。
+
+<DemoConfiguredExample name="theme-first-card" title="三个共享值，一张卡片" source={`@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+  --radius-card: 0.5rem;
+}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><p class="flex items-center gap-xs m(0) text-xs fg-text-muted"><span aria-hidden="true" class="h(8) w(8) pill bg-brand"></span>Brand color</p><h2 class="mt-sm mb-xs text-lg font-regular">Field notes</h2><p class="m(0) text-sm fg-text-muted">Keep the details that matter.</p></article>'} caption="p-card 和 r-card 设置共享内边距和圆角。小标记使用 bg-brand，让颜色令牌可见，同时保留卡片的中性色表面。" />
+
+`p-card` 会生成 `padding: var(--spacing-card)`；浏览器在卡片元素上解析自定义属性。所有使用方应一起变化时就修改令牌；变化只属于单个元素时则使用局部值。
+
+## 改变一个值，更新所有使用方 \{#change-one-value-across-its-consumers\}
+
+`--spacing-card` 可以同时提供卡片内边距和列表间隔。将值从 `1.5rem` 改为 `2rem`，两处用途都会改变，无需编辑标记：
+
+```html
+<article class="p-card">Field notes</article>
+<ul class="flex gap-card">
+  <li>Draft</li>
+  <li>Ready</li>
+</ul>
+```
+
+<ThemeIllustration />
+
+这种联动是设计决策。如果卡片应更宽松而列表间隔要保持不变，请使用不同令牌。现在共享同一数值，并不代表界面的两个部分永远都应一起变化。
+
+---
+
+## 按命名空间命名令牌 \{#define-tokens\}
+
+令牌前缀决定命名空间，各类名系列读取自己支持的命名空间。`--spacing-card` 提供给 `p-card`、`m-card` 和 `gap-card`；`--radius-card` 提供给 `r-card`；`--container-panel` 提供给 `max-w-panel`。相同键名在不同系列可代表不同值：`p-lg` 读取间距，`r-lg` 读取圆角。
+
+```css name=index.css
+@theme {
+  --color-text-action: var(--color-brand);
+  --font-family-sans: Geist, ui-sans-serif, system-ui, sans-serif;
+  --container-panel: 28rem;
+}
+```
+
+只有 `@theme` 声明会注册类名令牌；其他位置的原生自定义属性不会。按共享设计决策命名，例如 `brand` 或 `card`，不要按首次使用它的组件命名。重新定义 `--spacing-lg` 等预设键名即可改变整个项目的值。[系列索引](/reference/tokens/families)列出各类名读取的命名空间；解析方式请参阅[变量与模式](/reference/rules/modes#namespace-resolution)。
+
+---
+
+## 令牌别名与覆盖 \{#alias-and-override-tokens\}
+
+需要让一个令牌跟随另一个时，使用 `var()`。[别名先解析再继承](https://www.w3.org/TR/css-variables-1/#cycles)：如果 `--color-text-action` 声明在根元素，在后代覆盖 `--color-brand` 不会重新绑定继承的别名。请在该作用域重新声明别名。
+
+<DemoConfiguredExample name="theme-local-alias" title="局部品牌色与继承的别名" source={`@theme {
+  --color-brand: light-dark(#1d4ed8, #93c5fd);
+  --color-text-action: var(--color-brand);
+}
+
+@layer components {
+  [data-brand="plum"] {
+    --color-brand: light-dark(#86198f, #f0abfc);
+  }
+  [data-rebind-action] {
+    --color-text-action: var(--color-brand);
+  }
+}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-regular fg-brand">Plum brand scope</h2><p class="mt-md mb(0) text-sm font-regular fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) text-sm font-regular fg-text-action">Rebound action: plum</p></section>'} caption="两个操作标签都使用 fg-text-action。第一个继承根元素计算的别名；第二个在 --color-brand 为梅紫色的范围中重新声明别名。" />
+
+<GuideStudy id="inherited-alias" />
+
+需要跟随浅色和深色模式的颜色时，让令牌使用 `light-dark()` 值，并保持不指向特定模式的名称，例如 `--color-surface-card`。启用模式请参阅[颜色](/guide/colors#native-color-scheme-and-manual-themes)。
+
+---
+
+<a id="use-inline-and-static-tokens" />
+
+## 选择令牌交付和值替换方式 \{#choose-token-delivery-and-value-substitution\}
+这两个修饰符回答的是不同问题：
+
+| 需求 | 选择 | 结果 |
+| --- | --- | --- |
+| 项目使用时才输出值 | 普通 `@theme` | 按需输出声明；类名保留令牌引用。 |
+| 即使未发现使用方也保留值 | `@theme static` | 令牌声明仍可供外部集成等用途使用。 |
+| 在每个应用样式的元素上解析引用变量 | `@theme inline` | 在生成声明中替换一次令牌值。 |
+
+如果集成读取的值无法被静态发现过程识别，请使用 `static`：
+
+```css
+@theme static { --color-integration-brand: #4f46e5; }
+```
+
+需要在使用类名的元素上解析原生变量时，可使用 `inline` 建立连接：
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-brand">Ocean background</div>
+</section>
+```
+
+此处 `bg-brand` 会输出 `background-color: var(--app-brand)`，因此内层元素读取从 section 继承的 ocean 值。替换移除了中间的 `--color-brand` 引用，并非将固定颜色复制到每个元素。
+
+两种行为都需要时，使用 `@theme static inline` 组合修饰符。Inline 替换适用于类名和 `@apply`；手写原生 CSS 会保留原有引用。请参阅[主题契约](/reference/directives/theme#theme-static)。
+
+---
+
+<GuideStudy id="delivery-substitution" />
+
+## 定义动效令牌 \{#define-motion-tokens\}
+
+<a id="animation-tokens-and-definitions"></a>
+
+`--animate-*` 令牌是完整的 `animation` 简写，因此可以组合关键帧名称、持续时间和缓动令牌。在旁边使用原生 CSS 编写关键帧：
+
+<DemoDialogEntrance />
+
+```css name=index.css
+@theme {
+  --duration-enter: 180ms;
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+}
+
+@keyframes dialog-in {
+  from { translate: 0 0.5rem; opacity: 0; }
+}
+```
+
+```html
+<!-- @MARK animate-dialog-in@motion-safe -->
+<dialog class="animate-dialog-in@motion-safe">…</dialog>
+```
+
+此令牌没有指定重复次数，因此入场只执行一次；预设的 `animate-*` 令牌则会重复。用户请求减少动态效果时，`@motion-safe` 会让对话框保持静止。关键帧默认保留在样式表中；使用 `@prune native` 时，被引用的动画令牌会保留其关键帧。对于仅由 JavaScript 应用的名称，请加入 `@safelist keyframes "dialog-in";`。参阅[动效](/reference/tokens/motion)和[关键帧契约](/reference/directives/pruning#native-keyframes)。

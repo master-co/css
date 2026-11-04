@@ -1,0 +1,130 @@
+---
+title: "色"
+description: "適応型の役割からインターフェイスの色を組み立て、角丸と影で面を浮かせ、明暗のモードを選びます。"
+figures: {"ColorIllustration":{"title":"配色が変わっても役割は同じ","alt":"明暗の領域に同じ面、境界線、見出し、補助テキストを表示しています。どちらも bg-surface-raised、b-line-divider、fg-text-strong、fg-text-muted を使い、解決後の色は局所的なカラースキームに従います。","caption":"役割は一度選ぶだけです。light-dark() の値は要素のカラースキームに従い、別の配色内にある局所的な領域にも対応します。","description":[{"title":"役割を保つ","text":"両方の領域で同じ面、区切り線、強調文字、補助文字のクラスを使います。"},{"title":"領域ごとに解決する","text":"役割の値には light-dark() を使います。クラスを変えずに、各領域の color-scheme が明暗の色を選びます。"}]},"GuideStudy:palette-or-role":{"title":"固定の色階と意味を持つ役割を区別する","alt":"2つの経路で、固定のパレット色階と明暗の値を選ぶ役割を分けて示します。","caption":"特定の色にはパレットの色階を、文脈に従う判断には役割を選びます。"},"GuideStudy:local-color-scheme":{"title":"最も近いカラースキームが色を選ぶ","alt":"ライトの文書がダークの領域を囲んでいます。同じ意味のトークンで、外側は明るい面、内側は暗い面を描きます。","caption":"入れ子の境界は color-scheme を表します。トークン名とマークアップは変わりません。"}}
+demos: {"DemoRaisedSurface":{"title":"浮き上がった面","caption":"両文書で同じクラスを使います。面、文字、影の色は有効なモードから得られ、影の形状は変わりません。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ColorIllustration from './components/ColorIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationColorRoles from '@master/internal-site/demo/foundations/FoundationColorRoles.astro'
+import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
+
+## 概要 [sr-only] \{#overview\}
+
+インターフェイスの色は役割から組み立てます。面、線、文字のクラスは、明暗どちらのモードでも変わりません。イラストやブランドのアクセントなど、色そのものが目的の場合はパレットの色階を使います。色の変化は、役割や状態、読み手が見分ける必要のある違いに結び付けます。
+
+<ColorIllustration />
+
+---
+
+## 役割とパレットの色階を選ぶ \{#choose-a-color-token\}
+
+| 判断したいこと | 使うもの | 例 |
+| --- | --- | --- |
+| ページ構造と文字の階層 | 色の役割 | `bg-surface-raised`, `b-line-divider`, `fg-text-muted` |
+| 特定の色 | パレットの色階 | `bg-blue-5`, `fg-blue-60` |
+
+<FoundationColorRoles />
+
+```html
+<!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
+  <h2 class="m(0) text-lg font-regular fg-text-strong">Project updates</h2>
+  <p class="mt-xs mb-md text-sm fg-text-muted">Three milestones changed this week.</p>
+  <a class="fg-text-link underline" href="/updates">Continue</a>
+</section>
+```
+
+<Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+役割は色のキーに含まれます。`bg-surface-raised` は `--color-surface-raised`、`b-line-divider` は `--color-line-divider` を読み取ります。線の役割で設定するのは色だけなので、境界線の幅とスタイルは別に指定します。すべての役割は[色の役割](/reference/tokens/color-roles)、パレットは[カラーパレット](/reference/tokens/color)を参照してください。
+
+<ReferenceIllustration id="border-ingredients" />
+
+---
+
+<GuideStudy id="palette-or-role" />
+
+## 固定と適応型の色相エイリアス \{#mode-aware-hue-aliases\}
+
+`fg-yellow` などの色相エイリアスは固定色で、どのモードでも同じ値です。`fg-text-yellow` などの文字用色相エイリアスは、各モードで文字の前景色に適した色階を選びます。実際の背景とのコントラストを確認してください。適応型のエイリアスでも、すべての組み合わせを保証するわけではありません。
+
+```html
+<!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
+<svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
+<p class="fg-text-yellow">Pending review</p>
+```
+
+<Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+色付きのラベルには文字用色相エイリアスを使います。本文、強調、リンクには文字の役割を使います。
+
+---
+
+## 浮き上がった面 \{#raised-surfaces\}
+
+浮き上がった面は、面の役割、角丸トークン、影のトークンを組み合わせます。操作できる面では、ホバーやフォーカス時に影を1段階上げます。通常のカードやコントロールには小さな角丸を使い、`pill` は下のバッジのように全体を丸くしたい形に使います。
+
+<DemoRaisedSurface />
+
+```html
+<!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
+<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover shadow-md:focus-visible" href="/notes">
+  <span class="flex items-center justify-between gap-sm">
+    <span class="fg-text-strong">Field notes</span>
+    <span class="px-xs py-3xs pill bg-line-subtle text-xs fg-text-muted">12 new</span>
+  </span>
+</a>
+```
+
+<Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+プリセットの影は色に `light-dark()` を使うため、`shadow-sm` は形状を保ちながら要素のカラースキームに従います。`pill` は角丸トークンではなく固定ユーティリティで、幅と高さが同じなら円になります。個別の角は `rtl-lg`、`rtr-lg`、`rbl-lg`、`rbr-lg` で丸められます。スケールとカスタマイズは[角丸](/reference/tokens/radius)と[影](/reference/tokens/shadow)を参照してください。
+
+<ReferenceIllustration id="pill-aspect" />
+
+---
+
+## ライトモードとダークモード \{#native-color-scheme-and-manual-themes\}
+
+プリセットはルートに `color-scheme: light dark` を設定し、役割と影に `light-dark()` を使うため、クラスを追加せずにシステム設定に従います。モードを選ぶには、ルート、入れ子の領域、またはシャドーホストに `data-theme="light"` か `data-theme="dark"` を設定します。
+
+<DemoConfiguredExample name="nested-color-schemes" title="1つのトークン、2つの局所的な配色" source={`@theme {
+  --color-surface-notes: light-dark(#f4f4f5, #27272a);
+}
+
+@layer base {
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}`} html={'<section data-theme="dark" class="p-md r-lg bg-surface-notes fg-text-body wrap-anywhere"><h2 class="m(0) text-lg font-regular">Dark notes</h2><p class="mt-xs mb-md text-sm">This region chooses dark.</p><article data-theme="light" class="p-md r-md bg-surface-notes fg-text-body"><h3 class="m(0) text-md font-regular">A light region inside</h3><p class="mt-xs mb(0) text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} caption="両領域で bg-surface-notes を使います。data-theme が異なる配色を選ぶので、light-dark() が外側に暗い面、内側に明るい面を与えます。" />
+
+プリセットにはこの2つの `data-theme` セレクターが含まれており、CSS では有効化の仕組みを示すために再掲しています。`light-dark()` を使う独自の色も同様に適応し、モード変更に再コンパイルは不要です。入れ子の領域は再宣言しない限り親のトークンを継承します。ブランドテーマには `[data-brand="ocean"]` など独自のセレクターを用意し、そこで役割のトークンを再宣言します。
+
+接尾辞の `@light` と `@dark` は `prefers-color-scheme` メディアクエリーです。手動の `data-theme` はトークンを変更しますが、これらのクエリーを有効にはしません。クラスを手動の選択に反応させるには、セレクター mixin を宣言して適用します。
+
+```css name=index.css
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```html
+<!-- @MARK @apply(--manual-dark) -->
+<img class="(opacity:.85)@apply(--manual-dark)" src="/chart.png" alt="Weekly usage" />
+```
+
+この mixin は実際のカラースキームではなく属性を調べるため、入れ子のライト領域内にも一致します。適応型のトークンを優先してください。スコープと解決については[変数とモード](/reference/rules/modes)を参照してください。
+
+<ReferenceIllustration id="manual-wrapper-reach" />
+
+<GuideStudy id="local-color-scheme" />
+
+## 実際の構成で役割を確認する \{#check-the-roles-in-context\}
+
+同じ内容を両方の配色で確認します。強調と補助の文字を実際の面と組み合わせ、通常時とフォーカス時のリンク、コントロールを識別する境界線も確認します。色のトークンが提供するのは値であり、それだけでコントラスト、フォーカスの見やすさ、状態の意味が成立するわけではありません。
+
+選択項目やステータスでは、色にラベル、アイコンなどの見える手掛かりを組み合わせます。入れ子の領域は個別に検証してください。ダークページ内で手動設定したライト領域にも、読みやすい面と前景の組み合わせが必要です。

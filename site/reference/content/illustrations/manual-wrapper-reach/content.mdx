@@ -1,0 +1,25 @@
+# Reference prose: illustrations/manual-wrapper-reach
+
+## title \{#copy-title\}
+
+An ancestor selector can reach into a light region
+
+## alt \{#copy-alt\}
+
+A dark data-theme ancestor contains a light region and a chart. The chart uses a light color scheme but still matches the manual-dark ancestor wrapper.
+
+## caption \{#copy-caption\}
+
+The dashed path follows the explicit dark attribute. The nested light boundary changes color-scheme, not the ancestry tested by the selector.
+
+## description-0 \{#copy-description-0\}
+
+The --manual-dark mixin in this article matches either [data-theme="dark"] or a descendant of that element.
+
+## description-1 \{#copy-description-1\}
+
+A chart inside a nested data-theme="light" region is still a descendant of the outer dark region. Its opacity wrapper therefore matches even while light-dark() values use the local light scheme.
+
+## description-2 \{#copy-description-2\}
+
+Use adaptive tokens for values that should follow the used color scheme; an attribute selector tests exactly the relationship it names.

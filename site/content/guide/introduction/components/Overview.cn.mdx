@@ -1,0 +1,30 @@
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+<DemoConfiguredExample name="introduction-panel" title="使用 CSS 与工具类制作的卡片" source={`@layer components {
+  .action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--text-sm--line-height, normal);
+    letter-spacing: var(--text-sm--letter-spacing, normal);
+    text-decoration-line: none;
+    outline-offset: 3px;
+
+    &:focus-visible {
+      outline: 2px solid;
+    }
+  }
+}`} caption="action 类定义按钮的基础样式。这个实例的宽度、外边距和蓝色由工具类指定。将指针悬停在链接上，或让链接获得焦点，查看交互状态。" html={`<article class="overflow-hidden w-full (max-width:22.5rem) mx-auto r-lg bg-surface-raised shadow-sm">
+  <img src="/building.jpg" width="640" height="360" alt="Sunlit facade of a contemporary building" class="block w-full h-auto (aspect-ratio:16/9) object-cover">
+  <div class="p-lg">
+    <p class="m(0) text-2xs font-regular tracking-widest uppercase fg-text-blue">Launch panel</p>
+    <h2 class="mt-xs mb(0) text-md font-regular fg-text-strong">Build the first screen in markup</h2>
+    <p class="mt-xs mb(0) text-sm leading-lg fg-text-muted">Start with local classes, then promote repeated values into your project theme when the interface settles.</p>
+    <a class="action w-full mt-md bg-blue-60 fg-white bg-blue-70:hover bg-blue-80:active outline-blue-60:focus-visible" href="/guide/installation" target="_top">Start building</a>
+  </div>
+</article>`} />

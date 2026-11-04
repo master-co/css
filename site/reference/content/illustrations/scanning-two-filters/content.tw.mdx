@@ -1,0 +1,36 @@
+# Reference prose: illustrations/scanning-two-filters
+
+## title \{#copy-title\}
+
+
+檔案選擇與候選選擇是不同篩選
+
+## alt \{#copy-alt\}
+
+
+main.html 提供 grid 與 hidden；draft.html 在擷取前已排除。安全清單加入 block，封鎖清單移除 hidden。最終候選集合為 grid 與 block。
+
+## caption \{#copy-caption\}
+
+
+排除 draft.html 會阻止其 flex 候選項進入此來源範圍。封鎖 hidden 是在收集後移除候選；安全清單的 block 則加入明確候選。
+
+## description-0 \{#copy-description-0\}
+
+
+@source 納入 HTML 檔案，@source not 排除 draft.html。只有 main.html 提供 grid 與 hidden class 字串。
+
+## description-1 \{#copy-description-1\}
+
+
+@safelist "block" 不依賴來源檔案，直接加入完整候選項。
+
+## description-2 \{#copy-description-2\}
+
+
+@blocklist "hidden" 移除該候選項。可用集合最後為 grid 與 block；flex 從未進入此範圍。
+
+## description-3 \{#copy-description-3\}
+
+
+檔案與候選政策彼此分開。具備候選資格不代表任意 class 字串都有效；一般比對與診斷仍會套用。

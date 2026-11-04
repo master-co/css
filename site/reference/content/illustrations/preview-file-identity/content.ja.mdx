@@ -1,0 +1,36 @@
+# Reference prose: illustrations/preview-file-identity
+
+## title \{#copy-title\}
+
+
+プレビューは記録したファイル版だけに適用
+
+## alt \{#copy-alt\}
+
+
+プレビューは p-md flex を記録する。未変更のファイルは提案の flex p-md を受け入れ、gap-sm を加えたファイルは拒否して新しい内容を保つ。
+
+## caption \{#copy-caption\}
+
+
+両ケースは同じクラス順のプレビューから始まります。適用には同じサーバー上の期限内のトークンと元ファイルの一致が必要です。ファイル変更は提案ファイルを書き込む前に拒否します。
+
+## description-0 \{#copy-description-0\}
+
+
+クラス順のプレビューは元の p-md flex を記録し、flex p-md を提案します。プレビューはソースを変更しません。
+
+## description-1 \{#copy-description-1\}
+
+
+全対象ファイルが記録したハッシュと一致すれば、有効なトークンの適用で提案内容を書き込み、トークンを消費します。
+
+## description-2 \{#copy-description-2\}
+
+
+ファイルが p-md flex gap-sm ならハッシュは一致しません。提案ファイルを書き込む前にプレビューを拒否し、新しい内容を保ちます。
+
+## description-3 \{#copy-description-3\}
+
+
+この比較はファイルの同一性だけを扱います。トークン期限切れ、サーバー再起動、不正なワークスペースパスでも適用はできません。逐次書き込みはトランザクションのロールバック機構ではありません。

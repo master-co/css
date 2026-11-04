@@ -1,0 +1,71 @@
+# Reference prose: tokens/shadow
+
+## title \{#copy-title\}
+
+
+阴影
+
+## summary \{#copy-summary\}
+
+
+针对浅色与深色调整的多层抬升阴影。
+
+## note \{#copy-note\}
+
+
+`shadow-<name>` 设置完整的 `box-shadow` 值。两个阴影类不会合并各自的列表，胜出的声明提供整个阴影。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+每个令牌保存一份以逗号分隔的原生阴影列表。展开值即可检查每一层。浅色与深色使用相同的偏移、模糊和扩展长度，区别在于 light-dark() 的颜色。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+阴影改变绘制，不改变布局
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`shadow-xs` 和 `shadow-xl` 会在同一个盒子周围产生不同的绘制范围，但都不会为阴影预留空间；后续元素的位置与间隙仍保持不变。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+令牌列表中的第一个阴影绘制在后续阴影之上。`shadow-inset` 使用内阴影，六个尺寸档位使用外阴影。这些令牌不设置表面颜色、圆角、堆叠顺序或裁剪规则。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+元素使用的配色方案选择各个 `light-dark()` 颜色，因此可以在不改变阴影长度、也不需要其他工具类的情况下改变绘制结果。局部配色方案的选择方式见颜色角色。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+要移除阴影，请使用原生声明 `(box-shadow:none)`。要结合内阴影和外阴影，请定义一个同时包含两份列表的令牌；分开的类不会合并它们。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+颜色角色
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生阴影绘制与布局
+
+## usage-lead \{#copy-usage-lead\}
+
+
+让静置表面保持较低抬升程度，只抬高悬浮于其上的对象。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改预设值或添加令牌：`--shadow-card` 会创建 `shadow-card`。
+
+## guide-label \{#copy-guide-label\}
+
+
+颜色

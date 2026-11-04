@@ -1,0 +1,29 @@
+# Reference prose: illustrations/shared-source-class
+
+## title \{#copy-title\}
+
+Removing one source does not remove a shared rule
+
+## alt \{#copy-alt\}
+
+Page A has been removed while page B still contains p-md. Only page B has a live connection to the retained padding rule.
+
+## caption \{#copy-caption\}
+
+With unchanged definitions and policy, removing page A leaves page B’s reference to p-md. Source ownership changes even though the generated CSS can stay the same.
+
+## description-0 \{#copy-description-0\}
+
+Initially page-a.tsx and page-b.tsx both contain the complete p-md class.
+
+## description-1 \{#copy-description-1\}
+
+Removing page-a.tsx removes only that source contribution. The live connection from page-b.tsx keeps the shared utility and its --spacing-md dependency.
+
+## description-2 \{#copy-description-2\}
+
+The utility can leave when no current source or safelist retains it. Updating a source replaces its contribution rather than accumulating historical classes.
+
+## description-3 \{#copy-description-3\}
+
+The diagram shows the retained utility declaration; the theme dependency is described separately rather than reproduced as a complete stylesheet.

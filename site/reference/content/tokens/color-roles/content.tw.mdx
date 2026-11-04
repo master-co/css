@@ -1,0 +1,86 @@
+# Reference prose: tokens/color-roles
+
+## title \{#copy-title\}
+
+
+色彩角色
+
+## summary \{#copy-summary\}
+
+
+文字、表面與線條角色，各自具有淺色與深色值。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+文字
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+表面
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+線條
+
+## note \{#copy-note\}
+
+
+角色是色彩鍵的一部分：`fg-text-muted` 透過 color 命名空間讀取 `--color-text-muted`。每個色彩家族都接受角色鍵，包括 `bg-text-link` 與 `outline-line-control`；角色名稱不會限制屬性。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+淺色與深色對應每個預設 light-dark() 值的兩個參數。實際選擇由元素使用的配色方案決定，不是單靠 class 前綴或作業系統。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+區域配色方案決定使用值
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`fg-text-muted` 產生 `color: var(--color-text-muted)`。其預設值使用 `light-dark(var(--color-zinc-60), var(--color-zinc-40))`：淺色選取第一個色彩，深色選取第二個。class 與生成規則都不會改變。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+預設集在根元素啟用 `color-scheme: light dark`。其中的 `data-theme="light"` 與 `data-theme="dark"` 選擇器，可在根元素、巢狀區域或 shadow host 選取配色方案。選擇由原生 CSS 執行，切換配色方案不需要重新生成這個 utility。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`@dark` 與 `@light` class 後綴檢查的是系統偏好設定。手動選擇 `data-theme` 不會啟用這些媒體查詢。需要以選擇器為條件時，請使用模式契約定義的形式。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+角色提供的是色彩，不是元件，也不保證在每個背景上都有足夠對比。反相表面有對應的反相文字角色。分隔線與低調線條屬於裝飾用途，控制項線條則用來識別邊界。變更表面、透明度或 token 值時，請重新檢查實際的色彩配對。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+變數與模式
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生 light-dark() 選擇
+
+## usage-lead \{#copy-usage-lead\}
+
+
+使用角色組成卡片：浮起的表面、分隔線，以及強調、內文與弱化文字。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+新增一個角色，為每個配色方案各設定一個值：`--color-text-brand` 會建立 `fg-text-brand`。
+
+## guide-label \{#copy-guide-label\}
+
+
+色彩

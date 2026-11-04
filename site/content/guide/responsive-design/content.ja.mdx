@@ -1,0 +1,163 @@
+---
+title: "レスポンシブデザイン"
+description: "適切なレスポンシブの境界を選び、ページの列や再利用する概要を調整し、レイアウトが変わる幅を検証します。"
+figures: {"ResponsiveIllustration":{"title":"1つのビューポート、2つのコンポーネント幅","alt":"同じページで、同一の概要がメイン列では 448px、サイドバーでは 160px のコンテナーに置かれています。28rem に達するメイン列だけで2トラックになります。","caption":"ルートが 16px なら 28rem は 448px です。これは実際のコンテナー幅です。同じビューポート内で、広い概要は2トラック、狭い概要は縦並びになります。","description":[{"title":"同じビューポート","text":"2枚のカードは同じページにあります。ビューポートのブレークポイントでは同じ幅として扱われます。"},{"title":"異なるコンテナー","text":"メインのコンテナーは幅 448px、サイドバーは幅 160px です。"},{"title":"局所的な応答","text":"各祖先は container-inline を使います。子孫のカードは grid-cols(1) と grid-cols(2)@container(--md) を使い、メインのカードだけがプリセットの 28rem に達します。"}]},"GuideStudy:named-container-target":{"title":"名前付きクエリーは近いコンテナーを越えて選べる","alt":"入れ子の article と card のコンテナー境界が1つの子を囲んでいます。青い印が子の article クエリーと外側の名前付き article 境界を対応付け、近い card 境界は紫のままです。","caption":"名前で適格な祖先を選びます。対象の要素はその祖先内に置いてください。コンテナーは自分自身を問い合わせません。"},"GuideStudy:responsive-local-change":{"title":"面を指定し直さずにレイアウトを変える","alt":"2枚のカードは面、角丸、文字を共有しています。親がしきい値を越えると、レイアウトだけが縦並びから横並びに変わります。","caption":"条件付きのレイアウトクラスは、無関係な宣言をそのまま保ちます。この模式図では不要なカード内容を省略しています。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ResponsiveIllustration from './components/ResponsiveIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationContainerGrid from '@master/internal-site/demo/foundations/FoundationContainerGrid.astro'
+
+## 概要 [sr-only] \{#overview\}
+ページのレイアウトと再利用するカードでは、必要なレスポンシブルールが異なる場合があります。ページはビューポートに、カードは親から与えられた空間に合わせます。Master CSS では、スタイルを変えたいクラスに条件を付けます。
+
+まず[インストール](/guide/installation)を済ませてください。ここでは標準プリセットと、`@import '@master/css';` を読み込むアプリのスタイルシートを使います。各プレビューには境界を観察するための操作部品があります。**生成 CSS** で、添えたクラスの出力を確認できます。
+
+## 変化の基準を選ぶ \{#choose-a-boundary\}
+
+ワークスペースの列数など、ページ全体の判断にはビューポート条件を使います。同じコンポーネントがメイン列、サイドバー、幅の限られた領域に置かれる場合はコンテナークエリーを使います。
+
+| 何を基準にするか | 書き方 | 測定対象 |
+| --- | --- | --- |
+| ページのビューポート | `grid-cols(3)@md` | ビューポートの幅 |
+| コンポーネントが使える空間 | `grid-cols(2)@container(--md)` | 条件を満たす最も近い祖先コンテナーの幅 |
+
+<ResponsiveIllustration />
+
+図の2枚のカードは同じビューポート内にありますが、親の幅が異なります。ビューポート条件は両方に同時に一致します。コンテナークエリーなら、狭い方は縦並びを保ち、広い方だけ列に分けられます。
+
+## ページをビューポートに合わせる \{#based-on-viewport-breakpoints\}
+
+1列から始め、内容に余裕ができるところで列を増やします。このワークフローは、プリセットの `2xs` の 37.5rem と `md` の 64rem を使います。標準の初期文字サイズ 16px では、600px と 1024px に相当します。
+
+<DemoConfiguredExample
+  name="responsive-workflow"
+  title="ページの列をビューポートに合わせる"
+  source=""
+  responsive
+  widthPresets={[{ label: '320px', width: 320 }, { label: '600px', width: 600 }, { label: '1024px', width: 1024 }]}
+  html={`<section aria-label="Publishing workflow" class="grid-cols(1) gap-md grid-cols(2)@2xs grid-cols(3)@md">
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Draft</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Collect the changes.</p>
+  </article>
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Review</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Check the examples.</p>
+  </article>
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Publish</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Share the release notes.</p>
+  </article>
+</section>`}
+  caption="幅を選ぶかスライダーを使います。プレビューの実際のビューポートが変わり、2xs 未満は1列、2xs から2列、md から3列になります。周囲のページは独自のビューポートを保ちます。"
+/>
+
+`grid-cols(1)` が基本のレイアウトです。条件が置き換えるのは列数だけで、内容の順序、間隔、面のスタイルは変わりません。3列が役立つのは内容が収まる間だけです。アプリでしきい値を採用する前に、長いラベルで試してください。
+
+`@md` はプリセットの `@custom-media --md` 定義を読みます。テーマ変数の `--breakpoint-md` は読みません。`@md` を使うすべてのクラスのしきい値を変えるには、アプリの CSS エントリーでカスタムメディアを再宣言します。
+
+```css name=app.css
+@import '@master/css';
+
+@custom-media --md (width >= 48rem);
+```
+
+新しい境界がプリセット全体ではなく1つのレイアウト用なら、プロジェクト固有の名前を使います。
+
+```css name=app.css
+@custom-media --workspace-wide (width >= 72rem);
+```
+
+```html
+<section class="grid-cols(1) grid-cols(3)@workspace-wide">…</section>
+```
+
+[ブレークポイントのリファレンス](/reference/rules/named-conditions#viewport-widths)に、プリセットの名前と値を示しています。しきい値は内容の必要に応じて選びます。`md` などの名前は特定の端末を指しません。
+
+## コンポーネントをコンテナーに合わせる \{#based-on-container-sizes\}
+
+祖先に `container-inline` を付け、子孫にコンテナー条件を指定します。ここでは狭い領域で概要とステータスを縦に並べ、祖先がプリセットの `--md` コンテナー条件の 28rem に達すると2列にします。
+
+<FoundationContainerGrid />
+
+```html
+<section class="container-inline">
+  <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
+    <div class="min-w(0)">
+      <h3 class="m(0) text-md font-regular fg-text-strong">Release notes</h3>
+      <p class="mb(0) mt-xs text-sm fg-text-muted">Review the changes before publishing.</p>
+    </div>
+    <dl class="grid gap-xs m(0) text-sm">
+      <div>
+        <dt class="fg-text-muted">Status</dt>
+        <dd class="m(0) fg-text-strong">Draft ready</dd>
+      </div>
+      <div>
+        <dt class="fg-text-muted">Next step</dt>
+        <dd class="m(0) fg-text-strong">Editorial review</dd>
+      </div>
+    </dl>
+  </article>
+</section>
+```
+
+<Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+ブラウザーウィンドウを固定したまま **コンテナー** スライダーを動かします。変わるのは祖先のサイズで、ビューポートではありません。文字サイズ 16px で 447px と 448px を比べると、448px で2列目が現れるはずです。操作部品は記事の幅内に収まるため、記事自体がしきい値より狭ければブラウザーを広げてください。
+
+祖先がクエリーの境界となり、子孫がレイアウトを変えます。要素は自分のサイズを、自身のコンテナークエリーの祖先として使えません。カードの高さは内容に任せ、折り返した文字に合わせて伸びるようにします。
+
+### 2つの尺度を区別する \{#keep-the-two-scales-separate\}
+
+`@md` と `@container(--md)` は異なる定義を使います。
+
+<DocumentComparison>
+
+| クラスまたは値 | プリセットでの意味 |
+| --- | --- |
+| `@md` | カスタムメディアによる 64rem のビューポートしきい値 |
+| `@container(--md)` | カスタムコンテナー条件による 28rem のコンテナーしきい値 |
+| `max-w-md` | サイズトークン `--container-md` を使う最大幅 |
+
+</DocumentComparison>
+
+`--container-md` を変えると幅の上限が変わりますが、どちらのクエリーのしきい値も変わりません。再利用する条件は `@custom-container` で定義し、局所的な条件なら `grid-cols(2)@container(width>=30rem)` のように書けます。構文と全スケールは[名前付きコンテナー条件](/reference/rules/conditions#named-container-conditions)を参照してください。
+
+### 外側のコンテナーに名前を付ける \{#creating-named-containers\}
+
+名前のないサイズクエリーは、条件を満たす最も近い祖先を測定します。入れ子のレイアウトに別のコンテナーができると、内側の境界が使われます。外側の幅を測りたい場合は、`(container-name:outer)` で名前を付けて `@container(outer|--md)` を使います。
+
+<DemoConfiguredExample name="named-container" title="測定する祖先を選ぶ" source="" responsive container widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} html={'<section class="(container-name:outer) container-inline p-md r-lg b(1) b-solid b-line-divider">\n  <p class="mt(0) text-sm fg-text-muted">Outer container</p>\n  <div class="container-inline (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(--md)">\n      <h3 class="m(0) text-sm font-regular">Nearest container</h3>\n      <p class="mb(0) mt-xs text-sm">\n        <span class="hidden@container(--md)">Below 28rem</span>\n        <span class="hidden inline@container(--md)">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(outer|--md)">\n      <h3 class="m(0) text-sm font-regular">Named outer container</h3>\n      <p class="mb(0) mt-xs text-sm">\n        <span class="hidden@container(outer|--md)">Below 28rem</span>\n        <span class="hidden inline@container(outer|--md)">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Narrow outer と Wide outer を切り替えます。内側は 28rem 未満のままなので、外側が広がったときに変わるのは名前付きクエリーだけです。" />
+
+2つのステータス表示は、同じ狭い内側コンテナーの中にあります。外側を広げても、変わるのは名前付きクエリーの結果だけです。コンテナーの命名は祖先を選ぶもので、要素が自分自身を問い合わせる仕組みではありません。
+
+<GuideStudy id="named-container-target" />
+
+## 変わるスタイルだけに条件を付ける \{#syntax-first\}
+
+共通のスタイルには条件を付けません。値を変える必要のあるプロパティと範囲だけに条件を加えます。たとえば aside に `md` 未満で浮き上がった面を使い、大きなレイアウトにはその背景を持ち越さないようにできます。
+
+```html
+<aside class="p-md bg-surface-raised@max-md">…</aside>
+```
+
+<Class2CSS classes={['bg-surface-raised@max-md']} />
+
+`@max-md` はプリセットの `@md` の補集合で、両者は重なりません。`--md` の再宣言で両方が移動します。`hidden@media(52.125rem<=width<=64rem)` のような局所的な範囲条件なら、プロジェクトの名前付きしきい値を変えずに特定区間を指定できます。構文は[条件のリファレンス](/reference/rules/conditions#mediafeature)を参照してください。
+
+<ReferenceIllustration id="breakpoint-partition" />
+
+<GuideStudy id="responsive-local-change" />
+
+## スクリーンショットだけでなく境界を検証する \{#verify-the-boundary-not-just-the-screenshot\}
+
+各しきい値の直前と、ちょうどその値を試します。ページの例では実際の iframe ビューポートを 599/600px と 1023/1024px で確認します。コンポーネントの例ではページのビューポートを固定し、文字サイズ 16px で祖先を 447/448px にして確認します。
+
+結果が想定と違う場合は、子孫の計算後の `grid-template-columns` を調べます。条件が一致しているか、コンテナークエリーが意図した適格な祖先を使っているか、[カスケード](/guide/cascade-layers)で別のルールが勝っていないかを確認します。
+
+最後に長い文章、拡大した文字、狭いレイアウトを試します。どの幅でも読み順を保ち、折り返しを許可し、カードの高さを固定しないようにします。[レイアウト](/guide/layout-system)では、クエリーの境界とは別にグリッドと間隔の選び方を扱います。

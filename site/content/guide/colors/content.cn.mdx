@@ -1,0 +1,130 @@
+---
+title: "颜色"
+description: "以自适应角色构建界面颜色，结合圆角与阴影突出表面，并选择明暗模式。"
+figures: {"ColorIllustration":{"title":"模式改变，角色不变","alt":"明暗区域中呈现相同的表面、边框、标题与次要文本。两者都使用 bg-surface-raised、b-line-divider、fg-text-strong 与 fg-text-muted；解析后的颜色则随局部配色方案改变。","caption":"只需选择一次角色。它的 light-dark() 值会跟随元素配色方案，包括嵌在另一配色中的区域。","description":[{"title":"保留角色","text":"两个区域使用相同的表面、分隔线、强调文本与次要文本 class。"},{"title":"按区域解析","text":"角色值使用 light-dark()。每个区域的 color-scheme 会选择亮色或暗色，无需改变 class。"}]},"GuideStudy:palette-or-role":{"title":"区分固定色阶与语义角色","alt":"两条路径分别呈现固定色阶，以及选择明暗值的角色。","caption":"特定颜色使用色阶；需要随场景调整的决策则使用角色。"},"GuideStudy:local-color-scheme":{"title":"最近的配色方案决定颜色","alt":"亮色文档包住一个暗色区域。同一个语义 token 在外侧绘制亮色表面，在区域内绘制暗色表面。","caption":"嵌套边界代表 color-scheme。Token 名称与标记保持不变。"}}
+demos: {"DemoRaisedSurface":{"title":"凸起表面","caption":"两份文档使用相同 class。表面、文本与阴影颜色由当前模式提供；阴影几何形状保持不变。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ColorIllustration from './components/ColorIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationColorRoles from '@master/internal-site/demo/foundations/FoundationColorRoles.astro'
+import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
+
+## 概览 [sr-only] \{#overview\}
+
+以角色构建界面颜色：表面、线条与文本的 class 在明暗模式中保持不变。当颜色本身就是重点，例如插图或品牌点缀时，再选用色阶。颜色变化应对应角色、状态，或读者需要辨识的差异。
+
+<ColorIllustration />
+
+---
+
+## 选择角色或色阶 \{#choose-a-color-token\}
+
+| 需求 | 使用 | 示例 |
+| --- | --- | --- |
+| 页面结构与文本层级 | 颜色角色 | `bg-surface-raised`, `b-line-divider`, `fg-text-muted` |
+| 特定颜色 | 色阶 | `bg-blue-5`, `fg-blue-60` |
+
+<FoundationColorRoles />
+
+```html
+<!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
+  <h2 class="m(0) text-lg font-regular fg-text-strong">Project updates</h2>
+  <p class="mt-xs mb-md text-sm fg-text-muted">Three milestones changed this week.</p>
+  <a class="fg-text-link underline" href="/updates">Continue</a>
+</section>
+```
+
+<Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+角色是颜色键名的一部分：`bg-surface-raised` 读取 `--color-surface-raised`，`b-line-divider` 读取 `--color-line-divider`。线条角色只设置颜色，因此边框宽度与样式须另外指定。[颜色角色](/reference/tokens/color-roles)列出所有角色，[调色板](/reference/tokens/color)则列出完整色阶。
+
+<ReferenceIllustration id="border-ingredients" />
+
+---
+
+<GuideStudy id="palette-or-role" />
+
+## 固定与自适应色相别名 \{#mode-aware-hue-aliases\}
+
+`fg-yellow` 这类色相别名是固定颜色，在每个模式中都使用相同的值。`fg-text-yellow` 这类文本色相别名则会按模式选择适合文本的前景色阶。请在实际背景上检查对比度；自适应别名无法保证每种搭配都合适。
+
+```html
+<!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
+<svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
+<p class="fg-text-yellow">Pending review</p>
+```
+
+<Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+彩色标签使用文本色相别名；正文、强调文本与链接则使用文本角色。
+
+---
+
+## 凸起表面 \{#raised-surfaces\}
+
+凸起表面结合表面角色、圆角 token 与阴影 token。可交互的表面在悬停或获得焦点时，将阴影提高一级。普通卡片与控件使用小圆角；`pill` 留给刻意完全圆润的形状，例如下方徽章。
+
+<DemoRaisedSurface />
+
+```html
+<!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
+<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover shadow-md:focus-visible" href="/notes">
+  <span class="flex items-center justify-between gap-sm">
+    <span class="fg-text-strong">Field notes</span>
+    <span class="px-xs py-3xs pill bg-line-subtle text-xs fg-text-muted">12 new</span>
+  </span>
+</a>
+```
+
+<Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+预设阴影用 `light-dark()` 设置颜色，因此 `shadow-sm` 保留几何形状，并跟随元素的配色方案。`pill` 是固定工具类，不是圆角 token；宽高相等时会形成圆形。使用 `rtl-lg`、`rtr-lg`、`rbl-lg` 与 `rbr-lg` 可分别设置单个角。各种尺度与自定义方式请见[圆角](/reference/tokens/radius)与[阴影](/reference/tokens/shadow)。
+
+<ReferenceIllustration id="pill-aspect" />
+
+---
+
+## 明暗模式 \{#native-color-scheme-and-manual-themes\}
+
+预设在根元素设置 `color-scheme: light dark`，角色与阴影则使用 `light-dark()`，因此页面无需额外 class 就会跟随系统偏好。若要指定模式，在根元素、嵌套区域或 Shadow Host 上设置 `data-theme="light"` 或 `data-theme="dark"`：
+
+<DemoConfiguredExample name="nested-color-schemes" title="一个 token，两种局部配色" source={`@theme {
+  --color-surface-notes: light-dark(#f4f4f5, #27272a);
+}
+
+@layer base {
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}`} html={'<section data-theme="dark" class="p-md r-lg bg-surface-notes fg-text-body wrap-anywhere"><h2 class="m(0) text-lg font-regular">Dark notes</h2><p class="mt-xs mb-md text-sm">This region chooses dark.</p><article data-theme="light" class="p-md r-md bg-surface-notes fg-text-body"><h3 class="m(0) text-md font-regular">A light region inside</h3><p class="mt-xs mb(0) text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} caption="两个区域都使用 bg-surface-notes。data-theme 属性选择不同配色，因此 light-dark() 提供暗色外层表面与亮色内层表面。" />
+
+预设已内置这两个 `data-theme` 选择器；示例 CSS 再次列出它们，以说明启用方式。用 `light-dark()` 定义的自定义颜色也会以相同方式调整，切换模式无需重新编译。嵌套区域会继承父级 token，除非自行重新声明；品牌主题应使用自己的选择器，例如 `[data-brand="ocean"]`，并在其中重新声明角色 token。
+
+`@light` 与 `@dark` 后缀是 `prefers-color-scheme` 媒体查询。手动设置 `data-theme` 会改变 token，但不会启用这些查询。若 class 必须响应手动选择，请声明选择器 mixin 并应用：
+
+```css name=index.css
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```html
+<!-- @MARK @apply(--manual-dark) -->
+<img class="(opacity:.85)@apply(--manual-dark)" src="/chart.png" alt="Weekly usage" />
+```
+
+这个 mixin 检查的是属性，而不是实际使用的配色方案，因此在嵌套的亮色区域内也会匹配。优先使用自适应 token；作用范围与解析方式请见[变量与模式](/reference/rules/modes)。
+
+<ReferenceIllustration id="manual-wrapper-reach" />
+
+<GuideStudy id="local-color-scheme" />
+
+## 在实际场景中检查角色 \{#check-the-roles-in-context\}
+
+在两种配色中检查相同内容。确认强调与次要文本和实际表面的对比度、链接的普通与焦点状态，以及用来识别控件的边界。颜色 token 提供一个值，本身不会建立对比度、确保焦点可见，或赋予状态含义。
+
+选中项或状态应搭配标签、图标或其他可见提示，避免只靠颜色。嵌套区域须单独验证：深色页面中的手动亮色区域，仍需有适当且易读的表面与前景搭配。

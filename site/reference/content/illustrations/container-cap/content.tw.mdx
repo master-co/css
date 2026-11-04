@@ -1,0 +1,36 @@
+# Reference prose: illustrations/container-cap
+
+## title \{#copy-title\}
+
+
+相同上限可以產生不同寬度
+
+## alt \{#copy-alt\}
+
+
+兩個 auto 寬度區塊都使用 max-w-3xs，最大寬度為 16rem。在 20rem 的父元素中，區塊寬度為 16rem；在 13rem 的父元素中，區塊則縮至 13rem 以符合空間。
+
+## caption \{#copy-caption\}
+
+
+寬度為 auto 的一般區塊會符合可用空間，直到達到最大寬度。兩個父元素以相同比例繪製，根元素字型大小為 16px。
+
+## description-0 \{#copy-description-0\}
+
+
+max-w-3xs 讀取預設的 --container-3xs 值 16rem。兩個範例都在一般區塊版面中使用 auto 寬度，採用 border-box 計算尺寸，且沒有最小寬度限制。
+
+## description-1 \{#copy-description-1\}
+
+
+第一個父元素提供 20rem 空間。子元素到達 16rem 上限後停止增寬，後方留下未使用的空間。
+
+## description-2 \{#copy-description-2\}
+
+
+第二個父元素提供 13rem 空間。子元素會符合這個較小空間，不會變成 16rem 寬。
+
+## description-3 \{#copy-description-3\}
+
+
+虛線輪廓標示可用寬度，不是生成的邊框或查詢容器。兩個父元素以相同比例繪製，根元素字型大小為 16px；高度則依相同內容決定。

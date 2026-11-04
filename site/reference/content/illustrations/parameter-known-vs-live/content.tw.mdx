@@ -1,0 +1,31 @@
+# Reference prose: illustrations/parameter-known-vs-live
+
+## title \{#copy-title\}
+
+
+靜態組合樣式引數不同於即時 CSS 值
+
+## alt \{#copy-alt\}
+
+
+pair(2rem) 展開為兩個尺寸。這個雙宣告組合樣式會拒絕 pair(var(--size))；明確的原生 width 變數則交由瀏覽器求值。
+
+## caption \{#copy-caption\}
+
+
+圖中的 pair utility 有兩個宣告。另一項單參數、單宣告的符號式參照例外，不適用於此。
+
+## description-0 \{#copy-description-0\}
+
+
+@utility pair(--size) \{ width: var(--size); height: var(--size); \} 接受 pair(2rem) 的已知引數，並綁定到兩個宣告。
+
+## description-1 \{#copy-description-1\}
+
+
+此組合樣式拒絕 pair(var(--size))，因為引數依賴瀏覽器。需要維持即時變化的值，請用明確的原生宣告 class。
+
+## description-2 \{#copy-description-2\}
+
+
+(width:var(--size)) 為瀏覽器保留變數參照，只改變寬度。若也需要高度，請另外加入高度宣告。

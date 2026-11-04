@@ -1,0 +1,31 @@
+# Reference prose: illustrations/static-branch-extraction
+
+## title \{#copy-title\}
+
+
+分支运行前即可看见静态选项
+
+## alt \{#copy-alt\}
+
+
+条件表达式两侧的字面值均连接到提取出的类。拼接运行时 tone 的表达式则停在未解析片段。
+
+## caption \{#copy-caption\}
+
+
+两个分支是源代码中的选项，并非依次执行的步骤。提取不会预测选中的分支，也不会凭空推导拼接后的类名。
+
+## description-0 \{#copy-description-0\}
+
+
+error ? "bg-red-60" : "bg-green-60" 让提取能看见两个完整的静态类字符串。
+
+## description-1 \{#copy-description-1\}
+
+
+"bg-" + tone 不提供完整的结果类。扫描器不会推断 tone 的值。
+
+## description-2 \{#copy-description-2\}
+
+
+选项有限时请使用完整候选字符串；值本身不受限时，则使用固定类搭配动态 CSS 变量。

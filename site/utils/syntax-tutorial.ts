@@ -1,9 +1,9 @@
-import path from 'node:path'
+import { localizedContentFile } from './localized-content'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { syntaxIllustrationMarkdown } from '../content/guide/syntax-tutorial/illustration'
 
-export async function syntaxTutorialContent(siteRoot: string) {
-  const result = await extractReferenceMdx(path.join(siteRoot, 'content/guide/syntax-tutorial/content.mdx'), [], [], {
+export async function syntaxTutorialContent(siteRoot: string, locale = 'en') {
+  const result = await extractReferenceMdx(await localizedContentFile(siteRoot, 'content/guide/syntax-tutorial/content.mdx', locale), [], [], {
     component: name => name === 'SyntaxIllustration' ? syntaxIllustrationMarkdown() : undefined
   })
   if (result.notes.length) throw new Error(`Incomplete Syntax Tutorial export: ${result.notes.join('; ')}`)

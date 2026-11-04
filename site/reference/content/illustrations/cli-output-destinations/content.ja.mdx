@@ -1,0 +1,36 @@
+# Reference prose: illustrations/cli-output-destinations
+
+## title \{#copy-title\}
+
+
+CSS の表示とアセット公開は配信境界が異なる
+
+## alt \{#copy-alt\}
+
+
+generate コマンドは no-export で stdout へ、output で CSS エントリーと必要なスタイルシート・リソースファイルへ分岐する。アセット一式を公開するのはファイル書き出し側だけ。
+
+## caption \{#copy-caption\}
+
+
+両コマンドともプロジェクトのソースを読みます。--no-export は CSS を表示し、--output はエントリーと必要なアセットを公開します。インポートやリソースが別ファイルなら一式を配信します。
+
+## description-0 \{#copy-description-0\}
+
+
+どちらも master-css generate が選択したプロジェクトソースとスタイルシートエントリーを読みます。
+
+## description-1 \{#copy-description-1\}
+
+
+--no-export --verbose 0 は出力ファイルを公開せず CSS を stdout へ送ります。参照リソースと URL の基準は呼び出し元の責任です。
+
+## description-2 \{#copy-description-2\}
+
+
+--output dist/app.css は指定エントリーと、インポートグラフに必要な別のスタイルシートやリソースアセットを公開します。
+
+## description-3 \{#copy-description-3\}
+
+
+ファイル群はアセット一式であり、全プロジェクトで追加ファイルを作るという約束ではありません。生成された場合はエントリーと一緒にデプロイします。

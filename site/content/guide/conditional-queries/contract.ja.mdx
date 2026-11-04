@@ -1,0 +1,197 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+条件の接尾辞は、クラスのルールを適用できる場合を制限します。Master CSS が名前付きの定義を解決してネイティブ CSS クエリーを出力し、ブラウザーが評価します。コンパイルは現在のビューポート、入力デバイス、ブラウザー対応をテストしません。
+
+このページは、対応する接尾辞、クエリーのエンコード、組み合わせを定義します。ビューポートやコンポーネントの境界の選び方は[レスポンシブデザイン](/guide/responsive-design)を、プログレッシブエンハンスメントは[互換性](/guide/compatibility)を参照してください。
+
+<ReferenceIllustration id="condition-eligibility" />
+
+## クエリーの形式 \{#arbitrary-conditions-and-queries\}
+
+条件はユーティリティと[セレクター接尾辞](/reference/rules/selectors)の後に追加します。クラスの括弧がクエリーを区切るため、メディア機能、範囲、supports 宣言をさらに括弧で囲まないでください。
+
+| クエリー | クラスの接尾辞 | ネイティブの条件 |
+| --- | --- | --- |
+| 名前付きメディア | `@sm` | `@custom-media --sm` を解決 |
+| メディアタイプ | `@media(print)` | `@media print` |
+| 真偽値のメディア機能 | `@media(hover)` | `@media (hover)` |
+| メディア機能 | `@media(pointer:coarse)` | `@media (pointer:coarse)` |
+| メディアの範囲 | `@media(width>=40rem)` | `@media (width>=40rem)` |
+| Supports 宣言 | `@supports(display:grid)` | `@supports (display:grid)` |
+| コンテナーサイズ | `@container(width>=40rem)` | `@container (width>=40rem)` |
+| 名前付きコンテナー | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
+| 独自のコンテナー条件 | `@container(card\|--md)` | `card` に対して `@custom-container --md` を解決 |
+| コンテナースタイル | `@container(style(--density:compact))` | `@container style(--density:compact)` |
+
+<Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
+
+`|` は、文字列、コメント、CSS エスケープの外の空白を表します。`@container(card|width>=40rem)` ではコンテナー名と条件を区切ります。引用符付き文字列とエスケープはリテラルの内容を保ちます。このエンコードはクラス用であり、CSS 定義には通常の空白を書きます。
+
+<a id="simple-queries-in-classes"></a>
+
+各接尾辞は単純なクエリーを 1 つ受け付け、単一値内の括弧が釣り合った関数は保持します。Master CSS はブラウザー対応データベースで機能名を制限しません。生成に成功しても、ブラウザーが条件に対応することや一致することは保証されません。複合式とクエリーリストは[CSS に記述するクエリー](#queries-in-css)を参照してください。
+
+## 条件を組み合わせる \{#grouping-conditions\}
+
+単純なクエリー接尾辞を重ねると、すべての条件が必要になります。最初の接尾辞が外側のクエリーになり、その後の接尾辞が内側に入れ子になります。同じ種類のラッパーを繰り返しても順序を保ちます。
+
+<ReferenceIllustration id="nested-conditions" />
+
+```html
+<div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
+```
+
+<Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+これらは入れ子の CSS 条件であり、順番に実行する手順ではありません。両方のクエリーが一致して初めて、`display: grid` 宣言がカスケードに参加します。宣言を受け取る要素は、引き続きセレクターが決めます。
+
+### セレクターとトークンの依存関係 \{#composition\}
+
+`fg-red:hover@sm` は、トークンを参照するユーティリティ、セレクター、名前付きメディア条件を組み合わせます。
+
+```html
+<div class="fg-red:hover@sm">Hover at sm and above</div>
+```
+
+プリセットでは、`fg-red` は `--color-red` を使い、`:hover` はクラスを持つ要素を調べ、`@sm` はビューポート幅が少なくとも `52.125rem` であることを要求します。プリセットの red エイリアスは固定色ですが、プロジェクトで上書きできます。トークン値と競合する CSS がなければ、クラスだけで最終色を確定できません。
+
+<a id="complete-generated-css"></a>
+
+<Class2CSS classes={['fg-red:hover@sm']} />
+
+生成 CSS は必要なトークンの依存関係を含みますが、ベースのレイヤー順序宣言は挿入しません。通常は `@import '@master/css'` で[ベーススタイルシート](/reference/rules/layers)を読み込みます。
+
+## 名前付きメディア条件 \{#common-condition-variants\}
+
+`@sm` のような単独の接尾辞は `@custom-media` 定義を解決します。未定義の名前はエラーです。ミックスイン名は別の `@apply(--name)` 構文を、コンテナー条件は `@container(--name)` を使い、どちらも単独の接尾辞では選びません。
+
+| プリセットの接尾辞 | 意味 |
+| --- | --- |
+| `@sm`, `@md`, … | ビューポートがそのブレークポイント以上 |
+| `@max-sm`, `@max-md`, … | 対応するブレークポイントの補集合 |
+| `@landscape`, `@portrait` | ビューポートの向き |
+| `@motion-safe`, `@motion-reduce` | 動きを抑える設定 |
+| `@light`, `@dark` | システムのカラー設定 |
+
+### ブレークポイント \{#sm--md--lg--and-more\}
+
+プリセットの `media.css` は 11 個のビューポートのブレークポイントを登録します。`theme.css` だけのインポートでは登録されず、テーマ変数もメディア条件を定義しません。値は[ブレークポイントのリファレンス](/reference/rules/named-conditions#viewport-widths)を参照してください。
+
+プロジェクトはネイティブ単位を保ってクエリーを置き換えられます。プリセットの `--max-*` は対応する名前の否定で、`--max-md` は `not (--md)` です。定義を一緒にコンパイルすると、`--md` の置き換えが両方の範囲を更新し、境界で重複しません。
+
+<a id="compiled-condition-definitions"></a>
+
+コンパイル済み manifest には、すでに展開したクエリーが入っています。そこに定義を追加しても、既存の依存条件は再展開されません。両方の範囲を置き換える設定フラグメントには、両方の名前を明示します。
+
+<ConfiguredExample source={'@custom-media --md (width >= 60rem);\n@custom-media --max-md not (--md);'} classes={['hidden@md', 'hidden@max-md']} />
+
+<ReferenceIllustration id="compiled-query-snapshot" />
+
+### システムのカラー設定 \{#light--dark--and-custom-modes\}
+
+プリセットの `@light` と `@dark` は `prefers-color-scheme` をクエリーします。祖先セレクターを挿入したり、手動で選んだサイトテーマに従ったりはしません。手動の有効化には `@apply(--manual-dark)` などの明示的なセレクターミックスインを使います。[変数とモード](/reference/rules/modes#mode-triggers)を参照してください。
+
+## ネイティブクエリー \{#native-queries\}
+
+### メディア機能と範囲 \{#mediafeature\}
+
+ネイティブ機能名と単位を省略せずに使います。`print`、`screen`、`all` などのメディアタイプは、グループ化の括弧なしで出力します。メディアタイプでない単独の名前は真偽値の機能となり、`@media(hover)` は `@media (hover)` を出力します。
+
+<a id="comparison-operators"></a>
+
+範囲は `<`、`<=`、`>`、`>=`、`=` を受け付け、連鎖する比較にも対応します。小数とネイティブ単位を保持し、CSS の解像度単位 `x` もネイティブの意味を保ちます。
+
+<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)', 'hidden@media(resolution>=2x)']} />
+
+同じ単位で比較可能な範囲は、範囲の優先順位を保ちます。名前付きメディア条件と等価なネイティブクエリーは、同じ順序付け情報を使います。異なる単位や式は安定した構文順序を使い、Master CSS は並べ替えのためにルートのフォントサイズを仮定したり、単位を変換したりしません。コンテナークエリーの領域はメディアクエリーと別です。等価な条件かつ同じプロパティのスコープでは、直接値が名前付きトークンより後になります。
+
+ブラウザーによる機能と範囲の解釈は、[Media Queries](https://www.w3.org/TR/mediaqueries-5/)を参照してください。
+
+### Supports 宣言 \{#supportsfeature\}
+
+`@supports(property:value)` は `@supports(display:grid)` などの CSS 宣言を 1 つ受け付け、ブラウザーがそのプロパティと値の組み合わせへの対応を調べます。`selector()` の検査、否定、複合の対応条件は [CSS ミックスイン](#queries-in-css)に記述します。
+
+<Class2CSS classes={['grid@supports(display:grid)']} />
+
+### コンテナー \{#containersize\}
+
+サイズクエリーは、クエリー対象にできる祖先コンテナーを測定します。通常の CSS でコンテナーを作り、最も近い対象ではなく特定のコンテナーを選ぶ場合は名前を付けます。この例では、クエリーを適用する要素は子孫です。
+
+```html
+<aside class="(container-name:card) container-inline">
+  <div class="grid-cols(2)@container(card|width>=40rem)">
+    <div>First item</div>
+    <div>Second item</div>
+  </div>
+</aside>
+```
+
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+
+条件が一致すると、組み合わせスタイルは `display: grid` と等幅の 2 列を設定します。しきい値未満ではどちらの宣言も提供しないため、2 つのブロック子要素は通常フローで縦に並びます。コンテナー自身の幅は周囲のレイアウトが決めます。
+
+カスタムプロパティのスタイルクエリーは、祖先コンテナーの値を調べます。`container-inline` は不要です。
+
+```html
+<div style="--density:compact">
+  <div class="p(8)@container(style(--density:compact))">Compact content</div>
+</div>
+```
+
+<Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+コンテナーの適格性と照合は、ネイティブの[コンテナークエリー](https://www.w3.org/TR/css-conditional-5/#container-queries)が定義します。`--container-md` などのサイズトークンを変えても、明示的なしきい値や名前付きコンテナー条件は変わりません。独立したサイズの役割は[コンテナートークン](/reference/tokens/container)を参照してください。
+
+### 名前付きコンテナー条件 \{#named-container-conditions\}
+
+`@container(--md)` は `@custom-container --md` を解決し、`@container(card|--md)` は同じ条件を名前が `card` の適格なコンテナーに適用します。定義が提供するのは条件であり、コンテナー名ではありません。
+
+プリセットの `container.css` は 13 個のコンポーネント幅と、それぞれの `max-` の補集合を登録します。ビューポートのブレークポイントとは独立しており、`@container(--md)` は `28rem`、`@md` は `64rem` です。
+
+プリセットのコンテナースケールとその補集合の一覧は、[名前付き条件](/reference/rules/named-conditions#container-widths)を参照してください。
+
+各 `--max-*` は、対応する最小幅条件の否定です。たとえば `--max-md` は `not (--md)` です。メディア条件と同様に、一緒にコンパイルした定義は参照先の上書きに従いますが、[展開済み manifest の定義](#compiled-condition-definitions)は、フラグメントが参照先の名前だけを置き換えても再展開されません。
+
+<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+
+名前の定義や置き換えには [`@custom-container`](/reference/directives/queries#custom-container) を使います。未定義の名前はエラーです。
+
+## CSS に記述するクエリー \{#queries-in-css\}
+
+<a id="upgrading-rc-conditions"></a>
+
+クラスのクエリーは、意図的にネイティブ CSS より小さな文法だけを受け付けます。メディアクエリーリスト、複合条件、否定は `@custom-media` で定義します。ほかのクエリーには `@mixin` を使い、`@contents` でクラスの宣言を挿入する場所を示します。
+
+| 拒否されるクラス形式 | 理由 | 利用できる代替形式 |
+| --- | --- | --- |
+| `@media((width>=50rem))` | 余分なグループ化の括弧 | `@media(width>=50rem)` |
+| `@media(screen\|and\|(width>=50rem))` | 複合クエリー | 名前付き `@custom-media` |
+| `@media(not\|print)` | 否定クエリー | 名前付き `@custom-media` |
+| `@media(screen,print)` | クエリーリスト | 名前付き `@custom-media` |
+| `@supports(selector([lang\|=en]))` | セレクターの対応検査 | ネイティブの `@supports` を含む `@mixin` |
+
+余分なグループ化の括弧は、使うべきクラス形式とともに `CLASS_SYNTAX_ERROR` を報告します。複雑な形式は `MASTER_QUERY_REQUIRES_CSS` を報告し、ルールを生成しません。クエリーを引用符で囲んでも文法は広がりません。`|=` 属性演算子などのリテラルなパイプは、クラスのクエリーではなくネイティブ CSS に記述してください。
+
+<ConfiguredExample source={'@custom-media --wide-screen screen and (width >= 50rem);\n@mixin --language-selector {\n  @supports selector([lang|=en]) { @contents; }\n}'} classes={['p-md@wide-screen', 'block@apply(--language-selector)']} />
+
+再利用できるラッパーと引数は、[ユーティリティとミックスイン](/reference/directives/definitions#reusing-a-matched-value)を参照してください。
+
+## その他の接尾辞 \{#other-suffixes\}
+
+以下の接尾辞も `@` を使いますが、メディア、対応、コンテナーの条件はテストしません。
+
+### カスケードレイヤーの選択 \{#base--default--component--utility\}
+
+`@layer(base)`、`@layer(defaults)`、`@layer(components)`、`@layer(utilities)` はクラス全体のレイヤーを選び、サブレイヤーは作りません。同じレイヤーの繰り返しは許可されますが、1 つのクラスで異なるレイヤーを選ぶとエラーです。順序と制約は[カスケードレイヤー](/reference/rules/layers)を参照してください。
+
+### 開始時のスタイル \{#starting-style\}
+
+`@starting-style` はネイティブの at-rule でルールを囲みます。要素に以前の描画スタイルがない場合に変更前のスタイルを提供し、登場時のトランジションを可能にします。自動でトランジションを作ったり、汎用の「初回描画」セレクターとして働いたりはしません。ネイティブの動作は [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@starting-style)を参照してください。
+
+<Class2CSS classes={['(opacity:0)@starting-style']} />
+
+`@starting-style` と `@layer(...)` は組み込みの接尾辞であり、プリセット定義を必要としません。再利用する CSS ラッパーには [`@apply(--name)`](/reference/directives/definitions#reusing-a-matched-value) を使います。

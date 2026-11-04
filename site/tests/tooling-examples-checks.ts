@@ -32,7 +32,8 @@ export function verifyLintExamples() {
     assert.equal(decision.fixed, false)
     assert.equal(decision.messages.length, 1)
     const source = deliverySource('code-linting')
-    const section = (heading: string) => source.split(`### ${heading}\n`)[1].split(/\n## /)[0].split(/\n### /)[0]
+    const section = (heading: string) => source.replace(/^(#{2,3} .+?)\s+\\?\{#[\w-]+\\?\}$/gm, '$1')
+      .split(`### ${heading}\n`)[1].split(/\n## /)[0].split(/\n### /)[0]
     const invalid = deliveryFences(section('No invalid classes')).find(fence => fence.language === 'html')!
     const invalidMessages = lint.verify(invalid.text, config('no-invalid-classes'))
     assert.equal(invalidMessages.length, 1)

@@ -1,0 +1,144 @@
+---
+{
+  "title": "Angular에서 Master CSS 설정하기",
+  "description": "CLI가 생성한 CSS를 Angular에 연결하고 두 개발 감시 프로세스를 함께 실행한 뒤 프로덕션 스타일시트 또는 선택적 브라우저 런타임을 확인합니다.",
+  "category": "통합"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/angular/cover-light.webp'
+import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Angular" />
+
+Angular 빌더는 유지하고 Master CSS CLI로 Angular가 불러올 수 있는 스타일시트를 생성합니다. 개발 중에는 두 감시 프로세스를 함께 실행하세요. Master CSS가 생성 CSS를 갱신하고 Angular는 이를 가져오는 앱을 제공합니다.
+
+이 설정은 전역 `src/styles.css`, 정상 작동하는 `npm start` 명령, 지원되는 Node.js 24 버전을 갖춘 기존 브라우저 렌더링 Angular 앱을 전제로 합니다. Angular의 기본 [에뮬레이트된 캡슐화](https://angular.dev/guide/components/styling#viewencapsulationemulated)를 사용하므로 전역 스타일이 컴포넌트 템플릿에 적용됩니다. Shadow DOM 컴포넌트에는 자체 섀도 루트 안에 스타일이 필요합니다.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step>
+    ### Master CSS 추가하기 \{#add-master-css\}
+
+    Angular 프로젝트 루트에서 설치 프로그램을 실행하세요:
+
+    ```bash
+    npm create @master/css@rc -- --framework angular --yes
+    ```
+
+    정적 설정은 `@master/css`와 `@master/css-cli`를 추가합니다. 설치 프로그램의 선택적 도구 및 미리보기 옵션은 [설치](/guide/installation#installation)를 참고하세요.
+  </Step>
+  <Step>
+    ### 스타일시트 연결 확인하기 \{#check-the-stylesheet-connection\}
+
+    설치 프로그램은 프로젝트 루트에 Master CSS 소스 진입점을 만듭니다:
+
+    ```css name=master.css
+    @import '@master/css';
+    ```
+
+    기존 내용을 유지하면서 Angular 전역 스타일시트에 다음 가져오기도 추가합니다:
+
+    ```css name=src/styles.css
+    @import './master.generated.css';
+    ```
+
+    `angular.json`의 애플리케이션 `build.options.styles` 배열에 `src/styles.css`를 유지하세요. 생성된 CSS가 페이지에 전달되는지는 Angular의 [전역 스타일 설정](https://angular.dev/reference/configs/workspace-config#styles-and-scripts-configuration)이 결정합니다. 비표준 워크스페이스 구조에서는 출력 경로와 가져오기를 함께 조정하세요.
+
+    `@theme`, `@utility` 같은 Master CSS 정의는 `master.css`에 두세요. Angular는 생성된 네이티브 CSS를 사용하며 일반 CSS 빌더는 이런 정의를 컴파일하지 않습니다. `src/master.generated.css`를 편집하거나 이를 `master.css`로 다시 가져오지 마세요.
+  </Step>
+  <Step>
+    ### CSS 생성하기 \{#generate-the-css\}
+
+    한 터미널에서 스타일시트를 생성하고 변경 사항을 계속 감시하세요:
+
+    ```bash
+    npx master-css generate --output src/master.generated.css --watch
+    ```
+
+    최초 생성이 끝날 때까지 기다린 뒤 두 번째 터미널에서 Angular를 시작하세요:
+
+    ```bash
+    npm start
+    ```
+
+    두 프로세스를 모두 실행 상태로 유지하세요. Angular 감시 프로세스만으로는 클래스를 추가할 때 Master CSS가 다시 생성되지 않습니다.
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+
+    루트 컴포넌트가 참조하는 템플릿에 다음 마크업을 추가하세요. Angular의 [현재 명명 규칙](https://angular.dev/cli/new#file-name-style-guide)에서는 보통 `src/app/app.html`이며, 기존 프로젝트는 `src/app/app.component.html`을 사용할 수도 있습니다.
+
+    <DemoConfiguredExample name="angular-check" title="템플릿 스타일 확인하기" source="" caption="문단에 중립색 표면, 얇은 테두리, 작은 둥근 모서리와 사방 1rem의 안쪽 여백이 적용됩니다." html={`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello Angular
+</p>`} />
+  </Step>
+</StepSection>
+
+## 결과 확인하기 \{#verify-the-result\}
+
+Angular 앱을 여세요. 문단의 간격과 표면이 예제와 같아야 합니다. 템플릿의 `p-md`를 `p-lg`로 바꾸세요. 두 감시 프로세스가 실행 중이면 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나야 합니다. 갱신을 확인한 뒤 원래대로 돌립니다.
+
+스타일이 나타나지 않으면 연결 과정을 순서대로 확인하세요:
+
+- Master CSS 터미널에서 생성 오류를 확인하고 `src/master.generated.css`가 있는지 확인합니다.
+- `src/styles.css`의 가져오기와 `angular.json`의 해당 파일 등록을 확인합니다.
+- 브라우저 개발자 도구로 문단을 검사해 일치하는 규칙과 이를 덮어쓰는 컴포넌트 스타일이 있는지 확인합니다.
+
+정적 생성에는 소스의 완전한 클래스 문자열이나 명시적인 세이프리스트가 필요합니다. 조건부 클래스 이름도 완전한 형태로 유지하고, 동적 값에는 CSS 사용자 지정 속성을 사용하세요. 생성된 출력에 클래스가 없다면 [클래스 이름 스캔](/guide/scanning-and-pruning)을 참고하세요.
+
+## 배포용 빌드하기 \{#build-for-deployment\}
+
+Angular가 앱을 패키징하기 전에 CSS를 생성하세요:
+
+```bash
+npx master-css generate --output src/master.generated.css
+npm run build
+```
+
+CI에서도 같은 순서를 사용하세요. 이전에 생성된 파일을 제공하면 누락된 스타일이 가려질 수 있으므로 새로 생성한 뒤 프로덕션 빌드를 확인합니다.
+
+정적이라는 말은 CSS 생성 단계를 뜻합니다. 브라우저에서 렌더링되는 Angular 앱이 HTML을 만들려면 여전히 JavaScript가 필요합니다.
+
+## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
+
+기본값은 정적 렌더링입니다. 알려진 소스 문자열이 아닌 브라우저 DOM 변경에 따라 클래스를 생성해야 한다면 런타임 렌더링을 사용하세요.
+
+| 모드 | 설치 프로그램 옵션 | CSS 전달 방식 |
+| --- | --- | --- |
+| 정적 | 없음 | `src/styles.css`에서 CLI 출력 가져오기 |
+| 런타임 | `--mode runtime` | `src/main.ts`에서 브라우저 런타임 시작 |
+
+<DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
+
+런타임 설정에는 다음 명령을 실행하세요:
+
+```bash
+npm create @master/css@rc -- --framework angular --mode runtime --yes
+```
+
+설치 프로그램은 `src/main.ts`에서 `MasterCSSRuntime`을 시작하고 `@master/css-runtime/default-program`을 불러오며 문서의 클래스 변경을 관찰합니다.
+
+**Angular를 시작하기 전에 전역 스타일시트 설정을 완료하세요.** 현재 설치 프로그램은 `src/styles.css`에 `@import '@master/css';`를 추가합니다. 이 가져오기를 아래의 네이티브 기본 스타일시트로 바꾸고 앱에 필요한 다른 네이티브 CSS 가져오기와 규칙은 유지하세요. 정적 설정에서 전환한다면 `./master.generated.css` 가져오기도 제거합니다. 이 런타임 경로에는 CSS 감시 프로세스가 필요하지 않습니다.
+
+```css name=src/styles.css
+@import '@master/css/base.css';
+```
+
+기본 프로그램은 프리셋 어휘를 제공합니다. Angular의 일반 CSS에 `@theme`이나 `@utility`를 추가해도 사용자 지정 런타임 프로그램이 컴파일되지는 않습니다. 프로젝트에서 정의한 어휘에는 정적 CLI 경로를 사용하거나 [런타임 API](/reference/packages#css-runtime)를 통해 별도로 컴파일한 프로그램을 제공하세요.
+
+Angular 앱을 빌드하고 제공한 뒤 브라우저 콘솔에서 다음 코드를 실행하세요. 다시 빌드하지 않아도 예제 문단에 밑줄이 생겨야 합니다:
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+이 런타임은 브라우저 진입점에서 시작됩니다. Angular SSR 앱에는 별도의 초기 CSS 전략이 필요합니다. 이 가이드는 브라우저 렌더링 설정을 다룹니다.
+
+</DocumentDisclosure>

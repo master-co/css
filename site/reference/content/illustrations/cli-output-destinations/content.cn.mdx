@@ -1,0 +1,36 @@
+# Reference prose: illustrations/cli-output-destinations
+
+## title \{#copy-title\}
+
+
+标准输出中的 CSS 与发布资源具有不同的交付边界
+
+## alt \{#copy-alt\}
+
+
+generate 命令通过 no-export 分支至 stdout，或通过 output 产生 CSS 入口和所需样式表、资源文件。仅文件导出分支发布资源集。
+
+## caption \{#copy-caption\}
+
+
+两个命令均读取项目源。--no-export 将 CSS 写入标准输出，--output 发布入口及所需资源。导入或资源保持独立时，须交付完整文件集。
+
+## description-0 \{#copy-description-0\}
+
+
+两种情况下 master-css generate 均读取所选项目源与样式表入口。
+
+## description-1 \{#copy-description-1\}
+
+
+--no-export --verbose 0 将 CSS 结果发送至 stdout，不发布输出文件。调用方仍负责引用资源及其 URL 基准。
+
+## description-2 \{#copy-description-2\}
+
+
+--output dist/app.css 发布指定入口及导入图所需的独立样式表或资源。
+
+## description-3 \{#copy-description-3\}
+
+
+文件组表示资源集，并不保证每个项目均产生额外文件。一旦产生，部署时须与入口一同交付。

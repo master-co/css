@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: Props) {
   return referenceMetadata(entry.join('/'), locale)
 }
 
-const { entry } = Astro.props.params
-const doc = await loadReferenceRoute(entry.join('/'))
+const { entry, locale } = Astro.props.params
+const doc = await loadReferenceRoute(entry.join('/'), locale)
 ---
 
 {doc.sheet?.kind === 'named-conditions'

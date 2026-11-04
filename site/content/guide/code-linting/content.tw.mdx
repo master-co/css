@@ -1,0 +1,249 @@
+---
+title: "Master CSS 程式碼檢查"
+description: "使用 ESLint 驗證 Master CSS class、偵測衝突、排序 class 清單，並套用專案政策。"
+figures: {"LintIllustration":{"title":"修正格式，選擇語意","alt":"兩種 lint 結果。排序 p-md flex flex 會自動產生 flex p-md，移除重複項目。15px 的原始 font-size 則維持不變，須由人選擇 token 或允許該值。","caption":"自動修正可排序 class 並移除重複項目。原始值警告無法替你選擇設計角色。","description":[{"title":"安全的格式修正","text":"sort-classes 將 p-md flex flex 改為 flex p-md。重複項目消失，但產生的宣告不變。"},{"title":"設計決策","text":"啟用 no-unapproved-raw-values 時，(font-size:15px) 可能產生警告。沒有自動修正：請選擇語意 token，或明確允許該值。"}]},"GuideStudy:lint-ownership":{"title":"衝突需要設計決策","alt":"可排序的 class 清單有可還原的重新排序輸出；兩個衝突的內距 class 則分別指向兩種可能的預期值。","caption":"排序無法決定設計需要哪種間距。請有意識地解決競爭宣告。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LintIllustration from './components/LintIllustration.astro'
+
+## 概覽 [sr-only] \{#overview\}
+編輯時找出無效 class、衝突宣告與不一致語法。ESLint 整合使用專案主題與自訂定義，因此診斷反映的是專案實際可產生的 class。
+
+從下方建議設定開始，或透過[安裝整合](/guide/installation#integrations)隨框架設定一併加入。Lint 檢查 class 撰寫；版面、對比與互動仍需在瀏覽器驗證。沒有 lint 問題不等於完成設計檢閱。
+
+<LintIllustration />
+
+---
+
+## 安裝建議設定 \{#install-the-recommended-config\}
+在專案中安裝 ESLint 與建議設定。專案需要框架剖析器時，保留相關設定。
+
+```bash
+npm install -D eslint @master/eslint-config-css@rc
+```
+
+將建議設定加入 flat config：
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS
+])
+```
+
+它會啟用下列四項規則；請見[規則預設值與修正](/reference/packages#eslint-config-css)。從應用程式根目錄執行檢查，才能找到專案 CSS 進入點：
+
+```bash
+npx eslint .
+```
+
+先在本機檢閱自動編輯，再推廣至整個專案：
+
+```bash
+npx eslint . --fix
+```
+
+排序、移除重複項目與完全被覆寫的 class 可自動修正。指令完成後，無效值與設計政策警告仍可能需要決策。CI 保留不自動修正的指令，讓失敗保持可見。
+
+---
+
+## Lint 規則 \{#linting-rules\}
+### Class 排序 \{#sort-classes\}
+`@master/css/sort-classes` 讓 class 字串穩定且易於檢閱。已知 Master CSS class 排在未知 class 前，依產生的串接層與條件優先順序排列，並按 CSS 意圖將基礎 class 分組：定位與版面、尺寸、間距、盒模型、排版、繪製與效果。
+
+```mcss
+bg-white font-md flex px-md relative w-full shadow-lg r-md (z-index:10) (gap:0.5rem) <!-- [!code --] -->
+relative (z-index:10) flex (gap:0.5rem) w-full px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+```
+
+`:hover`、`@dark` 與 `@sm` 等變體，依產生的條件順序排列在基礎 class 主體之後。
+
+```mcss
+bg-black:hover flex p-sm w-full block@dark text-center <!-- [!code --] -->
+flex w-full p-sm text-center bg-black:hover block@dark <!-- [!code ++] -->
+```
+
+排序也會移除同一 class 字串中的重複值。
+
+```mcss
+inline-flex px-md inline-flex <!-- [!code --] -->
+inline-flex px-md <!-- [!code ++] -->
+```
+
+排序是格式政策，不會改變產生的 CSS，但能讓 class 字串更易檢閱，並讓跨框架與編輯器的自動修正保持確定性。
+
+### 禁止無效 class \{#no-invalid-classes\}
+`@master/css/no-invalid-classes` 回報格式錯誤的 Master CSS class 語法，以及已識別但產生無效 CSS 的 class。兩者是不同失敗：格式錯誤可能在產生規則前被拒絕，而接受的宣告仍可能包含無效值。
+
+```html
+<button class="(font-size:16)">Save</button>
+```
+
+(x) `(font-size:16)` 使用無單位的非零長度。請改用 `(font-size:16px)` 這類原生長度，或 `font-md` 這類已定義尺寸 token。
+
+預設忽略未相符 class，讓團隊可混用 Master CSS 與原生全域 class。
+
+未知 CSS 值是另一種情況：class 可以符合語言，但驗證器無法完整檢查其值。例如目前驗證器將 `(display:banana)` 回報為 `unknown`，此規則不會標記它。因此沒有 lint 問題，仍不能證明瀏覽器支援或外觀符合預期。
+
+若也要拒絕未相符 class 名稱，啟用 [`disallowUnknownClass`](#team-policy)。
+
+### 優先使用標準形式 \{#prefer-canonical-classes\}
+`@master/css/prefer-canonical-classes` 檢查等價的標準形式，同時保留 token 身分、值來源、條件巢狀關係與產生規則順序。
+
+下列 class 保持不變：
+
+```mcss
+(margin:16px) block@dark@sm
+```
+
+此規則不會用目前值相同的 token 取代字面值、不會換算單位，也不會重新排列原始條件。語意 token 應刻意選擇；團隊要求使用時，可採用下方原始值政策。
+
+### 禁止衝突 class \{#no-conflicting-classes\}
+`@master/css/no-conflicting-classes` 回報在相同變體範圍中，輸出相同宣告屬性的 class。
+
+```mcss
+(margin:0.625rem) (margin:1.25rem) <!-- [!code --] -->
+(margin:1.25rem) <!-- [!code ++] -->
+```
+
+(!) `"(margin:0.625rem)" is overridden by "(margin:1.25rem)".`
+
+變體範圍很重要。選擇器、模式或條件不同的 class 不會互相衝突。
+
+```mcss
+(margin:2.5rem)@sm (margin:3.125rem)@md
+```
+
+<ReferenceIllustration id="lint-overlap-context" />
+
+完全被覆寫的 class 可自動移除。勝出者依產生的 CSS 順序決定，不依 HTML class 名稱順序。反轉上方兩個 margin class，仍由 `(margin:1.25rem)` 勝出。
+
+部分宣告重疊需要檢閱。例如下方上邊框覆寫會被回報，但規則不會拆開簡寫，也不會移除另外三邊的邊框：
+
+```mcss
+b-solid bt-dashed
+```
+
+移除刻意覆寫前，先比較產生的宣告，並在瀏覽器檢查元素。
+
+---
+
+<GuideStudy id="lint-ownership" />
+
+## 支援的來源 \{#supported-sources\}
+外掛檢查 `class` 與 `className` 屬性、`clsx` 與 `cva` 等輔助函式，以及 `classList` 方法中的 class 字串。詳見[設定與預設值](/reference/packages#eslint-plugin-css)。
+
+在 `@master/css` 設定鍵下自訂選項。陣列會取代預設值，因此請列出所有希望 ESLint 檢查的輔助函式或屬性：
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    settings: {
+      '@master/css': {
+        classAttributes: ['class', 'className', 'containerClass'],
+        classFunctions: ['clsx', 'cva'],
+        classDeclarations: ['classes']
+      }
+    }
+  }
+])
+```
+
+---
+
+## 團隊政策 \{#team-policy\}
+團隊希望每個 class 都來自 Master CSS 語法或專案 manifest 時，使用更嚴格驗證。`disallowUnknownClass` 會拒絕未相符 class 名稱，但不改變未知 CSS 值的診斷：
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
+    }
+  }
+])
+```
+
+```html
+<button class="btn">...</button>
+```
+
+(x) `"btn" is not a valid or known class.`
+
+刻意使用的專案 class 應在 CSS 進入點定義，例如 `@layer components` 中的 `.btn`，讓它們納入 manifest。
+
+團隊希望有 token 的 utility 必須使用 token，除非明確允許某個值時，啟用原始值政策：
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-unapproved-raw-values': ['warn', {
+        allowProperties: ['width', 'height'],
+        allowedPatterns: ['^var\\(', '^calc\\(']
+      }]
+    }
+  }
+])
+```
+
+```mcss
+(font-size:15px) (margin:17px) (color:#123456)
+```
+
+(!) Unexpected raw value `"15px"` in `"(font-size:15px)"`. Use a token or allow it explicitly.
+
+此規則沒有自動修正：目前值相同的 token 不一定代表正確角色。可用[選項](/reference/packages#eslint-plugin-css)將政策限制在指定屬性。
+
+當一個元素透過組合器替許多其他元素設定樣式時，該 class 清單已成為元件。啟用 `prefer-component-classes`，可回報超過 `max` 個 class（預設 `3`）作用到其他元素的清單：
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/prefer-component-classes': 'warn'
+    }
+  }
+])
+```
+
+```mcss
+flex block_h4 hidden_h4 grid_svg flex>li
+```
+
+(!) `4 classes style other elements through combinators ("_h4", "_svg", ">li"); the limit is 3. Move them into a component class in @layer components.`
+
+元素自身狀態、`:has()` 或 `:is()` 內的相對選擇器，以及 `@sm` 這類條件不計入。將規則移到[元件 class](/guide/global-styles#component-classes)。
+
+---
+
+## 原生元件 CSS \{#native-component-css\}
+要檢查原生 CSS 的 token 參照，請執行 [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change)，並以來源路徑傳入從 JavaScript 匯入的路由樣式表；ESLint 只檢查 class 清單。
+
+## 編輯器回饋 \{#editor-feedback\}
+Class 補全與滑鼠移入資訊請見[語言服務](/guide/language-service)。Lint 規則與儲存排序設定由 ESLint 負責；兩項工具都能使用同一套專案定義。
+
+## 從指令碼與 AI 工具執行 lint \{#lint-from-scripts-and-ai-tools\}
+開發與 CI 指令碼保留 `eslint .`；不透過 ESLint 剖析器取得 JSON 診斷，可使用 [`master-css lint`](/reference/tools/cli#lint)；代理則使用 [`mastercss_lint_project`](/reference/tools/mcp#mastercss_lint_project)。

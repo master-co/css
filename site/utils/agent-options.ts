@@ -150,6 +150,6 @@ export function agentOptionGroup(name: string) {
   if (!Object.hasOwn(agentOptions, name)) throw new Error(`Unknown agent option group: ${name}`)
   return agentOptions[name as keyof typeof agentOptions]
 }
-export function agentOptionsMarkdown(name: string) {
-  return agentOptionGroup(name).options.map((option: DocumentOption) => `- **${option.name}**${option.defaultValue === undefined ? '' : ` — default: \`${option.defaultValue}\``}. ${option.description}`).join('\n')
+export function agentOptionsMarkdown(name: string, group = agentOptionGroup(name)) {
+  return group.options.map((option: DocumentOption) => `- **${option.name}**${option.defaultValue === undefined ? '' : ` — default: \`${option.defaultValue}\``}. ${option.description}`).join('\n')
 }

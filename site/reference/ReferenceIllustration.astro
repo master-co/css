@@ -1,4 +1,5 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
 import tool0light from '../assets/images/reference-tools/preview-file-identity/preview-file-identity-light.png'
 import tool0dark from '../assets/images/reference-tools/preview-file-identity/preview-file-identity-dark.png'
 import tool1light from '../assets/images/reference-tools/cli-output-destinations/cli-output-destinations-light.png'
@@ -66,7 +67,7 @@ import radiusLight from '../assets/images/reference-radius/radius-clipping-light
 import radiusDark from '../assets/images/reference-radius/radius-clipping-dark.png'
 import shadowLight from '../assets/images/reference-shadow/shadow-footprint-light.png'
 import shadowDark from '../assets/images/reference-shadow/shadow-footprint-dark.png'
-import { referenceIllustrations, type ReferenceIllustrationId } from './illustrations'
+import { referenceFigure, type ReferenceIllustrationId } from './illustrations'
 
 import study0light from '../assets/images/reference-studies/ambiguous-namespace-light.png'
 import study0dark from '../assets/images/reference-studies/ambiguous-namespace-dark.png'
@@ -234,7 +235,7 @@ const images = {
 }
 
 const { id } = Astro.props
-const figure = referenceIllustrations[id]
+const figure = referenceFigure(id, siteOf(Astro).locale)
 if (!figure) throw new Error(`Unknown Reference illustration: ${id}`)
 ---
 

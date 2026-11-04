@@ -1,0 +1,36 @@
+# Reference prose: illustrations/screen-reader-name
+
+## title \{#copy-title\}
+
+
+잘린 텍스트도 보이는 컨트롤에 이름을 제공할 수 있습니다
+
+## alt \{#copy-alt\}
+
+
+링크 하나가 보이는 화살표와 sr-only 텍스트를 포함합니다. 시각적 표현에는 화살표만 보이지만 접근성 표현에서는 이름이 Read the utility definition인 링크가 됩니다.
+
+## caption \{#copy-caption\}
+
+
+화살표에는 aria-hidden="true"가 있습니다. 레이블 텍스트는 sr-only로 시각적으로 잘리지만 링크의 접근 가능한 이름을 제공합니다. 링크 자체는 보이고 포커스를 받을 수 있습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+링크는 접근 가능한 이름 계산에서 제외된 화살표와 Read the utility definition이 들어 있는 span을 포함합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+span은 실제 sr-only 프리셋인 절대 위치, 1px 상자, 넘친 내용 숨기기, 잘라 내기를 사용합니다. aria-hidden 없이 DOM에 남아 있습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+보이는 링크는 여전히 40px 정사각형 영역을 차지하고 화살표를 표시합니다. 접근성 역할은 link이며 이름은 Read the utility definition입니다.
+
+## description-3 \{#copy-description-3\}
+
+
+두 갈래는 같은 컨트롤의 표현 방식이며 순차적으로 실행되는 작업이 아닙니다. 상위 요소를 접근성 트리에서 숨기면 하위 요소도 숨겨집니다.

@@ -1,0 +1,376 @@
+---
+{
+  "title": "渲染模式",
+  "description": "選擇 CSS 的生成位置，比較靜態、預先渲染、執行階段與漸進式傳遞，並驗證結果。",
+  "category": "基礎",
+  "figures": {
+    "GuideStudy:static-late-class": {
+      "title": "稍後出現的類別無法擴充靜態樣式表",
+      "alt": "靜態建置看見 p-md 並輸出規則。瀏覽器稍後加入 p-lg，但該輸出中沒有它的規則。",
+      "caption": "此範例假設所有建置輸入與安全清單都沒有 p-lg。動態值可透過自訂屬性改變，不必更換類別。"
+    },
+    "GuideStudy:progressive-known-class": {
+      "title": "已知類別重用已傳遞的 CSS",
+      "alt": "瀏覽器已有 CSS 與有效頁面 manifest。已知且已連接的類別沿用既有 CSS，manifest 之外的類別則觸發延後載入引擎的分支。",
+      "caption": "這是預先渲染產物有效時的預設漸進式交接，不是效能時間軸。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:runtime": {
+      "title": "執行階段傳遞",
+      "alt": "已連接 DOM 的類別使用情況經過瀏覽器引擎，轉成原生樣式表規則。",
+      "caption": "瀏覽器引擎插入或重用 CSS 規則。快取規則的存續時間可能超過已連接 DOM 的使用期間。",
+      "steps": [
+        {
+          "title": "觀察",
+          "description": "讀取已連接元素，並接收 DOM 類別變更。"
+        },
+        {
+          "title": "確保規則可用",
+          "description": "透過編譯後的專案程式執行完整類別。"
+        },
+        {
+          "title": "更新",
+          "description": "在 runtime 樣式表中插入或重用原生 CSS 規則。"
+        }
+      ]
+    },
+    "DeliveryFlow:progressive": {
+      "title": "漸進式傳遞",
+      "alt": "HTML 將初始 CSS 帶到瀏覽器，未涵蓋類別則觸發延後啟動的引擎並生成額外 CSS。",
+      "caption": "初始 CSS 隨 HTML 抵達。預先渲染樣式表與頁面 manifest 有效時，引擎會持續延後啟動，直到出現 manifest 之外的已連接類別。",
+      "steps": [
+        {
+          "title": "渲染",
+          "description": "從渲染後頁面 HTML 的類別生成 CSS。"
+        },
+        {
+          "title": "傳遞",
+          "description": "將初始 CSS 隨 HTML 送出，讓瀏覽器在 runtime 啟動前就能套用。"
+        },
+        {
+          "title": "接續運作",
+          "description": "讀取頁面 hydration manifest 並追蹤已連接 DOM 類別。預設情況下，manifest 之外的類別會載入瀏覽器引擎與專案程式、採用相符既有規則，再生成額外 CSS。"
+        }
+      ]
+    },
+    "DeliveryFlow:hydration": {
+      "title": "CSS hydration",
+      "alt": "既有 CSS 與引擎重播頁面 manifest 的結果比較；相符規則會被採用，不符則重建 CSS。",
+      "caption": "引擎啟動時採用相符規則，不符則重建 CSS。參照的 manifest 若無法載入或驗證，啟動會在此比較之前遭拒絕。",
+      "steps": [
+        {
+          "title": "讀取",
+          "description": "載入頁面 hydration manifest，並繼續使用既有樣式表。"
+        },
+        {
+          "title": "驗證",
+          "description": "瀏覽器引擎啟動時，使用專案程式依伺服器規則順序重播 manifest 類別、驗證資源，並比較生成規則與既有 CSSOM。"
+        },
+        {
+          "title": "採用或重建",
+          "description": "將相符規則重用為 runtime 管理的規則物件；不符時則重建 CSS。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 概覽 [sr-only] \{#overview\}
+依應用程式何時得知完整類別名稱，選擇渲染模式。名稱能在原始碼中取得時，先使用靜態渲染。預先渲染會從完成的頁面 HTML 生成 CSS；執行階段渲染處理瀏覽器中建立的新類別；漸進式渲染則結合頁面 CSS 與執行階段支援。
+
+請先完成框架的[安裝指南](/guide/installation)。官方整合會載入 CSS 進入點並設定所選模式；下方範例說明各模式的行為與驗證方式。框架支援及可供處理的 HTML，取決於使用的整合。
+
+## 選擇渲染模式 \{#comparisons\}
+
+| 模式 | 類別來源 | 初始 CSS | 瀏覽器中的 Master CSS |
+| --- | --- | --- | --- |
+| [靜態](#static-rendering) | 原始檔中的完整字串 | 生成的樣式表 | 不需要執行階段或引擎 |
+| [預先渲染](#pre-rendering--ssg-ssr) | 渲染完成的頁面 HTML | 隨該頁面傳遞的規則 | 不需要執行階段或引擎 |
+| [執行階段](#runtime-rendering) | 已連接的 DOM 元素 | 執行階段啟動後生成規則 | 執行階段與引擎 |
+| [漸進式](#progressive-rendering) | 渲染完成的 HTML，接著是後續 DOM 變更 | 隨該頁面傳遞的規則 | 執行階段追蹤使用情況；引擎可延後到出現未涵蓋類別時才啟動 |
+
+互動式應用程式也能使用靜態 CSS。切換已知類別、修改 CSS 變數及使用原生選擇器，都不需要執行階段引擎。完整類別名稱在建置後才首次出現時，才需要考慮執行階段生成。
+
+預先渲染需要真實的頁面標記。用戶端渲染應用中的空根元素，無法提供應用程式類別供伺服器渲染器處理。也請檢查整合的適用邊界：[Next.js 漸進式轉接器](/guide/installation/nextjs#rendering-modes)處理建置時 HTML，因此請求時的動態 SSR 回應依賴瀏覽器執行階段生成規則。
+
+---
+
+## 靜態渲染 \{#static-rendering\}
+建置會掃描原始碼中的完整類別字串，再依專案定義生成 CSS，不會執行應用程式碼或觀察 DOM。瀏覽器載入輸出的樣式表，不需要 Master CSS 執行階段。
+
+### 生成樣式表的進入點 \{#generated-stylesheet-entry\}
+在應用程式原本就會載入的樣式表中，匯入 Master CSS：
+
+```css name=src/style.css
+@import '@master/css';
+```
+
+這個匯入是生成 utility、其必要資源與預設集基礎樣式的插入位置。每個生成樣式表根進入點使用一個匯入。請保留在最上層匯入區塊中、一般樣式規則之前；該區塊的其他 CSS 匯入會排在生成的 Master CSS 之前輸出。
+
+若要觀察從原始碼到 CSS 的流程，請在匯入之後加入這個 utility 定義，並將按鈕放在會被掃描的原始檔中：
+
+<ConfiguredExample source={`@utility btn {
+  display: inline-flex;
+  padding-inline: var(--spacing-md);
+}`} html={'<button class="btn text-center">Save</button>'} />
+
+掃描器會找到 `btn` 與 `text-center`。引擎解析專案組合樣式與預設集的固定 utility，再生成規則與參照的資源。只定義 `btn` 不會輸出規則，必須由掃描到的類別或明確的安全清單提出需求。
+
+整合會探索一般應用程式來源，並在開發時更新 CSS。原始碼應保留完整類別名稱，變動值則透過 CSS 變數傳遞；[掃描類別名稱](/guide/scanning-and-pruning)說明這兩種方式，以及 `@source` 與安全清單的例外處理。
+
+### 原生 CSS 進入點 \{#native-css-entries\}
+CSS 進入點中的原生選擇器預設保留，即使掃描來源中沒有其類別也一樣。它們的 `var(--*)` 與動畫參照，可保留相符的主題變數與關鍵影格。
+
+確定要修剪專案自有的原生 CSS 時，使用 `pruneNativeCSS: true`；只針對單一檔案則使用 `@prune native;`。`@preserve native;` 可將檔案排除於整合層級的修剪之外。請參閱[修剪未使用的原生 CSS](/guide/optimizing-css-delivery#native-pruning)。
+
+---
+
+<GuideStudy id="static-late-class" />
+
+## 執行階段渲染 \{#runtime-rendering\}
+類別名稱在瀏覽器才得知時，例如視覺編輯器或建置後載入的內容，請使用執行階段渲染。執行階段透過 [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) 追蹤已連接元素及其類別變更，再插入或重用相符 CSS 規則。
+
+<DeliveryFlow name="runtime" />
+
+透過整合選擇執行階段模式，例如 [Vite 執行階段設定](/guide/installation/vite#rendering-modes)。啟動後，在瀏覽器主控台逐一執行下列片段：
+
+<StepSection>
+  <Step>
+    #### 插入元素 \{#insert-an-element\}
+    ```js
+    const h1 = document.createElement('h1')
+    h1.className = 'text-center'
+    h1.textContent = 'Hello World'
+    document.body.append(h1)
+    ```
+    執行階段生成規則後，已連接的標題就會置中。
+  </Step>
+  <Step>
+    #### 加入類別 \{#add-a-class\}
+    ```js
+    h1.classList.add('(font-size:3rem)')
+    ```
+    標題增大至 `3rem`，原有對齊規則仍持續使用。
+  </Step>
+  <Step>
+    #### 移除類別 \{#remove-a-class\}
+    ```js
+    h1.classList.remove('text-center')
+    ```
+    標題不再符合對齊規則，會恢復為繼承的對齊方式，即使執行階段暫時仍保留未使用的規則也一樣。
+  </Step>
+  <Step>
+    #### 移除元素 \{#remove-the-element\}
+    ```js
+    h1.remove()
+    ```
+    這個標題不再使用兩個類別。若沒有其他已連接元素使用它們，規則就可在閒置清理期間移除。
+  </Step>
+</StepSection>
+
+兩個類別同時存在時，使用下列規則：
+
+<Class2CSS classes={['text-center', '(font-size:3rem)']} />
+
+執行階段生成依賴 JavaScript 啟動。若頁面初始規則必須隨回應提供，請使用預先渲染 CSS；只有後續類別名稱需要時，才加入執行階段支援。
+
+### 執行階段啟動前隱藏頁面 \{#prevent-premature-rendering\}
+僅使用執行階段的頁面在生成前沒有規則。可在根元素加入 `hidden`，避免未套樣式的畫面先被繪製：
+
+```html
+<html lang="en" hidden>
+  <!-- Load the stylesheet and runtime using your integration's setup. -->
+</html>
+```
+
+執行階段啟動後會移除 `hidden`，它所處理的啟動錯誤流程也會取消根元素隱藏。但如果 JavaScript 停用，或執行階段指令碼遭封鎖、下載失敗，頁面會一直隱藏。這些情況仍必須可讀的內容，應使用靜態或預先渲染 CSS。漸進式頁面已帶有首屏 CSS，因此維持可見。
+
+### 預先載入執行階段程式 \{#preload-runtime-engine\}
+引擎必須取得程式後，才能生成第一批規則。僅使用執行階段的頁面應預先載入程式，讓請求在解析文件時就開始。使用 `as="fetch"` 與 `crossorigin` 配合執行階段的請求，同源時也一樣：
+
+```html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+  <link rel="preload" as="fetch" crossorigin href="/master-css/default-program.bin"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="/master-css/base.css">
+  <script src="/master-css/global.min.js"></script>
+</head>
+</html>
+```
+
+<DocumentComparison>
+
+| 檔案 | 是否預先載入？ |
+| --- | --- |
+| CDN `default-program.bin` | 是，適用於使用封裝預設集、僅採 CDN 執行階段的頁面。 |
+| 專案程式 `master-css-program.<hash>.bin` | 僅使用執行階段的頁面需要，官方執行階段整合會加入提示。漸進式頁面不需要，引擎與程式會等到某個類別需要時才載入。 |
+| 頁面 hydration manifest | 不需要。這是交接資料，瀏覽器不靠它繪製畫面。 |
+
+</DocumentComparison>
+
+在開發者工具確認執行階段重用預先載入的回應，沒有重新請求。配對規則請參閱 [`rel="preload"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload)。
+
+<ReferenceIllustration id="preload-is-data" />
+
+---
+
+## 預先渲染 — SSG、SSR \{#pre-rendering--ssg-ssr\}
+建置或伺服器取得最終頁面 HTML，且後續類別不需要瀏覽器生成時，請使用預先渲染。伺服器渲染器讀取 HTML、生成規則，並插入 `style#master-css`。它從標記生成 CSS，不會將應用程式元件渲染成 HTML。
+
+官方整合會對支援的 HTML 輸出執行此步驟。自訂伺服器或建置流程可參考此範例，使用建置整合提供的 `virtual:master-css-manifest`。伺服器程式碼執行前，建置工具必須先解析這個虛擬模組。
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+寫入或回傳取得的 `html`。其中的 `style#master-css` 包含標題規則與所需 font-size token：
+
+<Class2CSS classes={'font-5xl'} />
+
+此輸出不需要 Master CSS 執行階段或 hydration manifest。只在稍後出現的類別，需要另外提供 CSS，或選擇支援執行階段的模式。
+
+在有限次數的靜態建置中，渲染器可重用快取規則，同時產生每頁專屬 CSS。manifest 改變時重新建立渲染器，建置結束後則釋放。長期運作的伺服器應設定有上限的 `maxCachedClasses`，不要沿用建置範例的 `Infinity`；請參閱[伺服器 API](/reference/packages#css-server)。
+
+---
+
+## 漸進式渲染 \{#progressive-rendering\}
+伺服器或建置可生成頁面初始 CSS，且瀏覽器稍後可能引入新類別時，請使用漸進式渲染。回應透過 `style#master-css` 帶有 CSS；執行階段讀取頁面 hydration manifest，區分已涵蓋類別與需要引擎的類別。
+
+<DeliveryFlow name="progressive" />
+
+一般輸出會讓 style 元素指向外部 manifest：
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+實際資產 URL 由整合提供。無法發布穩定 JSON 資產的自訂 SSR 主機，也可改用行內 `script#master-css-hydration-manifest`。頁面若沒有生成規則或受管理資源，就不需要 manifest 指標。
+
+瀏覽器可在執行階段或 manifest 載入前套用行內 CSS。這說明 CSS 何時可用；實際繪製時機仍取決於頁面其他資源。不要預先載入頁面 hydration manifest 或延後載入的專案程式；請參閱[預先載入](#preload-runtime-engine)。
+
+manifest 中列出的類別可直接重用，不必啟動引擎。這包含一般撰寫的類別，以及由生成或專案選擇器參照、不含自身規則的狀態或主題類別。變更已渲染選擇器所使用的屬性，也不需要新的類別規則。完整類別若不在 manifest 中，即使曾出現在專案其他原始碼裡，仍會啟動引擎。
+
+<GuideStudy id="progressive-known-class" />
+
+### CSS hydration \{#css-hydration\}
+hydration 讓執行階段採用既有 CSS 規則。啟動時會讀取明確設定的 `hydrationManifest` 選項，或尋找行內 manifest、`style#master-css` 上的 URL。引擎延後啟動時，執行階段會追蹤使用情況，不重建樣式表。
+
+<DeliveryFlow name="hydration" />
+
+新類別或 `cssRuntime.ready()` 啟動引擎時，瀏覽器引擎會依伺服器規則順序重播 manifest 中的類別、驗證資源，再將生成結果與既有 CSSOM 比較。相符規則成為執行階段管理的規則，新類別隨後可生成額外 CSS。移除的類別可能在交接前仍保留預先渲染規則，交接後才進入一般保留規則的清理流程。
+
+manifest 帶有資源順序，以及頁面樣式表已輸出的全域資源，不會重複 CSS 文字，也不取代專案程式。請讓它與同一次建置的 HTML、資產一起提供。
+
+---
+
+## 整合支援 \{#integration-support\}
+
+這些官方轉接器預設使用靜態渲染。建置階段尚未知的類別，需明確選擇執行階段生成。`pre-render` 從 HTML 生成 CSS，不需要用戶端執行階段；`progressive` 則結合 HTML 渲染與支援後續類別的執行階段。各轉接器能處理的 HTML 取決於主框架：
+
+| 轉接器 | 靜態 | 執行階段 | `pre-render` 與伺服器 HTML | `progressive` |
+| --- | --- | --- | --- | --- |
+| [Vite](/guide/installation/vite) | 建置階段擷取 | 透過 Vite HTML 流程注入 | Vite 掛鉤處理的 HTML；自訂 SSR 需要伺服器整合 | Vite HTML 渲染加上執行階段；自訂 SSR 需自行渲染 HTML |
+| [Webpack](/guide/installation/webpack) | 建置階段擷取 | 注入編譯的 HTML 資產 | HTML 主機必須呼叫 `@master/css-server`；外掛沒有請求時伺服器掛鉤 | 提供執行階段傳遞；主機提供渲染後 HTML 與 hydration 資料 |
+| [Next.js](/guide/installation/nextjs) | 建置階段擷取 | 用戶端 instrumentation | 建置後處理 HTML 輸出；不轉換請求時動態 SSR | 建置渲染 HTML 加上執行階段；動態 SSR 不會自動注入伺服器 CSS |
+| [Astro](/guide/installation/astro) | 透過 Vite 在建置階段擷取 | 注入頁面指令碼 | Astro 中介軟體處理預先渲染頁面與伺服器 HTML 回應 | 中介軟體渲染加上執行階段 |
+| [Nuxt](/guide/installation/nuxtjs) | 透過 Vite 在建置階段擷取 | Nuxt 用戶端外掛 | 內容主體為字串的 Nitro HTML 回應；不轉換串流主體 | Nitro HTML 渲染加上用戶端執行階段 |
+| [SvelteKit](/guide/installation/svelte) | 透過 Vite 在建置階段擷取 | 需要文件所述的用戶端掛鉤 | 需要 Master CSS 伺服器 handle；在 SSR 與預先渲染期間處理頁面區塊 | 同時需要伺服器 handle 與用戶端掛鉤 |
+
+框架採用 Vite 或 Webpack，不代表該 bundler 能為它加入伺服器行為。Webpack 的 HTML 注入也不會重寫由開發伺服器靜態目錄直接提供的檔案。Astro 中介軟體在回傳前讀取完整 HTML 回應，SvelteKit 則使用頁面區塊掛鉤。選擇傳遞方式時，請依框架指南操作。PHP、Rails、CMS 與 .NET 主機會透過 Vite 建置資產，再從樣板載入；請參閱[伺服器渲染應用程式](/guide/installation/server-rendered)。
+
+
+## 原生修剪是另一項選擇 \{#native-pruning-is-a-separate-choice\}
+
+漸進式渲染可搭配原生修剪，不改變初始 CSS 傳遞或後續 utility 生成的時機。修剪需要已知使用集合，以及會提供該集合的建置流程；執行階段生成無法還原已從傳遞內容移除的任意原生選擇器。可重現的比較請參閱[最佳化 CSS 傳遞](/guide/optimizing-css-delivery#rendering-and-pruning)。
+
+## 驗證所選模式 \{#verify-the-selected-mode\}
+除了開發環境，也要測試正式建置：整合即使在正式環境預先渲染 CSS，開發時仍可能使用執行階段生成。
+
+<DocumentComparison>
+
+| 模式 | 驗證項目 |
+| --- | --- |
+| 靜態 | 生成 HTML 有載入樣式表，且具代表性的完整來源類別在其中有規則。停用 JavaScript 後，這些樣式仍保留。 |
+| 預先渲染 | 回應原始碼包含帶有頁面規則的 `style#master-css`。請在執行 JavaScript 前驗證，僅檢查即時 DOM 無法證明預先渲染已發生。 |
+| 執行階段 | 插入初始 DOM 沒有的類別，在執行階段觀察到後檢查計算樣式與生成的 CSS 規則。 |
+| 漸進式 | 先驗證預先渲染 CSS，再加入頁面 manifest 沒有的類別並檢查其規則是否生成。轉接器若只處理建置時 HTML，請另外測試動態 SSR 路由。 |
+
+</DocumentComparison>
+
+### 檢查運作中的樣式表 \{#running-style-sheet\}
+執行階段擁有 `style#master-css` 並更新其 CSSOM。啟動後，元素文字內容無法作為可靠的即時檢視，請改查樣式表的 [cssRules](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/cssRules)：
+
+```js
+const sheet = document.querySelector('style#master-css').sheet
+console.log(sheet.cssRules)
+```
+
+### 診斷漸進式啟動 \{#diagnose-progressive-startup\}
+
+<DocumentComparison>
+
+| 觀察結果 | 意義與下一項檢查 |
+| --- | --- |
+| 警告後重建 CSS | 既有規則與 hydration 資料不符，或 style 沒有 manifest 指標。請確認 HTML、CSS 與 manifest 資產來自同一次建置。 |
+| 啟動以 `INVALID_HYDRATION_MANIFEST` 拒絕 | 參照的行內或外部 manifest 無法載入或通過驗證。請檢查資產 URL、回應與部署檔案。 |
+| 初始 CSS 正常，新類別卻無效 | 延後啟動的引擎可能載入失敗。請檢查 `onDiagnostic`、程式請求與 `cssRuntime.snapshot().engine`。既有預先渲染 CSS 會保留；`refresh()` 或重新 `start()` 可重試。 |
+
+</DocumentComparison>
+
+新類別很可能在載入後不久出現時，`enginePrefetch: 'idle'` 會在閒置時啟動引擎。使用 `engine: 'eager'` 則在 `start()` 期間啟動。兩者都改變預設延後啟動的取捨，應依頁面實際互動選用。
+
+### 互動密集的畫面 \{#interaction-heavy-screens\}
+一次互動若加入大量首次出現的類別，瀏覽器就必須同時處理 DOM 變更與新樣式表規則。對編輯器、資料網格、建構工具或其他大型動態檢視：
+
+- 將穩定的版面、排版與元件狀態保留在共用類別中。
+- 引擎就緒後、插入檢視之前，先預熱可預期的執行階段類別。
+- 座標、使用者產生的色彩等各元素經常變動的值，使用 CSS 變數或行內樣式。
+- 重複狀態若不需要為每個值生成不同類別，請使用原生選擇器。
+
+若要預熱檢視中可預期的類別，請使用 `MasterCSSRuntime.start()` 回傳的 handle：
+
+```js
+await cssRuntime.ready()
+cssRuntime.ensureClassRules(['grid', 'gap-md'])
+```
+
+請一起測量執行階段 JavaScript、程式傳遞、初始化、DOM 觀察與 CSSOM 處理。單看壓縮後 JavaScript 大小，無法說明互動成本。測量結果與條件請參閱[基準測試](/benchmarks)。
+
+### 使用者產生的標記 \{#user-generated-markup\}
+執行階段觀察或伺服器渲染的每個類別都會成為 CSS，因此 `class` 屬性與 `style` 屬性一樣強大，包含原生宣告、`url()` 及 `:has()` 等選擇器。頁面渲染他人撰寫的標記，例如留言、CMS 豐富文字或聊天訊息時，HTML 淨化器應以處理 `style` 的方式處理 `class`：移除，或只允許自行挑選的類別。只跳脫屬性值並不足夠，因為類別名稱本身就是輸入。
+
+執行階段狀態、傳遞產物、自訂啟動進入點與引擎主機，請參閱 [執行階段](/reference/packages#css-runtime)、[server](/reference/packages#css-server) 與 [engine](/reference/packages#css) 套件。

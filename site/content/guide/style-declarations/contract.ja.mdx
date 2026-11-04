@@ -1,0 +1,210 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import FixedUtilities from '~/site/reference/FixedUtilities.astro'
+
+<a id="overview"></a>
+
+クラスは登録済みユーティリティまたはネイティブ宣言から始まり、任意でセレクター、条件、重要度が続きます。このページは宣言の形式、値の解析、拒否の規則を定義します。実例に沿った説明は[構文チュートリアル](/guide/syntax-tutorial)を、ネイティブプロパティの意味は [CSS リファレンス](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference)を参照してください。
+
+以下の名前付き形式は、`@import '@master/css'` で既定のプリセットを読み込んでいることを前提とします。プロジェクト定義でユーティリティを追加・置換できます。ネイティブ宣言に登録済みユーティリティは不要です。
+
+## 利用できる形式 \{#basic-syntax\}
+
+<a id="utilities"></a>
+
+| 形式 | 例 | 意味 |
+| --- | --- | --- |
+| 静的ユーティリティ | `flex` | 登録済みの名前。ここでは `display: flex` |
+| トークンユーティリティ | `p-md` | 登録済みの接頭辞とトークンキー。ここでは `padding: var(--spacing-md)` |
+| 関数ユーティリティ | `p(12)` | 引数を取る登録済み関数。ここでは `padding: calc(12 * 1px)` |
+| ネイティブ宣言 | `(padding:1rem)` | 完全な CSS プロパティと値を 1 つ指定 |
+
+これらは構文の形であり、同じ意味で置き換えられる表記ではありません。静的、トークン、関数のユーティリティはいずれも複数の宣言を持てます。`truncate`、`text-sm`、`grid-cols(2)` は組み合わせスタイルです。ネイティブの先頭部分はちょうど 1 つの宣言を持ち、CSS ショートハンドも使えます。
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(padding:1rem)']} />
+
+<a id="combine-with-states-and-queries"></a>
+
+どの形式も接尾辞を受け付けます。`p(12):hover@sm!` では、先頭が `p(12)`、セレクターが `:hover`、条件が `@sm` で、`!` が重要度を示します。接尾辞は自身のクラスだけに作用します。完全な仕様は[セレクター](/reference/rules/selectors)と[条件](/reference/rules/conditions)を参照してください。
+
+## ネイティブ宣言 \{#declaration-heads\}
+
+<a id="native-properties"></a>
+<a id="native-declaration-fallback"></a>
+
+完全なプロパティ名で `(property:value)` を書きます。Master CSS は括弧の釣り合った先頭部分を読み取ってから、接尾辞を解析します。単独の名前の後のコロンはセレクターの開始です。`flex:hover` は登録済みの `flex` ユーティリティを選び、`display:block` は `(display:block)` の代わりにはなりません。
+
+### 閉じる境界 \{#the-closing-boundary\}
+
+文字列、コメント、エスケープ、入れ子の丸括弧と角括弧、引用符なしの `url()` トークンは、CSS のコンポーネント値の境界に従います。引用符付き文字列内の `)` は先頭部分を閉じません。
+
+```html
+<span class="(content:')')::before"></span>
+```
+
+<ReferenceIllustration id="native-value-boundary" />
+
+先頭部分の内側でも、ほかの CSS 構造はそれぞれの境界を保ちます。
+
+| クラス | 値の境界 |
+| --- | --- |
+| `(width:calc(1px+(2px*3)))` | 入れ子の括弧は計算式に属する |
+| `(grid-template-columns:[start]\|1fr\|[end])` | 角括弧は Grid のライン名を囲む |
+| `(background-image:url(/a{b.svg))` | 波括弧は引用符なしの URL トークンに属する |
+
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+
+値の内部にも CSS エスケープが適用されます。引用符なしの URL に括弧がある場合は、引用符で囲むか CSS エスケープを使い、トークンを有効に保ちます。
+
+### 不正な先頭部分 \{#invalid-heads\}
+
+不正な先頭部分はルールを生成せず、ユーティリティや別のクラス形式として再試行もしません。
+
+| 拒否されるクラス | 理由 |
+| --- | --- |
+| `(display:block` | 閉じ括弧がない |
+| `(color:red)(display:block)` | 1 クラスに先頭部分が 2 つある |
+| `(color:red;display:block)` | 宣言が 1 つを超える |
+| `(display:block;)` | 末尾でもトップレベルのセミコロンは不可 |
+| `(width:calc(1px])` | 区切り記号が対応しない |
+| `(width:)` | 通常のプロパティの値が空 |
+| `(color:{red})` | 波括弧のブロックを通常のプロパティ値に指定 |
+| `(width:calc(((…1px…))))` を 65 段入れ子にする | 括弧の入れ子が 64 段を超える |
+
+カスタムプロパティは空の値や釣り合った波括弧ブロックを持てるため、`(--slot:)` と `(--state:{open})` は有効です。`(--slot:!important)` は値が空の重要なカスタムプロパティですが、`(width:!important)` は無効です。
+
+### 出力とブラウザー上の有効性 \{#vendor-prefixes\}
+
+構文が有効なプロパティ名は、ツールの一覧になくても宣言を出力できます。ネイティブ値はプリセットに限定されませんが、対象ブラウザーでそのプロパティに有効な値でなければなりません。たとえば `(font-size:48)` は `font-size: 48` を出力し、`px` は付きません。このゼロでない単位なしの長さは無効な CSS です。その長さには `(font-size:48px)` を使います。`(field-sizing:content)` などのネイティブプロパティにユーティリティの登録は不要です。
+
+<Class2CSS classes={['(font-size:48px)', '(field-sizing:content)']} />
+
+Master CSS は、`backdrop-filter` とともに `-webkit-backdrop-filter` を出すなど、一部の互換宣言を出力します。ただしベンダー固有セレクターの追加や、ブラウザー機能の polyfill は行いません。生成 CSS を確認し、ブラウザー要件とフォールバック設計は[互換性](/guide/compatibility)を参照してください。
+
+<Class2CSS classes={['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']} />
+
+## 値のエンコード \{#values\}
+
+### 空白・文字列・アンダースコア \{#value-encoding\}
+
+値に CSS の引用符があっても、HTML の空白はクラスを区切ります。クラスの値内で、引用符の外の `|` は空白を表し、引用符付き文字列内ではリテラルのままです。カンマやスラッシュなどの CSS 記号はそのまま残します。
+
+```html
+<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+```
+
+<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+
+色の値は `rgb(30 60 90 / 80%)` になり、content の文字列は `'a|b'` のままです。CSS 文字列の中に実際の空白が必要なら、`\000020` などの CSS エスケープを使います。`(content:'New\000020collection')::before` は「New collection」を生成します。6 桁のエスケープなら、HTML のクラス内に終端の空白を入れずに済みます。
+
+ネイティブの先頭部分内のアンダースコアは、`slide_in` のようにリテラルです。閉じた後の `_` は子孫セレクターを開始し、`(color:red)_a` は子孫リンクを対象にします。登録済みユーティリティ名に `_` は使えませんが、含むトークンキーは `var(--name)` で参照できます。
+
+### 関数と明示的な変数 \{#functions\}
+
+CSS 関数はネイティブプロパティの値のままです。Master CSS は `calc(100%-2rem)` の演算の空白を、最大 64 段の入れ子の括弧や `1px-2px-3px` などの連続する減算まで正規化し、それより深い部分はそのまま残します。計算はブラウザーが評価します。Master CSS は単独の語からトークンを推論したり CSS 関数をユーティリティ呼び出しとして評価したりはしません。
+
+<Class2CSS classes={['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']} />
+
+<a id="rgb-hsl-oklch-"></a>
+<a id="hexadecimal-color"></a>
+
+ネイティブの色の値は意味を保ちます。`(color:red)`、`(color:#175fe9)`、`(color:rgb(23,95,233))` は CSS 値を指定し、`fg-red` はテーマトークンを選びます。`var()` 参照は明示的です。`(font-family:mono)` は CSS ファミリーの `mono` を指定し、`--font-mono` ではありません。トークンの解決、モード、派生値は[変数とモード](/reference/rules/modes)を参照してください。
+
+### 数値と単位 \{#units\}
+
+<a id="decimal"></a>
+<a id="unit-conversion"></a>
+<a id="unit-sensing"></a>
+<a id="multiplier-units"></a>
+
+ネイティブ宣言は単位を保持し、`rem` をピクセルに変換したりプロパティから単位を推論したりしません。小数の先頭のゼロは省略でき、`(opacity:.5)` と `(opacity:0.5)` は同じ数値を指定します。
+
+| ネイティブ値 | 解釈 |
+| --- | --- |
+| `(margin:1rem)` | ルートのフォントサイズを基準とする長さ |
+| `(width:50%)` | プロパティの文脈で解決されるパーセント値 |
+| `(rotate:30deg)` | 明示的な角度 |
+| `(animation-duration:200ms)` | 明示的な時間。`.2s` も同じ長さを表す |
+| `(opacity:.5)` | 単位なしの数値 |
+| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | CSS ピクセル当たりのドット数によるネイティブ画像の解像度 |
+
+プロパティが数値、長さ、パーセント値などのどの型を受け付けるかは、[CSS の値と単位](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units)の規則で決まります。`p(12)` は異なり、プリセットの関数が引数に `1px` を明示的に掛けます。
+
+### 負の値 \{#negative\}
+
+ネイティブの負の値は `(margin-top:-2rem)` のように値の中に書きます。直接数値の引数には `mt(-8)` を使います。負のトークンクラスはクラス全体の前に `-` を付け、`-mt-sm` とします。この形式には数値トークンと負の値に対応したユーティリティが必要です。padding は対応しないため `-p-sm` は拒否されます。
+
+<Class2CSS classes={['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']} />
+
+引数の検証によって CSS プロパティの値の制約が変わるわけではありません。
+
+## 登録済みユーティリティ \{#registered-utilities\}
+
+### トークン名 \{#variable-alias\}
+
+<a id="property-abbreviations"></a>
+
+トークンの接頭辞はユーティリティ定義で登録され、プロパティの略称からは推論されません。`p-md` は `--spacing-md` を読み、`fg-red` と `bg-red` はともに `--color-red` を読みますが、設定するプロパティは異なります。`padding-md` のような完全なプロパティ名の形式や、`p-4` のような暗黙の数値スケールはありません。選択された名前空間にそのキーが必要です。
+
+同じ綴りのトークンクラスより静的な名前が優先されます。たとえばプロジェクトが `--container-full` を定義しても `w-full` は `width: 100%` のままです。`--radius-pill` があっても `pill` は完全に丸い角の半径です。同名の静的ユーティリティと関数は独立して登録されます。
+
+接頭辞と名前空間の完全な対応表は[トークンファミリー一覧](/reference/tokens/families)、登録と置換の規則は[ユーティリティ定義](/reference/directives/definitions#utilities)を参照してください。プロジェクトの値の定義とスコープ設定は[テーマトークン](/guide/theme)で説明します。
+
+<ReferenceIllustration id="fixed-name-reservation" />
+
+### 直接数値 \{#direct-values\}
+
+`m(4)`、`b(1)`、`grow(1)` などのプリセット関数は静的な数値を 1 つ受け取ります。長さの関数は `1px` を掛ける式を出力し、`grow()`、`shrink()`、`order()` は数値をそのまま渡します。`order()` は整数が必要です。ゼロ、小数、負の引数は各パラメーターに宣言された型に従います。
+
+単位や動的な式は数値引数ではないため、`m(1px)` と `b(var(--x))` は規則を生成しません。それらの値には `(margin:1rem)` や `(border-width:var(--x))` を使います。関数一覧、パラメーター型、生成される宣言は[直接数値](/reference/direct-values)を参照してください。
+
+<a id="motion-properties"></a>
+
+レシピは複数のプロパティや補助値をまとめられます。`text-sm` はサイズ、行の高さ、字間を含み、`animate-fade` はアニメーションの一括指定を提供します。参照と上書きの規則は[テキストトークン](/reference/tokens/text#primary-and-companions)と[モーショントークン](/reference/tokens/motion#duration-overrides)を参照してください。
+
+## カスタムプロパティ \{#variable-properties\}
+
+`(--name:value)` という先頭部分は、一致する要素に CSS カスタムプロパティを宣言します。他の宣言と同じセレクターや条件を付けられますが、ユーティリティやテーマトークンは登録しません。
+
+```html
+<div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
+  Progress
+</div>
+```
+
+<Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+`var(--progress)` は通常の CSS の解決と継承を使います。未解決の変数や互換性のない置換値により、参照する宣言が無効になる場合があります。必要に応じて [CSS 変数の代替値](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var)を使ってください。固定クラスに動的な値を渡す方法は[構文チュートリアル](/guide/syntax-tutorial#complete-card)で説明します。
+
+## 組み合わせと重要度 \{#combining-declarations\}
+
+<a id="group"></a>
+<a id="independent-properties"></a>
+
+`b(1) b-solid b-line-control` のように、別々のクラスで独立した判断を表します。ネイティブの一括指定も使用でき、この書き方の推奨で CSS の文法は変わりません。セレクターや条件が必要な各クラスに、それぞれ接尾辞を付けてください。
+
+```html
+<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
+```
+
+同じレイヤー、条件、セレクター内では、レシピ、単一宣言のユーティリティ、ネイティブ宣言の順に並びます。単一宣言のユーティリティは値の出所より先にプロパティの系統と適用範囲で並び、同じプロパティではトークンが固定値や直接数値より前になります。HTML のクラス順序で結果は決まりません。
+
+<Class2CSS classes={['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']} />
+
+ここではネイティブの padding が両ユーティリティの後に来て、`mt(0)` と `mx-auto` が `m-md` の対応する部分を上書きします。並び順の完全な契約は[カスケードレイヤー](/reference/rules/layers)、コンポーネントクラス、`@utility` レシピ、CSS ミックスイン の選び方は[スタイルの再利用](/guide/reusing-styles)を参照してください。
+
+### 重要度 \{#important\}
+
+末尾の `!` はクラスの宣言を重要にします。括弧内の値の末尾にあるネイティブの `!important` も同じ効果で、両方書いても出力は 1 回です。文字列内の `'!important'` は内容のままです。
+
+<Class2CSS classes={['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]} />
+
+<ReferenceIllustration id="important-recipe" />
+
+## 固定ユーティリティ一覧 \{#fixed-utilities\}
+
+プリセットには固定の単一宣言ユーティリティが 292 個あります。それぞれ一覧のプロパティだけを設定し、`flex-col` は flex レイアウトを有効にせず、`b-none` は枠線の太さをリセットせず、`pill` はサイズを設定しません。複数宣言の `truncate` レシピは[切り詰め](/reference/truncation)に別途掲載しています。
+
+<FixedUtilities />
+
+`start` と `end` はネイティブの意味を保ち、`flex-start` と `flex-end` とは異なります。論理軸では `x` がインライン軸、`y` がブロック軸で、`t`、`r`、`b`、`l` は物理的な辺です。固定ユーティリティにはセレクター、条件、`!` を付けられ、使用時に CSS を出力します。

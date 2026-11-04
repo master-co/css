@@ -1,0 +1,36 @@
+# Reference prose: illustrations/container-condition-expansion
+
+## title \{#copy-title\}
+
+
+命名条件展开不会决定容器
+
+## alt \{#copy-alt\}
+
+
+--dense 条件结合命名宽度条件与样式查询。在 @container card 使用时展开条件，并保留 card 为容器名称。
+
+## caption \{#copy-caption\}
+
+
+定义保存条件。使用处提供容器名称 card。展开 --dense 同时保留宽度与样式检查。
+
+## description-0 \{#copy-description-0\}
+
+
+--md 定义宽度条件 (width >= 28rem)。--dense 结合该引用与 style(--density: compact)。
+
+## description-1 \{#copy-description-1\}
+
+
+使用处 @container card (--dense) 选择名为 card 的容器。
+
+## description-2 \{#copy-description-2\}
+
+
+展开产生 @container card (width >= 28rem) and style(--density: compact)。容器名称不变，也不成为定义的一部分。
+
+## description-3 \{#copy-description-3\}
+
+
+相同条件可搭配其他容器名称或最近的合格容器复用。图示呈现编译时替换，并非 DOM 树。

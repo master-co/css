@@ -7,7 +7,7 @@ Move repeated, visual, markup-owned styles into Master CSS classes. Keep global 
 
 ---
 
-## Migration strategy
+## Migration strategy \{#migration-strategy\}
 Choose a small component whose original CSS and rendered states you can inspect. Follow the [shared migration workflow](/guide/migration#migration-strategy) for the baseline and batch checks; this guide focuses on deciding which declarations belong in markup and which local CSS contracts should remain.
 
 A useful first batch has stable visual declarations and no vendor selectors. Keep a module when its local class name is an API, when it targets internal structure, or when replacing it would spread complicated selectors across call sites.
@@ -16,7 +16,7 @@ A useful first batch has stable visual declarations and no vendor selectors. Kee
 
 ---
 
-## Add Master CSS beside existing CSS
+## Add Master CSS beside existing CSS \{#add-master-css-beside-existing-css\}
 Keep the current CSS files loaded while Master CSS starts generating rules for new or converted markup. Check the cascade before deleting a local rule: unlayered legacy declarations outrank normal layered utilities, even when the Master CSS import appears later. Retaining both selectors on the same element can therefore mask the conversion.
 
 ```css name=app.css
@@ -29,7 +29,7 @@ Use [Rendering modes](/guide/rendering-modes) to decide whether the project shou
 
 ---
 
-## Convert local CSS to markup classes
+## Convert local CSS to markup classes \{#convert-local-css-to-markup-classes\}
 Move local visual declarations into markup when the class list is easier to review than a separate selector. This example already uses the shared surface and text roles from the installed preset; the conversion keeps them unchanged.
 
 ```css name=Card.module.css
@@ -92,7 +92,7 @@ Prefer named theme tokens such as `bg-surface-card`, `p-card`, or `r-card` when 
 
 ---
 
-## Keep CSS Modules when they are the component API
+## Keep CSS Modules when they are the component API \{#keep-css-modules-when-they-are-the-component-api\}
 CSS Modules are still useful when a component exposes a stable local class name, needs selectors that target internal structure, or uses project tokens in local variants.
 
 Vite, Next.js, and Webpack supply project theme definitions to local stylesheets automatically. Native declarations emit their required variables without importing the app CSS output again.
@@ -133,7 +133,7 @@ This wrapper defaults to `type="button"`; pass `type="submit"` for form submissi
 
 ---
 
-## Move shared values into `@theme`
+## Move shared values into `@theme` \{#move-shared-values-into--theme\}
 Project-owned custom properties usually belong in `@theme` before large-scale class conversion. That lets markup use token names instead of hard-coded values.
 
 ```css name=app.css
@@ -162,7 +162,7 @@ Keep plain CSS custom properties when the value is runtime-owned, component-priv
 
 ---
 
-## Validate the migration
+## Validate the migration \{#validate-the-migration\}
 Review each batch as both code and UI.
 
 - Run the project's formatter, linter, type check, tests, and production build.
@@ -173,7 +173,7 @@ Review each batch as both code and UI.
 
 ---
 
-## Useful references
+## Useful references \{#useful-references\}
 - [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.

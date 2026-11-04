@@ -1,0 +1,71 @@
+# Reference prose: tokens/spacing
+
+## title \{#copy-title\}
+
+
+间距
+
+## summary \{#copy-summary\}
+
+
+用同一套间距尺度设置 padding、margin、gap、inset 和偏移。
+
+## note \{#copy-note\}
+
+
+族决定属性，令牌提供距离。`px-` 和 `mx-` 使用行内轴，`pl-` 和 `ml-` 则使用物理左侧。完整族表列出各自对应的原生属性。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+预设尺度使用 rem 长度。像素换算假设根元素字号为 16px；浏览器使用实际的根元素字号。需要零或一个 CSS 像素时，可使用 `p(0)` 或 `p(1)` 这类直接值函数。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+距离相同，作用的边界不同
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p-md` 和 `gap-md` 都读取 `--spacing-md`，但 padding 分隔内容与盒子边缘，gap 则分隔布局中的项目。gap 不会在外围产生 padding。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`gap-md` 只设置间隙值，不会启用 Grid 或 Flexbox。同样，inset 令牌只设置偏移量，不会选择定位方式。实际效果由原生属性和布局决定。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+能否使用负值令牌形式取决于读取它的属性：`-mt-md` 合法，`-p-md` 则被拒绝。预设没有 zero 或 auto 间距令牌；零值可用 `m(0)`，行内轴自动外边距则可用 `mx-auto` 这类固定工具类。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+负值
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+直接值
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生 gap 行为
+
+## usage-lead \{#copy-usage-lead\}
+
+
+为表单添加内边距、拉开字段间距，并分隔每个标签与控件。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改预设值或添加令牌：`--spacing-card` 会创建 `p-card`、`m-card`、`gap-card` 和其他间距类。
+
+## guide-label \{#copy-guide-label\}
+
+
+布局

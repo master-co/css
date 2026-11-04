@@ -1,0 +1,222 @@
+---
+title: "Bootstrap からの移行"
+description: "Bootstrap の画面を Master CSS に移し、ベンダー CSS、JavaScript で動くコンポーネント、カスケードに依存する上書きを維持します。"
+figures: {"BootstrapIllustration": {"title": "名前ではなく境界を維持する", "alt": "同じ幅の軸で Bootstrap md は 768px、Master CSS の既定 md は初期文字サイズ 16px なら 1024px からです。独自の bootstrap-md で元の 768px を維持します。", "caption": "Bootstrap 5.3 の既定と初期文字サイズ 16px を使います。名前を変換する前にインストール済みテーマを確認します。", "description": [{"title": "元の境界", "text": "Sass 設定を変えていなければ Bootstrap 5.3 md は 768px からです。"}, {"title": "異なるプリセット", "text": "Master CSS md は 64rem、ここでは 1024px からです。同名の再利用は境界を変えます。"}, {"title": "明示的な移行条件", "text": "--bootstrap-md を 768px に定義し、grid-cols(3)@bootstrap-md で元の境界を保ちます。"}]}}
+---
+import BootstrapIllustration from './components/BootstrapIllustration.astro'
+
+Bootstrap と Master CSS は併用できます。既存のマークアップが Bootstrap のグリッド、ユーティリティ、コンポーネント、JavaScript の動作、Sass 変数、セレクターの上書きに依存する間は、Bootstrap を読み込み続けます。一度に一画面か一群のコンポーネントを変換し、製品が依存しなくなってから削除します。
+
+このガイドはアプリ側で管理する Bootstrap の使用箇所を扱います。ベンダーのマークアップ、外部プラグイン、生成 HTML、Bootstrap の JavaScript コンポーネントは、明確な代替手段を用意するまで残せます。
+
+---
+
+## 移行方針 \{#migration-strategy\}
+[共通の移行手順](/guide/migration#migration-strategy)に従い、既存ウィジェットの周囲にあるアプリ管理のレイアウトから始めます。残るコンポーネントが依存する間は、Bootstrap の CSS、JavaScript、Sass 出力を維持します。
+
+画面の変換前に、三つの境界を確認します。
+
+- **値：**カスタマイズした `$spacers`、`$grid-breakpoints`、コンテナー幅を調べます。同じ尺度名でも値は同じとは限りません。
+- **セレクター：**ベンダーのマークアップと Bootstrap の内部に結び付いた上書きは、そのコンポーネントを置き換えるまで一緒に残します。
+- **動作：**フォーカス処理、ARIA 状態、イベントの明確な代替を用意するまで、モーダル、ドロップダウン、折りたたみ領域は Bootstrap に任せます。
+
+最初の有用な成果は、動作するコンポーネントの周囲のレイアウトを変換することです。依存関係の削除は、そのコンポーネントに代替ができてから行います。
+
+<BootstrapIllustration />
+
+---
+
+## Bootstrap と並べて Master CSS を追加する \{#add-master-css-beside-bootstrap\}
+アプリがすでに読み込むスタイルシートから Master CSS をインポートします。Bootstrap のインポートはまだ削除しません。
+
+```css name=app.css
+@import "bootstrap/dist/css/bootstrap.css";
+@import "@master/css";
+```
+
+通常のアプリファイルには既定のソース探索で十分です。独自の対象追加、除外、safelist、blocklist が必要な場合だけ明示的なソースディレクティブを追加します。
+
+インポート順だけでは、非レイヤーの Bootstrap ルールを通常のレイヤー内ユーティリティより下にできません。Master CSS のコンポーネントとユーティリティを優先するには、レイヤー順を宣言してから Bootstrap を `defaults` にインポートします。
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import "bootstrap/dist/css/bootstrap.css" layer(defaults);
+@import "@master/css";
+```
+
+これはカスケードの動作を変えます。アプリ全体に導入する前に、既存の上書きをブラウザーで比較してください。Bootstrap ユーティリティは `!important` を使う場合もあります。通常の Master CSS 宣言は、後のレイヤーにあるだけではそれを上書きしません。
+
+---
+
+## Bootstrap の Sass 値を `@theme` に移す \{#move-bootstrap-sass-values-into--theme\}
+Bootstrap の Sass 変数には製品の設計判断が含まれることがあります。Bootstrap コンポーネント外のマークアップでも使う値は、Master CSS のトークンに移します。
+
+```scss name=bootstrap-theme.scss
+$primary: #2563eb;
+$body-color: #172033;
+$border-radius: .5rem;
+$spacer: 1rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --spacing-page: 1rem;
+}
+
+```
+
+```html
+<section class="bg-white fg-body p-page r-control">
+  ...
+</section>
+```
+
+Bootstrap の尺度名が Master CSS のプリセットと一致するとは考えないでください。製品に必要な値を移し、その役割を表すトークン名を選びます。
+
+---
+
+## グリッドとユーティリティのクラスを変換する \{#convert-grid-and-utility-classes\}
+レイアウトラッパーと、ユーティリティだけを使う単純なマークアップから始めます。
+
+Bootstrap のクラスの綴りではなく、レイアウトの意図を維持します。
+
+```html
+<!-- Before: container py-5 -->
+<!-- Before: row g-4 -->
+<!-- Before: col-md-4 -->
+```
+
+Bootstrap の既定の [`md` ブレークポイント](https://getbootstrap.com/docs/5.3/layout/breakpoints/#available-breakpoints)は 768px、Master CSS のプリセットの `md` は 64rem からです。元の列切り替え条件を維持するため、アプリの CSS エントリーで名前付き条件を定義します。
+
+```css name=app.css
+@custom-media --bootstrap-md (width >= 768px);
+```
+
+```html
+<section class="w-full max-w-6xl mx-auto px-md py-2xl">
+  <div class="grid gap-lg grid-cols(3)@bootstrap-md">
+    <article class="p-lg b(1) b-solid b-line-divider r-lg bg-white fg-body">
+      ...
+    </article>
+  </div>
+</section>
+```
+
+これは三列になる境界を維持しつつ、コンテナー幅とグリッドの間隔を新しく選んでいます。実際の三項目を使い、767px と 768px を確認してください。`@md` をそのまま使うと、プリセットでは 64rem まで縦に並びます。Bootstrap のコンテナーやガターの規則を置き換える前に寸法を比較します。明示的な `fg-body` は、固定の白いカードに製品の暗い文字色を組み合わせます。
+
+ユーティリティの別名より明確な場合は、ネイティブ宣言構文を使います。
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) contents@md">
+  ...
+</div>
+```
+{ }
+
+Bootstrap のコンテナー幅、ガターの前提、コンポーネント内部を必要とするテンプレートには、Bootstrap のレイアウトクラスを残します。
+
+---
+
+## 単純なコンポーネントを変換する \{#convert-simple-components\}
+ボタン、カード、アラート、バッジは、アプリが管理する視覚パターンであることが多いものです。動作もプロジェクトが管理する場合は、マークアップクラスや Master CSS のコンポーネントクラスに変換します。併用中は新しいクラス名を使い、未変更の Bootstrap ボタンへの影響を防ぎます。上で定義したテーマトークンを維持してください。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+
+  .panel {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+}
+```
+
+```html
+<button type="button" class="action-button">Save</button>
+<article class="panel">...</article>
+```
+
+ドロップダウン、モーダル、タブ、カルーセル、折りたたみ領域など、動作、アクセシビリティ、内部構造を Bootstrap が提供するものは残します。クラスが転送され、カスケードが明確なら、Bootstrap のルート要素に小さな Master CSS クラスを追加できます。
+
+---
+
+## JavaScript で動くコンポーネントを維持する \{#preserve-javascript-driven-components\}
+Bootstrap の JavaScript コンポーネントは CSS だけではありません。種類に応じてフォーカス、ARIA 属性、トランジション、body のスクロール固定、Popper の配置、イベントを管理します。[JavaScript API](https://getbootstrap.com/docs/5.3/getting-started/javascript/)で維持すべき動作を一覧にします。
+
+代替の動作を実装してテストするまで、`data-bs-*` 属性を持つマークアップは Bootstrap に残します。まず周囲のレイアウトや製品側のラッパーだけを変換します。
+
+```html
+<section class="grid gap-md">
+  <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
+</section>
+```
+
+コンポーネントの置き換え時に、対応する Bootstrap JavaScript のインポートとデータ属性を同じ確認可能な作業で削除します。
+
+---
+
+## 上書きとベンダー CSS を扱う \{#handle-overrides-and-vendor-css\}
+多くの Bootstrap プロジェクトは、状態クラス、入れ子のマークアップセレクター、詳細度の修正などの上書きに依存しています。機械的に変換しないでください。
+
+Bootstrap の内部を対象にする上書きは、CSS として残します。
+
+```css name=bootstrap-overrides.css
+.navbar .dropdown-menu {
+  min-width: 16rem;
+}
+```
+
+マークアップがアプリの管理下に入ってから、上書きを Master CSS に移します。
+
+```html
+<nav class="flex items-center gap-md">
+  <div class="min-w-3xs">...</div>
+</nav>
+```
+
+ベンダー CSS や外部の Bootstrap テーマは、ベンダーの契約を置き換えるまで通常の CSS として残します。
+
+---
+
+## 移行を検証する \{#validate-the-migration\}
+- 各作業後にプロジェクトのフォーマッター、lint、型チェック、テスト、本番ビルドを実行します。
+- Bootstrap のグリッド、コンテナー、フォーム、モーダル、ドロップダウン、折りたたみ、ツールチップ、ポップオーバー、レスポンシブユーティリティを使う画面を比較します。
+- 対応する場合は、ホバー、focus-visible、無効、展開、選択、検証、ダークモードをテストします。
+- 残るテンプレート、コンポーネント、プラグイン、上書きのどれも依存しなくなるまで Bootstrap を読み込みます。
+- 検証一式がすべて通ってから、Bootstrap の Sass、CSS、JavaScript のインポートとパッケージを削除します。
+
+---
+
+## 関連資料 \{#useful-references\}
+- [インストール](/guide/installation)：Master CSS の追加。
+- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、プログレッシブの選択。
+- [スタイル宣言](/reference/rules/declarations)：クラス構文。
+- [テーマトークン](/guide/theme)：トークン、[変数とモード](/reference/rules/modes)：モード、[条件](/reference/rules/conditions)：クエリー構文。
+- [グローバルスタイル](/guide/global-styles#shared-vocabulary)：マークアップクラス、テーマトークン、独自ユーティリティ、コンポーネントクラスの選択。
+- [コードの lint](/guide/code-linting)：移行中のクラス文字列の検証。

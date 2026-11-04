@@ -1,4 +1,6 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel, referenceHeader } from './ui'
 import '@master/internal-site/styles/system/stage.css'
 import '@master/internal-site/styles/system/tray.css'
 import '@master/internal-site/styles/system/tray-code.css'
@@ -44,13 +46,16 @@ function paletteGroups(group: SheetGroup) {
 const { sheet } = Astro.props
 const grouped = sheet.groups.length > 1
 const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.flatMap(group => group.values.map(value => value.className))))
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, string | number>) => referenceLabel(locale, key, values)
+
 ---
 
-<h2 id="consumers">Classes</h2>
-<SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={sheet.id.startsWith('color') ? `${sheet.more.length} other color families` : `${sheet.more.length} more classes`} width={width} />
+<h2 id="consumers">{l('classes')}</h2>
+<SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={sheet.id.startsWith('color') ? l('moreColorFamilies', { count: sheet.more.length }) : l('moreClasses', { count: sheet.more.length })} width={width} />
 {sheet.note && <SheetNote text={sheet.note} />}
 
-<h2 id="values">Values</h2>
+<h2 id="values">{l('values')}</h2>
 {sheet.valuesLead && <p><InlineText text={sheet.valuesLead} /></p>}
 {sheet.groups.filter(group => group.values.length).map(group => <Fragment>
   {grouped && group.title && <h3 id={group.id}>{group.title}</h3>}
@@ -60,10 +65,10 @@ const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.f
         <Palette client:idle={{ timeout: 500 }} groups={paletteGroups(group)} />
       </div>
     </div>
-    : <SheetTable class="ref-value-table" head={group.head} modes={group.head.includes('Light')} keyWidth={width}>
+    : <SheetTable class="ref-value-table" head={group.head.map(header => referenceHeader(locale, header))} modes={group.modes} keyWidth={width}>
       {group.values.map(row => <tr id={row.id}>
         <th scope="row"><code>{row.className}</code></th>
-        {group.head.includes('Light') ? modePair(row.value)!.map(value => <td><code>{value}</code></td>)
+        {group.modes ? modePair(row.value)!.map(value => <td><code>{value}</code></td>)
           : (row.cells ?? [row.value]).map(value => {
             // A hue alias is a lookup relationship; do not hide its reference behind a hover title.
             const display = group.namespace === 'color' ? value : resolved(value)
@@ -78,9 +83,9 @@ const width = keyWidth(sheet.syntax.map(row => row.syntax).concat(sheet.groups.f
 
 <SheetExplanation explanation={sheet.explanation} />
 
-<h2 id="usage">Usage</h2>
+<h2 id="usage">{l('usage')}</h2>
 <SheetExampleBlock example={sheet.usage} />
 
-<h2 id="customize">Customize</h2>
+<h2 id="customize">{l('customize')}</h2>
 <SheetExampleBlock example={sheet.customize} preview={false} source={false} />
-<p class="ref-links">See <Link href="/reference/directives/theme">theme directives</Link>{sheet.guide && <Fragment> and <Link href={sheet.guide.href}>{sheet.guide.label}</Link></Fragment>}.</p>
+<p class="ref-links">{l('see')} <Link href="/reference/directives/theme">{l('themeDirectives')}</Link>{sheet.guide && <Fragment> {l('and')} <Link href={sheet.guide.href}>{sheet.guide.label}</Link></Fragment>}.</p>

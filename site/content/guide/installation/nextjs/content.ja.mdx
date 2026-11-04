@@ -1,0 +1,165 @@
+---
+{
+  "title": "Next.js で Master CSS を設定する",
+  "description": "Next.js App Router に Master CSS を接続し、事前レンダリングするページとリクエスト時に生成するページの CSS 配信を確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/nextjs/cover-light.webp'
+import dark from '~/site/assets/images/integrations/nextjs/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Next.js" />
+
+最上位に `app` ディレクトリーがある Next.js App Router プロジェクトに Master CSS を追加します。Master CSS はスタイルの配信方法を制御し、ページ HTML のレンダリング方法は引き続き Next.js が制御します。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      既存の [Next.js プロジェクト](https://nextjs.org/docs/app/getting-started/installation)のルートでインストーラーを実行します。既定は静的モードで、アダプターが Next.js のビルド用に生成スタイルシートを準備します。
+
+      (i) インストーラーが `app/globals.css` に追加した `@import '@master/css';` を残してください。アダプターがそのエントリーを処理し、ソースの走査で生成したスタイルを供給します。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework nextjs --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 読み込まれる設定を確認する \{#verify-the-loaded-configuration\}
+
+    [ルートレイアウト](https://nextjs.org/docs/app/getting-started/css#global-css)でグローバルスタイルシートをインポートしたままにし、既存のプロバイダー、メタデータ、ドキュメント構造を保持してください。以下のレイアウトは最小限の例です。TypeScript の設定では、非同期の設定関数からインテグレーションを返します。これにより、非同期ビルドモードでも設定ローダーにトップレベル await を必要としません：
+
+    ```ts name=next.config.ts
+    import type { NextConfig } from 'next'
+    import withMasterCSS from '@master/css-next'
+
+    const nextConfig: NextConfig = {}
+
+    export default async () => withMasterCSS(nextConfig, { mode: 'static' })
+    ```
+
+    既存の Next.js オプションは `nextConfig` に残してください。
+
+    ```css name=app/globals.css
+    @import '@master/css';
+    ```
+
+    ```tsx name=app/layout.tsx
+    import './globals.css'
+
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return <html lang="en"><body>{children}</body></html>
+    }
+    ```
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    開発サーバーを起動し、最初のページにスタイルを付けます。
+  </Step>
+  <InstallationPreview>
+
+```tsx name=app/page.tsx
+export default function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+  </InstallationPreview>
+</StepSection>
+
+<DocumentDisclosure title="CSS Modules でプロジェクトのトークンを使う">
+
+Turbopack と Webpack のどちらでも、ローカル CSS と CSS Modules はプロジェクトの定義を自動で受け取ります。ネイティブの宣言でプロジェクトのトークンを直接使い、共通の動作にはネイティブのセレクターを使ってください。必要なテーマリソースはグローバルに出力され、ローカルセレクターはフレームワーク本来のスコープを維持します。プロジェクトのコンテキスト外の追加定義ファイルには `@reference` を使います。
+
+Webpack の経路では、生成したテーマリソースを通常のグローバルスタイルシートで配信します。ローカル Module セレクターには Next.js の命名が適用され、`:root`、`:host`、モードのセレクターは元のスコープを維持します。コンポーネントは自身に再宣言せずに、祖先や入れ子のテーマからトークンを継承できます。繰り返し使うコンポーネントは生成リソースを共有します。グローバルエントリーからトークンが供給されていれば、どちらのバンドラーでも通常の CSS と CSS Modules でネイティブの `var(--token)` を使えます。
+
+</DocumentDisclosure>
+
+## 設定を確認する \{#check-the-setup\}
+
+`npm run dev` を実行し、ページの `p-md` を `p-lg` に変えます。パディングが `1rem` から `1.5rem` に増えるはずです。元に戻してから、本番の配信を確認します：
+
+```bash
+npm run build
+npm run start
+```
+
+JavaScript を無効にして本番のページを再読み込みします。段落のパディング、角丸、浮き上がった面が保たれるはずです。入れ子のルートも確認してください。ルートレイアウトからグローバルエントリーをインポートすれば、アプリ全体で CSS を利用できます。
+
+スタイルがない場合は、レイアウトのインポートと、`withMasterCSS()` を含む設定が実際に Next.js に読み込まれるか確認します。有効な設定ファイルは一つにしてください。`src/app` を使うプロジェクトでは、スタイルシートのエントリーとレイアウトのパスを意識して調整します。このページの手順は最上位の `app` を対象とします。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定は静的モードです。インストーラーのオプションが対応する `withMasterCSS()` のモードを設定します。モードを変えてもグローバルスタイルシートを保持してください：
+
+| モード | インストーラーのオプション | 配信方法 |
+| --- | --- | --- |
+| 静的 | なし | ソースの走査で生成したスタイルシート |
+| ランタイム | `--mode runtime` | Next.js のクライアント instrumentation によるブラウザーランタイム |
+| プログレッシブ | `--mode progressive` | 事前レンダリングした CSS をランタイムへ引き継ぐ |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+ランタイムモードは Next.js のクライアント instrumentation を通して Master CSS ランタイムを挿入し、ビルドアダプターによるページ CSS の事前レンダリングは行いません：
+
+```bash
+npm create @master/css@rc -- --framework nextjs --mode runtime --yes
+```
+
+インストーラーは `withMasterCSS(nextConfig, { mode: 'runtime' })` を設定します。`npm run build` と `npm run start` を実行してから、初期 DOM にないクラスを追加します：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+再ビルドせずに段落に下線が付くはずです。ランタイムモードは、JavaScript の起動前にはこれらの生成ルールを供給しません。更新されない場合は、ブラウザーのコンソールとランタイムプログラムのリクエストを確認してください。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="事前レンダリングしたスタイルを含める">
+
+プログレッシブレンダリングは、静的または事前レンダリングする Next.js ページに、事前レンダリング済み CSS とハイドレーションマニフェストを追加します：
+
+```bash
+npm create @master/css@rc -- --framework nextjs --mode progressive --yes
+```
+
+ランタイムは最初、カバー済みのクラスだけを追跡します。ページマニフェスト外のクラスがあるとエンジンが起動し、一致するルールを検証して取り込んでから追加 CSS を生成します。リクエスト時の動的 SSR レスポンスはビルドアダプターの事前レンダリング出力に含まれないため、生成ユーティリティのスタイルはブラウザーランタイムに依存します。これらのルートに JavaScript なしでユーティリティのスタイルが必要なら、静的モードを使ってください。
+
+`npm run build` と `npm run start` の実行後、事前レンダリングするルートのレスポンスソースに、JavaScript 実行前から `style#master-css` があるか確認し、上記と同じように後からクラスを追加して試します。動的 SSR ルートは別途テストしてください。このアダプターは、リクエスト時の HTML にサーバー生成 CSS を追加しません。
+
+</DocumentDisclosure>
+
+ランタイムまたはプログレッシブモードの Turbopack 本番ビルドで、生成された `.master/stylesheets/...-entry.css` を解決できないと報告される場合は、`npx next build --webpack` で Webpack ビルドを確認し、デプロイ前に `npm run start` で生成ページを検証してください。Webpack のビルド成功は、Turbopack の経路の検証にはなりません。
+
+## 既存のデプロイアダプターを保持する \{#adapter-composition\}
+
+プロジェクトが Next.js の [`adapterPath`](https://nextjs.org/docs/app/api-reference/config/next-config-js/adapterPath) をすでに使っている場合は、`nextConfig` に保持してから `withMasterCSS()` に渡します。インテグレーションは、設定されたアダプターと自身のビルドアダプターを組み合わせます。外部アダプターのパスが明示されていない場合は、`NEXT_ADAPTER_PATH` で指定したデプロイアダプターも認識します。
+
+既定では Master CSS が先に実行します。その後、完成した HTML をパッケージする外部アダプターが、生成 CSS とページマニフェストの参照を利用できます。ほかのアダプターが先にビルド出力を処理する必要がある場合だけ、`adapterOrder: 'external-first'` を使ってください。プロジェクトのオプションと選んだモードを保持して、既存の設定エクスポートを変更します：
+
+```ts
+export default async () => withMasterCSS(nextConfig, {
+  mode: 'progressive',
+  adapterOrder: 'external-first'
+})
+```
+
+両方のアダプターを有効にして本番ビルドを実行します。最終デプロイ出力の事前レンダリング済みルートと、実際に配信されるレスポンスを確認してください。`style#master-css` が残り、参照先のハイドレーションマニフェストがデプロイ先 URL から読み込まれる必要があります。動的ルートは別途テストします。アダプターの組み合わせで、Master CSS にリクエスト時の CSS レンダリングが追加されるわけではありません。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/motion-duration-override
+
+## title \{#copy-title\}
+
+
+持續時間 class 改變時間設定，但保留相同關鍵影格
+
+## alt \{#copy-alt\}
+
+
+兩個動畫以共用時間尺度比較。只有 animate-pulse 時，每次迭代持續 1000 毫秒；加入 animation-slow 後，持續時間縮短為 300 毫秒，關鍵影格則維持相同。
+
+## caption \{#copy-caption\}
+
+
+兩者使用相同的 pulse 關鍵影格。長條量測的是一次迭代的持續時間，不是動畫進度或渲染速度。預設集會重複播放，這個比較則單獨呈現一次迭代。
+
+## description-0 \{#copy-description-0\}
+
+
+animate-pulse 簡寫提供 pulse 1s infinite，每次迭代的持續時間為一秒。
+
+## description-1 \{#copy-description-1\}
+
+
+條件相同時，animation-slow 會排在 animate-pulse 之後，只將持續時間替換為 var(--duration-slow)，也就是 300ms。pulse 關鍵影格與無限迭代次數維持不變。
+
+## description-2 \{#copy-description-2\}
+
+
+兩條水平長條都從零開始，在同一條毫秒軸上呈現 1000:300 的長度比例。它們量測的是宣告的單次迭代持續時間，不是效能，也不是形狀移動的距離。
+
+## description-3 \{#copy-description-3\}
+
+
+預設的 pulse token 會無限重複。需要只播放一次時，請加入原生迭代次數或定義自訂 token；調整 class 名稱的順序不會改變生成規則的順序。

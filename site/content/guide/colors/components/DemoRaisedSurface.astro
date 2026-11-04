@@ -1,5 +1,9 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
 import DemoThemeComparison from '@master/internal-site/demo/DemoThemeComparison.astro'
+
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'DemoRaisedSurface', { title: 'A raised surface', caption: 'Identical classes in both documents. The surface, text and shadow colors come from the active mode; the shadow geometry stays the same.' })
 
 const html = `<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover shadow-md:focus-visible (text-decoration:none)" href="/guide/colors#raised-surfaces" target="_top">
 <span class="flex items-center justify-between gap-sm">
@@ -11,5 +15,5 @@ const html = `<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm
 ---
 
 {/* One raised surface: role color, radius token, state elevation and a pill badge. */}
-<DemoThemeComparison name="raised-surface" title="A raised surface" html={html} height={160}
-  caption="Identical classes in both documents. The surface, text and shadow colors come from the active mode; the shadow geometry stays the same." />
+<DemoThemeComparison name="raised-surface" title={copy.title} html={html} height={160}
+  caption={copy.caption} />

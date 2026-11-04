@@ -1,0 +1,463 @@
+---
+{
+  "title": "在伺服器渲染應用程式設定 Master CSS",
+  "description": "使用 Vite 建置 Master CSS，並從 PHP、Laravel、Rails、WordPress、Shopify、ASP.NET Core、Blazor 或 Express 範本載入。",
+  "category": "整合"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/server-rendered/cover-light.webp'
+import dark from '~/site/assets/images/integrations/server-rendered/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS 搭配伺服器符號" />
+
+伺服器或 CMS 渲染 HTML 時，由 Vite 建置 Master CSS 資產，再由宿主系統載入建置後的檔案。本指南涵蓋 PHP、Rails、WordPress、Shopify、ASP.NET Core、Blazor 與 Express；[Laravel](#laravel) 使用自己的 Vite 流程。頁面、路由與其他資產仍由宿主系統提供。請先選擇你的[宿主系統章節](#hosts)，再套用共用步驟：範本路徑與公開目錄決定掃描內容，以及樣式表的提供位置。Laravel 專案可直接前往[既有 Vite 流程](#laravel)。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 安裝 Vite 與 Master CSS \{#install-vite-and-master-css\}
+      在既有專案根目錄或佈景主題目錄中，安裝 Vite 與 Master CSS Vite 整合。若目錄沒有 `package.json`，請先執行 `npm init -y`。
+    </StepL>
+    <StepR>
+      ```bash
+      npm install @master/css@rc
+      npm install -D vite @master/css-vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 設定 Vite \{#configure-vite\}
+      將資產進入點建置至宿主系統的公開資產目錄。依[宿主系統表格](#hosts)設定 `outDir`；`emptyOutDir: false` 會保留宿主系統的其他檔案。
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css-vite'
+
+      export default defineConfig({
+        base: './',
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: false,
+          rollupOptions: {
+            input: 'src/master.ts',
+            output: {
+              entryFileNames: '[name].js',
+              assetFileNames: '[name][extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 建立資產進入點 \{#create-the-asset-entry\}
+      從進入點匯入 Master CSS。範本不屬於 Vite 模組圖的一部分，因此請將宿主系統[章節](#hosts)中的 `@source` 行附加到這份樣式表。
+    </StepL>
+    <StepR>
+      ```ts name=src/master.ts
+      import './master.css'
+      ```
+
+      ```css name=src/master.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 加入建置指令 \{#add-build-scripts\}
+      將這些指令合併到 `package.json`。啟動或發布宿主系統前先執行建置；開發時，請讓監看程序與宿主伺服器一起執行。
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 載入樣式表 \{#load-the-stylesheet\}
+    執行 `npm run build:assets`，依對應章節的方式，從宿主版面配置連結建置後的 `master.css`，再將段落加入會渲染的範本。
+  </Step>
+  <InstallationPreview>
+
+```html
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 檢查資產連接 \{#check-the-asset-connection\}
+
+執行宿主伺服器，並載入確實會渲染範例範本的頁面。段落應有浮起的表面、圓角與 `1rem` 內距。宿主與 `npm run watch:assets` 都在執行時，將 `p-md` 改成 `p-lg`：CSS 重新建置並重新載入頁面後，內距應增為 `1.5rem`。檢查後將類別改回原值。
+
+若頁面沒有樣式，請依序追查三個連接：
+
+- **範本到掃描器：**將宿主的 `@source` 行附加到 `src/master.css`。路徑相對於該樣式表解析。加入時請保留 `@import`。
+- **建置到公開目錄：**確認宿主提供檔案前，`npm run build:assets` 已將 `master.css` 寫入設定的 `outDir`。
+- **公開網址到頁面：**確認版面配置的樣式表請求回傳 CSS，而非 404 或 HTML 備援頁面，再檢查段落的相符規則。
+
+靜態產生需要完整類別字串。請將資料庫或編輯器的值對應至完整類別名稱，或透過 [`@safelist`](/reference/directives/scanning#safelist) 加入範圍有限的候選項目。`bg-${color}` 這類字串串接，不會告訴掃描器應產生哪些類別。
+
+請一併部署 `master.css` 與其匯入的所有 CSS 檔案，並保留名稱與相對路徑。若宿主會提供 HTML，請停用 JavaScript 檢查部署後的頁面；獨立 Blazor WebAssembly 仍需要 JavaScript 渲染頁面。固定資產檔名也需要宿主的快取版本策略，下方 Rails、WordPress 與 ASP.NET Core 範例有所示範。
+
+## 載入建置後的資產 \{#hosts\}
+
+| 宿主系統 | `outDir` | 範本來源 |
+| --- | --- | --- |
+| [PHP](#php) | `public/assets` | `.php` 檔案 |
+| [Rails](#rails) | `public/assets` | ERB 檢視 |
+| [WordPress](#wordpress) | 佈景主題中的 `assets` | 佈景主題 `.php` 範本 |
+| [Shopify](#shopify) | 佈景主題中的 `assets` | Liquid 檔案與範本 JSON |
+| [ASP.NET Core](#aspnet-core) | `wwwroot/assets` | Razor Pages 與 MVC 檢視 |
+| [Blazor](#blazor) | `wwwroot/assets` | `.razor`、`.cshtml` 與宿主 HTML |
+| [Express](#express) | `public/assets` | 範本引擎檢視 |
+
+### PHP \{#php\}
+掃描 PHP 範本，並從頁面 head 連結樣式表。CodeIgniter 請掃描 `app/Views/**/*.php`，並使用一般資產輔助函式載入 `/assets/master.css`。
+
+```css name=src/master.css
+@source "../app/**/*.php";
+@source "../public/**/*.php";
+```
+
+```html name=public/index.php
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+純 PHP 專案假設以 `public` 為網站根目錄，建置後執行 `php -S localhost:8000 -t public`。
+
+### Rails \{#rails\}
+掃描 ERB 檢視，並從應用程式版面配置參照樣式表：
+
+```css name=src/master.css
+@source "../app/views/**/*.erb";
+```
+
+```erb name=app/views/layouts/application.html.erb
+<%= stylesheet_link_tag "/assets/master.css", "data-turbo-track": "reload" %>
+```
+
+讓路由與控制器能連到的檢視渲染此段落，再啟動 `bin/rails server`。這些網址會直接提供 `public/assets` 下的檔案。發布新版本時，請為網址加上版本，例如 `/assets/master.css?v=2`：Turbo 的[資產追蹤](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change)會比較標籤，因此只覆寫相同網址的檔案，不會觸發重新載入。
+
+### WordPress \{#wordpress\}
+在啟用中的佈景主題或子佈景主題目錄工作，並設定 `outDir: 'assets'`。掃描佈景主題的 PHP 範本，包含 `woocommerce/**/*.php` 等覆寫檔，但不要掃描外掛內部實作：
+
+```css name=src/master.css
+@source "../**/*.php";
+@source not "../vendor/**";
+@source not "../node_modules/**";
+```
+
+從 `functions.php` 將樣式表加入載入佇列，並保留既有設定。啟用子佈景主題時，[樣式表目錄輔助函式](https://developer.wordpress.org/reference/functions/get_stylesheet_directory_uri/) 會指向子佈景主題：
+
+```php name=functions.php
+add_action('wp_enqueue_scripts', function () {
+  wp_enqueue_style(
+    'master-css',
+    get_stylesheet_directory_uri() . '/assets/master.css',
+    [],
+    filemtime(get_stylesheet_directory() . '/assets/master.css')
+  );
+});
+```
+
+載入頁面前先建置，讓 `filemtime()` 能讀取檔案；並在佈景主題保留 `wp_head()` 與 `wp_footer()`，讓 WordPress 輸出佇列中的資產。
+
+### Shopify \{#shopify\}
+在本地佈景主題目錄工作，並設定 `outDir: 'assets'`。掃描佈景主題的 [Liquid 範本、區段、區塊與程式碼片段](https://shopify.dev/docs/storefronts/themes/architecture)：
+
+```css name=src/master.css
+@source "../layout/**/*.liquid";
+@source "../sections/**/*.liquid";
+@source "../blocks/**/*.liquid";
+@source "../snippets/**/*.liquid";
+@source "../templates/**/*.liquid";
+@source "../templates/**/*.json";
+```
+
+將標籤加入佈景主題版面配置的 `<head>`，並保留 `content_for_header`、`content_for_layout` 與主題的其他資產：
+
+```liquid name=layout/theme.liquid
+{{ 'master.css' | asset_url | stylesheet_tag }}
+```
+
+將段落放進目前範本會渲染的區段，並讓 Vite 監看程序與 `shopify theme dev` 一起執行；預覽更新不會重新建置 CSS。預設集包含全域基礎樣式，因此請檢查既有店面元件，並使用[串接層](/guide/cascade-layers)決定保留哪些主題樣式。沒有資產建置流程的佈景主題，可使用 [CLI](/guide/installation#cli) 掃描相同來源。
+
+### ASP.NET Core \{#aspnet-core\}
+設定 `outDir: 'wwwroot/assets'`，掃描 Razor Pages 與 MVC 檢視，並從共用版面配置參照樣式表：
+
+```css name=src/master.css
+@source "../Pages/**/*.cshtml";
+@source "../Views/**/*.cshtml";
+@source not "../bin/**";
+@source not "../obj/**";
+```
+
+```html name=Pages/Shared/_Layout.cshtml
+<link rel="stylesheet" href="~/assets/master.css" asp-append-version="true">
+```
+
+在 `dotnet build` 或 `dotnet publish` 前先建置 Vite 資產，讓 .NET 將它們納入靜態資產輸出。新的 .NET 範本可能包含 Bootstrap，其未分層宣告可能覆寫已分層的 Master CSS utility；請參閱[串接層](/guide/cascade-layers)。
+
+### Blazor \{#blazor\}
+Blazor 沿用 ASP.NET Core 設定，使用 `outDir: 'wwwroot/assets'`，並掃描元件與宿主頁面：
+
+```css name=src/master.css
+@source "../**/*.{razor,cshtml,html}";
+@source not "../bin/**";
+@source not "../obj/**";
+@source not "../node_modules/**";
+@source not "../wwwroot/assets/**";
+```
+
+將樣式表加入[所用 Blazor 模型的宿主文件](https://learn.microsoft.com/en-us/aspnet/core/blazor/project-structure?view=aspnetcore-10.0)之 `<head>`，例如 `Components/App.razor`、`wwwroot/index.html` 或 `Pages/_Host.cshtml`。保留 `<base>`、`<HeadOutlet />`、路由與 Blazor 啟動指令碼；相對路徑會依 `<base>` 解析。
+
+```html name=Components/App.razor
+<link rel="stylesheet" href="assets/master.css">
+```
+
+伺服器渲染的元件在停用 JavaScript 時仍有樣式。僅使用 WebAssembly 的應用程式，仍需要框架 JavaScript 才能渲染元件。
+
+### Express \{#express\}
+掃描範本引擎的檢視、提供公開目錄，並從渲染頁面的版面配置連結樣式表：
+
+```css name=src/master.css
+@source "../views/**/*.{ejs,hbs,pug}";
+```
+
+```js name=app.js
+app.use(express.static('public'))
+```
+
+```html name=views/layout.ejs
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+在 Network 面板中，`/assets/master.css` 必須回傳 CSS，而非 HTML 備援頁面。
+
+### Laravel \{#laravel\}
+Laravel 已透過 Vite 建置資產，因此請略過上方步驟。在既有的 [Laravel 專案](https://laravel.com/docs/installation)中執行安裝程式；它會將 Master CSS 加入 `resources/css/app.css`，並在 `laravel-vite-plugin` 旁註冊外掛：
+
+```bash
+npm create @master/css@rc -- --framework laravel --mode static --yes
+```
+
+從 CSS 進入點掃描 Blade 檢視，並將該進入點保留在 Laravel 外掛的 `input` 清單。既有應用程式請保留 JavaScript 進入點與其他外掛：
+
+```css name=resources/css/app.css
+@import '@master/css';
+@source '../views/**/*.blade.php';
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [
+    laravel({ input: ['resources/css/app.css'], refresh: true }),
+    masterCSS({ mode: 'static' })
+  ]
+})
+```
+
+使用 `@vite` 載入進入點，它會從 Laravel 建置 manifest 解析帶版本的檔案；再執行 `npm run build`，並透過 Laravel 載入頁面：
+
+```html name=resources/views/app.blade.php
+<head>
+  @vite('resources/css/app.css')
+</head>
+```
+
+若應用程式改由 JavaScript 進入點匯入 CSS，請保留該進入點，避免透過兩條路徑載入相同 CSS。參閱 [Laravel 的 Vite 整合](https://laravel.com/docs/vite)。
+
+---
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+預設使用靜態模式。切換模式時，請保留資產進入點：
+
+| 模式 | 宿主系統 | 變更內容 |
+| --- | --- | --- |
+| 靜態 | 所有宿主 | 執行階段無額外動作 |
+| 執行階段 | PHP、Rails、WordPress、ASP.NET Core、Blazor、Express | `mode: 'runtime'`、執行階段進入點與模組指令碼 |
+| 漸進式 | Express | 伺服器渲染首次回應 CSS；執行階段處理後續類別 |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+安裝執行階段，在 `vite.config.ts` 設定 `masterCSS({ mode: 'runtime' })`，並從資產進入點啟動它。執行階段產生樣式不需要 `@source` 行：
+
+```bash
+npm install @master/css-runtime@rc
+```
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+runtime.observe()
+```
+
+將 `master.js` 作為模組載入，放在樣式表旁，並保留版面配置的其他標籤：
+
+<DocumentComparison>
+
+| 宿主系統 | 模組指令碼 |
+| --- | --- |
+| PHP、Express | 在 `</body>` 前加入 `<script type="module" src="/assets/master.js"></script>` |
+| Rails | `<%= javascript_include_tag "/assets/master.js", type: "module", "data-turbo-track": "reload" %>` |
+| ASP.NET Core | `<script type="module" src="~/assets/master.js" asp-append-version="true"></script>` |
+| Blazor | 在 Blazor 啟動指令碼後加入 `<script type="module" src="assets/master.js"></script>` |
+
+</DocumentComparison>
+
+WordPress 6.5 以上版本，使用相同掛鉤中的 [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/) 載入模組：
+
+```php name=functions.php
+wp_enqueue_script_module(
+  'master-css-runtime',
+  get_stylesheet_directory_uri() . '/assets/master.js',
+  [],
+  filemtime(get_stylesheet_directory() . '/assets/master.js')
+);
+```
+
+Blazor Web Apps 在[增強式導覽](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/navigation?view=aspnetcore-10.0)期間會修補 DOM，可能移除執行階段的樣式表。每次 `enhancedload` 後，請重新啟動執行階段，並將串流更新依序處理。獨立 WebAssembly 與較舊的 Blazor Server 宿主，使用上方的進入點即可。
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+declare const Blazor: {
+  addEventListener(name: 'enhancedload', listener: () => void): void
+}
+
+async function startRuntime() {
+  const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+  runtime.observe()
+  return runtime
+}
+
+let runtime = await startRuntime()
+let navigation = Promise.resolve()
+
+Blazor.addEventListener('enhancedload', () => {
+  navigation = navigation.then(async () => {
+    runtime.dispose()
+    runtime = await startRuntime()
+  }).catch(console.error)
+})
+```
+
+一起部署所有產生的樣式表、匯入與程式資產。執行階段樣式會在 JavaScript 載入後開始；指令碼不可用時，請依[渲染模式](/guide/rendering-modes#prevent-premature-rendering)所述保持文件可見。啟動後，在瀏覽器主控台執行以下程式碼。無須重新建置，段落就應出現底線：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+執行階段觀察的是頁面文件；獨立 iframe 或 shadow root 內的內容，需要自己的 CSS 傳遞方式。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="透過 Express 包含伺服器渲染樣式">
+
+使用漸進式渲染時，Express 先渲染範本，再由 `@master/css-server` 注入首次回應 CSS，執行階段則接管該樣式並處理後續類別。請在執行階段旁安裝伺服器渲染器與預設集：
+
+```bash
+npm install @master/css-runtime@rc @master/css-server@rc @master/css-preset@rc
+```
+
+保留 `masterCSS({ mode: 'runtime' })`，讓進入點延遲載入程式；完整涵蓋的頁面就能延後載入引擎，直到新類別需要它：
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({
+  program: () => import('virtual:master-css-program').then(module => module.default),
+  emittedGlobals
+})
+runtime.observe()
+```
+
+先渲染範本，再將完整文件傳給渲染器。ES 模組伺服器需要在 `package.json` 設定 `"type": "module"`：
+
+```js name=app.js
+import express from 'express'
+import ejs from 'ejs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
+
+const app = express()
+const renderer = createServerRenderer({ manifest })
+
+app.use('/assets', express.static('public/assets'))
+
+app.get('/', async (_request, response) => {
+  const body = await ejs.renderFile('views/index.ejs')
+  const document = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/assets/master.css">
+</head>
+<body>
+  ${body}
+  <script type="module" src="/assets/master.js"></script>
+</body>
+</html>`
+
+  const rendered = renderer.renderHTML(document, {
+    hydrationManifest: 'inject'
+  })
+  response.send(rendered.html)
+})
+
+const server = app.listen(3000)
+server.on('close', () => renderer.dispose())
+```
+
+首次回應包含 `style#master-css` 與小型 hydration 紀錄；伺服器 manifest 會留在伺服器上。本範例使用預設集 manifest 渲染，與 `src/master.css` 的預設集一致。若加入專案 token 或 utility，也必須為伺服器編譯專案 manifest，否則初始 CSS 將與瀏覽器定義不一致。
+
+停用 JavaScript 時，段落就應已有樣式。重新啟用 JavaScript、重新載入，再從主控台加入 `underline`；它應立即套用，無須新的伺服器回應。
+
+</DocumentDisclosure>

@@ -13,12 +13,12 @@ import dark from '~/site/assets/images/integrations/server-rendered/cover-dark.w
 
 When a server or CMS renders the HTML, Vite builds the Master CSS asset and the host loads the built file. This covers PHP, Rails, WordPress, Shopify, ASP.NET Core, Blazor and Express; [Laravel](#laravel) uses its own Vite pipeline. The host still serves the pages, routes and other assets. Choose your [host section](#hosts) before applying the shared steps: its template paths and public directory determine what gets scanned and where the stylesheet is served. Laravel projects can go directly to their [existing Vite pipeline](#laravel).
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Install Vite and Master CSS
+      ### Install Vite and Master CSS \{#install-vite-and-master-css\}
       In the existing project root or theme directory, install Vite and the Master CSS Vite integration. Run `npm init -y` first if the directory has no `package.json`.
     </StepL>
     <StepR>
@@ -30,7 +30,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
   </Step>
   <Step $row>
     <StepL>
-      ### Configure Vite
+      ### Configure Vite \{#configure-vite\}
       Build the asset entry into the host's public asset directory. Set `outDir` from the [host table](#hosts); `emptyOutDir: false` keeps the host's other files.
     </StepL>
     <StepR>
@@ -60,7 +60,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
   </Step>
   <Step $row>
     <StepL>
-      ### Create the asset entry
+      ### Create the asset entry \{#create-the-asset-entry\}
       Import Master CSS from the entry. Templates are not part of Vite's module graph, so append the `@source` lines from the host's [section](#hosts) to this stylesheet.
     </StepL>
     <StepR>
@@ -75,7 +75,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
   </Step>
   <Step $row>
     <StepL>
-      ### Add build scripts
+      ### Add build scripts \{#add-build-scripts\}
       Merge these scripts into `package.json`. Build before starting or publishing the host, and keep the watcher running beside the host's server during development.
     </StepL>
     <StepR>
@@ -90,7 +90,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
     </StepR>
   </Step>
   <Step>
-    ### Load the stylesheet
+    ### Load the stylesheet \{#load-the-stylesheet\}
     Run `npm run build:assets`, link the built `master.css` from the host's layout as its section shows, and add the paragraph to a rendered template.
   </Step>
   <InstallationPreview>
@@ -104,7 +104,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
   </InstallationPreview>
 </StepSection>
 
-## Check the asset connection
+## Check the asset connection \{#check-the-asset-connection\}
 
 Run the host's server and load a page that actually renders the example template. The paragraph should have a raised surface, rounded corners and `1rem` padding. With both the host and `npm run watch:assets` running, change `p-md` to `p-lg`: padding should grow to `1.5rem` after the CSS rebuild and a page reload. Restore the class after checking it.
 

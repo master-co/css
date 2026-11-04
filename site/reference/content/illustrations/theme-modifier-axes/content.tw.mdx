@@ -1,0 +1,36 @@
+# Reference prose: illustrations/theme-modifier-axes
+
+## title \{#copy-title\}
+
+
+static 控制保留，inline 控制生成值
+
+## alt \{#copy-alt\}
+
+
+二乘二矩陣比較一般、inline、static 與 static inline 主題區塊。static 保留兩個宣告 token；inline 將生成的 background 值從 var(--color-brand) 改為字面色彩。
+
+## caption \{#copy-caption\}
+
+
+每種情況都宣告 brand 與 spare，但只使用 bg-brand。僅有 inline 時，兩個 token 都不需要宣告。加入 static 會保留兩者，但不改變代入後的 class 值。
+
+## description-0 \{#copy-description-0\}
+
+
+四種情況都宣告 --color-brand: #4f46e5 與 --color-spare: #0d9488。bg-brand 是唯一使用端，沒有原生 token 參照。
+
+## description-1 \{#copy-description-1\}
+
+
+一般 @theme 輸出已使用的 brand token 與 background-color: var(--color-brand)，省略未使用的 spare token。
+
+## description-2 \{#copy-description-2\}
+
+
+@theme inline 將 #4f46e5 代入生成宣告。utility 不再讀取任何一個 token，因此這種情況不輸出兩個 token 的宣告。
+
+## description-3 \{#copy-description-3\}
+
+
+@theme static 保留兩個 token。@theme static inline 也保留兩者，但生成的 background-color 仍是 #4f46e5。保留與代入彼此獨立。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/selector-targets
+
+## title \{#copy-title\}
+
+
+相同悬停，不同目标
+
+## alt \{#copy-alt\}
+
+
+两个相同 article 的第一个链接均处于悬停状态。在 article 上检查悬停会为两个链接添加下划线；分别在链接上检查则只有第一个有下划线。
+
+## caption \{#copy-caption\}
+
+
+两个示例的第一个链接均处于悬停状态。蓝色虚线轮廓标出匹配后缀 :hover 检查的元素，并非生成的边框。
+
+## description-0 \{#copy-description-0\}
+
+
+两个 article 都带有工具类，并包含相同的两个直接子链接。第一个链接处于悬停状态，因此两个祖先 article 也都匹配 :hover。
+
+## description-1 \{#copy-description-1\}
+
+
+underline:hover>a 先检查 article，再选择直接子链接。两个链接都应用 text-decoration-line: underline。
+
+## description-2 \{#copy-description-2\}
+
+
+underline>a:hover 先选择直接子链接，再逐一检查。只有处于悬停状态的第一个链接应用声明。
+
+## description-3 \{#copy-description-3\}
+
+
+蓝色虚线轮廓标出匹配悬停检查的元素。它们不表示生成的边框，也不表示第二个 article 未处于悬停状态。

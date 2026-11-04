@@ -1,0 +1,29 @@
+# Reference prose: illustrations/compiler-output-ownership
+
+## title \{#copy-title\}
+
+A compiled manifest does not contain the delivered native stylesheet
+
+## alt \{#copy-alt\}
+
+Compiling app.css produces native CSS separately from a manifest. A Node render session uses the manifest and bg-brand to generate a utility rule; the native .card rule stays in the compiler CSS output.
+
+## caption \{#copy-caption\}
+
+The compiler returns native CSS and definitions separately. A Node render session turns the supplied class into utility CSS; it does not redeliver the compiler’s native .card rule.
+
+## description-0 \{#copy-description-0\}
+
+app.css contains a theme token and a native .card rule. compileManifestSync from @master/css-compiler/node compiles it with an explicit base manifest.
+
+## description-1 \{#copy-description-1\}
+
+result.css carries the native rule. result.manifest carries the definitions used for later class generation.
+
+## description-2 \{#copy-description-2\}
+
+A Node createRenderSessionSync from @master/css/node accepts that manifest. Ensuring bg-brand generates its background-color rule and required token resources.
+
+## description-3 \{#copy-description-3\}
+
+The application must deliver the native CSS as well as generated CSS and coordinate shared resource ownership. Browser engines use compiled runtime programs instead of this Node manifest path.

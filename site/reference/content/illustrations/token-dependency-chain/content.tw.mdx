@@ -1,0 +1,31 @@
+# Reference prose: illustrations/token-dependency-chain
+
+## title \{#copy-title\}
+
+
+使用 token 會一併保留其相依項目
+
+## alt \{#copy-alt\}
+
+
+fg-action 連到 color-action，再連到 color-brand。另一個 color-unused token 與這條鏈沒有連線。
+
+## caption \{#copy-caption\}
+
+
+箭頭表示「參照」，不是執行順序或階層串接優先順序。此例沒有 static token、安全清單或其他使用端。
+
+## description-0 \{#copy-description-0\}
+
+
+主題定義 --color-action: var(--color-brand)、--color-brand: #175cff，以及不相關的 --color-unused。
+
+## description-1 \{#copy-description-1\}
+
+
+使用 fg-action 會在 theme 串接層保留 --color-action，以及其遞移相依項目 --color-brand。
+
+## description-2 \{#copy-description-2\}
+
+
+此例中，不相關的 token 沒有使用根，因此不會輸出。生成的 color 宣告保留 var(--color-action)，其值由瀏覽器解析。

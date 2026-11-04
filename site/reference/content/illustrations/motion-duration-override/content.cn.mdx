@@ -1,0 +1,36 @@
+# Reference prose: illustrations/motion-duration-override
+
+## title \{#copy-title\}
+
+
+持续时间类改变时间设置，但保留相同关键帧
+
+## alt \{#copy-alt\}
+
+
+两个动画以共享时间尺度比较。只有 animate-pulse 时，每次迭代持续 1000 毫秒；添加 animation-slow 后，持续时间缩短为 300 毫秒，关键帧保持相同。
+
+## caption \{#copy-caption\}
+
+
+两者使用相同的 pulse 关键帧。长条测量的是一次迭代的持续时间，不是动画进度或渲染速度。预设会重复播放，这个比较则单独呈现一次迭代。
+
+## description-0 \{#copy-description-0\}
+
+
+animate-pulse 简写提供 pulse 1s infinite，每次迭代的持续时间为一秒。
+
+## description-1 \{#copy-description-1\}
+
+
+条件相同时，animation-slow 排在 animate-pulse 之后，只将持续时间替换为 var(--duration-slow)，也就是 300ms。pulse 关键帧与无限迭代次数保持不变。
+
+## description-2 \{#copy-description-2\}
+
+
+两条水平长条都从零开始，在同一条毫秒轴上呈现 1000:300 的长度比例。它们测量的是声明的单次迭代持续时间，不是性能，也不是形状移动的距离。
+
+## description-3 \{#copy-description-3\}
+
+
+预设的 pulse 令牌会无限重复。需要只播放一次时，请添加原生迭代次数或定义自定义令牌；调整类名顺序不会改变生成规则顺序。

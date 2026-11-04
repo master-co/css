@@ -1,0 +1,36 @@
+# Reference prose: illustrations/selector-targets
+
+## title \{#copy-title\}
+
+
+같은 호버, 다른 대상
+
+## alt \{#copy-alt\}
+
+
+동일한 두 article에서 첫 번째 링크가 호버 상태다. article의 호버를 검사하면 두 링크에 밑줄이 생기고 각 링크의 호버를 검사하면 첫 번째에만 생긴다.
+
+## caption \{#copy-caption\}
+
+
+두 예시 모두 첫 번째 링크가 호버 상태입니다. 파란 점선 윤곽은 접미사의 :hover 검사에 일치하는 요소이며 생성된 테두리가 아닙니다.
+
+## description-0 \{#copy-description-0\}
+
+
+두 article은 유틸리티 클래스를 가지며 같은 두 직계 자식 링크를 포함합니다. 첫 번째 링크가 호버 상태이므로 조상 article도 둘 다 :hover에 일치합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+underline:hover>a는 article을 검사한 뒤 직계 자식 링크를 선택합니다. 두 링크 모두 text-decoration-line: underline을 받습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+underline>a:hover는 직계 자식 링크를 선택한 뒤 각 링크를 검사합니다. 호버된 첫 번째 링크만 선언을 받습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+파란 점선 윤곽은 호버 검사에 일치하는 요소를 나타냅니다. 생성된 테두리가 아니며 두 번째 article이 호버 상태가 아니라는 뜻도 아닙니다.

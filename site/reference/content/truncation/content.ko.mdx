@@ -1,0 +1,66 @@
+# Reference prose: truncation
+
+## title \{#copy-title\}
+
+
+텍스트 생략
+
+## summary \{#copy-summary\}
+
+
+텍스트를 한 줄 또는 지정한 줄 수로 제한하고 말줄임표로 끝냅니다.
+
+## note \{#copy-note\}
+
+
+두 방식 모두 너비에 제약이 필요합니다. Flex 또는 Grid 항목 안에서는 해당 항목에 `min-w(0)`을 지정해 줄어들 수 있게 하세요.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+보이는 텍스트를 제한하되 전체 내용에 접근할 수 있게 합니다
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`truncate`는 넘친 내용 숨기기, 말줄임표, 줄바꿈 금지를 결합합니다. 오버플로가 발생하려면 인라인 너비가 유한한 블록 컨테이너가 필요합니다. 너비에 제약이 없는 인라인 span에 적용해도 한 줄 미리보기가 되지는 않습니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`clamp-lines(2)`는 접두사가 있는 line-clamp 조합을 사용합니다. 즉, `display: -webkit-box`, 세로 상자 방향, 두 줄 제한, 넘친 내용 숨기기를 설정합니다. 양의 정수를 사용하세요. 줄바꿈을 허용하므로 `truncate` 및 그 안의 `white-space: nowrap`과 함께 사용하지 마세요.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+텍스트는 DOM에 그대로 남습니다. 잘라 내기는 시각적 제약일 뿐 문자열을 줄이거나 내용을 펼치는 기능을 제공하지 않습니다. 중요한 정보는 실제 링크나 펼칠 수 있는 전체 텍스트 보기로 접근할 수 있게 하고, 마우스를 올릴 때만 보이는 title에 의존하지 마세요.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+Flex 또는 Grid 항목의 자동 최소 크기 때문에 항목이 가용 공간보다 넓게 유지될 수 있습니다. 줄어들어야 할 항목에 `min-w(0)`을 설정한 다음 안쪽 텍스트를 제한하세요. 줄 수를 제한할 때는 padding 때문에 숨긴 줄이 드러나지 않도록 padding을 래퍼에 지정하세요.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+이 조합 스타일은 display와 overflow 선언을 자체적으로 설정합니다. 이를 `flex`, `grid` 또는 보이는 오버플로로 덮어쓰면 줄 수 제한이 깨질 수 있습니다. 사용자 정의 생략 규칙이 필요하면 네이티브 속성을 명시적으로 사용하세요.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+네이티브 텍스트 오버플로
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+레거시 줄 수 제한
+
+## usage-lead \{#copy-usage-lead\}
+
+
+파일 이름은 한 줄로, 요약은 두 줄로 제한합니다. 세부 정보를 펼치면 둘 다 전체 내용을 읽을 수 있습니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+타이포그래피

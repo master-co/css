@@ -9,7 +9,7 @@ This guide covers `.scss` and `.sass` projects that use variables, maps, mixins,
 
 CSS `@mixin` and Sass `@mixin` share a keyword. Keep Master CSS definitions in `.css` files, or use the [SCSS interpolation pattern](/reference/directives/definitions#sass-interoperability) when emitting them from Sass. The [Sass mixin grammar](https://sass-lang.com/documentation/at-rules/mixin/) rejects mixin names beginning with `--`; a Master CSS definition must reach the Master compiler without being interpreted as a Sass mixin.
 
-## Migration strategy
+## Migration strategy \{#migration-strategy\}
 Start from the Sass entry files the app already builds. Follow the [shared migration workflow](/guide/migration#migration-strategy), and separate compile-time work from values the browser should receive.
 
 <DocumentComparison>
@@ -30,7 +30,7 @@ A Sass variable is resolved during preprocessing; a CSS custom property particip
 
 ---
 
-## Add Master CSS beside Sass
+## Add Master CSS beside Sass \{#add-master-css-beside-sass\}
 Import Master CSS from the stylesheet your app already loads. Keep Sass compilation in place.
 
 ```css name=app.css
@@ -46,7 +46,7 @@ If Sass currently emits global resets, vendor CSS, or generated selectors, keep 
 
 ---
 
-## Move variables and maps into `@theme`
+## Move variables and maps into `@theme` \{#move-variables-and-maps-into--theme\}
 Sass variables and maps that define product values usually become Master CSS theme tokens.
 
 ```scss name=_tokens.scss
@@ -78,7 +78,7 @@ Use token names that describe the product role. Do not preserve Sass variable na
 
 ---
 
-## Convert local component styles
+## Convert local component styles \{#convert-local-component-styles\}
 Move local visual rules into markup when the style belongs to one element or one component instance.
 
 ```scss name=Card.module.scss
@@ -106,7 +106,7 @@ Keep Sass or regular CSS when the selector describes document structure, generat
 
 ---
 
-## Replace placeholders and mixins intentionally
+## Replace placeholders and mixins intentionally \{#replace-placeholders-and-mixins-intentionally\}
 Sass placeholders and mixins often represent either product roles or low-level primitives. Choose the Master CSS target based on ownership.
 
 Use `@layer components` for product roles. Keep the `@theme` values from the previous example in the same project entry:
@@ -188,7 +188,7 @@ Keep Sass mixins when they generate many selectors, encode browser workarounds, 
 
 ---
 
-## Keep useful nesting as CSS
+## Keep useful nesting as CSS \{#keep-useful-nesting-as-css\}
 Nested Sass can map cleanly to Master CSS states when the target is a single element.
 
 ```html
@@ -222,7 +222,7 @@ Project theme variables are available automatically after Sass preprocessing in 
 
 ---
 
-## Validate the migration
+## Validate the migration \{#validate-the-migration\}
 - Run the Sass compiler, formatter, linter, type check, tests, and production build after each batch.
 - Compare converted pages in responsive breakpoints, dark mode, hover, focus-visible, disabled, and print states.
 - Keep Sass for vendor imports, generated CSS, complex nesting, mixins with browser workarounds, and one-off rules that are clearer as CSS.
@@ -230,7 +230,7 @@ Project theme variables are available automatically after Sass preprocessing in 
 
 ---
 
-## Useful references
+## Useful references \{#useful-references\}
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.

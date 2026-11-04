@@ -1,0 +1,226 @@
+---
+title: "語法教學"
+description: "讀懂並組合 Master CSS class，加入互動狀態與條件，建立隨可用空間調整的指南卡片。"
+figures: {"SyntaxIllustration":{"title":"讀懂樣式、選擇器與條件","alt":"完整 class fg-blue-60:hover@sm 以括號標出三個範圍：fg-blue-60 是樣式，:hover 是選擇器，@sm 是條件。","caption":"只有檢視區符合 sm 時，顏色才套用到滑鼠移入的元素。兩個後綴都只屬於這個 class。","description":[{"title":"樣式","text":"fg-blue-60 將 color 設為 var(--color-blue-60)。"},{"title":"選擇器","text":":hover 在滑鼠移入時符合持有 class 的元素。"},{"title":"條件","text":"@sm 將規則包在預設集具名 sm 媒體查詢內。選擇器與條件都相符時，此 class 才會套用。"}]},"GuideStudy:pipes-and-quotes":{"title":"直線符號在引號內有不同意義","alt":"兩個字面輸入對應各自輸出。rgb(30|60|90) 變成 rgb(30 60 90)；引號字串 New|collection 保留直線符號。","caption":"空白解碼只作用於引號字串之外。輸出字串仍是一個字面值。"},"GuideStudy:conditions-intersection":{"title":"兩個條件都必須相符","alt":"二乘二矩陣只醒目標示檢視區符合 sm 且支援 display:grid 的交集。","caption":"對 grid@sm@supports(display:grid) 而言，單獨符合任一條件都不會啟用宣告。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import TokenValues from '~/site/reference/TokenValues.astro'
+import SyntaxIllustration from './components/SyntaxIllustration.astro'
+
+指南卡片需要間距、易讀文字，以及能回應互動的連結。Master CSS 讓你在 HTML 中做這些決策：先選擇樣式，再加上選擇器或條件，決定樣式何時套用。
+
+請先完成[安裝](/guide/installation)。這些範例使用預設集，沒有自訂 utility 定義。將標記放在整合工具會掃描的來源檔中，並載入應用程式樣式表：
+
+```css name=app.css
+@import '@master/css';
+```
+
+每個**產生的 CSS** 展開區塊都呈現隨附 class 編譯後的輸出。開啟它即可查看送到瀏覽器的內容；不需把輸出複製進樣式表。
+
+## 讀懂 class \{#declarations\}
+
+從一個連結開始：只有檢視區符合預設集 `sm` 查詢時，滑鼠移入才變成藍色。
+
+```html
+<a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
+  Read the guide
+</a>
+```
+
+此 class 有三個部分。`fg-blue-60` 選擇樣式，`:hover` 選擇狀態，`@sm` 加上條件。只有選擇器與條件都相符時才套用樣式。沒有這些後綴時，`fg-blue-60` 不受滑鼠移入或檢視區寬度限制。
+
+<SyntaxIllustration />
+
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+產生的規則透過 CSS 變數設定 `color`，並放在媒體查詢內。選擇器會跳脫標點，以符合 HTML 中的字面 class 名稱。在 HTML 撰寫易讀形式即可；跳脫後的 CSS 選擇器屬於產生的輸出。
+
+<ReferenceIllustration id="suffix-ownership" />
+
+## 選擇提供值的方式 \{#values\}
+
+常見決策使用預設集名稱。需要精確的區域值時，將數字傳給支援的函式，或寫出原生宣告：
+
+<DocumentComparison>
+
+| 寫法 | 決策 |
+| --- | --- |
+| `flex` | 設定 `display: flex` 的固定 utility |
+| `p-md` | 具名間距的 token class |
+| `p(12)` | 直接值：12 像素內距 |
+| `(max-width:32rem)` | 包含完整 CSS 屬性與值的原生宣告 |
+| `text-sm` | 協調字級、行高與字距的配方 |
+
+</DocumentComparison>
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']} />
+
+`items-center`、`text-center` 這類固定 utility 涵蓋常見宣告。`m(4)`、`b(1)` 與 `grow(1)` 這類直接值函式接受數字；長度函式使用像素，`grow(1)` 則提供無單位的 flex 係數。原生宣告在括號內保留完整屬性名稱。`text-sm` 或 `grid-cols(2)` 這類配方可協調多個宣告。所有形式都支援選擇器與條件後綴。
+
+### 在單一 class 中保留空格 \{#keep-spaces-inside-one-class\}
+
+HTML 以空白分隔 class。在引號字串之外，CSS 值需要空格時請寫成 `|`，逗號、斜線與括號則原樣保留：
+
+```html
+<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
+  <span class="(content:'New|collection')::before"></span>
+</div>
+```
+
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+
+顏色會變成 `rgb(30 60 90 / 80%)`。在引號包住的 content 字串內，直線符號保留字面意義：文字為 `New|collection`。Master CSS 也會正規化 `calc(100%-2rem)` 這類運算式的運算子間距，運算式則由瀏覽器計算。原生宣告邊界、引號值與跳脫方式請見[宣告與值](/reference/rules/declarations)。
+
+<GuideStudy id="pipes-and-quotes" />
+
+## 共用值使用 token \{#token-families\}
+
+Token class 將前綴連到具名值。`p-md` 與 `gap-md` 都讀取間距 token `--spacing-md`，但設定不同屬性：
+
+<DocumentComparison>
+
+| Class | 宣告 |
+| --- | --- |
+| `p-md` | `padding: var(--spacing-md)` |
+| `gap-md` | `gap: var(--spacing-md)` |
+| `fg-text-muted` | `color: var(--color-text-muted)` |
+
+</DocumentComparison>
+
+<Class2CSS classes={['p-md', 'gap-md', 'fg-text-muted']} />
+
+以下選用的間距值直接來自預設集：
+
+<TokenValues namespace="spacing" keys={['sm', 'md', 'lg']} />
+
+`p-md` 與 `(padding:1rem)` 看起來可能相同，但代表不同決策。調整 `--spacing-md` 會改變 token 內距，字面值則維持 `1rem`。樣式應跟隨共用值時使用 token。[主題 token](/guide/theme)說明如何定義與限定自訂值的範圍；[家族索引](/reference/tokens/families)列出前綴與命名空間。
+
+## 組合獨立決策 \{#composition\}
+
+讓每個決策使用自己的 class，建立小型表面：
+
+```html
+<article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+  <h2 class="m(0) text-lg fg-text-strong">Field notes</h2>
+  <p class="mt-sm mb(0) text-sm fg-text-muted">Keep useful ideas close.</p>
+</article>
+```
+
+<Class2CSS classes={['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']} />
+
+這裡 `b(1)` 設定邊框寬度，`b-solid` 設定樣式，`b-line-divider` 設定顏色。改變其中一項，不需重述其他項目。內距、圓角與文字樣式也保持獨立，讓之後的變化很小：較寬版面可改變內距，同時保留表面與文字。
+
+### Class 順序不決定優先權 \{#cascade\}
+
+寫成 `p-md p(12)` 時，此屬性的直接值會勝過 token。反轉 HTML class 順序仍產生相同 CSS：
+
+<Class2CSS classes={['p-md', 'p(12)']} />
+
+除非刻意覆寫，基礎內距應擇一。混合原生元件 CSS 與 utility 時，串接層順序也有影響：預設集將一般 `utilities` 宣告放在 `components` 之後。[串接層](/guide/cascade-layers)說明競爭規則；[樣式重用](/guide/reusing-styles)說明如何保留元件共用外觀，同時改變單一實例。
+
+## 加入狀態與選擇器關係 \{#states\}
+
+將選擇器附加到行為改變的 class。這個按鈕在滑鼠移入時改變表面，透過鍵盤取得焦點時顯示外框：
+
+<DemoConfiguredExample
+  name="syntax-button"
+  title="表面變化與焦點外框"
+  source=""
+  html={`<button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+  Save changes
+</button>`}
+  caption="將滑鼠移到按鈕上，再用 Tab 移到按鈕。滑鼠移入會改變表面；鍵盤焦點會加上外框。此按鈕僅示範樣式，不會儲存資料。"
+/>
+
+Hover 後綴只屬於 `bg-surface-inset:hover`，不會讓相鄰 class 一起帶條件。這裡可使用原生偽類別與偽元素，包括 `:disabled`、`:nth-child(2)` 與 `::before`。選擇器函式也適用：`fg-blue-60:is(:hover,:focus-visible)` 回應任一狀態。
+
+選擇器也能指定其他元素。此例 class 放在 article 上，但 article 被滑鼠移入時，顏色會套用到其直接子連結：
+
+```html
+<article class="fg-blue-60:hover>a">
+  <h3>Field notes</h3>
+  <a href="/guide/reusing-styles">Read the guide</a>
+</article>
+```
+
+<Class2CSS classes={['fg-blue-60:hover>a']} />
+
+直接子元素使用 `>`，後代使用 `_`：`fg-blue-60_a` 會作用到後代連結。持有 class 的元素仍是後綴的定位基準。[選擇器](/reference/rules/selectors)說明兄弟組合器、屬性、選擇器清單與權重。
+
+## 加入條件 \{#conditions\}
+
+條件決定 class 何時套用。加上 `@sm`，只在檢視區符合該具名查詢時改變樣式。此預覽讓開頭範例的行為可直接觀察：
+
+<DemoConfiguredExample
+  name="syntax-viewport"
+  title="滑鼠移入顏色取決於檢視區寬度"
+  source=""
+  html={`<div class="p-sm p-lg@sm">
+  <a href="/guide/responsive-design" target="_top" class="inline-flex py-xs text-sm fg-text-body underline fg-blue-60:hover@sm">
+    Explore responsive design
+  </a>
+</div>`}
+  responsive
+  widthPresets={[{ label: 'Below sm', width: 640 }, { label: 'Above sm', width: 900 }]}
+  caption="選擇 Above sm 並將滑鼠移到連結上，連結會變藍。Below sm 時，滑鼠移入仍保留基礎文字顏色。內距也會在 sm 增加。這些控制項只調整預覽檢視區，與外層頁面無關。"
+/>
+
+`@sm` 指向預設集的自訂媒體查詢。一次性的檢視區門檻可寫成 `p-lg@media(width>=48rem)` 這類原生查詢。其他條件形式也遵循相同模式：
+
+<DocumentComparison>
+
+| Class | 條件 |
+| --- | --- |
+| `hidden@media(print)` | 列印時 |
+| `grid@supports(display:grid)` | 支援該宣告時 |
+| `grid@sm@supports(display:grid)` | 具名檢視區查詢與宣告支援同時成立 |
+
+</DocumentComparison>
+
+<Class2CSS classes={['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']} />
+
+多個條件由左至右巢狀包覆，因此每一層都必須相符。自訂媒體查詢與其他包覆形式請見[條件](/reference/rules/conditions)。
+
+<GuideStudy id="conditions-intersection" />
+
+### 跟隨元件可用空間 \{#follow-a-components-available-space\}
+
+即使檢視區寬度相同，側欄卡片也比主內容區卡片的空間小。在父元素加上 `container-inline`，再為卡片版面 class 加上容器條件。最後的範例以 `(container-name:card)` 為父元素命名，並用 `@container(card|width>=28rem)` 查詢。
+
+父元素建立容器，子元素改變版面。`28rem` 門檻是明確的查詢值，與 `--container-md` 這類尺寸 token 分開。[響應式設計](/guide/responsive-design#based-on-container-sizes)透過具名與巢狀容器，進一步說明兩者差異。
+
+## 組合完整卡片 \{#complete-card\}
+
+這張卡片結合前述決策。起初為單欄；具名父容器達到 `28rem` 時，連結移到文字旁，內距也隨之增加。連結的滑鼠移入與焦點樣式仍獨立於版面。
+
+<DemoConfiguredExample
+  name="syntax-complete"
+  title="適應可用空間的指南卡片"
+  source=""
+  html={`<section class="container-inline (container-name:card)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+    <div>
+      <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
+      <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
+    </div>
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+      Read the guide <span aria-hidden="true">→</span>
+    </a>
+  </article>
+</section>`}
+  responsive
+  container
+  widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]}
+  caption="切換 Narrow 與 Wide。具名容器控制卡片欄數與內距。將滑鼠移到 Read the guide，或用 Tab 取得焦點以檢查狀態；啟用連結會開啟「樣式重用」。"
+/>
+
+選擇變體時，在來源中保留完整 class 名稱，例如 `'p-md'` 與 `'p-lg'`。以 `'p-' + size` 這類片段組合 class，來源掃描器無法取得完整名稱。連續值請使用原生自訂屬性，搭配 `(width:var(--progress))` 這類固定 class。[掃描 class 名稱](/guide/scanning-and-pruning)說明來源探索；[渲染模式](/guide/rendering-modes)說明 CSS 何時產生。
+
+預期樣式未出現時，先開啟**產生的 CSS** 檢查 class，再檢查選擇器指向哪個元素、條件是否相符、解析後的自訂屬性，以及瀏覽器中的競爭規則。重新排列 HTML class 無法解決階層串接問題。
+
+接著閱讀[主題 token](/guide/theme)，定義共用值；或閱讀[樣式重用](/guide/reusing-styles)，選擇元件 class、utility 與 mixin。完整契約仍以 Reference 為準。

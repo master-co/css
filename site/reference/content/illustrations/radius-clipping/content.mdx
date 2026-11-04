@@ -1,0 +1,29 @@
+# Reference prose: illustrations/radius-clipping
+
+## title \{#copy-title\}
+
+The parent’s radius does not round its child
+
+## alt \{#copy-alt\}
+
+Two identical rounded parents contain the same blue child surface. With radius alone the child keeps square top corners; with overflow-hidden it follows the parent’s curved edge.
+
+## caption \{#copy-caption\}
+
+Both parents use r-4xl and the same content. Only the right parent adds overflow-hidden. Blue identifies the child surface; the dashed contour marks the parent’s rounded edge.
+
+## description-0 \{#copy-description-0\}
+
+Both parent boxes use r-4xl, whose preset value is 2rem. They contain identical child and parent-content regions, with dimensions following the same content.
+
+## description-1 \{#copy-description-1\}
+
+The left parent keeps the default visible overflow. Its own background is rounded, but the blue child paints a rectangle at the top.
+
+## description-2 \{#copy-description-2\}
+
+The right parent adds overflow-hidden. The same child rectangle is clipped to the parent’s rounded edge; the child does not inherit a radius.
+
+## description-3 \{#copy-description-3\}
+
+The dashed contour is an inspection annotation, not a border emitted by r-4xl. The color only identifies the same child in both examples.

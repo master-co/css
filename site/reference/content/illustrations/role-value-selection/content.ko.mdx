@@ -1,0 +1,36 @@
+# Reference prose: illustrations/role-value-selection
+
+## title \{#copy-title\}
+
+
+하나의 역할, 두 로컬 색 구성표
+
+## alt \{#copy-alt\}
+
+
+보조 텍스트의 light-dark 함수에 있는 두 인수가 라이트와 다크 견본으로 연결됩니다. 두 견본은 같은 보조 텍스트를 보여 주며 밝은 배경에서 zinc-60, 어두운 배경에서 zinc-40을 사용합니다.
+
+## caption \{#copy-caption\}
+
+
+실제로 사용하는 색 구성표가 첫 번째 또는 두 번째 색상을 선택합니다. 두 견본은 fg-text-muted와 bg-surface-base를 유지하며 로컬 색 구성표가 계산된 색상을 바꿉니다.
+
+## description-0 \{#copy-description-0\}
+
+
+fg-text-muted는 color: var(--color-text-muted)를 생성합니다. 프리셋 토큰에는 light-dark(var(--color-zinc-60), var(--color-zinc-40))가 들어 있습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+라이트 견본은 첫 번째 인수인 --color-zinc-60을, 다크 견본은 두 번째 인수인 --color-zinc-40을 사용합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+두 견본은 bg-surface-base와 같은 텍스트 클래스를 사용합니다. 색이 있는 연결선은 두 인수를 식별하는 주석이며 결과 텍스트 색상이 아닙니다.
+
+## description-3 \{#copy-description-3\}
+
+
+분기는 로컬에서 실제로 사용하는 색 구성표가 선택합니다. 이 비교는 시스템 미디어 쿼리가 수동으로 선택한 로컬 테마를 따른다는 뜻이 아닙니다.

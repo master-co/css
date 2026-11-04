@@ -1,0 +1,31 @@
+# Reference prose: illustrations/where-specificity
+
+## title \{#copy-title\}
+
+
+where()와 is()는 같은 상태에도 다른 명시도
+
+## alt \{#copy-alt\}
+
+
+나란한 두 선택자 분해에서 소유 요소의 0-1-0 기여는 유지된다. where는 0을, is는 가장 높은 인수 명시도 1-0-0을 더한다.
+
+## caption \{#copy-caption\}
+
+
+그림은 명시도만 비교합니다. 캐스케이드는 출처, 중요도, 레이어 우선순위를 먼저 고려합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+두 생성 선택자에서 이스케이프된 전체 클래스 소유 요소는 0-1-0을 더합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+:where(:hover,#selected)의 접미사는 0-0-0을 더하므로 합계는 0-1-0입니다.
+
+## description-2 \{#copy-description-2\}
+
+
+:is(:hover,#selected)에서는 ID 인수가 가장 높은 인수 명시도 1-0-0을 제공하므로 호버 대안이 일치할 때도 합계는 1-1-0입니다.

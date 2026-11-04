@@ -1,0 +1,381 @@
+---
+{
+  "title": "뷰 전환",
+  "description": "브라우저 뷰 전환, 안정적인 스냅샷 이름, Master CSS 레이아웃 유틸리티로 글의 여러 보기를 연결합니다.",
+  "category": "기본 개념",
+  "figures": {
+    "TransitionIllustration": {
+      "title": "레이아웃 간 이미지 연결 유지하기",
+      "alt": "글 모음의 작은 이미지와 상세 보기의 큰 이미지가 view-transition-name article-aurora-image를 공유합니다. DOM과 레이아웃이 바뀌어도 같은 이름이 이전 캡처와 새 캡처를 연결합니다.",
+      "caption": "브라우저는 이름으로 캡처를 연결합니다. 이전 요소와 새 요소는 다른 DOM 노드여도 됩니다. 각 렌더링 상태에서는 이름을 한 번만 사용해야 합니다.",
+      "description": [
+        {
+          "title": "글 모음 캡처",
+          "text": "이전 상태에서 선택한 글 이미지의 이름은 article-aurora-image입니다."
+        },
+        {
+          "title": "DOM 갱신",
+          "text": "전환 콜백 안에서 글 모음을 상세 보기로 교체합니다. 상세 이미지는 같은 이름을 사용합니다."
+        },
+        {
+          "title": "캡처 연결",
+          "text": "브라우저는 이미지의 이전 경계와 새 경계 사이를 애니메이션할 수 있습니다. 이름은 쌍을 식별하며 같은 DOM 노드를 유지하라는 요구가 아닙니다."
+        }
+      ]
+    },
+    "TransitionIllustration:capture-lifecycle": {
+      "title": "애니메이션 시작 전에 바뀌는 DOM",
+      "alt": "이전 이미지를 캡처하고 DOM이 상세 보기로 바뀐 뒤 이전 보기와 새 보기가 갱신된 DOM 위의 오버레이에서 애니메이션됩니다.",
+      "caption": "콜백이 새 보기를 커밋한 뒤 브라우저가 임시 오버레이를 애니메이션합니다. DOM을 점진적으로 교체하는 것이 아닙니다.",
+      "description": [
+        {
+          "title": "업데이트 전",
+          "text": "브라우저는 별도로 이름 붙인 이미지를 포함해 이전 글 모음을 캡처합니다."
+        },
+        {
+          "title": "콜백 내부",
+          "text": "앱이 글 모음을 상세 DOM으로 교체합니다. updateCallbackDone은 이 업데이트의 완료를 알립니다."
+        },
+        {
+          "title": "캡처 후",
+          "text": "의사 요소 오버레이가 이전 이미지와 새 보기를 혼합합니다. ready는 애니메이션 준비 완료를 표시하며 생략된 경우에도 finished는 이행됩니다."
+        }
+      ]
+    },
+    "TransitionIllustration:capture-identity": {
+      "title": "이름으로 캡처를 연결하고 클래스로 스타일 묶기",
+      "alt": "서로 다른 두 이름이 이전 상태와 새 상태에서 짝지어지고 같은 article 전환 클래스를 공유합니다. 별도 상태에서는 이름을 두 번 사용하여 유효하지 않다고 표시됩니다.",
+      "caption": "각 상태 안에서 식별자는 고유해야 합니다. 기능 안의 모든 이름 있는 캡처는 전환 클래스를 공유할 수 있습니다.",
+      "description": [
+        {
+          "title": "이름 연결",
+          "text": "article-aurora-image는 새 상태의 같은 이름과 연결되며 제목은 다른 이름으로 독립적으로 연결됩니다."
+        },
+        {
+          "title": "스타일 공유",
+          "text": "두 이름 있는 요소는 모두 view-transition-class: article을 가집니다. ::view-transition-group(.article)은 HTML 클래스와 독립적으로 두 그룹에 스타일을 적용합니다."
+        },
+        {
+          "title": "중복 거부",
+          "text": "같은 캡처 상태에서 렌더링된 두 요소의 이름이 hero이면 모호합니다. 애니메이션은 생략되지만 앱 업데이트는 완료될 수 있습니다."
+        }
+      ]
+    },
+    "TransitionIllustration:capture-tree": {
+      "title": "하나의 캡처로 구성되는 그룹과 이미지 쌍",
+      "alt": "문서 루트 의사 요소 트리가 그룹 기하를 움직이는 이미지 사각형에 연결하고 old/new 자식을 그 안에서 혼합되는 두 이미지에 연결합니다.",
+      "caption": "그룹은 이동하고 크기를 바꿉니다. old/new 자식은 그 경계 안에서 두 보기를 혼합하는 방식을 제어합니다.",
+      "description": [
+        {
+          "title": "루트에 연결",
+          "text": "문서 전환은 원래 카드 요소 아래가 아닌 문서 루트에 의사 요소를 생성합니다."
+        },
+        {
+          "title": "그룹 이동",
+          "text": "hero 그룹은 이전 경계와 새 경계 사이에서 애니메이션하며 image-pair 자식은 나가는 이미지와 들어오는 이미지를 포함합니다."
+        },
+        {
+          "title": "보기 혼합",
+          "text": "old/new 자식은 이미지 내용을 애니메이션합니다. 별도 root 그룹은 나머지 페이지 캡처를 가지며 old 또는 new 자식이 없으면 등장하거나 퇴장하는 캡처를 나타냅니다."
+        }
+      ]
+    },
+    "TransitionIllustration:capture-navigation": {
+      "title": "두 트리거와 같은 이름 기반 시각적 인계",
+      "alt": "한 문서는 콜백을 통해 목록에서 상세 보기로 바뀝니다. 별도 경로에서는 일반 링크가 같은 출처이며 모두 전환을 활성화한 두 문서를 연결합니다.",
+      "caption": "DOM 업데이트에는 startViewTransition()을 사용합니다. 목적지가 다른 문서라면 일반 탐색과 CSS 활성화를 사용하세요.",
+      "description": [
+        {
+          "title": "제자리 업데이트",
+          "text": "startViewTransition(update)는 현재 문서의 변경을 감쌉니다. DOM을 교체하는 클라이언트 라우터도 같은 동일 문서 경로를 따릅니다."
+        },
+        {
+          "title": "일반 탐색",
+          "text": "조건에 맞는 동일 출처 탐색이 두 문서를 연결합니다. 양쪽 모두 @view-transition { navigation: auto; }를 불러오며 startViewTransition 콜백은 필요하지 않습니다."
+        },
+        {
+          "title": "사용 가능한 목적지 유지",
+          "text": "두 경로 모두 일치하는 명시적 이름으로 별도 노드를 연결할 수 있습니다. 전환을 지원하지 않아도 DOM 업데이트나 일반 링크 탐색은 계속 사용할 수 있습니다."
+        }
+      ]
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import TransitionIllustration from './components/TransitionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoViewTransition from '@master/internal-site/demo/DemoViewTransition.astro'
+
+## 개요 [sr-only] \{#overview\}
+독자가 글 모음에서 상세 보기로 이동할 때 이미지와 제목의 연결을 유지하세요. 레이아웃에는 Master CSS, 전환에는 네이티브 CSS, 상태 변경에는 JavaScript를 사용합니다. 작동하는 인터페이스가 먼저입니다. 애니메이션을 사용할 수 없어도 독자는 글에 접근할 수 있어야 합니다.
+
+## 글 목록에서 상세 보기로 \{#article-list-to-detail\}
+
+(click) 어느 글이든 열고 카드로 돌아가세요. 이미지, 제목, 날짜의 위치 변화를 따라가 보세요. 키보드 초점은 글 제목으로 이동했다가 선택한 버튼으로 돌아옵니다.
+
+<DemoViewTransition example="articles" />
+
+이는 **동일 문서** 전환입니다. JavaScript가 다른 URL로 이동하지 않고 글 모음을 교체하며 브라우저는 시각적 인계를 애니메이션으로 표현합니다. 라우팅, 데이터 로딩, 브라우저 기록, 초점은 여전히 앱의 책임입니다. 실제 페이지 탐색에는 뒤의 [문서 간 전환 예제](#cross-document-transitions)를 사용하세요.
+
+<TransitionIllustration />
+
+## 브라우저가 애니메이션으로 표현하는 대상 \{#what-the-browser-animates\}
+
+CSS `transition`은 페이지에 남아 있는 요소의 속성 변화를 보간합니다. 뷰 전환은 다른 DOM 노드와 레이아웃을 연결할 수 있습니다. 브라우저가 이전 보기를 캡처하고 업데이트를 실행한 뒤 이전 이미지와 새 보기를 위한 임시 의사 요소 트리를 만들어 문서 위에서 애니메이션합니다. 애니메이션이 시작할 때 DOM은 이미 바뀐 상태입니다.
+
+이름이 지정된 요소가 없으면 브라우저는 보통 루트 보기를 교차 페이드합니다. 일치하는 이름을 추가하면 선택한 부분이 독립적으로 이동하고 크기를 바꿀 수 있습니다. 브라우저가 기본 애니메이션을 제공하므로 두 레이아웃을 측정하거나 이동 키프레임을 작성할 필요가 없습니다. [View Transition 렌더링 모델](https://www.w3.org/TR/css-view-transitions-1/#rendering-model)을 참고하세요.
+
+<TransitionIllustration name="capture-lifecycle" />
+
+## 글 전환 만들기 \{#build-the-article-transition\}
+
+Master CSS가 이미 [설치되었다고](/guide/installation) 가정합니다. 아래 마크업을 문서 body에 넣고 head에서 `article-transitions.css`를, 모듈로 `article-transitions.js`를 불러오세요. 이미지 경로는 프로젝트의 이미지로 바꿉니다. 이 축약 예제는 글 하나를 구현하고 실시간 미리보기는 같은 명명 방식을 두 글에 적용합니다.
+
+레이아웃 유틸리티는 요소에 유지하세요. 네이티브 `style` 속성은 각 캡처의 식별자를 제공하고 `.article-capture`는 공유 전환 스타일 그룹을 지정합니다.
+
+```html name=article-list.html
+<section data-articles class="max-w-xl mx-auto p-md">
+  <article class="grid gap-md">
+    <img class="article-capture block w-full h-auto"
+      style="view-transition-name: article-aurora-image"
+      src="/images/article-aurora.jpg" width="1200" height="750"
+      alt="A mountain ridge under soft light" />
+    <time class="article-capture block text-sm"
+      style="view-transition-name: article-aurora-date"
+      datetime="2026-05-12">May 12, 2026</time>
+    <h2 class="article-capture text-xl m(0)"
+      style="view-transition-name: article-aurora-title">
+      Designing transitions that preserve context
+    </h2>
+    <button type="button" data-read-more>Read article</button>
+  </article>
+</section>
+
+<template id="article-detail">
+  <article class="grid gap-lg">
+    <img class="article-capture block w-full h-auto"
+      style="view-transition-name: article-aurora-image"
+      src="/images/article-aurora.jpg" width="1200" height="750"
+      alt="A mountain ridge under soft light" />
+    <time class="article-capture block text-sm"
+      style="view-transition-name: article-aurora-date"
+      datetime="2026-05-12">May 12, 2026</time>
+    <h1 tabindex="-1" class="article-capture text-3xl m(0)"
+      style="view-transition-name: article-aurora-title">
+      Designing transitions that preserve context
+    </h1>
+    <p>The image, title and date retain their identity in a new layout.</p>
+    <button type="button" data-back>Back to collection</button>
+  </article>
+</template>
+```
+
+template은 삽입 전에는 비활성 상태이므로 이름이 글 모음과 충돌하지 않습니다. 이 기능의 스타일시트는 한 번만 불러오세요. 시간 설정은 글 캡처에 적용되며 나머지 보기에는 브라우저 기본 교차 페이드가 유지됩니다.
+
+```css name=article-transitions.css
+@layer components {
+  .article-capture {
+    view-transition-class: article;
+  }
+
+  ::view-transition-group(.article) {
+    animation-duration: .5s;
+    animation-timing-function: ease-in-out;
+  }
+}
+```
+
+이름 기반 전환은 지원하지만 `view-transition-class`는 지원하지 않는 브라우저도 이름을 짝지을 수 있으며 기본 시간을 유지합니다. 고정 이름은 `::view-transition-group(article-aurora-image)`로 직접 지정할 수도 있습니다.
+
+전환을 시작하기 전에 내용을 준비하세요. 애니메이션 경로에서는 캡처 전에 이미지를 디코딩합니다. 이미지가 실패해도 탐색은 허용하고 대체 텍스트를 사용할 수 있게 합니다. DOM 교체 자체는 콜백 안에서 일어납니다:
+
+```js name=article-transitions.js
+const root = document.querySelector('[data-articles]')
+const detail = document.querySelector('#article-detail')
+const list = document.createElement('template')
+list.content.append(...root.cloneNode(true).childNodes)
+const motion = matchMedia('(prefers-reduced-motion: reduce)')
+let active
+let revision = 0
+
+motion.addEventListener('change', () => {
+  if (motion.matches) active?.skipTransition()
+})
+
+async function changeView(content, focusSelector) {
+  const request = ++revision
+  active?.skipTransition()
+  const update = () => {
+    if (request !== revision) return
+    root.replaceChildren(content)
+    const target = root.querySelector(focusSelector)
+    target.focus({ preventScroll: true })
+    target.scrollIntoView({ block: 'nearest', behavior: 'instant' })
+  }
+  if (!document.startViewTransition || motion.matches) {
+    update()
+    return
+  }
+
+  await Promise.all([...content.querySelectorAll('img')].map(image =>
+    image.decode().catch(() => {})
+  ))
+  if (request !== revision) return
+  if (motion.matches) { update(); return }
+  const transition = document.startViewTransition(update)
+  active = transition
+  // Skipping an animation does not mean the DOM update failed.
+  transition.ready.catch(() => {})
+  const clear = () => { if (active === transition) active = undefined }
+  transition.finished.then(clear, clear)
+  // Let the caller handle an actual update error. Do not run update twice.
+  await transition.updateCallbackDone
+}
+
+root.addEventListener('click', event => {
+  if (!(event.target instanceof Element)) return
+  if (event.target.closest('[data-read-more]')) {
+    changeView(document.importNode(detail.content, true), 'h1').catch(reportError)
+  } else if (event.target.closest('[data-back]')) {
+    changeView(document.importNode(list.content, true), '[data-read-more]').catch(reportError)
+  }
+})
+```
+
+여러 글에서는 글 ID에서 각 부분의 안정적인 이름을 만들고 해당 글 버튼으로 초점을 돌려주세요. 네트워크 요청이 끝날 때까지 렌더링을 붙잡지 말고 전환 시작 전에 데이터를 가져옵니다. React에서는 콜백 안에서 `flushSync()`로 상태 업데이트를 커밋하세요. 상태 setter 호출만으로 새 DOM이 캡처 준비되었다고 보장할 수 없습니다. 자체 전환 통합을 가진 프레임워크는 이 커밋 경계를 담당해야 합니다.
+
+## 스냅샷 명명 \{#naming-snapshots\}
+
+각 캡처 상태에서 렌더링된 요소의 `view-transition-name`은 고유해야 합니다. 이전 상태와 새 상태 **사이에서** 이름을 재사용하면 짝이 형성되지만 어느 한 상태 **안에서** 두 번 쓰면 전환이 생략됩니다. 이전 상태에만 있는 이름은 퇴장하고 새 상태에만 있는 이름은 등장합니다.
+
+| 식별자 | 목적 | 한 상태 안에서 공유 가능? |
+| --- | --- | --- |
+| HTML `class="article-capture"` | 일반 CSS로 실제 요소 선택 | 가능 |
+| `view-transition-name: article-aurora-image` | 이전 캡처 하나와 새 캡처 하나 연결 | 불가 |
+| `view-transition-class: article` | `::view-transition-group(.article)`로 여러 이름 있는 그룹 선택 | 가능 |
+
+`::view-transition-group(.article)`의 점은 HTML 클래스가 아닌 **전환 클래스**를 의미합니다. 전환 클래스만 지정해도 이름 있는 캡처가 만들어지는 것은 아닙니다. [플랫폼의 그룹화 예제](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/view-transition-class#examples)에서 차이를 확인할 수 있습니다.
+
+<TransitionIllustration name="capture-identity" />
+
+`article-aurora-image`처럼 안정적이고 유효한 CSS 식별자를 사용하고 제목이나 임의 사용자 텍스트를 이름으로 쓰지 마세요. 키가 있는 목록 재정렬처럼 업데이트 후에도 **같은 DOM 요소**가 남으면 `view-transition-name: match-element`로 브라우저가 식별자를 지정하게 할 수 있습니다. 교체 노드나 별도 문서를 연결하지는 않습니다. 이 예제는 노드를 교체하므로 명시적 이름을 사용합니다.
+
+## 전환 의사 요소 스타일 지정하기 \{#styling-transition-pseudo-elements\}
+
+문서 전환의 의사 요소는 이름 있는 요소가 컴포넌트 깊숙이 있어도 문서 루트에서 시작합니다. 기본 트리에는 `root` 그룹과 각 이름 있는 캡처의 그룹이 있습니다. 각 그룹에는 이전 및/또는 새 자식을 가진 이미지 쌍이 포함됩니다.
+
+<TransitionIllustration name="capture-tree" />
+
+이전 자식은 정적 스냅샷을 가지며 새 자식은 갱신된 요소의 실시간 렌더링을 표시합니다. 시각적 표현이지 마크업의 추가 상호작용 복사본은 아닙니다.
+
+`::view-transition-group(...)`에 지속 시간과 이징을 설정해 이동과 크기 조절을 다듬으세요. 브라우저 기본 old/new 애니메이션은 그룹의 시간을 상속합니다. 나가는 내용과 들어오는 내용의 혼합 방식을 바꾸려면 `::view-transition-old(...)`와 `::view-transition-new(...)`를 지정하세요. 그룹의 `animation` 단축 속성은 브라우저가 생성한 이동 애니메이션을 대체할 수 있으므로 의도한 속성만 재정의합니다.
+
+선택자는 해당 기능 소유의 전역 스타일시트에 유지하세요. 컴포넌트 범위의 `.card::view-transition-old(...)`는 문서 루트 트리를 지정할 수 없습니다. 여기서 전역은 선택자 범위를 뜻하며 모든 기능의 규칙을 하나의 앱 전역 파일에 넣어야 한다는 뜻은 아닙니다.
+
+## 클래스와 네이티브 CSS 선택하기 \{#choosing-classes-or-native-css\}
+
+Master CSS로도 이런 네이티브 속성과 선택자를 표현할 수 있습니다. 작고 고정된 캡처라면 다음은 네이티브 선언과 동등합니다:
+
+```html
+<html class="(animation-duration:.5s)::view-transition-group(.article)">
+  <body>
+    <img class="(view-transition-name:article-aurora-image) (view-transition-class:article)"
+      src="/images/article-aurora.jpg" alt="A mountain ridge" />
+  </body>
+</html>
+```
+
+<Class2CSS classes={[
+  '(view-transition-name:article-aurora-image)',
+  '(view-transition-class:article)',
+  '(animation-duration:.5s)::view-transition-group(.article)'
+]} />
+
+의사 요소 유틸리티는 이미지가 아닌 `html`에 있어야 합니다. 마운트된 컴포넌트에서 클래스를 추가한다면 공유 루트에서 그 수명 주기도 관리해야 합니다. 애니메이션 선택자, 키프레임, 모션 조건이 늘어날수록 네이티브 스타일시트가 관련 결정을 모으고 범위를 쉽게 검사하도록 합니다.
+
+데이터 기반 식별자는 새 유틸리티 클래스를 조합하지 말고 네이티브 속성으로 설정하세요:
+
+```js
+// article.id is a stable slug controlled by the application, such as "aurora".
+image.style.viewTransitionName = `article-${article.id}-image`
+```
+
+정적 스캔은 문자열 보간을 실행하지 않습니다. `'(view-transition-name:article-' + id + '-image)'` 같은 조합 클래스는 소스에 있는 완전한 클래스가 아닙니다. 네이티브 style 값은 새 생성 규칙이 필요하지 않습니다. CSS 사용자 지정 속성을 참조하는 완전한 유틸리티 클래스를 쓰는 방법도 있습니다. [클래스 변경 없이 값 변경하기](/guide/scanning-and-pruning#keep-changing-values-out-of-class-names)를 참고하세요.
+
+클래스가 로컬 결정을 읽기 쉽게 한다면 사용하세요. 이 기능의 기본 분담은 마크업의 레이아웃 유틸리티, 데이터나 네이티브 스타일의 식별자, CSS의 전환 선택자입니다. 같은 분담은 AI 도우미에게도 각 관심사를 수정할 명확한 위치를 줍니다. 이는 작성 권장 사항이며 Master CSS의 제한이 아닙니다.
+
+## 문서 간 전환 \{#cross-document-transitions\}
+
+글마다 URL이 있다면 일반 링크를 유지하고 브라우저가 탐색하게 하세요. 두 페이지는 동일 출처이며 모두 활성화를 선택해야 합니다. **두** 문서가 모두 불러오는 스타일시트에 다음을 넣으세요:
+
+```css name=page-transitions.css
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+```
+
+모음 페이지에서는 실제 글 URL로 연결하세요. 공유 이미지는 두 페이지에서 같은 명시적 이름을 사용합니다:
+
+```html name=collection.html
+<a href="/articles/aurora/">
+  <img src="/images/article-aurora.jpg" alt="Read the Aurora article"
+    style="view-transition-name: article-aurora-image" />
+</a>
+```
+
+```html name=article.html
+<article>
+  <img src="/images/article-aurora.jpg" alt="A mountain ridge"
+    style="view-transition-name: article-aurora-image" />
+  <h1>The Aurora article</h1>
+  <a href="/articles/">Back to collection</a>
+</article>
+```
+
+<TransitionIllustration name="capture-navigation" />
+
+`location.href`를 `startViewTransition()`으로 감싸지 마세요. 콜백은 현재 문서의 업데이트를 제어합니다. 문서 간 전환은 앱 콜백이 아닌 조건에 맞는 브라우저 탐색을 사용합니다. 라우터가 링크를 가로채 현재 DOM을 바꾸면 동일 문서 통합을 사용하세요. 미지원 브라우저도 링크를 따라갑니다. 동일 문서 API 지원이 문서 간 지원을 의미하지는 않으므로 [문서 간 요구 사항과 수명 주기](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document)를 확인하세요.
+
+## 동작 줄이기 \{#reduced-motion\}
+
+동일 문서 예제는 시작 전에 사용자 설정을 확인하며 설정이 바뀌면 진행 중인 애니메이션도 생략합니다. 문서 간 스타일시트는 같은 설정에서 탐색 애니메이션을 비활성화합니다. 두 방식 모두 목적지를 바꾸거나 상호작용을 막지 않습니다.
+
+`@motion-safe` 지속 시간 재정의만으로는 브라우저 기본 전환이 **비활성화되지 않습니다**. 재정의가 더 이상 일치하지 않으면 기본 애니메이션은 남습니다. 전환 자체를 시작할지 제어하세요. 라우터가 시작을 담당한다면 해당 모션 처리를 사용하거나 동작 줄이기 규칙에서 관련 의사 요소 애니메이션을 비활성화합니다.
+
+## 폴백 \{#fallbacks\}
+
+전환 객체는 세 가지 다른 완료 단계를 제공합니다:
+
+<DocumentComparison>
+
+| Promise | 알려 주는 내용 |
+| --- | --- |
+| `updateCallbackDone` | DOM 업데이트 콜백이 완료되거나 실패함 |
+| `ready` | 애니메이션이 준비되거나 시작 전에 생략됨 |
+| `finished` | 생략된 애니메이션을 포함해 전환이 끝남. 업데이트 실패 시 거부됨 |
+
+</DocumentComparison>
+
+`finished`가 이행되었다고 애니메이션이 끝까지 재생되었다는 뜻은 아닙니다. 기본 예제는 업데이트를 반복하지 않고 `ready` 거부를 처리하며 업데이트 오류는 `reportError`로 전파합니다. 앱에서는 이 보고를 오류 경계나 복구 UI로 바꾸세요. [업데이트 콜백 계약](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/updateCallbackDone)을 참고하세요.
+
+## 전체 상호작용 검증하기 \{#verify-the-complete-interaction\}
+
+포인터와 키보드로 두 글을 열었다 돌아오세요. 좁은 화면을 포함해 초점, 글 식별, 사용 가능한 스크롤을 확인합니다. 동작 줄이기를 켜고 API를 사용할 수 없는 상태에서도 반복하세요. 같은 내용 변경이 계속 작동해야 합니다.
+
+내용은 바뀌지만 모션이 없다면 다음을 확인하세요:
+
+- 연결할 각 렌더링 이름이 이전 상태와 새 상태에 한 번씩 나타나는지 확인합니다.
+- 콜백이 완료되기 전에 DOM 변경을 실제로 커밋하는지 확인합니다.
+- 의사 요소 선택자가 문서 루트를 지정하고 CSS가 로드되었는지 확인합니다.
+- 이미지에 크기가 지정되어 표시할 준비가 되었으며 사용할 수 없는 이미지가 업데이트를 막지 않는지 확인합니다.
+- 캡처와 애니메이션 중 뷰포트가 안정적인지 확인합니다. 내용에 따라 높이가 바뀌는 iframe은 정상적인 전환을 취소할 수 있습니다. 내부 스크롤을 가진 고정 뷰포트로 이 문제를 피할 수 있습니다.
+
+최종 DOM이나 `finished` promise만 보지 말고 애니메이션 중 프레임을 관찰하세요. [뷰 전환 프레임 알고리즘](https://www.w3.org/TR/css-view-transitions-1/#handle-transition-frame)은 스냅샷 포함 블록의 크기가 바뀌면 애니메이션을 생략한다고 명시합니다.

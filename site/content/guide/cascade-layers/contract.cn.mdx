@@ -1,0 +1,148 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import { baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
+
+<a id="how-layers-control-the-cascade"></a>
+
+除非类明确选择其他受支持的层，Master CSS 都会将生成的样式规则放入 `utilities`。受管理的主题声明使用 `theme`。原生 CSS 则保留编写时所属的层，包括通过 `@apply` 展开混入的原生规则。
+
+本页定义层的归属与生成规则的排序。覆盖组件或通过 DevTools 诊断的方法，见指南中的[层叠层](/guide/cascade-layers)。
+
+## 建立顺序 \{#establishing-the-order\}
+
+基础样式表通过 `@master/css/base.css` 提供，也包含在完整的 `@master/css` 导入中；它会声明：
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+请在其他规则建立这些层之前加载它。CSS 按首次出现的顺序确定层次，后来的顺序声明无法重新排列已建立的层。生成的层块本身不会插入这段声明。
+
+### 普通声明与重要声明 \{#normal-and-important-declarations\}
+
+这些层的普通声明互相竞争时，`utilities` 的优先级最高，`theme` 最低。不属于任何层的普通作者规则优先于所有这些层。`!important` 会反转层之间的顺序，并让层内的重要规则优先于无层的重要规则。这里比较的是作者样式表内部的顺序，并非涵盖来源、行内样式、动画和过渡的完整层叠。见 [CSS 层排序](https://www.w3.org/TR/css-cascade-5/#layer-order)。
+
+<ReferenceIllustration id="layer-precedence" />
+
+层优先级先于选择器优先级判断，因此优先级更高的组件选择器，无法仅凭选择器优先级胜过普通工具类声明。同一层内的声明仍受其他层叠条件影响，见[选择器优先级](/reference/rules/selectors#specificity)。
+
+## 层的归属 \{#the-five-layers\}
+
+<a id="theme"></a>
+<a id="base"></a>
+<a id="defaults"></a>
+<a id="components"></a>
+<a id="utilities"></a>
+
+| 层 | 生成内容 | 原生 CSS 惯例 |
+| --- | --- | --- |
+| `theme` | 保留在 `:root, :host` 下的受管理令牌声明 | 令牌默认值 |
+| `base` | 带有 `@layer(base)` 的类 | 规范化与文档基础样式 |
+| `defaults` | 带有 `@layer(defaults)` 的类 | 广泛的项目或内容默认样式 |
+| `components` | 带有 `@layer(components)` 的类 | 可复用的产品类 |
+| `utilities` | 普通工具类、组合样式、原生声明类以及显式 `@layer(utilities)` | 局部工具类规则 |
+
+原生 CSS 列说明的是预期职责，并不限制 CSS 在某一层中可使用哪些属性。`defaults` 是项目层，不是浏览器的用户代理样式表。令牌依赖项的交付方式见[变量与模式](/reference/rules/modes#variable-lifecycle)。
+
+## 选择生成规则的层 \{#layer-checklist\}
+
+类后缀只接受以下四个层名称：
+
+```txt
+@layer(base)
+@layer(defaults)
+@layer(components)
+@layer(utilities)
+```
+
+该后缀选择整个生成类所属的层，不会创建子层，也不会移动该类依赖的主题变量。请将它与其他后缀一起放在结尾 `!` 之前。
+
+| 形式 | 结果 |
+| --- | --- |
+| `block@layer(defaults)` | display 规则放入 `defaults` |
+| `block@layer(base)@layer(base)` | 一个 base 层规则；允许重复相同选择 |
+| `block@layer(base)@layer(utilities)` | `CLASS_SYNTAX_ERROR`：一个类不能选择不同的层 |
+| `block@layer(theme)` | `UNKNOWN_CONDITION`：`theme` 不是生成样式规则可选的层 |
+| `block@layer(custom)` | `UNKNOWN_CONDITION`：任意原生层名称不能作为类后缀目标 |
+
+项目自有的层和子层请使用原生 `@layer` 语法。它们的顺序遵循原生 CSS；类后缀不会注册新的层名称。
+
+<ReferenceIllustration id="layer-token-separation" />
+
+### Base 与 defaults \{#base-and-defaults\}
+
+<a id="base-is-for-normalization"></a>
+
+base 层的后代规则可以建立结构基础：
+
+<ConfiguredExample source="" html={baseStylesTemplate} />
+
+<a id="defaults-are-for-broad-defaults"></a>
+
+defaults 层的后代规则可以建立代码排版，并让局部组件与工具类的选择保持更高优先级：
+
+<ConfiguredExample source="" html={defaultStylesTemplate} />
+
+`font-mono` 类保留在 `defaults` 中，它需要的字体令牌仍在 `theme`。选择器后缀决定哪些后代元素获得声明，与层的选择相互独立。
+
+### 默认样式的优先级低于局部选择 \{#summary\}
+
+这里的两个规则都指向第一个段落。段落自身的原生声明类放在 `utilities`，因此会覆盖文章在 defaults 层中的字号：
+
+<ConfiguredExample source="" html={overridingDefaultsTemplate} />
+
+## 原生规则与受管理的工具类 \{#native-rules-and-managed-utilities\}
+
+<a id="a-complete-flow"></a>
+<a id="writing-regular-css"></a>
+
+位于 `@layer components` 内的原生类仍是原生 CSS。它默认会被交付，并遵循该层内的原生源顺序，不会获得 Master 的选择器或条件后缀。[`@prune native`](/reference/directives/pruning) 控制未使用的原生选择器是否可以移除。
+
+<a id="utilities-can-override-components"></a>
+
+此例中的 `.btn` 声明 `inline-flex`，`flex` 则生成普通工具类声明。建立基础顺序后，按钮使用 `display: flex`：
+
+<ConfiguredExample source={'@layer components {\n  .btn { display: inline-flex; }\n}'} classes={['btn', 'flex']} element="button" label="Save" />
+
+按需生成的 `@utility` 则会注册受管理的类。它的普通输出属于 `utilities`，但可以通过后缀选择其他受支持的层：
+
+<ConfiguredExample source={'@utility flow {\n  display: grid;\n  gap: var(--spacing-md);\n}'} classes={['flow@layer(defaults)']} />
+
+工具类定义与原生规则的保留方式，见[工具类与混入](/reference/directives/definitions)。
+
+### 混入展开会保留所在的层 \{#mixin-expansion-keeps-the-surrounding-layer\}
+
+原生规则内的 `@apply` 会在出现的位置展开声明，不会将该规则移到 `utilities`：
+
+<ConfiguredExample source={'@mixin --inset { padding: 1.5rem; }\n@layer components {\n  .card { @apply --inset; }\n}'} classes={['card', 'p(8)']} />
+
+建立基础顺序后，工具类的 `8px` 内边距会胜过组件的 `1.5rem`。如果未将其放入层中，原生 `.card` 规则就不属于任何层，其普通内边距声明会优先于普通工具类。
+
+层块必须放在混入主体和 `@apply` 内容之外，这些位置不接受层块。层决定整个生成规则的归属，不是用来包裹部分声明。
+
+## 同一层内的优先级 \{#priority-matrix\}
+
+HTML 中的类顺序不会决定谁优先。Master CSS 为生成规则提供稳定顺序，再由浏览器对匹配声明应用层叠。在可比较的层、选择器和条件上下文中，生成规则按以下顺序排列：
+
+1. 包含多个声明，或包含内部选择器与条件的组合样式。
+2. 单声明工具类，包括固定、令牌驱动和直接值工具类。
+3. 原生声明类。
+
+单声明工具类按属性族和覆盖范围排序：单边或单轴规则排在整个族之后。属性和作用域相同时，具名令牌值排在直接值之前。重要性、选择器优先级和条件仍参与判断；直接值并不总能胜过其他作用域或层中的令牌。
+
+以下示例使用预设、基础层声明以及 `16px` 的根元素字号。竞争的声明指向同一个元素，而且条件均匹配。
+
+| 竞争的类或规则 | 结果 | 原因 |
+| --- | --- | --- |
+| `p-md p(8)`，顺序不限 | `padding: 8px` | 相同属性和作用域中，直接值排在令牌之后 |
+| `p(8) (padding:2rem)`，顺序不限 | `padding: 2rem` | 原生声明排在单声明工具类之后 |
+| `m-md mt(0)`，顺序不限 | 上外边距 `0`；其他外边距 `1rem` | 单边排在整个外边距族之后 |
+| `b(2) bt(0) b-solid b-red-60` | 上边宽 `0`；其他边宽 `2px`；红色实线边框 | 宽度、样式和颜色是独立的族 |
+| `p-md! p(8)` | `padding: 1rem` | 重要性先于值来源排序 |
+| `p-md! p(8)!` | `padding: 8px` | 重要性相同；直接值排在令牌之后 |
+| `p(8)@layer(base) p(12)` | `padding: 12px` | 普通工具类优先于 base |
+| `p(8)@layer(base)! p(12)!` | `padding: 8px` | 重要声明反转层优先级 |
+| 无层的 `.outside { padding: 32px; }` 与 `p(8)` | `padding: 32px` | 无层的普通声明优先于层内声明 |
+| components 层的 `padding: 24px !important` 与 `p(8)!` | `padding: 24px` | 重要声明之间，以较早的层优先 |
+
+层内的原生规则保留编写时的顺序，上述生成工具类的排序不会重新排列它们。声明重叠时请检查输出的 CSS，并使用[代码 lint](/guide/code-linting#no-conflicting-classes)，在编写时找出冲突的类。

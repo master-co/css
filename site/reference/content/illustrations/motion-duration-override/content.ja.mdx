@@ -1,0 +1,36 @@
+# Reference prose: illustrations/motion-duration-override
+
+## title \{#copy-title\}
+
+
+継続時間のクラスはキーフレームを保ったまま時間を変える
+
+## alt \{#copy-alt\}
+
+
+2 つのアニメーションを同じ時間軸で比較します。animate-pulse だけでは 1 回の反復が 1000 ミリ秒ですが、animation-slow を加えると、キーフレームはそのままで 300 ミリ秒に短くなります。
+
+## caption \{#copy-caption\}
+
+
+どちらも同じ pulse キーフレームを使います。バーが測るのは 1 回の反復の継続時間であり、アニメーションの進行やレンダリング速度ではありません。プリセットは繰り返しますが、この比較では 1 回の反復だけを取り出しています。
+
+## description-0 \{#copy-description-0\}
+
+
+animate-pulse のショートハンドは pulse 1s infinite を指定し、1 回の反復は 1 秒です。
+
+## description-1 \{#copy-description-1\}
+
+
+同じ条件では animation-slow が animate-pulse より後になり、継続時間だけを var(--duration-slow)、つまり 300ms に置き換えます。pulse キーフレームと無限の繰り返し回数は変わりません。
+
+## description-2 \{#copy-description-2\}
+
+
+両方の横棒はゼロから始まり、同じミリ秒軸の上で長さの比率は 1000:300 です。測っているのは宣言した 1 回の反復の継続時間であり、性能や図形の移動距離ではありません。
+
+## description-3 \{#copy-description-3\}
+
+
+プリセットの pulse トークンは無限に繰り返します。1 回だけ再生するには、ネイティブの繰り返し回数を指定するか、独自のトークンを定義します。クラス名を並べ替えても、生成ルールの順序は変わりません。

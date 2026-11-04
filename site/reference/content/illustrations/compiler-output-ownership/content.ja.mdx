@@ -1,0 +1,36 @@
+# Reference prose: illustrations/compiler-output-ownership
+
+## title \{#copy-title\}
+
+
+コンパイル済み manifest に配信するネイティブ CSS は入らない
+
+## alt \{#copy-alt\}
+
+
+app.css のコンパイルはネイティブ CSS と manifest を別々に生成する。Node のレンダーセッションは manifest と bg-brand からユーティリティ規則を作り、ネイティブ .card はコンパイラーの CSS 出力に残る。
+
+## caption \{#copy-caption\}
+
+
+コンパイラーはネイティブ CSS と定義を別々に返します。Node のレンダーセッションは渡されたクラスをユーティリティ CSS にし、コンパイラーのネイティブ .card 規則は再配信しません。
+
+## description-0 \{#copy-description-0\}
+
+
+app.css はテーマトークンとネイティブ .card 規則を含みます。@master/css-compiler/node の compileManifestSync が明示的なベース manifest でコンパイルします。
+
+## description-1 \{#copy-description-1\}
+
+
+result.css はネイティブ規則を、result.manifest は後のクラス生成用の定義を持ちます。
+
+## description-2 \{#copy-description-2\}
+
+
+@master/css/node の Node 用 createRenderSessionSync はその manifest を受け取ります。bg-brand を確保すると background-color 規則と必要なトークンリソースを生成します。
+
+## description-3 \{#copy-description-3\}
+
+
+アプリはネイティブ CSS と生成 CSS の両方を配信し、共有リソースの所有権を調整する必要があります。ブラウザーエンジンはこの Node manifest 経路ではなく、コンパイルしたランタイムプログラムを使います。

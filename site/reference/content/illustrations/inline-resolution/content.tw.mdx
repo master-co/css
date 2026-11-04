@@ -1,0 +1,36 @@
+# Reference prose: illustrations/inline-resolution
+
+## title \{#copy-title\}
+
+
+Inline 代入改變剩餘的參照
+
+## alt \{#copy-alt\}
+
+
+一般與 inline 主題定義會產生不同的變數參照。在相同的紫紅色 section 中，一般 token 仍是藍色，inline class 則讀取區域紫紅色變數。
+
+## caption \{#copy-caption\}
+
+
+兩個範例在相同標記中使用 bg-brand。一般 token 繼承根元素解析後的值；inline 則讓生成宣告在套用樣式的元素上讀取 --app-brand。
+
+## description-0 \{#copy-description-0\}
+
+
+兩份設定都定義 --color-brand: var(--app-brand)。根元素將 --app-brand 設為 #1d4ed8，巢狀 section 則覆寫成 #86198f。
+
+## description-1 \{#copy-description-1\}
+
+
+使用一般 @theme 時，bg-brand 會輸出 background-color: var(--color-brand)。根元素將 --color-brand 計算為藍色，巢狀使用端繼承該計算值。
+
+## description-2 \{#copy-description-2\}
+
+
+使用 @theme inline 時，bg-brand 會輸出 background-color: var(--app-brand)。使用它的元素讀取從 section 繼承的紫紅色值。
+
+## description-3 \{#copy-description-3\}
+
+
+色票顯示最後的背景結果。圖中的根元素值是計算值，不表示編譯器會計算色彩。

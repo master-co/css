@@ -1,0 +1,26 @@
+# Reference prose: illustrations/layer-token-separation
+
+## title \{#copy-title\}
+
+
+스타일 레이어를 선택해도 토큰은 이동하지 않습니다
+
+## alt \{#copy-alt\}
+
+
+p-md@layer(defaults)는 defaults의 padding 규칙에 대응하지만 의존 항목인 spacing-md는 theme에 남습니다.
+
+## caption \{#copy-caption\}
+
+
+두 레이어 띠는 출력의 소유 범위를 보여 줍니다. 위치가 전체 캐스케이드 우선순위 비교를 나타내지는 않습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+p-md@layer(defaults)는 생성된 padding 선언을 defaults 레이어에 출력합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+의존 항목인 --spacing-md는 여전히 theme 레이어의 :root,:host 아래 출력됩니다. @layer(defaults)는 클래스 규칙의 레이어를 선택하며 의존 항목의 레이어는 선택하지 않습니다.

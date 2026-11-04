@@ -1,0 +1,226 @@
+---
+title: "構文チュートリアル"
+description: "Master CSS のクラスを読み、組み合わせ、操作状態や条件を加え、利用可能な空間に応答するガイドカードを作ります。"
+figures: {"SyntaxIllustration":{"title":"スタイル、セレクター、条件を読む","alt":"完全なクラス fg-blue-60:hover@sm の3区間を括弧で示します。fg-blue-60 はスタイル、:hover はセレクター、@sm は条件です。","caption":"ビューポートが sm に一致する間だけ、ホバーした要素に色が適用されます。どちらの接尾辞もこのクラスに属します。","description":[{"title":"スタイル","text":"fg-blue-60 は color を var(--color-blue-60) に設定します。"},{"title":"セレクター","text":":hover はクラスを持つ要素のホバー時に一致します。"},{"title":"条件","text":"@sm はルールをプリセットの名前付き sm メディアクエリーで囲みます。セレクターと条件が両方一致すると適用されます。"}]},"GuideStudy:pipes-and-quotes":{"title":"パイプは引用符内で意味が変わる","alt":"2つのリテラル入力と出力を対応付けています。rgb(30|60|90) は rgb(30 60 90) になり、引用文字列 New|collection はパイプを保ちます。","caption":"空白の復元は引用文字列の外で行います。出力の文字列は1つのリテラル値のままです。"},"GuideStudy:conditions-intersection":{"title":"両方の条件が一致する必要がある","alt":"2行2列の表で、ビューポートが sm に一致し、display:grid に対応する交差部分だけを強調しています。","caption":"grid@sm@supports(display:grid) は、片方の条件だけでは宣言を有効にしません。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import TokenValues from '~/site/reference/TokenValues.astro'
+import SyntaxIllustration from './components/SyntaxIllustration.astro'
+
+ガイドカードには余白、読みやすい文字、操作に応答するリンクが必要です。Master CSS では HTML 内でこれらを決められます。スタイルを選び、適用先や適用時を決めるセレクターや条件を加えます。
+
+まず[インストール](/guide/installation)を済ませてください。この例は標準プリセットを使い、独自のユーティリティ定義はありません。連携ツールが走査するソースファイルにマークアップを置き、アプリのスタイルシートを読み込みます。
+
+```css name=app.css
+@import '@master/css';
+```
+
+各**生成 CSS** の折りたたみには、添えたクラスのコンパイル結果が表示されます。開くとブラウザーに届く内容を確認できます。この出力をスタイルシートにコピーする必要はありません。
+
+## クラスを読む \{#declarations\}
+
+プリセットの `sm` クエリーにビューポートが一致するときだけ、ホバーで青くなるリンクから始めます。
+
+```html
+<a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
+  Read the guide
+</a>
+```
+
+このクラスは3つの部分からなります。`fg-blue-60` がスタイル、`:hover` が状態を選び、`@sm` が条件を加えます。セレクターと条件の両方に一致したときだけ適用されます。接尾辞がなければ、`fg-blue-60` はホバーやビューポート幅に関係なく適用されます。
+
+<SyntaxIllustration />
+
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+生成ルールは CSS 変数で `color` を設定し、メディアクエリー内に置かれます。セレクターの記号は、HTML のクラス名に一致するようエスケープされます。HTML には読みやすい形を書き、エスケープした CSS セレクターは生成出力に任せます。
+
+<ReferenceIllustration id="suffix-ownership" />
+
+## 値の指定方法を選ぶ \{#values\}
+
+よくある判断にはプリセットの名前を使います。局所的に正確な値が必要なら、対応する関数に数値を渡すか、ネイティブ宣言を書きます。
+
+<DocumentComparison>
+
+| 書き方 | 判断 |
+| --- | --- |
+| `flex` | `display: flex` の固定ユーティリティ |
+| `p-md` | 名前付き間隔のトークンクラス |
+| `p(12)` | 直接値：12ピクセルのパディング |
+| `(max-width:32rem)` | 完全な CSS プロパティと値を持つネイティブ宣言 |
+| `text-sm` | 文字サイズ、行高、字間をまとめるレシピ |
+
+</DocumentComparison>
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']} />
+
+`items-center` や `text-center` などの固定ユーティリティは一般的な宣言をカバーします。`m(4)`、`b(1)`、`grow(1)` などの直接値関数は数値を受け取り、長さはピクセル、`grow(1)` は単位なしの flex 係数です。ネイティブ宣言は括弧内に完全なプロパティ名を保ちます。`text-sm` や `grid-cols(2)` などのレシピは複数の宣言をまとめられます。どの形式にもセレクターと条件の接尾辞を付けられます。
+
+### 1つのクラス内で空白を表す \{#keep-spaces-inside-one-class\}
+
+HTML は空白でクラスを区切ります。引用符付き文字列の外では、CSS 値に必要な空白を `|` で表し、カンマ、スラッシュ、括弧はそのまま残します。
+
+```html
+<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
+  <span class="(content:'New|collection')::before"></span>
+</div>
+```
+
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+
+色は `rgb(30 60 90 / 80%)` になります。引用符内の content 文字列ではパイプはそのまま残り、文字は `New|collection` です。Master CSS は `calc(100%-2rem)` などの演算子の空白も正規化し、計算はブラウザーが行います。ネイティブ宣言の境界、引用値、エスケープは[宣言と値](/reference/rules/declarations)を参照してください。
+
+<GuideStudy id="pipes-and-quotes" />
+
+## 共有する値にトークンを使う \{#token-families\}
+
+トークンクラスは接頭辞と名前付きの値を結び付けます。`p-md` と `gap-md` はどちらも間隔トークン `--spacing-md` を読み、別々のプロパティを設定します。
+
+<DocumentComparison>
+
+| クラス | 宣言 |
+| --- | --- |
+| `p-md` | `padding: var(--spacing-md)` |
+| `gap-md` | `gap: var(--spacing-md)` |
+| `fg-text-muted` | `color: var(--color-text-muted)` |
+
+</DocumentComparison>
+
+<Class2CSS classes={['p-md', 'gap-md', 'fg-text-muted']} />
+
+以下の間隔値はプリセットから直接取得しています。
+
+<TokenValues namespace="spacing" keys={['sm', 'md', 'lg']} />
+
+`p-md` と `(padding:1rem)` は同じ見た目でも、判断が異なります。`--spacing-md` を変えるとトークンのパディングは変わりますが、リテラルは `1rem` のままです。共有値に従わせたいスタイルにはトークンを使います。独自の値の定義とスコープは[テーマトークン](/guide/theme)、接頭辞と名前空間は[ファミリー索引](/reference/tokens/families)を参照してください。
+
+## 独立した判断を組み合わせる \{#composition\}
+
+判断ごとにクラスを分け、小さな面を組み立てます。
+
+```html
+<article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+  <h2 class="m(0) text-lg fg-text-strong">Field notes</h2>
+  <p class="mt-sm mb(0) text-sm fg-text-muted">Keep useful ideas close.</p>
+</article>
+```
+
+<Class2CSS classes={['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']} />
+
+ここでは `b(1)` が境界線の幅、`b-solid` がスタイル、`b-line-divider` が色を設定します。1つを変えてもほかを書き直す必要はありません。パディング、角丸、組版設定も独立しているため、後の変更を小さくできます。広いレイアウトでパディングだけ変え、面と文字は保てます。
+
+### クラスの順序は優先順位を決めない \{#cascade\}
+
+`p-md p(12)` と書くと、このプロパティでは直接値がトークンに優先します。HTML のクラス順を逆にしても同じ CSS になります。
+
+<Class2CSS classes={['p-md', 'p(12)']} />
+
+意図的な上書きでなければ、基本のパディングは1つにします。ネイティブのコンポーネント CSS とユーティリティを組み合わせる場合はレイヤー順も重要です。プリセットでは通常の `utilities` 宣言を `components` の後に置きます。競合は[カスケードレイヤー](/guide/cascade-layers)、共通の外観を保ちながら1つのインスタンスを変える方法は[スタイルの再利用](/guide/reusing-styles)を参照してください。
+
+## 状態とセレクターの関係を加える \{#states\}
+
+動作を変えるクラスにセレクターを付けます。このボタンはホバーで面を変え、キーボードで移動してきたときに輪郭線を表示します。
+
+<DemoConfiguredExample
+  name="syntax-button"
+  title="面の変化とフォーカスの輪郭線"
+  source=""
+  html={`<button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+  Save changes
+</button>`}
+  caption="ボタンをホバーし、次に Tab で移動してください。ホバーで面が変わり、キーボードフォーカスで輪郭線が付きます。スタイルを示すボタンで、データは保存しません。"
+/>
+
+ホバーの接尾辞は `bg-surface-inset:hover` だけに属し、隣のクラスを条件付きにはしません。`:disabled`、`:nth-child(2)`、`::before` などネイティブの疑似クラスと疑似要素も使えます。セレクター関数も使え、`fg-blue-60:is(:hover,:focus-visible)` はどちらかの状態で適用されます。
+
+セレクターは別の要素も対象にできます。この例では article にクラスを付けていますが、article のホバー時に色が付くのは直下のリンクです。
+
+```html
+<article class="fg-blue-60:hover>a">
+  <h3>Field notes</h3>
+  <a href="/guide/reusing-styles">Read the guide</a>
+</article>
+```
+
+<Class2CSS classes={['fg-blue-60:hover>a']} />
+
+直接の子には `>`、子孫には `_` を使います。`fg-blue-60_a` は子孫のリンクに届きます。クラスを持つ要素が接尾辞の基準である点は変わりません。兄弟結合子、属性、セレクターリスト、詳細度は[セレクター](/reference/rules/selectors)を参照してください。
+
+## 条件を加える \{#conditions\}
+
+条件はクラスが適用されるタイミングを決めます。`@sm` を加えると、ビューポートがその名前付きクエリーに一致する間だけ変わります。このプレビューで冒頭の例の動作を確認できます。
+
+<DemoConfiguredExample
+  name="syntax-viewport"
+  title="ホバー色はビューポート幅で決まる"
+  source=""
+  html={`<div class="p-sm p-lg@sm">
+  <a href="/guide/responsive-design" target="_top" class="inline-flex py-xs text-sm fg-text-body underline fg-blue-60:hover@sm">
+    Explore responsive design
+  </a>
+</div>`}
+  responsive
+  widthPresets={[{ label: 'Below sm', width: 640 }, { label: 'Above sm', width: 900 }]}
+  caption="Above sm を選んでリンクをホバーすると青くなります。Below sm では基本の文字色を保ちます。sm ではパディングも増えます。これらの操作は周囲のページとは独立して、プレビューのビューポートを変えます。"
+/>
+
+`@sm` はプリセットのカスタムメディアクエリーを指します。1か所だけのビューポートしきい値には `p-lg@media(width>=48rem)` などのネイティブクエリーを使えます。ほかの条件も同じ形です。
+
+<DocumentComparison>
+
+| クラス | 条件 |
+| --- | --- |
+| `hidden@media(print)` | 印刷時 |
+| `grid@supports(display:grid)` | 宣言に対応している |
+| `grid@sm@supports(display:grid)` | 名前付きビューポートクエリーと宣言への対応の両方 |
+
+</DocumentComparison>
+
+<Class2CSS classes={['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']} />
+
+複数の条件は左から右に入れ子になるため、すべてのラッパーに一致する必要があります。カスタムメディアなどのラッパーは[条件](/reference/rules/conditions)を参照してください。
+
+<GuideStudy id="conditions-intersection" />
+
+### コンポーネントが使える空間に合わせる \{#follow-a-components-available-space\}
+
+同じビューポート幅でも、サイドバーのカードはメイン領域のカードより狭くなります。親に `container-inline` を付け、カードのレイアウトクラスにコンテナー条件を加えます。最後の例は `(container-name:card)` で親に名前を付け、`@container(card|width>=28rem)` で問い合わせます。
+
+親がコンテナーを作り、子がレイアウトを変えます。`28rem` は明示的なクエリー値で、`--container-md` などのサイズトークンとは別です。[レスポンシブデザイン](/guide/responsive-design#based-on-container-sizes)では、名前付きと入れ子のコンテナーでこの違いを詳しく扱います。
+
+## 組み合わせて完成させる \{#complete-card\}
+
+このカードはここまでの判断を組み合わせています。最初は1列で、名前付きの親が `28rem` に達するとリンクが文字の隣へ移り、パディングも増えます。リンクのホバーとフォーカスのスタイルは、レイアウトから独立したままです。
+
+<DemoConfiguredExample
+  name="syntax-complete"
+  title="空間に収まるガイドカード"
+  source=""
+  html={`<section class="container-inline (container-name:card)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+    <div>
+      <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
+      <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
+    </div>
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+      Read the guide <span aria-hidden="true">→</span>
+    </a>
+  </article>
+</section>`}
+  responsive
+  container
+  widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]}
+  caption="Narrow と Wide を切り替えます。名前付きコンテナーがカードの列とパディングを決めます。Read the guide をホバーするか Tab で移動して状態を確認してください。実行すると「スタイルの再利用」が開きます。"
+/>
+
+バリエーションを選ぶときは、`'p-md'` と `'p-lg'` のような完全なクラス名をソースに残します。`'p-' + size` のような断片からの組み立てでは、スキャナーは完全な名前を得られません。連続値にはネイティブのカスタムプロパティと `(width:var(--progress))` のような固定クラスを使います。ソース探索は[クラス名の走査](/guide/scanning-and-pruning)、生成のタイミングは[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+想定したスタイルが出ない場合は、まず**生成 CSS** を開いてクラスを確認します。次にセレクターの対象要素、条件の一致、解決後のカスタムプロパティ、ブラウザー内の競合ルールを確認します。HTML のクラスを並べ替えてもカスケードは直りません。
+
+共有値の定義は[テーマトークン](/guide/theme)、コンポーネントクラス、ユーティリティ、mixin の使い分けは[スタイルの再利用](/guide/reusing-styles)へ進んでください。完全な契約は Reference にあります。

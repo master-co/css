@@ -1,0 +1,31 @@
+# Reference prose: illustrations/static-branch-extraction
+
+## title \{#copy-title\}
+
+
+정적 대안은 분기 실행 전에도 보임
+
+## alt \{#copy-alt\}
+
+
+조건식 양쪽의 리터럴이 추출 클래스에 연결된다. 런타임 tone을 연결한 식은 해석되지 않은 조각에서 끝난다.
+
+## caption \{#copy-caption\}
+
+
+두 분기는 소스의 대안이며 실행 순서가 아닙니다. 추출은 선택할 분기를 예측하거나 연결 결과의 클래스 이름을 만들어 내지 않습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+error ? "bg-red-60" : "bg-green-60"은 완전한 정적 클래스 문자열 두 개를 추출에 노출합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+"bg-" + tone은 완전한 결과 클래스를 노출하지 않습니다. 스캐너는 tone 값을 추론하지 않습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+선택지가 유한하면 완전한 대안을 사용하고 값 자체가 무제한이면 고정 클래스와 동적 CSS 변수를 사용하세요.

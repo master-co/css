@@ -1,0 +1,36 @@
+# Reference prose: illustrations/selector-targets
+
+## title \{#copy-title\}
+
+
+同じホバーでも対象は異なる
+
+## alt \{#copy-alt\}
+
+
+同じ構造の 2 つの article で最初のリンクがホバーされている。article のホバー検査では両リンクに、各リンクの検査では最初のリンクだけに下線が付く。
+
+## caption \{#copy-caption\}
+
+
+両方の例で最初のリンクをホバーしています。青い破線の輪郭は接尾辞の :hover 検査に一致する要素であり、生成された枠線ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+両 article はユーティリティクラスを持ち、同じ 2 つの直下の子リンクを含みます。最初のリンクがホバーされるため、両方の祖先 article も :hover に一致します。
+
+## description-1 \{#copy-description-1\}
+
+
+underline:hover>a は article を検査してから直下の子リンクを選びます。両リンクに text-decoration-line: underline が適用されます。
+
+## description-2 \{#copy-description-2\}
+
+
+underline>a:hover は直下の子リンクを選んでから個別に検査します。ホバーされた最初のリンクだけに宣言が適用されます。
+
+## description-3 \{#copy-description-3\}
+
+
+青い破線はホバー検査に一致する要素を示します。生成された枠線ではなく、2 番目の article がホバーされていないという意味でもありません。

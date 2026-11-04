@@ -1,0 +1,25 @@
+# Reference prose: illustrations/reference-no-roots
+
+## title \{#copy-title\}
+
+A referenced native rule does not retain its token
+
+## alt \{#copy-alt\}
+
+A referenced stylesheet defines a token and a remote rule. With no local consumer neither is delivered; adding a local token consumer delivers the token and local rule only.
+
+## caption \{#copy-caption\}
+
+Both cases reference the same file. Only local usage changes. The output excerpt omits the surrounding theme layer.
+
+## description-0 \{#copy-description-0\}
+
+The referenced file defines --color-accent and .remote \{ color: var(--color-accent); \}. Its undelivered native rule is not a usage root.
+
+## description-1 \{#copy-description-1\}
+
+A reference alone makes the token available without delivering that native rule or retaining the token solely for it.
+
+## description-2 \{#copy-description-2\}
+
+Adding .local \{ color: var(--color-accent); \} retains the token through the local consumer. The output still does not copy .remote.

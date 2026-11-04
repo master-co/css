@@ -1,0 +1,96 @@
+# Reference prose: tokens/motion
+
+## title \{#copy-title\}
+
+
+모션
+
+## summary \{#copy-summary\}
+
+
+애니메이션 단축 속성, 지속 시간 값, 이징 곡선입니다.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+애니메이션
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+지속 시간
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+이징
+
+## note \{#copy-note\}
+
+
+`animation-`과 `transition-` 접두사는 모두 duration과 easing 네임스페이스를 참조합니다. 사용자 지정 키는 두 네임스페이스에서 서로 달라야 하며 같은 키를 공유하면 모호해집니다. 반면 `animate-`는 전체 애니메이션 단축 속성을 참조합니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+애니메이션 토큰 열 개는 키프레임 이름을 포함하고 무한 반복합니다. 지속 시간 일곱 개는 시간 길이를 제공하며 이징 곡선 아홉 개는 시간 진행을 값의 진행에 대응시킵니다. 시각적 비교는 한 번만 재생하고 처음에는 일시 정지하며 동작 줄이기 설정을 따릅니다.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+애니메이션의 일부 덮어쓰기
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`animate-pulse`는 1s 지속 시간을 포함한 전체 `animation` 단축 속성을 설정합니다. 조건이 같으면 `animation-slow`가 단축 속성 뒤에 정렬되어 지속 시간을 300ms로 바꿉니다. 키프레임 이름과 반복 횟수는 유지되며 class 속성의 순서를 바꿔도 결과는 달라지지 않습니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+지속 시간 또는 이징 계열로 일부를 조정하거나 해당 변수로 사용자 지정 애니메이션 토큰을 구성하세요. `(animation-duration:450ms)` 같은 명시적 네이티브 선언으로 리터럴 값을 덮어쓸 수도 있습니다. 두 막대는 같은 시간 척도에서 한 번의 반복을 보여 주며 렌더링 성능을 비교하지 않습니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+애니메이션 토큰은 값이 참조하는 키프레임을 유지합니다. 지속 시간이나 이징 클래스만으로는 애니메이션 이름을 지정하지 않습니다. 전환에도 속성 값의 변화가 필요합니다. `transition-fast`는 지속 시간을 제공할 뿐 hover 상태나 속성 목록을 제공하지 않습니다.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+지연은 효과가 시작되는 시점을 바꾸며 지속 시간을 늘리지 않습니다. 이징은 지속 시간 안에서 진행 양상을 바꿉니다. 제어점이 세로 0–1 범위를 벗어나는 곡선은 끝점을 넘거나 뒤로 움직일 수 있지만, 애니메이션 대상 속성이 실제 렌더링 값을 제한할 수 있습니다.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+필수적이지 않은 모션에는 `@motion-safe`를 사용하세요. 프리셋 애니메이션을 한 번만 실행하려면 같은 조건에서 `(animation-iteration-count:1)`을 추가하세요. 컴포넌트의 등장 애니메이션 구성은 테마 가이드에서, 캡처한 페이지 상태 사이의 전환은 뷰 전환 가이드에서 다룹니다.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+생성 규칙의 순서
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+네이티브 animation 단축 속성
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+뷰 전환
+
+## usage-lead \{#copy-usage-lead\}
+
+
+모션이 허용되면 링크에 마우스를 올렸을 때 배경 변화에 이징을 적용합니다. 링크는 값 표로 돌아갑니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+지속 시간과 이징 토큰으로 애니메이션을 구성하고 키프레임은 네이티브 CSS로 선언하세요. `--animate-reveal`를 정의하면 `animate-reveal`이 생성됩니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+테마 토큰

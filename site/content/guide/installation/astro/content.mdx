@@ -14,12 +14,12 @@ Connect Master CSS to an Astro site through a shared CSS entry. The integration 
 
 (i) **Static production limitation:** the current integration can emit base styles without the scanned utility rules. Check the production result below. For a static stylesheet that does not depend on this integration path, use the [CLI build](#cli-build).
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [Astro project](https://docs.astro.build/en/install-and-setup/), run the installer from the project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
@@ -29,7 +29,7 @@ Connect Master CSS to an Astro site through a shared CSS entry. The integration 
     </StepR>
   </Step>
   <Step>
-    ### Connect the stylesheet
+    ### Connect the stylesheet \{#connect-the-stylesheet\}
     The installer creates a standalone CSS entry:
 
     ```css name=src/styles/global.css
@@ -39,7 +39,7 @@ Connect Master CSS to an Astro site through a shared CSS entry. The integration 
     [Import it from page or layout frontmatter](https://docs.astro.build/en/guides/imports/#import-statements). A shared layout delivers it to every page using that layout. Keep the Master CSS integration beside the project's existing integrations in `astro.config.mjs`.
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     Start the dev server. Import `src/styles/global.css` from the page frontmatter, then add the paragraph. Use the same import in a shared layout when several pages need it.
   </Step>
   <InstallationPreview>
@@ -65,7 +65,7 @@ import '../styles/global.css'
   </InstallationPreview>
 </StepSection>
 
-## Check the setup
+## Check the setup \{#check-the-setup\}
 Run `npm run dev`, change `p-md` to `p-lg` and check that padding grows from `1rem` to `1.5rem`. Restore it and test the production page:
 
 ```bash

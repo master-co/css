@@ -1,0 +1,31 @@
+# Reference prose: illustrations/reference-no-roots
+
+## title \{#copy-title\}
+
+
+参照されたネイティブ規則はトークンを保持しない
+
+## alt \{#copy-alt\}
+
+
+参照スタイルシートがトークンと remote 規則を定義する。ローカルの参照元がなければどちらも配信せず、参照元を加えるとトークンとローカル規則だけを配信する。
+
+## caption \{#copy-caption\}
+
+
+両ケースは同じファイルを参照し、ローカルの使用だけが変わります。出力抜粋では外側の theme レイヤーを省略しています。
+
+## description-0 \{#copy-description-0\}
+
+
+参照先は --color-accent と .remote \{ color: var(--color-accent); \} を定義します。配信しないネイティブ規則は使用の起点ではありません。
+
+## description-1 \{#copy-description-1\}
+
+
+参照だけでは、トークンを利用可能にするものの、ネイティブ規則は配信せず、そのためだけにトークンを保持もしません。
+
+## description-2 \{#copy-description-2\}
+
+
+.local \{ color: var(--color-accent); \} を加えるとローカルの参照元がトークンを保持します。出力は引き続き .remote をコピーしません。

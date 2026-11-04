@@ -1,0 +1,66 @@
+# Reference prose: grid-tracks
+
+## title \{#copy-title\}
+
+
+網格軌道
+
+## summary \{#copy-summary\}
+
+
+用一個 class 設定等分的網格軌道或跨軌道配置。
+
+## note \{#copy-note\}
+
+
+`grid-cols()` 與 `grid-rows()` 會建立 Grid；span 函式則將項目放進既有的 Grid。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+軌道數量與項目配置由不同元素負責
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`grid-cols(3)` 設定 `display: grid` 與三個 `minmax(0, 1fr)` 欄。`grid-rows(3)` 設定三個同樣規格的列，並設定 `grid-auto-flow: column`。其餘配置都採用預設值時，相同的六個子元素在第一種情況會橫向填入，在第二種情況則會向下填入。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+軌道數量與跨越數都必須使用正整數。軌道函式不會加入間隙。等分比例會分配扣除間隙後的可用空間；零最小值允許軌道縮小，但本身不會讓內容換行或裁切內容。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`grid-col-span(2)` 與 `grid-row-span(2)` 設定項目的配置，不會設定父元素的 display。跨越數超過明確建立的 Grid 時，可能產生隱含軌道。跨斷點協調軌道數量與跨越數的做法，請見版面配置指南。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`grid-cols()` 不會重設 `grid-rows()` 建立的欄向流動。如果兩者都生效，兩組軌道定義都會保留，自動配置仍會沿著欄向下進行。明確需要列向流動時，請加入 `(grid-auto-flow:row)`。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+列的等分比例需要受限的可用高度，才能分配固定的垂直空間。在高度為 auto 的 Grid 中，內容會參與列尺寸計算；`grid-rows(3)` 並不是高度限制。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+版面配置
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生 Grid 配置
+
+## usage-lead \{#copy-usage-lead\}
+
+
+配置三個等寬欄，讓主要區塊跨兩欄與兩列。
+
+## guide-label \{#copy-guide-label\}
+
+
+版面配置

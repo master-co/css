@@ -1,0 +1,91 @@
+# Reference prose: tokens/font
+
+## title \{#copy-title\}
+
+
+フォント
+
+## summary \{#copy-summary\}
+
+
+ファミリー、サイズ、ウェイトを、いずれも font-* 形式で指定します。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+ファミリー
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+サイズ
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+ウェイト
+
+## note \{#copy-note\}
+
+
+3 つの名前空間が `font-` 接頭辞を共有するため、名前はその間で一意でなければなりません。複数の名前空間に同じ名前を定義すると、`AMBIGUOUS_TOKEN` が報告され、CSS は生成されません。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+ファミリーは順序付きのフォールバックリスト、サイズは rem 単位の長さ、ウェイトは数値による指定です。ピクセル換算はルートのフォントサイズを 16px と仮定しています。実際の書体と利用可能なウェイトは、ページに読み込まれたフォントによって決まります。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+接頭辞は共通でもプロパティは独立
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`font-serif`、`font-4xl`、`font-semibold` は、それぞれ `font-family`、`font-size`、`font-weight` を設定します。異なるプロパティなので併用できますが、いずれも完全なテキストスタイルではありません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+サイズのクラスは、行の高さと文字間隔をそれぞれの宣言や継承に委ねます。3 つの寸法を 1 つのスタイルから指定したい場合は、`text-<name>` を使います。どちらの形式でも、ファミリーとウェイトは独立しています。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+ファミリートークンはフォント名を指定するだけで、ダウンロードは行いません。プリセットの sans、mono、serif のスタックは、それぞれ任意のフック `--font-sans`、`--font-mono`、`--font-serif` から始まります。フォントの読み込みとサイト全体のスタック選択は、タイポグラフィガイドで説明しています。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+独自のキーは 3 つの名前空間の間で重複させないでください。`--font-family-brand` と `--font-size-brand` が両方あると、`font-brand` は曖昧になります。`(font-size:var(--font-size-brand))` のような明示的なネイティブ宣言なら、目的のプロパティと変数を指定できます。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+テキストスタイル
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+名前空間の解決
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+ネイティブのフォント選択
+
+## usage-lead \{#copy-usage-lead\}
+
+
+見出しに大きめのサイズと中程度のウェイトを指定し、コード例には等幅のファミリーを使います。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+各名前空間はそれぞれのトークンを受け付けます。`--font-family-display` は `font-display` を、`--font-size-hero` は `font-hero` を利用可能にします。
+
+## guide-label \{#copy-guide-label\}
+
+
+タイポグラフィ

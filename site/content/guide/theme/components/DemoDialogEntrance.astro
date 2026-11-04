@@ -1,6 +1,10 @@
 ---
 import FoundationDialog from '@master/internal-site/demo/foundations/FoundationDialog.astro'
+import { dialogCopy } from '@master/internal-site/demo/foundations/dialog-copy.js'
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'FoundationDialog', dialogCopy)
 ---
 
 {/* The dialog entrance specimen, named for the Markdown export's demo rule. */}
-<FoundationDialog />
+<FoundationDialog {...copy} />

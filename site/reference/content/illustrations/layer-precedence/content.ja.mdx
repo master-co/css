@@ -1,0 +1,36 @@
+# Reference prose: illustrations/layer-precedence
+
+## title \{#copy-title\}
+
+
+重要な宣言ではレイヤーの優先順位が反転する
+
+## alt \{#copy-alt\}
+
+
+5 つのレイヤーが theme から utilities の順に並び、その後にレイヤー外の CSS が続きます。通常の宣言は下ほど、重要な宣言は上ほど優先されます。
+
+## caption \{#copy-caption\}
+
+
+作成者スタイルシート内で、重要度が同じ宣言を比較します。通常のレイヤー外ルールは名前付きレイヤーより優先され、重要な名前付きレイヤーのルールは重要なレイヤー外ルールより優先されます。
+
+## description-0 \{#copy-description-0\}
+
+
+ベーススタイルシートは、theme、base、defaults、components、utilities の順に宣言します。
+
+## description-1 \{#copy-description-1\}
+
+
+作成者スタイルシートの通常の宣言では、theme から utilities に向かって優先順位が上がり、レイヤー外の宣言がすべての名前付きレイヤーより優先されます。
+
+## description-2 \{#copy-description-2\}
+
+
+作成者スタイルシートの重要な宣言では、逆方向に優先順位が上がります。これらのレイヤーでは theme が最も強く、レイヤー外の重要な宣言が最も弱くなります。
+
+## description-3 \{#copy-description-3\}
+
+
+レイヤーの優先順位はセレクターの詳細度より先に比較されます。図は重要度ごとのグループを別々に比較しており、通常の宣言と重要な宣言、あるいはほかのカスケードのオリジンを比較するものではありません。

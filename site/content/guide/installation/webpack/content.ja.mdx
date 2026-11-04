@@ -1,0 +1,194 @@
+---
+{
+  "title": "Webpack・Rspack・Rsbuild で Master CSS を設定する",
+  "description": "Webpack、Rspack、Rsbuild で CSS エントリーと HTML プラグインを接続し、本番のスタイルシートを確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/webpack/cover-light.webp'
+import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × webpack" />
+
+Webpack、Rspack、Rsbuild のアプリに Master CSS を組み込みます。三つとも `@master/css-webpack` を使い、CSS エントリーが定義を供給し、プラグインがユーティリティルールを生成し、HTML プラグインが出力をページにリンクします。エントリーと HTML テンプレートがある、動作するアプリから始めてください。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      既存の [Webpack](https://webpack.js.org/guides/getting-started/)、[Rspack](https://rspack.dev/guide/start/quick-start)、[Rsbuild](https://rsbuild.rs/guide/start/quick-start) プロジェクトのルートで、`--framework webpack`、`rspack`、`rsbuild` のいずれかを指定してインストーラーを実行します。既定の静的モードは、プラグインを登録して `src/index.css` を作成します。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework webpack --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### CSS エントリーをインポートする \{#import-the-css-entry\}
+      インストーラーは `@import '@master/css';` を含む `src/index.css` を作成します。既存のマウントコードを保持し、アプリの JavaScript または TypeScript エントリーからインポートしてください。ユーティリティを必要とするすべてのページで読み込まれるよう、グローバルエントリーを使います。
+    </StepL>
+    <StepR>
+      ```js name=src/index.js
+      import './index.css'
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    開発サーバーを起動し、HTML プラグインが処理する HTML テンプレートか、フレームワークのコンポーネントに段落を置きます。
+  </Step>
+  <InstallationPreview>
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Master CSS with Webpack</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## バンドラーの設定 \{#configuration\}
+インストーラーが書き込むのは、Master CSS に関する設定です。フレームワークのプラグイン、エントリー、HTML 生成を保持して既存の設定に統合し、プラグインは一度だけ登録してください。
+
+### Webpack \{#webpack\}
+生成したスタイルシートの配信には、ネイティブの CSS 処理と `HtmlWebpackPlugin` が必要です：
+
+```js name=webpack.config.mjs
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  experiments: { css: true },
+  module: {
+    rules: [{ test: /\.css$/i, type: 'css/auto' }]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rspack \{#rspack\}
+Rspack は、同じ Webpack 互換プラグインを組み込みの CSS サポートと `HtmlRspackPlugin` とともに使います：
+
+```js name=rspack.config.mjs
+import { HtmlRspackPlugin } from '@rspack/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        type: 'css/auto'
+      }
+    ]
+  },
+  plugins: [
+    new HtmlRspackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rsbuild \{#rsbuild\}
+Rsbuild は `tools.rspack` フックでプラグインを登録します。フレームワークのプラグインとアプリをマウントするエントリーは保持してください。このフックは Master CSS の処理だけを追加します。
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default defineConfig({
+  tools: {
+    rspack(config) {
+      config.plugins ||= []
+      config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+      return config
+    }
+  }
+})
+```
+
+React のスターターでは、`src/App.tsx` に段落を置きます：
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 設定を確認する \{#check-the-setup\}
+まず開発サーバーの実行中に、ソースの `p-md` を `p-lg` に変えます。段落のパディングが `1rem` から `1.5rem` に増えるはずです。確認後、元に戻します。
+
+使うバンドラーに対応するコマンドでビルドします：
+
+<DocumentComparison>
+
+| バンドラー | 本番ビルド |
+| --- | --- |
+| Webpack | `npx webpack --mode production` |
+| Rspack | `npx rspack build --mode production` |
+| Rsbuild | `npx rsbuild build` |
+
+</DocumentComparison>
+
+出力ディレクトリーを HTTP サーバーで配信します。段落に `1rem` のパディング、浮き上がった面、角丸があるはずです。静的モードのユーティリティはリンクした CSS から供給され、Master CSS ランタイムは使いません。JavaScript を無効にしても HTML テンプレートの内容にはスタイルが残りますが、クライアントレンダリングのフレームワークは内容の作成に JavaScript が必要です。
+
+HTML プラグインは、スタイルシートのリンクと必要なランタイムスクリプトを出力します。開発サーバーの静的ディレクトリーから直接配信したファイルには、それらは追加されません。CSS のリクエストがない場合は、まず HTML 生成を確認します。読み込まれてもユーティリティがない場合は、CSS エントリー、ネイティブ CSS 処理、プラグインの登録を確認してください。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定は静的モードです。プラグインの `mode` オプションで別の配信方法を選び、HTML プラグインがそのランタイムスクリプトを組み込みます：
+
+| モード | プラグインのオプション | インストーラーのオプション |
+| --- | --- | --- |
+| 静的 | `mode: 'static'` | なし |
+| ランタイム | `mode: 'runtime'` | `--mode runtime` |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+`--mode runtime` と対象の `--framework` を指定してインストーラーを実行します。プラグインのオプションが `mode: 'runtime'` に設定されます：
+
+```bash
+npm create @master/css@rc -- --framework webpack --mode runtime --yes
+```
+
+本番出力をビルドして配信します。出力 HTML が Master CSS のランタイムスクリプトを読み込むはずです。起動後、ブラウザーのコンソールで次を実行すると、再ビルドせずに段落に下線が付くはずです：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

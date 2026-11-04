@@ -1,0 +1,8 @@
+---
+title: "Master CSS を使い始める"
+description: "クラス構文、デザイントークン、CSS の配信方式を学び、使用するフレームワークに取り入れます。"
+---
+import GuideIndex from './components/GuideIndex.svelte'
+import { guideIndexCategories } from './components/guide-index'
+
+<GuideIndex client:idle={{ timeout: 500 }} pageCategories={guideIndexCategories(props.pageCategories)} />

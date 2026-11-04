@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-eligibility
+
+## title \{#copy-title\}
+
+
+查询匹配后，规则才有资格参与层叠
+
+## alt \{#copy-alt\}
+
+
+同一个已编译媒体规则连接两种视口情况。低于阈值时不生效，达到阈值时则参与层叠。
+
+## caption \{#copy-caption\}
+
+
+编译器在两种浏览器情况评估前就输出查询。查询匹配不保证能在层叠中胜出。
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem) 输出包含 display: grid 的 @media 规则，不会测试当前视口。
+
+## description-1 \{#copy-description-1\}
+
+
+39rem 时，浏览器不会应用该规则；40rem 时条件匹配，声明参与层叠。
+
+## description-2 \{#copy-description-2\}
+
+
+其他层叠规则仍可能决定最终 display 值。编译、查询匹配与最终计算样式是不同的检查。

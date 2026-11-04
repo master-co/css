@@ -1,0 +1,29 @@
+# Reference prose: illustrations/grid-track-flow
+
+## title \{#copy-title\}
+
+Column and row recipes fill the same children in different directions
+
+## alt \{#copy-alt\}
+
+Six numbered items form three columns and two rows with grid-cols(3). With grid-rows(3), they form three rows and two columns, filling down before starting the next column.
+
+## caption \{#copy-caption\}
+
+Both grids use the same six children and gap. grid-rows(3) also sets grid-auto-flow: column; grid-cols(3) leaves the default row flow. Tile heights follow their content.
+
+## description-0 \{#copy-description-0\}
+
+The first grid has three explicit minmax(0, 1fr) columns. Default row flow places items 1, 2 and 3 across its first row, followed by 4, 5 and 6.
+
+## description-1 \{#copy-description-1\}
+
+The second grid has three explicit minmax(0, 1fr) rows and column auto-flow. Items 1, 2 and 3 fill the first column; 4, 5 and 6 fill the second.
+
+## description-2 \{#copy-description-2\}
+
+Both scenes use real preset CSS, six identical content-sized tiles and a 12px gap. Widths keep the tile widths comparable; neither recipe supplies that gap or width.
+
+## description-3 \{#copy-description-3\}
+
+The illustration uses default item placement. Explicit placement and spans can change the result; grid-cols does not reset a column flow established elsewhere.

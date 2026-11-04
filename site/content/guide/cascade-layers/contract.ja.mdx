@@ -1,0 +1,148 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import { baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
+
+<a id="how-layers-control-the-cascade"></a>
+
+Master CSS は、クラスが別の対応レイヤーを明示しない限り、生成するスタイルルールを `utilities` に出力します。管理対象のテーマ宣言は `theme` を使います。ネイティブ CSS は、`@apply` でミックスインを展開するルールも含め、記述されたレイヤーを保ちます。
+
+このページでは、レイヤーの所属と生成ルールの順序を定義します。コンポーネントの上書きや DevTools を使う診断手順は、ガイドの[カスケードレイヤー](/guide/cascade-layers)を参照してください。
+
+## 順序を確立する \{#establishing-the-order\}
+
+`@master/css/base.css` として公開され、完全な `@master/css` インポートにも含まれるベーススタイルシートは、次を宣言します。
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+ほかのルールがこれらのレイヤーを確立する前に読み込んでください。CSS は最初に出現した順でレイヤーの順序を決めるため、後から順序を宣言しても、確立済みのレイヤーを並べ替えられません。生成されるレイヤーブロックが、この宣言を自動で挿入することもありません。
+
+### 通常の宣言と重要な宣言 \{#normal-and-important-declarations\}
+
+これらのレイヤー内で通常の宣言が競合すると、`utilities` の優先順位が最も高く、`theme` が最も低くなります。レイヤーに属さない通常の作成者ルールは、これらすべてより優先されます。`!important` はレイヤー間の順序を反転させ、レイヤー内の重要なルールをレイヤー外の重要なルールより優先します。これは作成者スタイルシート内の比較であり、オリジン、インラインスタイル、アニメーション、トランジションを含むカスケード全体ではありません。[CSS のレイヤー順序](https://www.w3.org/TR/css-cascade-5/#layer-order)を参照してください。
+
+<ReferenceIllustration id="layer-precedence" />
+
+レイヤーの優先順位は、セレクターの詳細度より先に評価されます。そのため、詳細度の高いコンポーネントセレクターでも、詳細度だけでは通常のユーティリティ宣言に勝てません。同じレイヤーの宣言間では、ほかのカスケード基準も引き続き作用します。[セレクターの詳細度](/reference/rules/selectors#specificity)を参照してください。
+
+## レイヤーの所属 \{#the-five-layers\}
+
+<a id="theme"></a>
+<a id="base"></a>
+<a id="defaults"></a>
+<a id="components"></a>
+<a id="utilities"></a>
+
+| レイヤー | 生成内容 | ネイティブ CSS の慣例 |
+| --- | --- | --- |
+| `theme` | `:root, :host` に保持される管理対象トークンの宣言 | トークンの既定値 |
+| `base` | `@layer(base)` を付けたクラス | 正規化と文書の基盤 |
+| `defaults` | `@layer(defaults)` を付けたクラス | プロジェクトや内容に広く適用する既定スタイル |
+| `components` | `@layer(components)` を付けたクラス | 再利用可能な製品クラス |
+| `utilities` | 通常のユーティリティ、組み合わせスタイル、ネイティブ宣言クラス、明示的な `@layer(utilities)` | 局所的なユーティリティルール |
+
+ネイティブ CSS の列が示すのは想定する責務であり、レイヤー内で CSS が許可するプロパティの制限ではありません。`defaults` はプロジェクトのレイヤーであり、ブラウザーのユーザーエージェントスタイルシートではありません。トークンの依存関係の配信は[変数とモード](/reference/rules/modes#variable-lifecycle)で説明しています。
+
+## 生成ルールのレイヤーを選ぶ \{#layer-checklist\}
+
+クラスの接尾辞で指定できるレイヤー名は、次の 4 つだけです。
+
+```txt
+@layer(base)
+@layer(defaults)
+@layer(components)
+@layer(utilities)
+```
+
+この指定は、生成クラス全体のレイヤーを選びます。サブレイヤーを作ったり、クラスが依存するテーマ変数を移動したりはしません。ほかの接尾辞とともに、末尾の `!` より前に置きます。
+
+| 形式 | 結果 |
+| --- | --- |
+| `block@layer(defaults)` | display ルールを `defaults` に配置 |
+| `block@layer(base)@layer(base)` | base レイヤーのルールを 1 つ生成。同じ選択の繰り返しは許可 |
+| `block@layer(base)@layer(utilities)` | `CLASS_SYNTAX_ERROR`：1 つのクラスで異なるレイヤーは選択できない |
+| `block@layer(theme)` | `UNKNOWN_CONDITION`：`theme` は生成スタイルルールの対象外 |
+| `block@layer(custom)` | `UNKNOWN_CONDITION`：任意のネイティブレイヤー名はクラス接尾辞の対象外 |
+
+プロジェクト独自のレイヤーやサブレイヤーには、ネイティブの `@layer` 構文を使います。順序はネイティブ CSS に従い、クラスの接尾辞が新しいレイヤー名を登録することはありません。
+
+<ReferenceIllustration id="layer-token-separation" />
+
+### Base と defaults \{#base-and-defaults\}
+
+<a id="base-is-for-normalization"></a>
+
+base レイヤーの子孫ルールで、構造の基盤を設定できます。
+
+<ConfiguredExample source="" html={baseStylesTemplate} />
+
+<a id="defaults-are-for-broad-defaults"></a>
+
+defaults レイヤーの子孫ルールでは、局所的なコンポーネントやユーティリティの指定を優先させたまま、コードのタイポグラフィを設定できます。
+
+<ConfiguredExample source="" html={defaultStylesTemplate} />
+
+`font-mono` クラスは `defaults` に残り、必要なフォントトークンは `theme` に残ります。宣言を受け取る子孫要素はセレクター接尾辞が決め、レイヤーの選択とは独立しています。
+
+### 既定スタイルより局所的な指定を優先する \{#summary\}
+
+ここでは両方のルールが最初の段落を対象にします。段落自身のネイティブ宣言クラスは `utilities` に入るため、記事の defaults レイヤーのフォントサイズを上書きします。
+
+<ConfiguredExample source="" html={overridingDefaultsTemplate} />
+
+## ネイティブルールと管理対象のユーティリティ \{#native-rules-and-managed-utilities\}
+
+<a id="a-complete-flow"></a>
+<a id="writing-regular-css"></a>
+
+`@layer components` 内のネイティブクラスは、引き続きネイティブ CSS です。既定で配信され、そのレイヤー内のネイティブなソース順序に従い、Master のセレクター接尾辞や条件接尾辞は使えません。未使用のネイティブセレクターを除去できるかどうかは、[`@prune native`](/reference/directives/pruning) が制御します。
+
+<a id="utilities-can-override-components"></a>
+
+この例では `.btn` が `inline-flex` を宣言し、`flex` が通常のユーティリティ宣言を生成します。ベースの順序を確立すると、ボタンには `display: flex` が適用されます。
+
+<ConfiguredExample source={'@layer components {\n  .btn { display: inline-flex; }\n}'} classes={['btn', 'flex']} element="button" label="Save" />
+
+一方、必要に応じて生成する `@utility` は管理対象のクラスを登録します。通常の出力先は `utilities` ですが、接尾辞で別の対応レイヤーを選べます。
+
+<ConfiguredExample source={'@utility flow {\n  display: grid;\n  gap: var(--spacing-md);\n}'} classes={['flow@layer(defaults)']} />
+
+ユーティリティの定義とネイティブルールの保持については、[ユーティリティとミックスイン](/reference/directives/definitions)を参照してください。
+
+### ミックスインの展開は周囲のレイヤーを保つ \{#mixin-expansion-keeps-the-surrounding-layer\}
+
+ネイティブルール内の `@apply` は、その位置で宣言を展開します。ルールを `utilities` に移動することはありません。
+
+<ConfiguredExample source={'@mixin --inset { padding: 1.5rem; }\n@layer components {\n  .card { @apply --inset; }\n}'} classes={['card', 'p(8)']} />
+
+ベースの順序を確立すると、ユーティリティの `8px` の padding がコンポーネントの `1.5rem` に優先します。囲むレイヤーがなければ、ネイティブの `.card` ルールはレイヤーに属さず、通常の padding 宣言が通常のユーティリティより優先されます。
+
+レイヤーブロックは、ミックスイン本体と `@apply` の内容の外に置きます。これらの位置では使えません。レイヤーは生成ルール全体の所属を選ぶもので、宣言の一部を囲むものではありません。
+
+## 同じレイヤー内での優先順位 \{#priority-matrix\}
+
+HTML のクラス順序は優先順位を決めません。Master CSS は生成ルールに安定した順序を与え、ブラウザーが一致する宣言にカスケードを適用します。比較可能なレイヤー、セレクター、条件の文脈では、生成ルールは次の順に並びます。
+
+1. 複数の宣言、または内部のセレクターや条件を持つ組み合わせスタイル。
+2. 固定、トークンを参照するもの、値を直接受け取るものを含む、単一宣言のユーティリティ。
+3. ネイティブ宣言クラス。
+
+単一宣言のユーティリティは、プロパティの系統と適用範囲で並びます。片側や 1 軸への指定は、全体への指定より後です。同じプロパティとスコープでは、名前付きトークンの値が直接値より前になります。重要度、セレクターの詳細度、条件も引き続き作用するため、直接値が別のスコープやレイヤーのトークンに常に勝つわけではありません。
+
+以下の例では、プリセット、ベースのレイヤー宣言、ルートのフォントサイズ `16px` を使います。競合する宣言は同じ要素を対象とし、条件は一致しています。
+
+| 競合するクラスやルール | 結果 | 理由 |
+| --- | --- | --- |
+| `p-md p(8)`、順序は不問 | `padding: 8px` | 同じプロパティとスコープでは、直接値がトークンより後 |
+| `p(8) (padding:2rem)`、順序は不問 | `padding: 2rem` | ネイティブ宣言が単一宣言ユーティリティより後 |
+| `m-md mt(0)`、順序は不問 | 上マージンは `0`、ほかは `1rem` | 片側の指定がマージン全体の指定より後 |
+| `b(2) bt(0) b-solid b-red-60` | 上辺の幅は `0`、ほかは `2px`、赤の実線ボーダー | 幅、スタイル、色は独立した系統 |
+| `p-md! p(8)` | `padding: 1rem` | 重要度が値の由来による順序より優先 |
+| `p-md! p(8)!` | `padding: 8px` | 重要度が等しく、直接値がトークンより後 |
+| `p(8)@layer(base) p(12)` | `padding: 12px` | 通常のユーティリティが base より優先 |
+| `p(8)@layer(base)! p(12)!` | `padding: 8px` | 重要な宣言ではレイヤーの優先順位が反転 |
+| レイヤー外の `.outside { padding: 32px; }` と `p(8)` | `padding: 32px` | レイヤー外の通常の宣言がレイヤー内の宣言より優先 |
+| components レイヤーの `padding: 24px !important` と `p(8)!` | `padding: 24px` | 重要な宣言同士では先のレイヤーが優先 |
+
+レイヤー内のネイティブルールは記述順を保ち、上記の生成ユーティリティの順序で並べ替えられることはありません。宣言が重なる場合は出力された CSS を確認し、[コードの lint](/guide/code-linting#no-conflicting-classes)で記述中に競合するクラスを検出してください。

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md; homepage version visibility reviewed in header-version-qa-2026-11-04.md",
+  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md; homepage version visibility reviewed in header-version-qa-2026-11-04.md; canonical multilingual split-bundle measurements in local-i18n-style-qa-2026-11-05.md",
   "routes": {
     "/404": {
       "files": 9,
@@ -10,10 +10,10 @@
       "inlineBytes": 1790
     },
     "/benchmarks": {
-      "files": 16,
+      "files": 19,
       "depth": 1,
-      "gzip": 31245,
-      "brotli": 26630,
+      "gzip": 32815,
+      "brotli": 27958,
       "inlineBytes": 3023
     },
     "/examples/article-transitions": {
@@ -45,1046 +45,521 @@
       "inlineBytes": 2781
     },
     "/guide": {
-      "files": 14,
+      "files": 17,
       "depth": 1,
-      "gzip": 27260,
-      "brotli": 23164,
+      "gzip": 28839,
+      "brotli": 24500,
       "inlineBytes": 1790
     },
     "/guide/ai-coding": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 34873,
-      "brotli": 29590,
+      "gzip": 36445,
+      "brotli": 30937,
       "inlineBytes": 1790
     },
     "/guide/authoring-packages": {
-      "files": 21,
+      "files": 24,
       "depth": 1,
-      "gzip": 33240,
-      "brotli": 28223,
+      "gzip": 34814,
+      "brotli": 29564,
       "inlineBytes": 1790
     },
     "/guide/cascade-layers": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 32480,
-      "brotli": 27575,
+      "gzip": 34055,
+      "brotli": 28915,
       "inlineBytes": 1790
     },
     "/guide/code-linting": {
-      "files": 17,
+      "files": 20,
       "depth": 1,
-      "gzip": 28690,
-      "brotli": 24330,
+      "gzip": 30268,
+      "brotli": 25672,
       "inlineBytes": 1790
     },
     "/guide/colors": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34550,
-      "brotli": 29325,
+      "gzip": 36121,
+      "brotli": 30672,
       "inlineBytes": 1790
     },
     "/guide/compatibility": {
-      "files": 21,
+      "files": 24,
       "depth": 1,
-      "gzip": 35261,
-      "brotli": 29988,
+      "gzip": 36834,
+      "brotli": 31327,
       "inlineBytes": 1958
     },
     "/guide/global-styles": {
-      "files": 21,
+      "files": 24,
       "depth": 1,
-      "gzip": 33930,
-      "brotli": 28797,
+      "gzip": 35503,
+      "brotli": 30145,
       "inlineBytes": 1790
     },
     "/guide/installation": {
-      "files": 24,
+      "files": 27,
       "depth": 1,
-      "gzip": 34936,
-      "brotli": 29630,
+      "gzip": 36507,
+      "brotli": 30967,
       "inlineBytes": 2233
     },
     "/guide/installation/angular": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
+      "gzip": 36437,
+      "brotli": 30978,
       "inlineBytes": 1790
     },
     "/guide/installation/astro": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
+      "gzip": 36437,
+      "brotli": 30978,
       "inlineBytes": 1790
     },
     "/guide/installation/lit": {
-      "files": 21,
+      "files": 24,
       "depth": 1,
-      "gzip": 33416,
-      "brotli": 28409,
+      "gzip": 34989,
+      "brotli": 29748,
       "inlineBytes": 1790
     },
     "/guide/installation/nextjs": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
+      "gzip": 36437,
+      "brotli": 30978,
       "inlineBytes": 1790
     },
     "/guide/installation/nuxtjs": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
+      "gzip": 36437,
+      "brotli": 30978,
       "inlineBytes": 1790
     },
     "/guide/installation/server-rendered": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 35045,
-      "brotli": 29766,
+      "gzip": 36616,
+      "brotli": 31113,
       "inlineBytes": 1790
     },
     "/guide/installation/storybook": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 32214,
-      "brotli": 27355,
+      "gzip": 33789,
+      "brotli": 28695,
       "inlineBytes": 1790
     },
     "/guide/installation/svelte": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
+      "gzip": 36437,
+      "brotli": 30978,
       "inlineBytes": 1790
     },
     "/guide/installation/vite": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 35045,
-      "brotli": 29766,
+      "gzip": 36616,
+      "brotli": 31113,
       "inlineBytes": 1790
     },
     "/guide/installation/webpack": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 35045,
-      "brotli": 29766,
+      "gzip": 36616,
+      "brotli": 31113,
       "inlineBytes": 1790
     },
     "/guide/introduction": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 32480,
-      "brotli": 27575,
+      "gzip": 34055,
+      "brotli": 28915,
       "inlineBytes": 1790
     },
     "/guide/language-service": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 31212,
-      "brotli": 26449,
+      "gzip": 32787,
+      "brotli": 27799,
       "inlineBytes": 1790
     },
     "/guide/layout-system": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34139,
-      "brotli": 28959,
+      "gzip": 35712,
+      "brotli": 30307,
       "inlineBytes": 1790
     },
     "/guide/migration": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 30869,
-      "brotli": 26160,
+      "gzip": 32444,
+      "brotli": 27509,
       "inlineBytes": 1890
     },
     "/guide/migration/bootstrap": {
-      "files": 17,
+      "files": 20,
       "depth": 1,
-      "gzip": 28730,
-      "brotli": 24366,
+      "gzip": 30308,
+      "brotli": 25708,
       "inlineBytes": 1905
     },
     "/guide/migration/css-in-js": {
-      "files": 18,
+      "files": 21,
       "depth": 1,
-      "gzip": 30180,
-      "brotli": 25588,
+      "gzip": 31756,
+      "brotli": 26938,
       "inlineBytes": 1905
     },
     "/guide/migration/css": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 32520,
-      "brotli": 27611,
+      "gzip": 34095,
+      "brotli": 28951,
       "inlineBytes": 1905
     },
     "/guide/migration/material-ui": {
-      "files": 19,
+      "files": 22,
       "depth": 1,
-      "gzip": 30359,
-      "brotli": 25723,
+      "gzip": 31935,
+      "brotli": 27073,
       "inlineBytes": 1905
     },
     "/guide/migration/sass": {
-      "files": 19,
+      "files": 22,
       "depth": 1,
-      "gzip": 30359,
-      "brotli": 25723,
+      "gzip": 31935,
+      "brotli": 27073,
       "inlineBytes": 1905
     },
     "/guide/migration/tailwindcss": {
-      "files": 19,
+      "files": 22,
       "depth": 1,
-      "gzip": 30359,
-      "brotli": 25723,
+      "gzip": 31935,
+      "brotli": 27073,
       "inlineBytes": 1905
     },
     "/guide/monorepo": {
-      "files": 18,
+      "files": 21,
       "depth": 1,
-      "gzip": 29450,
-      "brotli": 24978,
+      "gzip": 31027,
+      "brotli": 26321,
       "inlineBytes": 1790
     },
     "/guide/rendering-modes": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 31521,
-      "brotli": 26741,
+      "gzip": 33095,
+      "brotli": 28090,
       "inlineBytes": 1790
     },
     "/guide/responsive-design": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 37331,
-      "brotli": 31756,
+      "gzip": 38902,
+      "brotli": 33103,
       "inlineBytes": 3630
     },
     "/guide/reusing-styles": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34109,
-      "brotli": 28932,
+      "gzip": 35682,
+      "brotli": 30280,
       "inlineBytes": 1790
     },
     "/guide/route-level-styles": {
-      "files": 21,
+      "files": 24,
       "depth": 1,
-      "gzip": 33240,
-      "brotli": 28223,
+      "gzip": 34814,
+      "brotli": 29564,
       "inlineBytes": 1790
     },
     "/guide/scanning-and-pruning": {
-      "files": 17,
+      "files": 20,
       "depth": 1,
-      "gzip": 28690,
-      "brotli": 24330,
+      "gzip": 30268,
+      "brotli": 25672,
       "inlineBytes": 1790
     },
     "/guide/syntax-tutorial": {
-      "files": 22,
+      "files": 25,
       "depth": 1,
-      "gzip": 34109,
-      "brotli": 28932,
+      "gzip": 35682,
+      "brotli": 30280,
       "inlineBytes": 1790
     },
     "/guide/theme": {
-      "files": 21,
+      "files": 24,
       "depth": 1,
-      "gzip": 33930,
-      "brotli": 28797,
+      "gzip": 35503,
+      "brotli": 30145,
       "inlineBytes": 1790
     },
     "/guide/typography": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 32480,
-      "brotli": 27575,
+      "gzip": 34055,
+      "brotli": 28915,
       "inlineBytes": 1790
     },
     "/guide/view-transitions": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 34318,
-      "brotli": 29094,
+      "gzip": 35891,
+      "brotli": 30442,
       "inlineBytes": 1790
     },
     "/": {
       "files": 10,
       "depth": 1,
-      "gzip": 63144,
+      "gzip": 63147,
       "brotli": 49554,
       "inlineBytes": 13266
     },
     "/reference": {
-      "files": 15,
+      "files": 18,
       "depth": 1,
-      "gzip": 27762,
-      "brotli": 23577,
+      "gzip": 29341,
+      "brotli": 24913,
       "inlineBytes": 1790
     },
     "/reference/direct-values": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36957,
-      "brotli": 31407,
+      "gzip": 38530,
+      "brotli": 32755,
       "inlineBytes": 2907
     },
     "/reference/directives/definitions": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/directives/imports": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/directives/pruning": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/directives/queries": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/directives/scanning": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/directives/theme": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/grid-tracks": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 37013,
-      "brotli": 31459,
+      "gzip": 38586,
+      "brotli": 32807,
       "inlineBytes": 2931
     },
     "/reference/packages": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/rules/conditions": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/rules/declarations": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/rules/extraction": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/rules/layers": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/rules/modes": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/rules/named-conditions": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36918,
-      "brotli": 31379,
+      "gzip": 38491,
+      "brotli": 32727,
       "inlineBytes": 2585
     },
     "/reference/rules/selectors": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/sr-only": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36945,
-      "brotli": 31385,
+      "gzip": 38518,
+      "brotli": 32733,
       "inlineBytes": 2840
     },
     "/reference/tokens/color-roles": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40337,
-      "brotli": 34287,
+      "gzip": 41907,
+      "brotli": 35633,
       "inlineBytes": 3717
     },
     "/reference/tokens/color": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40301,
-      "brotli": 34265,
+      "gzip": 41871,
+      "brotli": 35611,
       "inlineBytes": 3118
     },
     "/reference/tokens/container": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40370,
-      "brotli": 34314,
+      "gzip": 41940,
+      "brotli": 35660,
       "inlineBytes": 3642
     },
     "/reference/tokens/families": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 39884,
-      "brotli": 33874,
+      "gzip": 41454,
+      "brotli": 35220,
       "inlineBytes": 1790
     },
     "/reference/tokens/font": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40089,
-      "brotli": 34073,
+      "gzip": 41659,
+      "brotli": 35419,
       "inlineBytes": 2549
     },
     "/reference/tokens/leading": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 39998,
-      "brotli": 33992,
+      "gzip": 41568,
+      "brotli": 35338,
       "inlineBytes": 2082
     },
     "/reference/tokens/motion": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40337,
-      "brotli": 34294,
+      "gzip": 41907,
+      "brotli": 35640,
       "inlineBytes": 3367
     },
     "/reference/tokens/radius": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40495,
-      "brotli": 34441,
+      "gzip": 42065,
+      "brotli": 35787,
       "inlineBytes": 4011
     },
     "/reference/tokens/shadow": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40504,
-      "brotli": 34436,
+      "gzip": 42074,
+      "brotli": 35782,
       "inlineBytes": 4263
     },
     "/reference/tokens/spacing": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40289,
-      "brotli": 34243,
+      "gzip": 41859,
+      "brotli": 35589,
       "inlineBytes": 3260
     },
     "/reference/tokens/text": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40007,
-      "brotli": 33993,
+      "gzip": 41577,
+      "brotli": 35339,
       "inlineBytes": 2155
     },
     "/reference/tokens/tracking": {
-      "files": 25,
+      "files": 28,
       "depth": 1,
-      "gzip": 40028,
-      "brotli": 34011,
+      "gzip": 41598,
+      "brotli": 35357,
       "inlineBytes": 2176
     },
     "/reference/tools/cli": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/tools/mcp": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
+      "gzip": 38210,
+      "brotli": 32458,
       "inlineBytes": 1790
     },
     "/reference/truncation": {
-      "files": 23,
+      "files": 26,
       "depth": 1,
-      "gzip": 37172,
-      "brotli": 31625,
-      "inlineBytes": 3576
-    },
-    "/tw": {
-      "files": 10,
-      "depth": 1,
-      "gzip": 63144,
-      "brotli": 49554,
-      "inlineBytes": 13266
-    },
-    "/tw/benchmarks": {
-      "files": 16,
-      "depth": 1,
-      "gzip": 31245,
-      "brotli": 26630,
-      "inlineBytes": 3023
-    },
-    "/tw/guide": {
-      "files": 14,
-      "depth": 1,
-      "gzip": 27260,
-      "brotli": 23164,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/ai-coding": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 34873,
-      "brotli": 29590,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/authoring-packages": {
-      "files": 21,
-      "depth": 1,
-      "gzip": 33240,
-      "brotli": 28223,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/cascade-layers": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 32480,
-      "brotli": 27575,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/code-linting": {
-      "files": 17,
-      "depth": 1,
-      "gzip": 28690,
-      "brotli": 24330,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/colors": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34550,
-      "brotli": 29325,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/compatibility": {
-      "files": 21,
-      "depth": 1,
-      "gzip": 35261,
-      "brotli": 29988,
-      "inlineBytes": 1958
-    },
-    "/tw/guide/global-styles": {
-      "files": 21,
-      "depth": 1,
-      "gzip": 33930,
-      "brotli": 28797,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation": {
-      "files": 24,
-      "depth": 1,
-      "gzip": 34936,
-      "brotli": 29630,
-      "inlineBytes": 2233
-    },
-    "/tw/guide/installation/angular": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/astro": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/lit": {
-      "files": 21,
-      "depth": 1,
-      "gzip": 33416,
-      "brotli": 28409,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/nextjs": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/nuxtjs": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/server-rendered": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 35045,
-      "brotli": 29766,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/storybook": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 32214,
-      "brotli": 27355,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/svelte": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34866,
-      "brotli": 29631,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/vite": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 35045,
-      "brotli": 29766,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/installation/webpack": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 35045,
-      "brotli": 29766,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/introduction": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 32480,
-      "brotli": 27575,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/language-service": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 31212,
-      "brotli": 26449,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/layout-system": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34139,
-      "brotli": 28959,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/migration": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 30869,
-      "brotli": 26160,
-      "inlineBytes": 1890
-    },
-    "/tw/guide/migration/bootstrap": {
-      "files": 17,
-      "depth": 1,
-      "gzip": 28730,
-      "brotli": 24366,
-      "inlineBytes": 1905
-    },
-    "/tw/guide/migration/css-in-js": {
-      "files": 18,
-      "depth": 1,
-      "gzip": 30180,
-      "brotli": 25588,
-      "inlineBytes": 1905
-    },
-    "/tw/guide/migration/css": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 32520,
-      "brotli": 27611,
-      "inlineBytes": 1905
-    },
-    "/tw/guide/migration/material-ui": {
-      "files": 19,
-      "depth": 1,
-      "gzip": 30359,
-      "brotli": 25723,
-      "inlineBytes": 1905
-    },
-    "/tw/guide/migration/sass": {
-      "files": 19,
-      "depth": 1,
-      "gzip": 30359,
-      "brotli": 25723,
-      "inlineBytes": 1905
-    },
-    "/tw/guide/migration/tailwindcss": {
-      "files": 19,
-      "depth": 1,
-      "gzip": 30359,
-      "brotli": 25723,
-      "inlineBytes": 1905
-    },
-    "/tw/guide/monorepo": {
-      "files": 18,
-      "depth": 1,
-      "gzip": 29450,
-      "brotli": 24978,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/rendering-modes": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 31521,
-      "brotli": 26741,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/responsive-design": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 37331,
-      "brotli": 31756,
-      "inlineBytes": 3630
-    },
-    "/tw/guide/reusing-styles": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34109,
-      "brotli": 28932,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/route-level-styles": {
-      "files": 21,
-      "depth": 1,
-      "gzip": 33240,
-      "brotli": 28223,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/scanning-and-pruning": {
-      "files": 17,
-      "depth": 1,
-      "gzip": 28690,
-      "brotli": 24330,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/syntax-tutorial": {
-      "files": 22,
-      "depth": 1,
-      "gzip": 34109,
-      "brotli": 28932,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/theme": {
-      "files": 21,
-      "depth": 1,
-      "gzip": 33930,
-      "brotli": 28797,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/typography": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 32480,
-      "brotli": 27575,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/view-transitions": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 34318,
-      "brotli": 29094,
-      "inlineBytes": 1790
-    },
-    "/tw/reference": {
-      "files": 15,
-      "depth": 1,
-      "gzip": 27762,
-      "brotli": 23577,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/direct-values": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36957,
-      "brotli": 31407,
-      "inlineBytes": 2907
-    },
-    "/tw/reference/directives/definitions": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/directives/imports": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/directives/pruning": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/directives/queries": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/directives/scanning": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/directives/theme": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/grid-tracks": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 37013,
-      "brotli": 31459,
-      "inlineBytes": 2931
-    },
-    "/tw/reference/packages": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/rules/conditions": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/rules/declarations": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/rules/extraction": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/rules/layers": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/rules/modes": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/rules/named-conditions": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36918,
-      "brotli": 31379,
-      "inlineBytes": 2585
-    },
-    "/tw/reference/rules/selectors": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/sr-only": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36945,
-      "brotli": 31385,
-      "inlineBytes": 2840
-    },
-    "/tw/reference/tokens/color-roles": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40337,
-      "brotli": 34287,
-      "inlineBytes": 3717
-    },
-    "/tw/reference/tokens/color": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40301,
-      "brotli": 34265,
-      "inlineBytes": 3118
-    },
-    "/tw/reference/tokens/container": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40370,
-      "brotli": 34314,
-      "inlineBytes": 3642
-    },
-    "/tw/reference/tokens/families": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 39884,
-      "brotli": 33874,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/tokens/font": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40089,
-      "brotli": 34073,
-      "inlineBytes": 2549
-    },
-    "/tw/reference/tokens/leading": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 39998,
-      "brotli": 33992,
-      "inlineBytes": 2082
-    },
-    "/tw/reference/tokens/motion": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40337,
-      "brotli": 34294,
-      "inlineBytes": 3367
-    },
-    "/tw/reference/tokens/radius": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40495,
-      "brotli": 34441,
-      "inlineBytes": 4011
-    },
-    "/tw/reference/tokens/shadow": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40504,
-      "brotli": 34436,
-      "inlineBytes": 4263
-    },
-    "/tw/reference/tokens/spacing": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40289,
-      "brotli": 34243,
-      "inlineBytes": 3260
-    },
-    "/tw/reference/tokens/text": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40007,
-      "brotli": 33993,
-      "inlineBytes": 2155
-    },
-    "/tw/reference/tokens/tracking": {
-      "files": 25,
-      "depth": 1,
-      "gzip": 40028,
-      "brotli": 34011,
-      "inlineBytes": 2176
-    },
-    "/tw/reference/tools/cli": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/tools/mcp": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 36637,
-      "brotli": 31110,
-      "inlineBytes": 1790
-    },
-    "/tw/reference/truncation": {
-      "files": 23,
-      "depth": 1,
-      "gzip": 37172,
-      "brotli": 31625,
+      "gzip": 38745,
+      "brotli": 32973,
       "inlineBytes": 3576
     },
     "/guide/optimizing-css-delivery": {
-      "files": 20,
+      "files": 23,
       "depth": 1,
-      "gzip": 31079,
-      "brotli": 26335,
-      "inlineBytes": 1790
-    },
-    "/tw/guide/optimizing-css-delivery": {
-      "files": 20,
-      "depth": 1,
-      "gzip": 31079,
-      "brotli": 26335,
+      "gzip": 32654,
+      "brotli": 27686,
       "inlineBytes": 1790
     }
   }

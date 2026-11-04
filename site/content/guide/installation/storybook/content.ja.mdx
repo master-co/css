@@ -1,0 +1,93 @@
+---
+{
+  "title": "Storybook で Master CSS を設定する",
+  "description": "アプリのスタイルを Storybook のプレビュー iframe に読み込み、Vite ビルダーで開発時と本番用のストーリーを確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/storybook/cover-light.webp'
+import dark from '~/site/assets/images/integrations/storybook/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Storybook" />
+
+ストーリーを表示する Storybook のプレビュー iframe で、アプリの CSS エントリーを使います。Master CSS を使用し、[Storybook をインストール済み](https://storybook.js.org/docs/get-started/install)のアプリから始めてください。この手順では React、Vite ビルダー、Master CSS の静的モードを使います。まず [Vite インテグレーション](/guide/installation/vite#react)でアプリを設定します。ほかの Vite ベースのフレームワークでは、それぞれに対応する Storybook パッケージとストーリーの構文を使ってください。
+
+## 共通の CSS エントリーをインポートする \{#import-the-shared-css-entry\}
+Storybook の [Vite ビルダー](https://storybook.js.org/docs/builders/vite)は、通常アプリの Vite 設定を読み込みます。その設定で `masterCSS()` を一度だけ登録し、`.storybook/preview.ts` からアプリのスタイルシートをインポートしてください。既存のプレビューデコレーターとパラメーターは保持します。
+
+このインポートは、プレビュー iframe 内のストーリーにスタイルを適用します。Storybook のサイドバーやツールバーには適用しません。
+
+```ts name=.storybook/preview.ts
+import type { Preview } from '@storybook/react-vite'
+
+import '../src/index.css'
+
+const preview: Preview = {
+  parameters: {},
+}
+
+export default preview
+```
+
+## 実際のストーリーで確認する \{#verify-an-actual-story\}
+アプリの `@import '@master/css';` を `src/index.css` に残してください。設定済みのストーリー glob に一致する場所に次のストーリーを作成します。完全なクラス名が静的 CSS のビルド対象になります：
+
+<InstallationPreview>
+
+```tsx name=src/MasterCSS.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+const meta = { title: 'Master CSS/Installation' } satisfies Meta
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Check: Story = {
+  render: () => (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+</InstallationPreview>
+
+`npm run storybook` を実行し、**Master CSS / Installation / Check** を開きます。段落に浮き上がった面、角丸、`1rem` のパディングが適用されていることを確認してください。ストーリーの `p-md` を `p-lg` に変えると、パディングが `1.5rem` に増えるはずです。元に戻してから、本番用のプレビューをビルドします：
+
+```bash
+npm run build-storybook
+```
+
+HTTP サーバーで `storybook-static` を配信し、同じストーリーを開きます。管理画面のドキュメントではなく、プレビュー iframe を調べてください。スタイルシートと段落は、その独立したドキュメント内にあります。静的モードでは CSS を事前に生成しますが、ストーリーのレンダリングには引き続き JavaScript が必要です。
+
+アプリにはスタイルが適用されるのにストーリーには適用されない場合、まず `preview.ts` の CSS インポートを確認し、次に Storybook のビルダーで Master CSS プラグインが実行されているか確認します。静的レンダリングでは、ストーリーのソースに完全なクラス文字列を記述してください。ストーリーのディレクトリーがアプリの走査対象外なら、`@source` に追加します。
+
+## 必要な場合だけ Vite インテグレーションを別途登録する \{#register-a-separate-vite-integration-when-needed\}
+Storybook の設定でアプリの Vite 設定を意図的に読み込まない場合は、`viteFinal` で Master CSS を登録します。次の内容を既存の設定に統合し、ストーリー glob、アドオン、フレームワークの設定を保持してください。アプリのプラグインがすでに読み込まれている場合は、この登録を省きます。
+
+```ts name=.storybook/main.ts
+import type { StorybookConfig } from '@storybook/react-vite'
+
+const config: StorybookConfig = {
+  framework: '@storybook/react-vite',
+  stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  async viteFinal(config) {
+    const { mergeConfig } = await import('vite')
+    const { default: masterCSS } = await import('@master/css-vite')
+
+    return mergeConfig(config, {
+      plugins: [
+        masterCSS()
+      ]
+    })
+  }
+}
+
+export default config
+```
+
+フレームワークとビルダーに対応する Storybook パッケージを使ってください。`viteFinal` フックは Vite ビルダー用です。Webpack ベースの Storybook には、別途 [Webpack インテグレーション](/guide/installation/webpack)が必要です。

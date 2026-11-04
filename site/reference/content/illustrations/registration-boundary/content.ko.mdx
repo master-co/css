@@ -1,0 +1,31 @@
+# Reference prose: illustrations/registration-boundary
+
+## title \{#copy-title\}
+
+
+네이티브 변수는 토큰 클래스를 등록하지 않습니다
+
+## alt \{#copy-alt\}
+
+
+같은 spacing-card 선언을 theme 안과 root 안에 각각 표시합니다. theme 정의만 p-card에 연결되지만 두 경우 모두 명시적인 네이티브 var 참조에 사용할 수 있습니다.
+
+## caption \{#copy-caption\}
+
+
+두 예제 모두 프리셋 유틸리티 계열을 불러옵니다. 등록과 브라우저 변수의 가용성은 별개의 기능입니다.
+
+## description-0 \{#copy-description-0\}
+
+
+@theme \{ --spacing-card: 1.5rem; \}는 spacing 네임스페이스에 card 키를 등록해 p-card를 사용할 수 있게 합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+:root \{ --spacing-card: 1.5rem; \}는 네이티브 CSS 변수를 제공하지만 p-card를 등록하지 않습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+명시적 네이티브 클래스 (padding:var(--spacing-card))는 어느 설정에서 제공한 변수든 사용할 수 있습니다.

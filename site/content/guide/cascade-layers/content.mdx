@@ -2,7 +2,7 @@ import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import CascadeIllustration from './components/CascadeIllustration.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Make a one-off adjustment without increasing selector specificity. Put shared component rules in the `components` layer and let an instance's utilities override the properties that need to change.
 
 <CascadeIllustration />
@@ -30,7 +30,7 @@ The `p-sm` utility takes precedence over the component's padding declaration, re
 
 The utility changes only padding. It does not replace the component or remove its other declarations. This makes a small local adjustment possible without another component variant or an `!important` declaration.
 
-## Keep native rules in the intended layer
+## Keep native rules in the intended layer \{#keep-native-rules-in-the-intended-layer\}
 
 A normal rule outside every layer takes precedence over normal rules inside named layers. If a utility compiles but appears to do nothing, look for an unlayered component rule:
 

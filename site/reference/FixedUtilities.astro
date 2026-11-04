@@ -1,0 +1,12 @@
+---
+import { siteOf } from '@master/internal-site/astro/site-context.ts'
+import { fixedUtilityRows } from './fixed-utilities'
+import { referenceLabel } from './ui'
+
+const { locale } = siteOf(Astro)
+---
+
+<table>
+  <thead><tr><th>{referenceLabel(locale, 'class')}</th><th>{referenceLabel(locale, 'declarations')}</th></tr></thead>
+  <tbody>{fixedUtilityRows.map(row => <tr><td><code>{row.className}</code></td><td><code>{row.declaration}</code></td></tr>)}</tbody>
+</table>

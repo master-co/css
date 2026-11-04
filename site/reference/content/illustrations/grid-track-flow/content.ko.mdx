@@ -1,0 +1,36 @@
+# Reference prose: illustrations/grid-track-flow
+
+## title \{#copy-title\}
+
+
+열과 행의 조합 스타일은 같은 자식을 다른 방향으로 채웁니다
+
+## alt \{#copy-alt\}
+
+
+번호가 있는 항목 여섯 개는 grid-cols(3)에서 세 열과 두 행을 이룹니다. grid-rows(3)에서는 세 행과 두 열을 이루며 아래로 채운 뒤 다음 열을 시작합니다.
+
+## caption \{#copy-caption\}
+
+
+두 Grid는 같은 자식 여섯 개와 gap을 사용합니다. grid-rows(3)는 grid-auto-flow: column도 설정하며 grid-cols(3)는 기본 행 방향 흐름을 유지합니다. 타일 높이는 콘텐츠에 따라 정해집니다.
+
+## description-0 \{#copy-description-0\}
+
+
+첫 번째 Grid는 명시적인 minmax(0, 1fr) 열 세 개를 갖습니다. 기본 행 방향 흐름이 첫 행에 항목 1, 2, 3을 가로로 배치하고 이어서 4, 5, 6을 배치합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+두 번째 Grid는 명시적인 minmax(0, 1fr) 행 세 개와 열 방향 자동 배치를 사용합니다. 항목 1, 2, 3이 첫 열을 채우고 4, 5, 6이 두 번째 열을 채웁니다.
+
+## description-2 \{#copy-description-2\}
+
+
+두 장면은 실제 프리셋 CSS, 콘텐츠에 맞춰 크기가 정해지는 동일한 타일 여섯 개, 12px gap을 사용합니다. 타일 너비를 비교할 수 있도록 전체 너비를 맞췄으며 두 조합 스타일 자체는 이 gap이나 너비를 제공하지 않습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+그림은 기본 항목 배치를 사용합니다. 명시적 배치와 span이 결과를 바꿀 수 있으며 grid-cols는 다른 곳에서 설정한 열 방향 흐름을 초기화하지 않습니다.

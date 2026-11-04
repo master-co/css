@@ -1,0 +1,36 @@
+# Reference prose: illustrations/namespace-lookup
+
+## title \{#copy-title\}
+
+
+같은 키로 서로 다른 토큰을 선택할 수 있습니다
+
+## alt \{#copy-alt\}
+
+
+독립적인 세 행에서 p-md는 spacing-md와 padding에, max-w-md는 container-md와 max-width에, font-md는 font-size-md와 font-size에 대응합니다. 각 행은 서로 다른 토큰 이름에 같은 md 키를 사용합니다.
+
+## caption \{#copy-caption\}
+
+
+각 행은 독립적으로 해석됩니다. 반복되는 md는 네임스페이스 안의 키이지, 이 클래스들이 공유하는 하나의 전역 값이 아닙니다.
+
+## description-0 \{#copy-description-0\}
+
+
+p-md는 --spacing-md를 선택하고 padding: var(--spacing-md)를 설정합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+max-w-md는 --container-md를 선택하고 max-width: var(--container-md)를 설정합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+font-md는 --font-size-md를 선택하고 font-size: var(--font-size-md)를 설정합니다. 프리셋의 font- 계열에서 md는 font-size 네임스페이스만 고유하게 선택합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+강조된 md 부분은 서로 다른 네임스페이스에 있는 같은 키입니다. 화살표는 조회와 속성 대응을 나타내며 세 행 사이의 의존 관계를 뜻하지 않습니다. 그림은 테마 값과 레이어 래퍼를 생략하지만 아래 생성 예제에는 둘 다 포함됩니다.

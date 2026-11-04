@@ -1,0 +1,31 @@
+# Reference prose: illustrations/pruning-selector-branches
+
+## title \{#copy-title\}
+
+
+가지치기는 클래스 사용으로 분기를 유지
+
+## alt \{#copy-alt\}
+
+
+선택자 목록에서 unused:hover는 제거되고 card는 남는다. 별도 card title 하위 선택자도 일치하는 DOM 관계의 증거 없이 card 사용만으로 전체가 유지된다.
+
+## caption \{#copy-caption\}
+
+
+유지 강조는 선택자 분기를 따릅니다. 가지치기는 사용하는 클래스 이름을 검사하며 전체 선택자가 현재 요소에 일치하는지는 검사하지 않습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+@prune native를 활성화하고 card를 사용하면 .card, .unused:hover는 .card 분기만 유지합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+별도 .card .title 분기는 사용 집합에 card가 있으므로 유지되며 title도 찾을 필요는 없습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+유지는 DOM에 title 하위 요소가 있다는 증명이 아닙니다. 클래스 선택자가 없는 규칙도 계속 보존됩니다.

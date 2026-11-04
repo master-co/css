@@ -3,6 +3,9 @@ import i18n from '@master/internal-site/common/i18n.config.js'
 import units from './units'
 import en from './public/dictionaries/en.json' with { type: 'json' }
 import tw from './public/dictionaries/tw.json' with { type: 'json' }
+import ja from './public/dictionaries/ja.json' with { type: 'json' }
+import ko from './public/dictionaries/ko.json' with { type: 'json' }
+import cn from './public/dictionaries/cn.json' with { type: 'json' }
 import { readPublicEnv } from './utils/public-env.js'
 
 const publicEnv = readPublicEnv()
@@ -14,7 +17,13 @@ export default defineSite({
   content: new URL('./content/', import.meta.url),
   app: new URL('./app-config.ts', import.meta.url),
   highlighter: new URL('./adapters/highlight.ts', import.meta.url),
-  i18n: { ...i18n, localizablePathnameRoots: Object.keys(units), translations: { en, tw }, sectionLocales: { examples: ['en'] } },
+  i18n: {
+    ...i18n,
+    localizablePathnameRoots: [...Object.keys(units), 'benchmarks'],
+    translations: { en, tw, ja, ko, cn },
+    sectionLocales: { examples: ['en'] },
+    validation: { reviews: new URL('./i18n/reviews.json', import.meta.url), resources: new URL('./i18n/resources.ts', import.meta.url) },
+  },
   sections: Object.fromEntries([
     ['home', 'home'], ['guide', 'guide'], ['reference', 'reference'],
     ['benchmarks', 'page'], ['page', 'page'],

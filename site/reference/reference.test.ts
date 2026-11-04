@@ -5,9 +5,10 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createDocumentationSearch } from '@master/internal-site/utils/documentation-search'
-import { extractSearchNodesFromMdx } from '@master/internal-site/utils/search-pages'
-import { generateReference, renderDocumentMarkdown } from './build'
+import { extractSearchNodesFromMdx, extractSearchNodesFromMarkdown } from '@master/internal-site/utils/search-pages'
+import { generateReference, renderDocumentMarkdown, localizeReferenceMarkdown } from './build'
 import { searchTasks } from './search-tasks'
+import { referenceText } from './copy'
 import type { ReferenceCatalog } from './types'
 import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
 import { resolveSyntaxRow } from './syntax'
@@ -106,15 +107,21 @@ test('motion lookup owns the animation shorthand family and all ten preset value
   }
 })
 
-test('30 acceptance queries find the intended document in the first three results', async () => {
-  for (const locale of ['en', 'tw']) {
+test('acceptance queries find localized Reference editions in the first three results', async () => {
+  for (const locale of ['en', 'tw', 'ja', 'ko', 'cn']) {
     const pages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     const search = createDocumentationSearch(pages)
-    const failures = searchTasks.filter(([query, id]) => !search(query, 3).some(result => result.page.url.endsWith(`/reference/${id}`)))
+    const tasks = searchTasks.map(([query, id]) => {
+      if (locale !== 'en' && ['Conditions', 'Variables and modes', 'Cascade layers', 'Publish the complete asset set'].includes(query)) {
+        return [referenceText(id, 'title', locale), id] as const
+      }
+      return [query, id] as const
+    })
+    const failures = tasks.filter(([query, id]) => !search(query, 3).some(result => result.page.url.endsWith(`/reference/${id}`)))
     assert.ok(failures.length <= 3, `${locale}: ${JSON.stringify(failures)}`)
     for (const query of ['padding', 'p', 'px', 'padding-inline']) {
       const result = search(query, 1)[0]
-      assert.equal(result.page.title, 'Token families', query)
+      assert.equal(result.page.title, referenceText('tokens/families', 'title', locale), query)
       assert.match(result.href, /#family-/, query)
     }
     assert.match(search('@master/css#createEngine', 1)[0].href, /\/reference\/packages#css$/)
@@ -302,7 +309,7 @@ test('Reference illustrations retain their explanation in portable content and s
     assert.ok(portable.includes(figure.caption))
     for (const text of figure.description) assert.ok(portable.includes(text))
     assert.doesNotMatch(portable, /reference-illustration|<ReferenceIllustration/)
-    const searchText = extractSearchNodesFromMdx(doc.markdown).map(node => node.text).join(' ')
+    const searchText = extractSearchNodesFromMarkdown(doc.markdown).map(node => node.text).join(' ')
     assert.ok(searchText.includes(figure.title))
   }
   assert.throws(() => referenceIllustrationMarkdown('missing'), /Unknown Reference illustration/)
@@ -404,11 +411,12 @@ test('Syntax tutorial preserves its learning path, executable examples and searc
   assert.match(tutorial.markdown, /fg-blue-60 sets color to var\(--color-blue-60\)/)
   assert.match(tutorial.markdown, /selector and condition must both match/)
   assert.doesNotMatch(tutorial.markdown, /<SyntaxIllustration/)
-  for (const locale of ['en', 'tw']) {
+  for (const locale of ['en', 'tw', 'ja', 'ko', 'cn']) {
     const searchPages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
-    const canonical = (url: string) => url.replace(/^\/(en|tw)(?=\/)/, '')
+    const canonical = (url: string) => url.replace(/^\/(en|tw|ja|ko|cn)(?=\/)/, '')
     const page = searchPages.find((page: any) => canonical(page.url) === '/guide/syntax-tutorial')
-    assert.deepEqual(page.nodes, extractSearchNodesFromMdx(tutorial.searchMarkdown))
+    const localizedTutorial = await syntaxTutorialContent(root, locale)
+    assert.deepEqual(page.nodes, extractSearchNodesFromMarkdown(localizedTutorial.markdown))
     for (const id of ['declarations', 'composition', 'states', 'conditions', 'complete-card']) {
       assert.ok(page.nodes.some((node: { id?: string }) => node.id === id), `${locale}: ${id}`)
     }
@@ -442,15 +450,22 @@ test('generated output metadata preserves source/result pairing and prepared hig
   }
 })
 
-test('machine index and localized Markdown identify the same content and source revision', async () => {
-  const index = JSON.parse(await readFile(path.join(root, 'public/reference/index.json'), 'utf8'))
-  assert.equal(index.revision, catalog.revision)
-  for (const id of ['tokens/families', 'tokens/spacing', 'rules/conditions']) {
-    const en = await readFile(path.join(root, `public/reference/${id}.md`), 'utf8')
-    const tw = await readFile(path.join(root, `public/tw/reference/${id}.md`), 'utf8')
-    assert.ok(en.includes(catalog.version) && tw.includes(catalog.version))
-    assert.match(tw, /English fallback/)
-    assert.equal(en.match(/Content digest: (.+)/)?.[1], tw.match(/Content digest: (.+)/)?.[1])
+test('machine indexes and prepared editions identify their own content and source revision', async () => {
+  const editions = JSON.parse(await readFile(path.join(root, '.generated/reference-route-indexes.json'), 'utf8'))
+  for (const locale of Object.keys(editions)) {
+    const prefix = locale === 'en' ? '' : `${locale}/`
+    const index = JSON.parse(await readFile(path.join(root, `public/${prefix}reference/index.json`), 'utf8'))
+    assert.equal(index.revision, catalog.revision)
+    assert.equal(index.locale, locale)
+    for (const id of ['tokens/families', 'tokens/spacing', 'rules/conditions']) {
+      const markdown = await readFile(path.join(root, `public/${prefix}reference/${id}.md`), 'utf8')
+      const document = index.documents.find((doc: any) => doc.id === id)
+      assert.ok(markdown.includes(catalog.version))
+      assert.doesNotMatch(markdown, /English fallback/)
+      assert.equal(markdown.match(/Content digest: (.+)/)?.[1], document.contentDigest)
+      assert.equal(markdown.match(/Canonical: (.+)/)?.[1], document.url)
+      assert.ok(markdown.includes(`Language: ${document.language}`))
+    }
   }
 })
 
@@ -458,7 +473,7 @@ test('route payloads preserve Reference content and its parsed render tree', asy
   const routeIndex = JSON.parse(await readFile(path.join(root, '.generated/reference-route-index.json'), 'utf8'))
   assert.deepEqual(routeIndex, catalog.documents.map(({ id, kind, title, description, category, url }) => ({ id, kind, title, description, category, url })))
   for (const doc of catalog.documents) {
-    const { tree, renderDigest, ...document } = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(doc.id)}.json`), 'utf8'))
+    const { tree, renderDigest, ...document } = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', 'en', `${encodeURIComponent(doc.id)}.json`), 'utf8'))
     assert.deepEqual(document, JSON.parse(JSON.stringify(doc)))
     assert.match(renderDigest, /^[a-f0-9]{64}$/)
     function withoutHighlights(node: any): any {
@@ -479,7 +494,7 @@ test('route payloads preserve Reference content and its parsed render tree', asy
 test('prepared Reference highlights match live code, declarations and source/result pairs', async () => {
   for (const id of ['rules/modes', 'tokens/color', 'packages', 'directives/theme', 'tools/mcp']) {
     const doc = catalog.documents.find(doc => doc.id === id)!
-    const payload = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(id)}.json`), 'utf8'))
+    const payload = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', 'en', `${encodeURIComponent(id)}.json`), 'utf8'))
     async function verify(nodes: any[], compact = false) {
       for (let index = 0; index < nodes.length; index++) {
         const node = nodes[index]
@@ -537,6 +552,38 @@ test('render fingerprint tracks grammar, native artifact and module resolution i
   } finally { await rm(directory, { recursive: true, force: true }) }
 })
 
+test('a transitive parser dependency invalidates warm prepared trees without hashing unrelated home files', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'reference-render-dependencies-'))
+  const siteRoot = path.join(directory, 'site')
+  const parser = path.join(siteRoot, 'framework/parser.ts')
+  const helper = path.join(siteRoot, 'framework/heading-ids.ts')
+  const unrelated = path.join(siteRoot, 'framework/home.ts')
+  try {
+    await mkdir(path.join(siteRoot, 'adapters'), { recursive: true })
+    await mkdir(path.dirname(parser), { recursive: true })
+    await writeFile(path.join(siteRoot, 'adapters/highlight.ts'), 'export { parse } from "../framework/parser.ts"')
+    await writeFile(parser, 'export { parse } from "./heading-ids.ts"')
+    await writeFile(helper, 'export const parse = "original parser"')
+    await writeFile(unrelated, 'export const hero = "unrelated homepage"')
+    const document = { ...catalog.documents.find(doc => doc.id === 'grid-tracks')!, markdown: '## Overview {#overview}\n\nA parser cache fixture.', headings: [{ id: 'overview', title: 'Overview', depth: 2 }] }
+    const version = await referenceRenderVersion(siteRoot)
+    const previous = structuredClone(await createReferenceRenderDocument(document, version))
+    // Reproduce a warm payload from before the parser attached explicit heading metadata.
+    delete (previous.tree.children[0] as any).data
+    const reused = await createReferenceRenderDocument(document, await referenceRenderVersion(siteRoot), previous)
+    assert.equal(reused.tree, previous.tree)
+    await writeFile(unrelated, 'export const hero = "updated homepage"')
+    assert.equal(await referenceRenderVersion(siteRoot), version)
+    await writeFile(helper, 'export const parse = "parser with heading metadata"')
+    const nextVersion = await referenceRenderVersion(siteRoot)
+    assert.notEqual(nextVersion, version)
+    const rebuilt = await createReferenceRenderDocument(document, nextVersion, previous)
+    assert.notEqual(rebuilt.tree, previous.tree)
+    assert.equal((rebuilt.tree.children[0] as any).data.hProperties.id, 'overview')
+    assert.deepEqual(rebuilt.tree, markdownTree(document.markdown))
+  } finally { await rm(directory, { recursive: true, force: true }) }
+})
+
 test('changing a configured token updates class output, extracted Markdown and search together', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'reference-example-'))
   try {
@@ -548,7 +595,7 @@ test('changing a configured token updates class output, extracted Markdown and s
       const pageCSS = configuredExampleCSS(source, ['p-card'])
       assert.match(pageCSS, new RegExp(`--spacing-card:${value.replace('.', '\\.')}`))
       assert.ok(extracted.markdown.includes(pageCSS))
-      assert.ok(extractSearchNodesFromMdx(extracted.markdown).some(node => node.text.includes(`--spacing-card:${value}`)))
+      assert.ok(extractSearchNodesFromMarkdown(extracted.markdown).some(node => node.text.includes(`--spacing-card:${value}`)))
     }
   } finally { await rm(directory, { recursive: true, force: true }) }
   assert.throws(() => configuredExampleCSS('@theme { --spacing-card: 1.5rem;  }', ['p:missing-reference-token']), /Invalid configured documentation class/)
@@ -581,7 +628,7 @@ test('tool catalogs retain discovery, effects and source links without copying f
 test('directive contracts keep each definition and example with its content owner', async () => {
   const { directivePages } = await import('./editorial')
   const contract = await extractReferenceMdx(path.join(root, 'content/guide/directives/contract.mdx'))
-  const sections = documentHeadings(contract.markdown).filter(heading => heading.depth === 2).map(heading => heading.title)
+  const sections = documentHeadings(contract.markdown).filter(heading => heading.depth === 2).map(heading => heading.id)
   assert.deepEqual(directivePages.flatMap(page => page.sections).sort(), sections.sort(), 'Every authored section must have exactly one published owner')
   const { directiveExamples } = await import('../tests/directive-examples')
   const { stylesheetExampleMarkdown } = await import('@master/internal-site/css/stylesheet-example.ts')
@@ -649,12 +696,15 @@ test('Reference overview exports the complete current catalog with matching sear
   for (const doc of catalog.documents) {
     assert.ok(markdown.includes(`[${doc.title}](${doc.url})`), doc.id)
   }
-  for (const locale of ['en', 'tw']) {
-    const prefix = locale === 'en' ? '' : 'tw/'
+  const editions = JSON.parse(await readFile(path.join(root, '.generated/reference-route-indexes.json'), 'utf8'))
+  for (const locale of Object.keys(editions)) {
+    const prefix = locale === 'en' ? '' : `${locale}/`
+    const edition = locale === 'en' ? catalog : JSON.parse(await readFile(path.join(root, `.generated/reference.${locale}.json`), 'utf8'))
+    const overviewMarkdown = referenceOverviewMarkdown(edition.documents, locale)
     const exported = await readFile(path.join(root, `public/${prefix}reference.md`), 'utf8')
-    assert.ok(exported.includes(markdown))
+    assert.ok(exported.includes(localizeReferenceMarkdown(overviewMarkdown, locale)))
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     const overview = search.find((page: any) => page.url === `/${prefix}reference`)
-    assert.deepEqual(overview.nodes, extractSearchNodesFromMdx(markdown))
+    assert.deepEqual(overview.nodes, extractSearchNodesFromMarkdown(overviewMarkdown))
   }
 })

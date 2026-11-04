@@ -1,0 +1,35 @@
+# Reference prose: illustrations/import-reference-output
+
+## title \{#copy-title\}
+
+インポートはネイティブ規則を配信し、参照は定義を供給
+
+## alt \{#copy-alt\}
+
+
+同じ tokens.css を bg-brand を使う 2 つのローカルコンパイルに供給する。import の出力にはネイティブの .card 規則を含み、reference の出力は .card を省くが bg-brand 用のトークンは供給する。
+
+## caption \{#copy-caption\}
+
+
+両ローカル出力で bg-brand を使います。インポートはネイティブの .card 規則を配信し、参照は定義だけを利用可能にします。ローカルで使うトークンはどちらの出力でも出力できます。
+
+## description-0 \{#copy-description-0\}
+
+
+tokens.css は @theme で --color-brand を宣言し、それを参照するネイティブの .card 規則も定義します。両コンパイルの違いは @import と @reference だけです。
+
+## description-1 \{#copy-description-1\}
+
+
+両ローカル出力は bg-brand を生成し、依存先の --color-brand を保持します。
+
+## description-2 \{#copy-description-2\}
+
+
+.card を含むのは import の出力だけです。参照はその規則をローカル使用の起点にせず、参照先のスタイルシートも公開しません。
+
+## description-3 \{#copy-description-3\}
+
+
+分岐はコンパイル結果の比較で、実行時の読み込み手順ではありません。ネイティブの上書きにも実際のスタイルシート配信が必要です。

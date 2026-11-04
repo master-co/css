@@ -1,0 +1,96 @@
+# Reference prose: tokens/motion
+
+## title \{#copy-title\}
+
+
+動態效果
+
+## summary \{#copy-summary\}
+
+
+動畫簡寫、持續時間值與緩動曲線。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+動畫
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+持續時間
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+緩動
+
+## note \{#copy-note\}
+
+
+`animation-` 與 `transition-` 前綴都同時讀取 duration 與 easing 命名空間。自訂鍵必須在兩個命名空間之間保持不同，否則相同的鍵會產生歧義。`animate-` 讀取的則是完整動畫簡寫。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+十個動畫 token 包含關鍵影格名稱，並會無限重複。七個持續時間提供時間長度，九條緩動曲線則將時間進度對應到值進度。視覺比較只播放一次，初始狀態為暫停，並遵循減少動態效果偏好。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+覆寫動畫的一個部分
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`animate-pulse` 設定完整的 `animation` 簡寫，包括 1s 的持續時間。條件相同時，`animation-slow` 會排在簡寫之後，並將持續時間替換為 300ms。關鍵影格名稱與迭代次數維持不變；調整 class 屬性中的順序也不會改變結果。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+使用持續時間或緩動家族調整其中一個部分，或使用它們的變數組成自訂動畫 token。`(animation-duration:450ms)` 這類明確的原生宣告可以提供字面值覆寫。兩條長條以相同時間尺度呈現一次迭代，不是在比較渲染效能。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+動畫 token 會保留其值所參照的關鍵影格。單獨的持續時間或緩動 class 不會指定動畫名稱。轉場也需要有屬性值發生變更；`transition-fast` 提供的是持續時間，不是 hover 狀態或屬性清單。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+延遲改變的是效果開始時間，不會拉長持續時間。緩動則改變持續時間內的進度。控制點超出垂直 0–1 範圍的曲線，可能產生超越端點或倒退的效果；不過動畫屬性本身仍可能限制實際渲染的值。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+非必要的動態效果請加上 `@motion-safe` 條件。若要讓預設動畫只播放一次，請在相同條件下加入 `(animation-iteration-count:1)`。如何為元件組成進場動畫，請見主題指南；擷取頁面狀態之間的轉場，則由檢視轉場指南說明。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+生成規則的順序
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生動畫簡寫
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+檢視轉場
+
+## usage-lead \{#copy-usage-lead\}
+
+
+允許動態效果時，為連結 hover 後的背景變化加入緩動。連結會返回值對照表。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+以持續時間與緩動 token 組成動畫，並在原生 CSS 中宣告關鍵影格：`--animate-reveal` 會建立 `animate-reveal`。
+
+## guide-label \{#copy-guide-label\}
+
+
+主題 token

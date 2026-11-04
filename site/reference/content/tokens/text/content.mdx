@@ -1,0 +1,65 @@
+# Reference prose: tokens/text
+
+## title \{#copy-title\}
+
+Text
+
+## summary \{#copy-summary\}
+
+Text treatments that set font size, line height and letter spacing together.
+
+## note \{#copy-note\}
+
+A primary `--text-<name>` token creates the class; its `--line-height` and `--letter-spacing` companions are optional and fall back to `normal`. Family, weight and color stay separate classes.
+
+## valuesLead \{#copy-valuesLead\}
+
+Each row shows the three values read by one class. Preset sizes reference the matching font-size token; the table resolves that reference for reading. All preset treatments include both companions.
+
+## explanation-title \{#copy-explanation-title\}
+
+One primary token, three declarations
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`--text-card` registers `text-card`. The class always emits font size, line height and letter spacing. If `--text-card--line-height` or `--text-card--letter-spacing` is absent, its declaration uses `normal`; it does not preserve an inherited value.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+A companion alone does not register a treatment. Add the primary size token even when the only value you want to customize is its line height or letter spacing.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+A companion is a value used by this recipe, not another class name. Independent adjustments use `font-<size>`, `leading-<name>` or `tracking-<name>`. Under the same conditions, these single-property utilities sort after the text recipe and can override its corresponding declaration; their order in the class attribute does not decide the result.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+The recipe does not load a font, select its family or weight, add margins or decide the width of a paragraph. Typography Guide owns choosing and combining treatments into a hierarchy.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Font
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+Leading
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+Tracking
+
+## explanation-links-3-label \{#copy-explanation-links-3-label\}
+
+generated rule order
+
+## usage-lead \{#copy-usage-lead\}
+
+Apply one treatment to a paragraph; its family, weight and color remain independent.
+
+## customize-lead \{#copy-customize-lead\}
+
+Add a treatment with its companions: `--text-display` creates `text-display`.
+
+## guide-label \{#copy-guide-label\}
+
+Typography

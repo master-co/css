@@ -1,62 +1,26 @@
-import { benchmarkContent } from './utils/benchmark-content'
-import { introductionContent } from './utils/introduction-content'
-import { installationGuideContent, installationGuideSlugs } from './utils/installation-content'
 import { pages as basePages } from './scripts/generate-page-categories'
-
-import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import i18n from '@master/internal-site/common/i18n.config.js'
 import { writeIfChanged } from './scripts/write-if-changed'
-import { extractSearchNodesFromMdx, generateSearchPages } from '@master/internal-site/utils/search-pages'
+import { extractSearchNodesFromMarkdown, generateSearchPages } from '@master/internal-site/utils/search-pages'
 import { generateReference } from './reference/build'
-import { guideOverviewMarkdown } from './utils/guide-overview'
-import { syntaxTutorialContent } from './utils/syntax-tutorial'
-import { foundationGuideContent, foundationGuideSlugs } from './utils/foundation-content'
-import { projectStyleGuideContent, projectStyleGuideSlugs } from './utils/project-style-content'
-import { migrationGuideContent, migrationGuideSlugs } from './utils/migration-content'
-import { deliveryGuideContent, deliveryGuideSlugs } from './utils/delivery-content'
-import { agentGuideContent, agentGuideSlugs } from './utils/agent-content'
-import { toolingGuideContent, toolingGuideSlugs } from './utils/tooling-content'
+import { loadPages } from './scripts/generate-llms-txt'
 
-const searchPages = await generateSearchPages({ defaultLocale: i18n.defaultLocale, locales: i18n.locales, write: false })
-await generateReference(process.cwd(), searchPages, basePages)
-
-const guideCategories = JSON.parse(await readFile(new URL('./.categories/guide.json', import.meta.url), 'utf8'))
-const guideOverviewNodes = extractSearchNodesFromMdx(guideOverviewMarkdown(guideCategories))
-const syntaxTutorialNodes = extractSearchNodesFromMdx((await syntaxTutorialContent(process.cwd())).searchMarkdown)
-const guideContentNodes = new Map<string, ReturnType<typeof extractSearchNodesFromMdx>>(await Promise.all(foundationGuideSlugs.map(async slug => [
-  `/guide/${slug}`, extractSearchNodesFromMdx((await foundationGuideContent(process.cwd(), slug)).searchMarkdown)
-] as const)))
-for (const slug of projectStyleGuideSlugs) {
-  guideContentNodes.set(`/guide/${slug}`, extractSearchNodesFromMdx((await projectStyleGuideContent(process.cwd(), slug)).searchMarkdown))
-}
-for (const slug of migrationGuideSlugs) {
-  guideContentNodes.set(`/guide/migration${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await migrationGuideContent(process.cwd(), slug)).searchMarkdown))
-}
-for (const slug of deliveryGuideSlugs) {
-  guideContentNodes.set(`/guide/${slug}`, extractSearchNodesFromMdx((await deliveryGuideContent(process.cwd(), slug)).searchMarkdown))
-}
-for (const slug of toolingGuideSlugs) {
-  guideContentNodes.set(`/guide/${slug}`, extractSearchNodesFromMdx((await toolingGuideContent(process.cwd(), slug)).searchMarkdown))
-}
-for (const slug of agentGuideSlugs) {
-  guideContentNodes.set(`/guide/${slug}`, extractSearchNodesFromMdx((await agentGuideContent(process.cwd(), slug)).searchMarkdown))
-}
-for (const slug of installationGuideSlugs) {
-  guideContentNodes.set(`/guide/installation${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await installationGuideContent(process.cwd(), slug)).searchMarkdown))
-}
-guideContentNodes.set('/benchmarks', extractSearchNodesFromMdx((await benchmarkContent(process.cwd())).searchMarkdown))
-guideContentNodes.set('/guide/introduction', extractSearchNodesFromMdx((await introductionContent(process.cwd())).searchMarkdown))
-for (const locale of ['en', 'tw']) {
-  const searchFile = new URL(`./public/search/${locale}.json`, import.meta.url)
+const siteRoot = fileURLToPath(new URL('.', import.meta.url))
+const searchPages = await generateSearchPages({ cwd: siteRoot, defaultLocale: i18n.defaultLocale, locales: i18n.locales, write: false })
+await generateReference(siteRoot, searchPages, basePages)
+for (const locale of i18n.locales) {
   const pages = searchPages[locale]
-  const overview = pages.find((page: { url: string }) => page.url === '/guide' || page.url === `/${locale}/guide`)
-  if (overview) overview.nodes = guideOverviewNodes
-  const tutorial = pages.find((page: { url: string }) => page.url.replace(/^\/(en|tw)(?=\/)/, '') === '/guide/syntax-tutorial')
-  if (tutorial) tutorial.nodes = syntaxTutorialNodes
-  for (const page of pages) {
-    const nodes = guideContentNodes.get(page.url.replace(/^\/(en|tw)(?=\/)/, ''))
-    if (nodes) page.nodes = nodes
+  // During editing, only existing local translations are searchable. Production
+  // has already asserted completeness before preparation or route generation.
+  const authored = await loadPages(path.join(siteRoot, 'content'), locale, { skipMissing: true })
+  for (const document of authored.filter(document => document.section !== 'reference')) {
+    const entry = pages.find((entry: { url: string }) => entry.url === document.url)
+    if (!entry) continue
+    entry.title = document.title
+    entry.description = document.description ?? ''
+    entry.nodes = extractSearchNodesFromMarkdown(document.body)
   }
-  await writeIfChanged(searchFile, JSON.stringify(pages))
+  await writeIfChanged(new URL(`./public/search/${locale}.json`, import.meta.url), JSON.stringify(pages))
 }
-

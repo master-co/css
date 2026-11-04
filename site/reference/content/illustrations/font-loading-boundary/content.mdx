@@ -1,0 +1,25 @@
+# Reference prose: illustrations/font-loading-boundary
+
+## title \{#copy-title\}
+
+A family request still needs an available font face
+
+## alt \{#copy-alt\}
+
+One font-family request branches to the requested face when available and to a serif fallback when unavailable.
+
+## caption \{#copy-caption\}
+
+The samples illustrate two availability cases, not a measured download timeline. The requested face is illustrated with the loaded Geist file; the fallback uses the browser’s serif face.
+
+## description-0 \{#copy-description-0\}
+
+A font-family declaration names an ordered preference. It does not download a font by itself.
+
+## description-1 \{#copy-description-1\}
+
+An available matching face can render the text; otherwise the browser tries a later family. Glyph coverage also matters, so different characters in one line can use different fonts.
+
+## description-2 \{#copy-description-2\}
+
+Load web fonts through @font-face or a provider stylesheet and inspect rendered fonts, not only the computed font-family string.

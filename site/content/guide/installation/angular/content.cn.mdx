@@ -1,0 +1,144 @@
+---
+{
+  "title": "在 Angular 中配置 Master CSS",
+  "description": "将 CLI 生成的 CSS 接入 Angular，同时运行两个开发监听进程，并验证生产样式表或可选的浏览器运行时。",
+  "category": "集成"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/angular/cover-light.webp'
+import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Angular" />
+
+保留 Angular 构建器，并使用 Master CSS CLI 生成它可以加载的样式表。开发时，请同时运行两个监听进程：Master CSS 更新生成的 CSS，Angular 则提供导入该 CSS 的应用。
+
+本配置假设你已有在浏览器中渲染的 Angular 应用，包含全局 `src/styles.css`、正常工作的 `npm start` 命令和受支持的 Node.js 24 版本。它使用 Angular 默认的[模拟封装](https://angular.dev/guide/components/styling#viewencapsulationemulated)，使全局样式能够作用于组件模板。Shadow DOM 组件则需要在自己的 shadow root 中放置样式。
+
+## 安装 \{#installation\}
+
+<StepSection>
+  <Step>
+    ### 添加 Master CSS \{#add-master-css\}
+
+    从 Angular 项目根目录运行安装程序：
+
+    ```bash
+    npm create @master/css@rc -- --framework angular --yes
+    ```
+
+    静态配置会添加 `@master/css` 和 `@master/css-cli`。安装程序可选的工具及预览选项，请参阅[安装](/guide/installation#installation)。
+  </Step>
+  <Step>
+    ### 检查样式表连接 \{#check-the-stylesheet-connection\}
+
+    安装程序会在项目根目录创建 Master CSS 源入口：
+
+    ```css name=master.css
+    @import '@master/css';
+    ```
+
+    它还会保留现有内容，并将以下导入加入 Angular 的全局样式表：
+
+    ```css name=src/styles.css
+    @import './master.generated.css';
+    ```
+
+    在 `angular.json` 中，请将 `src/styles.css` 保留在应用的 `build.options.styles` 数组内。Angular 的[全局样式配置](https://angular.dev/reference/configs/workspace-config#styles-and-scripts-configuration)决定生成的 CSS 能否传递到页面。如果工作区结构非标准布局，请一并调整输出路径和导入。
+
+    将 `@theme`、`@utility` 等 Master CSS 定义放在 `master.css` 中。Angular 使用生成后的原生 CSS；普通 CSS 构建器不会编译这些定义。请勿编辑 `src/master.generated.css`，或将其重新导入 `master.css`。
+  </Step>
+  <Step>
+    ### 生成 CSS \{#generate-the-css\}
+
+    在一个终端中生成样式表，并持续监听变更：
+
+    ```bash
+    npx master-css generate --output src/master.generated.css --watch
+    ```
+
+    等待首次生成完成，再于第二个终端启动 Angular：
+
+    ```bash
+    npm start
+    ```
+
+    请让两个进程持续运行。添加类名时，仅 Angular 监听进程不会重新生成 Master CSS。
+  </Step>
+  <Step>
+    ### 开始使用 Master CSS \{#start-using-master-css\}
+
+    将以下标记加入根组件引用的模板。按照 Angular [当前的命名约定](https://angular.dev/cli/new#file-name-style-guide)，通常是 `src/app/app.html`；现有项目可能使用 `src/app/app.component.html`。
+
+    <DemoConfiguredExample name="angular-check" title="检查模板样式" source="" caption="段落具有中性色表面、细边框、小圆角，以及四边各 1rem 的内边距。" html={`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello Angular
+</p>`} />
+  </Step>
+</StepSection>
+
+## 验证结果 \{#verify-the-result\}
+
+打开 Angular 应用。段落的间距和表面应与示例一致。将模板中的 `p-md` 改为 `p-lg`：两个监听进程都在运行时，内边距应从 `1rem` 增加到 `1.5rem`。确认更新后恢复原值。
+
+如果没有样式，请按顺序追查连接：
+
+- 检查 Master CSS 终端是否存在生成错误，并确认 `src/master.generated.css` 存在。
+- 检查 `src/styles.css` 中的导入，以及该文件在 `angular.json` 中的注册。
+- 在浏览器开发者工具中检查段落，查找匹配规则以及是否存在覆盖它的组件样式。
+
+静态生成需要源代码中的完整类名字符串，或显式的安全列表。条件类名也应保持完整；动态值请使用 CSS 自定义属性。如果生成输出中缺少类名，请参阅[扫描类名](/guide/scanning-and-pruning)。
+
+## 构建以部署 \{#build-for-deployment\}
+
+先生成 CSS，再由 Angular 打包应用：
+
+```bash
+npx master-css generate --output src/master.generated.css
+npm run build
+```
+
+CI 也使用相同顺序。提供旧的生成文件可能掩盖样式缺失问题，因此请在重新生成后检查生产构建。
+
+静态描述的是 CSS 生成步骤。浏览器渲染的 Angular 应用仍需要 JavaScript 才能创建 HTML。
+
+## 选择其他渲染模式 \{#rendering-modes\}
+
+默认使用静态渲染。如果需要根据浏览器 DOM 变更，而非已知源代码字符串生成类名，请使用运行时渲染。
+
+| 模式 | 安装程序选项 | CSS 交付方式 |
+| --- | --- | --- |
+| 静态 | 无 | 由 `src/styles.css` 导入 CLI 输出 |
+| 运行时 | `--mode runtime` | 从 `src/main.ts` 启动浏览器运行时 |
+
+<DocumentDisclosure title="在浏览器中生成新类名">
+
+运行时配置请执行：
+
+```bash
+npm create @master/css@rc -- --framework angular --mode runtime --yes
+```
+
+安装程序会从 `src/main.ts` 启动 `MasterCSSRuntime`，加载 `@master/css-runtime/default-program`，并观察文档中的类名变更。
+
+**启动 Angular 前，请先完成全局样式表配置。**当前安装程序会将 `@import '@master/css';` 加入 `src/styles.css`。请用下方原生基础样式表替换此导入，保留应用需要的其他原生 CSS 导入和规则。如果从静态配置切换，还请移除 `./master.generated.css` 导入；此运行时路径不需要 CSS 监听进程。
+
+```css name=src/styles.css
+@import '@master/css/base.css';
+```
+
+默认程序提供预设词汇。在 Angular 的普通 CSS 中加入 `@theme` 或 `@utility`，不会编译出自定义运行时程序。对于项目自定义词汇，请使用静态 CLI 路径，或通过[运行时 API](/reference/packages#css-runtime)提供单独编译的程序。
+
+构建并提供 Angular 应用，再在浏览器控制台运行以下代码。无需重新构建，示例段落就应出现下划线：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+此运行时从浏览器入口启动。Angular SSR 应用需要单独的初始 CSS 策略；本指南涵盖的是浏览器渲染配置。
+
+</DocumentDisclosure>

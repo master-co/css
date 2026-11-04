@@ -4,7 +4,7 @@ import DocumentDisclosure from '@master/internal-site/components/DocumentDisclos
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Make each page receive the CSS it needs, including the states that appear after interaction. Start by tracing delivery, move feature styles to their owners, and prune native rules only where the build knows their possible uses. Compare the resulting assets and behavior before setting a regression budget.
 
 This guide follows an overview page and a reports page with the same navigation. Only Reports renders a report panel. The desired result is that Overview never downloads the panel's rules, while Reports keeps its ready and keyboard-focus states.
@@ -44,7 +44,7 @@ Both pages now receive the report rules. Their absence from Overview's DOM does 
 
 <DeliveryIllustration id="ownership" />
 
-### Reproduce the two-page example
+### Reproduce the two-page example \{#reproduce-the-two-page-example\}
 
 Use an empty directory with the following files. Install the public packages with `npm install`, run `npm run build`, and serve the result with `npm run preview`. Use matching Master CSS releases; retain the resulting lockfile for comparisons.
 
@@ -163,7 +163,7 @@ Open `/` and `/reports/` directly. Trace their emitted CSS imports: only Reports
 
 The `@prune native` marker opts this file in, but removal also requires a build path that supplies class usage. In the current Vite local-stylesheet transform, the report rules are compiled with project definitions without a usage set for pruning; `.report-debug` therefore remains in that local output. The ownership improvement still works. The next section verifies pruning separately through the public CLI rather than treating a directive in source as proof of a smaller production file.
 
-### Share definitions without importing the feature
+### Share definitions without importing the feature \{#share-definitions-without-importing-the-feature\}
 
 A local stylesheet can use project tokens and mixins without importing the full entry again. The integration supplies that definition context. When definitions live outside the entry graph, use [`@reference`](/guide/route-level-styles#reference-definitions-without-loading-their-native-rules); it supplies definitions without loading the referenced file's native rules.
 
@@ -183,7 +183,7 @@ Rules without class selectors remain available. Pruning is based on class usage,
 
 <ReferenceIllustration id="pruning-global-selectors" />
 
-### Verify the pruning step independently
+### Verify the pruning step independently \{#verify-the-pruning-step-independently\}
 
 <DocumentDisclosure title="Reproduce native pruning with the CLI">
 
@@ -212,7 +212,7 @@ npx master-css generate 'index.html' 'reports.js' --strict -o output.css
 
 Follow the imports from `output.css`. The report rules and their spacing dependency remain; `.report-debug` is absent. This check establishes the CLI's output for those inputs. It does not change the app's Vite pipeline. Do not import this second full entry into the application to force pruning: that would restore unrelated shared delivery. Use pruning in your production integration only when its actual output demonstrates the intended filtering.
 
-### Keep external and uncertain sources safe
+### Keep external and uncertain sources safe \{#keep-external-and-uncertain-sources-safe\}
 
 For a finite class added by a widget, list its complete name in the pruned file:
 

@@ -1,0 +1,148 @@
+---
+{
+  "title": "在 SvelteKit 中配置 Master CSS",
+  "description": "安装 SvelteKit 附加组件，连接根样式表，并选择静态、运行时、渐进式或仅预渲染的 CSS 交付方式。",
+  "category": "集成"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/svelte/cover-light.webp'
+import dark from '~/site/assets/images/integrations/svelte/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Svelte" />
+
+将 Master CSS 加入 SvelteKit 应用。附加组件会注册 Vite 集成，并从根布局导入 CSS 入口，让每个路由都能获取共享样式。
+
+## 安装 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 添加 Master CSS \{#add-master-css\}
+      在现有的 [SvelteKit 项目](https://svelte.dev/docs/kit/creating-a-project)中，从项目根目录运行 Svelte CLI 附加组件。它会安装静态渲染配置，并保留现有服务器钩子。
+    </StepL>
+    <StepR>
+      ```bash
+      npx sv add @master/css-svelte-addon
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 检查共享入口 \{#check-the-shared-entry\}
+    附加组件会在项目的 CSS 入口中加入 `@import '@master/css';`，并从 `src/routes/+layout.svelte` 导入该文件。请保留布局中现有的脚本、子内容渲染和其他导入。不要将全局入口放在其他路由不会加载的单个页面中。
+
+    在 `vite.config.ts` 中同时保留 `masterCSS()` 和 `sveltekit(...)`。静态模式不需要 Master CSS 的客户端或服务器钩子。
+  </Step>
+  <Step>
+    ### 开始使用 Master CSS \{#start-using-master-css\}
+    启动开发服务器，并用以下段落替换 `src/routes/+page.svelte`。保留添加到 `src/routes/+layout.svelte` 的样式表导入。
+  </Step>
+  <InstallationPreview>
+
+```svelte name=src/routes/%2Bpage.svelte
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 检查静态配置 \{#check-the-static-setup\}
+运行 `npm run dev`，将页面中的 `p-md` 改为 `p-lg`。内边距应从 `1rem` 增加到 `1.5rem`。恢复原值后，检查生产构建：
+
+```bash
+npm run build
+npm run preview
+```
+
+启用服务器渲染时，即使禁用 JavaScript，段落也应保留内边距、圆角和凸起表面。访问另一个路由，确认根布局也会为它加载入口。如果缺少样式，请检查 `vite.config.ts` 中的 Master CSS 插件和根布局中的 CSS 导入。
+
+组件的 `<style>` 块可以在原生声明中使用项目令牌。请继续加载全局 CSS 入口，以提供重置样式、原生组件规则和生成的工具类。项目上下文之外的定义文件应使用 `@reference`。
+
+---
+
+## 选择其他渲染模式 \{#rendering-modes\}
+默认使用静态模式，无需 Master CSS 钩子。切换模式时，请保留 CSS 入口：
+
+| 模式 | Vite 模式 | Master CSS 钩子 |
+| --- | --- | --- |
+| 静态 | `static` | 无 |
+| 运行时 | `runtime` | 客户端 |
+| 渐进式 | `progressive` | 客户端与服务器 |
+| 仅预渲染 | `pre-render` | 服务器，并禁用水合 manifest |
+
+<DocumentDisclosure title="在浏览器中生成新类名">
+
+在 `vite.config.ts` 中，用以下选项替换现有的 `masterCSS()` 调用。保留 `sveltekit(...)` 调用、其适配器配置及其他插件：
+
+```ts
+masterCSS({ mode: 'runtime' })
+```
+
+从客户端钩子加载一次启动代码。保留现有的钩子导出：
+
+```ts name=src/hooks.client.ts
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+SvelteKit 会自行渲染 HTML，因此仅设置 Vite 模式不会插入运行时脚本。客户端导入会使用项目程序启动运行时，并处理 Vite HMR。
+
+启动后，在浏览器控制台运行以下代码。无需重新构建，段落就应出现下划线：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="包含服务器渲染的样式">
+
+使用渐进式渲染时，将上方的 Vite 选项改为 `mode: 'progressive'`，保留客户端钩子，再添加服务器 handle：
+
+```ts name=src/hooks.server.ts
+export { handle } from '@master/css-svelte/hooks.server'
+```
+
+如果应用已有服务器 handle，请保留它，并在 SvelteKit 的 [`sequence()`](https://svelte.dev/docs/kit/@sveltejs-kit-hooks#sequence) 中将 Master CSS handle 放在首位。页面转换按反向顺序执行，这样 Master CSS 才能看到后续处理器生成的 HTML。例如，将现有 handle 移至 `src/hooks.application.ts`，保持其行为不变，再组合两者：
+
+```ts name=src/hooks.server.ts
+import { sequence } from '@sveltejs/kit/hooks'
+import { handle as masterCSS } from '@master/css-svelte/hooks.server'
+import { handle as application } from './hooks.application'
+
+export const handle = sequence(masterCSS, application)
+```
+
+将 `handleError` 等无关导出保留在 `hooks.server.ts` 中。
+
+如果预渲染的类名已覆盖页面，就可以延后加载运行时引擎。先禁用 JavaScript 检查初始样式，再重新启用并测试新类名。
+
+仅需预渲染交付时，选择 `mode: 'pre-render'`，只移除 Master CSS 客户端启动代码，并使用以下服务器配置：
+
+```ts name=src/hooks.server.ts
+/// <reference types="@master/css/client" />
+
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import { createMasterCSSHandle } from '@master/css-svelte/hooks.server'
+
+export const handle = createMasterCSSHandle({
+  manifest,
+  emittedGlobals,
+  hydrationManifest: false
+})
+```
+
+此配置会为渲染后的 HTML 提供 CSS，而不使用 Master CSS 浏览器运行时。之后新增的类名需要单独交付的样式表，或支持运行时生成的模式。
+
+</DocumentDisclosure>

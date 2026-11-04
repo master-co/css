@@ -1,0 +1,57 @@
+# Reference prose: tokens/radius
+
+## title \{#copy-title\}
+
+Radius
+
+## summary \{#copy-summary\}
+
+The preset corner radius scale, for whole elements or single corners.
+
+## note \{#copy-note\}
+
+Fully rounded corners use the fixed `pill` utility, not a radius token: it sets only `border-radius: calc(infinity * 1px)`.
+
+## valuesLead \{#copy-valuesLead\}
+
+The eight preset radii are rem lengths. Pixel equivalents assume a 16px root font size. A radius shapes corners; it does not set the box dimensions.
+
+## explanation-title \{#copy-explanation-title\}
+
+Rounding and clipping are separate
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`r-4xl` rounds the parent’s background and border. It does not give a child the same radius or automatically clip that child’s painting. Add `overflow-hidden` when the parent should clip its contents to the rounded edge.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+The physical families such as `rtl-` always address the top-left corner. Logical families such as `rss-` follow the block-start and inline-start sides, so their physical corner depends on writing mode and direction. Every mapping is listed above.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+Oversized radii are reduced by the browser when adjacent curves would overlap. This is why `pill` produces a capsule on a wide box and a circle on a square. It does not make an element square.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+For a square corner use the direct-value function `r(0)` or its single-corner counterpart, such as `rtl(0)`. The preset has no `--radius-none` token. Negative token forms such as `-r-md` are rejected.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+native corner clipping
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+direct values
+
+## usage-lead \{#copy-usage-lead\}
+
+Step the radius down from a sheet to the thumbnail inside it.
+
+## customize-lead \{#copy-customize-lead\}
+
+Change a preset value or add a token: `--radius-card` creates `r-card` and each single-corner class.
+
+## guide-label \{#copy-guide-label\}
+
+Color

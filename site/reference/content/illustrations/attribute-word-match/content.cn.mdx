@@ -1,0 +1,31 @@
+# Reference prose: illustrations/attribute-word-match
+
+## title \{#copy-title\}
+
+
+属性值完全相等与单词匹配不同
+
+## alt \{#copy-alt\}
+
+
+比较矩阵用完全相等与空格分词匹配，检查 title 值 css、master css 和 css-in-js。
+
+## caption \{#copy-caption\}
+
+
+每行用两个后缀检查同一个 DOM 属性值。连字符不构成以空格分隔的单词边界。
+
+## description-0 \{#copy-description-0\}
+
+
+[title=css] 仅匹配恰为 css 的值。[title~=css] 则匹配以空格分隔且等于 css 的单词。
+
+## description-1 \{#copy-description-1\}
+
+
+两个选择器均匹配 css。只有单词选择器匹配 master css。两者均不匹配 css-in-js。
+
+## description-2 \{#copy-description-2\}
+
+
+选择器检查属性，不会分割类字符串，也不会编辑属性值。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/preview-file-identity
+
+## title \{#copy-title\}
+
+
+預覽只適用於記錄時的檔案版本
+
+## alt \{#copy-alt\}
+
+
+一份預覽記錄 p-md flex。未變動檔案接受建議的 flex p-md 順序；已加入 gap-sm 的檔案會被拒絕，並保留新內容。
+
+## caption \{#copy-caption\}
+
+
+兩種情況從相同 class 排序預覽開始。套用需要同一伺服器內未過期的 token，且原始檔案相符。任何檔案變動都會在寫入建議檔案前拒絕。
+
+## description-0 \{#copy-description-0\}
+
+
+class 排序預覽記錄原本的 p-md flex，並建議 flex p-md。預覽不改動來源檔案。
+
+## description-1 \{#copy-description-1\}
+
+
+若每個受影響檔案都仍符合記錄雜湊，套用有效 token 會寫入建議內容，並使 token 失效。
+
+## description-2 \{#copy-description-2\}
+
+
+若檔案現在含有 p-md flex gap-sm，雜湊已不相符。套用會在寫入任何建議檔案前拒絕預覽，保留較新內容。
+
+## description-3 \{#copy-description-3\}
+
+
+此比較只聚焦檔案身分。token 過期、伺服器重啟與無效工作區路徑也可能阻止套用。依序寫入不是交易式復原機制。

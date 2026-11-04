@@ -1,0 +1,197 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+조건 접미사는 클래스 규칙이 적용될 수 있는 경우를 제한합니다. Master CSS가 이름 있는 정의를 해석해 네이티브 CSS 쿼리를 출력하고 브라우저가 이를 평가합니다. 컴파일은 현재 뷰포트, 입력 장치, 브라우저 지원을 테스트하지 않습니다.
+
+이 페이지는 허용되는 접미사, 쿼리 인코딩, 조합 방식을 정의합니다. 뷰포트 또는 컴포넌트 경계 선택은 [반응형 디자인](/guide/responsive-design)을, 점진적 향상은 [호환성](/guide/compatibility)을 참고하세요.
+
+<ReferenceIllustration id="condition-eligibility" />
+
+## 쿼리 형식 \{#arbitrary-conditions-and-queries\}
+
+조건은 유틸리티와 [선택자 접미사](/reference/rules/selectors) 뒤에 추가하세요. 클래스의 괄호가 쿼리를 구분하므로 미디어 기능, 범위, supports 선언에 괄호를 한 겹 더 붙이지 마세요.
+
+| 쿼리 | 클래스 접미사 | 네이티브 조건 |
+| --- | --- | --- |
+| 이름이 있는 미디어 | `@sm` | `@custom-media --sm` 해석 |
+| 미디어 유형 | `@media(print)` | `@media print` |
+| 불리언 미디어 기능 | `@media(hover)` | `@media (hover)` |
+| 미디어 기능 | `@media(pointer:coarse)` | `@media (pointer:coarse)` |
+| 미디어 범위 | `@media(width>=40rem)` | `@media (width>=40rem)` |
+| Supports 선언 | `@supports(display:grid)` | `@supports (display:grid)` |
+| 컨테이너 크기 | `@container(width>=40rem)` | `@container (width>=40rem)` |
+| 이름이 있는 컨테이너 | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
+| 사용자 지정 컨테이너 조건 | `@container(card\|--md)` | `card`에 대해 `@custom-container --md` 해석 |
+| 컨테이너 스타일 | `@container(style(--density:compact))` | `@container style(--density:compact)` |
+
+<Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
+
+`|`는 문자열, 주석, CSS 이스케이프 밖의 공백을 인코딩합니다. `@container(card|width>=40rem)`에서는 컨테이너 이름과 조건을 구분합니다. 따옴표 문자열과 이스케이프는 리터럴 내용을 유지합니다. 이 인코딩은 클래스용이므로 CSS 정의에는 일반 공백을 작성하세요.
+
+<a id="simple-queries-in-classes"></a>
+
+각 접미사는 단순 쿼리 하나를 허용하며 단일 값 안에서 괄호가 균형을 이루는 함수는 유지됩니다. Master CSS는 브라우저 지원 데이터베이스로 기능 이름을 제한하지 않습니다. 생성에 성공해도 브라우저가 조건을 지원하거나 조건에 일치한다는 뜻은 아닙니다. 복합식과 쿼리 목록은 [CSS에 작성할 쿼리](#queries-in-css)를 참고하세요.
+
+## 조건 조합하기 \{#grouping-conditions\}
+
+단순 쿼리 접미사를 쌓으면 모든 조건을 요구합니다. 첫 접미사가 바깥 쿼리가 되고 다음 접미사들이 그 안에 중첩됩니다. 같은 종류의 래퍼가 반복되어도 순서를 유지합니다.
+
+<ReferenceIllustration id="nested-conditions" />
+
+```html
+<div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
+```
+
+<Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+이들은 중첩된 CSS 조건이지 순서대로 실행하는 단계가 아닙니다. 두 쿼리가 모두 일치해야 `display: grid` 선언이 캐스케이드에 참여합니다. 선언을 받을 요소는 여전히 선택자가 결정합니다.
+
+### 선택자와 토큰 의존 항목 \{#composition\}
+
+`fg-red:hover@sm`은 토큰 기반 유틸리티, 선택자, 이름이 있는 미디어 조건을 결합합니다.
+
+```html
+<div class="fg-red:hover@sm">Hover at sm and above</div>
+```
+
+프리셋에서 `fg-red`는 `--color-red`를 사용하고, `:hover`는 클래스를 가진 요소를 확인하며, `@sm`은 뷰포트 너비가 최소 `52.125rem`이어야 합니다. 프리셋 red 별칭은 고정 색상을 가지며 프로젝트에서 값을 덮어쓸 수 있습니다. 토큰 값과 경쟁 CSS 없이는 클래스만으로 최종 색상을 확정할 수 없습니다.
+
+<a id="complete-generated-css"></a>
+
+<Class2CSS classes={['fg-red:hover@sm']} />
+
+생성 CSS에는 필요한 토큰 의존 항목이 포함되지만 기본 레이어 순서 선언은 삽입하지 않습니다. 보통 `@import '@master/css'`로 [기본 스타일시트](/reference/rules/layers)를 불러오세요.
+
+## 이름이 있는 미디어 조건 \{#common-condition-variants\}
+
+`@sm` 같은 단독 접미사는 `@custom-media` 정의를 해석합니다. 정의되지 않은 이름은 오류입니다. 믹스인 이름은 별도 `@apply(--name)` 구문을 사용하고 컨테이너 조건은 `@container(--name)`을 사용하며, 둘 다 단독 접미사로 선택되지 않습니다.
+
+| 프리셋 접미사 | 의미 |
+| --- | --- |
+| `@sm`, `@md`, … | 뷰포트가 해당 중단점 이상 |
+| `@max-sm`, `@max-md`, … | 대응하는 중단점의 상보 조건 |
+| `@landscape`, `@portrait` | 뷰포트 방향 |
+| `@motion-safe`, `@motion-reduce` | 동작 줄이기 환경설정 |
+| `@light`, `@dark` | 시스템 색상 환경설정 |
+
+### 중단점 \{#sm--md--lg--and-more\}
+
+프리셋의 `media.css`는 뷰포트 중단점 열한 개를 등록합니다. `theme.css`만 가져와서는 등록되지 않으며 테마 변수도 미디어 조건을 정의하지 않습니다. 값은 [중단점 참조](/reference/rules/named-conditions#viewport-widths)를 참고하세요.
+
+프로젝트는 네이티브 단위를 유지하면서 쿼리를 바꿀 수 있습니다. 프리셋 `--max-*` 정의는 대응 이름을 부정하므로 `--max-md`는 `not (--md)`입니다. 정의를 함께 컴파일하면 `--md`를 바꿀 때 두 범위가 갱신되고 경계에서 겹치지 않습니다.
+
+<a id="compiled-condition-definitions"></a>
+
+컴파일된 manifest에는 이미 확장된 쿼리가 들어 있습니다. 여기에 정의를 추가해도 기존 의존 조건이 다시 확장되지는 않습니다. 두 범위를 모두 바꿔야 하는 설정 조각은 두 이름을 명시적으로 선언해야 합니다.
+
+<ConfiguredExample source={'@custom-media --md (width >= 60rem);\n@custom-media --max-md not (--md);'} classes={['hidden@md', 'hidden@max-md']} />
+
+<ReferenceIllustration id="compiled-query-snapshot" />
+
+### 시스템 색상 환경설정 \{#light--dark--and-custom-modes\}
+
+프리셋 `@light`와 `@dark`는 `prefers-color-scheme`을 쿼리합니다. 상위 선택자를 삽입하거나 수동으로 선택한 사이트 테마를 따르지 않습니다. 수동 활성화에는 `@apply(--manual-dark)` 같은 명시적 선택자 믹스인을 사용합니다. [변수와 모드](/reference/rules/modes#mode-triggers)를 참고하세요.
+
+## 네이티브 쿼리 \{#native-queries\}
+
+### 미디어 기능과 범위 \{#mediafeature\}
+
+완전한 네이티브 기능 이름과 단위를 사용하세요. `print`, `screen`, `all` 같은 미디어 유형은 그룹 괄호 없이 출력됩니다. 미디어 유형이 아닌 단일 이름은 불리언 기능입니다. `@media(hover)`는 `@media (hover)`를 출력합니다.
+
+<a id="comparison-operators"></a>
+
+범위는 `<`, `<=`, `>`, `>=`, `=`와 연쇄 비교를 허용합니다. 소수와 네이티브 단위는 유지되며 CSS 해상도 단위 `x`도 원래 의미를 유지합니다.
+
+<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)', 'hidden@media(resolution>=2x)']} />
+
+같은 단위로 비교 가능한 범위는 범위 우선순위를 유지합니다. 이름이 있는 미디어 조건과 동등한 네이티브 쿼리는 같은 정렬 근거를 사용합니다. 단위나 표현식이 다르면 안정적인 구문 기반 순서를 사용합니다. Master CSS는 정렬을 위해 브라우저 루트 글꼴 크기를 가정하거나 단위를 변환하지 않습니다. 컨테이너 쿼리 영역은 미디어 쿼리와 구분됩니다. 동등한 조건과 같은 속성 범위에서는 직접 값이 이름 있는 토큰 뒤에 옵니다.
+
+브라우저의 기능 및 범위 해석은 [Media Queries](https://www.w3.org/TR/mediaqueries-5/)를 참고하세요.
+
+### Supports 선언 \{#supportsfeature\}
+
+`@supports(property:value)`는 `@supports(display:grid)` 같은 CSS 선언 하나를 허용합니다. 브라우저가 해당 속성과 값의 조합을 지원하는지 확인합니다. `selector()` 검사, 부정, 복합 지원 조건은 [CSS 믹스인](#queries-in-css)에 작성하세요.
+
+<Class2CSS classes={['grid@supports(display:grid)']} />
+
+### 컨테이너 \{#containersize\}
+
+크기 쿼리는 자격을 갖춘 상위 쿼리 컨테이너를 측정합니다. 일반 CSS로 컨테이너를 설정하고 가장 가까운 적격 컨테이너가 아닌 특정 컨테이너를 선택해야 할 때 이름을 추가하세요. 이 예제의 쿼리 대상 요소는 하위 요소입니다.
+
+```html
+<aside class="(container-name:card) container-inline">
+  <div class="grid-cols(2)@container(card|width>=40rem)">
+    <div>First item</div>
+    <div>Second item</div>
+  </div>
+</aside>
+```
+
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+
+조건이 일치하면 조합 스타일은 `display: grid`와 같은 너비의 두 열을 설정합니다. 임계값 미만에서는 두 선언 모두 제공하지 않으므로 두 블록 자식은 일반 흐름에서 세로로 쌓입니다. 컨테이너 자체 너비는 주변 레이아웃에 의해 정해집니다.
+
+사용자 지정 속성 스타일 쿼리는 상위 컨테이너의 값을 확인하며 `container-inline`은 필요하지 않습니다.
+
+```html
+<div style="--density:compact">
+  <div class="p(8)@container(style(--density:compact))">Compact content</div>
+</div>
+```
+
+<Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+컨테이너 자격과 매칭은 네이티브 [컨테이너 쿼리](https://www.w3.org/TR/css-conditional-5/#container-queries)가 정의합니다. `--container-md` 같은 크기 토큰을 바꿔도 명시적 쿼리 임계값이나 이름 있는 컨테이너 조건은 바뀌지 않습니다. 별도의 크기 역할은 [컨테이너 토큰](/reference/tokens/container)을 참고하세요.
+
+### 이름이 있는 컨테이너 조건 \{#named-container-conditions\}
+
+`@container(--md)`는 `@custom-container --md`를 해석합니다. `@container(card|--md)`는 같은 조건을 이름이 `card`인 적격 컨테이너에 적용합니다. 정의는 조건을 제공할 뿐 컨테이너 이름을 제공하지 않습니다.
+
+프리셋 `container.css`는 컴포넌트 너비 열세 개와 각각의 `max-` 상보 조건을 등록합니다. 뷰포트 중단점과 독립적이므로 `@container(--md)`는 `28rem`이고 `@md`는 `64rem`입니다.
+
+전체 프리셋 컨테이너 척도와 상보 조건은 [이름이 있는 조건](/reference/rules/named-conditions#container-widths)을 참고하세요.
+
+각 `--max-*` 이름은 대응하는 최소 너비 조건의 부정입니다. 예를 들어 `--max-md`는 `not (--md)`입니다. 미디어 조건과 마찬가지로 함께 컴파일한 정의는 참조 이름의 덮어쓰기를 따르지만, [이미 확장된 manifest 정의](#compiled-condition-definitions)는 설정 조각이 그 이름만 바꿔도 다시 확장되지 않습니다.
+
+<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+
+이름을 정의하거나 바꾸려면 [`@custom-container`](/reference/directives/queries#custom-container)를 사용하세요. 정의되지 않은 이름은 오류입니다.
+
+## CSS에 작성할 쿼리 \{#queries-in-css\}
+
+<a id="upgrading-rc-conditions"></a>
+
+클래스 쿼리는 의도적으로 네이티브 CSS보다 작은 문법만 허용합니다. 미디어 쿼리 목록, 복합 조건, 부정은 `@custom-media`로 정의하세요. 다른 쿼리에는 `@mixin`을 사용하고 `@contents`로 클래스 선언이 들어갈 위치를 표시하세요.
+
+| 거부되는 클래스 형식 | 이유 | 허용되는 대안 |
+| --- | --- | --- |
+| `@media((width>=50rem))` | 추가 그룹 괄호 | `@media(width>=50rem)` |
+| `@media(screen\|and\|(width>=50rem))` | 복합 쿼리 | 이름이 있는 `@custom-media` |
+| `@media(not\|print)` | 부정 쿼리 | 이름이 있는 `@custom-media` |
+| `@media(screen,print)` | 쿼리 목록 | 이름이 있는 `@custom-media` |
+| `@supports(selector([lang\|=en]))` | 선택자 지원 검사 | 네이티브 `@supports`를 포함한 `@mixin` |
+
+추가 그룹 괄호는 사용해야 할 클래스 형식과 함께 `CLASS_SYNTAX_ERROR`를 보고합니다. 복잡한 형식은 `MASTER_QUERY_REQUIRES_CSS`를 보고하고 규칙을 생성하지 않습니다. 쿼리에 따옴표를 붙여도 허용 문법은 확장되지 않습니다. `|=` 속성 연산자 같은 리터럴 파이프는 클래스 쿼리 인코딩이 아니라 네이티브 CSS에 작성하세요.
+
+<ConfiguredExample source={'@custom-media --wide-screen screen and (width >= 50rem);\n@mixin --language-selector {\n  @supports selector([lang|=en]) { @contents; }\n}'} classes={['p-md@wide-screen', 'block@apply(--language-selector)']} />
+
+재사용 가능한 래퍼와 인수는 [유틸리티와 믹스인](/reference/directives/definitions#reusing-a-matched-value)을 참고하세요.
+
+## 기타 접미사 \{#other-suffixes\}
+
+다음 접미사도 `@` 표기를 사용하지만 미디어, 지원, 컨테이너 조건을 검사하지는 않습니다.
+
+### 캐스케이드 레이어 선택 \{#base--default--component--utility\}
+
+`@layer(base)`, `@layer(defaults)`, `@layer(components)`, `@layer(utilities)`는 클래스 전체의 레이어를 선택하며 하위 레이어를 만들지 않습니다. 같은 레이어는 반복할 수 있지만 한 클래스에서 다른 레이어를 선택하면 오류입니다. 순서와 제약은 [캐스케이드 레이어](/reference/rules/layers)를 참고하세요.
+
+### 시작 스타일 \{#starting-style\}
+
+`@starting-style`은 네이티브 at-rule로 규칙을 감쌉니다. 요소에 이전 렌더링 스타일이 없을 때 변경 전 스타일을 제공해 등장 전환이 가능하게 합니다. 자체적으로 전환을 만들거나 일반적인 “첫 렌더링” 선택자처럼 동작하지는 않습니다. 네이티브 동작은 [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@starting-style)을 참고하세요.
+
+<Class2CSS classes={['(opacity:0)@starting-style']} />
+
+`@starting-style`과 `@layer(...)`는 내장 접미사이므로 프리셋 정의가 필요하지 않습니다. 재사용 가능한 CSS 래퍼는 [`@apply(--name)`](/reference/directives/definitions#reusing-a-matched-value)을 사용합니다.

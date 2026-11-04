@@ -1,0 +1,31 @@
+# Reference prose: illustrations/parameter-known-vs-live
+
+## title \{#copy-title\}
+
+
+静的なレシピ引数と動的な CSS 値は異なる
+
+## alt \{#copy-alt\}
+
+
+pair(2rem) は 2 つの寸法に展開する。この 2 宣言のレシピは pair(var(--size)) を拒否し、明示的なネイティブ width 変数はブラウザーの評価に届く。
+
+## caption \{#copy-caption\}
+
+
+図の pair ユーティリティは宣言が 2 つあります。別に設けた単一パラメーター・単一宣言の記号参照の例外は適用しません。
+
+## description-0 \{#copy-description-0\}
+
+
+@utility pair(--size) \{ width: var(--size); height: var(--size); \} は pair(2rem) の既知の引数を受け取り、両宣言に束縛します。
+
+## description-1 \{#copy-description-1\}
+
+
+このレシピはブラウザー依存の引数である pair(var(--size)) を拒否します。動的に保つ値には明示的なネイティブ宣言クラスを使います。
+
+## description-2 \{#copy-description-2\}
+
+
+(width:var(--size)) は変数参照をブラウザー用に保ち、幅だけを変えます。高さも必要なら別の高さ宣言を加えます。

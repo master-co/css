@@ -1,0 +1,29 @@
+# Reference prose: illustrations/namespace-lookup
+
+## title \{#copy-title\}
+
+The same key can select different tokens
+
+## alt \{#copy-alt\}
+
+Three independent rows map p-md to spacing-md and padding, max-w-md to container-md and max-width, and font-md to font-size-md and font-size. Each repeats the key md inside a different token name.
+
+## caption \{#copy-caption\}
+
+Each row resolves independently. The repeated md is a key within a namespace, not one global value shared by these classes.
+
+## description-0 \{#copy-description-0\}
+
+p-md selects --spacing-md and writes padding: var(--spacing-md).
+
+## description-1 \{#copy-description-1\}
+
+max-w-md selects --container-md and writes max-width: var(--container-md).
+
+## description-2 \{#copy-description-2\}
+
+font-md selects --font-size-md and writes font-size: var(--font-size-md). In the preset, md uniquely selects the font-size namespace among the font- families.
+
+## description-3 \{#copy-description-3\}
+
+The highlighted md fragments are the same key in separate namespaces. The arrows indicate lookup and property mapping, not dependencies between the three rows. The figure omits theme values and layer wrappers; the generated example below includes both.

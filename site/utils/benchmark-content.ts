@@ -1,4 +1,6 @@
-import path from 'node:path'
+import { localizeBenchmarkChart } from '@master/internal-site/benchmarks/localization.ts'
+import { translateSite } from './translations'
+import { localizedContentFile } from './localized-content'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import type { BenchmarkBarItem, BenchmarkBarsProps, BenchmarkChartModel } from '@master/internal-site/benchmarks/types.ts'
 import { formatMetricValue } from '@master/internal-site/benchmarks/utils.ts'
@@ -38,27 +40,28 @@ function table(headers: BenchmarkText[], rows: BenchmarkText[][]) {
 /** The row label as the page shows it: the label, then its quieter note. */
 const barLabel = (item: BenchmarkBarItem) => [item.label, item.labelNote]
 
-function barsTable({ items, unit, valueFormatter }: BenchmarkBarsProps) {
-  return table(['Series', 'Value', 'Detail'], items.map(item => [
+function barsTable({ items, unit, valueFormatter }: BenchmarkBarsProps, t: (text: string) => string = text => text) {
+  return table(['Series', 'Value', 'Detail'].map(t), items.map(item => [
     barLabel(item), item.valueLabel ?? valueFormatter?.(item.value) ?? formatMetricValue(item.value, unit), item.detail,
   ]))
 }
 
 /** Serialize chart values, labels and tables from the same models the page renders. */
-export function benchmarkMarkdown(chart: BenchmarkChartModel): string {
+export function benchmarkMarkdown(sourceChart: BenchmarkChartModel, t: (text: string) => string = text => text): string {
+  const chart = localizeBenchmarkChart(sourceChart, t)
   switch (chart.kind) {
     case 'bars':
-      return barsTable(chart)
+      return barsTable(chart, t)
     case 'stacked-bars':
       return chart.items.map(item => {
         const total = item.total ?? item.segments.reduce((sum, segment) => sum + segment.value, 0)
         return `\n\n**${cell(item.label)}** · ${cell(chart.valueFormatter?.(total) ?? formatMetricValue(total, chart.unit))}${item.detail ? ` · ${cell(item.detail)}` : ''}`
-          + table(['Component', 'Value'], item.segments.map(segment => [segment.label, segment.valueLabel ?? chart.valueFormatter?.(segment.value) ?? formatMetricValue(segment.value, chart.unit)]))
+          + table(['Component', 'Value'].map(t), item.segments.map(segment => [segment.label, segment.valueLabel ?? chart.valueFormatter?.(segment.value) ?? formatMetricValue(segment.value, chart.unit)]))
       }).join('')
     case 'metric-table':
-      return table(['Metric', 'Value', 'Detail'], chart.metrics.map(metric => [metric.label, metric.value, metric.detail]))
+      return table(['Metric', 'Value', 'Detail'].map(t), chart.metrics.map(metric => [metric.label, metric.value, metric.detail]))
     case 'chart-groups':
-      return chart.groups.map(group => `\n\n#### ${group.title}\n\n${group.detail}${barsTable(group)}`).join('')
+      return chart.groups.map(group => `\n\n#### ${group.title}\n\n${group.detail}${barsTable(group, t)}`).join('')
     case 'data-table':
       return table(chart.headers, chart.rows)
     default:
@@ -66,20 +69,21 @@ export function benchmarkMarkdown(chart: BenchmarkChartModel): string {
   }
 }
 
-export async function benchmarkContent(siteRoot: string) {
-  const result = await extractReferenceMdx(path.join(siteRoot, 'content/benchmarks/content.mdx'), [], [], {
+export async function benchmarkContent(siteRoot: string, locale = 'en') {
+  const t = (text: string) => translateSite(locale, text)
+  const result = await extractReferenceMdx(await localizedContentFile(siteRoot, 'content/benchmarks/content.mdx', locale), [], [], {
     component(name, attrs) {
       if (name === 'PageCSSSizeBenchmark') {
-        return table(['Site', 'Raw CSS', 'Brotli CSS'], pageCssSnapshot.pages.map(page => [
+        return table(['Site', 'Raw CSS', 'Brotli CSS'].map(t), pageCssSnapshot.pages.map(page => [
           page.name, `${(page.css.total.rawBytes / 1000).toFixed(1)} kB`, `${(page.css.total.brotliBytes / 1000).toFixed(1)} kB`
-        ])) + '\nBoth views use the same scale and the committed page snapshot.\n'
+        ])) + `\n${t('Both views use the same scale and the committed page snapshot.')}\n`
       }
       if (name !== 'BenchmarkChart') return
       const { chart: reference, ...rest } = attrs as { chart?: { type?: string, value?: string } }
       if (Object.keys(rest).length || reference?.type !== 'mdxJsxAttributeValueExpression') throw new Error('BenchmarkChart takes one chart={Name} reference')
       const chart = benchmarkContentComponents[reference.value?.trim() ?? '']
       if (!chart) throw new Error(`Unregistered benchmark chart: ${reference.value}`)
-      return benchmarkMarkdown(chart)
+      return benchmarkMarkdown(chart, t)
     },
   })
   if (result.notes.length) throw new Error(`Incomplete Benchmarks export: ${result.notes.join('; ')}`)

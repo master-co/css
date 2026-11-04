@@ -1,0 +1,36 @@
+# Reference prose: illustrations/definition-replacement
+
+## title \{#copy-title\}
+
+
+较后定义完整替换注册
+
+## alt \{#copy-alt\}
+
+
+两个依序排列的 badge 工具类定义导向一条最终规则。第一个包含红色与 padding，第二个仅有蓝色。输出仅包含蓝色。
+
+## caption \{#copy-caption\}
+
+
+两个定义注册相同的静态工具类。第二个完整替换第一个，原有的 padding 也不再保留。这是生成前的定义替换，并非两条 CSS 规则在层叠中竞争。
+
+## description-0 \{#copy-description-0\}
+
+
+第一个静态 badge 定义包含 color: red 和 padding: 1rem。
+
+## description-1 \{#copy-description-1\}
+
+
+较后的静态 badge 定义仅含 color: blue，并完整替换第一个定义。
+
+## description-2 \{#copy-description-2\}
+
+
+使用 badge 生成一条包含 color: blue 的规则。之前的 padding 及其依赖不会保留。
+
+## description-3 \{#copy-description-3\}
+
+
+静态与函数注册仍相互独立。令牌模式仅替换前缀与命名空间相同的分支；混入则替换完整命名定义。

@@ -1,6 +1,10 @@
 ---
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 import DocumentFlow from '@master/internal-site/components/DocumentFlow.astro'
 import { previewWorkflow } from '../utils/agent-guide-data'
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'AgentWorkflow', previewWorkflow)
+
 ---
 
-<div data-agent-workflow><DocumentFlow {...previewWorkflow} /></div>
+<div data-agent-workflow><DocumentFlow {...copy} /></div>

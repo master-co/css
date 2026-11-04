@@ -1,0 +1,144 @@
+---
+{
+  "title": "Monorepo",
+  "description": "讓每個應用程式擁有自己的專案脈絡，並在工作區套件之間共用 CSS 詞彙。",
+  "category": "基礎",
+  "figures": {
+    "MonorepoIllustration": {
+      "title": "共用原始碼，保留兩個專案脈絡",
+      "alt": "admin 與 shop 專案都匯入 styles/shared.css，各自在 index.css 覆寫 color-primary。相同 bg-primary 類別在 admin 解析為紫色，在 shop 解析為青綠色，兩邊覆寫互不影響。",
+      "caption": "匯入會共用定義。每個應用程式仍擁有自己的進入點、覆寫、原始碼選取範圍與產生輸出。",
+      "description": [
+        {
+          "title": "共用定義",
+          "text": "兩個應用程式進入點都匯入 styles/shared.css。"
+        },
+        {
+          "title": "Admin 脈絡",
+          "text": "projects/admin/index.css 將 color-primary 覆寫為 #4f46e5。它的 bg-primary 類別使用這個紫色值。"
+        },
+        {
+          "title": "Shop 脈絡",
+          "text": "projects/shop/index.css 將 color-primary 覆寫為 #0f766e。它的 bg-primary 類別獨立使用這個青綠色值。"
+        }
+      ]
+    },
+    "GuideStudy:shared-source-inputs": {
+      "title": "共用 CSS 與共用標記是獨立輸入",
+      "alt": "CSS 定義檔與元件原始檔，分別透過匯入與原始碼選取兩條路徑進入使用端應用程式。",
+      "caption": "匯入共用 CSS，不會自動選取所有同層元件檔案進行掃描。"
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MonorepoIllustration from './components/MonorepoIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 概覽 [sr-only] \{#overview\}
+讓每個應用程式擁有獨立的專案邊界，再透過匯入共用 CSS 詞彙。[語言服務](/guide/language-service)、[程式碼 lint](/guide/code-linting) 與建置整合，都能使用同一份應用程式專屬的專案脈絡。
+
+匯入 `@master/css` 的專案 CSS 進入點，或宣告 Master CSS 相依性的套件，都能識別一個工作區。這些邊界獨立於套件管理工具的工作區清單。請從各應用程式的專案目錄開始建置，並將 CSS 進入點保留在該目錄。僅屬於套件管理工具的同一工作區，不會建立共用的 Master CSS 設定。
+
+<MonorepoIllustration />
+
+---
+
+## 一個專案，一個工作區 \{#one-project-one-workspace\}
+每個 `package.json` 專案都有一個 Master CSS 工作區：一份專案 manifest 圖、原始碼掃描脈絡，以及一組工具整合。
+
+獨立應用程式請使用分開的套件專案，例如 `projects/admin` 與 `projects/shop`。各自擁有 CSS 進入點與應用程式設定：
+
+<ExplorerView items={[
+  { name: 'projects', children: [
+    { name: 'admin', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]},
+    { name: 'shop', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]}
+  ]},
+  { name: 'package.json' },
+  { name: 'styles', children: [{ name: 'shared.css' }] }
+]} />
+
+在每個應用程式完成對應的[框架設定](/guide/installation#integrations)。從該應用程式目錄啟動開發伺服器及正式環境建置，讓產生的 CSS、原始碼掃描、診斷與編輯器狀態都對齊同一專案根目錄。
+
+將共用定義放在專用原始檔中。此範例由共用檔提供 token，而每個應用程式自行匯入完整的 Master CSS 進入點：
+
+```css name=styles/shared.css
+@theme {
+  --color-primary: #123456;
+}
+```
+
+### 共用 CSS 定義 \{#share-css-definitions\}
+在每個工作區匯入共用的專案 CSS 檔案，再於其後加入工作區專屬的定義。
+```css name=projects/admin/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #4f46e5;
+}
+
+@layer components {
+  .app-shell {
+    background-color: var(--color-surface-base);
+    min-height: 100vh;
+  }
+}
+```
+共用匯入之後的定義，可以覆寫共用 token 與 utility。同一串接層的原生元件規則，依 CSS 原始碼順序排列。
+
+shop 匯入相同的共用原始碼，再選擇自己的顏色：
+
+```css name=projects/shop/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #0f766e;
+}
+```
+
+兩個應用程式都能使用相同類別：
+
+```html
+<p class="flex items-center gap-xs text-sm">
+  <span aria-hidden="true" class="h(8) w(8) pill bg-primary"></span>
+  Workspace
+</p>
+```
+
+admin 建置會輸出自己的 `#4f46e5` 主色值；shop 則輸出 `#0f766e`。變更 admin 的覆寫，不應改變 shop 輸出。建置兩個應用程式，檢查各自產生樣式表中的 `--color-primary`，確認邊界正常運作。
+
+共用檔案定義詞彙；每個應用程式進入點決定匯入內容。應用程式專用的掃描指令與傳遞選擇，請留在所屬應用程式中，不要放入共用樣式表。
+
+---
+
+## 納入共用元件原始碼 \{#include-shared-component-sources\}
+
+共用 CSS 匯入提供的是定義。共用元件內的類別字串，仍需要送到使用端應用程式的掃描器。Vite 可以掃描匯入的工作區模組；從應用程式內啟動的 CLI 建置，則不會沿 JavaScript 匯入追查同層套件。
+
+若元件位於 `packages/ui`，請在每個使用端應用程式的 CSS 進入點加入 `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";`。這個明確路徑會將共用原始碼納入應用程式建置。它相對於宣告該指令的 CSS 檔案，因此進入點移動時也要調整路徑。
+
+<ReferenceIllustration id="source-relative-base" />
+
+已安裝的相依套件目錄不會自動掃描。打包後的元件函式庫可能需要範圍精確的 `@source` 模式，指向其發布的原始檔。請挑選只出現在該套件中的類別，檢查應用程式正式環境輸出。[原始碼邊界](/reference/rules/extraction#source-boundaries)列出了排除規則與其他來源類型。
+
+<GuideStudy id="shared-source-inputs" />
+
+## 擴大共用範圍前，先驗證邊界 \{#verify-the-boundary-before-sharing-more\}
+
+從各應用程式目錄執行正式環境建置。變更一個區域覆寫後，檢查兩份輸出：admin 的值應只在 admin 改變。接著加入只由共用元件使用的完整類別，確認使用端應用程式會輸出該規則。
+
+若缺少 token，請檢查 CSS 匯入圖。若定義可用，但共用元件的 utility 缺少，請檢查原始碼選取範圍。這是兩項獨立輸入：匯入共用 CSS，不會自動納入所有同層元件檔案。
+
+詞彙需要版本化套件契約時，請參閱[撰寫套件](/guide/authoring-packages)。以[掃描類別名稱](/guide/scanning-and-pruning)定義各應用程式掃描的檔案，再透過[最佳化 CSS 傳遞](/guide/optimizing-css-delivery#native-pruning)決定可移除的原生規則。

@@ -1,0 +1,57 @@
+# Reference prose: tokens/shadow
+
+## title \{#copy-title\}
+
+Shadow
+
+## summary \{#copy-summary\}
+
+Layered elevation shadows, tuned for light and dark.
+
+## note \{#copy-note\}
+
+`shadow-<name>` writes the complete `box-shadow` value. Two shadow classes do not append their lists; the winning declaration supplies the entire shadow.
+
+## valuesLead \{#copy-valuesLead\}
+
+Each token stores a comma-separated list of native shadows. Expand a value to inspect every layer. Light and dark use the same offsets, blur and spread lengths with different light-dark() colors.
+
+## explanation-title \{#copy-explanation-title\}
+
+A shadow changes paint, not layout
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`shadow-xs` and `shadow-xl` produce different painted footprints around the same box. Neither reserves room for its shadow: the following element keeps the same position and gap.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+The first shadow in a token’s list is painted on top of the later shadows. `shadow-inset` uses inner shadows; the six size steps use outer shadows. The tokens do not supply a surface color, radius, stacking order or clipping policy.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+The element’s used color scheme selects each `light-dark()` color. It changes the paint without changing the shadow’s lengths or requiring another utility class. See Color roles for local scheme selection.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+To remove the shadow, use the native declaration `(box-shadow:none)`. To combine an inset with an outer shadow, define one token containing both lists; separate classes do not merge them.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Color roles
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native shadow painting and layout
+
+## usage-lead \{#copy-usage-lead\}
+
+Keep resting surfaces low and lift only what floats above them.
+
+## customize-lead \{#copy-customize-lead\}
+
+Change a preset value or add a token: `--shadow-card` creates `shadow-card`.
+
+## guide-label \{#copy-guide-label\}
+
+Color

@@ -1,0 +1,45 @@
+# Reference prose: sr-only
+
+## title \{#copy-title\}
+
+Screen reader text
+
+## summary \{#copy-summary\}
+
+Hide text visually while keeping it in the accessibility tree.
+
+## note \{#copy-note\}
+
+Use this class for text that should remain available to assistive technology. It is not a way to disable an element or remove it from keyboard navigation.
+
+## explanation-title \{#copy-explanation-title\}
+
+Visual clipping and accessible naming are separate
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`sr-only` takes its element out of normal flow, gives it a 1px box and clips its paint. It does not apply `display: none`, `visibility: hidden` or `aria-hidden`. Text can therefore still contribute to an accessible name.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+Put the class on the label text inside a control. Keep the control itself visible and focusable. An icon marked `aria-hidden="true"` stays out of the name, leaving the text to describe the action.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+Do not put a focusable control inside an always-clipped region: keyboard users could reach a control they cannot see. A skip link needs its own visible-on-focus styling; the preset does not provide a `not-sr-only` reversal utility.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+An ancestor that removes the subtree from the accessibility tree still removes this text. `sr-only` cannot counteract `hidden`, `display: none` or `aria-hidden="true"` on an ancestor. Test the resulting role and name in the actual control.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+accessible names
+
+## usage-lead \{#copy-usage-lead\}
+
+Name an icon-only link that opens the utility definition below.
+
+## caption \{#copy-caption\}
+
+The link’s accessible name is “Read the utility definition”; the arrow is excluded from that name.

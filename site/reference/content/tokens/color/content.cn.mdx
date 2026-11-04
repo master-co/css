@@ -1,0 +1,81 @@
+# Reference prose: tokens/color
+
+## title \{#copy-title\}
+
+
+调色板
+
+## summary \{#copy-summary\}
+
+
+所有带编号的色阶、固定色相别名以及其他预设颜色令牌。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+调色板
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+色相别名
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+其他颜色
+
+## note \{#copy-note\}
+
+
+颜色类只设置指定的属性。要显示边框，请同时设置宽度，例如 `b(1)`、样式，例如 `b-solid`，以及颜色，例如 `b-blue-60`。颜色角色使用相同的族，并有各自的值对照表。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+调色板编号是令牌的键，不是透明度或明度百分比。编号越大，OKLCH 明度越低。每个色样都可复制 CSS 值或变量引用；下方的色相别名保留原始令牌引用。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+色相别名选择固定色阶
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`bg-blue` 读取 `--color-blue`，其预设值为 `var(--color-blue-60)`。`bg-yellow` 则会取得 `--color-yellow-40`。使用别名不代表不同色相会对应相同的色阶编号。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+带编号的色阶与色相别名不会随配色方案切换。`fg-text-blue` 这类自适应文本别名属于颜色角色。重新定义令牌可以改变其中任一种行为。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`bg-current` 读取 `currentColor`，因此结果跟随元素的文本颜色。预设中没有 `--color-transparent` 令牌。需要透明色或其他字面颜色值时，请使用原生声明，例如 `(background-color:transparent)` 或 `(background-color:#175fe9)`。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+颜色角色
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生值与透明度
+
+## usage-lead \{#copy-usage-lead\}
+
+
+这些状态标签明确指定前景与背景色阶。即使没有颜色，文字仍能传达状态，而且所选颜色在两种配色方案中都保持不变。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+在 `@theme` 中注册颜色后，颜色族就能使用它的键。这里的 `brand` 可用于 `bg-brand`、`fg-brand`、`b-brand` 等类。
+
+## guide-label \{#copy-guide-label\}
+
+
+颜色

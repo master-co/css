@@ -1,0 +1,36 @@
+# Reference prose: illustrations/compiler-output-ownership
+
+## title \{#copy-title\}
+
+
+编译后的 manifest 不含交付的原生样式表
+
+## alt \{#copy-alt\}
+
+
+编译 app.css 分别产生原生 CSS 和 manifest。Node 渲染会话使用 manifest 与 bg-brand 生成工具类规则；原生 .card 规则留在编译器 CSS 输出。
+
+## caption \{#copy-caption\}
+
+
+编译器分别返回原生 CSS 与定义。Node 渲染会话将提供的类转为工具类 CSS，不会再次交付编译器的原生 .card 规则。
+
+## description-0 \{#copy-description-0\}
+
+
+app.css 包含主题令牌与原生 .card 规则。@master/css-compiler/node 的 compileManifestSync 以显式基础 manifest 编译它。
+
+## description-1 \{#copy-description-1\}
+
+
+result.css 带有原生规则。result.manifest 带有供后续类生成使用的定义。
+
+## description-2 \{#copy-description-2\}
+
+
+@master/css/node 的 Node createRenderSessionSync 接受该 manifest。确保 bg-brand 可用时生成其 background-color 规则与所需令牌资源。
+
+## description-3 \{#copy-description-3\}
+
+
+应用必须同时交付原生与生成 CSS，并协调共享资源所有权。浏览器引擎使用编译后的运行时程序，不采用此 Node manifest 路径。

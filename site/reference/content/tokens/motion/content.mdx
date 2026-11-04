@@ -1,0 +1,77 @@
+# Reference prose: tokens/motion
+
+## title \{#copy-title\}
+
+Motion
+
+## summary \{#copy-summary\}
+
+Animation shorthands, duration values and easing curves.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+Animations
+
+## groups-1-title \{#copy-groups-1-title\}
+
+Durations
+
+## groups-2-title \{#copy-groups-2-title\}
+
+Easing
+
+## note \{#copy-note\}
+
+The `animation-` and `transition-` prefixes each read both duration and easing namespaces. Custom keys must be distinct across those two namespaces; a shared key is ambiguous. `animate-` reads a complete animation shorthand instead.
+
+## valuesLead \{#copy-valuesLead\}
+
+The ten animation tokens include their keyframe names and repeat infinitely. Seven durations supply time lengths; nine easing curves map time progress to value progress. The visual comparisons run animations once, start paused and respect reduced motion.
+
+## explanation-title \{#copy-explanation-title\}
+
+Override one part of an animation
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`animate-pulse` writes the complete `animation` shorthand, including its 1s duration. Under the same conditions, `animation-slow` sorts after the shorthand and replaces that duration with 300ms. The keyframe name and iteration count remain unchanged; reordering the class attribute does not change this result.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+Use the duration or easing family to adjust one part, or compose a custom animation token from their variables. An explicit native declaration such as `(animation-duration:450ms)` supplies a literal override. The two bars show one iteration on the same time scale; they do not compare rendering performance.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+Animation tokens retain the keyframes their values reference. Duration or easing classes alone do not name an animation. A transition also needs a property value to change; `transition-fast` supplies a duration, not a hover state or a property list.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+A delay changes when an effect starts; it does not lengthen its duration. Easing changes progress within the duration. Curves with control points outside the vertical 0–1 range can overshoot or rewind; the property being animated can still constrain its rendered values.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+Guard nonessential motion with `@motion-safe`. For one run of a preset animation, add `(animation-iteration-count:1)` under the same conditions. Theme Guide owns composing an entrance for a component; View transitions Guide owns transitions between captured page states.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+generated rule order
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native animation shorthand
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+View transitions
+
+## usage-lead \{#copy-usage-lead\}
+
+Ease the link’s background change on hover when motion is allowed. The link returns to the value tables.
+
+## customize-lead \{#copy-customize-lead\}
+
+Compose an animation from duration and easing tokens, and declare its keyframes in native CSS: `--animate-reveal` creates `animate-reveal`.
+
+## guide-label \{#copy-guide-label\}
+
+Theme tokens

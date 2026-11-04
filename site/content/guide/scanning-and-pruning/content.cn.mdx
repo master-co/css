@@ -1,0 +1,141 @@
+---
+{
+  "title": "扫描类名",
+  "description": "编写完整类名、处理变化的值，并纳入静态构建所需的源文件。",
+  "category": "编写",
+  "figures": {
+    "GuideStudy:stable-dynamic-value": {
+      "title": "改变变量，保持规则稳定",
+      "alt": "相同 font-size 类名出现在两个标题上方。将 --headline-size 从 2rem 改为 3rem，会让第二个标题变大，无须引入其他类名。",
+      "caption": "浏览器解析更新后的自定义属性。静态样式表中已包含完整规则。"
+    },
+    "GuideStudy:source-and-policy": {
+      "title": "源文件发现与保留策略回答不同问题",
+      "alt": "源文件先提供完整类名候选，再由独立策略关卡决定是否保留；缺少源文件，就无法提供其中的类名。",
+      "caption": "先检查源文件是否纳入，再检查类名策略。图解并不表示类名字符串会作为 JavaScript 求值。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:scanning": {
+      "title": "从源代码到工具类",
+      "alt": "从源文件提取完整字符串，再根据项目定义解析并生成 CSS。",
+      "caption": "原生类名使用情况也会用于裁剪，即使该类名不是 Master CSS 工具类。",
+      "steps": [
+        {
+          "title": "发现",
+          "description": "通过集成默认行为或显式源文件指令查找应用源文件。"
+        },
+        {
+          "title": "提取",
+          "description": "读取完整候选字符串，不运行应用代码。"
+        },
+        {
+          "title": "解析",
+          "description": "使用当前启用的清单，为识别出的 Master CSS 类名生成规则。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 概览 [sr-only] \{#overview\}
+让静态构建能够获取类名，同时避免把变化的值变成新类。编写完整的备选类名，用 CSS 变量处理连续值，并且只在输入超出集成的常规范围时调整源文件发现。原生 CSS 的移除另有[交付流程](/guide/optimizing-css-delivery#native-pruning)。
+
+## 在源代码中保留完整类名 \{#keep-complete-classes-in-source\}
+
+扫描器读取源代码文本，不会运行应用。组件需要选择状态颜色时，请完整写出每个类名：
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+静态提取无法从 `'bg-' + tone` 这类片段获得完整结果。多种状态会选择不同类名时，请使用有限的映射表：
+
+```js
+const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
+const className = statusClasses[status]
+```
+
+扫描器不必执行这次查找，就能找到两个备选类名。运行时与渐进式渲染可为首次在浏览器中确定的有效工具类名生成规则；源代码中的完整字符串是静态扫描的要求，并不禁止动态工具类。选择方式请参阅[渲染模式](/guide/rendering-modes#comparisons)。
+
+<DeliveryFlow name="scanning" />
+
+即使同时只使用其中一个分支，扫描器仍能看见两个分支。各类名生成的内容由当前启用的项目定义决定：
+
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+<ReferenceIllustration id="static-branch-extraction" />
+
+## 不要把变化的值放进类名 \{#keep-changing-values-out-of-class-names\}
+
+假设标题大小来自编辑器控件。请保持类名完整，并修改元素上的自定义属性：
+
+```html
+<h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+document.getElementById('headline').style.setProperty('--headline-size', '3rem')
+```
+
+<Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+完成静态构建后，在浏览器控制台运行这段 JavaScript。标题会变大，但不会添加类名或生成新规则。局部自定义属性不需要注册 `@theme`，也不需要 Master CSS 运行时。如果类名本身在启动后才首次出现，请使用[运行时或渐进式渲染](/guide/rendering-modes#comparisons)。
+
+<GuideStudy id="stable-dynamic-value" />
+
+## 纳入常规发现范围之外的源文件 \{#include-sources-outside-normal-discovery\}
+
+先使用集成或 CLI 的常规源文件发现。共享组件目录若在其范围之外，再在负责扫描的样式表中显式添加源文件。路径以该样式表为相对基准：
+
+```css name=src/style.css
+@import '@master/css';
+@source "../shared/**/*.tsx";
+@source not "../shared/**/*.test.tsx";
+```
+
+此示例纳入同级的 `shared/` 目录，并排除其中的测试。匹配模式应只覆盖必要输入。`@source` 提供类名候选，不会导入样式表，也不决定层叠优先级。不要只因缺少一个组件，就添加整个仓库。
+
+外部内容提供的工具类名若是有限集合，请列出完整候选：
+
+```css
+@safelist "bg-red-60" "bg-green-60";
+```
+
+安全列表让这些候选可用于生成，不会把类名添加到元素上，也不会让无效名称变成有效。无界的值应使用变量，不要尝试逐一枚举。[`@blocklist`](/reference/directives/scanning#blocklist) 会排除候选；已发现类名却仍未生成 CSS 时，请检查此策略。
+
+<GuideStudy id="source-and-policy" />
+
+路径模式、候选过滤及其优先级请参阅[扫描指令](/reference/directives/scanning)。请区分源文件从未被读取，以及候选被策略移除这两种情况。
+
+## 查找样式缺失的原因 \{#find-why-a-style-is-missing\}
+
+1. 使用[类名检查工具](/reference/tools/mcp#mastercss_inspect_class)，根据当前启用的项目清单检查完整类名。
+2. 确认源文件已纳入扫描。普通应用文件使用集成或 CLI 的默认发现；只有明确例外才添加 [`@source`](/reference/directives/scanning)。
+3. 检查候选策略。`@source not` 可排除文件，`@blocklist` 可移除类名。已知且有限的外部类名集合可使用 `@safelist`。
+4. 规则已生成时，确认此页已加载所属样式表。已经加载时，先检查选择器是否匹配，以及层叠中胜出的声明，再调整源文件发现。
+5. 缺少的是原生规则时，请遵循[原生裁剪检查](/guide/optimizing-css-delivery#native-pruning)，包括外部类名与稍后出现的状态。运行时工具类生成无法重建任意被移除的原生选择器。
+
+源文件边界、候选扫描与验证请参阅[提取](/reference/rules/extraction)。
+
+## 继续处理原生 CSS 交付 \{#continue-to-native-css-delivery\}
+
+### 裁剪未使用的原生 CSS \{#prune-native-css\}
+
+原生 CSS 默认保留。若要移除未使用的原生类规则，请遵循[只裁剪已知的使用集合](/guide/optimizing-css-delivery#native-pruning)。该流程先确定交付的归属范围，再说明文件显式启用、软件包边界、保留状态与关键帧依赖。
+
+### 保留第三方样式表 \{#preserve-native-css\}
+
+类名由外部提供时，可选择有限的安全列表，或保留拥有这些原生规则的文件。[保护外部与不确定的源文件](/guide/optimizing-css-delivery#keep-external-and-uncertain-sources-safe)包含示例与策略限制。
+
+### 验证输出 \{#verify-pruning\}
+
+源代码中存在指令，并不证明集成已提供使用集合。[独立验证裁剪步骤](/guide/optimizing-css-delivery#verify-the-pruning-step-independently)提供可复现的 CLI 检查，并说明该检查能够证明什么。

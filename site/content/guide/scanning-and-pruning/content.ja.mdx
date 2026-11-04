@@ -1,0 +1,141 @@
+---
+{
+  "title": "クラス名のスキャン",
+  "description": "完全なクラス名を記述し、変化する値を扱い、静的ビルドに必要なソースを含めます。",
+  "category": "記述",
+  "figures": {
+    "GuideStudy:stable-dynamic-value": {
+      "title": "変数を変えてもルールは保つ",
+      "alt": "同じ font-size クラスが2つの見出しの上に示されている。--headline-size を2remから3remへ変えると、クラスを追加せず2つ目の見出しが大きくなる。",
+      "caption": "ブラウザーが更新されたカスタムプロパティを解決します。静的スタイルシートには、すでに完全なルールがあります。"
+    },
+    "GuideStudy:source-and-policy": {
+      "title": "ソース探索と保持ポリシーは別の問題",
+      "alt": "ソースファイルが完全なクラス候補を提供し、別のポリシー判定で保持の可否を決める。読み取られないソースからはクラスを得られない。",
+      "caption": "クラスのポリシーより先に、ソースが含まれるか確認します。この図はクラス文字列を JavaScript として評価することを示していません。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:scanning": {
+      "title": "ソースからユーティリティへ",
+      "alt": "ソースファイルから完全な文字列を抽出し、プロジェクト定義と照合して CSS を生成する。",
+      "caption": "Master CSS ユーティリティではないクラスも、その使用状況がネイティブ CSS の削除判断に使われます。",
+      "steps": [
+        {
+          "title": "探索",
+          "description": "インテグレーションの既定動作か明示的なソースディレクティブで、アプリのソースを見つけます。"
+        },
+        {
+          "title": "抽出",
+          "description": "アプリのコードを実行せず、完全な候補文字列を読み取ります。"
+        },
+        {
+          "title": "解決",
+          "description": "有効なマニフェストを使い、認識した Master CSS クラスのルールを生成します。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 概要 [sr-only] \{#overview\}
+変化する値ごとに新しいクラスを作らず、静的ビルドがクラス名を取得できるようにします。選択肢となるクラスを完全に記述し、連続的な値には CSS 変数を使います。ソース探索の変更は、入力がインテグレーションの通常の範囲外にある場合に限ります。ネイティブ CSS の削除は、別の[配信手順](/guide/optimizing-css-delivery#native-pruning)で扱います。
+
+## 完全なクラスをソースに残す \{#keep-complete-classes-in-source\}
+
+スキャナーはソースの文字列を読み取り、アプリケーションは実行しません。コンポーネントで状態の色を選ぶ場合は、クラスをそれぞれ完全に記述します。
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+静的な抽出では、`'bg-' + tone` のような断片から完成したクラス名は得られません。複数の状態に応じてクラスを選ぶ場合は、有限のマップを使います。
+
+```js
+const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
+const className = statusClasses[status]
+```
+
+スキャナーはこの参照処理を実行せず、両方の候補を見つけられます。ランタイムやプログレッシブレンダリングでは、ブラウザーで初めて判明した有効なユーティリティ名からもルールを生成できます。ソース内の完全な文字列は静的スキャンの要件であり、動的ユーティリティを禁じるものではありません。選び方は[レンダリングモード](/guide/rendering-modes#comparisons)を参照してください。
+
+<DeliveryFlow name="scanning" />
+
+一度に使う分岐が1つだけでも、ソース上では両方を確認できます。各クラスが何を生成するかは、有効なプロジェクト定義で決まります。
+
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+<ReferenceIllustration id="static-branch-extraction" />
+
+## 変化する値をクラス名に含めない \{#keep-changing-values-out-of-class-names\}
+
+見出しのサイズをエディターの操作部品で決める場合を考えます。クラス名を完全なまま保ち、要素のカスタムプロパティを変更します。
+
+```html
+<h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+document.getElementById('headline').style.setProperty('--headline-size', '3rem')
+```
+
+<Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+静的ビルド後にブラウザーのコンソールでこの JavaScript を実行します。クラスを追加したり新しいルールを生成したりせず、見出しが大きくなります。ローカルなカスタムプロパティに `@theme` の登録や Master CSS runtime は不要です。クラス名自体が起動後に初めて現れる場合は、[ランタイムまたはプログレッシブレンダリング](/guide/rendering-modes#comparisons)を使います。
+
+<GuideStudy id="stable-dynamic-value" />
+
+## 通常の探索範囲外のソースを含める \{#include-sources-outside-normal-discovery\}
+
+まずインテグレーションや CLI の通常のソース探索を使います。共有コンポーネントのディレクトリが範囲外なら、スキャンを担当するスタイルシートにソースを明示します。パスの基準はそのスタイルシートです。
+
+```css name=src/style.css
+@import '@master/css';
+@source "../shared/**/*.tsx";
+@source not "../shared/**/*.test.tsx";
+```
+
+この例は兄弟ディレクトリの `shared/` を含め、テストを除外します。パターンは必要な入力だけに絞ってください。`@source` はクラスの候補を提供するもので、スタイルシートの import やカスケードの優先順位の決定は行いません。コンポーネントが1つ不足しているだけでリポジトリ全体を追加しないでください。
+
+外部コンテンツが提供するユーティリティ名が有限であれば、候補を完全な形で列挙します。
+
+```css
+@safelist "bg-red-60" "bg-green-60";
+```
+
+セーフリストは候補を生成対象として提供しますが、要素にクラスを追加したり、無効な名前を有効にしたりはしません。範囲を限定できない値は列挙せず、変数を使います。[`@blocklist`](/reference/directives/scanning#blocklist) は候補を除外します。検出済みのクラスから CSS が生成されない場合は、このポリシーを確認してください。
+
+<GuideStudy id="source-and-policy" />
+
+パスのパターン、候補フィルター、優先順位は[スキャンのディレクティブ](/reference/directives/scanning)を参照してください。ソースファイルが読み取られていない場合と、候補がポリシーで除外された場合を区別します。
+
+## スタイルが見つからない原因を調べる \{#find-why-a-style-is-missing\}
+
+1. [クラス検査ツール](/reference/tools/mcp#mastercss_inspect_class)で、完全なクラスを有効なプロジェクトマニフェストと照合します。
+2. ソースファイルがスキャン対象に含まれるか確認します。通常のアプリのファイルはインテグレーションや CLI の既定の探索に任せ、明示的な例外だけに [`@source`](/reference/directives/scanning) を追加します。
+3. 候補のポリシーを確認します。`@source not` はファイル、`@blocklist` はクラスを除外できます。既知で有限の外部クラス集合には `@safelist` を使います。
+4. ルールが生成されていれば、そのスタイルシートがページで読み込まれているか確認します。読み込まれている場合は、ソース探索を変更する前にセレクターの一致とカスケードで優先される宣言を調べます。
+5. ネイティブルールが不足している場合は、外部クラスや後から現れる状態も含めて[ネイティブ CSS の削除に関する検証](/guide/optimizing-css-delivery#native-pruning)を行います。ランタイムのユーティリティ生成では、削除された任意のネイティブセレクターを復元できません。
+
+ソースの境界、候補のスキャン、検証は[抽出](/reference/rules/extraction)を参照してください。
+
+## ネイティブ CSS の配信へ進む \{#continue-to-native-css-delivery\}
+
+### 未使用のネイティブ CSS を削除する \{#prune-native-css\}
+
+ネイティブ CSS は既定で保持されます。未使用のネイティブクラスのルールを削除するには、[既知の使用集合だけを対象にする](/guide/optimizing-css-delivery#native-pruning)手順に従います。配信の責任範囲を決めた後の、ファイルごとの有効化、パッケージ境界、保持する状態、キーフレームの依存関係を扱います。
+
+### ベンダーのスタイルシートを保持する \{#preserve-native-css\}
+
+外部から提供されるクラスには、有限のセーフリストを使うか、ネイティブルールを所有するファイルを保持します。[外部の不確かなソースを保護する](/guide/optimizing-css-delivery#keep-external-and-uncertain-sources-safe)に、例とポリシーの制約をまとめています。
+
+### 出力を検証する \{#verify-pruning\}
+
+ソースにディレクティブがあるだけでは、インテグレーションが使用集合を渡した証拠になりません。[削除処理を個別に検証する](/guide/optimizing-css-delivery#verify-the-pruning-step-independently)手順では、再現可能な CLI の確認方法と、それによって何を確かめられるかを説明します。

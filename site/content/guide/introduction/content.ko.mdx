@@ -1,0 +1,68 @@
+---
+title: "Master CSS 입문"
+description: "클래스로 인터페이스를 만들고 생성 CSS를 따라가며 프로젝트에서 공유할 값을 정의하세요."
+figures: {"IntroductionIllustration": {"title": "클래스는 스타일을 선택하고 토큰은 값을 제공합니다", "alt": "HTML의 p-lg 클래스가 생성 CSS의 .p-lg 선택자로 연결됩니다. 값이 1.5rem인 테마 토큰 --spacing-lg는 padding 선언 안의 var() 참조로 연결됩니다.", "caption": "같은 이름이 각 부분을 연결합니다. p-lg는 규칙을 선택하고 var(--spacing-lg)는 공유 값을 읽습니다. 그림에는 해당 선언만 표시하며, 아래의 전체 출력에는 레이어도 포함됩니다.", "description": [{"title": "클래스 일치", "text": "HTML의 p-lg 클래스는 생성된 .p-lg 선택자와 일치합니다. 파란 괄호와 선이 두 위치를 연결합니다."}, {"title": "공유 값", "text": "프리셋은 --spacing-lg를 1.5rem으로 정의합니다. 보라색 괄호와 선이 이 정의를 padding: var(--spacing-lg)의 참조와 연결합니다."}, {"title": "브라우저 결과", "text": "브라우저는 CSS 변수를 해석해 네 방향 모두에 1.5rem 패딩을 적용합니다. 생성된 규칙은 값을 선언에 복사하지 않고 변수 참조를 유지합니다."}]}, "GuideStudy:language-and-delivery": {"title": "전달 방식이 달라도 클래스 체계는 같습니다", "alt": "하나의 클래스와 선언이 두 전달 경로로 나뉩니다. 하나는 빌드에서 생성한 스타일시트이고, 다른 하나는 브라우저에서 생성한 스타일시트입니다.", "caption": "구문은 어떤 스타일을 요청하는지 나타냅니다. 렌더링 모드는 CSS를 언제 어디서 생성할지 결정합니다."}}
+---
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Overview from './components/Overview.mdx'
+import IntroductionIllustration from './components/IntroductionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+
+Master CSS는 마크업에서 인터페이스 스타일을 지정하고 CSS에서 공통 스타일을 정의하는 CSS 프레임워크입니다. 요소를 만드는 곳에 클래스를 작성하고, 프로젝트 전체에서 공유할 값과 패턴은 스타일시트에 두세요. Master가 해당 클래스에 필요한 CSS를 생성합니다.
+
+제공되는 색상, 간격, 타이포그래피부터 사용할 수 있습니다. 첫 컴포넌트를 만들기 전에 완전한 테마를 설계할 필요는 없습니다.
+
+## CSS와 유틸리티로 인터페이스 만들기 \{#overview\}
+
+이 카드는 네이티브 컴포넌트 클래스와 유틸리티를 조합합니다. `.action`은 CSS에서 버튼의 기본 스타일을 정의합니다. `w-full`, `mt-md`, `bg-blue-60`은 이 카드에 필요한 너비, 바깥 여백, 색상을 지정합니다. 나머지 마크업은 프리셋 유틸리티로 레이아웃, 간격, 타이포그래피를 구성합니다.
+
+[설치](/guide/installation)를 마쳤다면 앱 스타일시트의 프리셋 가져오기 뒤에 예제의 CSS를 추가하고, 통합 도구가 스캔하는 소스 파일에 HTML을 넣으세요.
+
+```css name=app.css
+@import '@master/css';
+```
+
+<Overview />
+
+미리보기는 표시된 CSS와 HTML을 함께 사용합니다. 이 예제는 `@layer components` 안에 `.action`을 정의하고, Master는 마크업의 클래스에서 유틸리티 규칙을 생성합니다. 버튼의 공통 형태와 포커스 표시는 `.action`에 두고, 이 인스턴스의 파란색과 전체 너비 지정은 마크업에 남기세요.
+
+`p-lg`를 `p-md`로 바꿔 보세요. 버튼의 기본 스타일은 유지하면서 카드 콘텐츠의 패딩이 줄어듭니다.
+
+이미지 URL은 앱이 `/building.jpg`를 제공한다고 가정합니다. 자신의 이미지와 대체 텍스트로 바꾸고, 링크도 앱 안의 페이지를 가리키도록 변경하세요.
+
+## 클래스에서 CSS까지 따라가기 \{#write-your-first-class\}
+
+카드의 `p-lg`를 살펴보세요. 프리셋은 `p-`를 패딩에, `lg`를 간격 토큰 `--spacing-lg`에 연결합니다. Master는 선언에서 이 CSS 변수를 참조하는 클래스 선택자를 생성합니다.
+
+<IntroductionIllustration />
+
+<Class2CSS classes={['p-lg']} />
+
+브라우저는 일치하는 요소에 `padding: var(--spacing-lg)`를 적용합니다. 프리셋 값에 따르면 네 방향 모두 `1.5rem`입니다. 테마에서 공유 값을 변경해도 클래스 이름은 그대로입니다.
+
+다른 클래스는 다른 종류의 결정을 표현합니다. `w-full`은 `width: 100%`를 지정하는 고정 유틸리티이고, `bg-blue-70:hover`는 호버 상태를 추가합니다. [구문 튜토리얼](/guide/syntax-tutorial)은 동작하는 예제로 값, 선택자, 조건을 설명합니다.
+
+## 함께 바뀌어야 할 값 정의하기 \{#define-what-should-change-together\}
+
+여러 요소가 프로젝트의 한 설정을 공유해야 한다면 테마 토큰을 추가하세요. 주요 동작의 색상을 지정하려면 앱 스타일시트의 가져오기 뒤에 `--color-brand`를 정의하고, 마크업에서 `bg-brand`를 사용합니다.
+
+<ConfiguredExample source={`@theme {
+  --color-brand: #2563eb;
+}`} html={`<a class="inline-flex px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
+  Start building
+</a>`} />
+
+`--color-brand`를 변경하면 이를 사용하는 요소가 갱신됩니다. 해당 요소들이 함께 바뀌어야 할 때 토큰을 공유하세요. 서로 무관한 두 색상은 값이 같더라도 같은 이름을 사용할 필요가 없습니다. 공유 값을 정의하고 재정의하는 방법은 [테마 토큰](/guide/theme)에서 설명합니다.
+
+여러 요소가 스타일 규약을 공유해야 한다면 `.action` 같은 컴포넌트 클래스를 사용하고, 마크업을 공유해야 한다면 UI 컴포넌트를 사용하세요. 클래스 목록이 길다는 이유만으로 새 CSS 이름을 만들 필요는 없습니다. [스타일 재사용](/guide/reusing-styles)은 공통 토큰, 컴포넌트 클래스, 사용자 지정 유틸리티를 선택하는 기준을 설명합니다.
+
+<GuideStudy id="language-and-delivery" />
+
+## 정적 CSS로 시작하기 \{#start-with-static-css\}
+
+프레임워크에 권장되는 정적 통합을 사용하세요. 빌드 시점에 소스에서 완전한 클래스 이름을 찾아 일반 CSS를 전달하므로, 브라우저에 Master 런타임이나 엔진이 필요하지 않습니다.
+
+상호작용이 있는 인터페이스도 그대로 만들 수 있습니다. 알려진 클래스 사이를 전환하거나, `:hover` 같은 선택자를 사용하거나, CSS 사용자 지정 속성으로 진행률과 좌표 같은 값을 갱신하세요. 플레이그라운드, 시각적 편집기, 배포된 콘텐츠가 이전에 알 수 없던 클래스 이름을 추가한다면 런타임이 유용합니다. [렌더링 모드](/guide/rendering-modes)에서 전달 방식의 선택 기준을 설명합니다.
+
+[설치](/guide/installation)에 따라 Master CSS를 앱에 연결한 뒤, [구문 튜토리얼](/guide/syntax-tutorial)에서 상호작용 상태와 반응형 조건을 갖춘 카드를 만들어 보세요. 작성 중 자동 완성과 진단을 사용하려면 [언어 서비스](/guide/language-service)를 설정하세요.

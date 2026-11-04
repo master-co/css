@@ -1,0 +1,31 @@
+# Reference prose: illustrations/contents-insertion
+
+## title \{#copy-title\}
+
+
+包装决定调用方声明的位置
+
+## alt \{#copy-alt\}
+
+
+is-hover-or-focus-visible 选择器内的 contents 插槽填入 underline 类提供的 text-decoration-line: underline。
+
+## caption \{#copy-caption\}
+
+
+高亮插槽与插入声明位于选择器边界内的同一位置。包装控制声明的应用位置。
+
+## description-0 \{#copy-description-0\}
+
+
+@mixin --hocus \{ &:is(:hover, :focus-visible) \{ @contents; \} \} 定义包含显式 contents 插槽的选择器包装。
+
+## description-1 \{#copy-description-1\}
+
+
+underline@apply(--hocus) 将 text-decoration-line: underline 提供给插槽。输出规则在任一状态下均可匹配类所属元素。
+
+## description-2 \{#copy-description-2\}
+
+
+图示结果以 & 简写转义后的类所属元素，使位置易于阅读；生成 CSS 仍保留完整所属元素。

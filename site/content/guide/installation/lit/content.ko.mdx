@@ -1,0 +1,166 @@
+---
+{
+  "title": "Lit에서 Master CSS 설정하기",
+  "description": "정적 CSS 또는 컴포넌트 수명 주기에 따라 동작하는 브라우저 런타임으로 Lit 섀도 루트에 스타일을 적용합니다.",
+  "category": "통합"
+}
+---
+
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/lit/cover-light.webp'
+import dark from '~/site/assets/images/integrations/lit/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Lit" />
+
+Lit 컴포넌트는 일반적으로 섀도 루트 안에 렌더링됩니다. 문서 스타일은 그 안의 요소에 닿지 않으므로 생성된 CSS를 각 컴포넌트의 섀도 트리 내부에 전달해야 합니다.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS 추가하기 \{#add-master-css\}
+      Vite로 빌드하는 기존 [Lit 프로젝트](https://lit.dev/docs/getting-started/)의 루트에서 설치 프로그램을 실행하세요. Lit은 기본적으로 Vite 정적 모드를 사용합니다. 소스에 완전한 클래스 이름을 유지하고, 브라우저에 처음 등장하는 이름으로 클래스를 생성해야 한다면 런타임 모드를 명시적으로 사용하세요.
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework lit --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### CSS 소스 진입점 유지하기 \{#keep-a-css-source-entry\}
+    설치 프로그램은 `src/index.css`를 만들고 Vite 통합을 등록합니다. 정의는 이 소스 파일에 유지하세요:
+
+    ```css name=src/index.css
+    @import '@master/css';
+    ```
+
+    아래 컴포넌트는 Vite의 `?inline` 가져오기로 처리된 CSS 텍스트를 받습니다. 일반적인 문서 수준의 스타일시트 가져오기로는 섀도 루트 내부에 스타일을 적용할 수 없습니다.
+
+    현재 인라인 CSS 전달 방식에는 상대 경로인 Vite `base`를 사용하세요. 루트 기준 자산 URL은 프로덕션 컴포넌트를 불러올 때 `Invalid base URL`을 일으킬 수 있습니다. 다음 내용을 기존 Vite 설정에 병합하되 다른 플러그인은 유지하고 Master CSS를 한 번만 등록하세요:
+
+    ```ts name=vite.config.ts
+    import { defineConfig } from 'vite'
+    import masterCSS from '@master/css-vite'
+
+    export default defineConfig({
+      base: './',
+      plugins: [masterCSS()]
+    })
+    ```
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 섀도 루트에 스타일 포함하기 \{#include-styles-in-the-shadow-root\}
+      생성된 스타일시트를 텍스트로 가져와 Lit의 [`unsafeCSS`](https://lit.dev/docs/components/styles/#static-styles)로 포함하세요. CSS는 자신의 빌드 입력에서 가져오며, 신뢰할 수 없는 사용자 텍스트를 `unsafeCSS`에 전달해서는 안 됩니다. 설치 프로그램은 이 스타일시트를 추가할 때 표준 컴포넌트의 기존 스타일을 유지합니다.
+    </StepL>
+    <StepR>
+      ```ts name=src/my-element.ts
+      import { LitElement, html, unsafeCSS } from 'lit'
+      import { customElement } from 'lit/decorators.js'
+      import masterCSSStyles from './index.css?inline'
+
+      @customElement('my-element')
+      export class MyElement extends LitElement {
+        static styles = [unsafeCSS(masterCSSStyles)]
+
+        render() {
+          return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+    애플리케이션 진입점에서 컴포넌트 모듈을 계속 가져오고, 등록된 요소를 페이지에 배치하세요:
+
+    ```ts name=src/main.ts
+    import './my-element'
+    ```
+
+    ```html
+    <my-element></my-element>
+    ```
+
+    기존 `index.html`은 `src/main.ts`를 모듈로 불러와야 합니다. `npm run dev`를 실행하면 Lit이 요소의 섀도 루트 안에 문단을 만듭니다.
+  </Step>
+  <DemoConfiguredExample
+    name="lit-shadow-check"
+    title="섀도 루트 내부 스타일 확인하기"
+    source=""
+    html={'<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>'}
+    caption="미리보기는 실제 섀도 루트 안에 문단과 함께 생성된 스타일시트를 불러옵니다."
+    shadow
+    code={false}
+  />
+</StepSection>
+
+## 섀도 스타일시트 확인하기 \{#check-the-shadow-stylesheet\}
+Lit 템플릿의 `p-md`를 `p-lg`로 바꾸세요. 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나야 합니다. 원래대로 돌린 뒤 프로덕션 빌드를 확인합니다:
+
+```bash
+npm run build
+npm run preview
+```
+
+브라우저 개발자 도구에서 `<my-element>` 안의 문단을 검사하세요. `1rem` 안쪽 여백, 떠 있는 표면, 둥근 모서리가 적용되어야 합니다. 문서 수준의 요소에만 스타일이 적용된다면 컴포넌트의 `?inline` 가져오기와 `static styles`를 확인하세요.
+
+정적 모드에는 Master CSS 브라우저 런타임이 필요하지 않습니다. 다만 Lit이 이 클라이언트 렌더링 컴포넌트를 만들려면 여전히 JavaScript가 필요합니다.
+
+<DocumentDisclosure title="섀도 루트 내부에서 새 클래스 생성하기">
+
+브라우저에 처음 등장하는 클래스 이름을 처리하려면 런타임 모드로 설치 프로그램을 실행하세요:
+
+```bash
+npm create @master/css@rc -- --framework lit --mode runtime --yes
+```
+
+설치 프로그램은 표준 `src/my-element.ts` 컴포넌트에 런타임 데코레이터를 추가하고 Vite에 `masterCSS({ mode: 'runtime' })`를 설정합니다. 위의 상대 `base`를 유지하세요. 다른 컴포넌트에도 같은 설정이 필요합니다. 규칙 생성 전에 레이어 순서가 확정되도록 런타임 스타일시트보다 CSS 텍스트를 먼저 불러오세요:
+
+```ts name=src/my-element.ts
+/// <reference types="@master/css/client" />
+
+import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+import { withMasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import masterCSSStyles from './index.css?inline'
+
+@customElement('my-element')
+@withMasterCSSRuntime({ program, emittedGlobals })
+export class MyElement extends LitElement {
+  protected createRenderRoot() {
+    const root = super.createRenderRoot()
+    const styles = document.createElement('style')
+    styles.textContent = masterCSSStyles
+    root.append(styles)
+    return root
+  }
+
+  render() {
+    return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
+  }
+}
+```
+
+이 예제는 런타임이 시작되기 전에 기본 스타일시트를 `<style>` 요소로 삽입합니다. Lit의 `static styles`는 adopted stylesheets를 사용하며, [CSSOM 스타일시트 순서](https://drafts.csswg.org/cssom/#css-style-sheet-collections)상 일반 `<style>` 요소 뒤에 배치됩니다. 그곳에 레이어 순서 선언을 두면 기본 레이어가 런타임 유틸리티 뒤에 놓일 수 있습니다.
+
+데코레이터가 적용된 각 컴포넌트는 자신의 섀도 루트를 위한 런타임을 시작하고 연결이 해제되면 이를 해제합니다. 문서 수준의 런타임은 해당 루트 안의 클래스를 관찰할 수 없습니다.
+
+컴포넌트가 나타난 뒤 브라우저 콘솔에서 다음 코드를 실행하세요. 다시 빌드하지 않아도 문단에 밑줄이 생겨야 합니다:
+
+```js
+document.querySelector('my-element').shadowRoot
+  .querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

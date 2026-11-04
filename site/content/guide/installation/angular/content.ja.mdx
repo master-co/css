@@ -1,0 +1,144 @@
+---
+{
+  "title": "Angular で Master CSS を設定する",
+  "description": "CLI で生成した CSS を Angular に接続し、開発用の監視を両方動かして、本番のスタイルシートまたは任意のブラウザーランタイムを確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/angular/cover-light.webp'
+import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Angular" />
+
+Angular のビルダーを保持し、Master CSS CLI で読み込み可能なスタイルシートを生成します。開発中は両方の監視プロセスを動かしてください。Master CSS が生成 CSS を更新し、Angular がそれをインポートするアプリを配信します。
+
+この設定は、グローバルな `src/styles.css`、動作する `npm start` コマンド、対応する Node.js 24 がある、既存のブラウザーレンダリングの Angular アプリを前提とします。Angular の既定の[エミュレートされたカプセル化](https://angular.dev/guide/components/styling#viewencapsulationemulated)を使い、グローバルスタイルがコンポーネントのテンプレートに届くようにします。Shadow DOM コンポーネントでは、自身のシャドウルート内にスタイルが必要です。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step>
+    ### Master CSS を追加する \{#add-master-css\}
+
+    Angular プロジェクトのルートでインストーラーを実行します：
+
+    ```bash
+    npm create @master/css@rc -- --framework angular --yes
+    ```
+
+    静的モードの設定では `@master/css` と `@master/css-cli` が追加されます。インストーラーの任意のツールやプレビューのオプションは、[インストール](/guide/installation#installation)を参照してください。
+  </Step>
+  <Step>
+    ### スタイルシートの接続を確認する \{#check-the-stylesheet-connection\}
+
+    インストーラーはプロジェクトのルートに Master CSS のソースエントリーを作成します：
+
+    ```css name=master.css
+    @import '@master/css';
+    ```
+
+    既存の内容を保持したまま、Angular のグローバルスタイルシートに次のインポートも追加します：
+
+    ```css name=src/styles.css
+    @import './master.generated.css';
+    ```
+
+    `angular.json` のアプリの `build.options.styles` 配列に `src/styles.css` を残してください。生成した CSS がページに届くかは、Angular の[グローバルスタイル設定](https://angular.dev/reference/configs/workspace-config#styles-and-scripts-configuration)で決まります。標準と異なるワークスペース構成では、出力パスとインポートを合わせて調整します。
+
+    `@theme` や `@utility` などの Master CSS の定義は `master.css` に置きます。Angular が使うのは生成後のネイティブ CSS で、通常の CSS ビルダーはこれらの定義をコンパイルしません。`src/master.generated.css` を編集したり、`master.css` に逆にインポートしたりしないでください。
+  </Step>
+  <Step>
+    ### CSS を生成する \{#generate-the-css\}
+
+    一つのターミナルでスタイルシートを生成し、変更の監視を続けます：
+
+    ```bash
+    npx master-css generate --output src/master.generated.css --watch
+    ```
+
+    最初の生成が終わるのを待ってから、別のターミナルで Angular を起動します：
+
+    ```bash
+    npm start
+    ```
+
+    両方のプロセスを動かしたままにします。Angular の監視だけでは、クラスを追加しても Master CSS は再生成されません。
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+
+    ルートコンポーネントが参照するテンプレートに次のマークアップを追加します。Angular の[現在の命名規則](https://angular.dev/cli/new#file-name-style-guide)では通常 `src/app/app.html` ですが、既存のプロジェクトでは `src/app/app.component.html` の場合もあります。
+
+    <DemoConfiguredExample name="angular-check" title="テンプレートのスタイルを確認する" source="" caption="段落には中立色の面、細い境界線、小さな角丸、四辺に 1rem のパディングが付きます。" html={`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello Angular
+</p>`} />
+  </Step>
+</StepSection>
+
+## 結果を確認する \{#verify-the-result\}
+
+Angular アプリを開きます。段落の間隔と面が例と一致するはずです。テンプレートの `p-md` を `p-lg` に変えてください。両方の監視プロセスが動いていれば、パディングが `1rem` から `1.5rem` に増えます。更新を確認してから元に戻します。
+
+スタイルが付かない場合は、順に接続を確認してください：
+
+- Master CSS のターミナルで生成エラーを確認し、`src/master.generated.css` が存在することを確かめます。
+- `src/styles.css` のインポートと、`angular.json` での同ファイルの登録を確認します。
+- ブラウザーの開発者ツールで段落を調べ、一致するルールと、それを上書きするコンポーネントスタイルがないか確認します。
+
+静的生成には、ソース内の完全なクラス文字列、または明示的なセーフリストが必要です。条件付きのクラス名も完全な形で記述し、動的な値には CSS カスタムプロパティを使ってください。生成出力にクラスがない場合は、[クラス名の走査](/guide/scanning-and-pruning)を参照します。
+
+## デプロイ用にビルドする \{#build-for-deployment\}
+
+Angular がアプリをパッケージする前に CSS を生成します：
+
+```bash
+npx master-css generate --output src/master.generated.css
+npm run build
+```
+
+CI でも同じ順序にします。古い生成ファイルの配信はスタイルの欠落を隠す場合があるため、新しく生成してから本番ビルドを確認してください。
+
+静的とは CSS の生成段階を指します。ブラウザーでレンダリングする Angular アプリが HTML を作るには、引き続き JavaScript が必要です。
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+
+既定は静的レンダリングです。既知のソース文字列ではなく、ブラウザーの DOM 変更からクラスを生成する必要がある場合は、ランタイムレンダリングを使ってください。
+
+| モード | インストーラーのオプション | CSS 配信 |
+| --- | --- | --- |
+| 静的 | なし | `src/styles.css` が CLI の出力をインポート |
+| ランタイム | `--mode runtime` | `src/main.ts` からブラウザーランタイムを起動 |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+ランタイムモードの設定では、次を実行します：
+
+```bash
+npm create @master/css@rc -- --framework angular --mode runtime --yes
+```
+
+インストーラーは `src/main.ts` から `MasterCSSRuntime` を起動し、`@master/css-runtime/default-program` を読み込んで、ドキュメントのクラス変更を監視します。
+
+**Angular を起動する前に、グローバルスタイルシートの設定を完了してください。**現在、インストーラーは `src/styles.css` に `@import '@master/css';` を追加します。このインポートを以下のネイティブなベーススタイルシートに置き換え、アプリに必要なほかのネイティブ CSS インポートとルールは保持します。静的モードから切り替える場合は、`./master.generated.css` のインポートも削除してください。このランタイム経路には CSS の監視は不要です。
+
+```css name=src/styles.css
+@import '@master/css/base.css';
+```
+
+既定のプログラムはプリセットの語彙を供給します。Angular の通常の CSS に `@theme` や `@utility` を追加しても、独自のランタイムプログラムはコンパイルされません。プロジェクト固有の語彙には、静的な CLI の経路を使うか、[ランタイム API](/reference/packages#css-runtime)で別途コンパイルしたプログラムを供給してください。
+
+Angular アプリをビルドして配信し、ブラウザーのコンソールで次を実行します。再ビルドせずに、例の段落に下線が付くはずです：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+このランタイムはブラウザーのエントリーから起動します。Angular SSR アプリには別途初期 CSS の方針が必要です。このガイドは、ブラウザーレンダリングの設定を対象とします。
+
+</DocumentDisclosure>

@@ -1,0 +1,25 @@
+# Reference prose: illustrations/ambiguous-namespace
+
+## title \{#copy-title\}
+
+Two matching namespaces do not produce two declarations
+
+## alt \{#copy-alt\}
+
+font-brand reaches two matching brand keys, one in font-family and one in font-size. The branches meet at an ambiguity barrier with no emitted rule.
+
+## caption \{#copy-caption\}
+
+Both token keys exist in this custom theme. Master CSS requires a unique namespace selection before generating the class.
+
+## description-0 \{#copy-description-0\}
+
+With --font-family-brand: monospace and --font-size-brand: 2rem, font-brand matches two preset font- families.
+
+## description-1 \{#copy-description-1\}
+
+The result is AMBIGUOUS_TOKEN and no CSS for that class; the branches are not combined.
+
+## description-2 \{#copy-description-2\}
+
+Use distinct keys or an explicit native declaration such as (font-size:var(--font-size-brand)).

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-domains
+
+## title \{#copy-title\}
+
+
+相同名称，测量不同边界
+
+## alt \{#copy-alt\}
+
+
+图中宽 64rem 的视口内包含较小的 28rem 查询容器。md 媒体条件引用视口，md 容器条件则引用内部容器。
+
+## caption \{#copy-caption\}
+
+
+预设的 @md 阈值为 64rem，@container(--md) 则为 28rem。虽然两者都使用 md 名称，这两份独立定义查询的却是不同边界。
+
+## description-0 \{#copy-description-0\}
+
+
+外侧边界代表宽度达到预设 @md 最小值 64rem 的视口。
+
+## description-1 \{#copy-description-1\}
+
+
+内侧边界代表宽度达到独立 @container(--md) 最小值 28rem 的查询容器。被查询的元素位于该容器内。
+
+## description-2 \{#copy-description-2\}
+
+
+两种宽度采用相同绘图比例，初始字号与根元素字号都是 16px。修改容器尺寸令牌不会改变任一条件定义。

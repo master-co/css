@@ -1,3 +1,4 @@
+import { referenceLabel } from './ui'
 import type { ReferenceRenderDocument } from './render-document'
 
 /**
@@ -53,65 +54,41 @@ export type ReferenceTable =
   | { kind: 'namespace', rows: { namespace: string, consumers: string[] }[] }
   | { kind: 'table', label: string, comparison: boolean }
 
-/** Tables with a known header become the document components; descriptions stay Markdown nodes. */
+/** Structured cell shapes select the reading component independently of translated headings. */
 export function referenceTable(node: any): ReferenceTable {
   const cells = node.children[0].children
   const rows = node.children.slice(1)
-  const apiIndex = cells.length === 2 && cells.every((cell: any) => cell.children.length === 1 && cell.children[0].type === 'text')
-    && (cells[0].children[0].value === 'Import path' && cells[1].children[0].value === 'Purpose'
-      || cells[0].children[0].value === 'Export' && cells[1].children[0].value === 'Kind')
-    && rows.every((row: any) => row.children.length === 2 && row.children[0].children.length === 1
-      && row.children[0].children[0].type === 'link' && row.children[0].children[0].children.length === 1
-      && row.children[0].children[0].children[0].type === 'inlineCode'
-      && row.children[1].children.length === 1 && row.children[1].children[0].type === 'text')
+  const one = (cell: any, type: string) => cell.children.length === 1 && cell.children[0].type === type
+  const columnCount = (count: number) => cells.length === count && rows.length > 0 && rows.every((row: any) => row.children.length === count)
+  const apiIndex = columnCount(2) && rows.every((row: any) => one(row.children[0], 'link')
+    && one(row.children[0].children[0], 'inlineCode') && one(row.children[1], 'text'))
   if (apiIndex) return {
-    kind: 'api',
-    compact: cells[0].children[0].value === 'Export',
-    entries: rows.map((row: any) => ({ name: row.children[0].children[0].children[0].value, href: row.children[0].children[0].url, description: row.children[1].children[0].value }))
+    kind: 'api', compact: rows.every((row: any) => /#api-[\da-f]+$/.test(row.children[0].children[0].url)),
+    entries: rows.map((row: any) => ({ name: row.children[0].children[0].children[0].value, href: row.children[0].children[0].url, description: row.children[1].children[0].value })),
   }
-  if (cells.length === 3 && cells.every((cell: any, index: number) => cell.children.length === 1 && cell.children[0].value === ['Setting', 'Default', 'Effect'][index])
-    && rows.every((row: any) => row.children.length === 3 && row.children.slice(0, 2).every((cell: any) => cell.children.length === 1 && cell.children[0].type === 'inlineCode'))) {
-    return {
-      kind: 'options',
-      options: rows.map((row: any) => ({
-        name: row.children[0].children[0].value, defaultValue: row.children[1].children[0].value,
-        description: row.children[2].children
-      }))
-    }
+  if (columnCount(3) && rows.every((row: any) => row.children.slice(0, 2).every((cell: any) => one(cell, 'inlineCode')))
+    && rows.some((row: any) => row.children[2].children.some((child: any) => child.type !== 'inlineCode'))) {
+    return { kind: 'options', options: rows.map((row: any) => ({ name: row.children[0].children[0].value, defaultValue: row.children[1].children[0].value, description: row.children[2].children })) }
   }
-  if (cells.length === 4 && cells.every((cell: any, index: number) => cell.children.length === 1 && cell.children[0].value === ['Parameter', 'Type', 'Requirement', 'Description'][index])
-    && rows.every((row: any) => row.children.length === 4 && row.children.slice(0, 2).every((cell: any) => cell.children.length === 1 && cell.children[0].type === 'inlineCode') && row.children[2].children.length === 1 && row.children[2].children[0].type === 'text')) {
-    return {
-      kind: 'parameters',
-      parameters: rows.map((row: any) => ({
-        name: row.children[0].children[0].value, type: row.children[1].children[0].value,
-        requirement: row.children[2].children[0].value, description: row.children[3].children
-      }))
-    }
+  if (columnCount(4) && rows.every((row: any) => row.children.slice(0, 2).every((cell: any) => one(cell, 'inlineCode')) && one(row.children[2], 'text'))) {
+    return { kind: 'parameters', parameters: rows.map((row: any) => ({ name: row.children[0].children[0].value, type: row.children[1].children[0].value, requirement: row.children[2].children[0].value, description: row.children[3].children })) }
   }
-  if (cells.length === 2 && ['Token', 'Syntax'].includes(cells[0].children[0]?.value) && cells[1].children[0]?.value === 'CSS'
-    && rows.every((row: any) => row.children.length === 2 && row.children.every((cell: any) => cell.children.length === 1 && cell.children[0].type === 'inlineCode'))) {
-    return { kind: 'code', label: cells[0].children[0].value, rows: rows.map((row: any) => ({ syntax: row.children[0].children[0].value, css: row.children[1].children[0].value })) }
+  if (columnCount(2) && rows.every((row: any) => one(row.children[0], 'inlineCode') && row.children[0].children[0].value.endsWith('-*')
+    && row.children[1].children.every((child: any) => child.type === 'inlineCode' || child.type === 'text' && /^[,\s]*$/.test(child.value)))) {
+    return { kind: 'namespace', rows: rows.map((row: any) => ({ namespace: row.children[0].children[0].value.slice(0, -2), consumers: row.children[1].children.filter((child: any) => child.type === 'inlineCode').map((child: any) => child.value) })) }
   }
-  if (cells.length === 2 && cells[0].children[0]?.value === 'Namespace' && cells[1].children[0]?.value === 'Consumers'
-    && rows.every((row: any) => row.children.length === 2 && row.children[0].children.length === 1 && row.children[0].children[0].type === 'inlineCode' && row.children[0].children[0].value.endsWith('-*')
-      && row.children[1].children.every((child: any) => child.type === 'inlineCode' || child.type === 'text' && /^[,\s]*$/.test(child.value)))) {
-    return {
-      kind: 'namespace',
-      rows: rows.map((row: any) => ({
-        namespace: row.children[0].children[0].value.slice(0, -2),
-        consumers: row.children[1].children.filter((child: any) => child.type === 'inlineCode').map((child: any) => child.value),
-      }))
-    }
+  const label = cells.map((cell: any) => cell.children.map((child: any) => child.value ?? '').join('')).join(', ')
+  if (columnCount(2) && rows.every((row: any) => row.children.every((cell: any) => one(cell, 'inlineCode')))) {
+    return { kind: 'code', label, rows: rows.map((row: any) => ({ syntax: row.children[0].children[0].value, css: row.children[1].children[0].value })) }
   }
-  return { kind: 'table', label: cells.map((cell: any) => cell.children.map((child: any) => child.value ?? '').join('')).join(', '), comparison: cells.length === 2 }
+  return { kind: 'table', label, comparison: cells.length === 2 }
 }
 
 /** Fenced code: a long declaration, a Generated CSS output, or a complete schema/help disclosure. */
-export function referenceCodeWrapper(node: any) {
+export function referenceCodeWrapper(node: any, locale = 'en') {
   if (node.lang === 'typescript' && node.meta === 'declaration') return { kind: 'declaration' as const }
   const disclosure = node.meta?.match(/\bdisclosure=(input-schema|output-schema|command-help)\b/)?.[1] as 'input-schema' | 'output-schema' | 'command-help' | undefined
-  const titles = { 'input-schema': 'Complete input schema', 'output-schema': 'Complete output schema', 'command-help': 'Complete command help' }
+  const titles = { 'input-schema': referenceLabel(locale, 'inputSchema'), 'output-schema': referenceLabel(locale, 'outputSchema'), 'command-help': referenceLabel(locale, 'commandHelp') }
   if (/\bdisclosure=generated-css\b/.test(node.meta ?? '')) return { kind: 'generated-css' as const }
   return disclosure ? { kind: 'disclosure' as const, title: titles[disclosure] } : undefined
 }

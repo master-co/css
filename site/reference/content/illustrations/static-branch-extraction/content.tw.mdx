@@ -1,0 +1,31 @@
+# Reference prose: illustrations/static-branch-extraction
+
+## title \{#copy-title\}
+
+
+分支執行前就能看見靜態選項
+
+## alt \{#copy-alt\}
+
+
+條件運算式兩側的字面值都連到擷取出的 class。串接執行階段 tone 的運算則停在未解析片段。
+
+## caption \{#copy-caption\}
+
+
+兩個分支是來源中的選項，不是依序執行的步驟。擷取不會預測選中的分支，也不會憑空推導串接後的 class 名稱。
+
+## description-0 \{#copy-description-0\}
+
+
+error ? "bg-red-60" : "bg-green-60" 讓擷取能看見兩個完整的靜態 class 字串。
+
+## description-1 \{#copy-description-1\}
+
+
+"bg-" + tone 不會提供完整的結果 class。掃描器不會推論 tone 的值。
+
+## description-2 \{#copy-description-2\}
+
+
+選項有限時請使用完整候選字串；值本身不受限時，則使用固定 class 搭配動態 CSS 變數。

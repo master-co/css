@@ -101,12 +101,10 @@ export function toolingExample(name: string): DocumentCodeExampleProps {
   if (!Object.hasOwn(toolingExamples, name)) throw new Error(`Unknown tooling example: ${name}`)
   return toolingExamples[name as keyof typeof toolingExamples]
 }
-export function toolingOptionsMarkdown(name: string) {
-  const group = toolingOptionGroup(name)
+export function toolingOptionsMarkdown(name: string, group = toolingOptionGroup(name)) {
   return group.options.map((option: DocumentOption) => `- **${option.name}**${option.defaultValue === undefined ? '' : ` — default: \`${option.defaultValue}\``}. ${option.description}`).join('\n')
 }
-export function toolingExampleMarkdown(name: string) {
-  const example = toolingExample(name)
+export function toolingExampleMarkdown(name: string, example = toolingExample(name)) {
   const fence = (label: string, language: string, code: string) => `${label}:\n\n\`\`\`${language}\n${code}\n\`\`\``
   return [example.title, fence(example.sourceLabel ?? 'Source', example.language, example.source),
     ...(example.diagnostic ? [`${example.diagnostic.severity} · \`${example.diagnostic.rule}\`: ${example.diagnostic.message}`] : []),

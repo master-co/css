@@ -1,0 +1,238 @@
+---
+title: "Master CSS로 AI 코딩"
+description: "에이전트를 Master CSS 프로젝트에 연결하고 범위가 명확한 변경을 요청하며 렌더링 결과를 검증하고 공유 스타일 변경을 검토하세요."
+figures: {"AIIllustration":{"title":"출력에 있어도 브라우저에서 우선하지는 않습니다","alt":"레이어 안의 p-md 유틸리티는 --spacing-md로 패딩을 선언하고 레이어 밖의 notice 규칙은 8px을 선언합니다. 일반 레이어 밖 규칙이 우선하여 렌더링된 알림의 패딩은 8px입니다.","caption":"두 규칙은 모두 유효하고 존재합니다. 일반 레이어 밖 CSS가 일반 레이어 안 CSS보다 우선하므로 생성 출력만 검사해서는 의도한 간격을 입증할 수 없습니다.","description":[{"title":"생성 규칙","text":"프리셋의 p-md 유틸리티는 utilities 레이어에서 padding: var(--spacing-md)를 제공하며 기본값은 1rem입니다."},{"title":"경쟁 규칙","text":"일반 선언에서는 레이어 밖 네이티브 규칙 .notice { padding: 8px; }가 레이어 안 유틸리티보다 우선합니다."},{"title":"관찰 결과","text":"notice와 p-md가 함께 있는 요소의 네 면 패딩은 8px입니다. 간격을 고치려면 같은 유틸리티를 다시 생성할 것이 아니라 우선한 네이티브 규칙을 검토해야 합니다."}]},"GuideStudy:inspection-coverage":{"title":"검사한 집합은 전체 프로젝트보다 작습니다","alt":"프로젝트 경계에는 세 소스가 있으며 괄호는 검사한 두 소스만 감싸고 세 번째는 밖에 남겨 둡니다.","caption":"검사한 파일과 맥락을 명시하세요. 일부에서 문제가 없다는 결과는 모든 소스에 대한 증거가 아닙니다."}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import AIIllustration from './components/AIIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 개요 [sr-only] \{#overview\}
+코딩 에이전트에 CSS 진입점, 테마 토큰, 컴포넌트 클래스, 프로젝트 검사 등 자신이 사용하는 스타일 맥락을 제공하세요. Master CSS MCP 서버를 연결하고 범위가 명확한 UI 변경을 요청하며 최종 소스와 렌더링 결과의 증거를 요구하세요. 이 가이드는 프로젝트 설정부터 첫 수정과 이후 공유 정의 변경까지 안내합니다.
+
+---
+
+## 먼저 프로젝트 설정 \{#set-up-the-project-first\}
+[설치 도구](/guide/installation)는 기본적으로 에이전트용 프로젝트 환경도 준비합니다. `npm create @master/css@rc`는 프레임워크 통합과 함께 다음을 추가합니다.
+
+- `@master/eslint-config-css`와 이를 펼치는 `eslint.config.js`를 추가하여 에이전트 출력을 [코드 린팅](/guide/code-linting)으로 검사합니다.
+- 개발 의존성 `@master/css-mcp`를 추가하고 MCP 클라이언트에 등록할 stdio 명령을 출력합니다.
+- `AGENTS.md`에 `## Master CSS` 규칙 블록을 추가해 문서, 프로젝트 용어, MCP, ESLint를 안내합니다.
+
+`--no-eslint`, `--no-mcp`, `--no-ai`로 각 항목을 건너뛰거나 `--minimal`로 프레임워크만 설정할 수 있습니다. 생성된 `AGENTS.md` 블록 아래에 실제 검증 명령을 추가해 에이전트가 추측하지 않게 하세요.
+
+다음으로 에이전트가 재사용할 프로젝트 용어를 만드세요. 테마 토큰은 반복 값을 명확히 하고 컴포넌트 클래스는 공유 제품 패턴에 안정적인 이름을 제공합니다.
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+```
+
+---
+
+## MCP 서버 연결 \{#connect-the-mcp-server\}
+MCP 서버는 로컬에서 stdio로 실행되며 `--root`로 전달한 작업 공간을 읽습니다. `mcpServers` JSON을 지원하는 클라이언트라면 MCP 설정 파일에 다음 항목을 추가하세요.
+
+```json name=mcp-client-config.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+자체 등록 명령을 사용하는 클라이언트에서도 같은 stdio 명령을 사용합니다.
+
+```bash
+# Claude Code (add --scope project for a shared .mcp.json)
+claude mcp add --transport stdio master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+
+# Codex
+codex mcp add master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+`--root`에는 절대 경로를 사용하세요. 경로는 기기마다 다르므로 커밋할 프로젝트 범위 설정을 검토하세요. 클라이언트를 다시 시작하거나 새 세션을 열고 에이전트에 `mastercss_workspace_info` 호출을 요청해 반환된 루트와 스타일시트 진입점이 이 프로젝트에 속하는지 확인하세요. 매니페스트 로드 실패는 프로젝트 맥락을 고쳐야 한다는 뜻입니다. 서버는 프리셋으로 조용히 대체해 응답하지 않습니다.
+
+[MCP 도구 목록](/reference/tools/mcp)에는 모든 도구, `debug-missing-css` 같은 내장 프롬프트, 기계가 읽을 수 있는 결과 형식이 나열됩니다. 클라이언트에서 MCP를 쓸 수 없다면 프로젝트 루트에서 [CLI](/reference/tools/cli)를 실행하세요. 예를 들어 `master-css lint --format json --exit-code never` 또는 `master-css inspect --format json --exit-code never`를 사용할 수 있습니다.
+
+---
+
+## Master CSS 스킬 사용 \{#use-the-master-css-skill\}
+
+공식 `master-css` 스킬은 작업에 필요한 지침을 읽습니다. Master CSS 프로젝트에서 다음 워크플로에 사용하세요.
+
+| 워크플로 | 사용 시점 |
+| --- | --- |
+| UI 구성 및 편집 | 프로젝트 토큰, 유틸리티, 네이티브 CSS로 컴포넌트를 만들거나 다듬습니다. |
+| 스타일 검토 및 디버깅 | 스타일 변경을 검토하거나 소스 추출부터 브라우저 동작까지 누락되거나 예상과 다른 스타일을 조사합니다. |
+| CSS 전달 최적화 | 프로덕션 CSS를 평가하고 라우트 및 컴포넌트 로딩 경계를 개선하며 선택적 제거를 검증합니다. |
+
+프로젝트 디렉터리에서 설치하고 코딩 에이전트를 선택하세요.
+
+```sh
+npx skills add master-co/css --skill master-css
+```
+
+[Skills CLI](https://github.com/vercel-labs/skills)는 Codex, Claude Code, Cursor 같은 에이전트 선택을 지원합니다. 스킬의 호환성 메타데이터를 설치된 Master CSS 버전과 확인하세요. 스킬은 필요에 따라 참조 문서를 읽지만 Master CSS를 설치하거나 MCP 서버를 등록하지는 않습니다. 설치 도구의 `--ai` 옵션은 이 명령을 출력할 뿐 실행하지 않습니다.
+
+## 관찰 가능한 변경 하나 요청 \{#ask-for-one-observable-change\}
+
+편집 전에 프로젝트를 검사하고 하나의 명확한 변경을 수행하도록 요청하세요. 예를 들어 기존 카드를 다듬도록 요청하며 기대하는 결과를 설명하세요.
+
+<DocumentPrompt title="한 컴포넌트 다듬기" text={`Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
+
+You are working in a Master CSS project.
+
+Read the installed package/language/binding versions and project manifest first. Use documentation that matches those versions.
+Consult the Guide and Reference for the installed Master CSS version.
+
+Before editing, inspect the framework, package manager, CSS entry, theme tokens, component classes, nearby UI patterns, and available validation commands.
+
+When styling markup:
+- use valid Master CSS syntax
+- prefer existing theme tokens and component classes
+- prefer fixed utilities and numeric functions, such as flex and p(16), over equivalent native declarations
+- use canonical token families for project values and full native property names when a native declaration is needed
+- do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
+- keep semantic HTML and accessibility behavior unchanged
+- explain any value that should become a shared token
+
+After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.`} />
+
+
+---
+
+## 수정 검증 \{#verify-a-repair\}
+현재 정상 동작을 유지하고 수정을 뒷받침하는 증거를 제시하도록 요청하세요. 편집 전 소스 스냅샷을 보관하고 최종 파일을 검사하고 다시 빌드하세요. lint 자동 수정 후에도 반복해야 합니다. 거부된 제안은 유용한 증거이지만 다음 수정을 시작할 소스는 아닙니다.
+
+검사마다 답하는 질문이 다릅니다.
+
+<DocumentComparison>
+
+| 증거 | 확인할 내용 |
+| --- | --- |
+| Lint 보고서 | `coverage.checkedFiles`와 활성 규칙을 읽으세요. `summary.checkedFiles`는 검사한 입력 수이고 `summary.filesWithDiagnostics`는 진단이 있는 파일 수입니다. 진단 `files`가 비었다고 아무 검사도 실행되지 않은 것은 아닙니다. |
+| 클래스 검사 | 최종 마크업을 로드된 프로젝트 스타일시트와 비교하세요. 생성 유틸리티, 네이티브 CSS 선택자 훅, 해석되지 않은 표기를 구분하세요. |
+| 브라우저 검증 | 이전에 정상 작동한 상태를 포함해 영향을 받는 상태의 계산 값과 일치 규칙을 비교하세요. 생성 규칙이 존재해도 어느 선언이 우선하는지는 입증되지 않습니다. |
+
+</DocumentComparison>
+
+### 생성된 규칙도 우선하지 않을 수 있습니다 \{#a-generated-rule-can-still-lose\}
+
+이 예제의 두 클래스는 모두 유효한 CSS에 연결됩니다. 프리셋의 `p-md`는 1rem 패딩을 생성하지만 `.notice`는 **레이어 밖**의 네이티브 규칙에서 8px을 설정합니다. 일반 선언에서는 이 규칙이 레이어 안의 유틸리티보다 우선합니다.
+
+<AIIllustration />
+
+<DemoConfiguredExample name="agent-cascade-check" title="우선하는 패딩 검사" source={`.notice {
+  padding: 8px;
+}`} html={'<p class="w-fit m(0) p-md r-md text-sm bg-surface-raised fg-text-strong notice">Saved locally</p>'} caption="알림의 네 면 패딩은 8px입니다. 브라우저에서 검사한 뒤 생성된 CSS의 p-md와 네이티브 규칙을 비교하세요. 두 규칙이 모두 존재하지만 계산된 패딩을 제공하는 규칙은 하나뿐입니다." />
+
+`p-md` 규칙을 하나 더 생성해도 해결되지 않습니다. 알림이 공유 간격을 따라야 한다면 경쟁하는 패딩 선언을 제거하거나 의도적으로 컴포넌트 규칙을 `@layer components`에 배치하세요. 공유 규칙을 바꾸기 전에 다른 알림도 확인하세요. [CSS 레이어 순서](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description)를 참고하세요.
+
+### 검사 범위 읽기 \{#read-inspection-coverage\}
+
+기본 lint는 알 수 없는 작성 CSS 이름을 허용하므로 오류가 없다고 모든 클래스가 등록 유틸리티라는 뜻은 아닙니다. CLI 검사는 네이티브 선택자를 `discovered.invalid`와 `discovered.usedNative` 양쪽에 보고할 수 있습니다. 유틸리티는 생성하지 않아도 스타일시트 규칙은 존재할 수 있습니다. 명시적 `inspect --classes` 요청에서는 마크업과 네이티브 규칙을 함께 보며 `missingCSS`의 존재 사유를 읽으세요. `missingCSS.checked`가 비어 있으면 클래스 검사가 완료된 것이 아닙니다. [CLI 목록](/reference/tools/cli#inspect)에 검사 계약이 설명되어 있습니다.
+
+네이티브 규칙과 유틸리티가 같은 속성에 영향을 주면 프로젝트의 실제 레이어 순서에 따라 [캐스케이드 진단](/guide/cascade-layers#diagnose-a-competing-declaration)을 진행하세요. 수정 보고서에는 검사 결과와 브라우저에서 우선한 선언을 함께 남기세요.
+
+두 클래스 이름이 모두 인식되어도 충돌 경고는 검토해야 합니다. 등록 유틸리티를 네이티브 hover 선택자 훅으로 써도 별도로 생성되는 규칙이 hover로 제한되지는 않습니다. 컴포넌트가 지원하는 기본 상태, hover 조건, 키보드 포커스, 비활성 상태, 터치 동작을 확인하세요. 마지막 편집 후 관련 검사를 다시 실행하고 이전에 통과한 검사도 유지하세요. 다른 곳의 새 실패를 받아들이지 마세요.
+
+<GuideStudy id="inspection-coverage" />
+
+### 결과와 한계 보고 \{#verification-limits\}
+변경 동작, 유지한 네이티브 CSS와 의존성, 실제 확인한 파일과 상태, 미해결 진단을 담은 짧은 최종 보고서를 요청하세요. 세 파일에서 lint가 실패했지만 좁은 범위에서 통과했다면 두 결과를 모두 보고해야 합니다. 정보성 알 수 없는 값 진단은 유효하지 않은 값으로 표현하지 말고 그대로 드러내세요. 정적 예상과 브라우저 관찰 결과를 구분하고 브라우저 검증이 남았다면 명시하세요.
+
+스킬은 지침을 제공할 뿐 브라우저를 자동 실행하거나 수정 롤백을 강제하지 않습니다. 에이전트와 프로젝트 검사가 이를 수행해야 합니다. 동적 클래스 구성, 런타임 변경, 미검증 환경은 정적 검사 범위 밖일 수 있습니다. 빌드 성공, 빈 진단 목록, 하나의 시각적 상태 통과가 완전한 수정을 보장하지는 않습니다. 미완료 수정을 명시하고 합의한 범위와 검증 예산을 지키세요.
+
+---
+
+## 도구가 생성한 수정 검토 \{#safe-write-previews\}
+읽기 전용 도구는 파일을 쓰지 않습니다. 수정은 두 번의 호출을 거쳐 에이전트가 먼저 차이를 보여 줄 수 있습니다.
+
+1. `mastercss_preview_fixes` 또는 `mastercss_preview_directive_format`은 작업 공간을 건드리지 않고 차이와 확인 토큰을 반환합니다.
+2. 프로젝트 검토 절차에 따라 차이를 승인하면 `mastercss_apply_preview`가 씁니다. 토큰이 유효하고 모든 경로가 작업 공간 안에 있으며 각 파일이 미리보기 당시 해시와 일치해야 합니다.
+
+예를 들어 한 파일의 클래스 순서 수정을 미리 봅니다.
+
+```json name=mastercss_preview_fixes
+{
+  "mode": "lint-fixes",
+  "patterns": ["src/button.html"],
+  "rules": "sort-classes"
+}
+```
+
+미리보기 후 파일이 바뀌면 최신 작업을 덮어쓰는 대신 적용이 실패합니다. 파일이나 서버 세션이 바뀌면 새 미리보기를 만드세요. 토큰 유효성과 쓰기 보장은 [미리보기 수명](/reference/tools/mcp#preview-lifetime)을 참고하세요.
+
+---
+
+## 클래스가 불분명할 때 선언 변환 \{#translate-a-declaration-when-the-class-is-unclear\}
+
+MCP 클래스 검사에서 `matchStatus`, `cssSyntaxStatus`, `cssValueStatus`, `browserSupport`를 각각 확인하세요. 알 수 없는 값은 일치 실패가 아니며 `not-checked` 브라우저 지원은 검증된 지원이 아닙니다.
+
+클래스 표기가 불확실하면 [CLI](/guide/installation#cli)가 MCP 연결 없이 독립된 CSS 선언 블록에서 클래스를 제안할 수 있습니다. 앱 루트에서 프로젝트에 설치된 버전을 실행하세요.
+
+```bash
+master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
+```
+
+JSON 응답의 `result.classes`, `result.remainingCss`, `validation`, `diagnostics`를 읽으세요. `manifest.entries`에 예상한 CSS 진입점이 있는지 확인하세요. 빈 목록이면 프리셋을 사용한 것입니다. 다른 프로젝트 루트는 `--cwd`, 표준 입력의 선언은 `--stdin`으로 지정하세요. 종료 상태와 보존 블록은 [명령 계약](/reference/tools/cli#suggest)을 참고하세요. 설치된 CLI에 `suggest`가 없다면 패키지 버전을 섞지 말고 제공되는 검사를 계속 사용하세요.
+
+MCP가 연결되면 `mastercss_suggest_classes`는 같은 선언 블록을 받습니다.
+
+```json
+{
+  "declarations": "display:flex; align-items:center; padding:16px; gap:1rem;"
+}
+```
+
+기본 프리셋에서는 `flex items-center p(16) (gap:1rem)`을 제안합니다. 프로젝트 정의에 따라 제안이 바뀔 수 있습니다. 결과에는 생성 CSS, 개별 값 검증 상태, 네이티브 CSS에 남겨야 하는 블록인 `remainingCss`가 포함됩니다. 도구는 중복 선언과 겹칠 수 있는 속성을 포함해 불확실한 블록 전체를 보존합니다. 파일을 편집하거나 스타일시트 선택자를 변환하지는 않습니다.
+
+제안을 적용하기 전에 캐스케이드를 검토하세요. 선택자나 인라인 스타일의 선언을 유틸리티로 옮기면 우선하는 규칙이 바뀔 수 있습니다. 도구의 선언 검사는 주변 스타일이나 브라우저 렌더링을 검증하지 않습니다.
+
+---
+
+## 공유 변경의 영향 범위 확인 \{#review-the-second-change\}
+첫 초안이 올바르게 보여도 다음 편집이 무엇에 영향을 줄지는 알 수 없습니다. `--color-brand` 같은 공유 정의를 바꾸기 전에 프로젝트 스냅샷을 저장하고 마크업이 바뀌지 않아도 편집 후 비교하세요.
+
+```bash
+master-css inspect --snapshot > before.json
+master-css inspect --compare before.json > impact.json
+```
+
+`impact.json`은 변경된 정의, 알려진 클래스 사용처와 파일, 전후 생성 규칙, 네이티브 스타일시트 참조와 출력 전달을 나열합니다. 변경이 없어도 `coverage`를 읽으세요. 동적 소스, 원격 콘텐츠, 최종 브라우저 동작은 완전히 검사되지 않습니다. MCP에서는 전후에 `includeSnapshot: true`로 `mastercss_scan_project`를 호출하고 두 스냅샷을 `mastercss_css_compare`에 전달하세요.
+
+네이티브 컴포넌트 CSS는 관리되는 스타일시트 그래프 전체의 토큰 참조를 검사하세요. JavaScript에서 가져온 라우트 및 컴포넌트 스타일시트는 해당 그래프 밖에 있으므로 소스 경로로 명시하세요.
+
+```bash
+master-css inspect --design-system --design-system-options design-system.options.json "app/**/*.css"
+```
+
+보고서는 각 `var()` 토큰 참조의 소스 범위, 선택자, 상위 at-rule, 가져오는 파일, 공유 접두사 충돌을 나열합니다. `components` 목록은 `.button[data-variant="primary"]` 같은 선택자에서 컴포넌트 클래스의 속성 용어를 읽어 에이전트가 실제 CSS가 지원하는 변형을 작성하게 합니다. 선택적 [옵션 파일](/reference/tools/cli#design-system-options)은 토큰 설명, 사용 중단과 대체 제안, 특정 속성의 원시 값 정책을 추가합니다. 같은 객체는 `mastercss_scan_project.designSystem`과 [언어 서비스](/guide/language-service)의 `designSystem`에서도 받으며 라우트 스타일시트는 `routeStylesheets`에 넣습니다. 이 보고서는 작성된 구문의 증거입니다. 영향을 받는 레이아웃과 상태는 브라우저에서 확인하세요.
+
+
+## 에이전트와 전달 최적화 \{#optimize-delivery-with-an-agent\}
+
+로딩 리팩터링이나 성능 평가에서는 [CSS 전달 최적화](/guide/optimizing-css-delivery), 대상 라우트, 기존 렌더링 모드와 검사를 제공하세요. 프로덕션 자산 기준을 기록하고 기능 스타일을 소유 모듈로 옮긴 뒤 기능 페이지와 무관한 페이지 양쪽의 출력 및 상호작용을 검증하도록 요청하세요. 작업상 필요하지 않으면 모드는 유지하세요.
+
+공개 Master CSS 스킬은 전달 참조 문서를 통해 이 작업을 안내합니다. 소스와 매니페스트 검사는 유용하지만 브라우저 전송 비용이나 이후 상태의 정확성을 입증하지는 않습니다. 일반 컴포넌트 변경에는 관련 로컬 검사가 필요하며 자동으로 전체 사이트를 감사할 필요는 없습니다.

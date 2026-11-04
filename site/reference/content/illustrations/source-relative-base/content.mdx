@@ -1,0 +1,25 @@
+# Reference prose: illustrations/source-relative-base
+
+## title \{#copy-title\}
+
+A source path starts at the stylesheet that declares it
+
+## alt \{#copy-alt\}
+
+An imported styles/shared.css declares ./views/*.html and points to styles/views, while the application’s working directory is shown separately.
+
+## caption \{#copy-caption\}
+
+The tree depicts one filesystem. Importing the stylesheet from apps/shop does not rebase its authored @source pattern onto that app.
+
+## description-0 \{#copy-description-0\}
+
+The repository contains styles/shared.css and styles/views/card.html. shared.css declares @source "./views/*.html".
+
+## description-1 \{#copy-description-1\}
+
+The relative pattern resolves from styles/shared.css, so it includes styles/views/card.html even when the consuming app runs in apps/shop.
+
+## description-2 \{#copy-description-2\}
+
+The scanner’s separately supplied programmatic cwd option has its own contract; this figure explains the CSS-authored directive.

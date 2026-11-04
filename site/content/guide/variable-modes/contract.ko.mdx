@@ -1,0 +1,155 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+테마 토큰에는 두 역할이 있습니다. 이름은 등록된 유틸리티 계열에서 값을 사용할 수 있게 하며 출력된 사용자 지정 속성은 네이티브 CSS에 참여합니다. Master CSS는 클래스를 해석하고 의존 항목을 유지하며, 브라우저는 캐스케이드와 상속으로 사용자 지정 속성 값을 해석합니다.
+
+이 페이지는 토큰 조회, 의존 항목 전달, 치환, 모드 활성화를 정의합니다. [테마](/guide/theme)는 토큰을 공유할 시점과 프로젝트 테마를 만드는 방법을 설명하며 [토큰 색인](/reference#tokens)은 프리셋 값을 나열합니다.
+
+## 등록과 조회 \{#namespace-resolution\}
+
+토큰은 최상위 `@theme` 블록에 선언하세요. `@theme` 밖의 네이티브 사용자 지정 속성은 CSS에서 쓸 수 있지만 자체적으로 토큰 기반 클래스를 등록하지는 않습니다. 네이티브 선택자와 쿼리는 블록 밖에 둡니다. 스타일시트 문법은 [`@theme`](/reference/directives/theme#theme)을 참고하세요.
+
+<a id="contextual-token-lookup"></a>
+
+토큰 계열은 검색할 네임스페이스를 결정합니다. 키는 토큰 이름의 나머지 부분이며 키 안의 하이픈은 유지됩니다.
+
+| 토큰 | 클래스 | 생성 선언 |
+| --- | --- | --- |
+| `--spacing-card` | `p-card` | `padding: var(--spacing-card)` |
+| `--radius-card` | `r-card` | `border-radius: var(--radius-card)` |
+| `--color-brand` | `bg-brand` | `background-color: var(--color-brand)` |
+| `--color-text-action` | `fg-text-action` | `color: var(--color-text-action)` |
+| `--color-line-divider` | `b-line-divider` | `border-color: var(--color-line-divider)` |
+
+`text-action`과 `line-divider`는 `color` 네임스페이스의 키입니다. `outline-line-divider`는 `--color-line-divider`를 사용할 수 있지만 `outline-divider`는 `line-`을 암묵적으로 삽입하지 않습니다. 두 네임스페이스의 같은 키가 다른 값을 제공할 수 있으며 `p-card`와 `r-card`는 독립적으로 해석됩니다.
+
+<ConfiguredExample source={'@theme {\n  --spacing-card: 1.5rem;\n  --radius-card: .5rem;\n  --color-brand: #1d4ed8;\n  --color-text-action: var(--color-brand);\n  --color-line-divider: rgb(0 0 0 / 12%);\n}'} html={'<article class="p-card r-card b(1) b-solid b-line-divider">\n  <a class="fg-text-action" href="/settings">Settings</a>\n</article>'} />
+
+<a id="default-namespace-sources"></a>
+
+전체 접두사와 네임스페이스 대응은 [계열 색인](/reference/tokens/families)에 있습니다. 완전한 CSS 속성 이름이 토큰 계열을 자동으로 만들지는 않습니다. 새 대응이 필요하면 [`@utility`](/reference/directives/definitions#utilities)로 사용자 지정 패턴을 등록하세요. `w-full` 같은 고정 표기는 같은 키의 토큰이 있어도 고정 정의를 유지합니다. [클래스 해석](/reference/rules/declarations)을 참고하세요.
+
+<ReferenceIllustration id="registration-boundary" />
+
+## 의존 항목 전달 \{#variable-lifecycle\}
+
+생성 선언은 보통 `var()` 참조를 유지합니다. 사용되는 관리 대상 토큰은 전이적인 관리 대상 의존 항목과 함께 `theme` 레이어의 `:root, :host` 아래 출력됩니다.
+
+<a id="custom-spacing-example"></a>
+
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
+
+토큰이 유지되면 중복 선언도 소스 순서대로 남으며 해당 값이 참조하는 의존 항목도 유지됩니다. 네이티브 스타일시트의 참조도 관리 대상 토큰을 유지할 수 있습니다. 네이티브 사용자 지정 속성 선언과 범위별 덮어쓰기는 소유 스타일시트에 남아 해당 파일의 유지 정책을 따릅니다.
+
+Master CSS는 클래스를 생성할 때 라이트, 다크, 특정 뷰포트용 값을 고르지 않습니다. 검사는 작성된 선언과 의존 항목을 보고할 수 있지만 요소, 상위 요소, 브라우저 환경 없이는 계산값을 확정할 수 없습니다.
+
+<ReferenceIllustration id="token-dependency-chain" />
+
+### 없는 이름과 유효하지 않은 값 \{#missing-names-and-invalid-values\}
+
+알 수 없는 토큰 키는 일치하는 토큰 계열 클래스를 만들 수 없습니다. 이는 유효한 클래스가 출력한 `var()`가 나중에 브라우저에서 유효하지 않은 값으로 해석되는 경우와 다릅니다. 상속, 순환, 폴백, 속성 값의 유효성은 [네이티브 사용자 지정 속성 규칙](https://www.w3.org/TR/css-variables-1/)을 따릅니다. 선언을 유지한다고 최종 계산값이 유효함을 보장하지는 않습니다.
+
+## 상속과 범위별 별칭 \{#mode-buckets\}
+
+네이티브 선택자로 로컬 덮어쓰기를 선언하면 같은 클래스가 범위에 따라 다른 값을 받을 수 있습니다.
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-panel">Ocean panel</div>
+</section>
+```
+
+### 파생 값 \{#derived-mode-aware-values\}
+
+`--color-link: var(--color-brand)` 같은 별칭은 선언된 요소에서 먼저 해석된 뒤 계산값이 상속됩니다. 하위 요소에서 `--color-brand`만 덮어써도 상속한 별칭이 다시 연결되지는 않습니다. 로컬 brand에서 파생되어야 한다면 하위 범위에서 별칭을 다시 선언하세요.
+
+같은 범위 규칙은 `color-mix()` 같은 파생 표현식에도 적용됩니다.
+
+```css
+@theme {
+  --color-brand: #1d4ed8;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+[data-theme="plum"] {
+  --color-brand: #86198f;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+```
+
+이 함수들은 CSS 표현식으로 남습니다. Master CSS가 작성된 각 범위마다 색상을 따로 계산하지는 않습니다. [별칭 상호작용 예제](/guide/theme#alias-and-override-tokens)에서 상속과 재연결의 결과를 나란히 볼 수 있습니다.
+
+## Inline 치환과 static 전달 \{#inline-and-static-variables\}
+
+`inline`은 생성 선언이 참조하는 대상을 바꿉니다. `static`은 토큰의 사용자 지정 속성 선언에 탐색으로 발견한 사용처가 필요한지를 바꿉니다. 두 동작은 독립적입니다.
+
+| 정의 | 생성 클래스 선언 | 사용자 지정 속성 전달 |
+| --- | --- | --- |
+| `@theme` | 토큰 참조 유지 | 필요할 때 유지 |
+| `@theme inline` | 토큰 값을 한 번 치환 | 치환된 클래스 자체는 해당 토큰 선언을 요구하지 않음 |
+| `@theme static` | 토큰 참조 유지 | 사용처가 발견되지 않아도 유지 |
+| `@theme static inline` | 토큰 값을 한 번 치환 | 사용처가 발견되지 않아도 유지 |
+
+Inline 치환은 간접 참조 한 단계를 제거합니다. 치환된 값 안의 참조는 여전히 브라우저가 해석하며 `inline`이 재귀적으로 상수로 바꾸지는 않습니다. `@apply` 확장을 포함한 Master 생성 선언에 적용되며, 직접 작성한 네이티브 CSS는 원래 `var()` 참조를 유지합니다.
+
+### 남은 변수가 해석되는 위치 \{#where-the-remaining-variable-resolves\}
+
+다음 두 설정은 모두 `--color-brand: var(--app-brand)`를 정의하고 `bg-brand`를 사용하며 `inline` 수정자만 다릅니다. 두 경우 모두 문서 루트는 파란색이고 중첩된 section이 `--app-brand`를 자두색으로 덮어씁니다.
+
+<ReferenceIllustration id="inline-resolution" />
+
+일반 `@theme`에서는 생성 선언이 `--color-brand`를 참조합니다. 이 토큰의 `var(--app-brand)`는 루트에서 해석되며 중첩 요소는 결과인 파란색 값을 상속합니다.
+
+<ConfiguredExample source={'@theme { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Inherited blue</div>\n</section>'} />
+
+`@theme inline`에서는 생성 선언이 스타일을 적용하는 요소에서 `--app-brand`를 직접 참조해 section의 자두색 값을 받습니다.
+
+<ConfiguredExample source={'@theme inline { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Local plum</div>\n</section>'} />
+
+외부 사용처가 탐색으로 볼 수 없는 토큰을 필요로 하면 `static`을 독립적으로 사용하세요. 허용 형식과 정의 범위는 [테마 수정자](/reference/directives/theme#theme-static)를 참고하세요.
+
+## 모드 활성화 \{#mode-triggers\}
+
+모드는 작성된 CSS 범위 또는 조건이며 두 번째 토큰 네임스페이스가 아닙니다. 토큰 값을 바꾸는 것과 규칙을 특정 모드에 제한하는 것은 별도 작업입니다.
+
+| 방식 | 바뀌는 내용 | 활성화 조건 |
+| --- | --- | --- |
+| 네이티브 사용자 지정 속성 덮어쓰기 | 해당 범위에서 상속하는 값 | 작성된 선택자 또는 네이티브 쿼리 |
+| `light-dark()` 토큰 | 선택한 색상 값 | 요소가 실제 사용하는 색 구성표 |
+| 프리셋 `@dark` 또는 `@light` 접미사 | 규칙 적용 여부 | 시스템 `prefers-color-scheme` 미디어 쿼리 |
+| `@apply(--name)`을 통한 선택자 믹스인 | 생성 규칙이 매칭되는 위치 | 믹스인에 작성한 선택자 그대로 |
+
+### 수동 범위와 규칙 래퍼 \{#manual-scopes-and-rule-wrappers\}
+
+`bg-surface` 같은 토큰 클래스는 상속한 변수를 따릅니다. ocean 범위에서만 다른 선언을 적용하려면 믹스인에 그 범위를 명시하세요. `&`는 생성 선택자를 뜻하며 아래 하위 요소 분기는 의도적으로 작성한 것이지 Master CSS가 삽입한 것이 아닙니다.
+
+<ConfiguredExample source={'@theme { --color-surface: white; }\n[data-theme="ocean"] { --color-surface: #082f49; }\n@mixin --ocean {\n  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }\n}'} html={'<section data-theme="ocean">\n  <div class="bg-surface p(16)@apply(--ocean)">Ocean panel</div>\n</section>'} />
+
+토큰 덮어쓰기는 배경 값을 바꾸고 믹스인은 padding이 적용되는 위치를 바꿉니다. 어느 방식도 다른 방식을 정의하지 않습니다. 래퍼 인수와 배치는 [유틸리티와 믹스인](/reference/directives/definitions#reusing-a-matched-value)을 참고하세요.
+
+### 시스템 환경설정과 수동 색 구성표 \{#system-preference-and-manual-color-schemes\}
+
+전체 프리셋은 네이티브 `color-scheme` 규칙을 제공합니다. 루트는 `light dark`를 허용하며 `data-theme="light"` 또는 `data-theme="dark"`는 영역의 색 구성표를 고정합니다. 토큰은 `light-dark(white, #111827)`로 이 구성을 따를 수 있습니다. 브라우저가 값을 선택하므로 두 번째 클래스는 필요하지 않습니다. 네이티브 동작은 [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark)를 참고하세요.
+
+수동 테마 영역 안에서도 프리셋 `@dark`와 `@light` 접미사는 시스템 미디어 쿼리로 남습니다. `data-theme`를 바꿔도 활성화되지 않습니다. [색상](/guide/colors#native-color-scheme-and-manual-themes)에서 수동 활성화와 중첩 영역을 보여 줍니다.
+
+### 로컬 겹침과 Shadow DOM \{#local-overlap-and-shadow-dom\}
+
+겹치는 범위는 레이어 순서와 명시도를 포함한 일반 캐스케이드를 따릅니다. 선택자가 테마를 설명한다는 이유만으로 로컬 값이 자동으로 더 강해지지는 않습니다. [캐스케이드 레이어](/reference/rules/layers)를 참고하세요.
+
+기본 테마 선언에는 `:host`가 포함됩니다. 범위가 지정된 host 덮어쓰기를 명시적으로 작성하고 필요한 스타일시트를 섀도 트리에 불러오세요.
+
+```css
+@theme { --color-panel: white; }
+:host([data-theme="dark"]) { --color-panel: #111827; }
+```
+
+토큰은 리소스 전달을 대체하지 않습니다. 네이티브 키프레임과 의존 항목 유지는 [키프레임 계약](/reference/directives/pruning#native-keyframes)에서, 스타일시트 유지는 [네이티브 CSS 가지치기](/reference/directives/pruning)에서 다룹니다.

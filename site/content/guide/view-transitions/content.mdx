@@ -3,10 +3,10 @@ import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import DemoViewTransition from '@master/internal-site/demo/DemoViewTransition.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Keep an article's image and heading connected as readers move from a collection into its detail view. Use Master CSS for the layout, native CSS for the transition, and JavaScript for the state change. A working interface comes first: readers must still reach the article when animation is unavailable.
 
-## Article list to detail
+## Article list to detail \{#article-list-to-detail\}
 
 (click) Open either article, then return to its card. Follow the image, title and date as their positions change. Keyboard focus moves to the article heading and returns to the selected button.
 
@@ -16,7 +16,7 @@ This is a **same-document** transition: JavaScript replaces the collection witho
 
 <TransitionIllustration />
 
-## What the browser animates
+## What the browser animates \{#what-the-browser-animates\}
 
 A CSS `transition` interpolates changes to a property on an element that remains in the page. A view transition can connect different DOM nodes and different layouts: the browser captures the old view, runs your update, then builds a temporary pseudo-element tree for the old image and the new view. It animates that tree above the document. By the time the animation begins, the DOM has already changed.
 
@@ -24,7 +24,7 @@ Without named elements, the browser normally crossfades the root view. Adding ma
 
 <TransitionIllustration name="capture-lifecycle" />
 
-## Build the article transition
+## Build the article transition \{#build-the-article-transition\}
 
 Assume Master CSS is already [installed](/guide/installation). Put the following markup in the document body, load `article-transitions.css` in the head, and load `article-transitions.js` as a module. Replace the image path with one from your project. This reduced example implements one article; the live preview applies the same naming scheme to two.
 
@@ -141,7 +141,7 @@ root.addEventListener('click', event => {
 
 For multiple articles, give each part a stable name derived from the article ID, and return focus to that article's button. Fetch data before starting the transition rather than holding rendering while a network request finishes. In React, commit the state update with `flushSync()` inside the callback; calling a state setter alone does not guarantee the new DOM is ready for capture. Frameworks with their own transition integration should own that commit boundary.
 
-## Naming snapshots
+## Naming snapshots \{#naming-snapshots\}
 
 The same `view-transition-name` must be unique among rendered elements in each captured state. Reusing it **across** the old and new states is what forms a pair; reusing it twice **within** either state causes the transition to be skipped. Names present only in the old state exit; names present only in the new state enter.
 
@@ -157,7 +157,7 @@ The dot in `::view-transition-group(.article)` refers to the **transition class*
 
 Use stable, valid CSS identifiers such as `article-aurora-image`; do not use titles or arbitrary user text as names. `view-transition-name: match-element` lets the browser assign identity when the **same DOM element** survives an update, such as a keyed list reorder. It does not pair replacement nodes or separate documents. This example replaces nodes, so it uses explicit names.
 
-## Styling transition pseudo-elements
+## Styling transition pseudo-elements \{#styling-transition-pseudo-elements\}
 
 For document transitions, the pseudo-elements originate at the document root, even when the named element is deep inside a component. The default tree contains a group for `root` and a group for each named capture. Each group contains an image pair with an old and/or new child.
 
@@ -169,7 +169,7 @@ Set duration and easing on `::view-transition-group(...)` to tune movement and r
 
 Keep selectors in a global, feature-owned stylesheet: a component-scoped `.card::view-transition-old(...)` cannot target the document-root tree. “Global” here describes selector reach; it does not require placing every feature's rules in one application-wide file.
 
-## Choosing classes or native CSS
+## Choosing classes or native CSS \{#choosing-classes-or-native-css\}
 
 Master CSS can express these native properties and selectors. For a small fixed capture, the following is equivalent to native declarations:
 
@@ -201,7 +201,7 @@ Static scanning does not execute string interpolation. A constructed class such 
 
 Use classes where they keep a local decision easy to read. For this feature, the default is layout utilities in markup, identities in data or native styles, and transition selectors in CSS. The same division gives an AI assistant explicit places to change each concern; it is an authoring recommendation, not a restriction in Master CSS.
 
-## Cross-document transitions
+## Cross-document transitions \{#cross-document-transitions\}
 
 When articles have their own URLs, retain ordinary links and let the browser navigate. Both pages must be on the same origin and opt in. Put this in a stylesheet loaded by **both** documents:
 
@@ -239,13 +239,13 @@ On the collection page, link to the actual article URL. The shared image uses th
 
 Do not wrap `location.href` in `startViewTransition()`: that callback controls updates to the current document. Cross-document transitions use eligible browser navigation, not an application callback. If a router intercepts the link and swaps the current DOM, use its same-document integration instead. Unsupported browsers still follow the link. Same-document API support does not establish cross-document support; consult the [cross-document requirements and lifecycle](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 
-## Reduced motion
+## Reduced motion \{#reduced-motion\}
 
 The same-document example checks the user's preference before starting and skips an active animation if the preference changes. The cross-document stylesheet opts out of navigation animation under the same preference. Neither changes the destination or prevents interaction.
 
 A `@motion-safe` duration override alone does **not** disable the browser's default transition: when that override stops matching, default animation remains. Gate the transition itself. If a router owns initiation, use its motion handling or disable the relevant pseudo-element animations in a reduced-motion rule.
 
-## Fallbacks
+## Fallbacks \{#fallbacks\}
 
 The transition object exposes three different milestones:
 
@@ -261,7 +261,7 @@ The transition object exposes three different milestones:
 
 A resolved `finished` does not prove the animation played through. The main example handles `ready` rejection without repeating the update, and propagates an update error to `reportError`. In an application, replace that reporting with your error boundary or recovery UI. See the [update callback contract](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/updateCallbackDone).
 
-## Verify the complete interaction
+## Verify the complete interaction \{#verify-the-complete-interaction\}
 
 Open both articles with a pointer and keyboard, then return. Check focus, article identity and usable scrolling, including on a narrow screen. Repeat with reduced motion and with the API unavailable: the same content change must still work.
 

@@ -1,0 +1,248 @@
+---
+{
+  "title": "Vite에서 Master CSS 설정하기",
+  "description": "Master CSS를 Vite, React, Vue, React Router 또는 TanStack Start에 연결하고 정적 CSS와 선택적 브라우저 생성을 확인합니다.",
+  "category": "통합"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/vite/cover-light.webp'
+import dark from '~/site/assets/images/integrations/vite/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Vite" />
+
+React, Vue, React Router 프레임워크 모드, TanStack Start 등 Vite로 빌드하는 앱에 Master CSS를 추가합니다. 통합은 소스의 완전한 클래스 이름으로 CSS를 생성합니다. 프레임워크의 기존 Vite 플러그인과 마운트 코드를 유지하세요. Master CSS는 공유 스타일시트를 통해 빌드에 참여합니다.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS 추가하기 \{#add-master-css\}
+      기존 [Vite 프로젝트](https://vite.dev/guide/)의 루트에서 [프레임워크 표](#frameworks)의 `--framework` 값을 지정해 설치 프로그램을 실행하세요. 기본값은 정적 모드로, 소스의 완전한 클래스 이름이 일반 CSS로 변환됩니다.
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@rc -- --framework vite --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### CSS 진입점 확인하기 \{#check-the-css-entry\}
+    설치 프로그램은 Vite 플러그인에 `masterCSS()`를 추가하고 [프레임워크별 진입점](#frameworks)에 나열된 스타일시트를 갱신합니다. 일반 JavaScript 시작 프로젝트에서는 다음 파일입니다:
+
+    ```css name=src/style.css
+    @import '@master/css';
+    ```
+
+    애플리케이션에서 이 진입점을 계속 가져오세요. 다른 파일 이름을 쓰는 프로젝트라면 설치 프로그램 출력을 확인하고 가져오기가 해당 파일을 가리키도록 유지합니다. 설치 프로그램은 프레임워크 앱을 만들거나 마운트 코드를 대체하지 않습니다.
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+    `#app` 요소가 있는 일반 JavaScript 시작 프로젝트에서는 다음 진입점을 사용하고 `npm run dev`를 실행하세요. 프레임워크 앱은 아래의 해당 [컴포넌트 예제](#frameworks)를 사용합니다.
+  </Step>
+  <InstallationPreview>
+
+```js name=src/main.js
+import './style.css'
+
+document.querySelector('#app').innerHTML = `
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+`
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 프레임워크별 진입점 \{#frameworks\}
+앱에 맞는 설치 프로그램 값을 선택하세요. 아래는 일반적인 시작 프로젝트 경로이며 React와 Vue 설정은 지원되는 다른 기존 CSS 진입점을 재사용할 수도 있습니다. 플래그를 생략하면 설치 프로그램이 프로젝트에서 프레임워크를 감지합니다.
+
+| 프레임워크 | `--framework` | CSS 진입점 |
+| --- | --- | --- |
+| 일반 JavaScript와 Vite | `vite` | `src/style.css` |
+| [React](#react) | `react` | `src/index.css` |
+| [Vue](#vue) | `vue` | `src/assets/main.css` |
+| [React Router](#react-router) 프레임워크 모드 | `react-router` | `app/app.css` |
+| [TanStack Start](#tanstack-start) | `tanstack-start` | `src/styles/app.css` |
+
+### React \{#react\}
+[Vite로 빌드하는 React 프로젝트](https://vite.dev/guide/#scaffolding-your-first-vite-project)에서 `src/App.tsx`를 바꾸세요. `src/main.tsx`의 `src/index.css` 가져오기는 유지합니다.
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+### Vue \{#vue\}
+[Vue 프로젝트](https://vuejs.org/guide/quick-start)에서 `src/App.vue`를 바꾸세요. 애플리케이션 진입점의 `src/assets/main.css` 가져오기는 유지합니다.
+
+```vue name=src/App.vue
+<template>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+</template>
+```
+
+### React Router \{#react-router\}
+[React Router 프레임워크 모드](https://reactrouter.com/start/framework/installation) 프로젝트에서는 설치 프로그램이 `app/root.tsx`에서 `app/app.css`를 가져옵니다. 홈 라우트를 바꾸고 `app/routes.ts`의 등록은 유지하세요. `app/root.tsx`의 `Links`, `Scripts`, `Outlet`, 문서 구조는 페이지와 스타일시트를 전달하므로 유지해야 합니다.
+
+```tsx name=app/routes/home.tsx
+export default function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+### TanStack Start \{#tanstack-start\}
+Vite로 빌드하는 [TanStack Start](https://tanstack.com/start/latest) 프로젝트에서는 인덱스 라우트를 바꾸세요. 설치 프로그램이 `src/routes/__root.tsx`에서 `src/styles/app.css`를 가져오므로 모든 라우트가 같은 CSS 진입점을 불러옵니다.
+
+```tsx name=src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+  component: Home
+})
+
+function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 설정 확인하기 \{#check-the-setup\}
+개발 서버가 실행 중일 때 소스의 `p-md`를 `p-lg`로 바꾸세요. 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나야 합니다. `p-md`로 되돌린 뒤 앱을 빌드합니다:
+
+```bash
+npm run build
+```
+
+프로젝트의 미리보기 또는 시작 명령으로 프로덕션 출력을 제공하세요. 일반 Vite, React, Vue 시작 프로젝트는 보통 `npm run preview`를 사용하며 React Router와 TanStack Start는 설정된 서버나 배포 어댑터를 사용합니다. 문단에 `1rem` 안쪽 여백이 유지되고 정적 모드에서 Master CSS 브라우저 런타임이 배포되지 않는지 확인하세요.
+
+클라이언트 렌더링 앱은 문단을 만들기 위해 JavaScript가 필요합니다. 서버 렌더링이 활성화된 React Router 또는 TanStack Start 라우트에서는 JavaScript를 끄고 새로고침하여 서버 HTML에 같은 스타일시트가 적용되는지 확인하세요.
+
+파일은 로드되지만 특정 클래스가 없다면 소스에 완전한 이름을 유지하세요. [클래스 이름 스캔](/guide/scanning-and-pruning)을 참고할 수 있습니다. 유틸리티가 전혀 작동하지 않으면 CSS 진입점을 가져오는지, Vite 설정에 프레임워크 플러그인과 함께 `masterCSS()`가 있는지 확인합니다. 시작 프로젝트의 스타일이 결과를 가리면 `@import '@master/css';`는 유지하고 외형 규칙을 제거하세요.
+
+---
+
+## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
+기본값인 정적 모드에는 Master CSS 시작 코드가 필요하지 않습니다. 모드를 바꿀 때도 CSS 진입점을 유지하세요:
+
+| 프레임워크 | 설치 프로그램 옵션 | 런타임 시작 방식 |
+| --- | --- | --- |
+| Vite, React, Vue | `--mode runtime` | Vite 플러그인이 `index.html`에 주입 |
+| React Router, TanStack Start | `--mode runtime` | 루트 라우트의 브라우저 전용 가져오기 |
+
+<DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
+
+`--mode runtime`과 프로젝트의 `--framework` 값을 지정해 설치 프로그램을 실행하세요:
+
+```bash
+npm create @master/css@rc -- --framework vite --mode runtime --yes
+```
+
+Vite, React, Vue에서는 플러그인이 런타임을 `index.html`에 주입하고 컴파일된 프로그램을 출력합니다. 런타임 가져오기를 두 번째로 추가하지 마세요.
+
+React Router와 TanStack Start는 자체적으로 HTML을 생성하므로 Vite의 `index.html` 주입 과정을 거치지 않습니다. 기존 루트 라우트의 스타일시트 가져오기 옆에 브라우저 전용 런타임 가져오기를 추가하고 라우트 정의와 컴포넌트 내보내기는 유지하세요:
+
+```tsx name=app/root.tsx
+import './app.css'
+
+if (!import.meta.env.SSR) {
+  void import('virtual:master-css-runtime')
+}
+```
+
+```tsx name=src/routes/__root.tsx
+import '../styles/app.css'
+
+if (!import.meta.env.SSR) {
+  void import('virtual:master-css-runtime')
+}
+```
+
+이 가드는 가상 런타임이 서버에서 실행되지 않게 합니다. 문서마다 한 번만 불러오세요. `app/master-css.d.ts` 또는 `src/master-css.d.ts` 같은 선언 파일에 클라이언트 타입을 추가합니다:
+
+```ts
+/// <reference types="@master/css/client" />
+```
+
+앱을 빌드하고 미리보기한 뒤 브라우저 콘솔에서 다음 코드를 실행하세요. 다시 빌드하지 않아도 문단에 밑줄이 생겨야 합니다:
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+JavaScript 실행 전에는 서버 렌더링 HTML에 런타임 생성 CSS가 포함되지 않습니다. 클래스가 적용되지 않으면 콘솔과 출력된 프로그램 요청을 확인하세요.
+
+</DocumentDisclosure>
+
+
+## 스타일시트 로딩 방식 선택하기 \{#stylesheet-loading\}
+
+문서 스타일시트에는 [일반 CSS 가져오기](https://vite.dev/guide/features#css)를 유지하세요. 다른 사용 측에서 CSS 텍스트나 URL이 필요할 때만 다른 요청을 사용합니다. 이런 요청은 앱의 Master CSS 진입점을 대체하거나 렌더링 모드를 바꾸지 않습니다.
+
+<DocumentComparison>
+
+| 요청 | 결과와 책임 |
+| --- | --- |
+| `import './app.css'` | Vite가 문서에 처리된 스타일시트를 불러옵니다. |
+| `import styles from './Card.module.css'` | Vite가 범위가 지정된 CSS를 불러오고 로컬 클래스 이름 매핑을 반환합니다. |
+| `import css from './app.css?inline'` | 처리된 CSS 텍스트를 주입하지 않고 반환합니다. 사용 측에서 직접 연결해야 합니다. |
+| `import source from './app.css?raw'` | Master 지시문을 포함한 작성 원본을 반환합니다. 브라우저에서 바로 쓸 수 있는 CSS가 아닙니다. |
+| `import href from './local.css?url'` | URL을 반환합니다. 문서에 해당 스타일이 필요하면 스타일시트 링크로 연결합니다. |
+
+</DocumentComparison>
+
+예를 들어 자신이 관리하는 문서에 신뢰할 수 있는 빌드 출력을 삽입합니다:
+
+```js
+import css from './app.css?inline'
+
+const style = document.createElement('style')
+style.textContent = css
+document.head.append(style)
+```
+
+처리된 텍스트에도 가져오기가 남을 수 있습니다. `CSSStyleSheet.replaceSync()`는 가져오기가 없는 출력에만 사용하세요. 이 메서드는 가져온 스타일시트를 불러오지 않습니다. 섀도 루트에는 스타일시트 순서와 자산 기본 경로 요구 사항을 포함해 [Lit 설정](/guide/installation/lit)을 따르세요.
+
+### Sass와 CSS Modules \{#sass-and-css-modules\}
+
+프로젝트의 Sass 의존성과 Vite 전처리 옵션을 유지하세요. Sass가 Master CSS에 처리를 맡기도록 Master CSS 진입점 가져오기를 CSS URL 가져오기로 작성합니다:
+
+```scss name=src/app.scss
+@import url("@master/css");
+```
+
+해석된 Sass 부분 파일은 각 리소스 디렉터리를 유지합니다. 소스 맵은 가능한 경우 진단을 원본 파일에 연결하지만, 생성되었거나 매핑되지 않은 내용은 전처리된 위치만 표시할 수 있습니다. Master 믹스인 정의는 `.css`에 유지하거나 [Sass 상호 운용 패턴](/reference/directives/definitions#sass-interoperability)을 사용하세요.
+
+CSS Modules는 범위가 지정된 내보내기와 `composes` 관계를 유지합니다. 네이티브 선언은 전역 출력을 다시 가져오지 않고 프로젝트 정의를 사용할 수 있습니다. 페이지를 새로고침하지 않고 클래스 이름 내보내기를 갱신하려면 프레임워크 HMR이나 사용하는 모듈이 변경을 수용해야 합니다. `?inline`은 범위가 지정된 CSS 텍스트를, `?raw`는 원본 소스를 반환합니다. Vite 8.3.5는 `.module.css`와 `.module.scss`의 `?url` 요청을 거부하므로 모듈 스타일시트에는 이 경로를 사용하지 마세요.
+
+### 배포된 자산 확인하기 \{#check-the-deployed-assets\}
+
+보존된 하위 스타일시트, 이미지, 글꼴, 런타임 프로그램을 포함해 전체 프로덕션 출력을 배포하세요. Master CSS는 가져오기의 media, supports, layer 한정 조건을 유지하고 원래 소유 소스를 기준으로 리소스 URL을 다시 작성합니다. 따라서 인라인 문자열도 별도 자산을 요구할 수 있습니다. [가져오기 계약](/reference/directives/imports#publish-stylesheet-assets)에서 이 경계를 설명합니다.
+
+SSR `?inline` 사용 측의 URL은 설정된 공개 `base`를 사용합니다. Vite는 기본적으로 SSR 자산을 출력하지 않습니다. 대응하는 클라이언트 빌드의 자산을 배포하거나 서버 빌드가 자산을 게시해야 한다면 [`build.ssrEmitAssets`](https://vite.dev/config/build-options#build-ssremitassets)를 활성화하세요. 빌드를 배포 위치로 옮긴 뒤 실제 응답과 Network 패널을 검사합니다. 원래 위치에서의 빌드만으로는 URL 이동 가능성을 확인할 수 없습니다.
+
+개발 중 참조 리소스를 삭제하면 컴파일 오류가 보고되지만 해당 서버 컨텍스트가 닫힐 때까지 이미 게시된 리소스 버전은 계속 제공될 수 있습니다. 의존 리소스를 복구하고 사용 측이 갱신되며 오류가 사라지는지 확인하세요. 페이지에 스타일이 남아 있다는 사실만으로는 최신 컴파일이 성공했다고 볼 수 없습니다.

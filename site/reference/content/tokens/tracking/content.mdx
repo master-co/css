@@ -1,0 +1,61 @@
+# Reference prose: tokens/tracking
+
+## title \{#copy-title\}
+
+Tracking
+
+## summary \{#copy-summary\}
+
+The preset letter-spacing scale.
+
+## note \{#copy-note\}
+
+Tight keys already contain negative lengths; use `tracking-tight` directly. A signed token form such as `-tracking-tight` is not supported.
+
+## valuesLead \{#copy-valuesLead\}
+
+The nonzero preset values use em, relative to the font size where letter-spacing is declared. `tracking-normal` supplies zero; use `(letter-spacing:normal)` for the native keyword.
+
+## explanation-title \{#copy-explanation-title\}
+
+Inherited spacing keeps its computed length
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`tracking-widest` supplies `.12em`. At a 16px font size it computes to 1.92px. A child with a 32px font inherits that length; it does not automatically double the spacing.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+Apply `tracking-widest` on the child to evaluate `.12em` against its own 32px font size, producing 3.84px. This differs from the unitless ratios used by Leading.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+Letter spacing adjusts the spacing of text rather than stretching the glyph shapes. It can change line wrapping; keep the container free to grow and inspect the actual font and language.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+A `text-*` treatment includes a letter-spacing declaration. On the same element and under the same conditions, a `tracking-*` utility follows that recipe and can override its spacing. For a literal length, use a native declaration such as `(letter-spacing:-.03em)`.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Leading
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+Text treatment companions
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+native tracking behavior
+
+## usage-lead \{#copy-usage-lead\}
+
+Compare the same phrase at one font size with two tracking values.
+
+## customize-lead \{#copy-customize-lead\}
+
+Change a preset value or add a token: `--tracking-display` creates `tracking-display`.
+
+## guide-label \{#copy-guide-label\}
+
+Typography

@@ -1,0 +1,144 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+擷取會在不執行應用程式的情況下，從來源找出可能的 class 名稱。這些候選項也稱為潛在 class，是比對與候選項政策的輸入。找到字串，不代表它一定會產生規則、具有合法 CSS 值，或能在特定瀏覽器運作。
+
+本頁定義來源邊界、靜態擷取、候選項分類與來源歸屬。[掃描 class 名稱](/guide/scanning-and-pruning)說明如何撰寫可被找到的 class，以及診斷樣式遺漏。[掃描指令](/reference/directives/scanning)則定義路徑與 class 模式的文法。
+
+## 完整的靜態字串 \{#candidate-scanning\}
+
+擷取器使用來源語言的結構。JavaScript 與 TypeScript 字串即使不在 `className` 中，也能提供候選項：以顯示文字傳給元件的 class 仍可能被找到。掃描器不會推論哪個分支會執行，或函式在執行階段會回傳什麼。
+
+<a id="complete-classes"></a>
+
+| 來源形式 | 擷取可看見的內容 |
+| --- | --- |
+| HTML `class="p-md shadow-md"` | 兩個完整 class |
+| JSX `className="p-md"` | 完整 class |
+| `error ? 'bg-red-60' : 'bg-green-60'` | 兩個靜態分支 |
+| `{ compact: 'p-sm', roomy: 'p-lg' }` | 物件中的完整值 |
+| 包含完整靜態 class 片段的樣板字面值 | 這些完整片段 |
+| `'bg-' + tone`，或 class 名稱內的樣板插值 | 不會推論出 `bg-red-60` 或其他完整結果 |
+| 只在執行階段由 API 回傳的 class | 沒有可擷取的來源字串 |
+
+例如，下列來源包含兩個色彩，以及固定的內距與圓角。`tone` 插值不需要求值，就能找到物件中已經完整寫出的 class：
+
+```js
+const tones = {
+  neutral: 'bg-surface-base fg-text-neutral',
+  destructive: 'bg-red-70 fg-white'
+}
+const className = `px-md r-md ${tones.destructive}`
+```
+
+擷取出的 class 集合是 `bg-surface-base`、`fg-text-neutral`、`bg-red-70`、`fg-white`、`px-md` 與 `r-md`。掃描器不會因為此例選了 destructive 分支，就只輸出該分支。
+
+## 候選項分類 \{#validation\}
+
+擷取後，使用中的 manifest 與樣式表註冊內容會決定候選項的角色。未知的一般應用程式 class 不會自動被視為 Master CSS 錯誤。
+
+| 候選項 | 結果 |
+| --- | --- |
+| 已註冊的預設 utility，例如 `p-md` | 產生相符的 utility 規則與相依項目 |
+| 專案定義的 `@utility` class | 產生專案已編譯 manifest 註冊的規則 |
+| 已註冊的原生 class，例如 `.card` | 記錄原生使用情況，不會產生新的 utility |
+| 未比對到定義的應用程式 class | 沒有 Master 生成的規則 |
+| 格式錯誤的 Master class | 沒有規則；檢查功能可回報語法診斷 |
+| 已比對但具有無效或未知 CSS 值的 class | 可能輸出 CSS；比對成功本身不代表值合法或瀏覽器支援 |
+
+```html
+<article class="card p-md shadow-md">Release notes</article>
+```
+
+這裡的 `p-md` 與 `shadow-md` 由預設集解析。只有專案確實提供原生規則，且修剪政策會考量使用情況時，`card` 才會保留該原生規則。原生樣式表預設會保留，掃描本身不會啟用修剪。
+
+<Class2CSS classes={['p-md', 'shadow-md']} />
+
+編譯器比對、CSS 語法驗證、CSS 值驗證與瀏覽器支援，是不同的檢查。請用 [class 檢查](/reference/tools/mcp#mastercss_inspect_class)區分；比對成功的 class 仍會受到瀏覽器階層串接與計算值規則影響。
+
+## 來源邊界 \{#source-boundaries\}
+
+建置整合與 CLI 流程會探索常見的專案原始檔，包括 HTML、JavaScript、TypeScript、JSX、TSX、支援的框架原始碼、Markdown、MDX 與 PHP。一般應用程式檔案不需要廣泛的 `@source` 指令。
+
+自動探索遵循專案與上層工作區的 `.gitignore`，不使用 Git 全域忽略設定。相依套件、宣告檔、二進位檔、版本控制資料與生成輸出會排除。Master 輸出與目前打包器的輸出都不是掃描輸入；Next.js 使用其設定的 `distDir`。
+
+| 指令 | 對探索的影響 |
+| --- | --- |
+| `@source` | 明確納入額外路徑，包括自動探索或 `.gitignore` 排除的檔案 |
+| `@source not` | 排除路徑，優先於納入規則 |
+
+這些例外適用於共用工作區來源、外部內容，或指定範圍的修剪根目錄。相對路徑規則與支援形式請見[掃描指令](/reference/directives/scanning)。
+
+框架整合優先使用原始 MDX、Vue 與 Svelte 來源，不會再掃描一次已編譯的顯示字串。擷取器的語言種類很重要：刻意提供純文字輸入時可以使用 `kind: 'raw'`，但它不是來源解析失敗時的備援方式。
+
+## Markdown 與 MDX \{#markdown-and-mdx\}
+
+Markdown 與 MDX 擷取使用語法樹。實際的 HTML/JSX、ESM 與運算式會參與擷取，文章文字、行內程式碼、一般程式碼區塊與 frontmatter 則不會。因此，文件中展示 class 的程式碼區塊不會自動成為可執行範例。
+
+宿主可用 `parentSource` 將可執行範例註冊為虛擬來源，或明確將有限範圍的 class 加入安全清單。虛擬輸入明確標示可執行內容的歸屬，由宿主提供實際範例來源與語言種類。
+
+格式錯誤的來源會回報 `SOURCE_PARSE_ERROR`。開發時會保留前一次成功提供的結果，正式建置則會失敗。解析或讀取失敗，不等同於將來源更新為空字串。
+
+### 來源位置 \{#source-locations\}
+
+擷取不只可回報字串，也可回報候選項的出現位置，包括原始 UTF-16 範圍、擷取器、內容種類、owner，以及納入或排除的原因。編碼後的屬性仍保有原始來源範圍。完整 URL 字面值會被排除；未知的原生宣告則可能保留為候選項，供後續驗證。
+
+## 來源歸屬 \{#scanner-hosts\}
+
+掃描器工作階段追蹤的是目前各來源提供的結果，不是曾經遇過的所有 class。更新來源會取代它原本提供的結果。移除一個來源時，其他目前來源或安全清單仍保留的 class 不會被移除。
+
+<ReferenceIllustration id="shared-source-class" />
+
+這些工作階段操作可透過 [`@master/css-tooling/scanner/node`](/reference/packages#css-tooling) 的 `MasterCSSScanner` 使用。它們描述來源歸屬；使用框架整合時，通常由建置外掛負責執行。
+
+| 操作 | 對歸屬的影響 |
+| --- | --- |
+| `collectCandidates` | 純粹擷取，不保留來源提供的結果 |
+| `scanSource` | 取代一個來源的內容，包括空字串 |
+| `removeSource` | 移除該來源與其虛擬後代來源 |
+| `reconcileSources` | 提供一個 owner 下一個完整的來源集合 |
+| `registerNativeClasses` | 為樣式表來源註冊原生 class 識別 |
+| `removeOwner` | 移除該 owner 的來源與原生註冊內容 |
+
+```ts
+await scanner.scanSource('page.mdx', content, { owner: 'pages' })
+await scanner.scanSource('page.mdx#live', html, {
+  owner: 'pages', parentSource: 'page.mdx', kind: 'html'
+})
+scanner.removeSource('page.mdx', { owner: 'pages' })
+```
+
+移除 `page.mdx` 時，也會移除它的虛擬範例。其他 owner 的參照仍各自獨立。重新對齊來源時，只保留為該 owner 提供的輸入；即使父來源由外部管理，明確保留的虛擬輸入仍屬於這個集合。
+
+`changed` 表示生成輸出或修剪輸入有所變更。`sourceChanged` 也涵蓋只有來源出處改變的更新：第二個來源可以加入歸屬，而不改變 CSS。`sources` 檢視呈現目前成功的來源集合，包括空輸入與虛擬關係。
+
+<ReferenceIllustration id="source-replacement" />
+
+## 執行階段的值 \{#runtime-values\}
+
+值可以改變而不更動 class 名稱。完整的原生宣告 class 可以參照由標記或腳本提供的自訂屬性：
+
+```html
+<h1 class="(font-size:var(--headline-size))" style="--headline-size: 2rem">Launch notes</h1>
+```
+
+掃描器只會看見一個完整 class。更新 `--headline-size` 會改變瀏覽器中的值，不需要新的 utility 規則。請見[可變值範例](/guide/scanning-and-pruning#keep-changing-values-out-of-class-names)。
+
+相同契約也適用於 `(width:var(--progress))`：腳本可以呼叫 `element.style.setProperty('--progress', '40%')`，class 則保持不變。
+
+如果 class 名稱本身在啟動後才首次出現，靜態建置就無法找到它。請提供有限範圍的安全清單，或使用[執行階段或漸進式渲染](/guide/rendering-modes#comparisons)。
+
+## 候選項政策 \{#included-and-excluded-classes\}
+
+| 指令 | 用途 | 限制 |
+| --- | --- | --- |
+| `@safelist` | 保留有限範圍的外部 class，例如 CMS 狀態或小工具 class | 不會略過比對，也不會定義缺少的 utilities |
+| `@blocklist` | 避免誤判的候選項產生 CSS | 不會改寫來源，也不會移除任意原生 CSS |
+
+class 模式、優先順序與原生使用情況，請見[掃描指令](/reference/directives/scanning)。移除原生規則與關鍵影格的方式，請見[原生 CSS 修剪](/reference/directives/pruning)。候選項探索與原生保留是分開的政策。
+
+<a id="checklist"></a>
+
+樣式遺漏時，請先檢查完整 class、檔案的探索邊界與候選項政策，再修改撰寫語法。[指南診斷清單](/guide/scanning-and-pruning#find-why-a-style-is-missing)會以實際情境帶你完成這些檢查。

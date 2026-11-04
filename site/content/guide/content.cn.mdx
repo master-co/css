@@ -1,0 +1,8 @@
+---
+title: "开始使用 Master CSS"
+description: "学习类语法、设计令牌和 CSS 交付方式，并将其应用到使用的框架中。"
+---
+import GuideIndex from './components/GuideIndex.svelte'
+import { guideIndexCategories } from './components/guide-index'
+
+<GuideIndex client:idle={{ timeout: 500 }} pageCategories={guideIndexCategories(props.pageCategories)} />

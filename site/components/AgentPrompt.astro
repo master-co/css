@@ -1,4 +1,6 @@
 ---
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
 import { agentPrompt } from '../utils/agent-guide-data'
 
@@ -7,6 +9,8 @@ interface Props {
 }
 
 const { name } = Astro.props
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, `AgentPrompt:${name}`, agentPrompt(name))
+
 ---
 
-<div data-agent-prompt={name}><DocumentPrompt {...agentPrompt(name)} /></div>
+<div data-agent-prompt={name}><DocumentPrompt {...copy} /></div>

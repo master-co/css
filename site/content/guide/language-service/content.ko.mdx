@@ -1,0 +1,256 @@
+---
+title: "Master CSS 언어 서비스"
+description: "VS Code를 설정하고 프로젝트 맥락의 토큰 자동 완성을 확인하며 생성 CSS를 검사하고 클래스 소스와 작업 공간을 설정하세요."
+figures: {"LanguageIllustration":{"title":"프로젝트 정의가 편집기 용어가 됩니다","alt":"app.css의 spacing-card 토큰이 HTML class 속성의 p-card 자동 완성을 제공합니다. 제안을 수락한 뒤 p-card에 마우스를 올리면 padding: var(--spacing-card)가 표시됩니다.","caption":"하나의 프로젝트 토큰을 두 편집기 검사로 확인합니다. 클래스 이름을 완성한 뒤 선언을 검사하세요. 편집기 미리보기는 브라우저에서 무엇이 우선하는지 입증하지 않습니다.","description":[{"title":"정의","text":"앱 스타일시트가 @master/css를 가져오고 @theme에서 --spacing-card: 1.5rem을 선언합니다."},{"title":"자동 완성","text":"HTML class 속성 안에서 p-ca는 프로젝트 맥락을 반영한 p-card 자동 완성을 받습니다."},{"title":"검사","text":"p-card에 마우스를 올리면 생성된 padding: var(--spacing-card) 선언이 표시됩니다. 페이지 CSS는 여전히 프레임워크 통합이 제공하므로 렌더링 결과는 별도로 검증하세요."}]},"GuideStudy:editor-build-boundary":{"title":"편집기 미리보기는 스타일시트를 전달하지 않습니다","alt":"하나의 소스 클래스가 두 갈래로 나뉩니다. 언어 서비스는 작성자에게 생성 CSS를 보여 주고 통합 도구는 브라우저에 CSS를 전달합니다.","caption":"자동 완성과 호버는 작성 맥락을 확인합니다. 실제 페이지도 빌드와 브라우저로 검증하세요."}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentOptionList from '@master/internal-site/components/DocumentOptionList.astro'
+import DocumentOptionEntry from '@master/internal-site/components/DocumentOptionEntry.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LanguageIllustration from './components/LanguageIllustration.astro'
+
+## 개요 [sr-only] \{#overview\}
+Master CSS 언어 서비스로 프로젝트가 실제 지원하는 클래스를 찾고 편집하면서 CSS를 검사하세요. 제안은 프로젝트 토큰과 정의를 읽으며 사용자 지정 유틸리티, mixin, 선택자, 조건도 반영합니다.
+
+[Master CSS가 설치된](/guide/installation) 프로젝트로 시작하세요. 확장은 소스 작성을 돕고 브라우저로의 스타일시트 전달은 여전히 프레임워크 통합이 담당합니다.
+
+---
+
+## VS Code 설정 \{#set-up-vs-code\}
+공식 [Master CSS 확장](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode)을 설치하고 VS Code에서 프로젝트 폴더를 연 뒤 문자열 안의 자동 완성을 활성화하세요.
+
+```json name=.vscode/settings.json
+{
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}
+```
+
+확장은 `@master/css`를 가져오는 CSS 진입점이나 Master CSS 패키지를 선언한 `package.json`에서 프로젝트 맥락을 찾습니다. 여러 앱이 있는 저장소에서는 사용할 테마가 있는 앱의 소스 파일을 여세요.
+
+## 프로젝트 토큰 확인 \{#check-a-project-token\}
+
+앱 CSS 진입점의 기존 가져오기 뒤에 간격 토큰을 추가하세요.
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --spacing-card: 1.5rem;
+}
+```
+
+HTML 파일의 class 속성 안에 `p-ca`를 입력하세요. 제안에서 `p-card`를 선택한 뒤 완성된 클래스에 마우스를 올리세요.
+
+```html
+<article class="p-card">Field notes</article>
+```
+
+<LanguageIllustration />
+
+호버의 생성 규칙에 `padding: var(--spacing-card)`가 있어야 합니다. 클래스 이름은 프로젝트 토큰에서 나오며 선언은 변수 참조를 유지합니다. 브라우저에서 페이지를 열어 실제 패딩을 확인하세요. `p-card`가 없다면 편집기 설정을 더 추가하기 전에 [작업 공간 맥락](#workspace-aware-manifests)을 해결하세요.
+
+---
+
+<GuideStudy id="editor-build-boundary" />
+
+## 저장 시 클래스 정렬 추가 \{#add-class-sorting-on-save\}
+
+클래스 정책 진단과 저장 시 정렬을 사용하려면 먼저 [코드 린팅](/guide/code-linting)을 설정하고 [ESLint 확장](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)을 설치하세요. `editor.quickSuggestions`와 함께 다음 옵션을 추가하세요.
+
+```json name=.vscode/settings.json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ]
+}
+```
+
+이제 명시적으로 저장하면 프로젝트 ESLint 설정으로 클래스를 정렬할 수 있습니다. 규칙 목록만으로는 저장 동작이 활성화되지 않습니다. `eslint.codeActionsOnSave.mode`는 기본값 `all`로 유지하세요. 확장의 `problems` 모드는 이 규칙 필터를 무시합니다. [ESLint 확장 설정](https://github.com/microsoft/vscode-eslint#settings-options)을 참고하세요.
+
+---
+
+## 편집 중 스타일 검사 \{#inspect-styles-as-you-edit\}
+### 클래스와 조건 자동 완성 \{#complete-classes-and-conditions\}
+자동 완성은 설정된 클래스 소스인 마크업 속성, 프레임워크 바인딩 속성, JavaScript 헬퍼 호출, 태그 템플릿, 프로젝트별 클래스 선언에서 작동합니다. 유틸리티, 속성 값, 색상 토큰, 선택자, 쿼리, 지시문 구문을 제안하며 작업 공간 매니페스트가 로드되면 프로젝트 토큰도 표시됩니다.
+
+### 생성 규칙 읽기 \{#read-the-generated-rule\}
+`fg-blue-60:hover@sm` 같은 클래스에 마우스를 올려 선언, 선택자 상태, 쿼리를 검사하세요. 이 예제는 `sm` 이상 너비에서 호버 상태일 때만 프리셋의 파란색 토큰을 적용합니다.
+
+```html
+<a class="fg-text-body fg-blue-60:hover@sm" href="/notes">
+  Field notes
+</a>
+```
+
+### 구문 강조 \{#syntax-highlighting\}
+확장은 CSS 계열 문서의 지시문 구문을 강조하고 클래스 목록의 선언, 값, 선택자, 쿼리, 단위, important 표시, 따옴표 구간, 구성 요소 경계에 의미 토큰을 사용합니다. 기본적으로 커서 아래 클래스 문자열만 강조하여 긴 마크업을 차분하게 유지합니다. 의미 색상이 보이지 않으면 현재 VS Code 테마에서 의미 강조를 활성화하세요.
+
+Shiki 코드 예제도 마크업 클래스 속성에 같은 차분한 기본 표시를 사용하며 커서 대신 포인터 호버로 강조합니다. `transformerMasterCSS`와 함께 공개 스타일시트를 가져오세요.
+
+```ts
+import '@master/css-language-service/shiki.css'
+import { transformerMasterCSS } from '@master/css-language-service/shiki'
+```
+
+### 색상 도구 \{#color-tools\}
+Master CSS 색상 유틸리티와 매니페스트 색상은 VS Code 색상 장식과 색 선택기를 사용합니다. `masterCSS.renderSyntaxColors`와 VS Code의 [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css)를 모두 활성화하세요.
+
+### 지시문 서식 지정 \{#directive-formatting\}
+문서 및 범위 서식 지정은 CSS, SCSS, LESS 문서와 Vue, Svelte, Astro의 CSS 계열 `<style>` 블록에 있는 지시문 소스를 정리하며 생성 CSS는 바꾸지 않습니다. 클래스 목록 지시문에서는 important 표시를 해당 클래스에 붙입니다. `@safelist "(background-color:transparent) !";`는 `@safelist "(background-color:transparent)!";`가 됩니다.
+
+### 진단 \{#diagnostics\}
+언어 서버는 같은 문서의 지시문 오류와 프로젝트 매니페스트 로드 오류를 보고합니다. 클래스 문자열 구문, 정책, 정렬 진단은 [코드 린팅](/guide/code-linting)이 담당하며 중복 보고하지 않습니다. 언어 서버 클라이언트는 `designSystem` 설정으로 열린 관리 CSS 파일의 토큰 참조 검사를 선택할 수 있습니다. 이는 `master-css inspect`와 같은 [디자인 시스템 옵션](/reference/tools/cli#design-system-options)을 받습니다.
+
+---
+
+## 클래스 소스 인식 \{#supported-class-sources\}
+
+내장 소스에는 `class`, `className`, 프레임워크 바인딩, 일반 헬퍼 호출, 태그 템플릿이 포함됩니다. 프로젝트에서 다른 헬퍼나 속성을 사용하면 이름을 추가하세요.
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.classAttributes": ["ui"],
+  "masterCSS.classDeclarations": ["classes", "styles"],
+  "masterCSS.classFunctions": ["cn"]
+}
+```
+
+예를 들어 이제 `cn("p-card")`도 클래스 자동 완성을 받습니다. 언어 서비스 배열은 내장 클래스 소스를 **확장**하므로 `clsx`도 계속 작동합니다. ESLint 소스 설정은 기본값을 **대체**합니다. 프로젝트 규칙을 도입할 때는 두 도구를 모두 설정하세요.
+
+<DocumentDisclosure title="사용 가능한 VS Code 설정">
+
+옵션은 `.vscode/settings.json`이나 VS Code 사용자 설정에 지정하세요. 기본값은 HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown, MDX를 지원합니다.
+
+<DocumentOptionList label="VS Code 설정">
+
+<DocumentOptionEntry name="masterCSS.includedLanguages">
+
+기본값: 일반적인 웹 및 템플릿 언어 ID.
+
+언어 서비스 기능을 제공할 언어입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributes">
+
+기본값: `class`, `className`.
+
+값에 클래스 문자열이 포함된 마크업 속성입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributeBindings">
+
+기본값: 프레임워크 바인딩 기본값.
+
+`:class`, `v-bind:class`, `[ngClass]`, `class:list` 같은 바인딩 속성입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classFunctions">
+
+기본값: `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+
+문자열 인수에 클래스 문자열이 들어 있는 호출 대상입니다. `styled`는 `styled.button` 같은 멤버 형태도 지원합니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classDeclarations">
+
+기본값: `[]`.
+
+문자열이 클래스 선언인 변수 또는 객체 속성입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.exclude">
+
+기본값: `.git`, `node_modules`, `.hg`.
+
+모든 기능에서 제외할 파일입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.suggestSyntax">
+
+기본값: `true`.
+
+자동 완성 항목입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.inspectSyntax">
+
+기본값: `true`.
+
+호버 검사와 생성 CSS 미리보기입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.renderSyntaxColors">
+
+기본값: `true`.
+
+Master CSS 색상 구문의 색상 장식입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.formatDirectives">
+
+기본값: `true`.
+
+지시문 서식 지정입니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.embeddedSyntaxHighlighting">
+
+기본값: `active`.
+
+`active`는 커서 아래 클래스, `always`는 모든 포함 클래스를 강조하고 `off`는 강조하지 않습니다. 지시문 구문 강조는 유지됩니다.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.workspaces">
+
+기본값: `auto`.
+
+프로젝트 매니페스트를 위한 작업 공간 감지입니다.
+
+</DocumentOptionEntry>
+
+</DocumentOptionList>
+
+</DocumentDisclosure>
+
+---
+
+## 작업 공간별 매니페스트 \{#workspace-aware-manifests\}
+`auto` 모드에서 언어 서버는 `@master/css`를 가져오는 각 CSS 파일과 Master CSS 패키지를 선언한 각 `package.json`의 작업 공간을 감지하고 각각에 매니페스트를 제공합니다. 모노레포에서는 자동 완성, 호버 미리보기, 색상, 진단이 가장 가까운 Master CSS 프로젝트를 따릅니다. 감지가 저장소 구조와 맞지 않으면 작업 공간 디렉터리를 나열하세요. 프로젝트 경계는 [모노레포](/guide/monorepo)를 참고하세요.
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.workspaces": ["apps/admin", "apps/shop", "packages/design-system"]
+}
+```
+
+의존성이나 작업 공간 구조가 바뀌었거나 VS Code가 매니페스트 편집을 반영하지 못했다면 `Master CSS: Restart Language Server`를 실행하세요.
+
+## 문제 해결 \{#troubleshooting\}
+<DocumentComparison>
+
+| 증상 | 해결 |
+| --- | --- |
+| 문자열 안에 자동 완성이 나오지 않습니다. | `editor.quickSuggestions.strings`를 활성화하세요. |
+| 프로젝트 토큰이나 유틸리티가 없습니다. | 감지한 CSS 진입점이나 가져온 스타일시트에 토큰이 있는지 확인하고 매니페스트 오류를 해결한 뒤 필요하면 언어 서버를 다시 시작하세요. |
+| 잘못된 모노레포 패키지를 사용합니다. | `masterCSS.workspaces`에 작업 공간 디렉터리를 명시하세요. |
+| 색상 장식이 나타나지 않습니다. | `masterCSS.renderSyntaxColors`와 `editor.colorDecorators`를 활성화하고 언어별 재정의를 확인하세요. |
+
+</DocumentComparison>

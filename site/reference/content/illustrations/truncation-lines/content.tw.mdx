@@ -1,0 +1,36 @@
+# Reference prose: illustrations/truncation-lines
+
+## title \{#copy-title\}
+
+
+相同文字可顯示全部、一行或兩行
+
+## alt \{#copy-alt\}
+
+
+三份等寬段落分別顯示全文、使用 truncate 的單行刪節，以及使用 clamp-lines(2) 的兩行刪節。裁切範例仍在 DOM 中保留相同的完整文字。
+
+## caption \{#copy-caption\}
+
+
+字型、寬度與文字都相同，只改變截斷 class。刪節號由瀏覽器原生繪製，每個元素仍保有完整字串。
+
+## description-0 \{#copy-description-0\}
+
+
+每份文字寬 192px，字型大小 14px，行高 24px。
+
+## description-1 \{#copy-description-1\}
+
+
+第一份文字自由換行，並增高以容納所有行。truncate 讓第二份維持一行，並以刪節號隱藏溢位。
+
+## description-2 \{#copy-description-2\}
+
+
+clamp-lines(2) 讓第三份文字換行，再透過帶前綴的 line-clamp 組合，將可見內容限制為兩行。
+
+## description-3 \{#copy-description-3\}
+
+
+三個元素都包含相同的完整字串。讀者需要閱讀完整的可見文字時，必須另外提供展開控制項或連結。

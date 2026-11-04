@@ -1,0 +1,120 @@
+---
+{
+  "title": "相容性",
+  "description": "為新 CSS 功能保留可用的備援方式、驗證瀏覽器行為，並安排第三方樣式在階層串接中的位置。",
+  "category": "入門",
+  "figures": {
+    "CompatibilityIllustration": {
+      "title": "增強功能改變尺寸，不影響筆記存取",
+      "alt": "功能查詢分成兩個文字區域，內容都是相同的六行筆記。備援欄位較短，可捲動閱讀；支援的欄位則增高以顯示六行內容。",
+      "caption": "筆記、寬度與限制相同。沒有增強功能時欄位可捲動；有增強功能時會先增高，到達最大高度後才捲動。",
+      "description": [
+        {
+          "title": "共用基礎",
+          "text": "兩個文字區域具有相同六行內容、寬度、內距與高度限制。控制項始終可編輯、可垂直調整大小，且可捲動。"
+        },
+        {
+          "title": "查詢不符合",
+          "text": "欄位使用一般初始大小。部分行位於可見區域之外，但仍能透過捲動讀取。"
+        },
+        {
+          "title": "查詢符合",
+          "text": "field-sizing: content 宣告讓欄位隨筆記增高。最大高度會停止繼續增高；更長的筆記則改為捲動。"
+        }
+      ]
+    },
+    "GuideStudy:fallback-addition": {
+      "title": "增強功能從可用的備援方式開始",
+      "alt": "兩條分支由同一個基礎出發。不支援的瀏覽器維持原狀；支援的瀏覽器加入條件式增強功能。",
+      "caption": "@supports 控制增強功能。備援方式仍是條件之外的一般宣告。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DemoFeatureSupport from '@master/internal-site/demo/DemoFeatureSupport.svelte'
+import CompatibilityIllustration from './components/CompatibilityIllustration.astro'
+
+Master CSS 產生 CSS；瀏覽器決定能套用哪些屬性、值與選擇器。先建立可用的基礎，在有助改善體驗時加入較新的功能，並檢查既有樣式如何參與階層串接。
+
+這些範例假設已完成[安裝](/guide/installation)，且應用程式已載入 `@import '@master/css';`。
+
+## 確認瀏覽器的基礎需求 \{#overview\}
+
+預設集使用串接層、OKLCH 色彩與 `light-dark()` 產生自適應值。為增強功能提供備援方式，不會免除這些基礎需求。請依需支援的瀏覽器，確認[瀏覽器基礎需求與廠商前綴](/reference/rules/declarations#vendor-prefixes)。
+
+類別被辨識，不代表保證瀏覽器相容。Master 只會為部分屬性輸出相容前綴，不會為每個新功能提供 polyfill。同樣地，工具回傳 `unknown`，表示該項檢查尚未驗證此 CSS，並非證明它無效或可安全發布。
+
+## 加入功能，保留備援方式 \{#new-css-features\}
+
+### 原生宣告 \{#native-declarations\}
+
+即使無法自動調整大小，筆記欄位也應維持可編輯。先給予一般 textarea 尺寸並允許垂直調整，再加入 [`field-sizing: content`](https://drafts.csswg.org/css-forms/#field-sizing) 作為增強。這個原生屬性可依內容調整控制項大小；最小與最大高度則將它限制在實用範圍內。
+
+<DemoFeatureSupport client:idle={{ timeout: 500 }} condition="field-sizing: content" />
+
+<DemoConfiguredExample name="compatibility-field" title="具備備援方式的筆記欄位" source="" caption="新增或刪除行數。支援的瀏覽器會讓欄位增高，最高到 12rem；否則保留初始大小。兩種情況都能捲動與調整大小。" html={`<div class="w-full (max-width:28rem) mx-auto">
+  <label for="project-note" class="block mb-xs text-sm fg-text-strong">Project notes</label>
+  <textarea id="project-note" name="note" rows="3" class="block w-full p-sm r-md b(1) b-solid b-line-divider bg-surface-inset text-sm fg-text-strong (resize:vertical) (min-height:6rem) (max-height:12rem) outline(2):focus-visible outline-solid:focus-visible outline-offset(3) (field-sizing:content)@supports(field-sizing:content)">Plan the next release.
+Review the draft.
+Check the examples.
+Test with a keyboard.
+Verify the small screen.
+Publish when ready.</textarea>
+</div>`} />
+
+`(field-sizing:content)` 提供原生宣告。其 `@supports(field-sizing:content)` 後綴會將宣告置於 [CSS 功能查詢](https://www.w3.org/TR/css-conditional-3/#at-supports)內。查詢不符合時，基礎樣式與一般 textarea 行為仍會保留。
+
+<CompatibilityIllustration />
+
+預覽會檢查目前瀏覽器的語法支援，也請在目標瀏覽器測試實際編輯行為。若要在支援的瀏覽器檢查備援方式，可暫時移除條件式類別：欄位應停止自動增高，但仍可透過捲動讀取所有文字。這是在隔離增強功能，並非模擬舊瀏覽器。
+
+使用**產生的 CSS** 檢查輸出的條件。[條件](/reference/rules/conditions#supportsfeature)記錄了類別語法；原生 CSS 可表達更複雜的功能查詢。
+
+<GuideStudy id="fallback-addition" />
+
+### 新的選擇器 \{#new-selectors\}
+
+依選擇器提供的增強功能也適用相同做法。此處 [`:has(:checked)`](https://www.w3.org/TR/selectors-4/#relational) 會在核取方塊勾選時，讓標籤出現藍色邊框。即使不支援該選擇器，原生核取方塊仍會記錄選擇：
+
+<DemoConfiguredExample name="compatibility-selector" title="選取狀態與可選的強調效果" source="" caption="勾選核取方塊。支援的瀏覽器也會改變標籤邊框；勾選記號才是選擇狀態的主要提示。" html={`<label class="flex items-center gap-sm w-fit mx-auto p-sm r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong b-blue-60:has(:checked)">
+  <input type="checkbox" name="updates" class="m(0) shrink(0) (accent-color:currentColor)">
+  <span>Send me release notes</span>
+</label>`} />
+
+讓基礎樣式獨立於新選擇器。不要讓必要控制項或內容依賴增強功能。選擇器拼法與組合方式，請參閱[選擇器](/reference/rules/selectors)。
+
+## 將第三方 CSS 納入階層串接 \{#third-party-styles\}
+
+若一般 utility 應覆寫函式庫的一般樣式，請將該 CSS 匯入較早的 `defaults` 層。在 Master 整合處理的應用程式 CSS 進入點中，於這些匯入之前宣告串接層順序。
+
+若專案已使用 [Swiper 核心、導覽與分頁樣式](https://swiperjs.com/get-started)，請透過此進入點載入，不要另外在其他地方匯入未分層副本：
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import 'swiper/css' layer(defaults);
+@import 'swiper/css/navigation' layer(defaults);
+@import 'swiper/css/pagination' layer(defaults);
+@import '@master/css';
+
+@layer components {
+  .swiper-slide {
+    background-color: var(--color-surface-raised);
+  }
+}
+```
+
+在輪播既有標記中，一張投影片可保留元件表面，另一張則加入區域 utility：
+
+```html
+<div class="swiper-slide">Default surface</div>
+<div class="swiper-slide bg-blue-60 fg-white">Featured slide</div>
+```
+
+`utilities` 中的一般背景宣告會優先於 `components`，後者又高於 `defaults`。調整 HTML 類別名稱順序，不會改變結果。
+
+加入更強覆寫前，請先在瀏覽器開發者工具檢查競爭宣告。同一作者來源與脈絡中，一般未分層樣式優先於一般已分層樣式。廠商 CSS 的 `!important` 宣告也會優先於一般 utility；重要宣告會反轉串接層順序。這些是[原生階層串接規則](https://www.w3.org/TR/css-cascade-5/#layer-order)，不是 Master 專屬優先系統。[串接層](/guide/cascade-layers)提供逐步診斷方式。
+
+Master 管理的樣式表預設保留原生選擇器。若啟用原生修剪，請在你可控制的樣式表中，透過 [`@preserve native`](/reference/directives/pruning#preserve-native) 保護廠商、CMS 與外部注入的選擇器，或將這些來源排除於修剪範圍。第三方小工具使用的選擇器，不一定會出現在應用程式掃描的標記中。

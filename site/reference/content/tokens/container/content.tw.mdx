@@ -1,0 +1,71 @@
+# Reference prose: tokens/container
+
+## title \{#copy-title\}
+
+
+容器尺寸
+
+## summary \{#copy-summary\}
+
+
+用於寬度、高度、最小與最大尺寸的預設長度。
+
+## note \{#copy-note\}
+
+
+容器 token 設定的是長度，不會定義檢視區或容器查詢。`w-full`、`max-w-fit`、`basis-min` 這類填滿或內在尺寸形式是固定 utility，與這些 token 無關。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+每個值都是供尺寸屬性使用的長度。像素換算假設根元素字型大小為 16px。這些值不是檢視區斷點，也不是容器查詢定義。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+最大尺寸只設定上限
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`max-w-3xs` 設定 `max-width: var(--container-3xs)`，其預設值為 `16rem`。當包含區塊的可用空間較少時，寬度為 auto 的一般區塊仍可以更窄。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`w-3xs` 則會直接設定寬度。這兩個 class 都不會加入置中、內距或查詢容器隔離。修改 `--container-md` 不會重新定義 `@container(--md)`，也不會改變明確寫出的查詢門檻。建立查詢容器時，請使用原生 `container-type` 與 `container-name`。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+實際尺寸仍受原生版面配置影響：最小尺寸、盒模型計算、Flexbox 與 Grid 都可能改變使用尺寸。最大尺寸不會改變文字換行或溢位規則。若要設計頁面外框或決定響應式版面，請繼續閱讀版面配置指南。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+具名查詢條件
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+容器查詢語法
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生尺寸規則
+
+## usage-lead \{#copy-usage-lead\}
+
+
+限制對話框寬度與文字行長。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改預設值或新增尺寸：`--container-prose` 會建立 `max-w-prose`、`w-prose` 和其他尺寸 class。
+
+## guide-label \{#copy-guide-label\}
+
+
+版面配置

@@ -1,4 +1,6 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel } from './ui'
 import '@master/css-language-service/shiki.css'
 import '@master/internal-site/styles/system/table.css'
 import Link from '@master/internal-site/components/Link.svelte'
@@ -30,6 +32,8 @@ type Props = Pick<ReferenceRenderDocument, 'tree' | 'headings'>
 
 /** Small, non-executing renderer for the normalized reference Markdown. */
 const props = Astro.props
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1]) => referenceLabel(locale, key)
 const root = 'tree' in props
 const context = 'context' in props ? props.context : createReferenceBodyContext(props)
 
@@ -63,7 +67,7 @@ const Wrapper = anchor ? undefined : {
 }[type ?? '']
 // A long path may break after a slash, so a table column of import paths leaves its neighbour a readable measure.
 const codeParts: string[] | undefined = type === 'inlineCode' && node.value.length > 24 && node.value.includes('/') ? node.value.split(/(?<=\/)/) : undefined
-const codeWrapper = type === 'code' ? referenceCodeWrapper(node) : undefined
+const codeWrapper = type === 'code' ? referenceCodeWrapper(node, locale) : undefined
 const heading = type === 'heading' ? context.headingOf.get(node) : undefined
 const Heading = `h${node?.depth}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 const href = type === 'link' ? node.url : type === 'linkReference' ? context.definitions.get(node.identifier)?.url : undefined
@@ -88,20 +92,20 @@ const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
       : codeWrapper?.kind === 'disclosure'
         ? <DocumentDisclosure title={codeWrapper.title}><PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDisclosure>
         : <PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} />)
-  : type === 'heading' ? <Heading id={heading?.id}>{heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
+  : type === 'heading' ? <Heading id={heading?.id ?? node.data?.hProperties?.id}>{heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
     ? <DocumentIdentifier text={heading.title} />
     : <Astro.self nodes={headingChildren(node)} context={context} />}</Heading>
   : type === 'link' || type === 'linkReference' ? <Link href={href}><Astro.self nodes={node.children} context={context} /></Link>
   : type === 'break' ? <br />
   : type === 'thematicBreak' ? <hr />
   : table?.kind === 'api' ? (table.compact
-    ? <DocumentDisclosure title={`Exports · ${table.entries.length}`}><DocumentAPIIndex label={`${entrypoint} exports`} entries={table.entries} compact /></DocumentDisclosure>
-    : <DocumentAPIIndex label="Public entrypoints" entries={table.entries} compact={false} />)
-  : table?.kind === 'options' ? <DocumentOptions label="Project settings" options={table.options.map(option => ({
+    ? <DocumentDisclosure title={`${l('exports')} · ${table.entries.length}`}><DocumentAPIIndex label={`${entrypoint} · ${l('exports')}`} entries={table.entries} compact /></DocumentDisclosure>
+    : <DocumentAPIIndex label={l('publicEntrypoints')} entries={table.entries} compact={false} />)
+  : table?.kind === 'options' ? <DocumentOptions label={l('projectSettings')} options={table.options.map(option => ({
     name: option.name, defaultValue: option.defaultValue,
     description: <Astro.self nodes={option.description} context={context} />
   }))} />
-  : table?.kind === 'parameters' ? <DocumentParameters label="Parameters" parameters={table.parameters.map(parameter => ({
+  : table?.kind === 'parameters' ? <DocumentParameters label={l('parameters')} parameters={table.parameters.map(parameter => ({
     name: parameter.name, type: parameter.type, requirement: parameter.requirement,
     description: <Astro.self nodes={parameter.description} context={context} />
   }))} />

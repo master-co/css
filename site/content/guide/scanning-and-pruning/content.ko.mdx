@@ -1,0 +1,141 @@
+---
+{
+  "title": "클래스 이름 스캔",
+  "description": "완전한 클래스 이름을 작성하고 변하는 값을 처리하며 정적 빌드에 필요한 소스를 포함합니다.",
+  "category": "작성",
+  "figures": {
+    "GuideStudy:stable-dynamic-value": {
+      "title": "변수를 바꾸어도 규칙은 유지",
+      "alt": "같은 font-size 클래스가 두 제목 위에 표시됩니다. --headline-size를 2rem에서 3rem으로 바꾸면 다른 클래스 없이 두 번째 제목이 커집니다.",
+      "caption": "브라우저가 갱신된 사용자 지정 속성을 해석합니다. 정적 스타일시트에는 완전한 규칙이 이미 있습니다."
+    },
+    "GuideStudy:source-and-policy": {
+      "title": "소스 탐색과 유지 정책은 다른 문제",
+      "alt": "소스 파일이 먼저 완전한 클래스 후보를 제공하고 별도의 정책 단계가 유지 여부를 결정합니다. 누락된 소스는 해당 클래스를 제공할 수 없습니다.",
+      "caption": "클래스 정책보다 소스 포함 여부를 먼저 검사하세요. 그림은 클래스 문자열을 JavaScript로 평가한다는 뜻이 아닙니다."
+    }
+  },
+  "demos": {
+    "DeliveryFlow:scanning": {
+      "title": "소스에서 유틸리티까지",
+      "alt": "소스 파일에서 완전한 문자열을 추출한 뒤 프로젝트 정의와 대조해 CSS를 생성합니다.",
+      "caption": "Master CSS 유틸리티가 아닌 클래스도 네이티브 클래스 사용 정보가 가지치기에 반영됩니다.",
+      "steps": [
+        {
+          "title": "탐색",
+          "description": "통합 기본값이나 명시적 소스 지시문으로 앱 소스를 찾습니다."
+        },
+        {
+          "title": "추출",
+          "description": "앱 코드를 실행하지 않고 완전한 후보 문자열을 읽습니다."
+        },
+        {
+          "title": "해석",
+          "description": "활성 매니페스트로 인식된 Master CSS 클래스의 규칙을 생성합니다."
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 개요 [sr-only] \{#overview\}
+변하는 값을 새 클래스로 만들지 않으면서 정적 빌드가 클래스 이름을 찾을 수 있게 하세요. 가능한 클래스를 완전히 작성하고 연속적인 값에는 CSS 변수를 사용하며 입력이 통합의 일반 범위를 벗어날 때만 소스 탐색을 조정하세요. 네이티브 CSS 제거는 별도의 [전달 작업 흐름](/guide/optimizing-css-delivery#native-pruning)에서 다룹니다.
+
+## 소스에 완전한 클래스 유지하기 \{#keep-complete-classes-in-source\}
+
+스캐너는 소스 텍스트를 읽으며 앱을 실행하지 않습니다. 컴포넌트가 상태 색상을 선택한다면 각 클래스를 완전히 작성하세요:
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+정적 추출에서는 `'bg-' + tone` 같은 조각으로 완전한 결과를 얻을 수 없습니다. 여러 상태에서 클래스를 선택한다면 유한한 맵을 사용하세요:
+
+```js
+const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
+const className = statusClasses[status]
+```
+
+스캐너는 이 조회를 실행하지 않고도 두 후보를 찾을 수 있습니다. 런타임과 점진적 렌더링은 브라우저에서 처음 알려진 유효한 유틸리티 이름의 규칙도 생성할 수 있습니다. 완전한 소스 문자열은 정적 스캔의 요구 사항이며 동적 유틸리티를 금지하는 것은 아닙니다. 선택 방법은 [렌더링 모드](/guide/rendering-modes#comparisons)를 참고하세요.
+
+<DeliveryFlow name="scanning" />
+
+한 번에 하나의 분기만 사용해도 두 분기는 모두 소스에 보입니다. 각 클래스가 생성하는 내용은 활성 프로젝트 정의가 결정합니다:
+
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+<ReferenceIllustration id="static-branch-extraction" />
+
+## 변하는 값을 클래스 이름에 넣지 않기 \{#keep-changing-values-out-of-class-names\}
+
+제목 크기가 편집기 컨트롤에서 정해진다고 가정해 보세요. 클래스는 완전하게 유지하고 요소의 사용자 지정 속성을 변경하세요:
+
+```html
+<h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+document.getElementById('headline').style.setProperty('--headline-size', '3rem')
+```
+
+<Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+정적 빌드 후 브라우저 콘솔에서 JavaScript를 실행하세요. 클래스를 추가하거나 새 규칙을 생성하지 않고 제목이 커집니다. 로컬 사용자 지정 속성에는 `@theme` 등록이나 Master CSS 런타임이 필요하지 않습니다. 클래스 이름 자체가 시작 후 처음 생긴다면 [런타임 또는 점진적 렌더링](/guide/rendering-modes#comparisons)을 사용하세요.
+
+<GuideStudy id="stable-dynamic-value" />
+
+## 일반 탐색 범위 밖의 소스 포함하기 \{#include-sources-outside-normal-discovery\}
+
+먼저 통합이나 CLI의 일반 소스 탐색을 사용하세요. 공유 컴포넌트 디렉터리가 범위 밖에 있다면 스캔을 담당하는 스타일시트에 소스를 명시적으로 추가하세요. 경로는 해당 스타일시트를 기준으로 합니다:
+
+```css name=src/style.css
+@import '@master/css';
+@source "../shared/**/*.tsx";
+@source not "../shared/**/*.test.tsx";
+```
+
+이 예제는 형제 `shared/` 디렉터리를 포함하고 테스트는 제외합니다. 패턴은 필요한 입력만 포함하도록 좁게 유지하세요. `@source`는 클래스 후보를 제공하며 스타일시트를 가져오거나 캐스케이드 우선순위를 결정하지 않습니다. 컴포넌트 하나가 누락되었다고 저장소 전체를 추가하지 마세요.
+
+외부 콘텐츠가 제공하는 유틸리티 이름이 유한하다면 완전한 후보를 나열하세요:
+
+```css
+@safelist "bg-red-60" "bg-green-60";
+```
+
+안전 목록은 이 후보들을 생성에 사용할 수 있게 하지만 요소에 클래스를 추가하거나 유효하지 않은 이름을 유효하게 만들지는 않습니다. 범위가 정해지지 않은 값은 나열하려 하지 말고 변수를 사용하세요. [`@blocklist`](/reference/directives/scanning#blocklist)는 후보를 제외합니다. 클래스를 발견했는데도 CSS가 생성되지 않으면 해당 정책을 확인하세요.
+
+<GuideStudy id="source-and-policy" />
+
+경로 패턴, 후보 필터, 우선순위는 [스캔 지시문](/reference/directives/scanning)을 참고하세요. 소스 파일이 읽히지 않은 경우와 후보가 정책으로 제거된 경우를 구분하세요.
+
+## 스타일이 누락된 원인 찾기 \{#find-why-a-style-is-missing\}
+
+1. [클래스 검사 도구](/reference/tools/mcp#mastercss_inspect_class)로 완전한 클래스를 활성 프로젝트 매니페스트와 대조해 검사하세요.
+2. 소스 파일이 스캔에 포함되는지 확인하세요. 일반 앱 파일은 통합이나 CLI 기본 탐색을 사용하고 명시적 예외에만 [`@source`](/reference/directives/scanning)를 추가하세요.
+3. 후보 정책을 확인하세요. `@source not`는 파일을 제외하고 `@blocklist`는 클래스를 제거할 수 있습니다. 알려진 외부 클래스의 유한 집합에는 `@safelist`를 사용하세요.
+4. 규칙이 생성되었다면 이 페이지에서 해당 스타일시트를 불러오는지 확인하세요. 이미 불러왔다면 소스 탐색을 바꾸기 전에 선택자 일치와 캐스케이드에서 우선하는 선언을 확인하세요.
+5. 네이티브 규칙이 없다면 외부 클래스와 나중 상태를 포함한 [네이티브 가지치기 검사](/guide/optimizing-css-delivery#native-pruning)를 따르세요. 런타임 유틸리티 생성은 제거된 임의의 네이티브 선택자를 재구성할 수 없습니다.
+
+소스 경계, 후보 스캔, 검증은 [추출](/reference/rules/extraction)을 참고하세요.
+
+## 네이티브 CSS 전달로 이어가기 \{#continue-to-native-css-delivery\}
+
+### 사용하지 않는 네이티브 CSS 가지치기 \{#prune-native-css\}
+
+네이티브 CSS는 기본적으로 유지됩니다. 사용하지 않는 네이티브 클래스 규칙을 제거하려면 [알려진 사용 집합만 가지치기](/guide/optimizing-css-delivery#native-pruning)를 따르세요. 전달 소유 범위를 정한 뒤 파일별 활성화, 패키지 경계, 유지할 상태, 키프레임 의존성을 다룹니다.
+
+### 벤더 스타일시트 유지하기 \{#preserve-native-css\}
+
+외부에서 제공하는 클래스에는 유한한 안전 목록을 사용하거나 네이티브 규칙을 소유한 파일을 보존하세요. [외부 및 불확실한 소스 보호하기](/guide/optimizing-css-delivery#keep-external-and-uncertain-sources-safe)에 예제와 정책 한계가 있습니다.
+
+### 출력 검증하기 \{#verify-pruning\}
+
+소스에 지시문이 있다고 통합이 사용 집합을 제공했다는 뜻은 아닙니다. [가지치기 단계 독립 검증](/guide/optimizing-css-delivery#verify-the-pruning-step-independently)은 재현 가능한 CLI 검사와 이 검사가 입증하는 내용을 설명합니다.

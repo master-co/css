@@ -1,0 +1,76 @@
+# Reference prose: tokens/tracking
+
+## title \{#copy-title\}
+
+
+文字間隔
+
+## summary \{#copy-summary\}
+
+
+プリセットの letter-spacing スケール。
+
+## note \{#copy-note\}
+
+
+詰める指定のキーには、すでに負の長さが含まれています。`tracking-tight` をそのまま使ってください。`-tracking-tight` のように符号を加えたトークン形式には対応していません。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+ゼロ以外のプリセット値は、letter-spacing を宣言した要素のフォントサイズを基準とする em を使います。`tracking-normal` はゼロを指定します。ネイティブキーワードには `(letter-spacing:normal)` を使います。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+継承した文字間隔は計算済みの長さを保つ
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`tracking-widest` は `.12em` を指定し、16px のフォントサイズでは 1.92px と計算されます。32px のフォントを持つ子要素が継承するのはその長さであり、文字間隔が自動で倍になるわけではありません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+子要素に `tracking-widest` を適用すると、自身の 32px のフォントサイズを基準に `.12em` を計算し、3.84px になります。これは、行の高さに使う単位なしの比率とは異なります。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+文字間隔はテキストの間隔を調整するもので、字形を引き伸ばしません。折り返し位置が変わることもあるため、コンテナーが広がれるようにし、実際のフォントと言語で確認してください。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` のテキストスタイルには letter-spacing 宣言が含まれます。同じ要素で条件が同じなら、`tracking-*` ユーティリティはその組み合わせスタイルより後になり、文字間隔を上書きできます。長さを直接指定するには、`(letter-spacing:-.03em)` のようなネイティブ宣言を使います。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+行の高さ
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+テキストスタイルの付随トークン
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+ネイティブの文字間隔の動作
+
+## usage-lead \{#copy-usage-lead\}
+
+
+同じ語句とフォントサイズで、2 つの文字間隔を比較します。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+プリセット値を変更したり、トークンを追加したりできます。`--tracking-display` を定義すると `tracking-display` が使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+タイポグラフィ

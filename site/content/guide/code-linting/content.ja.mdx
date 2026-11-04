@@ -1,0 +1,249 @@
+---
+title: "Master CSS のコード lint"
+description: "ESLint で Master CSS のクラスを検証し、競合の検出、並べ替え、プロジェクトポリシーの適用を行います。"
+figures: {"LintIllustration":{"title":"整形は修正し、意味は選ぶ","alt":"2つの lint 結果です。p-md flex flex の並べ替えは重複を除いて flex p-md に自動修正します。font-size の生値 15px は変えず、人がトークンを選ぶか値を許可します。","caption":"自動修正で並べ替えと重複除去はできますが、生値の警告は設計上の役割を代わりに選べません。","description":[{"title":"安全な整形","text":"sort-classes は p-md flex flex を flex p-md にします。生成宣言を変えずに重複を除きます。"},{"title":"設計の判断","text":"no-unapproved-raw-values を有効にすると、(font-size:15px) が警告になる場合があります。自動修正はなく、意味を持つトークンを選ぶか明示的に値を許可します。"}]},"GuideStudy:lint-ownership":{"title":"競合には設計上の判断が必要","alt":"並べ替え可能なクラスリストには元に戻せる出力があります。一方、競合する2つのパディングクラスは、意図し得る2つの値に分岐します。","caption":"並べ替えでは設計に必要な間隔を決められません。競合する宣言は意図して解決します。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LintIllustration from './components/LintIllustration.astro'
+
+## 概要 [sr-only] \{#overview\}
+編集時に無効なクラス、宣言の競合、構文の不統一を見つけます。ESLint 連携はプロジェクトのテーマと独自定義を使うので、生成できるクラスに即した診断になります。
+
+下の推奨設定から始めるか、[インストール連携](/guide/installation#integrations)でフレームワーク設定と一緒に追加します。lint はクラスの記述を検証します。レイアウト、コントラスト、操作はブラウザーで確認してください。問題なしでもデザインレビューが済んだわけではありません。
+
+<LintIllustration />
+
+---
+
+## 推奨設定をインストールする \{#install-the-recommended-config\}
+プロジェクトに ESLint と推奨設定をインストールします。必要なフレームワークのパーサー設定は保ってください。
+
+```bash
+npm install -D eslint @master/eslint-config-css@rc
+```
+
+推奨設定を flat config に追加します。
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS
+])
+```
+
+下の4つのルールが有効になります。[ルールの既定値と修正](/reference/packages#eslint-config-css)を参照してください。CSS エントリーを見つけられるよう、アプリのルートから実行します。
+
+```bash
+npx eslint .
+```
+
+プロジェクト全体で採用する前に、自動編集をローカルでレビューします。
+
+```bash
+npx eslint . --fix
+```
+
+並べ替え、重複除去、完全に上書きされたクラスは自動修正できます。コマンド終了後も、無効値やデザインポリシーの警告には判断が必要な場合があります。CI には修正しないコマンドを残し、失敗を見える状態にします。
+
+---
+
+## lint ルール \{#linting-rules\}
+### クラスの並べ替え \{#sort-classes\}
+`@master/css/sort-classes` はクラス文字列を安定してレビューしやすくします。既知の Master CSS クラスを未知の前に置き、生成レイヤーと条件の優先順に従います。基本クラスは生成 CSS の意図で、位置とレイアウト、サイズ、間隔、ボックス、文字、描画、効果にまとめます。
+
+```mcss
+bg-white font-md flex px-md relative w-full shadow-lg r-md (z-index:10) (gap:0.5rem) <!-- [!code --] -->
+relative (z-index:10) flex (gap:0.5rem) w-full px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+```
+
+`:hover`、`@dark`、`@sm` などのバリアントは、生成条件の順に基本クラス群の後に置きます。
+
+```mcss
+bg-black:hover flex p-sm w-full block@dark text-center <!-- [!code --] -->
+flex w-full p-sm text-center bg-black:hover block@dark <!-- [!code ++] -->
+```
+
+同じクラス文字列内の重複値も除去します。
+
+```mcss
+inline-flex px-md inline-flex <!-- [!code --] -->
+inline-flex px-md <!-- [!code ++] -->
+```
+
+順序は整形ポリシーです。生成 CSS は変えませんが、文字列をレビューしやすくし、フレームワークやエディターをまたいだ自動修正を決定的にします。
+
+### 無効なクラスを禁止する \{#no-invalid-classes\}
+`@master/css/no-invalid-classes` は、不正な Master CSS 構文と、認識できても無効な CSS を生成するクラスを報告します。両者は別の失敗です。不正なクラスは生成前に拒否され、受理された宣言にも無効値が含まれ得ます。
+
+```html
+<button class="(font-size:16)">Save</button>
+```
+
+(x) `(font-size:16)` は単位のない非ゼロ長です。`(font-size:16px)` などのネイティブ長、または `font-md` など定義済みサイズトークンを使います。
+
+既定では一致しないクラスを無視するので、ネイティブのグローバルクラスと混在できます。
+
+未知の CSS 値は別のケースです。言語に一致しても、検証器が値を完全に調べられない場合があります。たとえば現在は `(display:banana)` を `unknown` と報告し、このルールは指摘しません。lint が通ってもブラウザー対応や意図した見た目の証明にはなりません。
+
+一致しないクラス名も拒否するには、[`disallowUnknownClass`](#team-policy) を有効にします。
+
+### 正規形のクラスを優先する \{#prefer-canonical-classes\}
+`@master/css/prefer-canonical-classes` は等価な正規形を調べ、トークンの識別、値の出所、条件の入れ子、生成ルールの順序を保ちます。
+
+以下のクラスは変えません。
+
+```mcss
+(margin:16px) block@dark@sm
+```
+
+同じ現在値のトークンでリテラルを置換したり、単位換算や記述した条件の並べ替えをしたりはしません。意味を持つトークンは意図して選び、チームで必須にする場合は下の生値ポリシーを使います。
+
+### 競合するクラスを禁止する \{#no-conflicting-classes\}
+`@master/css/no-conflicting-classes` は同じバリアントの範囲で、同じプロパティの宣言を出すクラスを報告します。
+
+```mcss
+(margin:0.625rem) (margin:1.25rem) <!-- [!code --] -->
+(margin:1.25rem) <!-- [!code ++] -->
+```
+
+(!) `"(margin:0.625rem)" is overridden by "(margin:1.25rem)".`
+
+バリアントの範囲が重要です。セレクター、モード、条件が異なるクラス同士は競合しません。
+
+```mcss
+(margin:2.5rem)@sm (margin:3.125rem)@md
+```
+
+<ReferenceIllustration id="lint-overlap-context" />
+
+完全に上書きされたクラスは自動除去できます。優先するのは生成 CSS の順序であり、HTML のクラス名順ではありません。上の margin クラスを逆にしても `(margin:1.25rem)` が優先します。
+
+宣言の一部だけが重なる場合はレビューが必要です。たとえば下の上辺の上書きは報告しますが、一括指定を分解したり残り3辺を取り除いたりはしません。
+
+```mcss
+b-solid bt-dashed
+```
+
+意図的な上書きを消す前に、生成宣言を比較し、ブラウザーで要素を確認します。
+
+---
+
+<GuideStudy id="lint-ownership" />
+
+## 対応するソース \{#supported-sources\}
+プラグインは `class` と `className` 属性、`clsx` と `cva` などのヘルパー、`classList` メソッド内のクラス文字列を調べます。[設定と既定値](/reference/packages#eslint-plugin-css)を参照してください。
+
+`@master/css` 設定キーでカスタマイズします。配列は既定値を置き換えるので、調べたいヘルパーや属性をすべて含めます。
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    settings: {
+      '@master/css': {
+        classAttributes: ['class', 'className', 'containerClass'],
+        classFunctions: ['clsx', 'cva'],
+        classDeclarations: ['classes']
+      }
+    }
+  }
+])
+```
+
+---
+
+## チームのポリシー \{#team-policy\}
+すべてのクラスを Master CSS 構文かプロジェクトマニフェスト由来にしたい場合は、厳格な検証を使います。`disallowUnknownClass` は一致しないクラス名を拒否しますが、未知の CSS 値の診断は変えません。
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
+    }
+  }
+])
+```
+
+```html
+<button class="btn">...</button>
+```
+
+(x) `"btn" is not a valid or known class.`
+
+意図したプロジェクトクラスは、`@layer components` の `.btn` などとして CSS エントリーに定義し、マニフェストに含めます。
+
+明示的に許可した値以外は、トークン対応のユーティリティにトークンを使わせたい場合、生値ポリシーを有効にします。
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-unapproved-raw-values': ['warn', {
+        allowProperties: ['width', 'height'],
+        allowedPatterns: ['^var\\(', '^calc\\(']
+      }]
+    }
+  }
+])
+```
+
+```mcss
+(font-size:15px) (margin:17px) (color:#123456)
+```
+
+(!) Unexpected raw value `"15px"` in `"(font-size:15px)"`. Use a token or allow it explicitly.
+
+このルールに自動修正はありません。同じ現在値のトークンでも役割が適切とは限らないためです。[オプション](/reference/packages#eslint-plugin-css)で対象プロパティを絞れます。
+
+1つの要素が結合子で多くの別要素を装飾するなら、そのリストはコンポーネントになっています。`prefer-component-classes` を有効にすると、`max` 個（既定 `3`）を超えるクラスが別要素に届くリストを報告します。
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/prefer-component-classes': 'warn'
+    }
+  }
+])
+```
+
+```mcss
+flex block_h4 hidden_h4 grid_svg flex>li
+```
+
+(!) `4 classes style other elements through combinators ("_h4", "_svg", ">li"); the limit is 3. Move them into a component class in @layer components.`
+
+要素自身の状態、`:has()` や `:is()` 内の相対セレクター、`@sm` などの条件は数えません。ルールは[コンポーネントクラス](/guide/global-styles#component-classes)へ移します。
+
+---
+
+## ネイティブのコンポーネント CSS \{#native-component-css\}
+ネイティブ CSS のトークン参照には、[`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change) を実行し、JavaScript から読み込むルートスタイルシートをソースパスで渡します。ESLint が調べるのはクラスリストだけです。
+
+## エディターのフィードバック \{#editor-feedback\}
+クラス補完とホバー情報は[言語サービス](/guide/language-service)を参照してください。lint ルールと保存時並べ替えは ESLint が担い、両ツールは同じプロジェクト定義を使えます。
+
+## スクリプトと AI ツールから lint する \{#lint-from-scripts-and-ai-tools\}
+開発と CI のスクリプトには `eslint .` を残します。ESLint パーサーなしで JSON 診断を得るには [`master-css lint`](/reference/tools/cli#lint)、エージェントには [`mastercss_lint_project`](/reference/tools/mcp#mastercss_lint_project) を使います。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/truncation-lines
+
+## title \{#copy-title\}
+
+
+相同文本可显示全部、一行或两行
+
+## alt \{#copy-alt\}
+
+
+三份等宽段落分别显示全文、使用 truncate 的单行省略，以及使用 clamp-lines(2) 的两行省略。裁剪示例仍在 DOM 中保留相同完整文本。
+
+## caption \{#copy-caption\}
+
+
+字体、宽度与文本都相同，只改变截断类。省略号由浏览器原生绘制，每个元素仍保有完整字符串。
+
+## description-0 \{#copy-description-0\}
+
+
+每份文本宽 192px，字号 14px，行高 24px。
+
+## description-1 \{#copy-description-1\}
+
+
+第一份文本自由换行，并增高以容纳所有行。truncate 让第二份保持一行，并以省略号隐藏溢出。
+
+## description-2 \{#copy-description-2\}
+
+
+clamp-lines(2) 让第三份文本换行，再通过带前缀的 line-clamp 组合，将可见内容限制为两行。
+
+## description-3 \{#copy-description-3\}
+
+
+三个元素都包含相同完整字符串。读者需要阅读全文时，必须另外提供展开控件或链接。

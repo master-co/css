@@ -1,11 +1,14 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel, referenceHeader } from './ui'
 import './sheet-blocks'
+import { referenceEditorial } from './copy'
 import Link from '@master/internal-site/components/Link.svelte'
 import InlineText from './InlineText.astro'
 import SheetExampleBlock from './SheetExampleBlock.astro'
 import SheetTable from './SheetTable.astro'
 import ReferenceIllustration from './ReferenceIllustration.astro'
-import { familyText } from './family-editorial'
+import { familyText as sourceFamilyText } from './family-editorial'
 import { ungroupedFamilies, type FamiliesSheet } from './sheets'
 
 interface Props {
@@ -14,32 +17,36 @@ interface Props {
 
 /** Every prefix that reads a token, grouped by the page that lists its values. */
 const { sheet } = Astro.props
+const familyText = referenceEditorial(sourceFamilyText, 'tokens/families', siteOf(Astro).locale)
 const rest = ungroupedFamilies(sheet)
 const tables = [
   ...sheet.groups.map(group => ({ group, rows: group.rows })),
   ...rest.length > 0 ? [{ group: undefined, rows: rest.toSorted((a, b) => a.prefix.length - b.prefix.length || a.prefix.localeCompare(b.prefix)) }] : []
 ]
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, string | number>) => referenceLabel(locale, key, values)
+
 ---
 
 <p><InlineText text={familyText.intro} /></p>
-<h2 id="reading-a-family">Read a family</h2>
+<h2 id="reading-a-family">{l('readFamily')}</h2>
 <p><InlineText text={familyText.mapping} /></p>
 <ReferenceIllustration id="namespace-lookup" />
 <SheetExampleBlock example={sheet.usage} preview={false} />
 <p><InlineText text={familyText.lookup} /></p>
 {tables.map(({ group, rows }) => <Fragment>
   {group
-    ? <h2 id={group.id}>{group.pages.map(page => page.title).join(' and ')}</h2>
-    : <h2 id="other">Other families</h2>}
-  <SheetTable class="ref-family-table" head={['Prefix', 'Token namespace', 'Properties']} keyWidth="5.5rem">
+    ? <h2 id={group.id}>{group.pages.map(page => page.title).join(l('and'))}</h2>
+    : <h2 id="other">{l('otherFamilies')}</h2>}
+  <SheetTable class="ref-family-table" head={['Prefix', 'Token namespace', 'Properties'].map(header => referenceHeader(locale, header))} keyWidth="5.5rem">
     {rows.map((row, index) => <tr id={rows.findIndex(other => other.prefix === row.prefix) === index ? `family-${row.prefix}` : undefined}>
       <th scope="row"><code>{row.prefix}-</code></th>
       <td><code>--{row.namespace}-*</code></td>
       <td><code>{row.property}</code></td>
     </tr>)}
   </SheetTable>
-  {group && <p class="ref-links">Values in {group.pages.map((page, index) => <Fragment>{index ? ' and ' : ''}<Link href={page.href}>{page.title}</Link></Fragment>)}.</p>}
+  {group && <p class="ref-links">{l('valuesIn')} {group.pages.map((page, index) => <Fragment>{index ? l('and') : ''}<Link href={page.href}>{page.title}</Link></Fragment>)}.</p>}
 </Fragment>)}
-<h2 id="resolution-boundaries">Resolution boundaries</h2>
+<h2 id="resolution-boundaries">{l('resolution')}</h2>
 {[familyText.shared, familyText.registration, familyText.roles, familyText.limits].map(paragraph => <p><InlineText text={paragraph} /></p>)}
-<p class="ref-links">See <Link href="/reference/rules/modes#namespace-resolution">token registration and resolution</Link>, <Link href="/reference/directives/definitions#utilities">utility definitions</Link>, <Link href="/reference/rules/declarations">declaration forms</Link> and <Link href="/guide/theme#define-tokens">building a theme</Link>.</p>
+<p class="ref-links">{l('see')} <Link href="/reference/rules/modes#namespace-resolution">{l('registration')}</Link>, <Link href="/reference/directives/definitions#utilities">{l('utilityDefinitions')}</Link>, <Link href="/reference/rules/declarations">{l('declarationForms')}</Link> {l('and')} <Link href="/guide/theme#define-tokens">{l('buildingTheme')}</Link>.</p>

@@ -1,0 +1,206 @@
+---
+{
+  "title": "ルート単位のスタイル",
+  "description": "共通の定義を使いながらルート CSS を局所的に配信し、参照コンテキスト、ネイティブルール、セレクターのスコープを区別します。",
+  "category": "記述",
+  "figures": {
+    "GuideStudy:delivery-not-scope": {
+      "title": "ルートの読み込みでセレクターのスコープは変わらない",
+      "alt": "ルートのファイルが .note ルールを読み込む。文書内の2つの領域に一致する .note 要素があり、両方が強調される。",
+      "caption": "import が制御するのは CSS の配信時期です。ネイティブクラスセレクターは読み込み後、文書全体で一致し得ます。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:route": {
+      "title": "定義を共有し、CSS は局所的に配信する",
+      "alt": "共有の spacing-lg 定義が home.css にコンテキストを提供する。pricing-card ルールと必要な間隔変数がローカル出力に含まれ、フレームワークが読み込む。定義の参照では無関係なネイティブルールは読み込まれない。",
+      "caption": "定義のコンテキストはグローバルなネイティブルールを読み込みません。ルート CSS はフレームワークが配信し、import でセレクターのスコープは限定されません。",
+      "steps": [
+        {
+          "title": "参照",
+          "description": "コンパイル時にプロジェクトのトークンと共有の語彙を読み取ります。"
+        },
+        {
+          "title": "コンパイル",
+          "description": "ルートのネイティブルールと、それが使う変数や管理対象キーフレームを出力し、無関係なグローバルネイティブルールは複製しません。"
+        },
+        {
+          "title": "読み込み",
+          "description": "ルートの CSS 出力の配信を、フレームワークやバンドラーに任せます。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概要 [sr-only] \{#overview\}
+ページのレイアウトとそのページだけのスタイルは、ページの隣に置き、ルートやコンポーネントから読み込みます。値には引き続き共有トークンを使えます。定義の共有に、すべてのネイティブルールのグローバル配信は必要ありません。
+
+先にフレームワークの[インストールガイド](/guide/installation)を完了します。Vite、Next.js、Webpack のインテグレーションでは、このようなローカルスタイルでもプロジェクトのトークン、ミックスイン、カスタムメディアを使えます。
+
+<ExplorerView items={[
+  { name: 'app', children: [
+    { name: 'globals.css' },
+    { name: 'home', children: [
+      { name: 'page.tsx' },
+      { name: 'home.css' }
+    ]}
+  ]}
+]} />
+
+通常のセレクターと宣言を記述します。ページ間で値を統一したい場合は、共有トークンを参照します。
+
+```css name=app/home/home.css
+.home-section {
+  padding-block: var(--spacing-5xl);
+}
+```
+
+そのスタイルを所有するルート、ページモジュール、コンポーネントのエントリーから、ルートのスタイルシートを読み込みます。
+
+```tsx name=app/home/page.tsx
+import "./home.css"
+```
+
+アプリのシェルからは引き続きグローバルスタイルシートを読み込み、レイヤー順序と共有スタイルを提供します。先頭には既存の `@import '@master/css'` を置きます。この全体 import を `home.css` に追加しないでください。
+
+ルートの import が制御するのは**配信**であり、セレクターのスコープではありません。読み込み後、`.home-section` は文書内のそのクラスを持つすべての要素に一致し得ます。所有範囲を表す名前を選び、クラス名のスコープを限定したければフレームワークの CSS Modules を使います。ルート CSS の読み込み時期と、移動後も残すかどうかもフレームワークが決めます。
+
+---
+
+<GuideStudy id="delivery-not-scope" />
+
+## プロジェクト定義を使う \{#use-project-definitions\}
+
+<DeliveryFlow name="route" />
+インテグレーションが、ローカルスタイルシートにプロジェクト定義のコンテキストを提供します。通常のネイティブ CSS でトークン、ミックスイン、名前付き条件を使い、出力されたスタイルシートの読み込みは引き続きフレームワークに任せます。
+
+```css name=app/home/home.css
+.pricing-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-raised);
+}
+```
+
+ルート出力には、これらのネイティブルールと、それが使うテーマ変数や管理対象のキーフレームを含みます。他のエントリーも同じリソースを使っていても、出力自体で必要なものがそろいます。グローバルなネイティブルールやユーティリティクラスは複製しません。
+
+### ネイティブルールを読み込まず定義を参照する \{#reference-definitions-without-loading-their-native-rules\}
+
+定義がアプリのエントリーグラフの外にある場合は `@reference` を使います。たとえばローカルなマーケティング用スタイルシートは、色トークンと独自のコンポーネントを提供できます。
+
+```css name=styles/marketing.css
+@theme {
+  --color-campaign: var(--color-blue-60);
+}
+
+@layer components {
+  .campaign-root { color: var(--color-campaign); }
+}
+```
+
+ルートのスタイルシートからそのファイルを参照し、ルートが所有するルールでトークンを使います。
+
+```css name=app/home/home.css
+@reference "../../styles/marketing.css";
+
+@layer components {
+  .campaign-banner {
+    border-color: var(--color-campaign);
+  }
+}
+```
+
+ルート出力に含まれるのは `.campaign-banner` と必要な色リソースで、`.campaign-root` は**含まれません**。そのネイティブコンポーネントも必要なら、適切なアプリやルートの import でマーケティング用スタイルシートを読み込みます。パッケージが export するスタイルシートでも同じ区別が必要です。定義だけを参照する動作は[参照ディレクティブ](/reference/directives/imports#reference)を参照してください。
+
+---
+
+## ネイティブセレクターを記述する \{#write-native-selectors\}
+ルートのネイティブルールを `app/home/home.css` に書き、ルートのマークアップでそのクラスを使います。個別の指定をユーティリティクラスで上書きできるようにするには、`@layer components` に置きます。
+
+ネイティブルールを読み込んでも、新しい Master CSS ユーティリティは登録されません。下の両カードは同じネイティブクラスを使います。2つ目には `p-md` を加えるため、コンポーネントの `var(--spacing-lg)` の padding をユーティリティが上書きします。このクラス名に `@utility` の登録は不要です。
+
+<DemoConfiguredExample
+  name="route-native-card"
+  title="ルート CSS をローカルユーティリティで調整"
+  source={`@layer components {
+  .home-bento {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: minmax(0, 1fr);
+    overflow-wrap: anywhere;
+  }
+
+  .home-bento-card {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+
+  .home-bento-card > h2 {
+    font-size: var(--font-size-lg);
+    line-height: 1.4;
+    font-weight: var(--font-weight-regular);
+    margin-block: 0 0.5rem;
+  }
+
+  .home-bento-card > p {
+    color: var(--color-text-muted);
+    line-height: var(--leading-lg);
+    margin: 0;
+  }
+}`}
+  html={`<section class="home-bento" aria-label="Workspace options">
+  <article class="home-bento-card">
+    <h2>Team workspace</h2>
+    <p>Shared route styles set the card's surface, typography and spacing.</p>
+  </article>
+  <article class="home-bento-card p-md">
+    <h2>Compact workspace</h2>
+    <p>A utility adjusts padding without another native class.</p>
+  </article>
+</section>`}
+  caption="カード内の余白を比較します。両方とも同じルートのネイティブ CSS を使い、2つ目だけがユーティリティで padding を変更しています。"
+/>
+
+`@layer components` にルールを置くことで、クラスによる上書きを可能にします。[カスケードレイヤー](/guide/cascade-layers)を参照してください。
+
+これらのネイティブルールは既定でスタイルシートとともに出力されます。そのソースで[未使用のネイティブ CSS の削除](/guide/optimizing-css-delivery#native-pruning)を有効にすると、検出したクラスの使用状況で残すルールが決まります。複数ページでセレクターを使うようになったら、共有する役割を[グローバルスタイル](/guide/global-styles#shared-vocabulary)へ移します。
+
+---
+
+## ローカルでバリアントを使う \{#use-variants-locally\}
+プロジェクトのカスタムメディアは、通常のメディアクエリーと並べてネイティブルール内で使えます。
+
+```css name=app/home/home.css
+.home-note {
+  color: var(--color-blue-60);
+
+  @media (--dark) {
+    color: var(--color-blue-40);
+  }
+
+  @media (width < 52.125rem) {
+    width: 100%;
+  }
+}
+```
+
+`--dark` はシステムの `prefers-color-scheme` 設定に従います。手動の `data-theme` 属性ではそのクエリーは変わりません。手動で選んだ配色に従うサーフェスには、[適応型の色トークン](/guide/colors#native-color-scheme-and-manual-themes)を使います。
+
+
+## ルートの配信を検証する \{#verify-route-delivery\}
+
+ルートを直接開き、次に別のページから移動します。スタイルシートの読み込み、ネイティブセレクターの一致、期待するトークン値を確認します。共有ページも調べてください。ソースをローカルに所有する構成で、ルート専用の CSS を誤ってアプリのエントリーへ移してはいけません。
+
+出力がなければ、ルートの CSS import とインテグレーションのプロジェクトコンテキストを確認します。ルールがあるのに結果が違う場合は、一致したセレクター、レイヤー、算出値を調べます。全体の `@master/css` import を増やしても、セレクターやカスケードの問題は解決しません。
+
+ページ間の変更前後の測定、選択的な削除、プロジェクトの予算については、[CSS 配信の最適化](/guide/optimizing-css-delivery)へ進んでください。

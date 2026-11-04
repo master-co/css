@@ -1,0 +1,36 @@
+# Reference prose: illustrations/motion-duration-override
+
+## title \{#copy-title\}
+
+
+지속 시간 클래스는 같은 키프레임을 유지하며 타이밍을 바꿉니다
+
+## alt \{#copy-alt\}
+
+
+두 애니메이션을 같은 시간 척도에서 비교합니다. animate-pulse만 있으면 반복 한 번에 1000밀리초가 걸리지만, animation-slow를 추가하면 같은 키프레임을 유지하면서 지속 시간이 300밀리초로 줄어듭니다.
+
+## caption \{#copy-caption\}
+
+
+두 경우 모두 같은 pulse 키프레임을 사용합니다. 막대는 애니메이션 진행도나 렌더링 속도가 아니라 반복 한 번의 지속 시간을 측정합니다. 프리셋은 반복하지만 이 비교에서는 반복 한 번만 따로 보여 줍니다.
+
+## description-0 \{#copy-description-0\}
+
+
+animate-pulse 단축 속성은 pulse 1s infinite를 지정하며 반복 한 번의 지속 시간은 1초입니다.
+
+## description-1 \{#copy-description-1\}
+
+
+조건이 같으면 animation-slow가 animate-pulse 뒤에 정렬되어 지속 시간만 var(--duration-slow), 즉 300ms로 바꿉니다. pulse 키프레임과 무한 반복 횟수는 유지됩니다.
+
+## description-2 \{#copy-description-2\}
+
+
+두 가로 막대는 모두 0에서 시작하며 같은 밀리초 축에서 길이 비율은 1000:300입니다. 선언된 반복 한 번의 지속 시간을 측정하며 성능이나 도형의 이동 거리를 측정하지 않습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+프리셋 pulse 토큰은 무한 반복합니다. 한 번만 실행하려면 네이티브 반복 횟수를 추가하거나 사용자 지정 토큰을 정의하세요. 클래스 이름 순서를 바꿔도 생성 규칙의 순서는 바뀌지 않습니다.

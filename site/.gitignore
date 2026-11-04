@@ -4,7 +4,7 @@
 .pages.json
 .generated
 .master
-/.cache/eslint/
+/.cache/
 
 # dependencies
 /node_modules
@@ -13,6 +13,12 @@
 /public/search
 /public/reference
 /public/tw/reference
+/public/ja/reference
+/public/ko/reference
+/public/cn/reference
+/public/**/*.md
+/public/*/llms.txt
+/public/*/llms-full.txt
 /public/reference.md
 /public/tw/reference.md
 /public/brand.md

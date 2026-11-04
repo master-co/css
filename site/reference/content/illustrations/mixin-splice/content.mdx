@@ -1,0 +1,25 @@
+# Reference prose: illustrations/mixin-splice
+
+## title \{#copy-title\}
+
+A mixin expands at the call position
+
+## alt \{#copy-alt\}
+
+A highlighted apply line in a native caption rule is replaced by two highlighted declarations, between the unchanged color and font-weight lines.
+
+## caption \{#copy-caption\}
+
+Matching lines stay aligned around the insertion. The selector, declaration order and surrounding layer remain the caller’s.
+
+## description-0 \{#copy-description-0\}
+
+The --caption mixin supplies font-size: 14px and line-height: 1.5.
+
+## description-1 \{#copy-description-1\}
+
+Inside .caption, @apply --caption expands between color: currentColor and font-weight: 600.
+
+## description-2 \{#copy-description-2\}
+
+Expansion does not register a class or move the native rule to a generated layer. Duplicate declarations and authored order are preserved.

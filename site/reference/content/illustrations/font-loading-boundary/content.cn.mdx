@@ -1,0 +1,31 @@
+# Reference prose: illustrations/font-loading-boundary
+
+## title \{#copy-title\}
+
+
+指定字体族仍需有可用字体
+
+## alt \{#copy-alt\}
+
+
+一个 font-family 请求在指定字体可用时使用它，不可用时则分支至 serif 回退字体。
+
+## caption \{#copy-caption\}
+
+
+示例呈现两种可用性情况，并非实测下载时间轴。指定字体以已加载的 Geist 文件示意，回退则使用浏览器的 serif 字体。
+
+## description-0 \{#copy-description-0\}
+
+
+font-family 声明指定有顺序的偏好，本身不会下载字体。
+
+## description-1 \{#copy-description-1\}
+
+
+若有匹配且可用的字体即可渲染文本，否则浏览器尝试后续字体族。字形覆盖范围也有影响，因此同一行不同字符可能使用不同字体。
+
+## description-2 \{#copy-description-2\}
+
+
+通过 @font-face 或提供商样式表加载网页字体，并检查实际渲染字体，不要仅看计算后的 font-family 字符串。

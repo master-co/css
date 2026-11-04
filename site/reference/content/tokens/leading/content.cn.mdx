@@ -1,0 +1,71 @@
+# Reference prose: tokens/leading
+
+## title \{#copy-title\}
+
+
+行高
+
+## summary \{#copy-summary\}
+
+
+随字号缩放的无单位行高。
+
+## note \{#copy-note\}
+
+
+`leading-<name>` 只设置 `line-height`，不会改变字号、添加段间距或限制段落高度。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+五个预设值都是无单位比例，不是 rem 长度或像素数量。实际使用的行高取决于元素的字号。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+继承的比例按各自字号计算
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`leading-md` 提供数值 `1.6`。子元素继承后使用自己的字号：16px 得到 25.6px，24px 则得到 38.4px。被继承的值仍然是比例。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+显式长度或百分比具有不同的继承行为：它会在声明所在元素解析为长度。需要自定义比例时，请使用 `(line-height:1.5)` 这类原生声明，或添加主题令牌；预设没有 `leading(1.5)` 函数。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+行高控制的是文本行的垂直度量，不是可见字形之间的空白间隙。其他行内内容可能让行盒更高。行高不会裁剪字形，也不保证段落具有固定高度。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` 文本样式设置自己的行高，因此会替换继承的比例。如果要有意覆盖这组样式，请在同一元素应用 `leading-*`；条件相同时，单属性工具类排在组合样式之后。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+文本样式的配套令牌
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生 line-height 继承
+
+## usage-lead \{#copy-usage-lead\}
+
+
+在父元素设置比例，让子元素按各自的字号计算行高。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改预设值或添加令牌：`--leading-prose` 会创建 `leading-prose`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

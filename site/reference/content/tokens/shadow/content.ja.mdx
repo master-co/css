@@ -1,0 +1,71 @@
+# Reference prose: tokens/shadow
+
+## title \{#copy-title\}
+
+
+シャドウ
+
+## summary \{#copy-summary\}
+
+
+ライトとダークに合わせて調整した、重なりのあるエレベーションシャドウ。
+
+## note \{#copy-note\}
+
+
+`shadow-<name>` は `box-shadow` の値全体を設定します。2 つのシャドウクラスが互いのリストを追加し合うことはなく、優先される宣言がシャドウ全体を指定します。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+各トークンは、カンマで区切られたネイティブシャドウのリストを持ちます。値を展開すると各レイヤーを確認できます。ライトとダークではオフセット、ぼかし、広がりの長さは同じで、light-dark() の色だけが異なります。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+シャドウが変えるのは描画でありレイアウトではない
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`shadow-xs` と `shadow-xl` は、同じボックスの周りに異なる広がりの影を描きます。どちらもシャドウ用の空間は確保しないため、後続要素の位置と間隔は変わりません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+トークンのリストで最初のシャドウは、後のシャドウより手前に描かれます。`shadow-inset` は内側のシャドウを使い、6 段階のサイズは外側のシャドウを使います。これらのトークンは、サーフェスの色、角丸、重なり順、切り取りの方針を指定しません。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+各 `light-dark()` の色は、要素で実際に使われるカラースキームが選びます。シャドウの長さを変えたり別のユーティリティクラスを使ったりせずに、描画だけを変えられます。場所ごとのスキームの選択は、カラーロールを参照してください。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+シャドウを消すには、ネイティブ宣言の `(box-shadow:none)` を使います。内側と外側のシャドウを組み合わせるには、両方のリストを含む 1 つのトークンを定義します。別々のクラスでは結合されません。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+カラーロール
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+ネイティブシャドウの描画とレイアウト
+
+## usage-lead \{#copy-usage-lead\}
+
+
+通常のサーフェスは低く保ち、その上に浮くものだけを持ち上げます。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+プリセット値を変更したり、トークンを追加したりできます。`--shadow-card` を定義すると `shadow-card` が使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+色

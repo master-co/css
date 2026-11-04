@@ -1,0 +1,358 @@
+---
+{
+  "title": "基準測試",
+  "description": "觀察頁面傳遞的 CSS 有多少符合該頁、比較相同 UI 的生成 CSS，並連同限制檢查建置與執行階段成本。",
+  "category": "證據"
+}
+---
+
+import BenchmarkChart from '@master/internal-site/benchmarks/BenchmarkChart.astro'
+import PageCSSSizeBenchmark from './components/PageCSSSizeBenchmark.astro'
+import { BenchmarkSummaryTable } from './components/BenchmarkSummary'
+import { PageCSSSampleTable, PageCSSSiteTable } from './components/PageCSSSizeSample'
+import { RevisionComparisonTable } from './components/RevisionComparison'
+import {
+  StaticBuildChart,
+  StaticBuildTable,
+  StaticComparisonSummary,
+  StaticCSSBytesTable,
+  StaticCSSOutputChart,
+  StaticStructureChart,
+  StaticStructureTable
+} from './components/StaticTailwindComparison'
+import {
+  BrowserCSSCostSummary,
+  BrowserCSSCostTables,
+  BrowserCSSVolumeTraceChart,
+  BrowserDOMScalingTraceChart
+} from './components/BrowserCSSCostBenchmark'
+import {
+  MasterDeliveryLoadChart,
+  MasterDeliveryModesSummary,
+  MasterDeliveryModesTables,
+  MasterDeliveryPayloadChart,
+  MasterDeliveryRuntimeChart
+} from './components/MasterDeliveryModesBenchmark'
+import {
+  InteractionCostSummary,
+  InteractionCostTables,
+  InteractionPrimaryCharts,
+  InteractionRuntimeCharts
+} from './components/InteractionCostBenchmark'
+import {
+  BrowserLifecycleLongSessionCharts,
+  BrowserLifecycleLongSessionTable,
+  BrowserLifecycleSummary
+} from './components/BrowserLifecycleBenchmark'
+import {
+  BuildPathDiagnosticsCharts,
+  BuildPathDiagnosticsSummary,
+  BuildPathDiagnosticsTable
+} from './components/BuildPathDiagnosticsBenchmark'
+
+## 概覽 [sr-only] \{#overview\}
+這些測量先回答兩個問題：文件頁面傳遞的 CSS 有多少符合該頁，以及相同 UI 使用 Master CSS 與 Tailwind CSS 時，各會生成多少 CSS。技術附錄涵蓋建置時間、Chromium 對 CSS 規模的反應，以及各種 Master CSS 渲染模式的成本。將結果套用到其他應用程式前，請先確認各節的條件與限制。
+
+快照於 2026 年 11 月 4 日，在同一台機器（Apple M5 Max、macOS）上使用 Chromium 156 記錄。Master CSS 套件建置自修訂版 `add10eec6`。瀏覽器生命週期快照來自當天較早記錄的 `3fc239c6c`；`add10eec6` 修改編譯器與靜態建置主機，沒有修改執行階段、預設集或引擎。Master CSS 文件頁面取自同一份工作目錄的正式建置，其他文件網站則於同日擷取公開頁面。
+
+<figure>
+  <BenchmarkChart chart={BenchmarkSummaryTable} />
+  <figcaption>主要結果由已提交的快照計算。下列各節提供每項結果的條件與完整資料。</figcaption>
+</figure>
+
+---
+
+## 文件頁面 CSS \{#page-css-size\}
+回答的問題：從各文件頁面初始 HTML 找到的行內 style 內容與連結樣式表有多大？其中多少樣式規則符合該頁？
+
+<PageCSSSizeBenchmark />
+
+圖表加總各網站所列頁面的行內 `style` 內容與連結樣式表，Brotli 檢視會分別壓縮每份內容。單一頁面可能無法代表網站，因此表格為每站另外加入四個文件頁面，並呈現範圍。
+
+<figure>
+  <BenchmarkChart chart={PageCSSSampleTable} />
+  <figcaption>每站五個文件頁面。符合的樣式規則，其選擇器會在 1280 × 800 檢視區中符合已載入頁面的某個元素。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={PageCSSSiteTable} />
+  <figcaption>以相同方式測量 Master CSS 網站 sitemap 列出的每個文件頁面。</figcaption>
+</figure>
+
+Master CSS 文件頁面結合兩種 CSS。每頁的 `style#master-css` 內容保有該頁使用的 utility，所列頁面這部分小於 1 kB。連結樣式表包含網站設計系統元件、預設集基礎與其參照的 token，佔了大多數位元組。每份連結樣式表屬於一個元件，且會完整抵達，因此使用較多元件的頁面連結更多檔案，各頁總量也不同。只渲染元件部分內容的頁面，例如尚未開啟的搜尋對話框或少量文章元件，仍會收到該元件全部規則，這是多數不符合規則的來源。其他網站中，有幾站會在每頁傳遞相同樣式表。
+
+符合規則的比例衡量頁面 CSS 與該頁的貼合程度，與大小無關。將選擇器的狀態偽類別與偽元素移除後，若能符合載入後的元素，就計為符合；其他檢視區、配色或後續互動的規則，只有在元素不存在時才計為不符合。此比例反映各站自己的樣式表，不單是 CSS 框架的特性。
+
+限制：這些是蒐集到的 CSS 內容大小，不是瀏覽器傳輸或時間測量。蒐集器不追蹤 CSS 匯入相依圖，也不計 JavaScript 注入樣式。完整回應壓縮、快取重用、標頭、CDN 行為、字體、圖片與應用程式執行階段工作，都不在比較範圍內。各站 CSS 也反映自身設計與建置選擇，因此此樣本不能單獨隔離 CSS 框架成本；下方靜態 fixtures 才以相同 UI 比較框架。
+
+---
+
+## 相同 UI，生成的 CSS \{#static-css-output\}
+回答的問題：等效的靜態 Master CSS 與 Tailwind CSS v4 fixtures，在生成 CSS 位元組、檔案與 CSS AST 結構上有何差異？
+
+整理後的快照結合 `css-output-size`、`build-performance` 與 `css-structure` 結果。主要圖表使用 `docs` fixture 與 CLI 變體，讓第一個檢視聚焦靜態產物輸出；正式環境建置命令時間則放在[技術附錄](#production-build)。
+
+<figure>
+  <BenchmarkChart chart={StaticComparisonSummary} />
+  <figcaption>涵蓋所有實測 fixtures 的靜態比較摘要快照。</figcaption>
+</figure>
+
+### 代表性 fixture \{#representative-fixture\}
+`docs` fixture 代表含有導覽、程式碼區塊與表格的密集文章及文件版面。
+
+<figure>
+  <BenchmarkChart chart={StaticCSSOutputChart} />
+  <figcaption>`docs` fixture 採 CLI 設定時，經 Brotli 壓縮的 CSS 輸出。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticStructureChart} />
+  <figcaption>從 CSS AST 解析取得的 `docs` fixture 生成宣告數。</figcaption>
+</figure>
+
+### 完整資料 \{#complete-data\}
+完整表格保留所有實測 fixtures，以及 CLI／Vite 兩種設定變體。
+
+<figure>
+  <BenchmarkChart chart={StaticCSSBytesTable} />
+  <figcaption>每個實測 fixture 與設定的原始、gzip、brotli CSS 位元組資料及 CSS 檔案數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticStructureTable} />
+  <figcaption>從生成 CSS 解析的規則、選擇器、宣告、at-rule、串接層與選擇器形狀資料。</figcaption>
+</figure>
+
+解讀：在討論瀏覽器成本前，CSS 結構指標先說明位元組數為何不同。Tailwind CSS 與 Master CSS fixtures 以等效的渲染 UI 意圖為目標，不追求相同類別字串。
+
+所有實測設定都輸出一個 CSS 檔案。Master CSS 靜態建置會將進入點匯入的樣式表內嵌，包含預設集，因此頁面和使用 Tailwind CSS 一樣，透過一次請求取得生成 CSS。保留外部匯入、命名空間，或對自身含有匯入的檔案進行限定條件匯入的樣式表，則仍是獨立檔案；這些 fixtures 都沒有這類情況。
+
+限制：這些數值不測量瀏覽器解析、樣式重新計算、版面配置、繪製、互動成本、監看模式或 HMR。fixtures 只使用 utility 類別；[頁面 CSS](#page-css-size) 樣本顯示自行撰寫的元件 CSS 可能增加多少內容。
+
+---
+
+## 相較七月快照的變更 \{#changes\}
+前次快照日期為 2026 年 7 月 1 日，當時修訂版的引擎之後已移至 Rust，類別語法也已改變。為區分程式碼變更與機器、瀏覽器、基準測試框架的影響，七月修訂版 `cd5a3972a` 已重新建置，並在與目前測量相同的機器及 Chromium 版本上，重新執行該修訂版自己的測試執行器。正式建置在兩份工作目錄間交替執行三次，讓機器背景負載對雙方的影響相近。
+
+重新執行後，七月的靜態 CSS 輸出逐位元組一致，因此較早的數據對當時修訂版有效。目前 fixtures 使用現行類別語法表達相同渲染值，其中每個類別都會生成 CSS，並通過 CLI 的 `--strict` 模式。
+
+<figure>
+  <BenchmarkChart chart={RevisionComparisonTable} />
+  <figcaption>各修訂版自己的執行器，在相同機器與 Chromium 版本上的中位數。雙方正式建置使用相同 Node.js 版本；每個建置中位數彙整三輪交替執行、共 15 次命令。</figcaption>
+</figure>
+
+在此機器上，目前修訂版啟動瀏覽器執行階段較快，也用較少資料為漸進式頁面完成 hydration，但下載的執行階段更大，冷啟動正式環境建置命令耗時更久。`docs` fixture 的生成 CSS 約增加 5%，與七月一樣以單一檔案抵達。每份工作目錄安裝自己的 Tailwind CSS 與 Vite 版本，因此 Tailwind CSS 對照組同時反映升級及各次執行雜訊。
+
+兩個修訂版中，各模式（包含 Tailwind CSS）的互動就緒時間都差不多。限制來自測試框架等待影格，不是 Master CSS 工作，因此讀值會以約一個影格（17 ms）為級距變動；七月修訂版較低的 Tailwind CSS 讀值，就是這樣的一級差異。
+
+---
+
+## 技術附錄 \{#current-results\}
+這些測試組說明上述結果背後的成本：正式環境建置命令、Chromium 對 CSS 規模的反應，以及每種 Master CSS 渲染模式在瀏覽器傳送與執行的內容。選擇渲染模式或診斷建置時間時，可閱讀這些資料。
+
+### 核心假說 \{#core-hypothesis\}
+傳遞方面的問題是：載入較少 CSS 規則所節省的瀏覽器工作，能否抵銷執行階段生成規則的成本。請比較完整頁面生命週期：初始載入、後續互動與長時間工作階段清理。
+
+執行階段與漸進式渲染增加 JavaScript 工作，從觀察到的類別生成規則。這組類別若少於從靜態來源推得的集合，就可能減少初始 CSS 與 CSSOM 規則量。減少的量能否抵銷啟動與變動處理，取決於工作負載。Tailwind CSS 在此作為零執行階段的靜態 CSS 對照：它不提供等效的執行階段實作，但能代表這項取捨中較大靜態 CSS 的一側。
+
+目前證據應視為方向性結果。實測 fixtures 中，若執行階段／漸進式模式減少的 CSSOM／規則量與樣式重新計算，足以抵銷執行階段啟動、觀察與變動工作，就能支持假說；這不代表每個應用程式都會更快。
+
+這些測試組沒有把選擇器比對直接測量為穩定的 Chromium 指標，而是從傳遞的選擇器、CSSOM 規則數、執行階段生成規則數，以及追蹤紀錄中的樣式重新計算推論。
+
+### 如何閱讀結果 \{#how-to-read-these-results\}
+基準測試在回答明確、範圍狹窄的問題時才有用。評估這項傳遞取捨時，請依下列順序閱讀測量：
+
+1. 頁面 CSS 與靜態 CSS 輸出顯示頁面或靜態設定傳遞多少位元組、檔案、選擇器、宣告與規則。
+2. 瀏覽器 CSS 成本校準 DOM 固定、CSS 規則量增長時，Chromium 的反應。
+3. 傳遞模式顯示 Master 靜態、執行階段、漸進式，以及 Tailwind 靜態模式在首次載入傳送與執行的內容。
+4. 互動成本測量載入後 DOM 與類別變更，包含執行階段規則工作。
+5. 瀏覽器生命週期證據結合長時間工作階段的瀏覽器工作、CSSOM／規則量與執行階段檢測資料。
+
+各圖表是針對實測 fixture 與命令的證據；套用到其他應用程式前，請先與完整表格及已提交快照交叉比較。
+
+| 問題 | 主要證據 |
+|----------|------------------|
+| 從各文件頁面找到的 CSS 內容有多大，頁面使用多少？ | 頁面 CSS 大小快照 |
+| 相同 UI 生成的靜態 CSS 有多大？ | 靜態 CSS 輸出與 CSS 結構快照 |
+| 正式環境建置命令耗時多久？ | 正式建置 |
+| Master CSS 建置時間花在哪裡？ | 建置路徑診斷 |
+| CSS 規則量對 Chromium 有何成本？ | 瀏覽器 CSS 成本校準 |
+| 各傳遞模式首次載入會傳送與執行什麼？ | Master CSS 傳遞模式 |
+| 載入後，類別與 DOM 改變時會發生什麼？ | 互動成本 |
+| 執行階段工作會改變長時間工作階段的瀏覽器成本嗎？ | 瀏覽器生命週期證據 |
+| 修訂版之間改變了什麼？ | 修訂版比較 |
+
+Tailwind CSS 不是等效執行階段實作的比較對象。在執行階段導向的測試組中，它是靜態瀏覽器對照基準，代表假說中零執行階段、較大靜態 CSS 的一側。
+
+數字較低不代表在所有情境都較好。較小 CSS 產物可能將工作轉移到執行階段，較快冷啟動命令可能掩蓋較少的有效輸出，本地 Chromium 追蹤也不能取代真實正式環境遙測。
+
+測量時間時也要檢查正確性：fixture 有渲染預期 UI，較小或較快的結果才有用。測試組有記錄時，表格會包含計算樣式與漸進式採用檢查。
+
+### 正式建置 \{#production-build\}
+回答的問題：各靜態 fixture 與設定的完整冷啟動或重複正式環境建置命令，耗時多久？
+
+<figure>
+  <BenchmarkChart chart={StaticBuildChart} />
+  <figcaption>`docs` fixture 採 CLI 設定時，冷啟動正式環境建置命令的中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticBuildTable} />
+  <figcaption>每個實測 fixture 與設定的冷啟動及重複正式環境建置命令時間資料。</figcaption>
+</figure>
+
+解讀：建置時間包含各命令流程的程序、CLI 或 Vite，以及套件啟動，因此小型 fixture 多半測到固定啟動成本。重複正式建置指在同一工作目錄執行第二次命令，不是監看模式或 HMR。
+
+### 建置路徑診斷 \{#build-path-diagnostics\}
+回答的問題：Master CSS 的哪些啟動、整合、擷取與編譯器子步驟，可說明完整命令成本？
+
+此快照結合 `startup-diagnostics`、`build-diagnostics`、`compiler-diagnostics` 與 `extraction-diagnostics`，用於說明 Master CSS 建置路徑，不是跨框架正式環境基準測試。
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsSummary} />
+  <figcaption>整理後的 Master CSS 建置路徑診斷快照。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsCharts} />
+  <figcaption>`docs` fixture 的診斷中位數。啟動探針提供方向性資訊，不能相加當作火焰圖。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsTable} />
+  <figcaption>每個實測 fixture 的完整建置路徑診斷快照資料。</figcaption>
+</figure>
+
+解讀：一般 fixture 命令中，模組匯入與來源掃描各花數毫秒；註冊樣式表進入點及組合輸出，各花數十毫秒，同設定重複組合仍約需第一次的五分之三。一次 CLI 執行的 CPU profile（`node --cpu-prof`）將最大一部分、約三分之一的命令時間，歸因於編譯匯入的預設集樣式表相依圖。這項工作與 fixture 類別無關，因此小型 fixtures 也幾乎付出和大型相同的固定成本。
+
+限制：診斷探針測量各自不同範圍與子步驟，不應把時間加總，當成同一份正式執行追蹤。
+
+### 瀏覽器 CSS 成本 \{#browser-css-cost\}
+回答的問題：DOM 固定時，CSS 規則量如何影響 Chromium 樣式重新計算、版面配置與繪製？CSS 固定時，DOM 規模增長又有何行為？
+
+此測試組使用本地 fixture 頁面、可確定的外部 CSS、Playwright 與 Chromium 追蹤，是純瀏覽器校準測試，不是 Master CSS 與 Tailwind CSS 的比較。
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSCostSummary} />
+  <figcaption>整理後的瀏覽器 CSS 成本快照。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSVolumeTraceChart} />
+  <figcaption>CSS 規則量增長、可見 DOM 固定時，暖快取追蹤中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserDOMScalingTraceChart} />
+  <figcaption>DOM 規模增長、CSS 固定時，暖快取追蹤中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSCostTables} />
+  <figcaption>CSS 規模與 DOM 擴展變體的完整瀏覽器 CSS 成本資料。</figcaption>
+</figure>
+
+解讀：CSS 規模曲線是主要依據，用來判斷傳遞模式在互動前要求 Chromium 載入多少 CSS。DOM 擴展對照組協助將 DOM、樣式與版面配置的擴展成本，和 CSS 酬載大小分開。
+
+限制：這些數值不測量執行階段規則生成、真實應用程式 JavaScript、Firefox、WebKit、CDN 行為或公開真實頁面的差異。Chromium 追蹤事件名稱可能隨瀏覽器版本改變。
+
+### Master CSS 傳遞模式 \{#master-css-delivery-modes\}
+回答的問題：各傳遞模式會產生多少初始酬載、本地 Chromium 載入成本、執行階段啟動成本、程式載入，以及何種漸進式採用行為？
+
+測試組跨靜態 fixture 集合，比較 Master CSS 靜態、執行階段、漸進式，以及 Tailwind CSS 靜態瀏覽器對照變體。
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryModesSummary} />
+  <figcaption>整理後的 Master CSS 傳遞模式快照。</figcaption>
+</figure>
+
+#### 代表性 fixture \{#delivery-representative-fixture\}
+主要圖表呈現 `docs` fixture。
+
+酬載圖表將完整 HTML 回應及首次載入請求的每個外部資產各計一次。行內 CSS 與注入的 hydration manifest 已在 HTML 內，因此不另列區段。空資產欄位不會在總量加入壓縮容器位元組。
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryPayloadChart} />
+  <figcaption>`docs` fixture 記錄的回應資產，分別以 Brotli 壓縮。所有長條共用從零到最大總量的刻度，各區段顯示資產的貢獻。</figcaption>
+</figure>
+
+這些總量是由記錄的資產欄位估算，不是實測網路傳輸大小。它們排除標頭與傳輸額外負擔，且每頁 HTML 都包含基準測試框架指令碼。詳細表格將分別壓縮的行內 CSS 與 hydration 片段保留作診斷；若將這些欄位加入回應總量，會重複計算內容。
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryLoadChart} />
+  <figcaption>`docs` fixture 的本地 Chromium 載入時間中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryRuntimeChart} />
+  <figcaption>Master 執行階段與漸進式模式的執行階段啟動及觀察中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryModesTables} />
+  <figcaption>每個實測 fixture 與模式的完整傳遞模式快照資料。</figcaption>
+</figure>
+
+解讀：執行階段模式不傳遞生成 CSS，但會在頁面套用樣式前擷取瀏覽器執行階段與編譯後預設程式。漸進式模式從 HTML 中的伺服器／建置時 CSS 開始，由執行階段採用；只有類別不在 hydration 資料中，才擷取程式，這些初始載入沒有發生該情況。
+
+限制：這些數值只測量本地 fixture 的初始載入，載入後變動由互動測試組處理。Master 靜態與 Tailwind 靜態各載入一份 CLI 生成樣式表，依等效 fixture 意圖建置，不是相同類別字串。執行階段與漸進式頁面載入可獨立運作的全域執行階段 bundle；bundler 整合可載入較小的漸進式進入點，其測量見 [執行階段大小契約](https://github.com/master-co/css/blob/rc/.ai/contracts/runtime-bundle-size.json)。各模式啟動方式請參閱[渲染模式](/reference/packages#css-runtime)。
+
+### 互動成本 \{#interaction-cost\}
+回答的問題：載入後切換類別、首次執行階段規則生成、DOM 加入／移除、主題切換、檢視區調整與清理週期，各有多少成本？
+
+此測試組在 `dynamic`、`dashboard` 與 `stress-dom` fixtures 上測量本地 Chromium 互動。Tailwind CSS 靜態變體作為樣式／版面配置／繪製工作的瀏覽器對照組，沒有等效的用戶端執行階段規則生成。
+
+<figure>
+  <BenchmarkChart chart={InteractionCostSummary} />
+  <figcaption>整理後的互動成本快照。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionPrimaryCharts} />
+  <figcaption>主要 `dynamic` fixture 情境中，變動後就緒時間的中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionRuntimeCharts} />
+  <figcaption>Master 執行階段與漸進式 `dynamic` fixture 情境的執行階段規則更新中位數。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionCostTables} />
+  <figcaption>支援的 fixture、模式與情境組合之完整互動成本資料。</figcaption>
+</figure>
+
+解讀：執行階段與漸進式模式應分兩層閱讀：先看使用者可見的變動就緒，再看執行階段樣式表工作。就緒時間包含測試框架等待影格，且各模式幾乎相同，因此模式額外增加的成本應比較執行階段變動工作與樣式重新計算。規則差量計算執行階段公開快照中的規則。漸進式頁面延後啟動引擎時，快照沒有規則；第一個不在 hydration 資料中的類別啟動引擎後，會將伺服器渲染規則採用到狀態中，因此該次互動的差量也計入採用的規則。請比較執行階段變動工作與樣式重新計算，評估 CSSOM 成本。
+
+限制：這些數值不測量路由轉場、HMR、開發流程、CDN 行為、Firefox、WebKit，或公開真實應用程式的差異。
+
+### 瀏覽器生命週期與長時間工作階段 \{#browser-lifecycle-and-inp-style-interactions\}
+回答的問題：每次記錄的五分鐘工作階段，累積多少渲染與執行階段工作？
+
+生命週期測試組比較 Master CSS 靜態、執行階段與漸進式設定，以及 Tailwind CSS 靜態對照組。下方圖表選用五分鐘長時間工作階段情境。每種模式**只有一次實測執行**；單一樣本的中位數就是那次觀察，不能證明可重複性。
+
+表格經過時間涵蓋完整指令碼工作階段與最後等待穩定的影格。來源指標名為 `inp-style-interaction-ms`，但此情境設計上就約為五分鐘，不是在測量單次輸入延遲或 Web Vitals INP。
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleSummary} />
+  <figcaption>瀏覽器生命週期證據的涵蓋範圍與正確性檢查。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleLongSessionCharts} />
+  <figcaption>各模式單次五分鐘執行中，觀察到的瀏覽器渲染與執行階段工作。</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleLongSessionTable} />
+  <figcaption>每種模式的完整五分鐘長時間工作階段證據。</figcaption>
+</figure>
+
+解讀：比較總樣式重新計算與各模式增加的執行階段變動工作。各模式只執行一次，無法證明穩定加速。對版面配置、繪製、回應能力或整體效能下結論前，請先在同一機器上比較重複執行。
+
+限制：除非 Chromium 提供穩定的追蹤指標，選擇器比對時間仍是從 CSSOM／規則量加上樣式重新計算推論。只有蒐集方式穩定到能在相同瀏覽器版本重現時，才回報 CSSOM 記憶體與 GC 壓力。
+
+---
+
+## 資料來源 \{#data-sources\}
+圖表讀取已提交至 `benchmarks/**/snapshot.json` 與 `benchmarks/browser-lifecycle/long-session-evidence.json`、日期為 2026 年 11 月 4 日的快照。fixtures、指標類別、發布規則、記錄命令與驗證步驟見[基準測試 README](https://github.com/master-co/css/tree/rc/benchmarks#readme)。重現結果需要相符的原始碼修訂版與 lockfile，不是只安裝目前套件即可。

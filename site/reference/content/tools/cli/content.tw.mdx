@@ -1,0 +1,273 @@
+# Reference prose: tools/cli
+
+## editorial-suggest-examples-0-description \{#copy-editorial-suggest-examples-0-description\}
+
+
+使用目前專案 manifest，從宣告建議 class：
+
+## editorial-suggest-examples-1-description \{#copy-editorial-suggest-examples-1-description\}
+
+
+從 stdin 讀取宣告區塊：
+
+## editorial-suggest-notes-0 \{#copy-editorial-suggest-notes-0\}
+
+
+傳入一個加上引號的宣告區塊，或使用 `--stdin`，不可同時使用。以 `--cwd` 選擇專案根目錄（預設為目前目錄）。引數若以 `--` 開頭，請用 stdin，或在引數前加上 `--`。輸入只能包含宣告，不可含選擇器或外層大括號。
+
+## editorial-suggest-notes-1 \{#copy-editorial-suggest-notes-1\}
+
+
+版本 1 JSON 封套包含 `cwd`、`manifest`、`result`、`validation` 與 `diagnostics`。`manifest.entries` 列出找到的 Master CSS 入口；若完全未找到，建議結果會使用預設集。已找到但載入失敗的入口會造成錯誤，絕不改用預設集。依賴專案 token 或 utility 覆寫前，請先檢查入口。
+
+## editorial-suggest-notes-2 \{#copy-editorial-suggest-notes-2\}
+
+
+`result` 是具版本的宣告建議報告，包含 class、生成 CSS、`remainingCss`、註記與驗證。`preserved` 結果保留整個原始區塊，並成功結束；請保留 CSS 並閱讀註記。`suggested` 結果檢查宣告對應，不檢查階層串接或瀏覽器渲染。class 專屬診斷以 `className` 識別；`validation` 分開呈現比對、CSS 語法、CSS 值與瀏覽器支援。
+
+## editorial-suggest-notes-3 \{#copy-editorial-suggest-notes-3\}
+
+
+報告一律以 JSON 寫入 stdout。錯誤也寫入 stderr，並以狀態 1 結束。輸入、manifest 或執行失敗會回傳 `result: null`；已知無效的建議 CSS 會產生錯誤，但仍保留提案。未知值不視為錯誤，瀏覽器支援維持 `not-checked`。未知旗標等引數剖析錯誤，使用一般 CLI 說明診斷。
+
+## editorial-generate-notes-0 \{#copy-editorial-generate-notes-0\}
+
+
+`--output` 指定 CSS 入口名稱（預設 `master.css`）。同層樣式表與資源也須一併發布；為保留順序、條件與 URL 所有權，本地匯入與資源可能維持獨立檔案。只複製入口可能不完整。樣式表邊界請見[匯入](/reference/directives/imports)。
+
+## editorial-generate-notes-1 \{#copy-editorial-generate-notes-1\}
+
+
+`--strict` 在發布資源前拒絕已知 CSS 語法或值錯誤。未知瀏覽器能力不視為已驗證支援。`--prune-native-css` 讓專案擁有的檔案參與原生修剪；套件檔案維持自身政策，`@preserve native` 在本地優先。[原生 CSS 修剪](/reference/directives/pruning)定義規則與關鍵影格行為。
+
+## editorial-generate-notes-2 \{#copy-editorial-generate-notes-2\}
+
+
+`--no-export` 列印一份 CSS 結果，不發布其參照資源；須自行保留所需樣式表與資源 URL 的基準。`--verbose 0` 隱藏進度記錄。Ctrl+C 可停止監看模式；監看程序仍運作時，重建仍可能失敗並保留上次成功匯出。
+
+## editorial-generate-examples-0-description \{#copy-editorial-generate-examples-0-description\}
+
+
+檢查生成 CSS，不寫入輸出檔案：
+
+## editorial-generate-examples-1-description \{#copy-editorial-generate-examples-1-description\}
+
+
+將 CSS 發布到明確指定的檔案：
+
+## editorial-generate-examples-2-description \{#copy-editorial-generate-examples-2-description\}
+
+
+專案來源變更時重新生成輸出；Ctrl+C 停止：
+
+## editorial-lint-notes-0 \{#copy-editorial-lint-notes-0\}
+
+
+Lint 報告 v5 將已檢查輸入與有診斷的檔案分開。`coverage.checkedFiles` 列出所有傳入 lint 的輸入，包含無問題檔案與 stdin 虛擬路徑。`summary.checkedFiles` 計算這些輸入；`summary.filesWithDiagnostics` 計算有診斷的已檢查檔案。`files` 陣列仍只包含診斷結果；空陣列不表示沒有執行檢查。
+
+## editorial-lint-notes-1 \{#copy-editorial-lint-notes-1\}
+
+
+解讀零診斷前先讀取 `coverage.status`：`complete` 表示已檢查所選輸入，`no-inputs` 表示沒有符合的來源輸入，`not-run` 表示 manifest 載入阻擋了來源 lint。manifest 診斷不計入已檢查來源檔案。使用 `--fix` 時，診斷數量描述重新檢查後的內容。無問題的 stdin 仍算一個輸入，不會建立磁碟檔案。stylish 輸出會在 stderr 包含涵蓋範圍摘要。
+
+## editorial-lint-notes-2 \{#copy-editorial-lint-notes-2\}
+
+
+`coverage.description` 說明結果，並區分 manifest 樣式表入口與已 lint 的來源輸入。空 `manifest.entries` 不表示沒有執行來源檢查。涵蓋範圍只適用所選輸入與啟用的 lint 規則，不驗證瀏覽器行為，也不證明整個專案都已檢查。`no-inputs` 搭配零結束狀態，不是來源檢查成功的證據。
+
+## editorial-lint-examples-0-description \{#copy-editorial-lint-examples-0-description\}
+
+
+檢查現有來源檔案中的 class 排序提案：
+
+## editorial-lint-examples-1-description \{#copy-editorial-lint-examples-1-description\}
+
+
+檢閱提案後套用 class 排序修正：
+
+## editorial-lint-examples-2-description \{#copy-editorial-lint-examples-2-description\}
+
+
+檢查 stdin 來源緩衝區，不修改其虛擬檔案：
+
+## editorial-inspect-examples-0-description \{#copy-editorial-inspect-examples-0-description\}
+
+
+檢查現有來源檔案使用的 class，並包含生成 CSS：
+
+## editorial-inspect-examples-1-description \{#copy-editorial-inspect-examples-1-description\}
+
+
+在 stderr 閱讀易讀報告：
+
+## editorial-inspect-examples-2-description \{#copy-editorial-inspect-examples-2-description\}
+
+
+儲存 JSON 供自動化使用，並保留依診斷決定的結束狀態：
+
+## editorial-inspect-examples-3-description \{#copy-editorial-inspect-examples-3-description\}
+
+
+檢查受管理專案 CSS 中的 token 參照與衝突：
+
+## editorial-inspect-examples-4-description \{#copy-editorial-inspect-examples-4-description\}
+
+
+從現有版本 1 選項檔案讀取中繼資料與原始值政策：
+
+## editorial-inspect-examples-5-description \{#copy-editorial-inspect-examples-5-description\}
+
+
+加入從 JavaScript 匯入、但 CSS 入口圖無法觸及的路由與元件樣式表：
+
+## editorial-inspect-notes-0 \{#copy-editorial-inspect-notes-0\}
+
+
+### 專案快照 \{#project-snapshots\}
+
+## editorial-inspect-notes-1 \{#copy-editorial-inspect-notes-1\}
+
+
+`--snapshot` 將解析後的專案快照寫入 stdout。變更前先儲存，再以 `--compare` 比較快照與目前專案。兩種模式互斥，且一律回傳 JSON。它們比較定義與已知使用端，不比較瀏覽器像素。
+
+## editorial-inspect-notes-2 \{#copy-editorial-inspect-notes-2\}
+
+
+```sh
+master-css inspect --snapshot > before.json
+# After the intended source change:
+master-css inspect --compare before.json > comparison.json
+```
+
+## editorial-inspect-notes-3 \{#copy-editorial-inspect-notes-3\}
+
+
+### 設計系統選項 \{#design-system-options\}
+
+## editorial-inspect-notes-4 \{#copy-editorial-inspect-notes-4\}
+
+
+`--design-system-options` 讀取 JSON 檔案，且必須搭配 `--design-system`。MCP `mastercss_scan_project` 的 `designSystem` 輸入（僅限專案情境），以及語言伺服器的 `designSystem` 設定也接受同一物件；三者回傳相同報告。
+
+## editorial-inspect-notes-5 \{#copy-editorial-inspect-notes-5\}
+
+
+```json name=design-system.json
+{
+  "version": 1,
+  "metadata": {
+    "--color-brand-old": {
+      "description": "Previous brand color",
+      "deprecated": true,
+      "replacement": "--color-brand"
+    }
+  },
+  "rawValuePolicy": {
+    "requireProperties": ["color", "background-color"]
+  }
+}
+```
+
+## editorial-inspect-notes-6 \{#copy-editorial-inspect-notes-6\}
+
+
+| 欄位 | 契約 |
+| --- | --- |
+| `version` | 必填；`1`。 |
+| `metadata` | 選填對應表，將目前專案的 token 名稱對應至 `description`、`deprecated` 與 `replacement`。棄用警告涵蓋撰寫的 CSS `var()` 參照；替換值是檢閱建議，絕不自動套用。 |
+| `rawValuePolicy.requireProperties` | 選填。這些有 token 支援的屬性，其原生宣告必須使用 token；完整 `var()` 元件（含備援值）不受限制。省略政策就不檢查原始值。 |
+
+## editorial-inspect-notes-7 \{#copy-editorial-inspect-notes-7\}
+
+
+不識別的欄位會被拒絕。選項只影響檢查報告，絕不影響生成 CSS 或瀏覽器程式。`components` 從同一複合選擇器中的屬性選擇器，列出各 class 的屬性詞彙，例如 `.button[data-variant="primary"]`：包含精確 `values` 與是否存在裸 `[name]` 選擇器（`presence`）；不收集 `:where()` 這類函式偽類別內的屬性。報告涵蓋專案入口及本地相依檔案，也包含以來源路徑指定的樣式表（列於 `project.routeStylesheets`，沒有匯入端）；使用 `--design-system` 時，來源路徑必須符合 `.css` 檔案。套件 CSS 與專案根目錄外檔案排除；`@reference` 邊提供定義情境但不交付，`browser` 維持 `not-checked`。
+
+## body-23 \{#copy-body-23\}
+
+
+透過[設定指南](/guide/installation#cli)安裝 CLI，再從專案根目錄執行。generate、lint 與 inspect 無須來源引數就能探索一般應用程式來源；明確路徑引數會取代這個選取範圍。suggest 接受 CSS 宣告區塊。
+
+## body-24 \{#copy-body-24\}
+
+
+來源 glob 請加上引號，讓 CLI 而非 shell 展開。這些指令作用於目前工作目錄，只有 `suggest` 提供 `--cwd`。[擷取](/reference/rules/extraction)定義來源剖析，[掃描](/reference/directives/scanning)定義樣式表來源政策。
+
+## body-25 \{#copy-body-25\}
+
+
+執行 `master-css --help` 列出指令，以 `master-css <command> --help` 閱讀已安裝版本的所有選項。目前指令定義位於 [CLI 原始碼](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts)。
+
+## body-26 \{#copy-body-26\}
+
+
+建議 class 並驗證生成宣告，不編輯檔案。使用目前專案 manifest，不確定的區塊會保留為 CSS。套用提案前，請檢閱階層串接與瀏覽器行為。
+
+## body-27 \{#copy-body-27\}
+
+
+發布 CSS 與相關樣式表資源。用 `--no-export --verbose 0` 只列印 CSS，不發布檔案。`--watch` 持續執行直到中斷；程序仍運作時也要檢查重建錯誤。
+
+## body-28 \{#copy-body-28\}
+
+
+預設回報 class 診斷，不寫入來源。`--fix` 套用支援的修正；`--fix-dry-run` 回傳提案而不套用。stdin 內容絕不寫回虛擬路徑。
+
+## body-29 \{#copy-body-29\}
+
+
+回報來源探索、樣式表入口與缺少的 CSS，不發布 CSS 或重寫來源檔案。`--classes` 檢查掃描結果，不會將那些 class 加入安全清單。解讀空結果前，請先閱讀診斷與涵蓋範圍。
+
+## body-30 \{#copy-body-30\}
+
+
+## 指令效果 \{#command-effects\}
+
+## body-31 \{#copy-body-31\}
+
+
+| 指令 | 預設輸出 | 檔案效果 |
+
+## body-32 \{#copy-body-32\}
+
+
+| [`generate`](#generate) | CSS 入口與所需資源 | 發布輸出；`--no-export` 改為列印 CSS。 |
+
+## body-33 \{#copy-body-33\}
+
+
+| [`lint`](#lint) | JSON 診斷 | 讀取來源；`--fix` 寫入支援的修正。 |
+
+## body-34 \{#copy-body-34\}
+
+
+| [`inspect`](#inspect) | JSON 檢查報告 | 讀取來源；shell 重新導向可儲存報告。 |
+
+## body-35 \{#copy-body-35\}
+
+
+| [`suggest`](#suggest) | JSON 宣告提案 | 讀取宣告；不套用提案。 |
+
+## body-36 \{#copy-body-36\}
+
+
+## 檢查結果 \{#check-results\}
+
+## body-37 \{#copy-body-37\}
+
+
+lint 與 inspect 預設將 JSON 報告寫入 stdout；`--format stylish` 將易讀診斷寫入 stderr。診斷錯誤通常會產生非零結束狀態。`--exit-code never` 會抑制診斷造成的失敗，因此判定成功前請先閱讀報告。疑難排解請見[程式碼檢查](/guide/code-linting)與[掃描 class 名稱](/guide/scanning-and-pruning)。來源連結指向 `rc` 分支。
+
+## title \{#copy-title\}
+
+
+CLI 指令
+
+## description \{#copy-description\}
+
+
+選擇指令、確認檔案影響，並從 CLI 說明與原始碼查找完整選項。
+
+## command-help \{#copy-command-help\}
+
+
+執行 `master-css %%command%% --help` 查看所有選項。[實作](https://github.com/master-co/css/blob/rc/packages/cli/src/%%command%%.ts)。

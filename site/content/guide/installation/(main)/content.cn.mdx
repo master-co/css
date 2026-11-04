@@ -1,0 +1,240 @@
+---
+{
+  "title": "安装 Master CSS",
+  "description": "选择框架集成、确认 CDN 是否可用，或通过 CLI 生成样式表。",
+  "category": "入门",
+  "figures": {
+    "InstallationIllustration": {
+      "title": "连接源代码与页面",
+      "alt": "应用标记和样式表一同交给构建集成，生成的 CSS 传递到显示 Hello World 的页面。",
+      "caption": "集成会从源代码读取类名，并从样式表读取定义。应用必须加载该样式表，生成的 CSS 才能传递到页面。",
+      "description": [
+        {
+          "title": "源代码",
+          "text": "p-md 这样的完整类名出现在集成扫描的源文件中。应用样式表导入 @master/css，以提供预设定义。"
+        },
+        {
+          "title": "构建集成",
+          "text": "两份源资料交给已配置的集成，为识别出的类名生成 CSS。安装程序负责配置此连接；集成负责后续开发和构建工作。"
+        },
+        {
+          "title": "页面",
+          "text": "应用加载样式表，使生成的 CSS 到达浏览器。使用预设时，p-md 规则会应用 1rem 内边距。仅安装软件包并不会建立样式表导入。"
+        }
+      ]
+    },
+    "GuideStudy:installation-observation": {
+      "title": "通过一个小修改验证完整流程",
+      "alt": "源代码从 p-md 改为 p-lg，编译后的内边距随之变化，浏览器中的方框明显变大。",
+      "caption": "安装成功只是第一步。修改类名可以同时检查类名发现、CSS 生成和样式表交付。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import InstallationGuides from '~/site/components/InstallationGuides.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import InstallationIllustration from './components/InstallationIllustration.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/installation/cover-light.webp'
+import dark from '~/site/assets/images/integrations/installation/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS 搭配 Astro、Vite、Nuxt、Svelte、Next.js、Angular、Lit、webpack 和 Storybook" />
+
+选择适合项目的配置方式：[集成](#integrations)将 Master CSS 接入框架或构建工具，[CLI](#cli) 则为没有打包工具的项目生成样式表。[CDN](#cdn) 提供使用默认预设的纯 HTML 配置；其 CSS-first 版本尚待发布。
+
+## 集成 \{#integrations\}
+
+现有应用请使用集成。默认采用静态渲染：构建时会在源代码中查找完整类名，并将样式表交付给浏览器。选择你的框架查看配置文件和步骤，或使用下方的自动安装程序。
+
+<InstallationGuides />
+
+运行时和服务器渲染配置，请参阅[各集成的渲染支持](/guide/rendering-modes#integration-support)。
+
+### 开始之前 \{#installation\}
+
+使用 Node.js 24，并打开应用根目录，也就是 `package.json` 所在的位置。安装程序会更新现有项目，不会创建框架初始项目。你的应用应已具备正常工作的开发命令。
+
+### 软件包发布状态 \{#package-availability\}
+
+这些步骤需要安装程序、集成及其依赖软件包协同发布。目前这组软件包尚未全部上架 npm。下方的 `@rc` 命令描述预定的安装渠道，并非当前已验证可安装此候选版本的方式。请等匹配软件包发布后再执行这些命令。其他标签下已存在的软件包并不代表与本配置兼容。
+
+若要在本地评估运行时，请使用[已构建源码的 CDN 示例](#cdn)。其中的脚本、编译后的程序和基础样式表必须来自同一次构建。
+
+手动配置或框架专用文件，请参阅[集成指南](/guide/installation#integrations)。如果项目没有对应的构建集成，请按照[独立 CLI 配置](/guide/installation#cli)操作。
+
+<StepSection>
+  <Step>
+    ### 添加 Master CSS \{#add-master-css\}
+
+    从项目根目录运行安装程序。它会检测框架和包管理器、更新配置文件，并从 `rc` 渠道安装匹配的 Master CSS 软件包。
+
+    ```bash
+    npm create @master/css@rc -- --yes
+    ```
+
+    <DocumentDisclosure title="查看或限制配置内容">
+
+    `--yes` 会接受建议的默认值，包括核心集成、ESLint 配置、MCP 软件包和 `AGENTS.md` 中的 Master CSS 指引。输出的 MCP 注册和 skill 安装命令是编码工具可选的后续步骤；安装程序不会执行它们。
+
+    加入 `--dry-run`，即可在不修改项目文件、不安装计划中的依赖的情况下查看方案：
+
+    ```bash
+    npm create @master/css@rc -- --yes --dry-run
+    ```
+
+    如果只需要核心框架配置，请在安装命令中加入 `--minimal`。它会跳过 ESLint、MCP 和代理指引的添加。如果想自行安装依赖，请加入 `--no-install`。
+
+    </DocumentDisclosure>
+  </Step>
+  <Step>
+    ### 检查样式表连接 \{#check-the-stylesheet-connection\}
+
+    阅读配置摘要，完成其中列出的框架专用步骤。某些集成需要后续配置命令或独立的 CSS 生成进程；请参阅你的[框架指南](/guide/installation#integrations)。
+
+    确认应用加载了安装程序创建或更新的样式表。该样式表应包含：
+
+    ```css
+    @import '@master/css';
+    ```
+
+    例如，纯 Vite 应用通常从 `src/main.js` 导入 `./style.css`。CSS 文件名和导入位置因框架而异。仅安装软件包不会自动将样式表加载到页面。
+
+    <InstallationIllustration />
+  </Step>
+  <Step>
+    ### 开始使用 Master CSS \{#start-using-master-css\}
+
+    使用应用原本的命令，例如 `npm run dev`，启动或重启开发服务器。将以下标记放入可见的页面或组件。在 JSX 中请用 `className` 替代 `class`。
+
+    <DemoConfiguredExample name="installation-check" title="检查第一个样式" source="" caption="使用预设时，p-md 会在文本四边各加入 1rem 内边距。" html={`<p class="w-fit mx-auto my(0) p-md r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong">
+  Hello World
+</p>`} />
+
+    你应看到文本位于带边框的小面板中。将 `p-md` 改为 `p-lg` 并保存：四边内边距都应从 `1rem` 增加到 `1.5rem`。这不仅确认安装程序成功完成，也验证源代码变更确实传递到了页面。
+  </Step>
+</StepSection>
+
+<GuideStudy id="installation-observation" />
+
+## CDN \{#cdn\}
+
+CDN 安装会直接在浏览器中运行 Master CSS，无需构建工具。它适合纯 HTML 原型；生成样式依赖 JavaScript。如果页面必须在没有 JavaScript 时仍有样式，请使用集成或 CLI。
+
+CSS-first CDN 版本尚未发布。使用模板前，请将下方所有 `VERSION` 替换为相同且已发布的 CSS-first 运行时和预设版本。在该版本可用之前，请按下文使用本地构建。[集成](#integrations)和 [CLI](#cli) 也有相同的[软件包发布要求](#package-availability)。
+
+将此模板保存为 `index.html`：
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en" hidden>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
+</head>
+
+<body>
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-strong">Hello World</h1>
+</body>
+
+</html>
+```
+
+标题应具有 `3rem` 外边距、`2.5rem` 斜体字体、`900` 字重和预设的强调文本色。将 `font-5xl` 改为 `font-6xl`，文本会增大到 `3rem`。运行时也会观察 JavaScript 造成的类名变更。
+
+样式表提供基础规则和层叠层顺序。传统脚本会自动启动、加载匹配的编译程序，并在文档解析完成后生成初始类名。规则准备好后，它会移除 `hidden`。三个预加载链接会提前开始样式表、脚本和程序请求；二进制文件使用 `as="fetch" crossorigin`，因为运行时获取的是数据，而非模块。二进制预加载和运行时获取会直接使用 jsDelivr 目标地址，因为 Master CDN 重定向没有附带 CORS 头。CDN 配置使用默认预设；自定义 `@theme` 或 `@utility` 定义请通过集成编译。
+
+<DocumentDisclosure title="在 CDN 发布前试用本地构建">
+
+从已构建的源码工作目录，将 `packages/preset/src/base.css`、`packages/runtime/dist/global.min.js` 和 `packages/runtime/dist/default-program.bin` 复制到 `index.html` 旁的同一目录。脚本和程序必须来自同一次构建。
+
+将两个样式表 URL 替换为 `./base.css`、两个脚本 URL 替换为 `./global.min.js`，并将程序预加载 URL 替换为 `./default-program.bin`。通过 HTTP 提供目录并打开 `index.html`。使用明确的脚本文件时，运行时会在文件旁解析程序；使用 Master CDN 或 jsDelivr 的 npm 软件包入口时，则会解析该包内的 `dist/default-program.bin`。
+
+</DocumentDisclosure>
+
+`hidden` 是可选属性，可防止首次绘制时出现无样式内容；已处理的程序加载错误和运行时三秒启动超时都会显示内容。如果禁用 JavaScript 或脚本本身无法下载，就无法移除此属性。如果这些情况下内容仍必须可读，请省略 `hidden` 或提供静态 CSS。
+
+如果有内容安全策略，请允许 CDN 及其 jsDelivr 重定向目标加载脚本、样式表和获取程序（`connect-src`），并允许运行时生成的样式表。不会获取 Wasm。加载和水合行为请参阅[运行时渲染](/guide/rendering-modes#runtime-rendering)。
+
+## CLI \{#cli\}
+
+不添加打包工具，也能从 HTML 生成静态样式表。CLI 会扫描完整类名并写出 CSS，再通过普通样式表链接加载。如果项目没有对应的[框架集成](/guide/installation#integrations)，请使用此配置。
+
+<StepSection>
+  <Step>
+    ### 安装 Master CSS \{#install-master-css\}
+    将 Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) 安装为开发依赖。
+
+    ```bash
+    npm install -D @master/css-cli@rc
+    ```
+  </Step>
+  <Step>
+    ### 创建 CSS 入口 \{#create-your-css-entry\}
+    创建导入默认 Master CSS 入口的样式表。
+
+    ```css name=main.css
+    @import "@master/css";
+    ```
+  </Step>
+  <Step>
+    ### 运行构建命令 \{#run-the-build-command\}
+    运行命令扫描源代码，并写入 `master.css`。
+
+    ```bash
+    npx @master/css-cli generate "index.html" --output master.css --watch
+    ```
+  </Step>
+  <Step>
+    ### 加载生成的样式表 \{#load-the-generated-stylesheet\}
+    将下方文档保存为 `index.html`。监听进程会根据其中的类名生成 `master.css`。提供此目录并打开页面，即可看到已应用样式的段落。
+    <InstallationPreview>
+
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
+</head>
+<body>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello World</p>
+</body>
+</html>
+```
+
+    </InstallationPreview>
+  </Step>
+</StepSection>
+
+### 构建以部署 \{#build-for-deployment\}
+
+监听命令会持续运行，并在选定源文件变更时更新输出。生产构建请省略 `--watch`，让命令写出结果后退出：
+
+```bash
+npx @master/css-cli generate "index.html" --output master.css
+```
+
+部署 `index.html`、`master.css` 以及生成样式表所引用的相邻 CSS 资源。请保留相对路径：仅复制 `master.css` 可能导致其导入样式缺失。发布新构建时，请将每组生成资源放在一起。
+
+加载部署后的页面，确认每个样式表请求都成功。禁用 JavaScript 时，段落应保留生成的内边距、边框和表面颜色。[扫描类名](/guide/scanning-and-pruning)说明了如何纳入普通应用范围之外的源文件。
+
+## 如果没有出现样式 \{#if-the-style-does-not-appear\}
+
+确认页面渲染的是你编辑的标记，并已加载应用样式表。接着确认构建集成已启用，并扫描了该源文件。请保留 `p-lg` 这样的完整类名；通过 `p-${size}` 等片段拼接会使静态扫描无法看到最终类名。
+
+如果安装程序报告无法识别框架或配置未完成，请按照对应的[集成指南](/guide/installation#integrations)或 [CLI 指南](/guide/installation#cli)操作。普通应用范围之外的文件，请参阅[扫描类名](/guide/scanning-and-pruning)。
+
+间距变更正常工作后，继续阅读[语法教程](/guide/syntax-tutorial)，制作具有交互状态和响应式条件的卡片。

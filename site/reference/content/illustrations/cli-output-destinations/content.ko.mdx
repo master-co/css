@@ -1,0 +1,36 @@
+# Reference prose: illustrations/cli-output-destinations
+
+## title \{#copy-title\}
+
+
+CSS 출력과 에셋 게시는 전달 경계가 다름
+
+## alt \{#copy-alt\}
+
+
+generate 명령은 no-export로 stdout에 분기하거나 output으로 CSS 진입점과 필요한 스타일시트 및 리소스 파일을 만든다. 파일 내보내기 분기만 에셋 집합을 게시한다.
+
+## caption \{#copy-caption\}
+
+
+두 명령 모두 프로젝트 소스를 읽습니다. --no-export는 CSS를 출력하고 --output은 진입점과 필요한 에셋을 게시합니다. 가져오기나 리소스가 별도로 남으면 전체 파일 집합을 전달하세요.
+
+## description-0 \{#copy-description-0\}
+
+
+두 경우 모두 master-css generate가 선택한 프로젝트 소스와 스타일시트 진입점을 읽습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+--no-export --verbose 0은 출력 파일을 게시하지 않고 CSS 결과를 stdout으로 보냅니다. 호출자가 참조 리소스와 URL 기준을 계속 담당합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+--output dist/app.css는 지정한 진입점과 가져오기 그래프에 필요한 별도 스타일시트 또는 리소스 에셋을 게시합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+파일 그룹은 에셋 집합이며 모든 프로젝트가 추가 파일을 만든다는 보장은 아닙니다. 파일이 생성되면 진입점과 함께 배포하세요.

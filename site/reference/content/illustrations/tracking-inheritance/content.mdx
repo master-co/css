@@ -1,0 +1,29 @@
+# Reference prose: illustrations/tracking-inheritance
+
+## title \{#copy-title\}
+
+Reapplying em tracking recalculates its length
+
+## alt \{#copy-alt\}
+
+A 16px parent uses tracking-widest. Two 32px children show the same word: one inherits 1.92px tracking, while the other reapplies tracking-widest and uses 3.84px, producing a wider text box.
+
+## caption \{#copy-caption\}
+
+Both children have the same font and size. The inherited letter-spacing length stays 1.92px; reapplying the class evaluates .12em at the child’s 32px font size.
+
+## description-0 \{#copy-description-0\}
+
+The parent uses font-md and tracking-widest. With a 16px root font size, its .12em tracking computes to a 1.92px length.
+
+## description-1 \{#copy-description-1\}
+
+Both child samples use font-3xl, or 32px, and the same word and font.
+
+## description-2 \{#copy-description-2\}
+
+The first child inherits the computed 1.92px letter spacing. The second reapplies tracking-widest, so .12em computes against 32px and becomes 3.84px.
+
+## description-3 \{#copy-description-3\}
+
+The second text box is wider even though the glyph size is unchanged. The colored guides show layout widths, not glyph-ink bounds or borders emitted by tracking.

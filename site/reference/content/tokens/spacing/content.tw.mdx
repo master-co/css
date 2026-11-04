@@ -1,0 +1,71 @@
+# Reference prose: tokens/spacing
+
+## title \{#copy-title\}
+
+
+間距
+
+## summary \{#copy-summary\}
+
+
+用同一套間距尺度設定 padding、margin、gap、inset 與位移。
+
+## note \{#copy-note\}
+
+
+家族決定屬性，token 提供距離。`px-` 與 `mx-` 使用行內軸，`pl-` 與 `ml-` 則使用實體左側。完整家族表會列出各自對應的原生屬性。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+預設尺度使用 rem 長度。像素換算假設根元素字型大小為 16px；瀏覽器會使用實際的根元素字型大小。需要零或一個 CSS 像素時，可使用 `p(0)` 或 `p(1)` 這類直接值函式。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+距離相同，作用的邊界不同
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p-md` 與 `gap-md` 都讀取 `--spacing-md`，但 padding 將內容與盒模型邊緣隔開，gap 則將版面中的項目隔開。gap 不會在外圍產生 padding。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`gap-md` 只會設定間隙值，不會啟用 Grid 或 Flexbox。同樣地，inset token 只會設定偏移量，不會選擇定位方式。實際效果由原生屬性與版面配置決定。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+能否使用負值 token 形式，取決於讀取它的屬性：`-mt-md` 合法，`-p-md` 則會被拒絕。預設集沒有 zero 或 auto 間距 token；零值可用 `m(0)`，行內軸自動外距則可用 `mx-auto` 這類固定 utility。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+負值
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+直接值
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生 gap 行為
+
+## usage-lead \{#copy-usage-lead\}
+
+
+為表單加入內距、拉開欄位間距，並隔開每個標籤與控制項。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改預設值或新增 token：`--spacing-card` 會建立 `p-card`、`m-card`、`gap-card` 和其他間距 class。
+
+## guide-label \{#copy-guide-label\}
+
+
+版面配置

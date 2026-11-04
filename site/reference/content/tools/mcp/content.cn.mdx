@@ -1,0 +1,326 @@
+# Reference prose: tools/mcp
+
+## editorial-mastercss_suggest_classes-purpose \{#copy-editorial-mastercss_suggest_classes-purpose\}
+
+
+使用当前 manifest，为独立 CSS 声明块建议类。请分别阅读 `remainingCss` 和 `validation`；声明对应不代表周围层叠或浏览器行为已获证实。
+
+## editorial-mastercss_suggest_classes-lifecycle \{#copy-editorial-mastercss_suggest_classes-lifecycle\}
+
+
+此操作不写入文件。不确定块完整保留为原生 CSS。
+
+## editorial-mastercss_workspace_info-purpose \{#copy-editorial-mastercss_workspace_info-purpose\}
+
+
+先在此确认服务器根目录、包解析和发现的 CSS 入口，再解读依赖项目的结果。
+
+## editorial-mastercss_workspace_info-lifecycle \{#copy-editorial-mastercss_workspace_info-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_setup_audit-purpose \{#copy-editorial-mastercss_setup_audit-purpose\}
+
+
+检查工作区根目录后，调查缺失包、未发现的 CSS 入口与集成配置。
+
+## editorial-mastercss_setup_audit-lifecycle \{#copy-editorial-mastercss_setup_audit-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_inspect_class-purpose \{#copy-editorial-mastercss_inspect_class-purpose\}
+
+
+检查当前 manifest 如何解释单个类。要确认项目扫描是否实际找到它，请用 `mastercss_trace_class`。
+
+## editorial-mastercss_inspect_class-lifecycle \{#copy-editorial-mastercss_inspect_class-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_trace_class-purpose \{#copy-editorial-mastercss_trace_class-purpose\}
+
+
+沿源发现、扫描器状态和生成 CSS 追踪类，解释出现或缺失的原因。
+
+## editorial-mastercss_trace_class-lifecycle \{#copy-editorial-mastercss_trace_class-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_extract_classes-purpose \{#copy-editorial-mastercss_extract_classes-purpose\}
+
+
+在缓冲区中找出精确类标记和源位置，或检查所选项目文件的提取结果。
+
+## editorial-mastercss_extract_classes-lifecycle \{#copy-editorial-mastercss_extract_classes-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_inspect_directives-purpose \{#copy-editorial-mastercss_inspect_directives-purpose\}
+
+
+从入口样式表或 CSS 缓冲区检查指令结构与编译效果。请提供 `entryPath` 或 `content`；空参数对象无法编译。
+
+## editorial-mastercss_inspect_directives-lifecycle \{#copy-editorial-mastercss_inspect_directives-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_render_css-purpose \{#copy-editorial-mastercss_render_css-purpose\}
+
+
+使用已连接的项目上下文，为少量字面类列表或 HTML 片段生成 CSS。
+
+## editorial-mastercss_render_css-lifecycle \{#copy-editorial-mastercss_render_css-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_scan_project-purpose \{#copy-editorial-mastercss_scan_project-purpose\}
+
+
+检查所选源范围中的扫描文件、样式表入口、生成 CSS，并可选检查缺失类。加入设计系统检查，可检查受管理项目 CSS 的令牌引用与策略。
+
+## editorial-mastercss_scan_project-lifecycle \{#copy-editorial-mastercss_scan_project-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_manifest_query-purpose \{#copy-editorial-mastercss_manifest_query-purpose\}
+
+
+查询当前 manifest 中的令牌、工具类、原生混入、自定义媒体及标准令牌家族。
+
+## editorial-mastercss_manifest_query-lifecycle \{#copy-editorial-mastercss_manifest_query-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_css_compare-purpose \{#copy-editorial-mastercss_css_compare-purpose\}
+
+
+提供前后两份项目快照，比较各自独立的定义和已知引用方，包括标记未变的编辑。否则，使用同一当前 manifest 比较两组类选择。结果解释生成 CSS 差异，不证明视觉等价。
+
+## editorial-mastercss_css_compare-lifecycle \{#copy-editorial-mastercss_css_compare-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_lint_project-purpose \{#copy-editorial-mastercss_lint_project-purpose\}
+
+
+对所选文件运行原生类诊断。在 lint 载荷 v5 中，`coverage.checkedFiles` 列出已检查输入，`summary.checkedFiles` 统计数量，`summary.filesWithDiagnostics` 统计有诊断文件。`files` 仅含诊断结果。`coverage.status` 为 `complete` 或 `no-inputs`；无输入时的零诊断不代表源已验证。`coverage.description` 解释这些字段：manifest 样式表入口不是已 lint 源输入。manifest 失败仍为 MCP 错误结果。项目解析器、插件设置与团队规则请另用其 ESLint 命令。
+
+## editorial-mastercss_lint_project-lifecycle \{#copy-editorial-mastercss_lint_project-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_lint_content-purpose \{#copy-editorial-mastercss_lint_content-purpose\}
+
+
+使用原生类诊断及已连接工作区的 manifest 检查未保存源缓冲区。lint 载荷 v5 即使无问题，也会在 `coverage.checkedFiles` 报告虚拟路径，并报告 `summary.checkedFiles: 1`。无问题缓冲区的 `summary.filesWithDiagnostics` 为零，`files` 为空。覆盖范围仅描述此缓冲区与启用的 lint 规则，并非浏览器行为或整个项目。
+
+## editorial-mastercss_lint_content-lifecycle \{#copy-editorial-mastercss_lint_content-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_suggest_syntax-purpose \{#copy-editorial-mastercss_suggest_syntax-purpose\}
+
+
+获取语言服务在未保存文档某位置的补全候选项与悬停信息。
+
+## editorial-mastercss_suggest_syntax-lifecycle \{#copy-editorial-mastercss_suggest_syntax-lifecycle\}
+
+
+此操作不写入工作区文件。
+
+## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
+
+
+为原生 lint 修复或生成 CSS 输出准备可审阅差异。此请求不应用变更。
+
+## editorial-mastercss_preview_fixes-lifecycle \{#copy-editorial-mastercss_preview_fixes-lifecycle\}
+
+
+工作区文件在 `mastercss_apply_preview` 前保持不变。非空预览在此服务器进程保存 token；过期、重启或成功应用后须重新预览。无变更结果不含确认 token。
+
+## editorial-mastercss_preview_directive_format-purpose \{#copy-editorial-mastercss_preview_directive_format-purpose\}
+
+
+格式化源缓冲区指令，或创建文件格式化预览。内容模式直接返回格式化文本，不创建应用 token。
+
+## editorial-mastercss_preview_directive_format-lifecycle \{#copy-editorial-mastercss_preview_directive_format-lifecycle\}
+
+
+内容模式不写入文件或保存 token。文件模式中工作区文件在 `mastercss_apply_preview` 前保持不变。非空预览在此服务器进程保存 token；过期、重启或成功应用后须重新预览。无变更结果不含确认 token。
+
+## editorial-mastercss_apply_preview-purpose \{#copy-editorial-mastercss_apply_preview-purpose\}
+
+
+在同一运行中的服务器会话中，精确应用已审阅预览的变更。此工具会写入工作区文件。
+
+## editorial-mastercss_apply_preview-lifecycle \{#copy-editorial-mastercss_apply_preview-lifecycle\}
+
+
+服务器在写入建议内容前验证所有原文件哈希与可写路径。成功应用消耗 token。文件按序写入，并非事务式多文件回滚机制。完成后请运行项目检查并查看变更 UI。
+
+## prompts-0-use \{#copy-prompts-0-use\}
+
+
+类未产生 CSS 时，检查扫描覆盖范围、manifest 加载、语法、原生 CSS 裁剪与样式表入口配置。
+
+## prompts-1-use \{#copy-prompts-1-use\}
+
+
+运行类诊断，仅提出安全且限定范围的写入预览。
+
+## prompts-2-use \{#copy-prompts-2-use\}
+
+
+审计外部样式系统，规划包含渲染模式、验证命令及视觉风险的渐进批次，不编辑文件。
+
+## results-0 \{#copy-results-0\}
+
+
+每个工具返回版本 3 对象，包含 `metadata`、`diagnostics` 及必填 `result`。成功为 `result: { status: 'success', data }`；失败为 `result: { status: 'error', error: { code, message } }`，并设置 MCP `isError`。JSON 文本与 `structuredContent` 包含同一对象；请按工具 `outputSchema` 验证两个分支。
+
+## results-1 \{#copy-results-1\}
+
+
+`metadata` 报告包、语言与绑定版本、实际使用的上下文、manifest 指纹、入口和依赖；无法获取的值为 null 或空数组。默认为项目上下文：缺少入口或编译失败均报错，绝不静默改用预设。仅查询预设时，请显式传入 `context: 'preset'`。
+
+## results-2 \{#copy-results-2\}
+
+
+类检查分别报告 `matchStatus`、`cssSyntaxStatus`、`cssValueStatus` 和 `browserSupport`，每项记录均标明版本、阶段与范围。CSS 语法错误不同于未知未来能力；`var()` 不代表已确定计算值，未实际运行浏览器检查时 `browserSupport` 保持 `not-checked`。已知 CSS 数学类型会被检查，但不计算长度或转换单位；不同令牌定义即使值相同仍有歧义。
+
+## results-3 \{#copy-results-3\}
+
+
+Markdown 与 MDX 提取将实际标记、代码与展示文本分开，返回原始 UTF-16 范围及包含或排除原因；CLI、编辑器与 MCP 共用相同 Rust 提取和匹配。CLI 报告版本独立于此封装。MCP 载荷的 `root` 是配置的工作区根目录；CLI 报告的 `cwd` 是命令根目录。
+
+## results-4 \{#copy-results-4\}
+
+
+项目比较：编辑前后分别以 `includeSnapshot: true` 调用 `mastercss_scan_project`，再将两个 `result.data.snapshot` 对象以 `beforeSnapshot` 和 `afterSnapshot` 传入 `mastercss_css_compare`；不可混用 class、content、`filePath` 或 `context` 输入。结果为 `{ version: 3, mode: 'project', comparison }`，其中 `comparison.version` 为 1，列出变更定义、已知引用方与文件、前后规则、原生引用、输出资源、交付顺序及 `coverage`。原生引用方按样式表粒度保守分析。
+
+## results-5 \{#copy-results-5\}
+
+
+设计系统检查：`mastercss_scan_project.designSystem` 接受[设计系统选项](/reference/tools/cli#design-system-options)对象，不可搭配 `context: 'preset'`。`result.data.designSystem` 中的版本 1 报告列出原有 `var()` 引用及源范围、选择器与 at-rule 祖先、导入方、令牌家族冲突、组件属性词汇（`components`）及策略诊断；从 JavaScript 导入的样式表请添加 `routeStylesheets` glob，并阅读 `project.routeStylesheets`、`project.excluded` 和 `coverage`。未注册自定义属性仍可能通过原生 CSS 解析，不会自动视为错误。
+
+## body-1 \{#copy-body-1\}
+
+
+使用 [MCP 设置指南](/guide/ai-coding#connect-the-mcp-server)将客户端连接到项目。向已连接服务器请求 `tools/list`，读取当前输入和输出模式。此目录帮助选择工具；完整注册与模式位于[服务器源码](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)。
+
+## body-2 \{#copy-body-2\}
+
+
+服务器使用传入 `--root` 的工作区。先用 `mastercss_workspace_info` 验证根目录与样式表入口。仅连接服务器不代表已加载预期项目 manifest。
+
+## body-3 \{#copy-body-3\}
+
+
+## 选择工具 \{#choose-a-tool\}
+
+## body-4 \{#copy-body-4\}
+
+
+| 问题 | 工具 |
+
+## body-5 \{#copy-body-5\}
+
+
+| 是否为预期项目与设置？ | [`workspace_info`](#mastercss_workspace_info), [`setup_audit`](#mastercss_setup_audit) |
+
+## body-6 \{#copy-body-6\}
+
+
+| 有哪些定义可用？ | [`manifest_query`](#mastercss_manifest_query), [`inspect_directives`](#mastercss_inspect_directives) |
+
+## body-7 \{#copy-body-7\}
+
+
+| 类表示什么，是否已找到？ | [`inspect_class`](#mastercss_inspect_class), [`extract_classes`](#mastercss_extract_classes), [`trace_class`](#mastercss_trace_class), [`scan_project`](#mastercss_scan_project) |
+
+## body-8 \{#copy-body-8\}
+
+
+| 该使用什么 CSS 或类语法？ | [`render_css`](#mastercss_render_css), [`suggest_classes`](#mastercss_suggest_classes), [`suggest_syntax`](#mastercss_suggest_syntax) |
+
+## body-9 \{#copy-body-9\}
+
+
+| 哪些地方变更或需要修复？ | [`css_compare`](#mastercss_css_compare), [`lint_project`](#mastercss_lint_project), [`lint_content`](#mastercss_lint_content) |
+
+## body-10 \{#copy-body-10\}
+
+
+| 如何审阅并应用编辑？ | [`preview_fixes`](#mastercss_preview_fixes), [`preview_directive_format`](#mastercss_preview_directive_format), [`apply_preview`](#mastercss_apply_preview) |
+
+## body-11 \{#copy-body-11\}
+
+
+表格简写工具名称；下方所有协议名称均以 `mastercss_` 开头。请求示例呈现传给 `tools/call` 的参数对象，并非完整 JSON-RPC 封装。
+
+## body-12 \{#copy-body-12\}
+
+
+## 预览生命周期 \{#preview-lifetime\}
+
+## body-13 \{#copy-body-13\}
+
+
+预览在单个服务器进程记录原文件身份与建议内容，不锁定文件，也不追踪后续编辑。非空文件预览返回 `confirmToken` 和 `expiresAt`；无变更结果及内存格式化不返回。应用前验证 token 期限、路径位于工作区内及每个原文件。成功应用消耗 token。写入按序执行，因此不保证事务回滚。
+
+## body-14 \{#copy-body-14\}
+
+
+按照 [AI 编程流程](/guide/ai-coding#safe-write-previews)审阅具体变更并验证渲染结果。本页契约定义工具接受什么、写入什么。
+
+## body-15 \{#copy-body-15\}
+
+
+## 提示词 \{#prompts\}
+
+## body-16 \{#copy-body-16\}
+
+
+在已连接客户端通过 `prompts/get` 请求提示词。
+
+## body-17 \{#copy-body-17\}
+
+
+| 提示词 | 用途 |
+
+## body-18 \{#copy-body-18\}
+
+
+## 结果 \{#results\}
+
+## body-19 \{#copy-body-19\}
+
+
+## 阅读完整契约 \{#read-the-full-contract\}
+
+## body-20 \{#copy-body-20\}
+
+
+在同一已连接服务器会话使用 `tools/list` 查看可接受参数。GitHub 提供[工具注册](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)、[输出模式](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts)及[结果封装](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts)。[工作流指南](/guide/ai-coding#safe-write-previews)展示完整预览与应用顺序。源链接指向 `rc` 分支；已连接服务器描述的是你的安装版本。
+
+## title \{#copy-title\}
+
+
+MCP 工具
+
+## description \{#copy-description\}
+
+
+选择工具、了解文件影响，并查找当前协议契约。

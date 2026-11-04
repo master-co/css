@@ -1,0 +1,36 @@
+# Reference prose: illustrations/stylesheet-asset-graph
+
+## title \{#copy-title\}
+
+
+진입점은 전달 에셋 그래프의 파일 하나
+
+## alt \{#copy-alt\}
+
+
+app.css는 print 조건으로 print.css를 가져오고 print.css는 mark.svg를 참조한다. 세 파일 모두 참조 URL에 게시해야 한다.
+
+## caption \{#copy-caption\}
+
+
+진입점에서 참조를 따라 자식 스타일시트와 이미지로 이동합니다. 이들은 별도로 전달되는 파일이며 print 한정자는 가져오기에 남습니다. 이름은 예시이며 생성 파일 이름 규칙이 아닙니다.
+
+## description-0 \{#copy-description-0\}
+
+
+전달된 app.css는 print 한정자로 print.css를 가져옵니다. 자식은 별도 스타일시트로 유지되고 한정자도 가져오기에 남습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+print.css의 선언은 자식 스타일시트의 전달 URL을 기준으로 mark.svg를 상대 참조합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+진입점, 자식 스타일시트, 이미지를 참조가 해석되는 URL에 게시하세요. app.css만 복사하면 두 의존 리소스를 사용할 수 없습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+이 그림은 의존성 그래프이며 요청 워터폴이 아닙니다. 실제 생성 이름과 에셋의 분리 여부는 컴파일과 호스트에 따라 달라집니다.

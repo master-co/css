@@ -1,0 +1,36 @@
+# Reference prose: illustrations/layer-precedence
+
+## title \{#copy-title\}
+
+
+重要性會反轉串接層優先順序
+
+## alt \{#copy-alt\}
+
+
+五個串接層從 theme 排到 utilities，後面接著沒有串接層的 CSS。一般宣告越往下優先順序越高，重要宣告則越往上越高。
+
+## caption \{#copy-caption\}
+
+
+比較作者樣式表中重要性相同的宣告。無層的一般規則優先於具名串接層；具名串接層的重要規則優先於無層的重要規則。
+
+## description-0 \{#copy-description-0\}
+
+
+基底樣式表依序宣告 theme、base、defaults、components 與 utilities。
+
+## description-1 \{#copy-description-1\}
+
+
+作者樣式表的一般宣告從 theme 到 utilities 優先順序逐步提高，無層宣告則高於所有具名串接層。
+
+## description-2 \{#copy-description-2\}
+
+
+作者樣式表的重要宣告則朝相反方向提高優先順序：theme 是這些串接層中最強的，無層的重要宣告最弱。
+
+## description-3 \{#copy-description-3\}
+
+
+串接層優先順序先於選擇器權重比較。圖中分別比較相同重要性的兩組宣告，不是將一般宣告與重要宣告或其他階層串接來源互相比較。

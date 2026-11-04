@@ -1,0 +1,25 @@
+# Reference prose: illustrations/registration-boundary
+
+## title \{#copy-title\}
+
+A native variable does not register a token class
+
+## alt \{#copy-alt\}
+
+The same spacing-card declaration is shown inside theme and inside root. Only the theme definition connects to p-card; both can supply an explicit native var reference.
+
+## caption \{#copy-caption\}
+
+Both examples load the preset utility families. Registration and browser variable availability are separate capabilities.
+
+## description-0 \{#copy-description-0\}
+
+@theme \{ --spacing-card: 1.5rem; \} registers the card key in the spacing namespace, making p-card available.
+
+## description-1 \{#copy-description-1\}
+
+:root \{ --spacing-card: 1.5rem; \} supplies a native CSS variable but does not register p-card.
+
+## description-2 \{#copy-description-2\}
+
+The explicit native class (padding:var(--spacing-card)) can use the variable from either configuration.

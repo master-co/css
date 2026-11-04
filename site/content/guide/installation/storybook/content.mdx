@@ -7,7 +7,7 @@ import dark from '~/site/assets/images/integrations/storybook/cover-dark.webp'
 
 Use the application’s CSS entry in Storybook’s preview iframe, where stories render. Start from an application that already uses Master CSS and has [Storybook installed](https://storybook.js.org/docs/get-started/install). This recipe uses React, the Vite builder and Master CSS static mode. Set up the application with the [Vite integration](/guide/installation/vite#react) first. Other Vite-based frameworks use their own Storybook package and story syntax.
 
-## Import the shared CSS entry
+## Import the shared CSS entry \{#import-the-shared-css-entry\}
 Storybook’s [Vite builder](https://storybook.js.org/docs/builders/vite) normally reads the application’s Vite configuration. Keep `masterCSS()` registered there once, then import the application stylesheet from `.storybook/preview.ts`. Preserve existing preview decorators and parameters.
 
 The import styles stories inside the preview iframe. It does not style Storybook’s sidebar or toolbar.
@@ -24,7 +24,7 @@ const preview: Preview = {
 export default preview
 ```
 
-## Verify an actual story
+## Verify an actual story \{#verify-an-actual-story\}
 Keep the application's `@import '@master/css';` in `src/index.css`. Create this story within the configured story glob; its complete class names become part of the static CSS build:
 
 <InstallationPreview>
@@ -58,7 +58,7 @@ Serve `storybook-static` with an HTTP server and open the same story. Inspect it
 
 If the app is styled but stories are not, first check the CSS import in `preview.ts`, then confirm the Master CSS plugin runs in Storybook’s builder. With static rendering, keep complete class strings in story source or add the story directory to `@source` when it lies outside the application’s scanned files.
 
-## Register a separate Vite integration when needed
+## Register a separate Vite integration when needed \{#register-a-separate-vite-integration-when-needed\}
 If your Storybook configuration deliberately does not load the application’s Vite configuration, register Master CSS in `viteFinal`. Merge this into your existing configuration, retaining its story globs, addons and framework settings. Skip this registration when the application plugin is already loaded.
 
 ```ts name=.storybook/main.ts

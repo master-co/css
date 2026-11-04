@@ -1,0 +1,130 @@
+---
+title: "색상"
+description: "적응형 역할로 인터페이스 색상을 구성하고 반지름과 그림자로 표면을 돋보이게 하며 밝은 모드와 어두운 모드를 선택하세요."
+figures: {"ColorIllustration":{"title":"색 구성표가 바뀌어도 역할은 그대로","alt":"밝은 영역과 어두운 영역에 같은 표면, 테두리, 제목, 보조 텍스트가 표시됩니다. 둘 다 bg-surface-raised, b-line-divider, fg-text-strong, fg-text-muted를 사용하며, 해석된 색상은 각 영역의 색 구성표에 따라 바뀝니다.","caption":"역할은 한 번만 선택하세요. light-dark() 값은 다른 색 구성표 안의 로컬 영역을 포함해 요소의 색 구성표를 따릅니다.","description":[{"title":"역할 유지","text":"두 영역은 같은 표면, 구분선, 강조 텍스트, 보조 텍스트 클래스를 사용합니다."},{"title":"영역별 해석","text":"역할 값은 light-dark()를 사용합니다. 각 영역의 color-scheme이 클래스를 바꾸지 않고 밝은 색 또는 어두운 색을 선택합니다."}]},"GuideStudy:palette-or-role":{"title":"고정 색상 단계와 의미적 역할 구분","alt":"두 경로가 고정 팔레트 단계와 밝은 값 또는 어두운 값을 선택하는 역할을 구분합니다.","caption":"특정 색에는 팔레트 단계를, 맥락에 맞춰 바뀌어야 하는 결정에는 역할을 선택하세요."},"GuideStudy:local-color-scheme":{"title":"가장 가까운 색 구성표가 색을 선택","alt":"밝은 문서가 어두운 영역을 감쌉니다. 같은 의미적 토큰이 바깥에서는 밝은 표면을, 영역 안에서는 어두운 표면을 그립니다.","caption":"중첩 경계는 color-scheme을 나타냅니다. 토큰 이름과 마크업은 그대로 유지됩니다."}}
+demos: {"DemoRaisedSurface":{"title":"돌출 표면","caption":"두 문서는 같은 클래스를 사용합니다. 표면, 텍스트, 그림자 색상은 활성 모드가 제공하고 그림자 형태는 유지됩니다."}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ColorIllustration from './components/ColorIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationColorRoles from '@master/internal-site/demo/foundations/FoundationColorRoles.astro'
+import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
+
+## 개요 [sr-only] \{#overview\}
+
+표면, 선, 텍스트 역할을 바탕으로 인터페이스 색상을 구성하세요. 이들의 클래스는 밝은 모드와 어두운 모드에서 그대로 유지됩니다. 일러스트나 브랜드 강조색처럼 색 자체가 목적일 때는 팔레트 단계를 사용하세요. 색상 변화는 역할, 상태 또는 독자가 구별해야 하는 차이에 연결하세요.
+
+<ColorIllustration />
+
+---
+
+## 역할 또는 팔레트 단계 선택 \{#choose-a-color-token\}
+
+| 목적 | 사용 대상 | 예제 |
+| --- | --- | --- |
+| 페이지 구조와 텍스트 계층 | 색상 역할 | `bg-surface-raised`, `b-line-divider`, `fg-text-muted` |
+| 특정 색상 | 팔레트 단계 | `bg-blue-5`, `fg-blue-60` |
+
+<FoundationColorRoles />
+
+```html
+<!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
+  <h2 class="m(0) text-lg font-regular fg-text-strong">Project updates</h2>
+  <p class="mt-xs mb-md text-sm fg-text-muted">Three milestones changed this week.</p>
+  <a class="fg-text-link underline" href="/updates">Continue</a>
+</section>
+```
+
+<Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+역할은 색상 키의 일부입니다. `bg-surface-raised`는 `--color-surface-raised`를, `b-line-divider`는 `--color-line-divider`를 읽습니다. 선 역할은 색상만 설정하므로 테두리 너비와 스타일은 별도로 지정하세요. 모든 역할은 [색상 역할](/reference/tokens/color-roles), 팔레트는 [색상 팔레트](/reference/tokens/color)를 참고하세요.
+
+<ReferenceIllustration id="border-ingredients" />
+
+---
+
+<GuideStudy id="palette-or-role" />
+
+## 고정 및 적응형 색상 별칭 \{#mode-aware-hue-aliases\}
+
+`fg-yellow` 같은 색상 별칭은 모든 모드에서 같은 값을 갖는 고정 색상입니다. `fg-text-yellow` 같은 텍스트 색상 별칭은 각 모드에서 텍스트 전경에 적합한 단계를 선택합니다. 실제 배경에서 대비를 확인하세요. 적응형 별칭도 모든 조합을 보장하지는 않습니다.
+
+```html
+<!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
+<svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
+<p class="fg-text-yellow">Pending review</p>
+```
+
+<Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+색상 라벨에는 텍스트 색상 별칭을 사용하세요. 본문, 강조, 링크에는 텍스트 역할을 유지하세요.
+
+---
+
+## 돌출 표면 \{#raised-surfaces\}
+
+돌출 표면은 표면 역할, 반지름 토큰, 그림자 토큰을 조합합니다. 상호작용 가능한 표면에 마우스를 올리거나 포커스하면 그림자를 한 단계 높이세요. 일반 카드와 컨트롤에는 작은 반지름을 사용하고, `pill`은 아래 배지처럼 완전히 둥근 모양이 필요할 때 사용하세요.
+
+<DemoRaisedSurface />
+
+```html
+<!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
+<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover shadow-md:focus-visible" href="/notes">
+  <span class="flex items-center justify-between gap-sm">
+    <span class="fg-text-strong">Field notes</span>
+    <span class="px-xs py-3xs pill bg-line-subtle text-xs fg-text-muted">12 new</span>
+  </span>
+</a>
+```
+
+<Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+프리셋 그림자는 색상에 `light-dark()`를 사용하므로 `shadow-sm`은 형태를 유지하며 요소의 색 구성표를 따릅니다. `pill`은 반지름 토큰이 아닌 고정 유틸리티이며, 너비와 높이가 같으면 원을 만듭니다. `rtl-lg`, `rtr-lg`, `rbl-lg`, `rbr-lg`로 모서리를 개별 지정할 수 있습니다. 크기 체계와 사용자 지정은 [반지름](/reference/tokens/radius)과 [그림자](/reference/tokens/shadow)를 참고하세요.
+
+<ReferenceIllustration id="pill-aspect" />
+
+---
+
+## 밝은 모드와 어두운 모드 \{#native-color-scheme-and-manual-themes\}
+
+프리셋은 루트에 `color-scheme: light dark`를 설정하고 역할과 그림자에 `light-dark()`를 사용하므로 추가 클래스 없이 시스템 설정을 따릅니다. 모드를 선택하려면 루트, 중첩 영역 또는 섀도 호스트에 `data-theme="light"`나 `data-theme="dark"`를 설정하세요.
+
+<DemoConfiguredExample name="nested-color-schemes" title="하나의 토큰, 두 로컬 색 구성표" source={`@theme {
+  --color-surface-notes: light-dark(#f4f4f5, #27272a);
+}
+
+@layer base {
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}`} html={'<section data-theme="dark" class="p-md r-lg bg-surface-notes fg-text-body wrap-anywhere"><h2 class="m(0) text-lg font-regular">Dark notes</h2><p class="mt-xs mb-md text-sm">This region chooses dark.</p><article data-theme="light" class="p-md r-md bg-surface-notes fg-text-body"><h3 class="m(0) text-md font-regular">A light region inside</h3><p class="mt-xs mb(0) text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} caption="두 영역은 모두 bg-surface-notes를 사용합니다. data-theme 속성이 서로 다른 색 구성표를 선택하므로 light-dark()는 바깥에 어두운 표면, 안쪽에 밝은 표면을 제공합니다." />
+
+프리셋에는 이 두 `data-theme` 선택자가 이미 포함되어 있습니다. 예제 CSS에서는 활성화 방식을 보여 주려고 다시 작성했습니다. `light-dark()`로 정의한 사용자 지정 색상도 같은 방식으로 적응하며, 모드를 바꿔도 다시 컴파일할 필요가 없습니다. 중첩 영역은 다시 선언하지 않는 한 부모 토큰을 상속합니다. 브랜드 테마에는 `[data-brand="ocean"]` 같은 자체 선택자를 지정하고 그 안에서 역할 토큰을 다시 선언하세요.
+
+`@light`와 `@dark` 접미사는 `prefers-color-scheme` 미디어 쿼리입니다. 수동 `data-theme` 설정은 토큰을 바꾸지만 해당 쿼리를 활성화하지는 않습니다. 클래스가 수동 선택에 반응해야 한다면 선택자 mixin을 선언하고 적용하세요.
+
+```css name=index.css
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```html
+<!-- @MARK @apply(--manual-dark) -->
+<img class="(opacity:.85)@apply(--manual-dark)" src="/chart.png" alt="Weekly usage" />
+```
+
+이 mixin은 실제 색 구성표가 아닌 속성을 검사하므로 중첩된 밝은 영역 안에서도 일치합니다. 적응형 토큰을 우선 사용하세요. 범위와 해석 방식은 [변수와 모드](/reference/rules/modes)를 참고하세요.
+
+<ReferenceIllustration id="manual-wrapper-reach" />
+
+<GuideStudy id="local-color-scheme" />
+
+## 실제 구성에서 역할 확인 \{#check-the-roles-in-context\}
+
+두 색 구성표에서 같은 내용을 확인하세요. 강조 및 보조 텍스트와 실제 표면의 대비, 링크의 기본 및 포커스 상태, 컨트롤을 구별하는 경계를 점검하세요. 색상 토큰은 값을 제공할 뿐, 대비나 포커스 가시성 또는 상태의 의미를 자체적으로 보장하지 않습니다.
+
+선택 항목이나 상태에는 색상과 함께 라벨, 아이콘 또는 다른 시각적 단서를 제공하세요. 중첩 영역은 별도로 검증하세요. 어두운 페이지 안에서 수동으로 지정한 밝은 영역도 읽기 쉬운 표면과 전경의 조합이 필요합니다.

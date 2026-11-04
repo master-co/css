@@ -1,0 +1,31 @@
+# Reference prose: illustrations/contents-default-vs-empty
+
+## title \{#copy-title\}
+
+
+省略 contents 區塊與空區塊不同
+
+## alt \{#copy-alt\}
+
+
+相同 mixin 的三次呼叫，分別呈現預設 grid 宣告、明確空區塊不產生宣告，以及提供 flex 內容取代預設。
+
+## caption \{#copy-caption\}
+
+
+mixin 包含 @contents \{ display: grid; \}。呼叫處的大括號區分刻意留空與省略區塊。
+
+## description-0 \{#copy-description-0\}
+
+
+@apply --panel; 省略 contents 區塊，使用 display: grid 備援。
+
+## description-1 \{#copy-description-1\}
+
+
+@apply --panel \{\} 提供空區塊，抑制備援，因此本例不新增宣告。
+
+## description-2 \{#copy-description-2\}
+
+
+@apply --panel \{ display: flex; \} 提供自己的內容來取代備援，兩個 display 宣告不會合併。

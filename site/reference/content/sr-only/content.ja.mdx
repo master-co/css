@@ -1,0 +1,56 @@
+# Reference prose: sr-only
+
+## title \{#copy-title\}
+
+
+スクリーンリーダー用のテキスト
+
+## summary \{#copy-summary\}
+
+
+テキストを視覚的に隠しつつ、アクセシビリティツリーには残します。
+
+## note \{#copy-note\}
+
+
+支援技術から引き続き利用できるようにしたいテキストに、このクラスを使います。要素を無効にしたり、キーボード操作の対象から外したりするための指定ではありません。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+表示の切り取りとアクセシブルな名前は別の仕組み
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`sr-only` は要素を通常フローから外し、1px のボックスを与えて描画領域を切り取ります。`display: none`、`visibility: hidden`、`aria-hidden` は適用しません。そのため、テキストはアクセシブルな名前の計算に引き続き使えます。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+クラスはコントロール内のラベルテキストに指定し、コントロール自体は見えていてフォーカスできる状態にします。アイコンに `aria-hidden="true"` を指定すると名前の計算から除外され、テキストで操作内容を説明できます。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+常に切り取られる領域に、フォーカス可能なコントロールを置かないでください。キーボード利用者が、見えないコントロールに移動してしまいます。スキップリンクには、フォーカス時に表示する独自のスタイルが必要です。プリセットには、表示を戻す `not-sr-only` ユーティリティはありません。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+祖先要素がサブツリーをアクセシビリティツリーから除外すると、このテキストも除外されます。`sr-only` では、祖先の `hidden`、`display: none`、`aria-hidden="true"` を打ち消せません。実際のコントロールで、最終的なロールと名前をテストしてください。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+アクセシブルな名前
+
+## usage-lead \{#copy-usage-lead\}
+
+
+下にあるユーティリティの定義を開く、アイコンだけのリンクに名前を付けます。
+
+## caption \{#copy-caption\}
+
+
+リンクのアクセシブルな名前は「Read the utility definition」です。矢印は名前の計算から除外されます。

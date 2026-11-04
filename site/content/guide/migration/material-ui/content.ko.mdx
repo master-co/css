@@ -1,0 +1,217 @@
+---
+title: "Material UI에서 마이그레이션"
+description: "컴포넌트 동작을 유지하며 앱 소유 레이아웃, sx 스타일, 테마 토큰, 재정의를 Master CSS로 옮겨 Material UI 프로젝트를 마이그레이션합니다."
+figures: {"MaterialUIIllustration": {"title": "토큰 선택 전에 테마 해석", "alt": "테마로 sx 값 세 개를 해석합니다. gap 2는 16px, padding 3은 24px이며 예제 테마의 기본 반경이 8px이므로 borderRadius 2는 16px입니다. 대응 클래스는 gap-md, p-lg, 사용자 정의 r-panel입니다.", "caption": "기본 간격 8px, 명시적 기본 반경 8px, 루트 글꼴 16px를 사용합니다. sx에서 같은 숫자가 같은 CSS 길이를 뜻하지는 않습니다.", "description": [{"title": "간격 해석", "text": "기본 간격 함수에서 gap: 2는 16px, p: 3은 24px입니다."}, {"title": "모양 해석", "text": "theme.shape.borderRadius가 8px이므로 borderRadius: 2는 16px이 됩니다."}, {"title": "맞는 토큰 선택", "text": "루트 16px에서 gap-md와 p-lg가 일치하며 사용자 정의 --radius-panel: 1rem이 r-panel을 제공합니다."}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import MaterialUIIllustration from './components/MaterialUIIllustration.astro'
+
+Material UI와 Master CSS는 공존할 수 있습니다. 대부분의 프로젝트는 앱 소유 레이아웃, 제품 표면, 반복되는 `sx` 스타일부터 옮기는 것이 좋습니다. 접근성, 상태 관리, 슬롯, JavaScript 동작이 여전히 유용한 Material UI 컴포넌트는 유지합니다.
+
+컴포넌트를 하나씩 다시 쓰는 작업으로 보지 마세요. 적절한 대안이 마련될 때까지 `Button`, `Dialog`, `Menu`, `Select`, `DataGrid`나 테마 기반 컴포넌트 재정의를 유지하는 경우가 많습니다.
+
+---
+
+## 마이그레이션 전략 \{#migration-strategy\}
+앱 소유 표면마다 [공통 마이그레이션 절차](/guide/migration#migration-strategy)를 사용합니다. Material UI에 필요한 동안 `ThemeProvider`, `CssBaseline`, Emotion 캐시, SSR 설정을 유지하세요.
+
+`sx`를 변환하기 전에 경계를 선택합니다.
+
+<DocumentComparison>
+
+| 스타일 소유 대상 | 이동 또는 유지 |
+| --- | --- |
+| 앱 소유 레이아웃 래퍼 | 실제 테마 스케일을 해석한 뒤 정적 `sx` 값을 변환합니다. |
+| 반복되는 제품 표면 | 공유 토큰과 필요하다면 네이티브 컴포넌트 클래스를 정의합니다. |
+| MUI 슬롯 또는 owner-state 변형 | `slotProps`, `classes`, `styleOverrides`, 기존 래퍼를 컴포넌트와 함께 유지합니다. |
+| 대화상자, 메뉴, 선택기, 데이터 그리드 | 동작을 보존하고 교체를 고려하기 전에 포커스, 키보드, 상태를 테스트합니다. |
+
+</DocumentComparison>
+
+공존 상태에서 목표를 달성하는 프로젝트도 많습니다. Master CSS가 앱 레이아웃과 사용자 정의 표면을 맡고 Material UI가 대화형 위젯을 계속 맡습니다.
+
+<MaterialUIIllustration />
+
+---
+
+## Material UI와 함께 Master CSS 추가 \{#add-master-css-beside-material-ui\}
+앱 스타일시트에서 Master CSS를 가져오고 현재 Material UI 프로바이더를 유지합니다.
+
+```css name=app.css
+@import "@master/css";
+```
+
+대부분의 프로젝트에는 기본 소스 탐색으로 충분합니다. 사용자 정의 포함, 제외, safelist, blocklist 동작이 필요할 때만 명시적인 소스 지시문을 추가합니다.
+
+큰 마이그레이션 전에 [렌더링 모드](/guide/rendering-modes)를 확인하세요. 기본 정적 렌더링부터 시작해 완전한 클래스 문자열을 쓰고, 알려진 클래스로 상태를 전환하며, 변하는 값은 CSS 변수로 전달합니다. 앱이 브라우저에서 새 클래스 이름을 만들 때만 런타임이나 점진적 렌더링을 선택하세요.
+
+---
+
+## 테마 값을 `@theme`으로 이동 \{#move-theme-values-into--theme\}
+Material UI 컴포넌트 밖에서도 공유해야 하는 제품 소유 값부터 시작합니다.
+
+```ts name=theme.ts
+import { createTheme } from '@mui/material/styles'
+
+export const theme = createTheme({
+  palette: {
+    primary: { main: '#2563eb' },
+    background: { paper: '#ffffff' },
+    text: { primary: '#172033' }
+  },
+  shape: {
+    borderRadius: 8
+  }
+})
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-surface: #ffffff;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --radius-panel: 1rem;
+}
+
+```
+
+```html
+<section class="b(1) b-solid b-line-divider fg-body bg-surface r-control">
+  ...
+</section>
+```
+
+Material UI의 간격, 중단점, 반경, 팔레트 스케일이 Master CSS 프리셋과 같다고 가정하지 마세요. 제품 토큰을 의도적으로 옮긴 뒤 기본 토큰 대체를 검토합니다.
+
+---
+
+## 앱 소유 `sx` 변환 \{#convert-app-owned--sx\}
+레이아웃 래퍼, 카드, 섹션, 단순 제품 UI를 꾸미는 `sx` 블록부터 시작합니다.
+
+```tsx name=DashboardPanel.tsx
+import Box from '@mui/material/Box'
+
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <Box component="section" sx={{
+      display: 'grid',
+      gap: 2,
+      p: 3,
+      borderRadius: 2,
+      bgcolor: 'background.paper',
+      color: 'text.primary'
+    }}>
+      {children}
+    </Box>
+  )
+}
+```
+
+```tsx name=DashboardPanel.tsx
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md p-lg bg-surface fg-body r-panel">
+      {children}
+    </section>
+  )
+}
+```
+
+기본 간격 함수에서 `gap: 2`는 16px, `p: 3`은 24px가 됩니다. 변환한 프리셋 값은 루트 글꼴 크기 16px에서 일치합니다. 위 테마의 [MUI `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders)는 기준 반경 8px을 두 배인 16px로 만듭니다. `r-panel`은 패널 역할을 1rem으로 표현하므로 앱의 루트 글꼴 크기에서 비교하세요. 사용자 정의 간격 함수에는 별도 매핑이 필요합니다. 스케일 비교가 다른 변화에 가려지지 않도록 같은 `section` 요소와 명시적인 표면·텍스트 조합을 유지합니다.
+
+동작을 위해 Material UI 컴포넌트를 유지하고 앱 소유 래퍼부터 스타일을 바꿉니다.
+
+```tsx
+<div className="flex justify-flex-end">
+  <Button variant="contained">Save</Button>
+</div>
+```
+
+일반 비레이어 Material UI/Emotion 규칙은 import 순서와 관계없이 레이어 Master CSS 유틸리티보다 우선합니다. `className` 전달만으로 재정의를 보장하지는 않습니다. 프로젝트가 캐스케이드 레이어를 의도적으로 구성하고 검증할 때까지 내부에는 `sx`, `slotProps`, `classes`를 유지하세요.
+
+---
+
+## 반복 패턴을 컴포넌트 클래스로 변환 \{#convert-repeated-patterns-to-component-classes\}
+많은 `sx` 블록이 같은 제품 역할을 표현하면 Master CSS 컴포넌트 클래스로 옮깁니다. 위 제품 토큰도 같은 CSS 진입점에 유지하세요.
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .panel {
+    border-radius: var(--radius-panel);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-height: 3rem;
+  }
+}
+```
+
+```tsx
+<section className="panel">
+  <div className="toolbar">
+    ...
+  </div>
+</section>
+```
+
+프로젝트 소유 역할에는 컴포넌트 클래스를 우선합니다. 디자인 시스템에 남는 Material UI 컴포넌트에는 Material UI 테마 변형을 유지합니다.
+
+---
+
+## 반응형 및 상태 스타일 처리 \{#handle-responsive-and-state-styles\}
+정적 반응형 `sx`를 같은 임계값의 조건으로 변환합니다. 기본 [Material UI `md`](https://mui.com/material-ui/customization/breakpoints/)는 900px부터, Master CSS 프리셋 `md`는 64rem부터입니다. 이름을 복사하지 말고 원래 임계값의 조건을 정의하세요.
+
+```tsx
+<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }} />
+```
+
+```css name=app.css
+@custom-media --mui-md (width >= 900px);
+```
+
+```html
+<section class="grid (grid-template-columns:1fr) gap-md (grid-template-columns:repeat(3,1fr))@mui-md">
+  ...
+</section>
+```
+
+컴포넌트 상태가 자신의 마크업에 속한다면 네이티브 상태나 속성을 우선합니다.
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+selected, expanded, focused, error 같은 MUI 상태 스타일이 앱 소유가 아닌 내부 슬롯이나 동작을 대상으로 한다면 MUI 재정의에 유지하세요.
+
+---
+
+## 마이그레이션 검증 \{#validate-the-migration\}
+- 각 작업 후 포매터, lint, 타입 검사, 테스트, 프로덕션 빌드를 실행합니다.
+- 주요 화면을 라이트·다크 테마, 반응형 중단점, 호버, focus-visible, 비활성, 선택, 로딩 상태에서 비교합니다.
+- Material UI 컴포넌트를 제거하기 전에 대화상자, 메뉴, 선택기, 팝오버, 포털, 전환, 포커스 트랩을 테스트합니다.
+- 남은 Material UI나 Emotion 경로가 필요로 하지 않을 때까지 Emotion 캐시와 SSR 설정을 유지합니다.
+- 시각 스타일과 컴포넌트 동작을 모두 대체한 뒤 Material UI 패키지를 제거합니다.
+
+---
+
+## 관련 참고 자료 \{#useful-references\}
+- [설치](/guide/installation): Master CSS 추가.
+- [렌더링 모드](/guide/rendering-modes): CSS 전달 선택.
+- [스타일 선언](/reference/rules/declarations): 클래스 구문.
+- [테마 토큰](/guide/theme): 공유 값, [반응형 디자인](/guide/responsive-design): 중단점, [변수와 모드](/reference/rules/modes): 모드.
+- [전역 스타일](/guide/global-styles#shared-vocabulary): 마크업 유틸리티, 컴포넌트 클래스, 사용자 정의 유틸리티.

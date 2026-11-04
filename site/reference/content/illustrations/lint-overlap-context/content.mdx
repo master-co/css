@@ -1,0 +1,25 @@
+# Reference prose: illustrations/lint-overlap-context
+
+## title \{#copy-title\}
+
+Conflict analysis compares declarations in the same variant scope
+
+## alt \{#copy-alt\}
+
+Two margin classes in the same scope occupy one shared cell; margin classes at sm and md occupy separate scope columns.
+
+## caption \{#copy-caption\}
+
+Separate query scopes do not mean disjoint browser ranges. At md, both minimum-width queries can match and the cascade still applies.
+
+## description-0 \{#copy-description-0\}
+
+Two margin declarations in the same selector and condition scope can be diagnosed as a conflict by no-conflicting-classes.
+
+## description-1 \{#copy-description-1\}
+
+The sm and md variants shown here have distinct scopes and are not reported as that same-scope conflict.
+
+## description-2 \{#copy-description-2\}
+
+This is a diagnostic grouping, not a claim that the two media ranges never overlap or that the authored values are automatically good design choices.

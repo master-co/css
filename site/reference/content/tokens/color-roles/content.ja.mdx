@@ -1,0 +1,86 @@
+# Reference prose: tokens/color-roles
+
+## title \{#copy-title\}
+
+
+カラーロール
+
+## summary \{#copy-summary\}
+
+
+テキスト、サーフェス、線のロール。それぞれライト用とダーク用の値を持ちます。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+テキスト
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+サーフェス
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+線
+
+## note \{#copy-note\}
+
+
+ロールは色のキーの一部です。`fg-text-muted` は color 名前空間を通じて `--color-text-muted` を参照します。`bg-text-link` や `outline-line-control` も含め、すべてのカラーファミリーでロールのキーを使えます。ロール名がプロパティを制限することはありません。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+ライトとダークは、各プリセット light-dark() 値の 2 つの引数に対応します。選択は要素で実際に使われるカラースキームによって決まり、クラスの接頭辞や OS だけでは決まりません。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+その場所のカラースキームが値を選ぶ
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`fg-text-muted` は `color: var(--color-text-muted)` を出力します。プリセット値は `light-dark(var(--color-zinc-60), var(--color-zinc-40))` で、ライトでは最初の色を、ダークでは 2 番目の色を選びます。クラスと生成ルールは変わりません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+プリセットはルートで `color-scheme: light dark` を有効にします。`data-theme="light"` と `data-theme="dark"` のセレクターにより、ルート、入れ子の領域、シャドウホストでスキームを選べます。選択はネイティブ CSS が行うため、切り替え時にこのユーティリティを再生成する必要はありません。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`@dark` と `@light` のクラス接尾辞が調べるのはシステムの設定です。`data-theme` を手動で選んでも、これらのメディアクエリーは有効になりません。セレクターに基づく条件には、モードの仕様で定義する形式を使います。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+ロールが提供するのは色であり、コンポーネントや、あらゆる背景に対するコントラストの保証ではありません。反転サーフェスには対になる反転テキストのロールがあります。区切り線や控えめな線は装飾用で、コントロールの線は境界を識別するためのものです。サーフェス、不透明度、トークン値を変更したら、実際の色の組み合わせを再確認してください。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+変数とモード
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+ネイティブの light-dark() による選択
+
+## usage-lead \{#copy-usage-lead\}
+
+
+ロールを組み合わせてカードを作ります。浮き上がったサーフェス、区切り線、強調・本文・控えめなテキストを使います。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+カラースキームごとに値を 1 つ持つロールを追加します。`--color-text-brand` を定義すると `fg-text-brand` が使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+色

@@ -1,0 +1,46 @@
+# Reference prose: tokens/families
+
+## intro \{#copy-intro\}
+
+
+token 家族連結 class 前綴、token 命名空間，以及它所設定的 CSS 屬性。這些表格列出預設集註冊的所有家族，也包括沒有預設值的家族。
+
+## mapping \{#copy-mapping\}
+
+
+單靠鍵無法識別 token。在 `p-md` 中，`p-` 讀取 `spacing` 命名空間，`md` 則選取 `--spacing-md`。相同的鍵用在其他家族中，可能會選取不同的 token。
+
+## lookup \{#copy-lookup\}
+
+
+每列依序表示前綴 → token 名稱模式 → 原生屬性。請以已註冊的鍵取代 `*`。連結的值頁面列出可用鍵；命名空間欄則指出該家族接受哪些 token。
+
+## shared \{#copy-shared\}
+
+
+`font-` 對 `--font-family-*`、`--font-size-*` 與 `--font-weight-*` 各有獨立家族。鍵必須能選出其中一個；如果同一個鍵存在於多個命名空間中，class 就會有歧義，而且不會產生 CSS。
+
+## registration \{#copy-registration\}
+
+
+請在 `@theme` 中註冊 token。寫在它外面的原生自訂屬性不會註冊鍵，新增命名空間也不會自動建立 utility 家族。新增家族時，請定義對應的 `@utility` 模式。
+
+## roles \{#copy-roles\}
+
+
+`--color-text-muted` 屬於 `color` 命名空間，鍵為 `text-muted`。色彩角色與色盤色彩使用相同家族，並不是獨立的 utility 命名空間。
+
+## limits \{#copy-limits\}
+
+
+本索引介紹會讀取 token 的家族。`w-full` 這類固定拼寫即使遇到同鍵的 token，也會保留自己的定義。`p(4)` 這類直接值函式與 `(padding:1rem)` 這類原生宣告，可以不查找 token 就直接接受值。
+
+## title \{#copy-title\}
+
+
+Token 家族
+
+## description \{#copy-description\}
+
+
+所有預設 token 家族的 class 前綴、token 命名空間與原生屬性。

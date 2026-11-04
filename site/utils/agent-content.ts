@@ -1,28 +1,35 @@
 import { aiIllustrationMarkdown } from '../content/guide/ai-coding/illustration'
-import path from 'node:path'
+import { localizedContentFile } from './localized-content'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { configuredMarkupMarkdown } from '@master/internal-site/css/configured-example.ts'
-import { agentPromptMarkdown, agentFixExample, previewWorkflowMarkdown } from './agent-guide-data'
-import { agentOptionsMarkdown } from './agent-options'
+import { agentPrompt, agentPromptMarkdown, agentFixExample, previewWorkflow, previewWorkflowMarkdown } from './agent-guide-data'
+import { agentOptionGroup, agentOptionsMarkdown } from './agent-options'
 import { agentStyleExample } from './agent-style-example'
+import { readLocalizedDocument } from '@master/internal-site/build/localization.ts'
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
 
 export const agentGuideSlugs = ['ai-coding'] as const
 
-export function agentFixMarkdown() {
-  return `${agentFixExample.title}\n\n${agentFixExample.sourceLabel}:\n\n\`\`\`html\n${agentFixExample.source}\n\`\`\`\n\n${agentFixExample.resultLabel}:\n\n\`\`\`html\n${agentFixExample.result}\n\`\`\``
+export function agentFixMarkdown(example = agentFixExample) {
+  return `${example.title}\n\n${example.sourceLabel}:\n\n\`\`\`html\n${example.source}\n\`\`\`\n\n${example.resultLabel}:\n\n\`\`\`html\n${example.result}\n\`\`\``
 }
 
-export async function agentGuideContent(siteRoot: string, slug: string) {
+export async function agentGuideContent(siteRoot: string, slug: string, locale = 'en') {
   if (!agentGuideSlugs.includes(slug as typeof agentGuideSlugs[number])) throw new Error(`Unsupported agent guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
+  const file = await localizedContentFile(siteRoot, `content/guide/${slug}/content.mdx`, locale)
+  const { frontmatter } = await readLocalizedDocument({ sourceFile: file, locale })
+  const result = await extractReferenceMdx(file, [], [], {
     overview: 'include',
     component(name, attributes) {
       if (name === 'AIIllustration') return aiIllustrationMarkdown()
-      if (name === 'AgentPrompt') return agentPromptMarkdown(String(attributes.name))
-      if (name === 'AgentOptions') return agentOptionsMarkdown(String(attributes.name))
-      if (name === 'AgentWorkflow') return previewWorkflowMarkdown()
-      if (name === 'AgentFixExample') return agentFixMarkdown()
-      if (name === 'AgentStyleExample') return `${configuredMarkupMarkdown(agentStyleExample.source, agentStyleExample.html)}\n\n${agentStyleExample.caption}`
+      if (name === 'AgentPrompt') return agentPromptMarkdown(String(attributes.name), demoCopy(frontmatter, locale, `AgentPrompt:${attributes.name}`, agentPrompt(String(attributes.name))))
+      if (name === 'AgentOptions') return agentOptionsMarkdown(String(attributes.name), demoCopy(frontmatter, locale, `AgentOptions:${attributes.name}`, agentOptionGroup(String(attributes.name))))
+      if (name === 'AgentWorkflow') return previewWorkflowMarkdown(demoCopy(frontmatter, locale, 'AgentWorkflow', previewWorkflow))
+      if (name === 'AgentFixExample') return agentFixMarkdown(demoCopy(frontmatter, locale, 'AgentFixExample', agentFixExample))
+      if (name === 'AgentStyleExample') {
+        const example = demoCopy(frontmatter, locale, 'AgentStyleExample', agentStyleExample)
+        return `${configuredMarkupMarkdown(example.source, example.html)}\n\n${example.caption}`
+      }
     }
   })
   if (result.notes.length) throw new Error(`Incomplete ${slug} export: ${result.notes.join('; ')}`)

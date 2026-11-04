@@ -1,8 +1,12 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import light from '../../../../../assets/images/migration-tailwindcss/apply-contracts-light.png'
 import dark from '../../../../../assets/images/migration-tailwindcss/apply-contracts-dark.png'
-import { tailwindIllustration as figure } from '../illustration'
+import { tailwindIllustration as sourceFigure } from '../illustration'
+const figure = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'TailwindIllustration', sourceFigure)
+
 ---
 
 <DocumentIllustration title={figure.title} alt={figure.alt} images={{ light, dark }} caption={figure.caption}>

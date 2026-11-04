@@ -1,0 +1,31 @@
+# Reference prose: illustrations/token-dependency-chain
+
+## title \{#copy-title\}
+
+
+토큰을 사용하면 의존 항목도 유지됩니다
+
+## alt \{#copy-alt\}
+
+
+fg-action은 color-action을 거쳐 color-brand에 도달합니다. 별도의 color-unused 토큰은 이 연결과 이어져 있지 않습니다.
+
+## caption \{#copy-caption\}
+
+
+화살표는 참조를 뜻하며 실행이나 캐스케이드 우선순위를 뜻하지 않습니다. 이 예제에는 static 토큰, safelist, 다른 사용처가 없습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+테마는 --color-action: var(--color-brand), --color-brand: #175cff, 그리고 관련 없는 --color-unused를 정의합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+fg-action을 사용하면 theme 레이어에 --color-action과 전이적 의존 항목인 --color-brand가 유지됩니다.
+
+## description-2 \{#copy-description-2\}
+
+
+이 예제에서 관련 없는 토큰에는 사용 루트가 없으므로 출력되지 않습니다. 생성된 color 선언은 var(--color-action)을 유지하며 값은 브라우저가 해석합니다.

@@ -1,0 +1,702 @@
+# Reference prose: packages
+
+## editorial--master-css-introduction \{#copy-editorial--master-css-introduction\}
+
+
+컴파일한 manifest나 런타임 프로그램을 실행하고 클래스 이름의 규칙을 생성하며 엔진 상태를 검사합니다. CSS 진입점은 프리셋 스타일시트 레이어를 제공합니다.
+
+## editorial--master-css-entries- \{#copy-editorial--master-css-entries-\}
+
+
+비동기 엔진 생성과 일회성 클래스 렌더링.
+
+## editorial--master-css-entries--node \{#copy-editorial--master-css-entries--node\}
+
+
+Node.js의 동기 네이티브 엔진, 런타임 프로그램 컴파일, 재사용 가능한 렌더 세션.
+
+## editorial--master-css-entries--client \{#copy-editorial--master-css-entries--client\}
+
+
+생성 가상 모듈의 TypeScript 전역 선언.
+
+## editorial--master-css-entries--index-css \{#copy-editorial--master-css-entries--index-css\}
+
+
+전체 프리셋 스타일시트 진입점.
+
+## editorial--master-css-entries--base-css \{#copy-editorial--master-css-entries--base-css\}
+
+
+기본 스타일과 안정적인 캐스케이드 레이어 순서.
+
+## editorial--master-css-entries--theme-css \{#copy-editorial--master-css-entries--theme-css\}
+
+
+프리셋 테마 정의.
+
+## editorial--master-css-entries--media-css \{#copy-editorial--master-css-entries--media-css\}
+
+
+프리셋 뷰포트 및 사용자 환경 설정 조건.
+
+## editorial--master-css-entries--container-css \{#copy-editorial--master-css-entries--container-css\}
+
+
+프리셋 컨테이너 너비 조건.
+
+## editorial--master-css-entries--utilities-css \{#copy-editorial--master-css-entries--utilities-css\}
+
+
+프리셋 유틸리티 등록.
+
+## editorial--master-css-compiler-introduction \{#copy-editorial--master-css-compiler-introduction\}
+
+
+스타일시트 지시문을 컴파일하고 프로젝트 manifest를 불러오며 생성 CSS와 작성한 스타일을 합성합니다. 작업과 실행 환경에 맞는 진입점을 선택하세요.
+
+## editorial--master-css-compiler-entries- \{#copy-editorial--master-css-compiler-entries-\}
+
+
+비동기 컴파일러 세션과 메모리 내 지시문 컴파일.
+
+## editorial--master-css-compiler-entries--node \{#copy-editorial--master-css-compiler-entries--node\}
+
+
+동기 네이티브 컴파일과 파일시스템 해석.
+
+## editorial--master-css-compiler-entries--project \{#copy-editorial--master-css-compiler-entries--project\}
+
+
+비동기 프로젝트 진입점 탐색과 manifest 로딩.
+
+## editorial--master-css-compiler-entries--project-sync \{#copy-editorial--master-css-compiler-entries--project-sync\}
+
+
+동기 프로젝트 진입점 탐색과 manifest 로딩.
+
+## editorial--master-css-compiler-entries--stylesheet \{#copy-editorial--master-css-compiler-entries--stylesheet\}
+
+
+Node.js 스타일시트 해석, 합성, 전달 에셋.
+
+## editorial--master-css-compiler-entries--stylesheet-browser \{#copy-editorial--master-css-compiler-entries--stylesheet-browser\}
+
+
+제공한 소스와 기본 manifest를 사용하는 브라우저 컴파일.
+
+## editorial--master-css-compiler-entries--diagnostics \{#copy-editorial--master-css-compiler-entries--diagnostics\}
+
+
+클래스, 파일, 진단을 포함한 프로젝트 검사 보고서.
+
+## editorial--master-create-css-introduction \{#copy-editorial--master-create-css-introduction\}
+
+
+기존 프로젝트의 Master CSS 설정을 계획하고 적용합니다. 계획은 적용 전에 의존성 변경, 파일 편집, 명령, 경고를 설명합니다.
+
+## editorial--master-create-css-usage \{#copy-editorial--master-create-css-usage\}
+
+
+`planMasterCSSSetup()`을 호출해 제안 변경을 검사하세요. `applyMasterCSSSetupPlan()`은 쓰기 전에 기록한 파일 전제 조건을 검사하므로 파일이 바뀌면 새 계획을 만드세요. 설정은 프로젝트 파일을 수정하고 의존성을 설치할 수 있습니다. 대화형 흐름은 [설치](/guide/installation)를 참고하세요.
+
+## editorial--master-create-css-entries- \{#copy-editorial--master-create-css-entries-\}
+
+
+설정 계획과 적용, 해당 옵션 및 결과 타입.
+
+## editorial--master-css-svelte-addon-introduction \{#copy-editorial--master-css-svelte-addon-introduction\}
+
+
+공식 Svelte CLI 애드온은 의존성, Vite 통합, 스타일시트 가져오기, 서버 훅을 포함해 SvelteKit 프로젝트에 Master CSS를 설정합니다.
+
+## editorial--master-css-svelte-addon-usage \{#copy-editorial--master-css-svelte-addon-usage\}
+
+
+Svelte CLI로 이 애드온을 실행하세요. 설정은 SvelteKit이 없는 프로젝트를 거부하고 실행 단계는 Svelte 의존성이 필요합니다. 전체 설정은 [Svelte 설치](/guide/installation/svelte)를 참고하세요.
+
+## editorial--master-css-svelte-addon-entries- \{#copy-editorial--master-css-svelte-addon-entries-\}
+
+
+Svelte CLI가 사용하는 기본 애드온.
+
+## editorial--master-eslint-config-css-introduction \{#copy-editorial--master-eslint-config-css-introduction\}
+
+
+공식 flat config 프리셋으로 ESLint의 Master CSS lint 규칙을 활성화합니다. 기본 내보내기와 `recommended`는 같은 설정을 가리킵니다.
+
+## editorial--master-eslint-config-css-entries- \{#copy-editorial--master-eslint-config-css-entries-\}
+
+
+권장 ESLint flat config.
+
+## editorial--master-eslint-plugin-css-introduction \{#copy-editorial--master-eslint-plugin-css-introduction\}
+
+
+ESLint 플러그인은 JavaScript와 템플릿 구문을 Master CSS 검증, 클래스 정렬, 수정에 연결합니다. 기본 내보내기와 `masterCSS`는 같은 플러그인을 제공합니다.
+
+## editorial--master-eslint-plugin-css-entries- \{#copy-editorial--master-eslint-plugin-css-entries-\}
+
+
+플러그인 규칙과 권장 설정.
+
+## editorial--master-css-language-server-introduction \{#copy-editorial--master-css-language-server-introduction\}
+
+
+Language Server Protocol로 Master CSS 완성, 호버, 색상, 포맷, 시맨틱 토큰을 제공합니다. 라이브러리 진입점은 호스트 관리 수명주기를 지원하고 server 진입점은 프로세스를 시작합니다.
+
+## editorial--master-css-language-server-usage \{#copy-editorial--master-css-language-server-usage\}
+
+
+호스트에 포함할 때 `MasterCSSLanguageServer`를 만들고 시작한 뒤 종료 시 해제하세요. `/server` 진입점을 불러오면 서버를 즉시 만들고 시작합니다. 편집기 흐름은 [언어 서비스](/guide/language-service)를 참고하세요.
+
+## editorial--master-css-language-server-entries- \{#copy-editorial--master-css-language-server-entries-\}
+
+
+언어 서버, 작업공간 설정, 시맨틱 토큰 요청 이름.
+
+## editorial--master-css-language-server-entries--server \{#copy-editorial--master-css-language-server-entries--server\}
+
+
+실행 가능한 서버 시작 진입점. 명명 내보내기나 기본 내보내기가 없습니다.
+
+## editorial--master-css-language-service-introduction \{#copy-editorial--master-css-language-service-introduction\}
+
+
+Master CSS 도구 결과를 편집기 문서, 언어 기능, 구문 강조에 매핑합니다. 서버 렌더링 코드 표시에는 Shiki 진입점을 사용하세요.
+
+## editorial--master-css-language-service-usage \{#copy-editorial--master-css-language-service-usage\}
+
+
+`MasterCSSLanguageService`를 만들 때 도구 세션을 제공하세요. Shiki 헬퍼는 옵션으로 재사용 가능한 언어 세션이나 manifest를 받습니다. `@master/css-language-service/shiki.css`를 가져오면 호버 시 마크업 강조를 활성화합니다. 설정과 예제는 [언어 서비스](/guide/language-service)를 참고하세요.
+
+## editorial--master-css-language-service-entries- \{#copy-editorial--master-css-language-service-entries-\}
+
+
+편집기 문서 서비스, 설정, 트리거 문자.
+
+## editorial--master-css-language-service-entries--common \{#copy-editorial--master-css-language-service-entries--common\}
+
+
+공유 완성 트리거 문자.
+
+## editorial--master-css-language-service-entries--shiki \{#copy-editorial--master-css-language-service-entries--shiki\}
+
+
+Shiki 변환기, 시맨틱 장식, 언어 등록.
+
+## editorial--master-css-language-service-entries--shiki-css \{#copy-editorial--master-css-language-service-entries--shiki-css\}
+
+
+Shiki 출력의 호버 활성 마크업 클래스 색상.
+
+## editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json \{#copy-editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json\}
+
+
+지시문 강조용 TextMate 문법 에셋.
+
+## editorial--master-css-mcp-introduction \{#copy-editorial--master-css-mcp-introduction\}
+
+
+Master CSS Model Context Protocol 서버를 만들거나 stdio 전송을 시작합니다. 도구 목록은 작업과 파일 영향을 설명합니다.
+
+## editorial--master-css-mcp-usage \{#copy-editorial--master-css-mcp-usage\}
+
+
+호스트가 전송 설정을 담당하면 `createMasterCSSMCPServer()`를, stdio는 `startMasterCSSMCPStdioServer()`를 사용합니다. 클라이언트 등록은 [MCP 서버](/guide/ai-coding#connect-the-mcp-server), 사용법은 [도구 목록](/reference/tools/mcp)을 참고하고 전체 규칙은 `tools/list`로 읽으세요.
+
+## editorial--master-css-mcp-entries- \{#copy-editorial--master-css-mcp-entries-\}
+
+
+서버 팩토리와 stdio 시작.
+
+## editorial--master-css-next-introduction \{#copy-editorial--master-css-next-introduction\}
+
+
+Master CSS를 Next.js 설정과 빌드 출력에 연결합니다. 루트 내보내기는 Next 설정을 감싸고 adapter 진입점은 빌드 통합과 어댑터 합성을 지원합니다.
+
+## editorial--master-css-next-usage \{#copy-editorial--master-css-next-usage\}
+
+
+Next 설정에 루트 기본 내보내기를 사용하세요. 빌드 출력을 처리하는 렌더링 모드는 래퍼를 await해야 합니다. 설정과 지원 모드는 [Next.js 설치](/guide/installation/nextjs)를 참고하세요.
+
+## editorial--master-css-next-entries- \{#copy-editorial--master-css-next-entries-\}
+
+
+Next 설정 래퍼와 통합 옵션.
+
+## editorial--master-css-next-entries--adapter \{#copy-editorial--master-css-next-entries--adapter\}
+
+
+빌드 어댑터, 합성 헬퍼, 렌더링 출력 보고서.
+
+## editorial--master-css-nuxt-introduction \{#copy-editorial--master-css-nuxt-introduction\}
+
+
+Master CSS를 Nuxt 모듈로 등록합니다. 기본 내보내기와 `masterCSSNuxtModule`은 같은 모듈입니다.
+
+## editorial--master-css-nuxt-usage \{#copy-editorial--master-css-nuxt-usage\}
+
+
+Nuxt 설정에서 모듈을 등록하여 프레임워크가 설정과 수명주기를 관리하게 하세요. [Nuxt 설치](/guide/installation/nuxtjs)를 참고하세요.
+
+## editorial--master-css-nuxt-entries- \{#copy-editorial--master-css-nuxt-entries-\}
+
+
+Nuxt 모듈.
+
+## editorial--master-css-preset-introduction \{#copy-editorial--master-css-preset-introduction\}
+
+
+프리셋은 테마 토큰, 조건, 유틸리티, 컴파일한 기본 manifest를 제공합니다. CSS 가져오기와 JSON manifest는 서로 다른 사용처를 위한 것입니다.
+
+## editorial--master-css-preset-usage \{#copy-editorial--master-css-preset-usage\}
+
+
+스타일시트를 작성할 때는 CSS를 가져오고 기본 manifest를 실행하거나 그에 대해 컴파일하는 API에는 JSON manifest를 전달하세요. 작성과 재정의는 [테마 토큰](/guide/theme)에 설명되어 있습니다.
+
+## editorial--master-css-preset-entries- \{#copy-editorial--master-css-preset-entries-\}
+
+
+전체 프리셋 스타일시트 진입점.
+
+## editorial--master-css-preset-entries--default-manifest-json \{#copy-editorial--master-css-preset-entries--default-manifest-json\}
+
+
+엔진, 컴파일러, 도구 API용 컴파일한 기본 manifest.
+
+## editorial--master-css-preset-entries--index-css \{#copy-editorial--master-css-preset-entries--index-css\}
+
+
+전체 프리셋 스타일시트 진입점.
+
+## editorial--master-css-preset-entries--base-css \{#copy-editorial--master-css-preset-entries--base-css\}
+
+
+기본 스타일과 안정적인 캐스케이드 레이어 순서.
+
+## editorial--master-css-preset-entries--theme-css \{#copy-editorial--master-css-preset-entries--theme-css\}
+
+
+프리셋 테마 정의.
+
+## editorial--master-css-preset-entries--media-css \{#copy-editorial--master-css-preset-entries--media-css\}
+
+
+프리셋 뷰포트 및 사용자 환경 설정 조건.
+
+## editorial--master-css-preset-entries--container-css \{#copy-editorial--master-css-preset-entries--container-css\}
+
+
+프리셋 컨테이너 너비 조건.
+
+## editorial--master-css-preset-entries--utilities-css \{#copy-editorial--master-css-preset-entries--utilities-css\}
+
+
+프리셋 유틸리티 등록.
+
+## editorial--master-css-runtime-introduction \{#copy-editorial--master-css-runtime-introduction\}
+
+
+문서나 섀도 루트의 클래스를 관찰하고 생성 CSS를 유지합니다. 런타임 시작에는 프로젝트 manifest를 브라우저 엔진용으로 컴파일한 런타임 프로그램이 필요하며 소유 세션을 반환합니다.
+
+## editorial--master-css-runtime-entries- \{#copy-editorial--master-css-runtime-entries-\}
+
+
+런타임 시작, 관찰, 스냅샷, 사용자 정의 요소 통합.
+
+## editorial--master-css-runtime-entries--default-program \{#copy-editorial--master-css-runtime-entries--default-program\}
+
+
+Master CSS 빌드 통합이 없는 앱을 위해 런타임 프로그램으로 컴파일한 기본 프리셋.
+
+## editorial--master-css-schema-introduction \{#copy-editorial--master-css-schema-introduction\}
+
+
+공유 타입과 코덱은 manifest, 진단, 하이드레이션, 통합 옵션을 설명하며 호스트가 구조화한 Master CSS 데이터를 교환하게 합니다.
+
+## editorial--master-css-schema-entries- \{#copy-editorial--master-css-schema-entries-\}
+
+
+공통 manifest, 진단, 렌더링 모드 내보내기.
+
+## editorial--master-css-schema-entries--manifest \{#copy-editorial--master-css-schema-entries--manifest\}
+
+
+Manifest v6 타입, 변수 헬퍼, 직렬화.
+
+## editorial--master-css-schema-entries--hydration-manifest \{#copy-editorial--master-css-schema-entries--hydration-manifest\}
+
+
+하이드레이션 규칙, 리소스 순서, 직렬화 헬퍼.
+
+## editorial--master-css-schema-entries--css-directives \{#copy-editorial--master-css-schema-entries--css-directives\}
+
+
+지시문 결과, 소스 범위, 출력 매핑.
+
+## editorial--master-css-schema-entries--css-syntax \{#copy-editorial--master-css-schema-entries--css-syntax\}
+
+
+유틸리티, 선택자, 값 표현 타입.
+
+## editorial--master-css-schema-entries--utility-type \{#copy-editorial--master-css-schema-entries--utility-type\}
+
+
+유틸리티 분류 상수와 타입.
+
+## editorial--master-css-schema-entries--runtime-style \{#copy-editorial--master-css-schema-entries--runtime-style\}
+
+
+런타임 스타일 요소 식별자.
+
+## editorial--master-css-schema-entries--emitted-globals \{#copy-editorial--master-css-schema-entries--emitted-globals\}
+
+
+세션 밖에서 이미 출력한 리소스 수.
+
+## editorial--master-css-schema-entries--css-common \{#copy-editorial--master-css-schema-entries--css-common\}
+
+
+공유 CSS 공급업체 식별자.
+
+## editorial--master-css-schema-entries--diagnostics \{#copy-editorial--master-css-schema-entries--diagnostics\}
+
+
+진단 버전, 소스 범위, 오류 페이로드.
+
+## editorial--master-css-schema-entries--integration \{#copy-editorial--master-css-schema-entries--integration\}
+
+
+렌더링 모드와 공유 통합 옵션.
+
+## editorial--master-css-server-introduction \{#copy-editorial--master-css-server-introduction\}
+
+
+생성 CSS를 HTML에 렌더링하고 브라우저 하이드레이션 데이터를 만듭니다. 호스트 수명주기에 맞춰 일회성 헬퍼, 재사용 렌더러, 스트리밍 HTML 세션을 선택하세요.
+
+## editorial--master-css-server-entries- \{#copy-editorial--master-css-server-entries-\}
+
+
+HTML 렌더링, 스트리밍 세션, 하이드레이션 옵션.
+
+## editorial--master-css-svelte-introduction \{#copy-editorial--master-css-svelte-introduction\}
+
+
+Master CSS를 Svelte 빌드와 SvelteKit 서버 응답에 통합합니다. 빌드와 요청 처리는 별도 진입점을 사용합니다.
+
+## editorial--master-css-svelte-usage \{#copy-editorial--master-css-svelte-usage\}
+
+
+빌드 설정에 Vite 플러그인을 등록하고 SvelteKit 서버 훅에 명명된 `handle` 내보내기를 등록하세요. 전체 연결은 [Svelte 설치](/guide/installation/svelte)를 참고하세요.
+
+## editorial--master-css-svelte-entries--vite \{#copy-editorial--master-css-svelte-entries--vite\}
+
+
+Svelte 지원 Vite 플러그인과 옵션.
+
+## editorial--master-css-svelte-entries--hooks-server \{#copy-editorial--master-css-svelte-entries--hooks-server\}
+
+
+명명된 SvelteKit 요청 처리기.
+
+## editorial--master-css-tooling-introduction \{#copy-editorial--master-css-tooling-introduction\}
+
+
+클래스 구문 분석, 후보 추출, 규칙 검증과 lint 또는 언어 결과를 제공합니다. 집중된 진입점을 선택하거나 여러 작업에 도구 세션을 재사용하세요.
+
+## editorial--master-css-tooling-usage \{#copy-editorial--master-css-tooling-usage\}
+
+
+세션을 만들거나 의미 분석 헬퍼를 호출할 때 프로젝트 manifest를 제공하세요. 반복 분석에는 세션을 재사용하고 완료 후 해제합니다. Node 하위 경로는 동기 네이티브 작업을 제공하며 파일시스템 스캔은 별도의 비동기 수명주기를 가집니다.
+
+## editorial--master-css-tooling-entries- \{#copy-editorial--master-css-tooling-entries-\}
+
+
+여러 분석 기능을 아우르는 재사용 비동기 도구 세션.
+
+## editorial--master-css-tooling-entries--node \{#copy-editorial--master-css-tooling-entries--node\}
+
+
+동기 네이티브 세션과 네이티브 선언 지원.
+
+## editorial--master-css-tooling-entries--lexer \{#copy-editorial--master-css-tooling-entries--lexer\}
+
+
+클래스 목록과 CSS 소스 분석.
+
+## editorial--master-css-tooling-entries--lexer-node \{#copy-editorial--master-css-tooling-entries--lexer-node\}
+
+
+동기 네이티브 클래스 목록 분석.
+
+## editorial--master-css-tooling-entries--source \{#copy-editorial--master-css-tooling-entries--source\}
+
+
+소스 후보 추출과 소스 범위 타입.
+
+## editorial--master-css-tooling-entries--source-node \{#copy-editorial--master-css-tooling-entries--source-node\}
+
+
+동기 네이티브 소스 추출.
+
+## editorial--master-css-tooling-entries--scanner-node \{#copy-editorial--master-css-tooling-entries--scanner-node\}
+
+
+파일시스템 스캐너, 유지 후보, 스캐너 수명주기.
+
+## editorial--master-css-tooling-entries--validator \{#copy-editorial--master-css-tooling-entries--validator\}
+
+
+제공한 manifest에 대한 클래스 검증.
+
+## editorial--master-css-tooling-entries--validator-node \{#copy-editorial--master-css-tooling-entries--validator-node\}
+
+
+동기 네이티브 클래스 검증.
+
+## editorial--master-css-tooling-entries--lint \{#copy-editorial--master-css-tooling-entries--lint\}
+
+
+Lint 진단, 편집, 표준 형식 제안, 콘텐츠 헬퍼.
+
+## editorial--master-css-tooling-entries--lint-node \{#copy-editorial--master-css-tooling-entries--lint-node\}
+
+
+동기 네이티브 클래스 lint.
+
+## editorial--master-css-tooling-entries--language \{#copy-editorial--master-css-tooling-entries--language\}
+
+
+편집기 독립 분석, 완성, 색상, 시맨틱 토큰.
+
+## editorial--master-css-tooling-entries--language-node \{#copy-editorial--master-css-tooling-entries--language-node\}
+
+
+동기 네이티브 언어 세션과 분석.
+
+## editorial--master-css-vite-introduction \{#copy-editorial--master-css-vite-introduction\}
+
+
+Vite에 Master CSS를 등록하여 프로젝트 스타일을 컴파일하고 선택 렌더링 모드를 조정합니다. 기본 내보내기와 `createMasterCSSVitePlugin`은 같은 팩토리입니다.
+
+## editorial--master-css-vite-usage \{#copy-editorial--master-css-vite-usage\}
+
+
+Vite 설정에서 팩토리를 호출하고 반환된 플러그인 수명주기는 Vite가 관리하게 하세요. 스타일시트 진입점과 모드 설정은 [Vite 설치](/guide/installation/vite)를 참고하세요.
+
+## editorial--master-css-vite-entries- \{#copy-editorial--master-css-vite-entries-\}
+
+
+Vite 플러그인 팩토리와 옵션.
+
+## editorial--master-css-webpack-introduction \{#copy-editorial--master-css-webpack-introduction\}
+
+
+Webpack에 Master CSS를 등록합니다. 기본 내보내기와 `MasterCSSWebpackPlugin`은 플러그인 클래스를 제공하며 옵션은 렌더링과 스캐너 동작을 선택합니다.
+
+## editorial--master-css-webpack-usage \{#copy-editorial--master-css-webpack-usage\}
+
+
+Webpack 설정에서 플러그인을 생성하여 Webpack이 컴파일 훅을 제어하게 하세요. 스타일시트와 loader 설정은 [Webpack 설치](/guide/installation/webpack)를 참고하세요.
+
+## editorial--master-css-webpack-entries- \{#copy-editorial--master-css-webpack-entries-\}
+
+
+Webpack 플러그인 클래스와 옵션.
+
+## editorial--master-css-astro-introduction \{#copy-editorial--master-css-astro-introduction\}
+
+
+Master CSS를 Astro 설정과 요청 처리에 연결합니다. 통합은 빌드 동작을 설정하고 middleware 진입점은 Astro 요청 훅을 제공합니다.
+
+## editorial--master-css-astro-usage \{#copy-editorial--master-css-astro-usage\}
+
+
+Astro 설정에서 기본 통합 팩토리를 사용하세요. 빌드와 middleware 설정은 [Astro 설치](/guide/installation/astro)를 참고하세요.
+
+## editorial--master-css-astro-entries- \{#copy-editorial--master-css-astro-entries-\}
+
+
+Astro 통합 팩토리와 옵션.
+
+## editorial--master-css-astro-entries--middleware \{#copy-editorial--master-css-astro-entries--middleware\}
+
+
+Astro 요청 middleware.
+
+## editorial--master-css-usage \{#copy-editorial--master-css-usage\}
+
+
+Node.js의 엔진 및 렌더 API에는 명시적인 manifest를 전달하거나 모든 환경에서 `compileRuntimeProgram()`의 런타임 프로그램을 전달하세요. 브라우저는 프로그램만 실행합니다. 반복 작업에는 세션을 재사용하고 완료 후 해제하세요. 스타일시트 작성과 프로젝트 로딩은 [컴파일러](/reference/packages#css-compiler), DOM 관찰은 [런타임](/reference/packages#css-runtime)을 사용합니다.
+
+빌드 통합은 `./client`에 선언된 가상 모듈로 전달 산출물을 제공합니다. `virtual:master-css-manifest`는 Node 엔진, 서버 렌더러, 도구용 컴파일한 `MasterCSSManifest`입니다. `virtual:master-css-program`은 브라우저 엔진 프로그램이며 프로덕션 빌드에서는 해시가 있는 `.bin` 에셋입니다. `virtual:master-css-emitted-globals`는 CSS 진입점이 이미 출력한 변수와 키프레임을 나열해 런타임 중복 생성을 막습니다. 페이지 하이드레이션 manifest는 응답 하나를 설명하는 별도 데이터입니다.
+
+빌드 시점과 서버 생성은 Rust 의미 체계를 사용합니다. 브라우저 엔진은 컴파일한 프로그램을 실행하며 같은 정의와 클래스에 같은 CSS를 생성합니다. 컴파일러, 서버, 런타임은 서로 맞는 릴리스를 사용하세요. 지원하지 않는 실행 또는 언어 버전은 거부됩니다.
+
+`executionState(names)`는 규칙을 생성하지 않고 중복을 포함한 요청 순서대로 저장된 규칙 참조를 읽습니다. 알 수 없거나 확보하지 않은 클래스의 참조는 비어 있습니다. 전체 규칙과 CSS는 `snapshot()`을 사용하세요. 브라우저 엔진에는 검사나 렌더 세션이 없습니다. CSS 변경 없는 전환에도 호스트는 리소스 상태를 동기화해야 합니다. 래퍼는 `executionState`, `registerEmittedGlobals`, `replaceEmittedGlobals`, `refresh`, `dispose`, `Symbol.dispose`를 포함한 모든 `MasterCSSEngine` 멤버를 전달해야 합니다.
+
+## editorial--master-css-compiler-usage \{#copy-editorial--master-css-compiler-usage\}
+
+
+API가 기본 manifest를 요구하면 명시적으로 제공하세요. 결과 사용 전에 반환 진단을 검사하세요. 전달 결과는 에셋 집합이므로 모든 스타일시트와 리소스를 지정 URL에 게시해야 합니다. 해석과 전달 경계는 [가져오기](/reference/directives/imports)를 참고하세요.
+
+**파일 컴파일 게시**
+
+`compileManifestFileSync(file, { baseManifest, delivery })`는 파일 그래프를 읽고 쓰기 없이 에셋을 반환합니다. `delivery`는 `entryURL`, `stylesheetURL(file)`, `resourceURL(file)`을 제공합니다. 서로 다른 스타일시트에는 서로 다른 최종 URL을 지정하세요. 모든 `stylesheets` 항목을 `href`에 게시하고 각 `resources` 항목을 `file`에서 `href`로 복사하세요. 최상위 `css`, `nativeCSS`, `generatedCSS`는 진입점만 설명합니다. 상대 리소스 URL은 원래 소스 소유자, 쿼리, 프래그먼트를 유지하며 참조 전용 스타일시트는 게시 에셋이 되지 않습니다. 누락 리소스와 스타일시트 URL 충돌은 게시 전에 실패합니다. `delivery`를 생략하면 이 에셋 게시 규칙 없이 단일 문자열 결과를 반환합니다.
+
+`preserveNativeCSS`의 기본값은 `true`입니다. 명시적 `false`는 원시 네이티브 CSS를 억제하지만 포함된 출력의 컴파일된 네이티브 믹스인 적용은 유지합니다. 가지치기를 활성화하지는 않습니다. 스타일시트 집합은 `includeNativeCSS`, `includeMasterBaseCSS`, `includeGeneratedCSS`로 네이티브 CSS, Master 기본 CSS, 생성 유틸리티를 각각 선택합니다. 네이티브 출력 제외는 생성 유틸리티가 쓰는 정의를 제거하지 않습니다. 파일 정책은 [네이티브 가지치기](/reference/directives/pruning)를 참고하세요.
+
+기본 `validation: 'report'`는 결과를 유지하며 진단을 검사합니다. `validation: 'error'`는 에셋 반환 전에 전체 결과의 알려진 무효 CSS를 거부하며 알 수 없는 기능만으로는 실패하지 않습니다. 사용 가능한 소스 맵이 있으면 범위 진단은 원래 스타일시트 소스를 가리킵니다. 생성 구간을 매핑할 수 없는 호스트 변환은 원래 위치를 만들어 내면 안 됩니다.
+
+**다른 변환기를 위한 네이티브 CSS 준비**
+
+다른 변환기에 스타일시트의 변경하지 않은 네이티브 부분이 필요하면 호스트는 `preserveNativeSource: true`를 활성화할 수 있습니다. Master 정의는 여전히 소비하고 네이티브 `@apply` 규칙도 변환하지만 무관한 주석, 빈 규칙, 값 표기, 규칙 경계는 유지합니다. 기본값 `false`는 컴파일러의 일반 네이티브 CSS 정규화를 유지합니다.
+
+소스 보존은 활성 네이티브 가지치기와 함께 쓸 수 없습니다. 클래스 목록만 전달해도 가지치기가 활성화되지는 않습니다. `preserveNativeCSS: false`는 여전히 네이티브 출력을 억제합니다. 이 옵션은 후속 호스트 변환의 최적화나 소스 맵 재작성을 막지 않으며 뒤의 변환이 도입한 Master 정의나 생성 전역 참조를 탐색하지 않습니다.
+
+**호스트 변환 뒤 리소스 렌더링 계속하기**
+
+다른 출력이 생성 테마 변수나 키프레임 정의를 이미 제공하면 `compileRenderedStylesheet()`와 `compileBrowserStylesheet()`에 선택적 `emittedGlobals` 리소스 수 스냅샷을 전달할 수 있습니다. 양수는 중복 출력을 억제하고 0은 억제하지 않습니다. 새 참조가 의존하는 모든 리소스도 계속 출력합니다. 반환 스냅샷은 입력을 바꾸지 않고 외부 맥락과 이번 렌더링에 필요한 리소스를 포함합니다. 옵션 생략 시 일반 독립 렌더링을 유지합니다.
+
+이 맥락은 후속 렌더링이 이미 처리한 변수를 원래 manifest 값으로 되돌리지 않게 합니다. 새 생성 CSS에 호스트 플러그인을 실행하지는 않습니다. 호스트는 플러그인 순서와 소스 소유권을 유지하며 새 CSS 처리와 리소스 게시를 담당합니다.
+
+## editorial--master-eslint-config-css-usage \{#copy-editorial--master-eslint-config-css-usage\}
+
+
+ESLint flat config에 프리셋을 추가하세요. 프로젝트별 동작은 [플러그인 설정](/reference/packages#eslint-plugin-css)으로 조정하며 [코드 린트](/guide/code-linting)는 각 규칙을 설명합니다.
+
+| 규칙 | 기본값 | 수정 가능 | 보고 내용 |
+| --- | --- | --- | --- |
+| `@master/css/sort-classes` | `warn` | 예 | 생성 규칙 순서와 다른 클래스 및 중복. |
+| `@master/css/no-invalid-classes` | `error` | 아니요 | 잘못된 Master CSS 구문과 생성 CSS. 일치하지 않는 클래스는 `disallowUnknownClass`일 때만 보고. |
+| `@master/css/no-conflicting-classes` | `warn` | 예 | 같은 변형 범위의 전체 및 부분 선언 충돌. 전체 재정의만 수정. |
+| `@master/css/prefer-canonical-classes` | `warn` | 예 | 토큰 동일성과 생성 규칙 동작을 유지할 때만 비표준 형식을 보고. |
+
+`@master/css/no-unapproved-raw-values`와 `@master/css/prefer-component-classes`는 프리셋에 없습니다.
+
+## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
+
+
+표준 규칙에는 [공식 프리셋](/reference/packages#eslint-config-css)을 쓰거나 자신의 flat config에 플러그인을 등록하세요. 규칙 동작은 [코드 린트](/guide/code-linting)를 참고하세요.
+
+설정은 `@master/css` 설정 키 아래에 있으며 배열은 기본값을 대체합니다.
+
+| 설정 | 기본값 | 용도 |
+| --- | --- | --- |
+| `classAttributes` | `['class', 'className']` | 클래스 문자열을 포함한 마크업 속성. |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | 인수에 클래스 문자열을 포함할 수 있는 호출 대상과 태그 템플릿. `styled`는 `styled.button` 같은 멤버 형식도 허용. |
+| `classDeclarations` | `[]` | 클래스 선언으로 취급할 프로젝트 변수나 객체 속성. |
+| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | 변형 설정 객체를 순회할 때 건너뛸 객체 키. |
+
+`@master/css/no-unapproved-raw-values`는 토큰 지원 유틸리티의 원시 값을 보고합니다. `requireProperties`는 나열한 네이티브 속성으로 제한하며 비어 있거나 생략하면 모든 토큰 지원 속성을 검사합니다. `allowProperties`와 `allowedPatterns`는 예외를 추가하고 `allowRawValues`는 규칙을 비활성화합니다. 네이티브 사용자 지정 속성 참조는 유효합니다. 진단 `data`는 속성 범위와 표준 토큰 계열을 명시하며 자동 수정은 없습니다.
+
+`@master/css/prefer-component-classes`는 최상위 `_`, `>`, `+`, `~` 결합자로 다른 요소를 스타일하는 클래스가 `max`개(기본 `3`)를 초과하는 클래스 목록을 보고합니다. 진단 `data`는 `classNames`와 `targets`를 나열하며 자동 수정은 없습니다.
+
+## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
+
+
+세션 사용 전에 `MasterCSSRuntime.start()`를 await하고 소유자가 완료되면 `dispose()`를 호출하세요. `withMasterCSSRuntime()`은 시작과 해제를 사용자 정의 요소 연결 콜백에 통합하며 섀도 루트가 필요합니다. 브라우저 흐름은 [렌더링 모드](/guide/rendering-modes)를 참고하세요.
+
+공식 통합은 시작 코드를 주입합니다. 사용자 정의 진입점은 `program`에 `() => import('virtual:master-css-program').then(module => module.default)` 같은 로더와 `emittedGlobals`를 전달한 뒤 `observe()`를 호출합니다. 런타임 전용 페이지는 시작 시 프로그램을 불러옵니다. 유효한 `hydrationManifest`가 있는 점진적 페이지는 `engine: 'eager'`나 `enginePrefetch: 'idle'`이 없으면 범위 밖 클래스가 나타날 때까지 엔진을 지연합니다. `emittedGlobals`는 번들을 쓰는 모든 페이지에 적용됩니다. 런타임은 생성 규칙과 온디맨드 키프레임을 자체 스타일시트에 삽입하고 연결된 스타일시트에는 쓰지 않습니다.
+
+`snapshot()`은 연결된 DOM 사용인 `usageCounts`와 사전 준비, 하이드레이션, 유지 규칙도 가질 수 있는 `classRules`를 구분합니다. `engine`은 `'deferred'`, `'loading'`, `'ready'`, `'failed'`입니다. 지연 엔진이 시작하기 전 클래스 스냅샷에는 규칙 항목이 없고 `layers`도 비어 있습니다. `ensureClassRules()`와 `deleteClassRules()`는 DOM 사용과 독립적이며 삭제는 동기적이고 유지 정책을 우회합니다. 엔진 준비 전에는 `RUNTIME_ENGINE_NOT_READY`를 던지고 시작하므로 먼저 `ready()`를 await하세요.
+
+## editorial--master-css-schema-usage \{#copy-editorial--master-css-schema-usage\}
+
+
+타입을 소유한 좁은 하위 경로에서 가져오세요. 타입 선언은 데이터 형태를 설명하며 임의 입력을 검증하거나 스타일시트 지시문을 컴파일하지 않습니다. API 간 manifest와 진단을 전달할 때 버전 필드를 유지하세요. 수동 편집으로 manifest가 호환되지는 않습니다.
+
+`serializeMasterCSSManifest()`로 manifest를 저장합니다. 직렬화는 파생 필드를 정규화하지만 엔진 검증을 대체하거나 주석과 편집 가능한 CSS 서식을 보존하지 않습니다. 알 수 없는 필드는 확장 메커니즘이 아닙니다. 바깥 구조가 이를 유지해도 중첩 필드가 허용되거나 실행 가능해지지는 않습니다.
+
+## editorial--master-css-server-usage \{#copy-editorial--master-css-server-usage\}
+
+
+렌더링 전에 컴파일한 manifest를 제공하세요. emitted-global과 하이드레이션 메타데이터를 클라이언트에 전달한 CSS와 맞추고 재사용 세션은 사용 후 해제하세요. 전체 HTML 예제는 [렌더링 모드](/guide/rendering-modes)를 참고하세요.
+
+`createServerRenderer()`는 렌더링 간 규칙을 캐시합니다. manifest가 바뀌면 다시 만들고 장기 실행 서버에서는 `maxCachedClasses`를 제한하세요. 사용자 정의 호스트는 페이지가 연결할 수 있는 최종 `stylesheets`를 `@master/css-compiler/stylesheet`의 `describeLinkedStylesheet()`가 반환하는 `{ href, css, imports }`와 이를 해석할 `documentURL`로 전달할 수 있습니다. 해당 스타일시트가 이미 전달하는 테마 변수와 네이티브 키프레임은 `style#master-css`에 반복하지 않습니다. 렌더링은 서로 다른 레이어나 조건의 같은 이름 정의도 포함해 각 키프레임 정의를 독립적으로 추적합니다.
+
+## body-0 \{#copy-body-0\}
+
+
+패키지가 담당하는 작업에 따라 선택하세요. 각 절은 공개 가져오기 경로와 현재 GitHub 소스 링크를 제공합니다. 시그니처, 오버로드, 타입은 소스에서 읽으며 이 페이지는 선언을 복제하지 않습니다.
+
+## body-1 \{#copy-body-1\}
+
+
+소스 링크는 저장소의 `rc` 브랜치를 따릅니다. 설치한 릴리스는 해당 패키지의 동봉 선언도 확인하세요.
+
+## body-2 \{#copy-body-2\}
+
+
+## 진입점 선택 \{#choose-an-entrypoint\}
+
+## body-3 \{#copy-body-3\}
+
+
+| 작업 | 시작점 |
+
+## body-4 \{#copy-body-4\}
+
+
+| 프레임워크나 빌드 도구 연결 | [설치 →](/guide/installation)와 아래의 통합 패키지. |
+
+## body-5 \{#copy-body-5\}
+
+
+| CSS 정의 컴파일 또는 스타일시트 파일 해석 | [`@master/css-compiler`](#css-compiler) |
+
+## body-6 \{#copy-body-6\}
+
+
+| 컴파일한 정의에서 클래스 규칙 생성 | [`@master/css`](#css) |
+
+## body-7 \{#copy-body-7\}
+
+
+| 브라우저 DOM의 클래스 관찰 | [`@master/css-runtime`](#css-runtime) |
+
+## body-8 \{#copy-body-8\}
+
+
+| 서버 응답 렌더링과 하이드레이션 | [`@master/css-server`](#css-server) |
+
+## body-9 \{#copy-body-9\}
+
+
+| 소스 추출 또는 검증 | [`@master/css-tooling`](#css-tooling) |
+
+## body-10 \{#copy-body-10\}
+
+
+| 편집기 기능 구현 | [`@master/css-language-service`](#css-language-service) |
+
+## body-11 \{#copy-body-11\}
+
+
+| 터미널이나 에이전트로 자동화 | [CLI 명령](/reference/tools/cli) 또는 [MCP 도구](/reference/tools/mcp) |
+
+## body-12 \{#copy-body-12\}
+
+
+manifest는 정의를 설명하며 네이티브 스타일시트가 아닙니다. 렌더링 모드의 유틸리티 출력과 함께 컴파일러의 네이티브 CSS도 전달하세요. Node 엔진은 manifest를, 브라우저 엔진은 컴파일한 런타임 프로그램을 사용합니다. 전달 경로 선택은 [렌더링 모드](/guide/rendering-modes)를 참고하세요.
+
+## body-13 \{#copy-body-13\}
+
+
+| 가져오기 경로 | 용도 |
+
+## description \{#copy-description\}
+
+
+공개 패키지를 선택하고 가져오기 경로를 찾으며 GitHub API 소스를 여세요.
+
+## title \{#copy-title\}
+
+
+패키지
+
+## source-links \{#copy-source-links\}
+
+
+[소스와 README](%%source%%) · [공개 내보내기 매핑](%%exports%%)

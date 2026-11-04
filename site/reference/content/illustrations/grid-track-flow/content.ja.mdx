@@ -1,0 +1,36 @@
+# Reference prose: illustrations/grid-track-flow
+
+## title \{#copy-title\}
+
+
+列と行の組み合わせスタイルは同じ子要素を異なる方向に並べる
+
+## alt \{#copy-alt\}
+
+
+番号付きの 6 項目が、grid-cols(3) では 3 列 2 行に並びます。grid-rows(3) では 3 行 2 列になり、下方向に埋めてから次の列へ進みます。
+
+## caption \{#copy-caption\}
+
+
+両方の Grid は、同じ 6 個の子要素と gap を使います。grid-rows(3) はさらに grid-auto-flow: column を設定し、grid-cols(3) は既定の行方向のフローを保ちます。タイルの高さは内容に従います。
+
+## description-0 \{#copy-description-0\}
+
+
+最初の Grid には明示的な minmax(0, 1fr) の列が 3 本あります。既定の行方向のフローで、項目 1、2、3 が最初の行に横に並び、その後に 4、5、6 が続きます。
+
+## description-1 \{#copy-description-1\}
+
+
+2 番目の Grid には明示的な minmax(0, 1fr) の行が 3 本あり、列方向に自動配置します。項目 1、2、3 が最初の列を埋め、4、5、6 が 2 番目の列に入ります。
+
+## description-2 \{#copy-description-2\}
+
+
+両方の場面は、実際のプリセット CSS、内容に応じた同じサイズのタイル 6 個、12px の gap を使います。幅はタイル同士を比較しやすくするための指定で、どちらの組み合わせスタイルも gap や幅自体は設定しません。
+
+## description-3 \{#copy-description-3\}
+
+
+図では既定の項目配置を使います。明示的な配置や span によって結果は変わり得ます。grid-cols は、ほかで設定した列方向のフローをリセットしません。

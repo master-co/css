@@ -1,0 +1,31 @@
+# Reference prose: illustrations/font-loading-boundary
+
+## title \{#copy-title\}
+
+
+指定字型家族仍需有可用字型
+
+## alt \{#copy-alt\}
+
+
+一個 font-family 請求在指定字型可用時使用它，不可用時則分支至 serif 備援。
+
+## caption \{#copy-caption\}
+
+
+範例呈現兩種可用性情況，不是實測下載時間軸。指定字型以已載入的 Geist 檔案示意，備援則使用瀏覽器的 serif 字型。
+
+## description-0 \{#copy-description-0\}
+
+
+font-family 宣告指定有順序的偏好，本身不會下載字型。
+
+## description-1 \{#copy-description-1\}
+
+
+若有符合且可用的字型，就能渲染文字；否則瀏覽器嘗試後續家族。字形涵蓋範圍也有影響，因此同一行不同字元可能使用不同字型。
+
+## description-2 \{#copy-description-2\}
+
+
+透過 @font-face 或供應商樣式表載入網頁字型，並檢查實際渲染字型，不要只看計算後的 font-family 字串。

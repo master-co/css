@@ -1,0 +1,56 @@
+# Reference prose: sr-only
+
+## title \{#copy-title\}
+
+
+屏幕阅读器文本
+
+## summary \{#copy-summary\}
+
+
+在视觉上隐藏文本，同时将其保留在无障碍树中。
+
+## note \{#copy-note\}
+
+
+将这个类用于仍应供辅助技术读取的文本。它不是禁用元素或将元素移出键盘导航的方式。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+视觉裁剪与无障碍命名是两回事
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`sr-only` 让元素脱离常规流，将其设为 1px 的盒子，并裁剪绘制区域。它不会应用 `display: none`、`visibility: hidden` 或 `aria-hidden`，因此文本仍可用于形成无障碍名称。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+将类放在控件内的标签文本上，让控件本身保持可见且可聚焦。标记为 `aria-hidden="true"` 的图标不会参与名称计算，便可由文本描述操作。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+不要将可聚焦的控件放入始终被裁剪的区域，否则键盘用户可能移到看不见的控件。跳转到内容的链接需要自行设置聚焦时显示的样式；预设没有提供 `not-sr-only` 反向工具类。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+如果祖先元素将整个子树移出无障碍树，这段文本也会一并移除。`sr-only` 无法抵消祖先元素上的 `hidden`、`display: none` 或 `aria-hidden="true"`。请在实际控件中测试最终的角色与名称。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+无障碍名称
+
+## usage-lead \{#copy-usage-lead\}
+
+
+为只有图标的链接提供名称，让它打开下方的工具类定义。
+
+## caption \{#copy-caption\}
+
+
+链接的无障碍名称是“Read the utility definition”，箭头不会参与名称计算。

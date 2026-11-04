@@ -1,0 +1,31 @@
+# Reference prose: illustrations/parameter-known-vs-live
+
+## title \{#copy-title\}
+
+
+静态配方参数不同于实时 CSS 值
+
+## alt \{#copy-alt\}
+
+
+pair(2rem) 展开为两个尺寸。这个双声明配方拒绝 pair(var(--size))；显式原生 width 变量则交由浏览器求值。
+
+## caption \{#copy-caption\}
+
+
+图中的 pair 工具类有两条声明。另一项单参数、单声明的符号式引用例外不适用于此。
+
+## description-0 \{#copy-description-0\}
+
+
+@utility pair(--size) \{ width: var(--size); height: var(--size); \} 接受 pair(2rem) 的已知参数，并绑定到两条声明。
+
+## description-1 \{#copy-description-1\}
+
+
+此配方拒绝 pair(var(--size))，因为参数依赖浏览器。需要保持实时变化的值，请用显式原生声明类。
+
+## description-2 \{#copy-description-2\}
+
+
+(width:var(--size)) 为浏览器保留变量引用，仅改变宽度。若也需要高度，请另加高度声明。

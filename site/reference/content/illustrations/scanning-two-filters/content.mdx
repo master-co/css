@@ -1,0 +1,29 @@
+# Reference prose: illustrations/scanning-two-filters
+
+## title \{#copy-title\}
+
+File selection and candidate selection are different filters
+
+## alt \{#copy-alt\}
+
+main.html contributes grid and hidden, while draft.html is excluded before extraction. Safelisting adds block; blocklisting removes hidden. The final candidate set is grid and block.
+
+## caption \{#copy-caption\}
+
+Excluding draft.html stops its flex candidate from entering this source scope. Blocklisting hidden removes a candidate after collection; safelisting block adds an explicit candidate.
+
+## description-0 \{#copy-description-0\}
+
+@source includes the HTML files, and @source not excludes draft.html. Only main.html contributes its grid and hidden class strings.
+
+## description-1 \{#copy-description-1\}
+
+@safelist "block" adds a complete candidate independently of a source file.
+
+## description-2 \{#copy-description-2\}
+
+@blocklist "hidden" removes that candidate. The resulting eligible set is grid and block; flex never entered this scope.
+
+## description-3 \{#copy-description-3\}
+
+File and candidate policies are distinct. Eligibility is not proof that an arbitrary class string is valid; normal matching and diagnostics still apply.

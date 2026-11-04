@@ -12,12 +12,12 @@ import dark from '~/site/assets/images/integrations/lit/cover-dark.webp'
 
 Lit components normally render into a shadow root. Document styles cannot reach those elements, so deliver the generated CSS inside each component's shadow tree.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [Lit project](https://lit.dev/docs/getting-started/) built with Vite, run the installer from the project root. Lit uses Vite static mode by default. Keep complete class names in source; use explicit runtime mode if classes must be generated from new names in the browser.
     </StepL>
     <StepR>
@@ -27,7 +27,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
     </StepR>
   </Step>
   <Step>
-    ### Keep a CSS source entry
+    ### Keep a CSS source entry \{#keep-a-css-source-entry\}
     The installer creates `src/index.css` and registers the Vite integration. Keep definitions in this source file:
 
     ```css name=src/index.css
@@ -50,7 +50,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
   </Step>
   <Step $row>
     <StepL>
-      ### Include styles in the shadow root
+      ### Include styles in the shadow root \{#include-styles-in-the-shadow-root\}
       Import the generated stylesheet as text and include it with Lit’s [`unsafeCSS`](https://lit.dev/docs/components/styles/#static-styles). The CSS comes from your build input; do not pass untrusted user text to `unsafeCSS`. The installer preserves the standard component’s existing styles when adding this stylesheet.
     </StepL>
     <StepR>
@@ -71,7 +71,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
     </StepR>
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     Keep the component module imported by the application entry, then place its registered element in the page:
 
     ```ts name=src/main.ts
@@ -95,7 +95,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
   />
 </StepSection>
 
-## Check the shadow stylesheet
+## Check the shadow stylesheet \{#check-the-shadow-stylesheet\}
 Change `p-md` to `p-lg` in the Lit template. Its padding should grow from `1rem` to `1.5rem`; restore it before checking the production build:
 
 ```bash

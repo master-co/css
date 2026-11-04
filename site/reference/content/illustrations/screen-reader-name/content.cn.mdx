@@ -1,0 +1,36 @@
+# Reference prose: illustrations/screen-reader-name
+
+## title \{#copy-title\}
+
+
+被裁剪的文本仍可为可见控件命名
+
+## alt \{#copy-alt\}
+
+
+一个链接包含可见箭头与 sr-only 文本。视觉呈现只能看到箭头，无障碍表示则是一个名为 Read the utility definition 的链接。
+
+## caption \{#copy-caption\}
+
+
+箭头具有 aria-hidden="true"。标签文本由 sr-only 在视觉上裁剪，并提供链接的无障碍名称。链接本身仍可见且可聚焦。
+
+## description-0 \{#copy-description-0\}
+
+
+链接包含一个不参与无障碍名称计算的箭头，以及一个包含 Read the utility definition 的 span。
+
+## description-1 \{#copy-description-1\}
+
+
+span 使用实际的 sr-only 预设样式：绝对定位、1px 盒子、隐藏溢出与裁剪。它仍留在 DOM 中，没有设置 aria-hidden。
+
+## description-2 \{#copy-description-2\}
+
+
+可见链接仍占用 40px 正方形区域，并显示箭头。它的无障碍角色是 link，名称为 Read the utility definition。
+
+## description-3 \{#copy-description-3\}
+
+
+两个分支是同一个控件的不同表示，不是按顺序执行的操作。如果祖先元素从无障碍树中隐藏，其后代元素也会一并隐藏。

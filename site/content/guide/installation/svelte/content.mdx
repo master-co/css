@@ -12,12 +12,12 @@ import dark from '~/site/assets/images/integrations/svelte/cover-dark.webp'
 
 Add Master CSS to a SvelteKit application. The add-on registers the Vite integration and imports its CSS entry from the root layout, so every route receives the shared styles.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [SvelteKit project](https://svelte.dev/docs/kit/creating-a-project), run the Svelte CLI add-on from the project root. It installs static rendering and leaves existing server hooks unchanged.
     </StepL>
     <StepR>
@@ -27,13 +27,13 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
     </StepR>
   </Step>
   <Step>
-    ### Check the shared entry
+    ### Check the shared entry \{#check-the-shared-entry\}
     The add-on updates the project's CSS entry with `@import '@master/css';` and imports that entry from `src/routes/+layout.svelte`. Keep the layout's existing script, child rendering and other imports. Do not put the global entry in a page that other routes never load.
 
     In `vite.config.ts`, keep both `masterCSS()` and `sveltekit(...)`. Static mode does not need a Master CSS client or server hook.
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     Start the dev server and replace `src/routes/+page.svelte` with this paragraph. Keep the stylesheet import added to `src/routes/+layout.svelte`.
   </Step>
   <InstallationPreview>
@@ -47,7 +47,7 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
   </InstallationPreview>
 </StepSection>
 
-## Check the static setup
+## Check the static setup \{#check-the-static-setup\}
 Run `npm run dev` and change `p-md` to `p-lg` in the page. Its padding should grow from `1rem` to `1.5rem`. Restore it, then check the production build:
 
 ```bash

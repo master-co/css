@@ -1,0 +1,36 @@
+# Reference prose: illustrations/preview-file-identity
+
+## title \{#copy-title\}
+
+
+미리보기는 기록한 파일 버전에만 적용
+
+## alt \{#copy-alt\}
+
+
+미리보기는 p-md flex를 기록한다. 변경하지 않은 파일은 제안된 flex p-md 순서를 수락하고 gap-sm을 추가한 파일은 거부되어 새 내용을 유지한다.
+
+## caption \{#copy-caption\}
+
+
+두 경우는 같은 클래스 순서 미리보기에서 시작합니다. 적용하려면 같은 서버의 만료되지 않은 토큰과 일치하는 원본 파일이 필요합니다. 파일이 바뀌면 제안 파일을 쓰기 전에 거부합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+클래스 순서 미리보기는 원래 p-md flex를 기록하고 flex p-md를 제안합니다. 미리보기는 소스 파일을 바꾸지 않습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+영향받는 모든 파일이 기록한 해시와 여전히 일치하면 유효 토큰 적용이 제안 내용을 쓰고 토큰을 소비합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+파일이 이제 p-md flex gap-sm을 포함하면 해시가 다릅니다. 적용은 제안 파일을 쓰기 전에 미리보기를 거부해 최신 내용을 보존합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+이 비교는 파일 동일성만 다룹니다. 토큰 만료, 서버 재시작, 잘못된 작업공간 경로도 적용을 막을 수 있습니다. 순차 쓰기는 트랜잭션 롤백 메커니즘이 아닙니다.

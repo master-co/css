@@ -1,0 +1,71 @@
+# Reference prose: tokens/leading
+
+## title \{#copy-title\}
+
+
+行高
+
+## summary \{#copy-summary\}
+
+
+隨字型大小縮放的無單位行高。
+
+## note \{#copy-note\}
+
+
+`leading-<name>` 只會設定 `line-height`，不會改變字型大小、加入段落間距或限制段落高度。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+五個預設值都是無單位比例，不是 rem 長度或像素數量。實際使用的行高取決於元素的字型大小。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+繼承的比例會依各自字型大小計算
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`leading-md` 提供數值 `1.6`。子元素繼承後會使用自己的字型大小：16px 得到 25.6px，24px 則得到 38.4px。被繼承的值仍然是比例。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+明確的長度或百分比具有不同的繼承行為：它會在宣告所在元素解析為長度。需要自訂比例時，請使用 `(line-height:1.5)` 這類原生宣告，或新增主題 token；預設集沒有 `leading(1.5)` 函式。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+行高控制的是文字行的垂直度量，不是可見字形之間的空白間隙。其他行內內容可能讓行框更高。行高不會裁切字形，也不保證段落具有固定高度。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` 文字樣式會設定自己的行高，因此會取代繼承的比例。若要刻意覆寫這組樣式，請在同一元素套用 `leading-*`；條件相同時，單一屬性的 utility 會排在組合樣式之後。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+文字樣式的配套 token
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生 line-height 繼承
+
+## usage-lead \{#copy-usage-lead\}
+
+
+在父元素設定比例，讓子元素依各自的字型大小計算行高。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改預設值或新增 token：`--leading-prose` 會建立 `leading-prose`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

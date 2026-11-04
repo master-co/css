@@ -1,0 +1,144 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+抽出はアプリケーションを実行せずに、ソースからクラス名の候補を見つけます。潜在クラスとも呼ぶこれらの候補は、照合と候補ポリシーへの入力です。文字列が見つかっても、ルールを生成すること、CSS 値が有効であること、特定のブラウザーで動くことは保証されません。
+
+このページでは、ソースの境界、静的抽出、候補の分類、ソースの所属を定義します。発見できるクラスの書き方とスタイルがない場合の診断は、[クラス名のスキャン](/guide/scanning-and-pruning)で説明しています。パスとクラスパターンの文法は[スキャンのディレクティブ](/reference/directives/scanning)が定義します。
+
+## 完全な静的文字列 \{#candidate-scanning\}
+
+抽出器はソース言語の構造を使います。JavaScript や TypeScript の文字列は、`className` の外でも候補になります。表示用のテキストとしてコンポーネントに渡したクラスも、発見されることがあります。スキャナーは、実行される分岐や、ランタイムに関数が返す値を推論しません。
+
+<a id="complete-classes"></a>
+
+| ソースの形式 | 抽出できる内容 |
+| --- | --- |
+| HTML `class="p-md shadow-md"` | 両方の完全なクラス |
+| JSX `className="p-md"` | 完全なクラス |
+| `error ? 'bg-red-60' : 'bg-green-60'` | 両方の静的な分岐 |
+| `{ compact: 'p-sm', roomy: 'p-lg' }` | オブジェクト内の完全な値 |
+| 完全な静的クラス部分を含むテンプレートリテラル | その完全な部分 |
+| `'bg-' + tone`、またはクラス名の途中にあるテンプレート補間 | `bg-red-60` などの完成形は推論しない |
+| ランタイムに API からだけ返されるクラス | 抽出するソース文字列がない |
+
+たとえば、次のソースは 2 つの色と、固定の padding と角丸を含みます。オブジェクト内の完全なクラスを発見するために、`tone` の補間を評価する必要はありません。
+
+```js
+const tones = {
+  neutral: 'bg-surface-base fg-text-neutral',
+  destructive: 'bg-red-70 fg-white'
+}
+const className = `px-md r-md ${tones.destructive}`
+```
+
+抽出されるクラスは `bg-surface-base`、`fg-text-neutral`、`bg-red-70`、`fg-white`、`px-md`、`r-md` です。この例が destructive の分岐を選んでいても、スキャナーは出力をその分岐だけに絞りません。
+
+## 候補の分類 \{#validation\}
+
+抽出後は、有効な manifest とスタイルシートの登録内容が候補の役割を決めます。未知の通常のアプリケーションクラスが、自動的に Master CSS のエラーになるわけではありません。
+
+| 候補 | 結果 |
+| --- | --- |
+| `p-md` などの登録済みプリセットユーティリティ | 一致するユーティリティルールと依存関係を生成 |
+| プロジェクト定義の `@utility` クラス | プロジェクトのコンパイル済み manifest に登録されたルールを生成 |
+| `.card` などの登録済みネイティブクラス | ネイティブの使用状況を記録し、新しいユーティリティは生成しない |
+| 定義に一致しないアプリケーションクラス | Master が生成するルールはない |
+| 形式が不正な Master クラス | ルールはなく、検査で構文診断を報告できる |
+| 一致したが CSS 値が無効または未知のクラス | CSS を出力する場合があり、照合だけでは値の有効性やブラウザー対応は証明できない |
+
+```html
+<article class="card p-md shadow-md">Release notes</article>
+```
+
+ここでは `p-md` と `shadow-md` をプリセットで解決します。`card` がネイティブルールを保持するのは、プロジェクトが実際にそのルールを提供し、プルーニングのポリシーが使用状況を考慮する場合だけです。ネイティブスタイルシートは既定で保持され、スキャン自体がプルーニングを有効にすることはありません。
+
+<Class2CSS classes={['p-md', 'shadow-md']} />
+
+コンパイラーによる照合、CSS 構文の検証、CSS 値の検証、ブラウザー対応は別の確認事項です。[クラスの検査](/reference/tools/mcp#mastercss_inspect_class)で区別してください。一致したクラスにも、ブラウザーのカスケードと計算値の規則が適用されます。
+
+## ソースの境界 \{#source-boundaries\}
+
+ビルド統合と CLI は、HTML、JavaScript、TypeScript、JSX、TSX、対応フレームワークのソース、Markdown、MDX、PHP など、一般的なプロジェクトのソースファイルを探索します。通常のアプリケーションファイルに広範な `@source` を書く必要はありません。
+
+自動探索は、プロジェクトと上位ワークスペースの `.gitignore` に従い、Git のグローバルな除外設定は使いません。依存パッケージ、宣言ファイル、バイナリ、VCS データ、生成出力は除外されます。Master の出力と現在のバンドラーの出力はスキャン入力にならず、Next.js では設定された `distDir` を使います。
+
+| ディレクティブ | 探索への影響 |
+| --- | --- |
+| `@source` | 自動探索や `.gitignore` で除外されたファイルも含め、追加のパスを明示的に対象にする |
+| `@source not` | パスを除外し、包含の指定より優先する |
+
+これらの例外は、共有ワークスペースのソース、外部コンテンツ、範囲を限定したプルーニングのルートに使います。相対パスの規則と対応形式は[スキャンのディレクティブ](/reference/directives/scanning)を参照してください。
+
+フレームワーク統合は、コンパイル済みの表示用文字列を再スキャンするより、元の MDX、Vue、Svelte ソースを優先します。抽出器の言語種別は重要です。意図的なプレーンテキスト入力には `kind: 'raw'` を使えますが、解析に失敗したソースのフォールバックではありません。
+
+## Markdown と MDX \{#markdown-and-mdx\}
+
+Markdown と MDX の抽出は構文木を使います。実際の HTML/JSX、ESM、式は対象になりますが、文章、インラインコード、通常のコードフェンス、frontmatter は対象外です。そのため、クラスを示す文書のコードフェンスが暗黙に実行例になることはありません。
+
+ホストは `parentSource` を使って実行例を仮想ソースとして登録するか、その有限のクラスを明示的にセーフリストへ追加できます。仮想入力は実行内容の所属を明確にし、実際の例のソースと言語種別はホストが提供します。
+
+不正なソースは `SOURCE_PARSE_ERROR` を報告します。開発時は直前に成功した結果を保持し、本番ビルドは失敗します。解析や読み込みの失敗は、空のソースへの更新とは異なります。
+
+### ソース位置 \{#source-locations\}
+
+抽出は文字列だけでなく、候補の出現箇所も報告できます。元の UTF-16 範囲、抽出器、内容種別、owner、対象に含めた理由や除外した理由です。エンコードされた属性でも元のソース範囲を保ちます。完全な URL リテラルは除外しますが、未知のネイティブ宣言は後の検証用に候補として残ることがあります。
+
+## ソースの所属 \{#scanner-hosts\}
+
+スキャナーセッションが追跡するのは現在の各ソースから得た結果であり、過去に見つけたすべてのクラスではありません。ソースを更新すると、そのソースの結果を置き換えます。1 つのソースを削除しても、ほかの現在のソースやセーフリストが保持するクラスは削除しません。
+
+<ReferenceIllustration id="shared-source-class" />
+
+これらのセッション操作は、[`@master/css-tooling/scanner/node`](/reference/packages#css-tooling) の `MasterCSSScanner` から使えます。ソースの所属を扱う操作であり、統合の利用者は通常、ビルドプラグインに実行を任せます。
+
+| 操作 | 所属への影響 |
+| --- | --- |
+| `collectCandidates` | 抽出のみを行い、ソースの結果を保持しない |
+| `scanSource` | 空文字列も含め、1 つのソースの内容を置き換える |
+| `removeSource` | そのソースと仮想の子孫ソースを削除 |
+| `reconcileSources` | 1 つの owner の次の完全なソース集合を指定 |
+| `registerNativeClasses` | スタイルシートのソースにネイティブクラスの識別情報を登録 |
+| `removeOwner` | その owner のソースとネイティブ登録を削除 |
+
+```ts
+await scanner.scanSource('page.mdx', content, { owner: 'pages' })
+await scanner.scanSource('page.mdx#live', html, {
+  owner: 'pages', parentSource: 'page.mdx', kind: 'html'
+})
+scanner.removeSource('page.mdx', { owner: 'pages' })
+```
+
+`page.mdx` を削除すると、その仮想の例も削除されます。別の owner の参照は独立しています。再照合では、その owner に渡した入力だけを保持します。明示的に保持した仮想入力は、親ソースが外部で管理されていても、その集合に残ります。
+
+`changed` は生成出力やプルーニング入力の変更を示します。`sourceChanged` は由来だけの更新も捉えます。2 つ目のソースが CSS を変えずに所属を追加する場合などです。`sources` ビューは、空の入力や仮想関係も含む、現在の成功したソース集合を公開します。
+
+<ReferenceIllustration id="source-replacement" />
+
+## ランタイムの値 \{#runtime-values\}
+
+クラス名を変えずに値を変えられます。完全なネイティブ宣言クラスで、マークアップやスクリプトが指定するカスタムプロパティを参照できます。
+
+```html
+<h1 class="(font-size:var(--headline-size))" style="--headline-size: 2rem">Launch notes</h1>
+```
+
+スキャナーには 1 つの完全なクラスが見えます。`--headline-size` を更新すると、新しいユーティリティルールなしでブラウザーの値が変わります。[変化する値の実例](/guide/scanning-and-pruning#keep-changing-values-out-of-class-names)を参照してください。
+
+同じ仕様は `(width:var(--progress))` にも適用されます。スクリプトから `element.style.setProperty('--progress', '40%')` を呼び出しても、クラスはそのままです。
+
+クラス名自体が起動後に初めて現れる場合、静的ビルドでは発見できません。範囲を限定したセーフリストを用意するか、[ランタイムまたはプログレッシブレンダリング](/guide/rendering-modes#comparisons)を使います。
+
+## 候補ポリシー \{#included-and-excluded-classes\}
+
+| ディレクティブ | 用途 | 制限 |
+| --- | --- | --- |
+| `@safelist` | CMS の状態やウィジェットのクラスなど、範囲を限定した外部クラスを保持 | 照合を省略せず、未定義のユーティリティも定義しない |
+| `@blocklist` | 誤検出した候補による CSS の生成を防ぐ | ソースを書き換えず、任意のネイティブ CSS も削除しない |
+
+クラスパターン、優先順位、ネイティブの使用状況は[スキャンのディレクティブ](/reference/directives/scanning)を参照してください。ネイティブルールとキーフレームの除去は[ネイティブ CSS のプルーニング](/reference/directives/pruning)を参照してください。候補の探索とネイティブの保持は別のポリシーです。
+
+<a id="checklist"></a>
+
+スタイルがない場合は、記述構文を変える前に、完全なクラス、ファイルの探索境界、候補ポリシーを確認します。[ガイドの診断チェックリスト](/guide/scanning-and-pruning#find-why-a-style-is-missing)では、実際の文脈で確認する手順を説明しています。

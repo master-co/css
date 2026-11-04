@@ -1,0 +1,53 @@
+# Reference prose: grid-tracks
+
+## title \{#copy-title\}
+
+Grid tracks
+
+## summary \{#copy-summary\}
+
+Equal grid tracks and spans in one class.
+
+## note \{#copy-note\}
+
+`grid-cols()` and `grid-rows()` create the grid; the span functions place an item inside an existing grid.
+
+## explanation-title \{#copy-explanation-title\}
+
+Track counts and placement have different owners
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`grid-cols(3)` sets `display: grid` and three `minmax(0, 1fr)` columns. `grid-rows(3)` sets three such rows and also sets `grid-auto-flow: column`. With otherwise default placement, the same six children therefore fill across in the first case and down in the second.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+Use positive integers for track counts and spans. Track functions do not add a gap. Equal fractions divide the available space after gaps; a zero minimum lets tracks shrink, but does not itself wrap or clip their contents.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+`grid-col-span(2)` and `grid-row-span(2)` set an item’s placement, not its parent’s display. A span can create implicit tracks if it exceeds the explicit grid. Layout Guide owns coordinating counts and spans across breakpoints.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+`grid-cols()` does not reset the column flow established by `grid-rows()`. If both apply, both track definitions remain and auto-placement still runs down columns. Add `(grid-auto-flow:row)` when you explicitly want row flow.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+Row fractions need a constrained available height to divide a fixed vertical space. In an auto-height grid, content participates in row sizing; `grid-rows(3)` is not a height constraint.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Layout
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native grid placement
+
+## usage-lead \{#copy-usage-lead\}
+
+Lay out three equal columns and let a feature span two columns and two rows.
+
+## guide-label \{#copy-guide-label\}
+
+Layout

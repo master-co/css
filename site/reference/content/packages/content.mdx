@@ -1,0 +1,589 @@
+# Reference prose: packages
+
+## editorial--master-css-introduction \{#copy-editorial--master-css-introduction\}
+
+Execute a compiled manifest or runtime program, generate rules for class names and inspect engine state. CSS entrypoints provide the preset stylesheet layers.
+
+## editorial--master-css-entries- \{#copy-editorial--master-css-entries-\}
+
+Asynchronous engine creation and one-shot class rendering.
+
+## editorial--master-css-entries--node \{#copy-editorial--master-css-entries--node\}
+
+Synchronous native engine, runtime program compilation and reusable render sessions in Node.js.
+
+## editorial--master-css-entries--client \{#copy-editorial--master-css-entries--client\}
+
+Ambient TypeScript declarations for generated virtual modules.
+
+## editorial--master-css-entries--index-css \{#copy-editorial--master-css-entries--index-css\}
+
+Complete preset stylesheet entry.
+
+## editorial--master-css-entries--base-css \{#copy-editorial--master-css-entries--base-css\}
+
+Base styles and the stable cascade-layer order.
+
+## editorial--master-css-entries--theme-css \{#copy-editorial--master-css-entries--theme-css\}
+
+Preset theme definitions.
+
+## editorial--master-css-entries--media-css \{#copy-editorial--master-css-entries--media-css\}
+
+Preset viewport and preference conditions.
+
+## editorial--master-css-entries--container-css \{#copy-editorial--master-css-entries--container-css\}
+
+Preset container width conditions.
+
+## editorial--master-css-entries--utilities-css \{#copy-editorial--master-css-entries--utilities-css\}
+
+Preset utility registrations.
+
+## editorial--master-css-compiler-introduction \{#copy-editorial--master-css-compiler-introduction\}
+
+Compile stylesheet directives, load project manifests and compose generated CSS with authored styles. Choose the entrypoint that matches the work and execution environment.
+
+## editorial--master-css-compiler-entries- \{#copy-editorial--master-css-compiler-entries-\}
+
+Asynchronous compiler sessions and in-memory directive compilation.
+
+## editorial--master-css-compiler-entries--node \{#copy-editorial--master-css-compiler-entries--node\}
+
+Synchronous native compilation and filesystem resolution.
+
+## editorial--master-css-compiler-entries--project \{#copy-editorial--master-css-compiler-entries--project\}
+
+Asynchronous project entry discovery and manifest loading.
+
+## editorial--master-css-compiler-entries--project-sync \{#copy-editorial--master-css-compiler-entries--project-sync\}
+
+Synchronous project entry discovery and manifest loading.
+
+## editorial--master-css-compiler-entries--stylesheet \{#copy-editorial--master-css-compiler-entries--stylesheet\}
+
+Node.js stylesheet resolution, composition and delivery assets.
+
+## editorial--master-css-compiler-entries--stylesheet-browser \{#copy-editorial--master-css-compiler-entries--stylesheet-browser\}
+
+Browser compilation from supplied source and a base manifest.
+
+## editorial--master-css-compiler-entries--diagnostics \{#copy-editorial--master-css-compiler-entries--diagnostics\}
+
+Project inspection reports with classes, files and diagnostics.
+
+## editorial--master-create-css-introduction \{#copy-editorial--master-create-css-introduction\}
+
+Plan and apply Master CSS setup for an existing project. The plan describes dependency changes, file edits, commands and warnings before application.
+
+## editorial--master-create-css-usage \{#copy-editorial--master-create-css-usage\}
+
+Call `planMasterCSSSetup()` to inspect the proposed changes. `applyMasterCSSSetupPlan()` checks recorded file preconditions before writing; create a new plan if those files change. Setup can modify project files and install dependencies. See [Installation](/guide/installation) for the interactive workflow.
+
+## editorial--master-create-css-entries- \{#copy-editorial--master-create-css-entries-\}
+
+Setup planning, application and their options and result types.
+
+## editorial--master-css-svelte-addon-introduction \{#copy-editorial--master-css-svelte-addon-introduction\}
+
+The official Svelte CLI add-on configures Master CSS in SvelteKit projects, including dependencies, Vite integration, stylesheet imports and server hooks.
+
+## editorial--master-css-svelte-addon-usage \{#copy-editorial--master-css-svelte-addon-usage\}
+
+Run this add-on through the Svelte CLI. Its setup rejects projects without SvelteKit, and its run step requires a Svelte dependency. See [Svelte installation](/guide/installation/svelte) for the complete setup.
+
+## editorial--master-css-svelte-addon-entries- \{#copy-editorial--master-css-svelte-addon-entries-\}
+
+Default add-on consumed by the Svelte CLI.
+
+## editorial--master-eslint-config-css-introduction \{#copy-editorial--master-eslint-config-css-introduction\}
+
+Use the official flat-config preset to enable Master CSS lint rules in ESLint. The default export and `recommended` refer to the same configuration.
+
+## editorial--master-eslint-config-css-entries- \{#copy-editorial--master-eslint-config-css-entries-\}
+
+Recommended ESLint flat configuration.
+
+## editorial--master-eslint-plugin-css-introduction \{#copy-editorial--master-eslint-plugin-css-introduction\}
+
+The ESLint plugin connects JavaScript and template syntax to Master CSS validation, class ordering and fixes. Its default and `masterCSS` exports expose the same plugin.
+
+## editorial--master-eslint-plugin-css-entries- \{#copy-editorial--master-eslint-plugin-css-entries-\}
+
+Plugin rules and recommended configuration.
+
+## editorial--master-css-language-server-introduction \{#copy-editorial--master-css-language-server-introduction\}
+
+Provide Master CSS completion, hover, colors, formatting and semantic tokens through the Language Server Protocol. The library entry supports host-managed lifecycle; the server entry starts the process.
+
+## editorial--master-css-language-server-usage \{#copy-editorial--master-css-language-server-usage\}
+
+Create and start `MasterCSSLanguageServer` when embedding it in a host, then dispose it during shutdown. Loading the `/server` entry constructs and starts a server immediately. See [Language service](/guide/language-service) for the editor-facing workflow.
+
+## editorial--master-css-language-server-entries- \{#copy-editorial--master-css-language-server-entries-\}
+
+Language server, workspace settings and semantic-token request names.
+
+## editorial--master-css-language-server-entries--server \{#copy-editorial--master-css-language-server-entries--server\}
+
+Executable server startup entry; no named or default exports.
+
+## editorial--master-css-language-service-introduction \{#copy-editorial--master-css-language-service-introduction\}
+
+Map Master CSS tooling results to editor documents, language features and syntax highlighting. Use the Shiki entrypoint for server-rendered code presentation.
+
+## editorial--master-css-language-service-usage \{#copy-editorial--master-css-language-service-usage\}
+
+Supply a tooling session when creating `MasterCSSLanguageService`. Shiki helpers accept a reusable language session or manifest through their options. Import `@master/css-language-service/shiki.css` for hover-activated markup highlighting. See [Language service](/guide/language-service) for configuration and examples.
+
+## editorial--master-css-language-service-entries- \{#copy-editorial--master-css-language-service-entries-\}
+
+Editor document services, settings and trigger characters.
+
+## editorial--master-css-language-service-entries--common \{#copy-editorial--master-css-language-service-entries--common\}
+
+Shared completion trigger characters.
+
+## editorial--master-css-language-service-entries--shiki \{#copy-editorial--master-css-language-service-entries--shiki\}
+
+Shiki transformer, semantic decorations and language registration.
+
+## editorial--master-css-language-service-entries--shiki-css \{#copy-editorial--master-css-language-service-entries--shiki-css\}
+
+Hover-activated markup class colors for Shiki output.
+
+## editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json \{#copy-editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json\}
+
+TextMate grammar asset for directive highlighting.
+
+## editorial--master-css-mcp-introduction \{#copy-editorial--master-css-mcp-introduction\}
+
+Create a Master CSS Model Context Protocol server or start its stdio transport. The tool catalog identifies operations and their file effects.
+
+## editorial--master-css-mcp-usage \{#copy-editorial--master-css-mcp-usage\}
+
+Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP server](/guide/ai-coding#connect-the-mcp-server) for client registration and [the tool catalog](/reference/tools/mcp) for usage; read complete contracts through `tools/list`.
+
+## editorial--master-css-mcp-entries- \{#copy-editorial--master-css-mcp-entries-\}
+
+Server factory and stdio startup.
+
+## editorial--master-css-next-introduction \{#copy-editorial--master-css-next-introduction\}
+
+Connect Master CSS to Next.js configuration and build output. The root export wraps Next configuration; the adapter entry supports build integration and adapter composition.
+
+## editorial--master-css-next-usage \{#copy-editorial--master-css-next-usage\}
+
+Use the root default export in Next configuration. Await the wrapper when using a rendering mode that processes build output. See [Next.js installation](/guide/installation/nextjs) for the setup and supported rendering modes.
+
+## editorial--master-css-next-entries- \{#copy-editorial--master-css-next-entries-\}
+
+Next configuration wrapper and integration options.
+
+## editorial--master-css-next-entries--adapter \{#copy-editorial--master-css-next-entries--adapter\}
+
+Build adapter, composition helpers and rendered-output reports.
+
+## editorial--master-css-nuxt-introduction \{#copy-editorial--master-css-nuxt-introduction\}
+
+Register Master CSS as a Nuxt module. The default and `masterCSSNuxtModule` exports refer to the same module.
+
+## editorial--master-css-nuxt-usage \{#copy-editorial--master-css-nuxt-usage\}
+
+Register the module through Nuxt configuration so the framework owns its setup and lifecycle. See [Nuxt installation](/guide/installation/nuxtjs) for configuration.
+
+## editorial--master-css-nuxt-entries- \{#copy-editorial--master-css-nuxt-entries-\}
+
+Nuxt module.
+
+## editorial--master-css-preset-introduction \{#copy-editorial--master-css-preset-introduction\}
+
+The preset supplies theme tokens, conditions, utilities and a compiled default manifest. CSS imports and the JSON manifest serve different consumers.
+
+## editorial--master-css-preset-usage \{#copy-editorial--master-css-preset-usage\}
+
+Import CSS when authoring a stylesheet; pass the JSON manifest to APIs that execute or compile against a base manifest. [Theme tokens](/guide/theme) explains authoring and overrides.
+
+## editorial--master-css-preset-entries- \{#copy-editorial--master-css-preset-entries-\}
+
+Complete preset stylesheet entry.
+
+## editorial--master-css-preset-entries--default-manifest-json \{#copy-editorial--master-css-preset-entries--default-manifest-json\}
+
+Compiled default manifest for engine, compiler and tooling APIs.
+
+## editorial--master-css-preset-entries--index-css \{#copy-editorial--master-css-preset-entries--index-css\}
+
+Complete preset stylesheet entry.
+
+## editorial--master-css-preset-entries--base-css \{#copy-editorial--master-css-preset-entries--base-css\}
+
+Base styles and the stable cascade-layer order.
+
+## editorial--master-css-preset-entries--theme-css \{#copy-editorial--master-css-preset-entries--theme-css\}
+
+Preset theme definitions.
+
+## editorial--master-css-preset-entries--media-css \{#copy-editorial--master-css-preset-entries--media-css\}
+
+Preset viewport and preference conditions.
+
+## editorial--master-css-preset-entries--container-css \{#copy-editorial--master-css-preset-entries--container-css\}
+
+Preset container width conditions.
+
+## editorial--master-css-preset-entries--utilities-css \{#copy-editorial--master-css-preset-entries--utilities-css\}
+
+Preset utility registrations.
+
+## editorial--master-css-runtime-introduction \{#copy-editorial--master-css-runtime-introduction\}
+
+Observe classes in a document or shadow root and maintain their generated CSS. Runtime startup requires a runtime program, the project manifest compiled for the browser engine, and returns an owned session.
+
+## editorial--master-css-runtime-entries- \{#copy-editorial--master-css-runtime-entries-\}
+
+Runtime startup, observation, snapshots and custom-element integration.
+
+## editorial--master-css-runtime-entries--default-program \{#copy-editorial--master-css-runtime-entries--default-program\}
+
+The default preset compiled into a runtime program, for apps without a Master CSS build integration.
+
+## editorial--master-css-schema-introduction \{#copy-editorial--master-css-schema-introduction\}
+
+Shared types and codecs describe manifests, diagnostics, hydration and integration options. These contracts let hosts exchange structured Master CSS data.
+
+## editorial--master-css-schema-entries- \{#copy-editorial--master-css-schema-entries-\}
+
+Common manifest, diagnostic and rendering-mode exports.
+
+## editorial--master-css-schema-entries--manifest \{#copy-editorial--master-css-schema-entries--manifest\}
+
+Manifest v6 types, variable helpers and serialization.
+
+## editorial--master-css-schema-entries--hydration-manifest \{#copy-editorial--master-css-schema-entries--hydration-manifest\}
+
+Hydration rules, resource order and serialization helpers.
+
+## editorial--master-css-schema-entries--css-directives \{#copy-editorial--master-css-schema-entries--css-directives\}
+
+Directive results, source ranges and output mappings.
+
+## editorial--master-css-schema-entries--css-syntax \{#copy-editorial--master-css-schema-entries--css-syntax\}
+
+Utility, selector and value representation types.
+
+## editorial--master-css-schema-entries--utility-type \{#copy-editorial--master-css-schema-entries--utility-type\}
+
+Utility classification constants and their type.
+
+## editorial--master-css-schema-entries--runtime-style \{#copy-editorial--master-css-schema-entries--runtime-style\}
+
+Runtime style element identifier.
+
+## editorial--master-css-schema-entries--emitted-globals \{#copy-editorial--master-css-schema-entries--emitted-globals\}
+
+Counts of resources already emitted outside a session.
+
+## editorial--master-css-schema-entries--css-common \{#copy-editorial--master-css-schema-entries--css-common\}
+
+Shared CSS vendor identifiers.
+
+## editorial--master-css-schema-entries--diagnostics \{#copy-editorial--master-css-schema-entries--diagnostics\}
+
+Diagnostic versions, source ranges and error payloads.
+
+## editorial--master-css-schema-entries--integration \{#copy-editorial--master-css-schema-entries--integration\}
+
+Rendering modes and shared integration options.
+
+## editorial--master-css-server-introduction \{#copy-editorial--master-css-server-introduction\}
+
+Render generated CSS into HTML and produce hydration data for the browser. Use a one-shot helper, a reusable renderer or a streaming HTML session to match the host lifecycle.
+
+## editorial--master-css-server-entries- \{#copy-editorial--master-css-server-entries-\}
+
+HTML rendering, streaming sessions and hydration options.
+
+## editorial--master-css-svelte-introduction \{#copy-editorial--master-css-svelte-introduction\}
+
+Integrate Master CSS with Svelte builds and SvelteKit server responses. Build and request handling use separate entrypoints.
+
+## editorial--master-css-svelte-usage \{#copy-editorial--master-css-svelte-usage\}
+
+Register the Vite plugin in build configuration and the named `handle` export in the SvelteKit server hook. See [Svelte installation](/guide/installation/svelte) for the complete wiring.
+
+## editorial--master-css-svelte-entries--vite \{#copy-editorial--master-css-svelte-entries--vite\}
+
+Svelte-aware Vite plugin and options.
+
+## editorial--master-css-svelte-entries--hooks-server \{#copy-editorial--master-css-svelte-entries--hooks-server\}
+
+Named SvelteKit request handler.
+
+## editorial--master-css-tooling-introduction \{#copy-editorial--master-css-tooling-introduction\}
+
+Analyze class syntax, extract candidates, validate rules and provide lint or language results. Choose a focused entrypoint or reuse a tooling session across operations.
+
+## editorial--master-css-tooling-usage \{#copy-editorial--master-css-tooling-usage\}
+
+Supply the project manifest when creating sessions or calling semantic helpers. Reuse sessions for repeated analysis, then dispose them. Node subpaths expose synchronous native operations; filesystem scanning has its own asynchronous lifecycle.
+
+## editorial--master-css-tooling-entries- \{#copy-editorial--master-css-tooling-entries-\}
+
+Reusable asynchronous tooling session spanning analysis capabilities.
+
+## editorial--master-css-tooling-entries--node \{#copy-editorial--master-css-tooling-entries--node\}
+
+Synchronous native session and native declaration support.
+
+## editorial--master-css-tooling-entries--lexer \{#copy-editorial--master-css-tooling-entries--lexer\}
+
+Class-list and CSS source analysis.
+
+## editorial--master-css-tooling-entries--lexer-node \{#copy-editorial--master-css-tooling-entries--lexer-node\}
+
+Synchronous native class-list analysis.
+
+## editorial--master-css-tooling-entries--source \{#copy-editorial--master-css-tooling-entries--source\}
+
+Source candidate extraction and source-range types.
+
+## editorial--master-css-tooling-entries--source-node \{#copy-editorial--master-css-tooling-entries--source-node\}
+
+Synchronous native source extraction.
+
+## editorial--master-css-tooling-entries--scanner-node \{#copy-editorial--master-css-tooling-entries--scanner-node\}
+
+Filesystem scanner, retained candidates and scanner lifecycle.
+
+## editorial--master-css-tooling-entries--validator \{#copy-editorial--master-css-tooling-entries--validator\}
+
+Class validation against a supplied manifest.
+
+## editorial--master-css-tooling-entries--validator-node \{#copy-editorial--master-css-tooling-entries--validator-node\}
+
+Synchronous native class validation.
+
+## editorial--master-css-tooling-entries--lint \{#copy-editorial--master-css-tooling-entries--lint\}
+
+Lint diagnostics, edits, canonical suggestions and content helpers.
+
+## editorial--master-css-tooling-entries--lint-node \{#copy-editorial--master-css-tooling-entries--lint-node\}
+
+Synchronous native class linting.
+
+## editorial--master-css-tooling-entries--language \{#copy-editorial--master-css-tooling-entries--language\}
+
+Editor-neutral analysis, completions, colors and semantic tokens.
+
+## editorial--master-css-tooling-entries--language-node \{#copy-editorial--master-css-tooling-entries--language-node\}
+
+Synchronous native language sessions and analysis.
+
+## editorial--master-css-vite-introduction \{#copy-editorial--master-css-vite-introduction\}
+
+Register Master CSS in Vite to compile project styles and coordinate the selected rendering mode. The default export and `createMasterCSSVitePlugin` are the same factory.
+
+## editorial--master-css-vite-usage \{#copy-editorial--master-css-vite-usage\}
+
+Call the factory in Vite configuration and let Vite own the returned plugin lifecycle. See [Vite installation](/guide/installation/vite) for the stylesheet entry and rendering-mode setup.
+
+## editorial--master-css-vite-entries- \{#copy-editorial--master-css-vite-entries-\}
+
+Vite plugin factory and options.
+
+## editorial--master-css-webpack-introduction \{#copy-editorial--master-css-webpack-introduction\}
+
+Register Master CSS with Webpack. The default export and `MasterCSSWebpackPlugin` expose the plugin class; options select its rendering and scanner behavior.
+
+## editorial--master-css-webpack-usage \{#copy-editorial--master-css-webpack-usage\}
+
+Construct the plugin in Webpack configuration so Webpack controls its compilation hooks. See [Webpack installation](/guide/installation/webpack) for the stylesheet and loader setup.
+
+## editorial--master-css-webpack-entries- \{#copy-editorial--master-css-webpack-entries-\}
+
+Webpack plugin class and options.
+
+## editorial--master-css-astro-introduction \{#copy-editorial--master-css-astro-introduction\}
+
+Connect Master CSS to Astro configuration and request handling. The integration configures build behavior; the middleware entry exposes Astro’s request hook.
+
+## editorial--master-css-astro-usage \{#copy-editorial--master-css-astro-usage\}
+
+Use the default integration factory in Astro configuration. See [Astro installation](/guide/installation/astro) for build and middleware setup.
+
+## editorial--master-css-astro-entries- \{#copy-editorial--master-css-astro-entries-\}
+
+Astro integration factory and options.
+
+## editorial--master-css-astro-entries--middleware \{#copy-editorial--master-css-astro-entries--middleware\}
+
+Astro request middleware.
+
+## editorial--master-css-usage \{#copy-editorial--master-css-usage\}
+
+Pass an explicit manifest to engine and render APIs in Node.js, or a runtime program from `compileRuntimeProgram()` anywhere; browsers execute only programs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages#css-compiler); for DOM observation, use [the runtime](/reference/packages#css-runtime).
+
+Build integrations expose the delivery artifacts as virtual modules declared by `./client`: `virtual:master-css-manifest` is the compiled `MasterCSSManifest` for the Node engine, server renderer and tooling; `virtual:master-css-program` is the browser engine program, a hashed `.bin` asset in production builds; `virtual:master-css-emitted-globals` lists variables and keyframes the CSS entry already emits, so runtime generation does not repeat them. A page hydration manifest is separate and describes one response.
+
+Build-time and server generation use Rust semantics; the browser engine executes compiled programs and produces the same CSS for the same definitions and classes. Compile with matching compiler, server and runtime releases: unsupported execution or language versions are rejected.
+
+`executionState(names)` reads stored rule references in request order, repeats included, without generating rules; unknown or never-ensured classes have empty references. Use `snapshot()` for complete rules and CSS. The browser engine has no inspection or render sessions. A host must synchronize resource state even when a transition has no CSS mutations, and a wrapper must forward every `MasterCSSEngine` member, including `executionState`, `registerEmittedGlobals`, `replaceEmittedGlobals`, `refresh`, `dispose` and `Symbol.dispose`.
+
+## editorial--master-css-compiler-usage \{#copy-editorial--master-css-compiler-usage\}
+
+Supply the base manifest explicitly when an API requires it. Inspect returned diagnostics before using the result. A delivery result is an asset set: publish every stylesheet and resource at its assigned URL. See [Imports](/reference/directives/imports) for resolution and delivery boundaries.
+
+**Publishing a file compilation**
+
+`compileManifestFileSync(file, { baseManifest, delivery })` reads the file graph and returns assets without writing them. `delivery` supplies `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`; give distinct stylesheets distinct final URLs. Publish every returned `stylesheets` item at its `href`, and copy each `resources` item from `file` to `href`. The top-level `css`, `nativeCSS` and `generatedCSS` describe the entry only. Relative resource URLs keep their original source owner, query and fragment; reference-only stylesheets do not become published assets. Missing resources and colliding stylesheet URLs fail before publication. Omitting `delivery` returns the single-string result, without this asset-publication contract.
+
+`preserveNativeCSS` defaults to `true`; explicit `false` suppresses raw native CSS while retaining compiled native mixin applications in included output. It does not enable pruning. Stylesheet collections separately select native CSS, Master base CSS and generated utilities through `includeNativeCSS`, `includeMasterBaseCSS` and `includeGeneratedCSS`. Excluded native output does not remove definitions used by generated utilities. See [native pruning](/reference/directives/pruning) for file policy.
+
+`validation: 'report'` is the default: inspect diagnostics while retaining the result. `validation: 'error'` rejects known-invalid CSS in the complete result before returning assets; unknown capabilities alone do not fail it. Ranged diagnostics identify original stylesheet sources where a usable source map exists. A host transform that cannot map a generated segment must not invent an original position.
+
+**Preparing native CSS for another transformer**
+
+Compiler hosts can opt into `preserveNativeSource: true` when another transformer
+needs the untouched native portions of a stylesheet. Master definitions are still
+consumed and native `@apply` rules are still lowered, while unrelated comments,
+empty rules, value spelling, and rule boundaries are retained. The option defaults
+to `false`, preserving the compiler's normal native CSS normalization.
+
+Source preservation cannot be combined with enabled native pruning. Passing a class list alone does not enable pruning. `preserveNativeCSS: false` still suppresses native output. The option
+does not prevent subsequent host transforms from optimizing the result or rewriting
+its source map, and it does not discover new Master definitions or generated-global
+references introduced by a later transform.
+
+**Continuing resource rendering after host transforms**
+
+`compileRenderedStylesheet()` and `compileBrowserStylesheet()` accept an optional
+`emittedGlobals` resource-count snapshot when another output already supplies
+generated theme variables or keyframe definitions. Positive counts suppress duplicate emission;
+zero counts do not. New references still emit their transitive resource closure.
+The returned snapshot includes the external context and resources required by this
+render, without changing the input snapshot. Omitting the option preserves normal
+standalone rendering.
+
+This context prevents a later render from replacing an already processed variable
+with its original manifest value. It does not run host plugins on newly generated
+CSS. Hosts remain responsible for processing that new CSS and publishing its
+resources while preserving plugin ordering and source ownership.
+
+## editorial--master-eslint-config-css-usage \{#copy-editorial--master-eslint-config-css-usage\}
+
+Add the preset to your ESLint flat configuration. Configure project-specific behavior through [the plugin settings](/reference/packages#eslint-plugin-css); [Code linting](/guide/code-linting) shows each rule.
+
+| Rule | Default | Fixable | Reports |
+| --- | --- | --- | --- |
+| `@master/css/sort-classes` | `warn` | Yes | Classes out of generated-rule order, and duplicates. |
+| `@master/css/no-invalid-classes` | `error` | No | Invalid Master CSS syntax and invalid generated CSS; unmatched classes only with `disallowUnknownClass`. |
+| `@master/css/no-conflicting-classes` | `warn` | Yes | Full and partial declaration conflicts in the same variant scope; only full overrides are fixed. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Non-canonical forms, only when token identity and generated-rule behavior are preserved. |
+
+`@master/css/no-unapproved-raw-values` and `@master/css/prefer-component-classes` are not in the preset.
+
+## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
+
+Use [the official preset](/reference/packages#eslint-config-css) for the standard rules, or register the plugin in your own flat configuration. See [Code linting](/guide/code-linting) for rule behavior.
+
+Settings live under the `@master/css` settings key. Arrays replace their defaults.
+
+| Setting | Default | Use |
+| --- | --- | --- |
+| `classAttributes` | `['class', 'className']` | Markup attributes that contain class strings. |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | Callees and tagged templates whose arguments can contain class strings; `styled` also accepts member forms such as `styled.button`. |
+| `classDeclarations` | `[]` | Project variables or object properties treated as class declarations. |
+| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | Object keys skipped while traversing variant config objects. |
+
+`@master/css/no-unapproved-raw-values` reports raw values in token-backed utilities. `requireProperties` limits it to listed native properties (empty or omitted checks every token-backed property); `allowProperties` and `allowedPatterns` add exceptions; `allowRawValues` disables it. Native custom-property references stay valid. Its diagnostic `data` names the property scope and canonical token families; it has no autofix.
+
+`@master/css/prefer-component-classes` reports a class list in which more than `max` classes (default `3`) style other elements through a top-level `_`, `>`, `+` or `~` combinator. Its diagnostic `data` lists `classNames` and their `targets`; it has no autofix.
+
+## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
+
+Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering modes](/guide/rendering-modes) for the browser workflow.
+
+Official integrations inject startup. A custom entry passes `program` as a loader, such as `() => import('virtual:master-css-program').then(module => module.default)`, plus `emittedGlobals`, then calls `observe()`. Runtime-only pages load the program during startup; progressive pages with a valid `hydrationManifest` defer the engine until a class outside it appears, unless `engine: 'eager'` or `enginePrefetch: 'idle'` is set. `emittedGlobals` applies to every page using the bundle. The runtime inserts generated rules and on-demand keyframes into its own stylesheet and never writes to linked stylesheets.
+
+`snapshot()` separates `usageCounts`, connected DOM usage, from `classRules`, which can also hold warmed, hydrated or retained rules. `engine` is `'deferred'`, `'loading'`, `'ready'` or `'failed'`; before a deferred engine starts, class snapshots have no rule entries and `layers` is empty. `ensureClassRules()` and `deleteClassRules()` act independently of DOM usage; deletion is synchronous and bypasses retention. Before the engine is ready they throw `RUNTIME_ENGINE_NOT_READY` and start it, so await `ready()` first.
+
+## editorial--master-css-schema-usage \{#copy-editorial--master-css-schema-usage\}
+
+Import types from the narrow subpath that owns them. A type declaration describes a data shape; it does not validate arbitrary input or compile stylesheet directives. Preserve version fields when passing manifests and diagnostics between APIs; editing them by hand does not make a manifest compatible.
+
+Store manifests with `serializeMasterCSSManifest()`. Serialization normalizes derived fields; it does not replace engine validation or keep comments and editable CSS formatting. Unknown fields are not an extension mechanism: an outer envelope that retains them does not make nested fields accepted or executable.
+
+## editorial--master-css-server-usage \{#copy-editorial--master-css-server-usage\}
+
+Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering modes](/guide/rendering-modes) for complete HTML examples.
+
+`createServerRenderer()` caches rules across renders: recreate it when the manifest changes, and bound `maxCachedClasses` in a long-lived server. Custom hosts can pass the final `stylesheets` a page may link, as `{ href, css, imports }` from `describeLinkedStylesheet()` in `@master/css-compiler/stylesheet`, with the `documentURL` that resolves them; theme variables and native keyframes those stylesheets already deliver are not repeated in `style#master-css`. Rendering tracks each keyframe definition independently, including same-name definitions in different layers or conditions.
+
+## body-0 \{#copy-body-0\}
+
+Choose a package by the work it owns. Each section lists its public import paths and links to its current source on GitHub. Read signatures, overloads and types there; this page does not reproduce declarations.
+
+## body-1 \{#copy-body-1\}
+
+The source links follow the repository’s `rc` branch. For an installed release, also consult the declarations shipped with that package.
+
+## body-2 \{#copy-body-2\}
+
+## Choose an entrypoint \{#choose-an-entrypoint\}
+
+## body-3 \{#copy-body-3\}
+
+| Work | Start with |
+
+## body-4 \{#copy-body-4\}
+
+| Connect a framework or build tool | [Installation →](/guide/installation) and its integration package below. |
+
+## body-5 \{#copy-body-5\}
+
+| Compile CSS definitions or resolve stylesheet files | [`@master/css-compiler`](#css-compiler) |
+
+## body-6 \{#copy-body-6\}
+
+| Generate class rules from compiled definitions | [`@master/css`](#css) |
+
+## body-7 \{#copy-body-7\}
+
+| Observe classes in a browser DOM | [`@master/css-runtime`](#css-runtime) |
+
+## body-8 \{#copy-body-8\}
+
+| Render and hydrate a server response | [`@master/css-server`](#css-server) |
+
+## body-9 \{#copy-body-9\}
+
+| Extract or validate source | [`@master/css-tooling`](#css-tooling) |
+
+## body-10 \{#copy-body-10\}
+
+| Implement editor features | [`@master/css-language-service`](#css-language-service) |
+
+## body-11 \{#copy-body-11\}
+
+| Automate from a terminal or agent | [CLI commands](/reference/tools/cli) or [MCP tools](/reference/tools/mcp) |
+
+## body-12 \{#copy-body-12\}
+
+A manifest describes definitions; it is not a native stylesheet. Deliver the compiler’s native CSS as well as the utility output your rendering mode produces. A Node engine uses a manifest; the browser engine uses a compiled runtime program. [Rendering modes](/guide/rendering-modes) teaches which delivery path to choose.
+
+## body-13 \{#copy-body-13\}
+
+| Import path | Purpose |
+
+## description \{#copy-description\}
+
+Choose a public package, find its import paths, and open its API source on GitHub.
+
+## title \{#copy-title\}
+
+Packages
+
+## source-links \{#copy-source-links\}
+
+[Source and README](%%source%%) · [Public export mappings](%%exports%%)

@@ -1,0 +1,91 @@
+# Reference prose: tokens/font
+
+## title \{#copy-title\}
+
+
+字型
+
+## summary \{#copy-summary\}
+
+
+字型家族、大小與字重，統一使用 font-* 形式。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+字型家族
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+大小
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+字重
+
+## note \{#copy-note\}
+
+
+三個命名空間共用 `font-` 前綴，因此名稱必須在三者之間保持唯一。同名定義出現在多個命名空間時，會回報 `AMBIGUOUS_TOKEN`，而且不產生 CSS。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+字型家族是依序嘗試的備援清單，大小是 rem 長度，字重則是數值要求。像素換算假設根元素字型大小為 16px。實際呈現的字型與可用字重，取決於頁面載入的字型。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+共用一個前綴，屬性各自獨立
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`font-serif`、`font-4xl` 與 `font-semibold` 分別設定 `font-family`、`font-size` 與 `font-weight`。因為設定不同屬性，所以可以合併使用，但其中任何一個都不是完整的文字樣式。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+字型大小 class 會讓行高與字距依各自的宣告或繼承決定。如果三個度量都應來自同一組文字樣式，請使用 `text-<name>`。無論哪種形式，字型家族與字重都仍然獨立。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+字型家族 token 只會指定字型名稱，不會下載字型。預設的 sans、mono 與 serif 字型堆疊，分別以選用的 `--font-sans`、`--font-mono` 與 `--font-serif` 掛鉤開頭。載入字型與選擇全站字型堆疊的做法，請見文字排版指南。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+自訂鍵必須在三個命名空間之間保持不同。如果 `--font-family-brand` 與 `--font-size-brand` 同時存在，`font-brand` 就會有歧義。`(font-size:var(--font-size-brand))` 這類明確的原生宣告，可以直接指定要使用的屬性與變數。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+文字樣式
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+命名空間解析
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生字型選擇
+
+## usage-lead \{#copy-usage-lead\}
+
+
+為標題設定較大的字級與中等字重，並為程式碼範例設定等寬字型家族。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+每個命名空間接受自己的 token：`--font-family-display` 會建立 `font-display`，`--font-size-hero` 會建立 `font-hero`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

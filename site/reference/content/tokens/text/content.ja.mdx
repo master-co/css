@@ -1,0 +1,81 @@
+# Reference prose: tokens/text
+
+## title \{#copy-title\}
+
+
+テキスト
+
+## summary \{#copy-summary\}
+
+
+フォントサイズ、行の高さ、文字間隔をまとめて設定するテキストスタイル。
+
+## note \{#copy-note\}
+
+
+主要な `--text-<name>` トークンがクラスを作ります。付随する `--line-height` と `--letter-spacing` は任意で、省略時は `normal` を使います。ファミリー、ウェイト、色は別のクラスで指定します。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+各行は、1 つのクラスが参照する 3 つの値を示します。プリセットのサイズは対応する font-size トークンを参照し、表では読みやすいように参照を解決しています。すべてのプリセットスタイルに、両方の付随トークンが含まれます。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+1 つの主要トークンから 3 つの宣言
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`--text-card` は `text-card` を登録します。このクラスは常にフォントサイズ、行の高さ、文字間隔を出力します。`--text-card--line-height` または `--text-card--letter-spacing` がない場合、その宣言には `normal` を使い、継承した値は保持しません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+付随トークンだけではテキストスタイルは登録されません。変更したい値が行の高さや文字間隔だけでも、主要なサイズトークンを追加してください。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+付随トークンは、この組み合わせスタイルが使う値であり、別のクラス名ではありません。個別に調整するには、`font-<size>`、`leading-<name>`、`tracking-<name>` を使います。同じ条件では、これらの単一プロパティのユーティリティはテキストの組み合わせスタイルより後になり、対応する宣言を上書きできます。class 属性での順序は結果を決めません。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+この組み合わせスタイルは、フォントの読み込み、ファミリーやウェイトの選択、マージンの追加、段落幅の決定は行いません。スタイルを選んで組み合わせ、階層を作る方法はタイポグラフィガイドで説明しています。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+フォント
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+行の高さ
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+文字間隔
+
+## explanation-links-3-label \{#copy-explanation-links-3-label\}
+
+
+生成ルールの順序
+
+## usage-lead \{#copy-usage-lead\}
+
+
+段落に 1 つのテキストスタイルを適用します。ファミリー、ウェイト、色は引き続き独立して指定できます。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+付随トークンとともにテキストスタイルを追加します。`--text-display` を定義すると `text-display` が使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+タイポグラフィ

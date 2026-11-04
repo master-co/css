@@ -38,6 +38,6 @@ export const installationGuideGroups = [
   ] }
 ] as const
 
-export const installationGuidesMarkdown = () => installationGuideGroups.map(group =>
-  `**${group.title}**\n\n${group.entries.map(([, title, href]) => `- [${title}](${href})`).join('\n')}`
+export const installationGuidesMarkdown = (t: (text: string) => string = text => text) => installationGuideGroups.map(group =>
+  `**${t(group.title)}**\n\n${group.entries.map(([, title, href]) => `- [${title}](${href})`).join('\n')}`
 ).join('\n\n')

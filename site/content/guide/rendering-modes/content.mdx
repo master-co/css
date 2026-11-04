@@ -7,7 +7,7 @@ import Step from '@master/internal-site/components/Step.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Choose a rendering mode by when your application knows its complete class names. Start with static rendering when those names are visible in source. Use pre-rendering to generate CSS from finished page HTML, runtime rendering for new classes created in the browser, or progressive rendering to combine page CSS with runtime support.
 
 Complete your framework's [installation guide](/guide/installation) first. Official integrations load the CSS entry and configure the selected mode; the examples below explain what each mode does and how to verify it. Framework support and the HTML available for processing depend on that integration.
@@ -27,10 +27,10 @@ Pre-rendering requires actual page markup. An empty root element in a client-ren
 
 ---
 
-## Static rendering
+## Static rendering \{#static-rendering\}
 The build scans source text for complete class strings and generates CSS from the project's definitions. It does not execute application code or observe the DOM. The browser loads the resulting stylesheet without a Master CSS runtime.
 
-### Generated stylesheet entry
+### Generated stylesheet entry \{#generated-stylesheet-entry\}
 Import Master CSS from the stylesheet your application already loads:
 
 ```css name=src/style.css
@@ -50,7 +50,7 @@ The scanner finds `btn` and `text-center`. The engine resolves the project recip
 
 Integrations discover ordinary application sources and update CSS during development. Keep complete class names in source and pass changing values through CSS variables; [Scanning class names](/guide/scanning-and-pruning) covers both, plus `@source` and safelist exceptions.
 
-### Native CSS entries
+### Native CSS entries \{#native-css-entries\}
 Native selectors in the CSS entry are preserved by default, even when their classes are absent from scanned source. Their `var(--*)` and animation references can retain the matching theme variables and keyframes.
 
 Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or `@prune native;` for one file. `@preserve native;` excludes a file from integration-level pruning. See [pruning unused native CSS](/guide/optimizing-css-delivery#native-pruning).
@@ -59,7 +59,7 @@ Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or
 
 <GuideStudy id="static-late-class" />
 
-## Runtime rendering
+## Runtime rendering \{#runtime-rendering\}
 Use runtime rendering when class names become known in the browser, such as in a visual editor or content loaded after the build. The runtime uses [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to track connected elements and their class changes, then inserts or reuses the matching CSS rules.
 
 <DeliveryFlow name="runtime" />
@@ -68,7 +68,7 @@ Select runtime mode through your integration, for example the [Vite runtime setu
 
 <StepSection>
   <Step>
-    #### Insert an element
+    #### Insert an element \{#insert-an-element\}
     ```js
     const h1 = document.createElement('h1')
     h1.className = 'text-center'
@@ -78,21 +78,21 @@ Select runtime mode through your integration, for example the [Vite runtime setu
     The connected heading becomes centered when the runtime generates its rule.
   </Step>
   <Step>
-    #### Add a class
+    #### Add a class \{#add-a-class\}
     ```js
     h1.classList.add('(font-size:3rem)')
     ```
     The heading grows to `3rem`. Its existing alignment rule remains in use.
   </Step>
   <Step>
-    #### Remove a class
+    #### Remove a class \{#remove-a-class\}
     ```js
     h1.classList.remove('text-center')
     ```
     The heading stops matching the alignment rule. It returns to its inherited alignment, even if the runtime temporarily retains the unused rule.
   </Step>
   <Step>
-    #### Remove the element
+    #### Remove the element \{#remove-the-element\}
     ```js
     h1.remove()
     ```
@@ -147,7 +147,7 @@ Confirm in DevTools that the runtime reuses the preloaded response instead of re
 
 ---
 
-## Pre-rendering — SSG, SSR
+## Pre-rendering — SSG, SSR \{#pre-rendering--ssg-ssr\}
 Use pre-rendering when your build or server has the final page HTML and you do not need browser generation for later classes. The server renderer reads that HTML, generates its rules, and inserts them into `style#master-css`. It generates CSS from markup; it does not render your application components into HTML.
 
 Official integrations perform this step for their supported HTML outputs. For a custom server or build pipeline, this example uses `virtual:master-css-manifest` supplied by a build integration. That virtual module must be resolved by the build tool before the server code runs.
@@ -188,7 +188,7 @@ The renderer can reuse cached rules across a finite static build while producing
 
 ---
 
-## Progressive rendering
+## Progressive rendering \{#progressive-rendering\}
 Use progressive rendering when the server or build can generate the initial page CSS and the browser may later introduce new classes. The response carries that CSS in `style#master-css`; the runtime reads a page hydration manifest to distinguish covered classes from those that need the engine.
 
 <DeliveryFlow name="progressive" />
@@ -207,7 +207,7 @@ A class listed in the manifest can be reused without starting the engine. This i
 
 <GuideStudy id="progressive-known-class" />
 
-### CSS hydration
+### CSS hydration \{#css-hydration\}
 Hydration lets the runtime adopt existing CSS rules. At startup it reads the explicit `hydrationManifest` option, or discovers the inline manifest or the URL on `style#master-css`. With the engine deferred, it tracks usage without rebuilding the stylesheet.
 
 <DeliveryFlow name="hydration" />
@@ -234,11 +234,11 @@ Static rendering is the default for these official adapters. Runtime generation 
 Vite and Webpack cannot add server behavior to a framework merely because it uses that bundler. Webpack's HTML injection also does not rewrite files served directly from a development server's static directory. Astro middleware reads the complete HTML response before returning it; SvelteKit uses its page-chunk hook. Follow the framework guide when choosing the delivery path. PHP, Rails, CMS and .NET hosts build the asset with Vite and load it from their templates; see [Server-rendered apps](/guide/installation/server-rendered).
 
 
-## Native pruning is a separate choice
+## Native pruning is a separate choice \{#native-pruning-is-a-separate-choice\}
 
 Progressive rendering can use native pruning without changing when initial CSS is delivered or later utilities are generated. Pruning requires a known usage set and a build path that supplies it; runtime generation cannot restore an arbitrary native selector removed from delivery. See [Optimizing CSS delivery](/guide/optimizing-css-delivery#rendering-and-pruning) for a reproducible comparison.
 
-## Verify the selected mode
+## Verify the selected mode \{#verify-the-selected-mode\}
 Test a production build as well as development: an integration may use runtime generation during development even when production pre-renders CSS.
 
 <DocumentComparison>
@@ -260,7 +260,7 @@ const sheet = document.querySelector('style#master-css').sheet
 console.log(sheet.cssRules)
 ```
 
-### Diagnose progressive startup
+### Diagnose progressive startup \{#diagnose-progressive-startup\}
 
 <DocumentComparison>
 
@@ -274,7 +274,7 @@ console.log(sheet.cssRules)
 
 When new classes are likely soon after load, `enginePrefetch: 'idle'` starts the engine during idle time. Use `engine: 'eager'` to start it during `start()`. Both change the default deferral tradeoff and should be chosen for the page's actual interactions.
 
-### Interaction-heavy screens
+### Interaction-heavy screens \{#interaction-heavy-screens\}
 An interaction that adds many first-time classes asks the browser to process both DOM changes and new stylesheet rules. For editors, data grids, builders, or other large dynamic views:
 
 - Keep stable layout, typography and component states in shared classes.

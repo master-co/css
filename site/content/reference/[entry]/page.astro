@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: Props) {
   return referenceMetadata(entry, locale)
 }
 
-const { entry } = Astro.props.params
-const doc = await loadReferenceRoute(entry, 'utility')
+const { entry, locale } = Astro.props.params
+const doc = await loadReferenceRoute(entry, locale, 'utility')
 const sheet = doc.sheet
 if (sheet?.kind !== 'recipe') throw new Error(`Missing recipe sheet: ${doc.id}`)
 ---

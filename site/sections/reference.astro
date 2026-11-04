@@ -4,12 +4,13 @@ import DocumentShell from '@master/internal-site/sections/document.astro'
 import DocHeader from '@master/internal-site/components/DocHeader.svelte'
 import DocWrapper from '@master/internal-site/components/DocWrapper.astro'
 import ReferenceNavigation from '~/site/reference/Navigation.svelte'
-import { routeIndex } from '~/site/reference/route-index'
+import { routeIndexForLocale } from '~/site/reference/route-index'
+import { siteOf } from '@master/internal-site/astro/site-context'
 import pageCategories from '~/site/.categories/reference.json'
 import { referenceNavigationCategories } from '~/site/reference/navigation-data'
 
 export const bodyClass = 'bg-surface-base'
-const navigation = referenceNavigationCategories(routeIndex, pageCategories.map(category => category.name))
+const navigation = referenceNavigationCategories(routeIndexForLocale(siteOf(Astro).locale), pageCategories.map(category => category.name))
 ---
 
 <DocumentShell>
