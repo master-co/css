@@ -48,7 +48,7 @@ jobs:
       matrix:
         include:
           - package: binding-darwin-arm64
-            runner: macos-15
+            runner: macos-26
           - package: binding-darwin-x64
             runner: macos-15-intel
           - package: binding-linux-arm64-gnu

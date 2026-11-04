@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { package: binding-darwin-arm64, runner: macos-15 }
+          - { package: binding-darwin-arm64, runner: macos-26 }
           - { package: binding-darwin-x64, runner: macos-15-intel }
           - { package: binding-linux-arm64-gnu, runner: ubuntu-24.04-arm }
           - { package: binding-linux-x64-gnu, runner: ubuntu-24.04 }
@@ -114,7 +114,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { target: darwin-arm64, runner: macos-15 }
+          - { target: darwin-arm64, runner: macos-26 }
           - { target: darwin-x64, runner: macos-15-intel }
           - { target: linux-arm64, runner: ubuntu-24.04-arm }
           - { target: linux-x64, runner: ubuntu-24.04 }

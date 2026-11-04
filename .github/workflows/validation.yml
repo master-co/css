@@ -330,7 +330,7 @@ jobs:
       matrix:
         include:
           - package: binding-darwin-arm64
-            runner: macos-15
+            runner: macos-26
           - package: binding-darwin-x64
             runner: macos-15-intel
           - package: binding-linux-arm64-gnu
@@ -525,7 +525,7 @@ jobs:
   compat_macos:
     name: compat-macos
     needs: preflight
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
       TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
