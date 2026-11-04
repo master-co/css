@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
   "suite": "tailwind-static-comparison",
-  "generatedAt": "2026-11-04T15:21:18.297Z",
+  "generatedAt": "2026-11-04T17:12:16.701Z",
   "sourceReports": [
     {
       "suite": "css-output-size",
-      "generatedAt": "2026-11-04T15:21:18.274Z",
+      "generatedAt": "2026-11-04T17:11:30.447Z",
       "command": "bun run --filter master-css-benchmarks bench:css-output-size"
     },
     {
       "suite": "build-performance",
-      "generatedAt": "2026-11-04T13:37:04.899Z",
+      "generatedAt": "2026-11-04T17:12:02.277Z",
       "command": "bun run --filter master-css-benchmarks bench:build-performance"
     },
     {
       "suite": "css-structure",
-      "generatedAt": "2026-11-04T13:36:25.593Z",
+      "generatedAt": "2026-11-04T17:11:33.619Z",
       "command": "bun run --filter master-css-benchmarks bench:css-structure"
     }
   ],
@@ -289,16 +289,16 @@
       "variants": {
         "master-static-cli": {
           "css": {
-            "rawBytes": 6374,
-            "gzipBytes": 2214,
-            "brotliBytes": 1879,
-            "brotliFileSumBytes": 2230,
-            "fileCount": 10,
-            "sha256": "fd4c640cb47bb44818ad14e069ed6c6f5a0123ded20926bcf854081c4218c014"
+            "rawBytes": 5600,
+            "gzipBytes": 1993,
+            "brotliBytes": 1692,
+            "brotliFileSumBytes": 1692,
+            "fileCount": 1,
+            "sha256": "8f08dc196a8d5027a23ce80cb4a2a9b156cee88f0fdf12c54782cdbbe940ffb2"
           },
           "build": {
-            "coldMedianMs": 381,
-            "repeatMedianMs": 378.1,
+            "coldMedianMs": 208.9,
+            "repeatMedianMs": 203.8,
             "sampleCount": 5
           },
           "structure": {
@@ -307,7 +307,7 @@
             "declarations": 134,
             "customProperties": 21,
             "importantDeclarations": 0,
-            "atRules": 15,
+            "atRules": 6,
             "layerBlocks": 4,
             "mediaBlocks": 0,
             "supportsBlocks": 0,
@@ -329,16 +329,16 @@
         },
         "master-static-vite": {
           "css": {
-            "rawBytes": 6203,
-            "gzipBytes": 2072,
-            "brotliBytes": 1796,
-            "brotliFileSumBytes": 2176,
-            "fileCount": 13,
-            "sha256": "91e483b6520f86e5f580818b85df81ee8aebc6fbaed61a0622bffd62f585efa1"
+            "rawBytes": 5601,
+            "gzipBytes": 1994,
+            "brotliBytes": 1692,
+            "brotliFileSumBytes": 1692,
+            "fileCount": 1,
+            "sha256": "4d38e295472838e4e93e046b566f5a59db9830cc1d95a15be6f48985240691a6"
           },
           "build": {
-            "coldMedianMs": 378,
-            "repeatMedianMs": 377.2,
+            "coldMedianMs": 269.3,
+            "repeatMedianMs": 253.5,
             "sampleCount": 5
           },
           "structure": {
@@ -347,7 +347,7 @@
             "declarations": 134,
             "customProperties": 21,
             "importantDeclarations": 0,
-            "atRules": 18,
+            "atRules": 6,
             "layerBlocks": 4,
             "mediaBlocks": 0,
             "supportsBlocks": 0,
@@ -377,7 +377,7 @@
             "sha256": "97c86036589158b6af326c1d9659d06db561c95e1374ce0902fc696fe81db17c"
           },
           "build": {
-            "coldMedianMs": 47.6,
+            "coldMedianMs": 50.7,
             "repeatMedianMs": 47.3,
             "sampleCount": 5
           },
@@ -417,8 +417,8 @@
             "sha256": "0630b3ed357b67ebf7b15043b06b3adff4ef04d1a7de0f1bb5f0f3b26c8f47d8"
           },
           "build": {
-            "coldMedianMs": 93,
-            "repeatMedianMs": 91.5,
+            "coldMedianMs": 97.5,
+            "repeatMedianMs": 91.9,
             "sampleCount": 5
           },
           "structure": {
@@ -454,16 +454,16 @@
       "variants": {
         "master-static-cli": {
           "css": {
-            "rawBytes": 7179,
-            "gzipBytes": 2475,
-            "brotliBytes": 2115,
-            "brotliFileSumBytes": 2440,
-            "fileCount": 10,
-            "sha256": "6a66ec4df0aa0202d786e3c2e77870ca236af61f5af1cab93206b88d2065f0c2"
+            "rawBytes": 6405,
+            "gzipBytes": 2256,
+            "brotliBytes": 1931,
+            "brotliFileSumBytes": 1931,
+            "fileCount": 1,
+            "sha256": "09e5c28989c725bc9ad88ebb4e6eb9263952c1e9de53e17e432e6d6364b9502d"
           },
           "build": {
-            "coldMedianMs": 382.9,
-            "repeatMedianMs": 377.1,
+            "coldMedianMs": 206,
+            "repeatMedianMs": 203.1,
             "sampleCount": 5
           },
           "structure": {
@@ -472,7 +472,7 @@
             "declarations": 153,
             "customProperties": 24,
             "importantDeclarations": 0,
-            "atRules": 16,
+            "atRules": 7,
             "layerBlocks": 4,
             "mediaBlocks": 1,
             "supportsBlocks": 0,
@@ -494,16 +494,16 @@
         },
         "master-static-vite": {
           "css": {
-            "rawBytes": 7008,
-            "gzipBytes": 2339,
-            "brotliBytes": 1992,
-            "brotliFileSumBytes": 2415,
-            "fileCount": 13,
-            "sha256": "4a2e81d7840f81ad9c471b8484e55a6e81914bca7e1a053731b5d92c2cfb34db"
+            "rawBytes": 6406,
+            "gzipBytes": 2257,
+            "brotliBytes": 1913,
+            "brotliFileSumBytes": 1913,
+            "fileCount": 1,
+            "sha256": "8381b514e6536e9daed4f9c80137706aa0d4514d9953a0994d53d03f757437de"
           },
           "build": {
-            "coldMedianMs": 379.1,
-            "repeatMedianMs": 377.7,
+            "coldMedianMs": 268.8,
+            "repeatMedianMs": 257.9,
             "sampleCount": 5
           },
           "structure": {
@@ -512,7 +512,7 @@
             "declarations": 153,
             "customProperties": 24,
             "importantDeclarations": 0,
-            "atRules": 19,
+            "atRules": 7,
             "layerBlocks": 4,
             "mediaBlocks": 1,
             "supportsBlocks": 0,
@@ -542,7 +542,7 @@
             "sha256": "8cf1d11e55afefecc219556677cfa570af7a671e5edcb19a5e39910b096a72ac"
           },
           "build": {
-            "coldMedianMs": 48.4,
+            "coldMedianMs": 52.3,
             "repeatMedianMs": 49.3,
             "sampleCount": 5
           },
@@ -582,8 +582,8 @@
             "sha256": "84f0d379a39adb7905aa39d25adf4af7a405b3c1bcd85a1216b48dae517d1409"
           },
           "build": {
-            "coldMedianMs": 97.1,
-            "repeatMedianMs": 94.6,
+            "coldMedianMs": 101.3,
+            "repeatMedianMs": 91.1,
             "sampleCount": 5
           },
           "structure": {
@@ -619,16 +619,16 @@
       "variants": {
         "master-static-cli": {
           "css": {
-            "rawBytes": 7436,
-            "gzipBytes": 2471,
-            "brotliBytes": 2096,
-            "brotliFileSumBytes": 2441,
-            "fileCount": 10,
-            "sha256": "6082c2872562b531b929c9088181520b16363bf34afbb3149597e118eebf2729"
+            "rawBytes": 6662,
+            "gzipBytes": 2251,
+            "brotliBytes": 1904,
+            "brotliFileSumBytes": 1904,
+            "fileCount": 1,
+            "sha256": "7ab91bdb14d37411ce095fcb1a49545c6dfd1bdc7e0cb48e4bcc96d2450806ea"
           },
           "build": {
-            "coldMedianMs": 386.2,
-            "repeatMedianMs": 380.6,
+            "coldMedianMs": 213.1,
+            "repeatMedianMs": 209.1,
             "sampleCount": 5
           },
           "structure": {
@@ -637,7 +637,7 @@
             "declarations": 161,
             "customProperties": 27,
             "importantDeclarations": 0,
-            "atRules": 15,
+            "atRules": 6,
             "layerBlocks": 4,
             "mediaBlocks": 0,
             "supportsBlocks": 0,
@@ -659,16 +659,16 @@
         },
         "master-static-vite": {
           "css": {
-            "rawBytes": 7265,
-            "gzipBytes": 2342,
-            "brotliBytes": 1999,
-            "brotliFileSumBytes": 2382,
-            "fileCount": 13,
-            "sha256": "05624df1ebc18e217018dd88cfd885d7f41b8f2d8ac97ea56f6f7c0bb33f51fa"
+            "rawBytes": 6663,
+            "gzipBytes": 2252,
+            "brotliBytes": 1907,
+            "brotliFileSumBytes": 1907,
+            "fileCount": 1,
+            "sha256": "538101cd2758238e24853e09ea1b21414846631b5bf3f3ea70239a8e2661f478"
           },
           "build": {
-            "coldMedianMs": 383.2,
-            "repeatMedianMs": 376.2,
+            "coldMedianMs": 307.4,
+            "repeatMedianMs": 263.2,
             "sampleCount": 5
           },
           "structure": {
@@ -677,7 +677,7 @@
             "declarations": 161,
             "customProperties": 27,
             "importantDeclarations": 0,
-            "atRules": 18,
+            "atRules": 6,
             "layerBlocks": 4,
             "mediaBlocks": 0,
             "supportsBlocks": 0,
@@ -707,8 +707,8 @@
             "sha256": "f9d9a4209be325cbe877cd1c7bdc4cadd38557c6a67bf897c7890186c878d6c5"
           },
           "build": {
-            "coldMedianMs": 49,
-            "repeatMedianMs": 48.7,
+            "coldMedianMs": 56.1,
+            "repeatMedianMs": 51.6,
             "sampleCount": 5
           },
           "structure": {
@@ -747,8 +747,8 @@
             "sha256": "8c2aa5bf4be693022871b5d35df00b3918130113fdc46a200bbc20c78eaa8d6a"
           },
           "build": {
-            "coldMedianMs": 97.5,
-            "repeatMedianMs": 95.6,
+            "coldMedianMs": 109.9,
+            "repeatMedianMs": 96.6,
             "sampleCount": 5
           },
           "structure": {
@@ -784,16 +784,16 @@
       "variants": {
         "master-static-cli": {
           "css": {
-            "rawBytes": 13422,
-            "gzipBytes": 3362,
-            "brotliBytes": 2257,
-            "brotliFileSumBytes": 2574,
-            "fileCount": 10,
-            "sha256": "52270b093e42c4aea1cedc50052541d01ad341f81b1c2360c4f195f478baef8e"
+            "rawBytes": 12648,
+            "gzipBytes": 3148,
+            "brotliBytes": 2049,
+            "brotliFileSumBytes": 2049,
+            "fileCount": 1,
+            "sha256": "ffdf4cc13141ea78844f403281dca2faf874b5657f1a03addf1bec685bfb7912"
           },
           "build": {
-            "coldMedianMs": 399.7,
-            "repeatMedianMs": 396.3,
+            "coldMedianMs": 234.6,
+            "repeatMedianMs": 215.5,
             "sampleCount": 5
           },
           "structure": {
@@ -802,7 +802,7 @@
             "declarations": 352,
             "customProperties": 25,
             "importantDeclarations": 0,
-            "atRules": 15,
+            "atRules": 6,
             "layerBlocks": 4,
             "mediaBlocks": 0,
             "supportsBlocks": 0,
@@ -824,16 +824,16 @@
         },
         "master-static-vite": {
           "css": {
-            "rawBytes": 13251,
-            "gzipBytes": 3251,
-            "brotliBytes": 2161,
-            "brotliFileSumBytes": 2541,
-            "fileCount": 13,
-            "sha256": "e7eaafa75c95056aad467aa9748fb7c3ae353f44a178a0ab125bb6a32e2ba4c8"
+            "rawBytes": 12649,
+            "gzipBytes": 3149,
+            "brotliBytes": 2051,
+            "brotliFileSumBytes": 2051,
+            "fileCount": 1,
+            "sha256": "88d836a180d7d4c157c1caca07e4dcce18d180fbe117b34e429f2c67dc98bb97"
           },
           "build": {
-            "coldMedianMs": 420.4,
-            "repeatMedianMs": 407.5,
+            "coldMedianMs": 286.8,
+            "repeatMedianMs": 276.1,
             "sampleCount": 5
           },
           "structure": {
@@ -842,7 +842,7 @@
             "declarations": 352,
             "customProperties": 25,
             "importantDeclarations": 0,
-            "atRules": 18,
+            "atRules": 6,
             "layerBlocks": 4,
             "mediaBlocks": 0,
             "supportsBlocks": 0,
@@ -872,8 +872,8 @@
             "sha256": "656aa6a7b509a889a6d5e8216b6d6e436c7b2c4e6a27e5e173eae8b7cba50ab0"
           },
           "build": {
-            "coldMedianMs": 49.8,
-            "repeatMedianMs": 51.4,
+            "coldMedianMs": 52.8,
+            "repeatMedianMs": 50.5,
             "sampleCount": 5
           },
           "structure": {
@@ -912,8 +912,8 @@
             "sha256": "a616b232d01d3d478accdd9e532b8e7e4e8816a2f3599fc2f9bf7379a70adb45"
           },
           "build": {
-            "coldMedianMs": 99.4,
-            "repeatMedianMs": 99.9,
+            "coldMedianMs": 104.8,
+            "repeatMedianMs": 98.8,
             "sampleCount": 5
           },
           "structure": {

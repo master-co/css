@@ -53,7 +53,7 @@ The public data does not include real-user Web Vitals or Lighthouse scores. Trac
 ## Data sources
 The charts read committed snapshots under `benchmarks/**/snapshot.json` and `benchmarks/browser-lifecycle/long-session-evidence.json`. The table preserves the commands recorded for those snapshots; run them from `benchmarks/`. Reproducing them requires the corresponding source revision and dependency lockfile, not just a current package installation.
 
-The November 4, 2026 snapshots were recorded on an Apple M5 Max with Chromium 156.0.8078.4 and packages built from `3fc239c6c`. The suite runner is Bun; production commands run with the runner's JavaScript runtime, so compare build timings only within one runtime.
+The November 4, 2026 snapshots were recorded on an Apple M5 Max with Chromium 156.0.8078.4 and packages built from `add10eec6`, except the browser lifecycle snapshot and evidence, which come from `3fc239c6c`; the commits between them change the compiler and the static build hosts, not the runtime, the preset or the engine. The Master CSS documentation pages were measured from a production build of `add10eec6`. The suite runner is Bun; production commands run with the runner's JavaScript runtime, so compare build timings only within one runtime.
 
 | Result | Committed data | Recorded snapshot command |
 |--------|----------------|------------------|
@@ -74,8 +74,9 @@ The Master CSS fixtures express the rendered values of the July 2026 fixtures in
 The revision comparison runs two revisions' own benchmark runners on one machine. It is the only valid way to compare timings across revisions: snapshots recorded on different machines, browsers or JavaScript runtimes are not comparable.
 
 1. Check out the baseline revision in a separate worktree, install it with its own lockfile and package manager, and build its packages.
-2. In both checkouts, run `css-output-size`, `master-delivery-modes` and `interaction-cost` (3 rounds, 1 warmup), and `build-performance` with `BENCHMARK_ROUNDS=5` under the same Node.js version (`npx vitest bench build-performance --run`). Use one Chromium build for both browser runs; an older Playwright can use it through `PLAYWRIGHT_BROWSERS_PATH` with a directory that names it as its expected build.
-3. Collect each side's four `report.json` files into a `.results`-shaped directory, then run `REVISION_COMPARISON_CURRENT=<revision> REVISION_COMPARISON_CURRENT_LABEL=<date> bun revision-comparison/update-snapshot.mjs <baseline .results> <current .results>`. The script rejects reports from different machines or Chromium builds.
+2. In both checkouts, run `css-output-size`, `master-delivery-modes` and `interaction-cost` (3 rounds, 1 warmup). Use one Chromium build for both browser runs; an older Playwright can use it through `PLAYWRIGHT_BROWSERS_PATH` with a directory that names it as its expected build.
+3. Run `build-performance` with `BENCHMARK_ROUNDS=5` under the same Node.js version (`npx vitest bench build-performance --run`), alternating between the checkouts (baseline, current, current, baseline, baseline, current), and keep each run's report as `build-performance/report-<n>.json`. The script pools a suite's reports before taking medians, so load from other processes falls on both sides alike.
+4. Collect each side's reports into a `.results`-shaped directory, then run `REVISION_COMPARISON_CURRENT=<revision> REVISION_COMPARISON_CURRENT_LABEL=<date> bun revision-comparison/update-snapshot.mjs <baseline .results> <current .results>`. The script rejects reports from different machines or Chromium builds.
 
 ### Validate the recorded data
 

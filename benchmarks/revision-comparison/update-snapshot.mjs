@@ -2,7 +2,9 @@
 // benchmark runner, run on one machine with one Chromium build:
 //   bun revision-comparison/update-snapshot.mjs <baseline .results> <current .results>
 // Both directories hold css-output-size, build-performance, master-delivery-modes and interaction-cost reports.
-import { readFile, writeFile } from 'node:fs/promises'
+// A suite directory may hold several reports (report-1.json, report-2.json, ...) from runs interleaved
+// with the other revision; their samples are pooled before taking medians.
+import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -54,7 +56,33 @@ const suites = [...new Set(rows.map((row) => row.suite))]
 const reports = {}
 for (const side of ['baseline', 'current']) {
   const root = side === 'baseline' ? baselineRoot : currentRoot
-  reports[side] = Object.fromEntries(await Promise.all(suites.map(async (suite) => [suite, JSON.parse(await readFile(resolve(root, suite, 'report.json'), 'utf8'))])))
+  reports[side] = Object.fromEntries(await Promise.all(suites.map(async (suite) => [suite, await readSuiteReport(resolve(root, suite))])))
+}
+
+async function readSuiteReport(directory) {
+  const files = (await readdir(directory)).filter((file) => /^report(-\d+)?\.json$/.test(file)).sort()
+  if (!files.length) throw new Error(`${directory} has no report.json.`)
+  const runs = await Promise.all(files.map(async (file) => JSON.parse(await readFile(resolve(directory, file), 'utf8'))))
+  if (runs.length === 1) return runs[0]
+  const samples = runs.flatMap((run) => run.samples)
+  const summary = runs.at(-1).summary.map((entry) => ({
+    ...entry,
+    ...summarize(samples.filter((sample) => sample.variantId === entry.variantId && sample.metricId === entry.metricId).map((sample) => sample.value))
+  }))
+  return { ...runs.at(-1), generatedAt: runs.map((run) => run.generatedAt).sort().at(-1), runCount: runs.length, samples, summary }
+}
+
+// Matches summarizeValues in shared/stats.ts.
+function summarize(values) {
+  const sorted = values.filter(Number.isFinite).sort((left, right) => left - right)
+  const middle = Math.floor(sorted.length / 2)
+  return {
+    min: sorted[0] ?? 0,
+    median: sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2 || 0,
+    mean: sorted.length ? sorted.reduce((total, value) => total + value, 0) / sorted.length : 0,
+    max: sorted.at(-1) ?? 0,
+    sampleCount: sorted.length
+  }
 }
 
 const environment = reports.current['build-performance'].environment
@@ -88,7 +116,7 @@ const snapshot = {
   environment,
   runtimes: Object.fromEntries(['baseline', 'current'].map((side) => [side, reports[side]['build-performance'].environment.node])),
   browser: reports.current['master-delivery-modes'].browser,
-  sourceReports: Object.fromEntries(['baseline', 'current'].map((side) => [side, suites.map((suite) => ({ suite, generatedAt: reports[side][suite].generatedAt }))])),
+  sourceReports: Object.fromEntries(['baseline', 'current'].map((side) => [side, suites.map((suite) => ({ suite, generatedAt: reports[side][suite].generatedAt, runCount: reports[side][suite].runCount ?? 1 }))])),
   rows: rows.map((row) => ({
     group: row.group,
     label: row.label,
@@ -103,7 +131,7 @@ const snapshot = {
     'Both revisions ran their own benchmark runner and fixtures on the same machine on the same day; browser suites used the same Chromium build.',
     'The baseline fixtures use the class syntax of that revision; the current fixtures express the same values in the current syntax, so class strings and HTML bytes differ.',
     'The benchmark harnesses also changed between the revisions: HTML payloads include harness scripts, and readiness timings include the harness frame waits.',
-    'Production build timings run every command with the recorded Node.js version so that both revisions use the same JavaScript runtime.',
+    'Production build timings run every command with the recorded Node.js version so that both revisions use the same JavaScript runtime. Where a side has several build reports, its runs alternated with the other revision’s and their samples are pooled, so background load affects both sides alike.',
     'Medians of a few local runs show direction and magnitude; small timing differences are within run-to-run noise.'
   ]
 }

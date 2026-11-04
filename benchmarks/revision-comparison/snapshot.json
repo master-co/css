@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "suite": "revision-comparison",
-  "generatedAt": "2026-11-04T14:27:34.861Z",
+  "generatedAt": "2026-11-04T17:27:47.337Z",
   "revisions": {
     "baseline": {
       "revision": "cd5a3972a",
@@ -9,7 +9,7 @@
       "description": "The revision that produced the July 2026 snapshots, before the engine moved to Rust."
     },
     "current": {
-      "revision": "3fc239c6c",
+      "revision": "add10eec6",
       "label": "Nov 4, 2026",
       "description": "Rust engine and compiled browser program; fixtures express the same rendered values in the current class syntax."
     }
@@ -38,37 +38,45 @@
     "baseline": [
       {
         "suite": "css-output-size",
-        "generatedAt": "2026-11-04T13:52:05.786Z"
+        "generatedAt": "2026-11-04T17:17:08.416Z",
+        "runCount": 1
       },
       {
         "suite": "build-performance",
-        "generatedAt": "2026-11-04T13:52:44.048Z"
+        "generatedAt": "2026-11-04T17:26:13.480Z",
+        "runCount": 3
       },
       {
         "suite": "master-delivery-modes",
-        "generatedAt": "2026-11-04T14:07:57.560Z"
+        "generatedAt": "2026-11-04T17:17:43.502Z",
+        "runCount": 1
       },
       {
         "suite": "interaction-cost",
-        "generatedAt": "2026-11-04T14:10:05.935Z"
+        "generatedAt": "2026-11-04T17:20:27.433Z",
+        "runCount": 1
       }
     ],
     "current": [
       {
         "suite": "css-output-size",
-        "generatedAt": "2026-11-04T13:35:43.031Z"
+        "generatedAt": "2026-11-04T17:11:30.447Z",
+        "runCount": 1
       },
       {
         "suite": "build-performance",
-        "generatedAt": "2026-11-04T13:53:44.246Z"
+        "generatedAt": "2026-11-04T17:26:48.780Z",
+        "runCount": 3
       },
       {
         "suite": "master-delivery-modes",
-        "generatedAt": "2026-11-04T14:10:55.741Z"
+        "generatedAt": "2026-11-04T17:14:58.874Z",
+        "runCount": 1
       },
       {
         "suite": "interaction-cost",
-        "generatedAt": "2026-11-04T13:49:47.263Z"
+        "generatedAt": "2026-11-04T17:22:33.316Z",
+        "runCount": 1
       }
     ]
   },
@@ -85,7 +93,7 @@
         "sampleCount": 1
       },
       "current": {
-        "median": 2115,
+        "median": 1931,
         "sampleCount": 1
       }
     },
@@ -101,7 +109,7 @@
         "sampleCount": 1
       },
       "current": {
-        "median": 10,
+        "median": 1,
         "sampleCount": 1
       }
     },
@@ -117,7 +125,7 @@
         "sampleCount": 1
       },
       "current": {
-        "median": 13,
+        "median": 1,
         "sampleCount": 1
       }
     },
@@ -145,12 +153,12 @@
       "variantId": "docs-master-static-cli",
       "metricId": "cold-build-ms",
       "baseline": {
-        "median": 142.3,
-        "sampleCount": 5
+        "median": 155.8,
+        "sampleCount": 15
       },
       "current": {
-        "median": 472.1,
-        "sampleCount": 5
+        "median": 274.2,
+        "sampleCount": 15
       }
     },
     {
@@ -161,12 +169,12 @@
       "variantId": "docs-master-static-vite",
       "metricId": "cold-build-ms",
       "baseline": {
-        "median": 206.7,
-        "sampleCount": 5
+        "median": 230.9,
+        "sampleCount": 15
       },
       "current": {
-        "median": 455.5,
-        "sampleCount": 5
+        "median": 340.1,
+        "sampleCount": 15
       }
     },
     {
@@ -177,12 +185,12 @@
       "variantId": "docs-tailwind-cli",
       "metricId": "cold-build-ms",
       "baseline": {
-        "median": 74.1,
-        "sampleCount": 5
+        "median": 88.2,
+        "sampleCount": 15
       },
       "current": {
-        "median": 70.1,
-        "sampleCount": 5
+        "median": 77,
+        "sampleCount": 15
       }
     },
     {
@@ -193,12 +201,12 @@
       "variantId": "docs-tailwind-vite",
       "metricId": "cold-build-ms",
       "baseline": {
-        "median": 133.2,
-        "sampleCount": 5
+        "median": 150.8,
+        "sampleCount": 15
       },
       "current": {
-        "median": 119.4,
-        "sampleCount": 5
+        "median": 129.2,
+        "sampleCount": 15
       }
     },
     {
@@ -248,7 +256,7 @@
         "sampleCount": 3
       },
       "current": {
-        "median": 8.4,
+        "median": 8.7,
         "sampleCount": 3
       }
     },
@@ -260,11 +268,11 @@
       "variantId": "docs-master-runtime",
       "metricId": "runtime-observe-ms",
       "baseline": {
-        "median": 4.8,
+        "median": 4.7,
         "sampleCount": 3
       },
       "current": {
-        "median": 4.4,
+        "median": 4.5,
         "sampleCount": 3
       }
     },
@@ -276,11 +284,11 @@
       "variantId": "docs-master-runtime",
       "metricId": "navigation-ready-ms",
       "baseline": {
-        "median": 43,
+        "median": 40.8,
         "sampleCount": 3
       },
       "current": {
-        "median": 39,
+        "median": 39.2,
         "sampleCount": 3
       }
     },
@@ -324,11 +332,11 @@
       "variantId": "docs-master-progressive",
       "metricId": "runtime-bootstrap-ms",
       "baseline": {
-        "median": 12.9,
+        "median": 13.2,
         "sampleCount": 3
       },
       "current": {
-        "median": 5.3,
+        "median": 5.4,
         "sampleCount": 3
       }
     },
@@ -340,11 +348,11 @@
       "variantId": "docs-master-progressive",
       "metricId": "runtime-observe-ms",
       "baseline": {
-        "median": 2,
+        "median": 2.1,
         "sampleCount": 3
       },
       "current": {
-        "median": 0.4,
+        "median": 0.3,
         "sampleCount": 3
       }
     },
@@ -356,11 +364,11 @@
       "variantId": "docs-master-progressive",
       "metricId": "navigation-ready-ms",
       "baseline": {
-        "median": 42.3,
+        "median": 40.4,
         "sampleCount": 3
       },
       "current": {
-        "median": 38.8,
+        "median": 39,
         "sampleCount": 3
       }
     },
@@ -372,11 +380,11 @@
       "variantId": "docs-tailwind-static",
       "metricId": "navigation-ready-ms",
       "baseline": {
-        "median": 25,
+        "median": 23.9,
         "sampleCount": 3
       },
       "current": {
-        "median": 23.1,
+        "median": 25.8,
         "sampleCount": 3
       }
     },
@@ -388,11 +396,11 @@
       "variantId": "dynamic-master-runtime-new-class-toggle",
       "metricId": "runtime-mutation-ms",
       "baseline": {
-        "median": 0.2,
+        "median": 0.3,
         "sampleCount": 3
       },
       "current": {
-        "median": 0.4,
+        "median": 0.5,
         "sampleCount": 3
       }
     },
@@ -420,11 +428,11 @@
       "variantId": "dynamic-tailwind-static-existing-class-toggle",
       "metricId": "interaction-ready-ms",
       "baseline": {
-        "median": 63.5,
+        "median": 46.6,
         "sampleCount": 3
       },
       "current": {
-        "median": 63.8,
+        "median": 61,
         "sampleCount": 3
       }
     }
@@ -433,7 +441,7 @@
     "Both revisions ran their own benchmark runner and fixtures on the same machine on the same day; browser suites used the same Chromium build.",
     "The baseline fixtures use the class syntax of that revision; the current fixtures express the same values in the current syntax, so class strings and HTML bytes differ.",
     "The benchmark harnesses also changed between the revisions: HTML payloads include harness scripts, and readiness timings include the harness frame waits.",
-    "Production build timings run every command with the recorded Node.js version so that both revisions use the same JavaScript runtime.",
+    "Production build timings run every command with the recorded Node.js version so that both revisions use the same JavaScript runtime. Where a side has several build reports, its runs alternated with the other revision’s and their samples are pooled, so background load affects both sides alike.",
     "Medians of a few local runs show direction and magnitude; small timing differences are within run-to-run noise."
   ]
 }

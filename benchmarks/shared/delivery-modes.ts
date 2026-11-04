@@ -304,8 +304,11 @@ async function createStaticDeliveryModePage(options: {
     round: 0,
     workspaceName: `${options.variantId}-static-build`
   })
-  // Master CSS builds emit an @import graph of per-source files; deliver it flattened as one stylesheet.
-  const css = (await readFiles(buildResult.cssFiles)).toString('utf8').replace(/^@import "\.\/[^"]+\.css";\n?/gm, '')
+  // Static delivery loads the build output as is, so a build must emit one stylesheet.
+  if (buildResult.cssFiles.length !== 1) {
+    throw new Error(`${options.variantId} emitted ${buildResult.cssFiles.length} CSS files; static delivery expects one.`)
+  }
+  const css = (await readFiles(buildResult.cssFiles)).toString('utf8')
   const fixture = getStaticFixtureSource(options.fixtureId)
   const sourceHtml = tool.family === 'master' ? fixture.masterHtml : fixture.tailwindHtml
   const html = addStaticHarness(sourceHtml)

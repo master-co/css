@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "suite": "interaction-cost",
-  "generatedAt": "2026-11-04T14:04:07.602Z",
+  "generatedAt": "2026-11-04T17:28:06.295Z",
   "sourceReport": {
     "suite": "interaction-cost",
-    "generatedAt": "2026-11-04T13:49:47.263Z",
+    "generatedAt": "2026-11-04T17:22:33.316Z",
     "command": "bun run --filter master-css-benchmarks bench:interaction-cost"
   },
   "environment": {
@@ -703,10 +703,10 @@
             "variantId": "dynamic-master-static-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 62.8,
-                "median": 63.3,
-                "mean": 63.2,
-                "max": 63.5,
+                "min": 58.2,
+                "median": 59,
+                "mean": 59.3,
+                "max": 60.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -739,7 +739,7 @@
               "styleRecalculationMs": {
                 "min": 0.2,
                 "median": 0.3,
-                "mean": 0.2,
+                "mean": 0.3,
                 "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -818,10 +818,10 @@
             "variantId": "dynamic-master-runtime-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63.1,
-                "median": 63.3,
-                "mean": 63.3,
-                "max": 63.6,
+                "min": 61.7,
+                "median": 62.6,
+                "mean": 62.6,
+                "max": 63.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -853,9 +853,9 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 0.2,
-                "median": 0.3,
-                "mean": 0.2,
-                "max": 0.3,
+                "median": 0.2,
+                "mean": 0.3,
+                "max": 0.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -933,10 +933,10 @@
             "variantId": "dynamic-master-progressive-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63.8,
-                "median": 63.9,
-                "mean": 63.9,
-                "max": 64,
+                "min": 59.9,
+                "median": 61.1,
+                "mean": 60.7,
+                "max": 61.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -967,9 +967,9 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.2,
-                "median": 0.2,
-                "mean": 0.2,
+                "min": 0.3,
+                "median": 0.3,
+                "mean": 0.3,
                 "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -1048,10 +1048,10 @@
             "variantId": "dynamic-tailwind-static-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63.5,
-                "median": 63.8,
-                "mean": 63.8,
-                "max": 64,
+                "min": 59.4,
+                "median": 61,
+                "mean": 61.2,
+                "max": 63.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1099,8 +1099,8 @@
               },
               "paintMs": {
                 "min": 0.3,
-                "median": 0.4,
-                "mean": 0.4,
+                "median": 0.3,
+                "mean": 0.3,
                 "max": 0.4,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -1165,18 +1165,18 @@
             "variantId": "dynamic-master-runtime-new-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 62.9,
-                "median": 63.1,
-                "mean": 63.2,
-                "max": 63.5,
+                "min": 59.8,
+                "median": 62.2,
+                "mean": 61.8,
+                "max": 63.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
                 "min": 0.3,
-                "median": 0.4,
-                "mean": 0.4,
-                "max": 0.5,
+                "median": 0.5,
+                "mean": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1210,7 +1210,7 @@
                 "min": 0.5,
                 "median": 0.5,
                 "mean": 0.5,
-                "max": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1280,15 +1280,15 @@
             "variantId": "dynamic-master-progressive-new-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 64,
-                "median": 64.1,
-                "mean": 64.1,
-                "max": 64.2,
+                "min": 60.6,
+                "median": 60.8,
+                "mean": 60.9,
+                "max": 61.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.3,
+                "min": 0.2,
                 "median": 0.3,
                 "mean": 0.3,
                 "max": 0.4,
@@ -1314,10 +1314,10 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.7,
-                "median": 0.7,
-                "mean": 0.7,
-                "max": 0.7,
+                "min": 0.8,
+                "median": 0.8,
+                "mean": 0.8,
+                "max": 0.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1397,10 +1397,10 @@
             "variantId": "dynamic-master-static-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.5,
-                "median": 64.3,
-                "mean": 64.1,
-                "max": 64.5,
+                "min": 60.6,
+                "median": 60.6,
+                "mean": 60.6,
+                "max": 60.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1434,7 +1434,7 @@
                 "min": 0.3,
                 "median": 0.3,
                 "mean": 0.3,
-                "max": 0.3,
+                "max": 0.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1512,10 +1512,10 @@
             "variantId": "dynamic-master-runtime-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.2,
-                "median": 63.8,
-                "mean": 63.7,
-                "max": 64.2,
+                "min": 58.1,
+                "median": 63.6,
+                "mean": 62,
+                "max": 64.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1554,7 +1554,7 @@
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 0,
+                "min": 0.1,
                 "median": 0.1,
                 "mean": 0.1,
                 "max": 0.1,
@@ -1627,10 +1627,10 @@
             "variantId": "dynamic-master-progressive-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.3,
-                "median": 63.4,
-                "mean": 63.6,
-                "max": 64.1,
+                "min": 58.6,
+                "median": 59.5,
+                "mean": 59.7,
+                "max": 61,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1669,9 +1669,9 @@
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 0,
-                "median": 0,
-                "mean": 0,
+                "min": 0.1,
+                "median": 0.1,
+                "mean": 0.1,
                 "max": 0.1,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -1680,7 +1680,7 @@
                 "min": 0.2,
                 "median": 0.2,
                 "mean": 0.2,
-                "max": 0.2,
+                "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1742,10 +1742,10 @@
             "variantId": "dynamic-tailwind-static-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.8,
-                "median": 63.8,
-                "mean": 63.8,
-                "max": 63.8,
+                "min": 58.8,
+                "median": 58.8,
+                "mean": 59.6,
+                "max": 61.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1859,10 +1859,10 @@
             "variantId": "dynamic-master-static-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 62.8,
-                "median": 62.8,
-                "mean": 63,
-                "max": 63.3,
+                "min": 62.7,
+                "median": 62.9,
+                "mean": 63.1,
+                "max": 63.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1896,7 +1896,7 @@
                 "min": 0.3,
                 "median": 0.3,
                 "mean": 0.3,
-                "max": 0.4,
+                "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -1974,18 +1974,18 @@
             "variantId": "dynamic-master-runtime-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 63.1,
-                "median": 63.3,
-                "mean": 63.4,
-                "max": 63.7,
+                "min": 60.4,
+                "median": 60.8,
+                "mean": 61.4,
+                "max": 62.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.2,
-                "median": 0.2,
+                "min": 0.1,
+                "median": 0.1,
                 "mean": 0.2,
-                "max": 0.2,
+                "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2011,7 +2011,7 @@
                 "min": 0.5,
                 "median": 0.5,
                 "mean": 0.5,
-                "max": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2089,17 +2089,17 @@
             "variantId": "dynamic-master-progressive-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 63.6,
-                "median": 64,
-                "mean": 64,
-                "max": 64.3,
+                "min": 61.5,
+                "median": 62.6,
+                "mean": 62.6,
+                "max": 63.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.2,
-                "median": 0.3,
-                "mean": 0.3,
+                "min": 0.1,
+                "median": 0.2,
+                "mean": 0.2,
                 "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -2204,10 +2204,10 @@
             "variantId": "dynamic-tailwind-static-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 62.9,
-                "median": 63.1,
-                "mean": 63.3,
-                "max": 63.8,
+                "min": 61,
+                "median": 62.3,
+                "mean": 62.3,
+                "max": 63.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2321,10 +2321,10 @@
             "variantId": "dynamic-master-static-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 111.5,
-                "median": 112.6,
+                "min": 110.1,
+                "median": 112.7,
                 "mean": 112.3,
-                "max": 112.8,
+                "max": 114,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2366,7 +2366,7 @@
                 "min": 0.7,
                 "median": 0.7,
                 "mean": 0.7,
-                "max": 0.7,
+                "max": 0.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2374,7 +2374,7 @@
                 "min": 0.7,
                 "median": 0.7,
                 "mean": 0.7,
-                "max": 0.8,
+                "max": 0.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2437,9 +2437,9 @@
             "interaction": {
               "readyMs": {
                 "min": 111.7,
-                "median": 111.8,
+                "median": 112.1,
                 "mean": 112,
-                "max": 112.6,
+                "max": 112.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2472,16 +2472,16 @@
               "styleRecalculationMs": {
                 "min": 0.2,
                 "median": 0.3,
-                "mean": 0.2,
+                "mean": 0.3,
                 "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 0.7,
+                "min": 0.6,
                 "median": 0.7,
                 "mean": 0.7,
-                "max": 0.8,
+                "max": 0.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2551,10 +2551,10 @@
             "variantId": "dynamic-master-progressive-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 113.1,
-                "median": 113.1,
-                "mean": 113.2,
-                "max": 113.4,
+                "min": 107.8,
+                "median": 110.1,
+                "mean": 109.9,
+                "max": 111.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2585,10 +2585,10 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.2,
-                "median": 0.2,
+                "min": 0.3,
+                "median": 0.3,
                 "mean": 0.3,
-                "max": 0.5,
+                "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2666,10 +2666,10 @@
             "variantId": "dynamic-tailwind-static-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 113.3,
-                "median": 113.3,
-                "mean": 113.4,
-                "max": 113.6,
+                "min": 108.4,
+                "median": 112.5,
+                "mean": 111.4,
+                "max": 113.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2700,10 +2700,10 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.4,
-                "median": 0.5,
-                "mean": 0.5,
-                "max": 0.5,
+                "min": 0.5,
+                "median": 0.6,
+                "mean": 0.8,
+                "max": 1.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2711,7 +2711,7 @@
                 "min": 0.7,
                 "median": 0.7,
                 "mean": 0.7,
-                "max": 0.7,
+                "max": 0.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2719,7 +2719,7 @@
                 "min": 0.8,
                 "median": 0.8,
                 "mean": 0.8,
-                "max": 0.9,
+                "max": 0.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2783,10 +2783,10 @@
             "variantId": "dynamic-master-static-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 329.9,
-                "median": 330.1,
-                "mean": 330.1,
-                "max": 330.3,
+                "min": 327.5,
+                "median": 329.4,
+                "mean": 328.9,
+                "max": 329.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2817,26 +2817,26 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.9,
-                "median": 0.9,
-                "mean": 1,
-                "max": 1,
+                "min": 1,
+                "median": 1.1,
+                "mean": 1.1,
+                "max": 1.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.2,
-                "median": 1.3,
-                "mean": 1.3,
-                "max": 1.4,
+                "min": 1.3,
+                "median": 1.5,
+                "mean": 1.5,
+                "max": 1.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 2.7,
-                "median": 2.8,
-                "mean": 2.8,
-                "max": 2.9,
+                "min": 2.8,
+                "median": 3.2,
+                "mean": 3.1,
+                "max": 3.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -2898,17 +2898,17 @@
             "variantId": "dynamic-master-runtime-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 328.8,
-                "median": 329.8,
-                "mean": 329.8,
-                "max": 330.8,
+                "min": 329.5,
+                "median": 329.9,
+                "mean": 329.9,
+                "max": 330.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.5,
+                "min": 0.4,
                 "median": 0.6,
-                "mean": 0.6,
+                "mean": 0.5,
                 "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -2932,15 +2932,15 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 1.7,
-                "median": 1.7,
-                "mean": 1.8,
+                "min": 1.6,
+                "median": 1.6,
+                "mean": 1.7,
                 "max": 1.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.8,
+                "min": 1.7,
                 "median": 1.8,
                 "mean": 1.8,
                 "max": 1.8,
@@ -2949,8 +2949,8 @@
               },
               "paintMs": {
                 "min": 2.7,
-                "median": 2.8,
-                "mean": 2.9,
+                "median": 3.1,
+                "mean": 3,
                 "max": 3.1,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -3013,18 +3013,18 @@
             "variantId": "dynamic-master-progressive-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 331,
-                "median": 331.5,
-                "mean": 331.4,
-                "max": 331.6,
+                "min": 327.5,
+                "median": 330.2,
+                "mean": 329.4,
+                "max": 330.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
                 "min": 0.4,
-                "median": 0.6,
-                "mean": 0.6,
-                "max": 0.7,
+                "median": 0.5,
+                "mean": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3048,25 +3048,25 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 1.6,
-                "median": 1.8,
-                "mean": 1.8,
-                "max": 1.9,
+                "median": 1.6,
+                "mean": 1.7,
+                "max": 1.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.7,
-                "median": 1.9,
-                "mean": 1.8,
-                "max": 1.9,
+                "min": 1.6,
+                "median": 1.6,
+                "mean": 1.7,
+                "max": 1.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 3,
-                "median": 3.5,
-                "mean": 3.4,
-                "max": 3.6,
+                "min": 2.7,
+                "median": 2.8,
+                "mean": 2.9,
+                "max": 3.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3128,10 +3128,10 @@
             "variantId": "dynamic-tailwind-static-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 329.7,
-                "median": 330.6,
-                "mean": 330.3,
-                "max": 330.6,
+                "min": 323.1,
+                "median": 328.3,
+                "mean": 327.2,
+                "max": 330.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3162,26 +3162,26 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 1.4,
-                "median": 1.4,
-                "mean": 1.4,
-                "max": 1.4,
+                "min": 1.1,
+                "median": 1.1,
+                "mean": 1.2,
+                "max": 1.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.5,
-                "median": 1.6,
-                "mean": 1.6,
-                "max": 1.6,
+                "min": 1.3,
+                "median": 1.3,
+                "mean": 1.3,
+                "max": 1.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 4.2,
-                "median": 4.3,
-                "mean": 4.3,
-                "max": 4.3,
+                "min": 3.2,
+                "median": 3.3,
+                "mean": 3.3,
+                "max": 3.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3250,10 +3250,10 @@
             "variantId": "dashboard-master-static-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63,
-                "median": 63.5,
-                "mean": 63.5,
-                "max": 64,
+                "min": 61.1,
+                "median": 61.3,
+                "mean": 62.3,
+                "max": 64.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3287,7 +3287,7 @@
                 "min": 0.5,
                 "median": 0.5,
                 "mean": 0.5,
-                "max": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3300,7 +3300,7 @@
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 0.5,
+                "min": 0.6,
                 "median": 0.6,
                 "mean": 0.6,
                 "max": 0.6,
@@ -3365,10 +3365,10 @@
             "variantId": "dashboard-master-runtime-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63.7,
-                "median": 63.9,
-                "mean": 64.1,
-                "max": 64.6,
+                "min": 60.9,
+                "median": 62.8,
+                "mean": 62.8,
+                "max": 64.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3418,7 +3418,7 @@
                 "min": 0.5,
                 "median": 0.5,
                 "mean": 0.5,
-                "max": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3480,10 +3480,10 @@
             "variantId": "dashboard-master-progressive-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 61.6,
-                "median": 63.5,
-                "mean": 63,
-                "max": 63.9,
+                "min": 58.8,
+                "median": 60.3,
+                "mean": 60.8,
+                "max": 63.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3517,7 +3517,7 @@
                 "min": 0.5,
                 "median": 0.5,
                 "mean": 0.5,
-                "max": 0.6,
+                "max": 0.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3531,7 +3531,7 @@
               },
               "paintMs": {
                 "min": 0.5,
-                "median": 0.6,
+                "median": 0.5,
                 "mean": 0.6,
                 "max": 0.6,
                 "sampleCount": 3,
@@ -3595,10 +3595,10 @@
             "variantId": "dashboard-tailwind-static-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63.7,
-                "median": 64.3,
-                "mean": 64.2,
-                "max": 64.5,
+                "min": 58.5,
+                "median": 60.5,
+                "mean": 59.9,
+                "max": 60.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3629,7 +3629,7 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.7,
+                "min": 0.6,
                 "median": 0.7,
                 "mean": 0.7,
                 "max": 0.7,
@@ -3645,7 +3645,7 @@
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 0.7,
+                "min": 0.6,
                 "median": 0.7,
                 "mean": 0.7,
                 "max": 0.7,
@@ -3713,10 +3713,10 @@
             "variantId": "dashboard-master-static-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.2,
-                "median": 63.8,
-                "mean": 63.6,
-                "max": 63.9,
+                "min": 60.8,
+                "median": 61.1,
+                "mean": 62,
+                "max": 64,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3747,7 +3747,7 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.4,
+                "min": 0.3,
                 "median": 0.4,
                 "mean": 0.4,
                 "max": 0.4,
@@ -3766,7 +3766,7 @@
                 "min": 0.3,
                 "median": 0.3,
                 "mean": 0.3,
-                "max": 0.4,
+                "max": 0.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3828,10 +3828,10 @@
             "variantId": "dashboard-master-runtime-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.1,
-                "median": 63.9,
-                "mean": 63.7,
-                "max": 64,
+                "min": 59,
+                "median": 60.9,
+                "mean": 60.9,
+                "max": 62.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3943,10 +3943,10 @@
             "variantId": "dashboard-master-progressive-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.3,
-                "median": 63.5,
-                "mean": 63.5,
-                "max": 63.6,
+                "min": 60.2,
+                "median": 61.1,
+                "mean": 61.9,
+                "max": 64.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -3977,7 +3977,7 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.3,
+                "min": 0.4,
                 "median": 0.4,
                 "mean": 0.4,
                 "max": 0.4,
@@ -4058,10 +4058,10 @@
             "variantId": "dashboard-tailwind-static-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.5,
-                "median": 63.7,
-                "mean": 63.7,
-                "max": 63.9,
+                "min": 58.2,
+                "median": 63.4,
+                "mean": 61.9,
+                "max": 64,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4175,10 +4175,10 @@
             "variantId": "dashboard-master-static-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 63.8,
-                "median": 63.9,
-                "mean": 63.9,
-                "max": 63.9,
+                "min": 61.1,
+                "median": 61.2,
+                "mean": 61.9,
+                "max": 63.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4212,7 +4212,7 @@
                 "min": 0.5,
                 "median": 0.5,
                 "mean": 0.5,
-                "max": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4290,15 +4290,15 @@
             "variantId": "dashboard-master-runtime-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 63.6,
-                "median": 63.7,
-                "mean": 63.7,
-                "max": 63.8,
+                "min": 58.5,
+                "median": 61.2,
+                "mean": 61.1,
+                "max": 63.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.1,
+                "min": 0.2,
                 "median": 0.2,
                 "mean": 0.2,
                 "max": 0.2,
@@ -4405,15 +4405,15 @@
             "variantId": "dashboard-master-progressive-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 63,
-                "median": 63.6,
-                "mean": 63.5,
-                "max": 63.8,
+                "min": 61.5,
+                "median": 63.1,
+                "mean": 62.9,
+                "max": 64.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.2,
+                "min": 0.1,
                 "median": 0.2,
                 "mean": 0.2,
                 "max": 0.3,
@@ -4440,8 +4440,8 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 0.8,
-                "median": 0.9,
-                "mean": 0.9,
+                "median": 0.8,
+                "mean": 0.8,
                 "max": 0.9,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -4520,10 +4520,10 @@
             "variantId": "dashboard-tailwind-static-theme-switch",
             "interaction": {
               "readyMs": {
-                "min": 62.7,
-                "median": 63.9,
-                "mean": 63.7,
-                "max": 64.4,
+                "min": 63.7,
+                "median": 64,
+                "mean": 64,
+                "max": 64.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4556,8 +4556,8 @@
               "styleRecalculationMs": {
                 "min": 0.6,
                 "median": 0.6,
-                "mean": 0.7,
-                "max": 0.7,
+                "mean": 0.6,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4573,7 +4573,7 @@
                 "min": 0.7,
                 "median": 0.7,
                 "mean": 0.7,
-                "max": 0.7,
+                "max": 0.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4637,10 +4637,10 @@
             "variantId": "dashboard-master-static-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 113.7,
-                "median": 113.7,
-                "mean": 113.9,
-                "max": 114.4,
+                "min": 110.6,
+                "median": 113.4,
+                "mean": 112.5,
+                "max": 113.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4679,9 +4679,9 @@
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.7,
+                "min": 1.8,
                 "median": 1.9,
-                "mean": 1.9,
+                "mean": 1.8,
                 "max": 1.9,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -4690,7 +4690,7 @@
                 "min": 1.3,
                 "median": 1.4,
                 "mean": 1.4,
-                "max": 1.4,
+                "max": 1.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4752,10 +4752,10 @@
             "variantId": "dashboard-master-runtime-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 112.6,
-                "median": 112.8,
-                "mean": 112.9,
-                "max": 113.3,
+                "min": 107.8,
+                "median": 110.7,
+                "mean": 110.2,
+                "max": 112.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4794,10 +4794,10 @@
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.7,
+                "min": 1.8,
                 "median": 1.8,
                 "mean": 1.8,
-                "max": 2,
+                "max": 1.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4805,7 +4805,7 @@
                 "min": 1.2,
                 "median": 1.2,
                 "mean": 1.2,
-                "max": 1.2,
+                "max": 1.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4867,10 +4867,10 @@
             "variantId": "dashboard-master-progressive-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 111.9,
-                "median": 112.5,
-                "mean": 112.5,
-                "max": 113.1,
+                "min": 109.8,
+                "median": 110.3,
+                "mean": 110.2,
+                "max": 110.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -4904,13 +4904,13 @@
                 "min": 0.3,
                 "median": 0.3,
                 "mean": 0.3,
-                "max": 0.3,
+                "max": 0.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 1.8,
-                "median": 1.8,
+                "min": 1.7,
+                "median": 1.9,
                 "mean": 1.8,
                 "max": 1.9,
                 "sampleCount": 3,
@@ -4982,10 +4982,10 @@
             "variantId": "dashboard-tailwind-static-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 112.5,
-                "median": 112.9,
-                "mean": 113.1,
-                "max": 113.8,
+                "min": 108.1,
+                "median": 110.3,
+                "mean": 109.7,
+                "max": 110.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5018,7 +5018,7 @@
               "styleRecalculationMs": {
                 "min": 0.5,
                 "median": 0.5,
-                "mean": 0.6,
+                "mean": 0.5,
                 "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -5035,7 +5035,7 @@
                 "min": 1.5,
                 "median": 1.5,
                 "mean": 1.5,
-                "max": 1.5,
+                "max": 1.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5105,9 +5105,9 @@
             "variantId": "stress-dom-master-static-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 62.8,
+                "min": 61.2,
                 "median": 63.5,
-                "mean": 63.3,
+                "mean": 62.8,
                 "max": 63.6,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -5140,7 +5140,7 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 1.6,
-                "median": 1.8,
+                "median": 1.7,
                 "mean": 1.7,
                 "max": 1.8,
                 "sampleCount": 3,
@@ -5155,7 +5155,7 @@
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 0.7,
+                "min": 0.8,
                 "median": 0.8,
                 "mean": 0.8,
                 "max": 0.8,
@@ -5220,10 +5220,10 @@
             "variantId": "stress-dom-master-runtime-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 59.4,
-                "median": 62.1,
-                "mean": 61.8,
-                "max": 63.8,
+                "min": 59.5,
+                "median": 61,
+                "mean": 61.3,
+                "max": 63.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5254,10 +5254,10 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 1.6,
-                "median": 1.7,
-                "mean": 1.7,
-                "max": 1.7,
+                "min": 1.7,
+                "median": 1.8,
+                "mean": 1.8,
+                "max": 1.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5270,8 +5270,8 @@
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 0.8,
-                "median": 0.8,
+                "min": 0.7,
+                "median": 0.7,
                 "mean": 0.8,
                 "max": 0.8,
                 "sampleCount": 3,
@@ -5335,10 +5335,10 @@
             "variantId": "stress-dom-master-progressive-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63,
-                "median": 63,
-                "mean": 63.2,
-                "max": 63.7,
+                "min": 60.3,
+                "median": 63.6,
+                "mean": 62.6,
+                "max": 63.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5385,10 +5385,10 @@
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 0.8,
+                "min": 0.7,
                 "median": 0.8,
                 "mean": 0.8,
-                "max": 0.8,
+                "max": 0.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5450,10 +5450,10 @@
             "variantId": "stress-dom-tailwind-static-existing-class-toggle",
             "interaction": {
               "readyMs": {
-                "min": 63.1,
-                "median": 63.4,
-                "mean": 63.3,
-                "max": 63.4,
+                "min": 60.7,
+                "median": 61.6,
+                "mean": 61.8,
+                "max": 63.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5568,10 +5568,10 @@
             "variantId": "stress-dom-master-static-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 62.6,
-                "median": 63.6,
-                "mean": 63.4,
-                "max": 64.1,
+                "min": 62.9,
+                "median": 62.9,
+                "mean": 63.1,
+                "max": 63.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5605,7 +5605,7 @@
                 "min": 0.6,
                 "median": 0.6,
                 "mean": 0.6,
-                "max": 0.6,
+                "max": 0.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5613,15 +5613,15 @@
                 "min": 0.1,
                 "median": 0.1,
                 "mean": 0.1,
-                "max": 0.2,
+                "max": 0.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
                 "min": 0.5,
                 "median": 0.5,
-                "mean": 0.5,
-                "max": 0.6,
+                "mean": 0.6,
+                "max": 0.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5683,10 +5683,10 @@
             "variantId": "stress-dom-master-runtime-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 59.4,
-                "median": 59.8,
-                "mean": 59.9,
-                "max": 60.4,
+                "min": 59.2,
+                "median": 60.6,
+                "mean": 60.6,
+                "max": 61.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5734,7 +5734,7 @@
               },
               "paintMs": {
                 "min": 0.5,
-                "median": 0.5,
+                "median": 0.6,
                 "mean": 0.6,
                 "max": 0.6,
                 "sampleCount": 3,
@@ -5798,10 +5798,10 @@
             "variantId": "stress-dom-master-progressive-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 62.7,
-                "median": 62.7,
-                "mean": 63,
-                "max": 63.5,
+                "min": 60.9,
+                "median": 63.2,
+                "mean": 62.6,
+                "max": 63.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5833,7 +5833,7 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 0.5,
-                "median": 0.6,
+                "median": 0.5,
                 "mean": 0.5,
                 "max": 0.6,
                 "sampleCount": 3,
@@ -5843,7 +5843,7 @@
                 "min": 0.1,
                 "median": 0.1,
                 "mean": 0.1,
-                "max": 0.1,
+                "max": 0.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -5913,10 +5913,10 @@
             "variantId": "stress-dom-tailwind-static-dom-append-remove",
             "interaction": {
               "readyMs": {
-                "min": 63.3,
-                "median": 63.3,
-                "mean": 63.4,
-                "max": 63.7,
+                "min": 60.4,
+                "median": 63.4,
+                "mean": 62.5,
+                "max": 63.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6031,10 +6031,10 @@
             "variantId": "stress-dom-master-static-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 110.2,
-                "median": 112.9,
-                "mean": 112.1,
-                "max": 113.3,
+                "min": 110.5,
+                "median": 112.8,
+                "mean": 112,
+                "max": 112.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6066,24 +6066,24 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 0.5,
-                "median": 0.5,
-                "mean": 0.5,
+                "median": 0.6,
+                "mean": 0.6,
                 "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
                 "min": 6.2,
-                "median": 6.2,
-                "mean": 6.2,
-                "max": 6.3,
+                "median": 6.5,
+                "mean": 6.4,
+                "max": 6.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
                 "min": 2.7,
-                "median": 2.8,
-                "mean": 2.8,
+                "median": 2.7,
+                "mean": 2.7,
                 "max": 2.8,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -6146,10 +6146,10 @@
             "variantId": "stress-dom-master-runtime-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 106.2,
-                "median": 111.6,
-                "mean": 110.2,
-                "max": 112.7,
+                "min": 108,
+                "median": 108.1,
+                "mean": 109.1,
+                "max": 111.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6183,23 +6183,23 @@
                 "min": 0.4,
                 "median": 0.4,
                 "mean": 0.4,
-                "max": 0.4,
+                "max": 0.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 6,
-                "median": 6.3,
+                "min": 6.1,
+                "median": 6.2,
                 "mean": 6.2,
-                "max": 6.4,
+                "max": 6.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
                 "min": 2.6,
-                "median": 2.6,
-                "mean": 2.6,
-                "max": 2.7,
+                "median": 2.7,
+                "mean": 2.7,
+                "max": 2.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6261,9 +6261,9 @@
             "variantId": "stress-dom-master-progressive-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 112.5,
-                "median": 112.9,
-                "mean": 112.8,
+                "min": 107.9,
+                "median": 112.4,
+                "mean": 111.2,
                 "max": 113.1,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -6303,18 +6303,18 @@
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 6.1,
-                "median": 6.3,
-                "mean": 6.2,
-                "max": 6.3,
+                "min": 6,
+                "median": 6.1,
+                "mean": 6.3,
+                "max": 6.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 2.5,
+                "min": 2.6,
                 "median": 2.7,
-                "mean": 2.6,
-                "max": 2.7,
+                "mean": 2.7,
+                "max": 2.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6376,10 +6376,10 @@
             "variantId": "stress-dom-tailwind-static-viewport-resize",
             "interaction": {
               "readyMs": {
-                "min": 112.3,
-                "median": 113,
-                "mean": 113.1,
-                "max": 113.9,
+                "min": 109.2,
+                "median": 110.3,
+                "mean": 110.1,
+                "max": 110.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6410,26 +6410,26 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 0.7,
-                "median": 0.7,
-                "mean": 0.7,
+                "min": 0.6,
+                "median": 0.6,
+                "mean": 0.6,
                 "max": 0.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 6.2,
-                "median": 6.4,
-                "mean": 6.4,
-                "max": 6.6,
+                "min": 5.8,
+                "median": 6,
+                "mean": 6,
+                "max": 6.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 2.8,
-                "median": 3.1,
-                "mean": 3.1,
-                "max": 3.4,
+                "min": 2.9,
+                "median": 2.9,
+                "mean": 3,
+                "max": 3.2,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6493,9 +6493,9 @@
             "variantId": "stress-dom-master-static-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 262.5,
-                "median": 263.3,
-                "mean": 263.2,
+                "min": 260.5,
+                "median": 262.8,
+                "mean": 262.3,
                 "max": 263.7,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -6527,26 +6527,26 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 1.6,
-                "median": 1.7,
-                "mean": 1.7,
+                "min": 1.8,
+                "median": 1.8,
+                "mean": 1.8,
                 "max": 1.8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 2.5,
+                "min": 2.7,
                 "median": 2.7,
-                "mean": 2.6,
-                "max": 2.7,
+                "mean": 2.8,
+                "max": 3.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 6.6,
-                "median": 6.9,
-                "mean": 6.9,
-                "max": 7.1,
+                "min": 7.4,
+                "median": 7.7,
+                "mean": 7.7,
+                "max": 8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6608,18 +6608,18 @@
             "variantId": "stress-dom-master-runtime-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 260.4,
-                "median": 262.7,
-                "mean": 262.2,
-                "max": 263.5,
+                "min": 261.4,
+                "median": 262.3,
+                "mean": 262,
+                "max": 262.4,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.4,
-                "median": 0.4,
+                "min": 0.3,
+                "median": 0.3,
                 "mean": 0.4,
-                "max": 0.5,
+                "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6642,26 +6642,26 @@
             },
             "browser": {
               "styleRecalculationMs": {
-                "min": 5.7,
+                "min": 5.8,
                 "median": 5.9,
-                "mean": 5.8,
-                "max": 5.9,
+                "mean": 6.1,
+                "max": 6.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 6.9,
-                "median": 7.1,
-                "mean": 7,
-                "max": 7.2,
+                "min": 7.1,
+                "median": 7.4,
+                "mean": 7.3,
+                "max": 7.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 6.7,
-                "median": 6.8,
-                "mean": 6.9,
-                "max": 7.2,
+                "min": 6.8,
+                "median": 7.4,
+                "mean": 7.3,
+                "max": 7.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6723,17 +6723,17 @@
             "variantId": "stress-dom-master-progressive-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 263.7,
-                "median": 263.9,
-                "mean": 263.8,
-                "max": 263.9,
+                "min": 260.3,
+                "median": 261.8,
+                "mean": 261.7,
+                "max": 262.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "runtimeMutationMs": {
-                "min": 0.3,
-                "median": 0.3,
-                "mean": 0.4,
+                "min": 0.5,
+                "median": 0.5,
+                "mean": 0.5,
                 "max": 0.6,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -6758,25 +6758,25 @@
             "browser": {
               "styleRecalculationMs": {
                 "min": 5.8,
-                "median": 6,
-                "mean": 5.9,
-                "max": 6,
+                "median": 6.2,
+                "mean": 6.1,
+                "max": 6.3,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
-                "min": 7.2,
-                "median": 7.4,
-                "mean": 7.4,
-                "max": 7.4,
+                "min": 7.5,
+                "median": 7.6,
+                "mean": 7.7,
+                "max": 8,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 6.7,
-                "median": 6.9,
-                "mean": 6.9,
-                "max": 7.1,
+                "min": 7,
+                "median": 7.4,
+                "mean": 7.3,
+                "max": 7.5,
                 "sampleCount": 3,
                 "unit": "ms"
               },
@@ -6838,9 +6838,9 @@
             "variantId": "stress-dom-tailwind-static-mutation-cleanup-cycle",
             "interaction": {
               "readyMs": {
-                "min": 262.1,
-                "median": 263.2,
-                "mean": 263,
+                "min": 260.7,
+                "median": 263.1,
+                "mean": 262.5,
                 "max": 263.6,
                 "sampleCount": 3,
                 "unit": "ms"
@@ -6875,23 +6875,23 @@
                 "min": 1.9,
                 "median": 2,
                 "mean": 2,
-                "max": 2.3,
+                "max": 2.1,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "layoutMs": {
                 "min": 2.5,
-                "median": 2.9,
-                "mean": 2.8,
-                "max": 2.9,
+                "median": 2.6,
+                "mean": 2.6,
+                "max": 2.7,
                 "sampleCount": 3,
                 "unit": "ms"
               },
               "paintMs": {
-                "min": 7.7,
-                "median": 7.9,
-                "mean": 8.1,
-                "max": 8.8,
+                "min": 7.3,
+                "median": 7.5,
+                "mean": 7.6,
+                "max": 7.9,
                 "sampleCount": 3,
                 "unit": "ms"
               },
