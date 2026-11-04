@@ -20,6 +20,29 @@ bun run --filter @master/css-vscode vsce verify-pat --azure-credential masterco
 
 If the publisher has not authorized the managed identity, Marketplace returns `InvalidAccessException: The requested operation is not allowed.`
 
+## Check CI authorization without publishing
+
+Manually run **Marketplace authorization check** (`marketplace-auth-check.yml`)
+on `rc` after the workflow is available on GitHub:
+
+```sh
+gh workflow run marketplace-auth-check.yml --repo master-co/css --ref rc
+```
+
+The workflow uses the release job's Azure identity and locked VSCE dependency,
+then runs only `vsce verify-pat --azure-credential masterco`. Dependency lifecycle
+scripts are disabled. It does not build or package the extension, change versions,
+push commits, publish packages, or deploy the website. It grants only repository
+read access and OIDC token access, and only runs against this repository's `rc`
+branch to match the release identity's federated subject.
+
+Check that both the Azure login and Marketplace verification steps succeed; a
+skipped job is not a successful authorization check. This checks credentials and
+publisher access, not VSIX contents or release acceptance. Do not rerun the
+Release workflow for this purpose. Introducing this workflow still requires a
+remote update: honor any release/deployment hold before pushing, because the
+existing push-triggered release workflow and hosting integrations are separate.
+
 ## Release
 
 Preview the release plan without changing files:
