@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { pathToFileURL } from 'node:url'
+import { channels } from './pages-site-manifest.mjs'
 
 const origins = { main: 'https://css.master.co', rc: 'https://rc.css.master.co' }
 
@@ -7,7 +8,7 @@ export function assertPagesTarget(project, { name, branch, origin }) {
   assert.equal(origin, origins[branch], 'Release channel must use its canonical origin')
   assert.ok(origins[branch], 'Only main and rc are site release channels')
   assert.equal(project?.name, name, 'Cloudflare returned a different Pages project')
-  assert.equal(project.production_branch, branch, 'Selected Pages project has a different production branch')
+  assert.equal(project.production_branch, channels[branch].deliveryBranch, 'Selected Pages project has a different release-success production branch')
   assert.ok(project.domains?.includes(new URL(origin).hostname), 'Selected Pages project does not serve this canonical hostname')
 }
 

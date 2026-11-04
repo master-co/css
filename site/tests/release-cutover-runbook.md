@@ -1,6 +1,6 @@
 # Website release cutover and recovery
 
-This is a reviewable procedure for #472 and #473. It does not authorize publication, deployment, DNS changes or a rollback. The current hold remains in effect. Local candidate checks do not establish that either public domain serves this candidate.
+This is a reviewable procedure for #472 and #473. Execution remains subject to the owner's release authorization and completion of the agreed readiness and MDX/translation work. This document does not itself authorize publication, deployment, DNS changes or rollback. Local candidate checks do not establish that either public domain serves this candidate.
 
 ## Routing and artifact contract
 
@@ -15,7 +15,55 @@ The site reads `PUBLIC_COMMIT_REF`, `PUBLIC_VERSION` and `PUBLIC_URL`. Set them 
 
 `PUBLIC_VERSION=2.0.0` is suitable for a local stable-metadata rehearsal only. It does not prove that version exists in npm. A release job must obtain the real version from its release result and bind the checked-out commit, build report, artifact digest and uploaded deployment to the same revision. Do not use a branch-head deploy hook to claim exact-commit deployment.
 
-The release workflow checks out `github.sha`, validates and retains the generated site artifact, then uploads that same `site/out` with Wrangler's `--branch "$PUBLIC_COMMIT_REF"` and `--commit-hash "$GITHUB_SHA"`. Before enabling this path, configure the scoped `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets and the `CLOUDFLARE_PAGES_STABLE_PROJECT` / `CLOUDFLARE_PAGES_RC_PROJECT` variables. Their values belong only in private settings. The read-only target preflight must confirm the selected project, production branch and domain; do not send `main` to an RC-only project. These new settings are a remaining deployment prerequisite, not something established by the local build or an existing RC hook.
+The release workflow uses the existing Cloudflare GitHub App. A normal push to `main` or `rc` cannot deploy the site. Only after required validation, the complete actual npm release and any required editor publication succeed does the workflow build the exact source, run browser verification, publish a public output manifest and advance the corresponding delivery ref to that same commit. It never creates a delivery commit or force-updates a ref.
+
+| Logical release channel | Pages production Git branch | Canonical origin |
+| --- | --- | --- |
+| `main` | `codex/pages-stable` | `https://css.master.co` |
+| `rc` | `codex/pages-rc` | `https://rc.css.master.co` |
+
+This deliberately separates source/release branches from deployment triggers. `PUBLIC_COMMIT_REF` remains the logical channel; it is not the Pages delivery branch. A branch-head deploy hook must not replace the exact-source handoff.
+
+The operator's strict target check in `scripts/pages-release-target.mjs` still requires the selected project, its corresponding production delivery branch and its canonical hostname. It never accepts a different hostname for bootstrap. The automated Git flow does not claim to have performed this API check: no Cloudflare token is required or created by it. Inspect these fields through the authenticated dashboard before the domain cutover; if an independently supplied read credential is available, the helper can perform the same strict read-only assertion.
+
+## Git App configuration
+
+Configure these repository variables for each `STABLE` and `RC` surface:
+
+| Repository variable | Value |
+| --- | --- |
+| `CLOUDFLARE_PAGES_STABLE_PROJECT` / `CLOUDFLARE_PAGES_RC_PROJECT` | Actual Pages project name |
+| `CLOUDFLARE_PAGES_STABLE_SUBDOMAIN` / `CLOUDFLARE_PAGES_RC_SUBDOMAIN` | Actual `<assigned-name>.pages.dev` subdomain, without scheme or path; do not infer it from the project name |
+| `CLOUDFLARE_PAGES_STABLE_MODE` / `CLOUDFLARE_PAGES_RC_MODE` | Explicitly `bootstrap` or `production`; missing/other values fail |
+
+The workflow uses its existing repository `GITHUB_TOKEN` only for immutable release-asset creation, fast-forward Git ref updates and reading official Pages checks. It does not expose that write token during dependency builds. The selected project and public subdomain appear in public release evidence; account identifiers, API tokens, hook URLs and full Cloudflare deployment identifiers do not.
+
+For each Pages Git source, use the matching production delivery branch, disable all preview branch builds, retain all build watch paths (`*`, no exclusions), set the repository root as the build root, set build command `bun run build:site:cloudflare-pages`, and output directory `site/out`. Configure these build variables:
+
+| Cloudflare build variable | Value |
+| --- | --- |
+| `NODE_VERSION` | `24` |
+| `BUN_VERSION` | `1.4.4` |
+| `SKIP_DEPENDENCY_INSTALL` | `1`; the hosted script runs the frozen install itself |
+| `MASTER_CSS_PAGES_PROJECT` | That project's actual name |
+| `MASTER_CSS_PAGES_SUBDOMAIN` | That project's actual `pages.dev` subdomain |
+| `MASTER_CSS_IMAGE_TRANSFORMATIONS` | `false`, identical to release CI |
+
+Leave `PUBLIC_VERSION` unset in hosting settings. The helper resolves the unique actual release tag that points to `CF_PAGES_COMMIT_SHA`; it never falls back to the latest remote tag. It maps `CF_PAGES_BRANCH` to the logical channel and sets the canonical origin. Any explicit `PUBLIC_VERSION`, `PUBLIC_COMMIT_REF` or `PUBLIC_URL` must agree. `git HEAD`, the exact release tag, Pages commit SHA, delivery branch, configured project and actual immutable Pages URL must all match the manifest.
+
+Current Cloudflare documentation says Direct Upload projects cannot switch to Git integration. An empty project's dashboard may present a newer **Connect** path; inspect it without saving or deploying before deciding whether attachment is supported. A button alone is not successful source attachment. Do not delete/recreate the empty stable project automatically. Keep both automatic build controls held until the source, guarded build command, release handoff and owner prerequisites are ready. [Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/), [Direct Upload limitation](https://developers.cloudflare.com/pages/get-started/direct-upload/)
+
+## Exact output evidence
+
+CI creates `site/out/site-release.json` before browser verification. Its payload digest covers every other output file; it does not contain its own hash or the enclosing manifest hash. The external `site-<logical-channel>-<full-revision>.manifest.json` GitHub release asset then records the size and SHA-256 of **every final output file**, including `site-release.json`. No output file is excluded from that final inventory. The manifest also binds the exact source/tag/version, channel, delivery branch, project/subdomain, canonical origin, portable-image flag, public package integrity cohort and successful three-browser report digest.
+
+An existing asset name must have identical downloaded bytes. The workflow never replaces or deletes it. Public registry versions, archive integrities and provenance are checked before delivery. The Cloudflare source build downloads that exact version/revision asset, checks the actual registry cohort again, builds without browser dependencies, reproduces the public identity and compares the complete output inventory before its build can succeed. Missing, extra, renamed, changed or symlinked files fail. A differing build cannot be deployed by accepting a new baseline.
+
+This is a write-once contract enforced by the release code, independently of GitHub's optional **immutable releases** setting. If that platform setting is enabled, all assets must be attached before publishing the draft GitHub release; the present post-release manifest step fails rather than disabling immutability or replacing an asset. Reconcile that release ordering before enabling such a policy. [GitHub immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases)
+
+Both builders clear only the known generated `site/.cache` before building so its previous contents cannot change Reference source-state metadata. The browser report retains its actual source-status entries; the expected generated untracked cache is disclosed rather than described as a wholly clean porcelain result.
+
+The workflow waits for the official Cloudflare Pages App check on this exact source and project, then reads the immutable deployment's public identity. The release concurrency remains held during this wait. A missing/skipped check, failed build, wrong source or timeout fails delivery. Cloudflare documents a 20-minute build limit; the external check wait is bounded to 45 minutes to include queue time. A cold hosted build must fit the platform limit. [Build limits](https://developers.cloudflare.com/pages/platform/limits/)
 
 ## Non-deploying preparation
 
@@ -54,9 +102,21 @@ The previous successful production deployment must remain available. A preview d
 
 ## Authorized staging and cutover
 
-These steps remain pending while deployment is prohibited.
+These steps run only when the owner's release prerequisites have been satisfied.
 
-1. Stage the exact verified output with its commit identity. Confirm the preview has `X-Robots-Tag: noindex`; Pages preview aliases can move, so retain the immutable deployment URL. [Preview deployment documentation](https://developers.cloudflare.com/pages/configuration/preview-deployments/)
+For a new stable project, start with mode `bootstrap`. Inspect the project and source/delivery branch before staging. If the project still has no Git source, attach it only after the public manifest and exact delivery ref exist; the first **Connect** may trigger a build and must not be treated as configuration-only. The Git App may stage and verify the exact artifact on its immutable `pages.dev` URL while the existing v1 project and stable domain remain intact. A successful bootstrap explicitly records `canonicalVerified: false`; it does not satisfy the stable-domain acceptance gate. After the separately authorized domain association/DNS cutover, verify the strict project/production-branch/canonical-hostname target contract and record an independent canonical proof without republishing npm:
+
+```sh
+node scripts/pages-site-release.mjs canonical release-artifacts/site.manifest.json
+```
+
+This command verifies the retained manifest against its exact public release asset, source tag, public registry cohort and canonical public site identity, then writes `release-artifacts/site-canonical.json`. Set the surface's mode to `production` after cutover; future deliveries must also verify the canonical identity. Mode is absent from immutable output/manifest bytes, so cutover does not create a conflicting asset for the same revision.
+
+If a failed site job is rerun, it downloads the npm evidence artifact named by the original completed release job, even when the workflow attempt number changes. If its delivery ref already selects this SHA, no new push or synthetic commit is made. Inspect or retry that exact Pages deployment through the authorized dashboard when appropriate; do not force a ref, move a version tag or republish npm to obtain a site retry. A new publication manifest with different bytes requires reconciliation, never `--clobber`.
+
+`release-artifacts/site-delivery.json` records the source, actual version, logical channel, delivery ref, project, mode and owning GitHub run/attempt before any asset/ref write. Each external write records its intent and acknowledged, rejected or unknown response outcome; asset/ref verification is recorded separately. A lost response can leave a successful remote write with an `unknown` outcome. A failed CLI status never means that no write occurred or that Cloudflare rolled back. Inspect the retained receipt and authoritative asset/ref state before retrying. Retries with an existing local receipt append an attempt without replacing its history; separate workflow attempts retain separate artifacts. Immutable-host and canonical verification flags become true only after their respective live checks complete. Failure receipts contain fixed phase/error codes, never raw responses, credentials or private dashboard identifiers.
+
+1. Stage the exact verified output with its commit identity. A private preview and the new project's production `pages.dev` bootstrap are distinct deployment environments. Require the real `X-Robots-Tag: noindex` response on either Pages-hosted surface; do not assume a production bootstrap inherits preview defaults. The Git delivery watcher explicitly checks the immutable identity response header. Retain the immutable deployment URL because branch aliases can move. These Pages-host rules do not impose a separate JSON SEO requirement on the canonical domain. [Preview deployment documentation](https://developers.cloudflare.com/pages/configuration/preview-deployments/)
 2. Verify `/`, `/tw`, Installation, Migration, a generated Reference page, search JSON, `llms.txt`, `llms-full.txt`, sitemap, one hashed JS/CSS asset and one image/font. Verify real HTTPS responses, MIME types, caching and canonical URLs. Run the browser matrix against the deployed artifact, including Firefox, and manually exercise keyboard focus and screen-reader navigation.
 3. Verify `/en` and `/en/*` normalization, organization redirects for Blog/Brand/Design System, the `/cdn/*` destination, and unknown route 404 behavior. The generated `_redirects` applies to Pages static responses, not arbitrary Functions routes. [Redirect documentation](https://developers.cloudflare.com/pages/configuration/redirects/)
 4. Do not redirect all old documentation URLs to unrelated new pages. The existing product policy deliberately retires removed Reference routes. Preserve committed brand download URLs. Decide any separate legacy-site hostname only after an operator verifies its hosting and recovery plan; this runbook reserves no new domain.

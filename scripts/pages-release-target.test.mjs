@@ -3,13 +3,14 @@ import { test } from 'node:test'
 import { assertPagesTarget, verifyPagesTarget } from './pages-release-target.mjs'
 
 const expected = { name: 'fixture-stable', branch: 'main', origin: 'https://css.master.co' }
-const project = { name: 'fixture-stable', production_branch: 'main', domains: ['fixture-stable.pages.dev', 'css.master.co'] }
+const project = { name: 'fixture-stable', production_branch: 'codex/pages-stable', domains: ['fixture-stable.pages.dev', 'css.master.co'] }
 
 test('a stable release requires the matching project, production branch and hostname', () => {
   assert.doesNotThrow(() => assertPagesTarget(project, expected))
   for (const wrong of [
     { ...project, name: 'fixture-rc' },
     { ...project, production_branch: 'rc' },
+    { ...project, production_branch: 'main' },
     { ...project, domains: ['rc.css.master.co'] }
   ]) assert.throws(() => assertPagesTarget(wrong, expected))
   assert.throws(() => assertPagesTarget(project, { ...expected, origin: 'https://preview.example' }))

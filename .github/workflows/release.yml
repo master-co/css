@@ -50,6 +50,7 @@ jobs:
       released: ${{ steps.outcome.outputs.released }}
       version: ${{ steps.outcome.outputs.version }}
       revision: ${{ steps.outcome.outputs.revision }}
+      artifact_name: ${{ steps.outcome.outputs.artifact_name }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -87,7 +88,9 @@ jobs:
           MASTER_CSS_RELEASE_PROMOTE: "1"
       - name: Bind delivery to the actual completed release
         id: outcome
-        run: node scripts/release-outcome.mjs
+        run: |
+          node scripts/release-outcome.mjs
+          echo "artifact_name=npm-release-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
       - name: Preserve publication inventory and recovery evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
@@ -104,14 +107,21 @@ jobs:
     needs:
       - validation
       - release
-    if: ${{ github.event_name == 'push' && needs.release.outputs.released == 'true' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.site_affected == 'true' }}
+      - publish-editors
+    if: ${{ always() && github.event_name == 'push' && needs.validation.result == 'success' && needs.release.result == 'success' && needs.release.outputs.released == 'true' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.site_affected == 'true' && (needs.publish-editors.result == 'success' || (needs.validation.outputs.vscode_release_affected != 'true' && needs.publish-editors.result == 'skipped')) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 75
     permissions:
-      contents: read
+      contents: write
+      checks: read
     env:
       PUBLIC_COMMIT_REF: ${{ github.ref_name }}
       PUBLIC_VERSION: ${{ needs.release.outputs.version }}
       PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
+      MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
+      PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+      PAGES_SUBDOMAIN: ${{ vars[format('CLOUDFLARE_PAGES_{0}_SUBDOMAIN', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+      PAGES_RELEASE_MODE: ${{ vars[format('CLOUDFLARE_PAGES_{0}_MODE', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -121,16 +131,26 @@ jobs:
       - uses: ./.github/actions/setup-bun
         with:
           turbo-cache-scope: build
-      # Build after npm publication so metadata resolves the tag on this exact
-      # source revision. A branch deploy hook could build a newer, untested head.
+      - name: Test the non-deploying Pages release contracts
+        run: node --test scripts/pages-site-manifest.test.mjs scripts/pages-site-release.test.mjs scripts/pages-release-github.test.mjs
+      - name: Download the completed npm cohort evidence from its owning attempt
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.release.outputs.artifact_name }}
+          path: release-artifacts/npm
+      - name: Require the actual source tag and complete public registry cohort
+        run: node scripts/pages-site-release.mjs preflight
+      # The external Git builder must reproduce these final, browser-tested bytes.
       - name: Build and verify the exact site revision
         run: |
           bun run build:site
           bun run --filter site test:css-contract
           bun run --filter site test:llms
           bun run --filter site test:docs-examples
+          node scripts/pages-site-release.mjs identity
           bun run playwright install --with-deps chromium firefox webkit
           node site/scripts/verify-release-site.mjs --out site/out --origin "$PUBLIC_URL" --report site/test-results/release-site.json
+          node scripts/pages-site-release.mjs manifest
       - name: Retain the verified site output
         uses: actions/upload-artifact@v7
         with:
@@ -138,25 +158,21 @@ jobs:
           path: |
             site/out/
             site/test-results/release-site.json
+            release-artifacts/site.manifest.json
           if-no-files-found: error
           retention-days: 30
-      - name: Deploy the verified output to its configured Pages project
-        shell: bash
-        run: |
-          set -euo pipefail
-          : "${CLOUDFLARE_API_TOKEN:?Configure the scoped Pages token before release}"
-          : "${CLOUDFLARE_ACCOUNT_ID:?Configure the Pages account before release}"
-          : "${PAGES_PROJECT:?Configure the Pages project for this release channel}"
-          node scripts/pages-release-target.mjs
-          bun run --cwd site wrangler pages deploy out \
-            --project-name "$PAGES_PROJECT" \
-            --branch "$PUBLIC_COMMIT_REF" \
-            --commit-hash "$GITHUB_SHA" \
-            --commit-dirty=false
+      - name: Create the immutable public manifest and advance the exact Pages Git ref
+        run: node scripts/pages-site-release.mjs deliver
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          PAGES_PROJECT: ${{ github.ref_name == 'main' && vars.CLOUDFLARE_PAGES_STABLE_PROJECT || vars.CLOUDFLARE_PAGES_RC_PROJECT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Retain exact Git deployment and canonical verification results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-delivery-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-artifacts/site-delivery.json
+          if-no-files-found: warn
+          retention-days: 90
 
   publish-editors:
     needs:

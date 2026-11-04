@@ -57,6 +57,12 @@ async function writeHeaders() {
         '  Cache-Control: public, max-age=31536000, immutable',
         '/fonts/*',
         '  Cache-Control: public, max-age=31536000, immutable',
+        // Production aliases and immutable Pages URLs share canonical product content.
+        // Keep both provider host shapes out of indexes without affecting custom domains.
+        'https://:project.pages.dev/*',
+        '  X-Robots-Tag: noindex',
+        'https://:deployment.:project.pages.dev/*',
+        '  X-Robots-Tag: noindex',
         ''
     ].join('\n'), 'utf8')
 }
