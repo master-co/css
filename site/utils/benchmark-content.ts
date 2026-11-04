@@ -3,6 +3,9 @@ import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import type { BenchmarkBarItem, BenchmarkBarsProps, BenchmarkChartModel } from '@master/internal-site/benchmarks/types.ts'
 import { formatMetricValue } from '@master/internal-site/benchmarks/utils.ts'
 import pageCssSnapshot from '../.generated/benchmarks/docs-page-css-size.json'
+import * as summaryCharts from '../content/benchmarks/components/BenchmarkSummary'
+import * as pageCSSCharts from '../content/benchmarks/components/PageCSSSizeSample'
+import * as revisionCharts from '../content/benchmarks/components/RevisionComparison'
 import * as staticCharts from '../content/benchmarks/components/StaticTailwindComparison'
 import * as buildCharts from '../content/benchmarks/components/BuildPathDiagnosticsBenchmark'
 import * as browserCharts from '../content/benchmarks/components/BrowserCSSCostBenchmark'
@@ -15,7 +18,7 @@ import * as lifecycleCharts from '../content/benchmarks/components/BrowserLifecy
  * They are plain data, so exporting them renders nothing. MDX is never executed.
  */
 export const benchmarkContentComponents: Record<string, BenchmarkChartModel> = {
-  ...staticCharts, ...buildCharts,
+  ...summaryCharts, ...pageCSSCharts, ...revisionCharts, ...staticCharts, ...buildCharts,
   ...browserCharts, ...deliveryCharts, ...interactionCharts, ...lifecycleCharts,
 }
 

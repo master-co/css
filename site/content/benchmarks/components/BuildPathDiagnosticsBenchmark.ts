@@ -87,8 +87,8 @@ function createSummaryMetrics(): BenchmarkMetric[] {
   const cliExtraction = getMetric(primary.cli.build, 'cli-css-extraction-ms')
   const viteOverhead = getMetric(primary.vite.startup, 'vite-master-command-overhead-ms')
   const viteScannerInit = getMetric(primary.vite.startup, 'vite-master-scanner-init-ms')
-  const compilerTotal = getMetric(primary.compiler, 'diagnostic-compiler-total-ms')
-  const extractionTotal = getMetric(primary.extraction, 'diagnostic-extraction-total-ms')
+  const registration = getMetric(primary.extraction, 'stylesheet-registration-ms')
+  const compose = getMetric(primary.compiler, 'baseline-compose-ms')
 
   return [
     {
@@ -122,9 +122,9 @@ function createSummaryMetrics(): BenchmarkMetric[] {
       tone: viteOverhead.median > viteScannerInit.median * 5 ? 'warn' : 'neutral'
     },
     {
-      label: 'Compiler and extraction',
-      value: `${formatMetric(compilerTotal)} / ${formatMetric(extractionTotal)}`,
-      detail: '`docs` fixture diagnostic compiler total and diagnostic extraction total',
+      label: 'Registration and compose',
+      value: `${formatMetric(registration)} / ${formatMetric(compose)}`,
+      detail: '`docs` fixture stylesheet entry registration versus the first full public compose',
       tone: 'neutral'
     }
   ]
@@ -152,11 +152,11 @@ function createViteItems(result = getPrimaryResult()): BenchmarkBarItem[] {
 
 function createCompilerItems(result = getPrimaryResult()): BenchmarkBarItem[] {
   return [
-    createItem('production-create-extracted-css', 'Production createExtractedCSS', result.compiler, 'production-create-extracted-css-ms', 'blue'),
-    createItem('compiler-total', 'Diagnostic compiler total', result.compiler, 'diagnostic-compiler-total-ms', 'cyan'),
-    createItem('render-compiled-css', 'Render compiled CSS', result.compiler, 'render-compiled-css-ms', 'yellow'),
-    createItem('extraction-total', 'Diagnostic extraction total', result.extraction, 'diagnostic-extraction-total-ms', 'green'),
-    createItem('rule-generation', 'Engine rule generation', result.extraction, 'engine-rule-generation-ms', 'red')
+    createItem('stylesheet-registration', 'Stylesheet registration', result.extraction, 'stylesheet-registration-ms', 'blue'),
+    createItem('baseline-compose', 'First full compose', result.compiler, 'baseline-compose-ms', 'cyan'),
+    createItem('repeated-compose', 'Repeated full compose', result.compiler, 'diagnostic-compose-ms', 'yellow'),
+    createItem('generated-only-compose', 'Compose without native CSS', result.extraction, 'generated-only-compose-ms', 'green'),
+    createItem('native-only-compose', 'Compose without generated CSS', result.extraction, 'native-only-compose-ms', 'red')
   ]
 }
 
@@ -183,7 +183,7 @@ export const BuildPathDiagnosticsCharts: BenchmarkChartModel = {
   groups: [
     { title: 'CLI path', detail: 'Docs fixture medians', items: createCLIItems(), unit: 'ms' },
     { title: 'Vite path', detail: 'Docs fixture medians', items: createViteItems(), unit: 'ms' },
-    { title: 'Compiler and extraction', detail: 'Docs fixture medians', items: createCompilerItems(), unit: 'ms' }
+    { title: 'Stylesheet pipeline', detail: 'Docs fixture medians of separate public operations', items: createCompilerItems(), unit: 'ms' }
   ]
 }
 
@@ -191,7 +191,7 @@ export const BuildPathDiagnosticsTable: BenchmarkChartModel = {
   kind: 'data-table',
   label: 'Build path diagnostics results',
   numericFrom: 2,
-  headers: ['Fixture', 'CLI command', 'CLI extraction', 'Vite overhead', 'Vite import', 'Vite scanner', 'Compiler total', 'Extraction total', 'Final CSS'],
+  headers: ['Fixture', 'CLI command', 'CLI extraction', 'Vite overhead', 'Vite import', 'Vite scanner', 'Registration', 'First compose', 'Pipeline total', 'Final CSS'],
   rows: results.map((result) => [
     getFixtureName(result.fixtureId),
     formatMetric(getMetric(result.cli.startup, 'cli-command-elapsed-ms')),
@@ -199,8 +199,9 @@ export const BuildPathDiagnosticsTable: BenchmarkChartModel = {
     formatMetric(getMetric(result.vite.startup, 'vite-master-command-overhead-ms')),
     formatMetric(getMetric(result.vite.startup, 'master-vite-import-ms')),
     formatMetric(getMetric(result.vite.startup, 'vite-master-scanner-init-ms')),
-    formatMetric(getMetric(result.compiler, 'diagnostic-compiler-total-ms')),
-    formatMetric(getMetric(result.extraction, 'diagnostic-extraction-total-ms')),
+    formatMetric(getMetric(result.extraction, 'stylesheet-registration-ms')),
+    formatMetric(getMetric(result.compiler, 'baseline-compose-ms')),
+    formatMetric(getMetric(result.compiler, 'public-pipeline-total-ms')),
     formatMetric(getMetric(result.compiler, 'final-css-raw-bytes'))
   ])
 }

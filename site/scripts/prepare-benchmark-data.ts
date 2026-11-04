@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { writeIfChanged } from './write-if-changed'
 
 const siteRoot = fileURLToPath(new URL('..', import.meta.url))
-export const benchmarkSuites = ['docs-page-css-size', 'tailwind-static-comparison', 'build-path-diagnostics', 'browser-css-cost', 'master-delivery-modes', 'interaction-cost', 'browser-lifecycle', 'long-session-evidence'] as const
+export const benchmarkSuites = ['docs-page-css-size', 'revision-comparison', 'tailwind-static-comparison', 'build-path-diagnostics', 'browser-css-cost', 'master-delivery-modes', 'interaction-cost', 'browser-lifecycle', 'long-session-evidence'] as const
 type BenchmarkSuite = typeof benchmarkSuites[number]
 type Data = Record<string, any>
 const pick = (source: Data, keys: string[]): Data => Object.fromEntries(keys.map(key => [key, source[key]]))
@@ -13,10 +13,14 @@ const pick = (source: Data, keys: string[]): Data => Object.fromEntries(keys.map
 export function projectBenchmarkSnapshot(suite: BenchmarkSuite, source: Data): Data {
   switch (suite) {
     case 'docs-page-css-size':
-      return { generatedAt: source.generatedAt, pages: source.pages.map((page: Data) => ({
-        name: page.name, css: { total: page.css.total },
-        assets: page.assets.map((asset: Data) => pick(asset, ['kind', 'tag', 'rawBytes', 'brotliBytes']))
+      return { generatedAt: source.generatedAt, browser: source.browser, pages: source.pages.map((page: Data) => ({
+        name: page.name, css: { total: page.css.total }, usage: page.usage,
+        assets: page.assets.map((asset: Data) => pick(asset, ['kind', 'tag', 'rawBytes', 'brotliBytes'])),
+        sample: pick(page.sample, ['pageCount', 'rawBytes', 'brotliBytes', 'matchedRuleShare']),
+        ...(page.site && { site: page.site })
       })) }
+    case 'revision-comparison':
+      return pick(source, ['revisions', 'environment', 'runtimes', 'browser', 'rows'])
     case 'tailwind-static-comparison':
       return pick(source, ['fixtures', 'variants', 'results'])
     case 'build-path-diagnostics':

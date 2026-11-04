@@ -39,7 +39,7 @@ type DeliveryModeResult = {
     externalCSS: ByteSummary
     inlineCSS: ByteSummary
     runtimeJS: ByteSummary
-    manifestJSON: ByteSummary
+    runtimeProgram: ByteSummary
     hydrationManifest: ByteSummary
   }
   structure: {
@@ -57,7 +57,7 @@ type DeliveryModeResult = {
     requestCount: SummaryStats
     runtimeReadyMs: SummaryStats
     runtimeBootstrapMs: SummaryStats
-    manifestLoadMs: SummaryStats
+    programLoadMs: SummaryStats
     runtimeObserveMs: SummaryStats
     progressiveAdopted: SummaryStats
     runtimeGeneratedRuleCount: SummaryStats
@@ -111,8 +111,8 @@ const responseSegments = [
     color: 'violet'
   },
   {
-    id: 'manifestJSON',
-    label: 'Manifest JSON',
+    id: 'runtimeProgram',
+    label: 'Runtime program',
     color: 'yellow'
   }
 ] satisfies { id: keyof DeliveryModeResult['payload']; label: string; color: BenchmarkColor }[]
@@ -283,7 +283,7 @@ export const MasterDeliveryModesTables: BenchmarkChartModel = {
   kind: 'data-table',
   label: 'Master CSS delivery modes results',
   numericFrom: 3,
-  headers: ['Fixture', 'Mode', 'Response assets', 'HTML', 'External CSS', 'Inline CSS (in HTML)', 'Runtime JS', 'Manifest JSON', 'Hydration (in HTML)', 'Rules', 'Declarations', 'Navigation ready', 'Style recalc', 'Layout', 'Paint', 'Runtime bootstrap', 'Runtime observe', 'Progressive adopted'],
+  headers: ['Fixture', 'Mode', 'Response assets', 'HTML', 'External CSS', 'Inline CSS (in HTML)', 'Runtime JS', 'Runtime program', 'Hydration (in HTML)', 'Rules', 'Declarations', 'Navigation ready', 'Style recalc', 'Layout', 'Paint', 'Runtime bootstrap', 'Runtime observe', 'Progressive adopted'],
   rows: results.flatMap((result) => modes.map((mode) => {
     const modeResult = result.modes[mode.id]
 
@@ -295,7 +295,7 @@ export const MasterDeliveryModesTables: BenchmarkChartModel = {
       formatBytes(modeResult.payload.externalCSS.brotliBytes),
       formatBytes(modeResult.payload.inlineCSS.brotliBytes),
       formatBytes(modeResult.payload.runtimeJS.brotliBytes),
-      formatBytes(modeResult.payload.manifestJSON.brotliBytes),
+      formatBytes(modeResult.payload.runtimeProgram.brotliBytes),
       formatBytes(modeResult.payload.hydrationManifest.brotliBytes),
       formatCount(modeResult.structure.styleRules),
       formatCount(modeResult.structure.declarations),

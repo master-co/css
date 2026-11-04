@@ -191,7 +191,7 @@ function createRuntimeMutationItems(scenarioId: ScenarioId): BenchmarkBarItem[] 
       label: getModeLabel(modeId),
       value: metric.median,
       valueLabel: formatMilliseconds(metric.median),
-      detail: `${formatCount(modeResult.interaction.runtimeGeneratedRuleCountDelta.median)} rules`,
+      detail: `+${formatCount(modeResult.interaction.runtimeGeneratedRuleCountDelta.median)} snapshot rules`,
       color: modeColors[modeId]
     }]
   })

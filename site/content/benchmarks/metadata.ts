@@ -2,7 +2,7 @@ import define from '@master/internal-site/utils/metadata'
 
 const metadata = define({
   title: 'Benchmarks',
-  description: 'Compare measured build, delivery, browser and runtime costs, including each benchmark’s scope and limits.',
+  description: 'See how much of the CSS a page delivers matches it, compare generated CSS for the same UI, and check build and runtime costs with their limits.',
   category: 'Evidence',
   fileURL: import.meta.url
 })

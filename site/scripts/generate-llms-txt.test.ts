@@ -684,7 +684,7 @@ test('benchmarks export the same chart values and complete tables as the page', 
     assert.ok(rendered.includes('|'), name)
     assert.ok(content.markdown.includes(rendered.trim().replace(/\n{3,}/g, '\n\n')), name)
   }
-  for (const text of ['Complete interaction cost data', 'Static CSS output, structure, and production build', 'It does not measure an individual input delay or Web Vitals INP', 'Session elapsed', 'one measured run']) assert.ok(content.markdown.includes(text), text)
+  for (const text of ['Complete interaction cost data', 'Same UI, generated CSS', 'It does not measure an individual input delay or Web Vitals INP', 'Session elapsed', 'one measured run']) assert.ok(content.markdown.includes(text), text)
   assert.doesNotMatch(content.markdown, /<Benchmark|<StaticCSS|\[object Object\]|MCSS_EXPRESSION/)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
