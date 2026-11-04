@@ -4,7 +4,7 @@ import init from './init'
 
 const nativePreset = readFileSync(new URL('../../preset/src/default-native.css', import.meta.url), 'utf8')
 
-test('animation shorthand tokens preserve preset timing and support direct overrides', async ({ page }) => {
+test('animation shorthand tokens preserve defaults and support token and direct overrides', async ({ page }) => {
   const names = ['fade', 'flash', 'float', 'heart', 'jump', 'ping', 'pulse', 'rotate', 'shake', 'zoom']
   await page.setContent(names.map(name => `<div id="${name}" class="animate-${name}"></div>`).join(''))
   await init(page)
@@ -17,10 +17,11 @@ test('animation shorthand tokens preserve preset timing and support direct overr
   }
   const target = page.locator('#fade')
   await target.evaluate(element => { element.className = 'animate-fade animation-fast' })
-  await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.has('animation-fast'))).toBe(true)
-  await expect(target).toHaveCSS('animation-duration', '1s')
-  await target.evaluate(element => { element.className = 'animate-fade (animation-duration:var(--duration-fast)) (animation-iteration-count:1)' })
+  // Class counts update before the next-frame CSSOM insertion. Wait for the
+  // longhand's computed result, not the shorthand's previous value.
   await expect(target).toHaveCSS('animation-duration', '0.15s')
+  await target.evaluate(element => { element.className = 'animate-fade animation-fast (animation-duration:var(--duration-slow)) (animation-iteration-count:1)' })
+  await expect(target).toHaveCSS('animation-duration', '0.3s')
   await expect(target).toHaveCSS('animation-iteration-count', '1')
 })
 
