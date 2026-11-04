@@ -1,10 +1,10 @@
 import { spawn } from 'node:child_process'
 import { once } from 'node:events'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { pathToFileURL } from 'node:url'
 import { tmpdir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { expect, test } from 'vitest'
 
 for (const scenario of [
@@ -15,22 +15,41 @@ for (const scenario of [
   test(`BH-0019 watches ${scenario.name} without output feedback`, async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-watch-new-'))
     const output = join(cwd, 'master.css')
-    const child = spawn(process.execPath, ['--import', pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href,
+    const traceDirectory = process.env.CLI_WATCH_TRACE_DIR
+    const run = (process.env.CLI_WATCH_TRACE_RUN ?? 'local').replace(/[^a-zA-Z0-9_-]/g, '_')
+    const traceFile = traceDirectory ? join(traceDirectory, `${run}-${basename(cwd)}.jsonl`) : undefined
+    const diagnosticFile = traceDirectory ? join(traceDirectory, `${run}-${basename(cwd)}.json`) : undefined
+    if (traceDirectory) mkdirSync(traceDirectory, { recursive: true })
+    const child = spawn(process.execPath, [...traceDirectory ? ['--import', pathToFileURL(resolve(__dirname, 'fixtures/watch-trace.mjs')).href] : [],
+      '--import', pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href,
       resolve(__dirname, '../src/bin/index.ts'), 'generate', '--watch', ...scenario.patterns], {
       cwd, env: { ...process.env, TSX_TSCONFIG_PATH: resolve(__dirname, '../../../tsconfig.json') }
     })
-    let stderr = ''
+    let stderr = '', stdout = ''
     child.stderr.on('data', chunk => { stderr += chunk })
-    child.stdout.resume()
+    child.stdout.on('data', chunk => { stdout += chunk })
+    let outcome = 'running'
+    const snapshot = () => ({ scenario: scenario.name, patterns: scenario.patterns, run, outcome, childExitCode: child.exitCode,
+      stdout, stderr, files: Object.fromEntries([scenario.file, scenario.excluded, 'ignored.json', 'master.css'].map(file => {
+        const absolute = join(cwd, file)
+        try { return [file, existsSync(absolute) ? readFileSync(absolute, 'utf8') : null] } catch (error) {
+          return [file, { errorCode: (error as NodeJS.ErrnoException).code }]
+        }
+      })) })
     const css = () => existsSync(output) ? readFileSync(output, 'utf8') : ''
     const wait = async (check: () => boolean) => {
       const deadline = Date.now() + 10000
       while (!check() && Date.now() < deadline && child.exitCode === null) await new Promise(resolveWait => setTimeout(resolveWait, 30))
-      expect(check(), stderr).toBe(true)
+      const complete = check()
+      if (!complete && diagnosticFile) writeFileSync(diagnosticFile, JSON.stringify(snapshot(), null, 2))
+      const trace = !complete && traceFile && existsSync(traceFile) ? readFileSync(traceFile, 'utf8') : ''
+      expect(complete, traceDirectory ? JSON.stringify(snapshot(), null, 2) + '\n' + trace : stderr).toBe(true)
     }
     const write = (file: string, text: string) => {
+      if (traceFile) appendFileSync(traceFile, JSON.stringify({ at: Date.now(), kind: 'fixture.write.start', file, content: text }) + '\n')
       mkdirSync(dirname(join(cwd, file)), { recursive: true })
       writeFileSync(join(cwd, file), text)
+      if (traceFile) appendFileSync(traceFile, JSON.stringify({ at: Date.now(), kind: 'fixture.write.end', file }) + '\n')
     }
     try {
       await wait(() => stderr.includes('Start watching source changes'))
@@ -46,7 +65,12 @@ for (const scenario of [
       await new Promise(resolveWait => setTimeout(resolveWait, 300))
       expect(stderr.match(/master\.css exported/g)?.length ?? 0).toBe(exports)
       expect(child.exitCode).toBeNull()
+      outcome = 'passed'
+    } catch (error) {
+      outcome = 'failed'
+      throw error
     } finally {
+      const diagnostic = diagnosticFile ? snapshot() : undefined
       if (child.exitCode === null) {
         const exited = once(child, 'exit')
         child.kill('SIGTERM')
@@ -55,6 +79,8 @@ for (const scenario of [
         clearTimeout(timer)
       }
       rmSync(cwd, { recursive: true, force: true })
+      if (diagnosticFile) writeFileSync(diagnosticFile, JSON.stringify({ ...diagnostic, outcome, stdout, stderr, childExitCode: child.exitCode,
+        childSignalCode: child.signalCode, fixtureRemoved: !existsSync(cwd) }, null, 2))
     }
   }, 30000)
 }

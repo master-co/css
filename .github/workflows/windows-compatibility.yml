@@ -5,7 +5,7 @@ on:
       mode:
         description: Full compatibility or focused regression diagnosis
         type: choice
-        options: [full, focused]
+        options: [full, focused, source-watch]
         default: full
 
 permissions:
@@ -40,6 +40,7 @@ jobs:
         id: build
         run: bun run turbo run build --filter=@master/css-cli... --filter=@master/css-mcp... --filter=@master/css-next... --concurrency=2
       - name: Repeat CLI and MCP regressions and verify Next lock recovery
+        if: ${{ inputs.mode != 'source-watch' }}
         shell: bash
         run: |
           set -uo pipefail
@@ -51,6 +52,31 @@ jobs:
           done
           bun run --cwd packages/next test tests/issues/475.test.ts tests/static-state.test.ts || result=1
           exit "$result"
+      - name: Diagnose new source watching on Windows
+        if: ${{ inputs.mode == 'source-watch' }}
+        shell: bash
+        env:
+          CLI_WATCH_TRACE_DIR: ${{ runner.temp }}/cli-watch-traces
+        run: |
+          set -uo pipefail
+          result=0
+          for iteration in {1..3}; do
+            echo "Complete CLI suite iteration $iteration of 3"
+            CLI_WATCH_TRACE_RUN="full-$iteration" bun run --cwd packages/cli test || result=1
+          done
+          for iteration in {1..10}; do
+            echo "Source watcher iteration $iteration of 10"
+            CLI_WATCH_TRACE_RUN="focused-$iteration" bun run --cwd packages/cli test tests/bug-hunt-watch-new-sources.test.ts || result=1
+          done
+          exit "$result"
+      - name: Retain source watcher diagnostics
+        if: ${{ always() && inputs.mode == 'source-watch' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cli-source-watch-traces
+          path: ${{ runner.temp }}/cli-watch-traces/
+          if-no-files-found: warn
+          retention-days: 7
       - name: Test every package
         if: ${{ !cancelled() && inputs.mode == 'full' && steps.build.outcome == 'success' }}
         run: bun run turbo run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful
