@@ -172,3 +172,50 @@ base manifest is still a compiler error.
 - Not changed: `project_comparison` still reads host snapshots as JSON and names
   variables `namespace-key` itself, which gives `--color-` for an empty key and
   ignores explicit names; aligning it changes comparison reports.
+
+## Follow-up: runtime size baseline, 2026-11-04
+
+Release audit #468 found `global.min.js` at 119,006 bytes against the recorded
+116,590-byte baseline and its 1,166-byte allowance (limit 117,756). A fresh
+`bun run --filter @master/css-runtime build` produced the same size, ruling out a
+stale bundle. This update synchronizes the baseline with already committed syntax,
+runtime correctness and security changes; it is not a size optimization.
+
+To isolate source changes, each revision below was built with the current installed
+toolchain and unchanged current global-entry tsdown configuration. A read-only
+Rolldown load hook substituted `git show <revision>:<path>` for the 54 loaded
+workspace TypeScript sources; output went to temporary directories. Rebuilding
+HEAD this way reproduced the fresh working-tree bundle exactly. This comparison
+holds bundler versions and configuration constant, rather than comparing artifacts
+produced by different historical environments.
+
+| Revision | Change | Raw bytes | Change from previous row |
+|---|---|---:|---:|
+| `960cef42e` | Keyframe simplification baseline | 116,177 | — |
+| `095ce731d` | Direct-value utilities, property-family ordering and syntax parity fixes | 117,312 | +1,135 |
+| `4206fd97e` | AI authoring and class suggestions | 117,312 | 0 |
+| `e9385e9f6` | Cross-element class-list lint | 117,312 | 0 |
+| `b77635984` | Component attribute vocabulary inspection | 117,312 | 0 |
+| `3f5b38def` | Class query syntax without native group parentheses | 118,044 | +732 |
+| `0bc88aec0` | Named custom-container conditions | 118,347 | +303 |
+| `7908e347b` | CDN program URL resolution and fully parsed page reveal | 118,930 | +583 |
+| `98930e98d` | Rendering, loader and parser security hardening | 118,899 | −31 |
+| `caa719629` | Placeholder XSS and untrusted-input denial-of-service fixes | 119,006 | +107 |
+
+The controlled source delta is +2,829 bytes. The recorded 116,590-byte baseline
+is 413 bytes above its 116,177-byte reconstruction with today's toolchain; the
+historical build environment was not reproduced, so that difference is not
+attributed to a specific dependency. Relative to the recorded baseline, the current
+bundle grows by 2,416 bytes raw, 1,012 gzip and 875 brotli. The tooling-only commits
+add no bundle bytes; the retained source differences implement the listed runtime
+and language behavior.
+
+Only the global bundle baseline changes, to 119,006 raw / 37,819 gzip / 33,279
+brotli. The `max(1,024 bytes, 1%)` allowance, default-program baseline and allowance,
+progressive critical-path baseline, and absolute 30 KiB engine / 55 KiB CDN brotli
+budgets remain unchanged. Validate with `bun run check:runtime-size` and
+`bun run --filter @master/css-engine-js check:size` after the runtime build.
+
+Both checks pass: all three relative baselines are within their allowances, the
+engine is 22.2 KiB brotli against 30 KiB, and the CDN bundle plus default program is
+47.5 KiB brotli against 55 KiB. `bun run check:ai-context` also passes.

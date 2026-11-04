@@ -6,9 +6,9 @@
   },
   "artifacts": {
     "packages/runtime/dist/global.min.js": {
-      "raw": 116590,
-      "gzip": 36807,
-      "brotli": 32404
+      "raw": 119006,
+      "gzip": 37819,
+      "brotli": 33279
     },
     "packages/runtime/dist/default-program.bin": {
       "raw": 77430,
