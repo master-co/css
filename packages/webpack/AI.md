@@ -35,6 +35,7 @@
 
 - Module source detection depends on Webpack internals.
 - Virtual module updates affect static CSS output.
+- Production static builds flatten each host CSS asset's stylesheet graph with Rust `renderStylesheetBundle({ inlineImports: true })` and emit only fragments a retained import still reaches (`utils/build-stylesheet-delivery.ts`). Development replaces the slot with inline generated CSS.
 - Runtime HTML mutation only covers compilation HTML assets; do not claim devServer static file mutation.
 - Script/preload tags must match Webpack output type: `modulepreload` for module output and `preload as="script"` for classic output.
 - Tests are sparse, so behavior changes need coverage.

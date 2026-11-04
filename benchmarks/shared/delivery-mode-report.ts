@@ -90,7 +90,7 @@ async function createMasterDeliveryModeReport(): Promise<BenchmarkReport> {
     summary: summarizeReportSamples(samples, metricUnits),
     limits: [
       'This suite measures local Chromium initial payload, page load, and Master CSS runtime/progressive adoption cost only.',
-      'Master static and Tailwind static variants use CLI-generated external CSS from equivalent rendered fixture intent, not identical class strings. Master CSS files of the generated @import graph are delivered flattened into one stylesheet.',
+      'Master static and Tailwind static variants each load one CLI-generated external stylesheet from equivalent rendered fixture intent, not identical class strings.',
       'Master runtime uses the built browser runtime bundle and its compiled default program; no upfront generated CSS is delivered.',
       'Master progressive payload excludes the default program, which startup fetches only for a class missing from the hydration data; program-load-ms records whether that fetch happened.',
       'Master progressive uses @master/css-server to inline style#master-css and hydration manifest, then the built browser runtime adopts that CSS.',

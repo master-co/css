@@ -29,13 +29,12 @@ function pageRows() {
 }
 
 function staticRows() {
-  const docs = staticComparison.results.find((result) => result.fixtureId === 'docs')!.variants as Record<string, { css: { brotliBytes: number, brotliFileSumBytes: number, fileCount: number }, build: { coldMedianMs: number } }>
+  const docs = staticComparison.results.find((result) => result.fixtureId === 'docs')!.variants as Record<string, { css: { brotliBytes: number }, build: { coldMedianMs: number } }>
   const master = docs['master-static-cli']
   const tailwind = docs['tailwind-cli']
   return {
     css: [
-      metric('Same UI, generated CSS', `${pair(master.css.brotliBytes, tailwind.css.brotliBytes, 1000, 1)} kB`, 'Master CSS / Tailwind CSS, docs fixture, Brotli.'),
-      metric('Same UI, per file', `${pair(master.css.brotliFileSumBytes, tailwind.css.brotliFileSumBytes, 1000, 1)} kB`, `Each of Master CSS’s ${master.css.fileCount} files compressed on its own.`)
+      metric('Same UI, generated CSS', `${pair(master.css.brotliBytes, tailwind.css.brotliBytes, 1000, 1)} kB`, 'Master CSS / Tailwind CSS, docs fixture, Brotli.')
     ],
     build: metric('Cold production command', `${pair(master.build.coldMedianMs, tailwind.build.coldMedianMs, 1, 0)} ms`, 'Master CSS / Tailwind CSS, docs fixture, including startup.')
   }

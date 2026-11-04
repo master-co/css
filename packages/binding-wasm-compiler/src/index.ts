@@ -22,7 +22,7 @@ interface GeneratedCompilerWasmModule {
   resolveCSSStylesheetGraph(request: unknown): unknown
   prepareCSSStylesheetBundle(request: unknown): unknown
   renderCSSStylesheetBundle(request: unknown): unknown
-  compileCSSStylesheetGraph(request: unknown): unknown
+  compileCSSStylesheetGraph(requestJSON: string): string
   CompilerRenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
     ensureClasses(classNames: string[]): void
@@ -164,7 +164,7 @@ export async function createCompilerWasmSession(
     resolveCSSStylesheetGraph: <T>(request: unknown) => module.resolveCSSStylesheetGraph(request) as T,
     prepareCSSStylesheetBundle: <T>(request: unknown) => module.prepareCSSStylesheetBundle(request) as T,
     renderCSSStylesheetBundle: <T>(request: unknown) => module.renderCSSStylesheetBundle(request) as T,
-    compileCSSStylesheetGraph: <T>(request: unknown) => module.compileCSSStylesheetGraph(request) as T
+    compileCSSStylesheetGraph: <T>(request: unknown) => JSON.parse(module.compileCSSStylesheetGraph(JSON.stringify(request))) as T
   }
 }
 

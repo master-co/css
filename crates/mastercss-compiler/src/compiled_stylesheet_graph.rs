@@ -257,14 +257,13 @@ pub fn compile_css_stylesheet_graph(
                     .unwrap_or(&node.id),
                 original_source,
             );
+            let original = crate::source_index::SourceIndex::new(original_source);
             for definition in result.manifest_input.keyframes.iter_mut().flatten() {
                 if let Some(reference) = &mut definition.source {
-                    css.restore_reference(original_source, reference);
-                    let start = mastercss_lexer::utf16_to_byte_offset(
-                        original_source,
-                        reference.range.start,
-                    )
-                    .unwrap_or_default();
+                    css.restore_reference(&original, reference);
+                    let start = original
+                        .byte_offset(reference.range.start)
+                        .unwrap_or_default();
                     definition.id = format!("{identity}-{start:08x}");
                 }
             }
@@ -278,22 +277,22 @@ pub fn compile_css_stylesheet_graph(
             ) {
                 crate::mixins::visit_sources(definition, &mut |source| {
                     if let Some(reference) = source {
-                        css.restore_reference(original_source, reference);
+                        css.restore_reference(&original, reference);
                     }
                 });
             }
             for definition in &mut result.definition_sources {
-                css.restore_reference(original_source, &mut definition.source);
+                css.restore_reference(&original, &mut definition.source);
             }
             for mapping in &mut result.native_mappings {
-                css.restore_reference(original_source, &mut mapping.source);
+                css.restore_reference(&original, &mut mapping.source);
             }
             for definition in result.style_definitions.iter_mut().flatten().chain(
                 slots
                     .iter_mut()
                     .flat_map(|slot| slot.definitions.iter_mut()),
             ) {
-                css.restore_definition(original_source, definition);
+                css.restore_definition(&original, definition);
             }
         }
         parsed.push(result);

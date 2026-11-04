@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "suite": "docs-page-css-size",
-  "generatedAt": "2026-11-04T15:17:40.009Z",
+  "generatedAt": "2026-11-04T17:34:57.677Z",
   "browser": {
     "name": "Chromium",
     "version": "156.0.8078.4",
@@ -189,7 +189,7 @@
               "ruleBytes": 513251,
               "matchedRuleBytes": 32052,
               "tokenRules": 522,
-              "domElements": 5294
+              "domElements": 5293
             }
           },
           {
@@ -487,7 +487,7 @@
         "ruleBytes": 248304,
         "matchedRuleBytes": 33833,
         "tokenRules": 226,
-        "domElements": 1087
+        "domElements": 1088
       },
       "sample": {
         "pageCount": 5,
@@ -532,7 +532,7 @@
               "ruleBytes": 248304,
               "matchedRuleBytes": 33833,
               "tokenRules": 226,
-              "domElements": 1087
+              "domElements": 1088
             }
           },
           {
@@ -840,9 +840,9 @@
             },
             "usage": {
               "styleRules": 999,
-              "matchedStyleRules": 390,
+              "matchedStyleRules": 395,
               "ruleBytes": 203666,
-              "matchedRuleBytes": 102426,
+              "matchedRuleBytes": 104337,
               "tokenRules": 17,
               "domElements": 783
             }
@@ -1454,117 +1454,117 @@
       "contentType": "text/html;charset=utf-8",
       "css": {
         "total": {
-          "rawBytes": 110480,
-          "brotliBytes": 23164
+          "rawBytes": 110389,
+          "brotliBytes": 23127
         },
         "inline": {
           "rawBytes": 1790,
           "brotliBytes": 560
         },
         "external": {
-          "rawBytes": 108690,
-          "brotliBytes": 22604
+          "rawBytes": 108599,
+          "brotliBytes": 22567
         }
       },
       "assets": [
         {
           "kind": "external",
-          "url": "/_astro/site-style-ee7f387de6780d6386d0.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-ee7f387de6780d6386d0.css",
+          "url": "/_astro/site.gVOCJx9Q.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site.gVOCJx9Q.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 15120,
-          "brotliBytes": 3356
+          "rawBytes": 15100,
+          "brotliBytes": 3348
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-64f3031c9662d35a5fb5.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-64f3031c9662d35a5fb5.css",
+          "url": "/_astro/interface.tb_47Mfl.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/interface.tb_47Mfl.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 7299,
-          "brotliBytes": 1663
+          "rawBytes": 7291,
+          "brotliBytes": 1658
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-2322deca0931bba5924e.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-2322deca0931bba5924e.css",
+          "url": "/_astro/documents.NzlIBgJG.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/documents.NzlIBgJG.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 7375,
-          "brotliBytes": 1675
+          "rawBytes": 7370,
+          "brotliBytes": 1676
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-a8c2249cce4c2bdb95f1.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-a8c2249cce4c2bdb95f1.css",
+          "url": "/_astro/DocHeader.hQlHIhxq.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/DocHeader.hQlHIhxq.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 17650,
-          "brotliBytes": 2961
+          "rawBytes": 17642,
+          "brotliBytes": 2960
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-cb11aacee734b338e890.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-cb11aacee734b338e890.css",
+          "url": "/_astro/DocSidebar.UVICvf9m.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/DocSidebar.UVICvf9m.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 2459,
-          "brotliBytes": 780
+          "rawBytes": 2455,
+          "brotliBytes": 778
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-c09e019346ebdc9d5f51.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-c09e019346ebdc9d5f51.css",
+          "url": "/_astro/site-style-2eb936567dc2a342eddf.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-2eb936567dc2a342eddf.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 5191,
-          "brotliBytes": 1161
+          "rawBytes": 5183,
+          "brotliBytes": 1159
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-234b88184e80e7d1f741.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-234b88184e80e7d1f741.css",
+          "url": "/_astro/dialog.V-lL1sq8.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/dialog.V-lL1sq8.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 2926,
-          "brotliBytes": 843
+          "rawBytes": 2922,
+          "brotliBytes": 841
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-df368d786414315f9058.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-df368d786414315f9058.css",
+          "url": "/_astro/docs.iz9nMDIr.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/docs.iz9nMDIr.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 5793,
-          "brotliBytes": 1365
+          "rawBytes": 5789,
+          "brotliBytes": 1364
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-37f75f814d492196e26b.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-37f75f814d492196e26b.css",
+          "url": "/_astro/document.VNX8V_w6.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/document.VNX8V_w6.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 4705,
-          "brotliBytes": 1271
+          "rawBytes": 4701,
+          "brotliBytes": 1270
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-2b162eb4b9d2c9e547dc.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-2b162eb4b9d2c9e547dc.css",
+          "url": "/_astro/Doc.ERJJKolj.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/Doc.ERJJKolj.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 23085,
-          "brotliBytes": 3834
+          "rawBytes": 23071,
+          "brotliBytes": 3822
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-7067d004c243a8389cf2.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-7067d004c243a8389cf2.css",
+          "url": "/_astro/DocumentationIndex.0l5n-7Na.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/DocumentationIndex.0l5n-7Na.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 10842,
-          "brotliBytes": 1828
+          "rawBytes": 10838,
+          "brotliBytes": 1827
         },
         {
           "kind": "external",
@@ -1577,20 +1577,20 @@
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-a62afc5446c95cdbfffc.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-a62afc5446c95cdbfffc.css",
+          "url": "/_astro/pagehead.-RLEnxge.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/pagehead.-RLEnxge.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 2505,
-          "brotliBytes": 756
+          "rawBytes": 2501,
+          "brotliBytes": 753
         },
         {
           "kind": "external",
-          "url": "/_astro/site-style-a63db355e4c2dc215277.css",
-          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-a63db355e4c2dc215277.css",
+          "url": "/_astro/segmented.evODwwnU.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/segmented.evODwwnU.css",
           "status": 200,
           "contentType": "text/css;charset=utf-8",
-          "rawBytes": 3409,
+          "rawBytes": 3405,
           "brotliBytes": 956
         },
         {
@@ -1618,19 +1618,19 @@
         "ruleBytes": 76340,
         "matchedRuleBytes": 38708,
         "tokenRules": 111,
-        "domElements": 1057
+        "domElements": 1084
       },
       "sample": {
         "pageCount": 5,
         "rawBytes": {
-          "min": 110480,
-          "median": 130708,
-          "max": 155256
+          "min": 110389,
+          "median": 130597,
+          "max": 155135
         },
         "brotliBytes": {
-          "min": 23164,
-          "median": 28932,
-          "max": 34265
+          "min": 23127,
+          "median": 28907,
+          "max": 34238
         },
         "matchedRuleShare": {
           "min": 0.464,
@@ -1646,16 +1646,16 @@
             "contentType": "text/html;charset=utf-8",
             "css": {
               "total": {
-                "rawBytes": 110480,
-                "brotliBytes": 23164
+                "rawBytes": 110389,
+                "brotliBytes": 23127
               },
               "inline": {
                 "rawBytes": 1790,
                 "brotliBytes": 560
               },
               "external": {
-                "rawBytes": 108690,
-                "brotliBytes": 22604
+                "rawBytes": 108599,
+                "brotliBytes": 22567
               }
             },
             "usage": {
@@ -1664,7 +1664,7 @@
               "ruleBytes": 76340,
               "matchedRuleBytes": 38708,
               "tokenRules": 111,
-              "domElements": 1057
+              "domElements": 1084
             }
           },
           {
@@ -1675,16 +1675,16 @@
             "contentType": "text/html;charset=utf-8",
             "css": {
               "total": {
-                "rawBytes": 133509,
-                "brotliBytes": 29630
+                "rawBytes": 133394,
+                "brotliBytes": 29594
               },
               "inline": {
                 "rawBytes": 2233,
                 "brotliBytes": 643
               },
               "external": {
-                "rawBytes": 131276,
-                "brotliBytes": 28987
+                "rawBytes": 131161,
+                "brotliBytes": 28951
               }
             },
             "usage": {
@@ -1693,7 +1693,7 @@
               "ruleBytes": 93758,
               "matchedRuleBytes": 52717,
               "tokenRules": 138,
-              "domElements": 2559
+              "domElements": 2586
             }
           },
           {
@@ -1704,16 +1704,16 @@
             "contentType": "text/html;charset=utf-8",
             "css": {
               "total": {
-                "rawBytes": 130708,
-                "brotliBytes": 28932
+                "rawBytes": 130597,
+                "brotliBytes": 28907
               },
               "inline": {
                 "rawBytes": 1790,
                 "brotliBytes": 560
               },
               "external": {
-                "rawBytes": 128918,
-                "brotliBytes": 28372
+                "rawBytes": 128807,
+                "brotliBytes": 28347
               }
             },
             "usage": {
@@ -1722,7 +1722,7 @@
               "ruleBytes": 91487,
               "matchedRuleBytes": 53826,
               "tokenRules": 136,
-              "domElements": 6012
+              "domElements": 6039
             }
           },
           {
@@ -1733,16 +1733,16 @@
             "contentType": "text/html;charset=utf-8",
             "css": {
               "total": {
-                "rawBytes": 121452,
-                "brotliBytes": 26741
+                "rawBytes": 121347,
+                "brotliBytes": 26717
               },
               "inline": {
                 "rawBytes": 1790,
                 "brotliBytes": 560
               },
               "external": {
-                "rawBytes": 119662,
-                "brotliBytes": 26181
+                "rawBytes": 119557,
+                "brotliBytes": 26157
               }
             },
             "usage": {
@@ -1751,7 +1751,7 @@
               "ruleBytes": 84139,
               "matchedRuleBytes": 52721,
               "tokenRules": 128,
-              "domElements": 2116
+              "domElements": 2143
             }
           },
           {
@@ -1762,16 +1762,16 @@
             "contentType": "text/html;charset=utf-8",
             "css": {
               "total": {
-                "rawBytes": 155256,
-                "brotliBytes": 34265
+                "rawBytes": 155135,
+                "brotliBytes": 34238
               },
               "inline": {
                 "rawBytes": 3118,
                 "brotliBytes": 951
               },
               "external": {
-                "rawBytes": 152138,
-                "brotliBytes": 33314
+                "rawBytes": 152017,
+                "brotliBytes": 33287
               }
             },
             "usage": {
@@ -1780,7 +1780,7 @@
               "ruleBytes": 112017,
               "matchedRuleBytes": 51433,
               "tokenRules": 154,
-              "domElements": 2680
+              "domElements": 2707
             }
           }
         ]
@@ -1789,14 +1789,14 @@
         "sitemap": "https://rc.css.master.co/sitemap.xml",
         "pageCount": 74,
         "rawBytes": {
-          "min": 110480,
-          "median": 133799,
-          "max": 156401
+          "min": 110389,
+          "median": 133684,
+          "max": 156280
         },
         "brotliBytes": {
-          "min": 23164,
-          "median": 29699,
-          "max": 34441
+          "min": 23127,
+          "median": 29673,
+          "max": 34414
         },
         "matchedRuleShare": {
           "min": 0.381,

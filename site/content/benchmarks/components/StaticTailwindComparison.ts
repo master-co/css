@@ -9,7 +9,6 @@ type VariantResult = {
     rawBytes: number
     gzipBytes: number
     brotliBytes: number
-    brotliFileSumBytes: number
     fileCount: number
     sha256: string
   }
@@ -158,7 +157,6 @@ function createDeclarationBarItems(result: FixtureResult): BenchmarkBarItem[] {
 
 function createSummaryMetrics(): BenchmarkMetric[] {
   const masterCliWins = results.filter((result) => result.variants['master-static-cli'].css.brotliBytes < result.variants['tailwind-cli'].css.brotliBytes).length
-  const masterCliFileWins = results.filter((result) => result.variants['master-static-cli'].css.brotliFileSumBytes < result.variants['tailwind-cli'].css.brotliFileSumBytes).length
   const tailwindCliBuildWins = results.filter((result) => result.variants['tailwind-cli'].build.coldMedianMs < result.variants['master-static-cli'].build.coldMedianMs).length
   const sampleCount = results[0]?.variants['master-static-cli'].build.sampleCount ?? 0
 
@@ -172,12 +170,6 @@ function createSummaryMetrics(): BenchmarkMetric[] {
       value: `${masterCliWins}/${results.length}`,
       detail: 'fixtures where Master CSS is smaller than Tailwind CSS by brotli bytes in the CLI setup',
       tone: 'good'
-    },
-    {
-      label: 'CSS output per file',
-      value: `${masterCliFileWins}/${results.length}`,
-      detail: 'the same comparison with each generated file compressed on its own, as separate responses transfer it',
-      tone: masterCliFileWins === results.length ? 'good' : 'warn'
     },
     {
       label: 'Build command',
@@ -216,7 +208,7 @@ export const StaticCSSBytesTable: BenchmarkChartModel = {
   kind: 'data-table',
   label: 'Static CSS bytes results',
   numericFrom: 3,
-  headers: ['Fixture', 'Variant', 'Raw', 'Gzip', 'Brotli', 'Brotli per file', 'Files'],
+  headers: ['Fixture', 'Variant', 'Raw', 'Gzip', 'Brotli', 'Files'],
   rows: results.flatMap((result) => variants.map((variant) => {
     const value = result.variants[variant.id].css
     return [
@@ -225,7 +217,6 @@ export const StaticCSSBytesTable: BenchmarkChartModel = {
       formatKilobytes(value.rawBytes),
       formatKilobytes(value.gzipBytes),
       formatKilobytes(value.brotliBytes),
-      formatKilobytes(value.brotliFileSumBytes),
       value.fileCount
     ]
   }))

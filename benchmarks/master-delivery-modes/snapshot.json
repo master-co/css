@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "suite": "master-delivery-modes",
-  "generatedAt": "2026-11-04T14:10:55.772Z",
+  "generatedAt": "2026-11-04T17:15:23.910Z",
   "sourceReport": {
     "suite": "master-delivery-modes",
-    "generatedAt": "2026-11-04T14:10:55.741Z",
+    "generatedAt": "2026-11-04T17:14:58.874Z",
     "command": "bun run --filter master-css-benchmarks bench:master-delivery-modes"
   },
   "environment": {
@@ -440,9 +440,9 @@
               "brotliBytes": 1443
             },
             "externalCSS": {
-              "rawBytes": 6027,
-              "gzipBytes": 2140,
-              "brotliBytes": 1825
+              "rawBytes": 5600,
+              "gzipBytes": 1993,
+              "brotliBytes": 1692
             },
             "inlineCSS": {
               "rawBytes": 0,
@@ -472,10 +472,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 22.8,
-              "median": 23,
-              "mean": 24.8,
-              "max": 28.6,
+              "min": 23,
+              "median": 24.6,
+              "mean": 26.2,
+              "max": 31.1,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -489,25 +489,25 @@
             },
             "styleRecalculationMs": {
               "min": 0.7,
-              "median": 0.7,
-              "mean": 0.7,
-              "max": 0.8,
+              "median": 0.8,
+              "mean": 1.3,
+              "max": 2.3,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 4.6,
-              "median": 5,
-              "mean": 4.9,
-              "max": 5.1,
+              "min": 4.9,
+              "median": 5.4,
+              "mean": 5.4,
+              "max": 5.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
               "min": 0.7,
-              "median": 0.7,
-              "mean": 0.7,
-              "max": 0.8,
+              "median": 0.8,
+              "mean": 1,
+              "max": 1.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -626,10 +626,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 39.4,
-              "median": 39.4,
-              "mean": 39.4,
-              "max": 39.5,
+              "min": 39.1,
+              "median": 39.6,
+              "mean": 39.6,
+              "max": 40,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -650,10 +650,10 @@
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 2.7,
+              "min": 2.9,
               "median": 3,
-              "mean": 2.9,
-              "max": 3.1,
+              "mean": 3,
+              "max": 3,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -682,23 +682,23 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 17,
-              "median": 17.3,
-              "mean": 17.5,
-              "max": 18.2,
+              "min": 17.9,
+              "median": 19,
+              "mean": 18.7,
+              "max": 19.1,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 8.2,
-              "median": 8.6,
-              "mean": 8.6,
-              "max": 8.9,
+              "min": 8.8,
+              "median": 8.9,
+              "mean": 9.1,
+              "max": 9.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "programLoadMs": {
-              "min": 0.6,
+              "min": 0.5,
               "median": 0.7,
               "mean": 0.7,
               "max": 0.8,
@@ -706,10 +706,10 @@
               "unit": "ms"
             },
             "runtimeObserveMs": {
-              "min": 3.8,
-              "median": 4,
-              "mean": 4.1,
-              "max": 4.4,
+              "min": 4,
+              "median": 4.2,
+              "mean": 4.3,
+              "max": 4.6,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -780,10 +780,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 38.7,
-              "median": 39.3,
-              "mean": 39.1,
-              "max": 39.4,
+              "min": 39.4,
+              "median": 39.8,
+              "mean": 40.7,
+              "max": 42.8,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -797,17 +797,17 @@
             },
             "styleRecalculationMs": {
               "min": 0.4,
-              "median": 0.4,
+              "median": 0.5,
               "mean": 0.5,
               "max": 0.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 2.7,
-              "median": 2.7,
-              "mean": 2.7,
-              "max": 2.8,
+              "min": 2.8,
+              "median": 2.8,
+              "mean": 2.8,
+              "max": 2.9,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -815,7 +815,7 @@
               "min": 0.4,
               "median": 0.4,
               "mean": 0.4,
-              "max": 0.4,
+              "max": 0.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -836,18 +836,18 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 10.8,
-              "median": 11,
-              "mean": 11.1,
-              "max": 11.4,
+              "min": 10.9,
+              "median": 11.2,
+              "mean": 11.3,
+              "max": 11.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 3.9,
-              "median": 4,
-              "mean": 4,
-              "max": 4.1,
+              "min": 4,
+              "median": 4.2,
+              "mean": 4.2,
+              "max": 4.3,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -863,7 +863,7 @@
               "min": 0.2,
               "median": 0.3,
               "mean": 0.3,
-              "max": 0.3,
+              "max": 0.4,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -934,34 +934,34 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 21.8,
-              "median": 22.5,
-              "mean": 23.2,
-              "max": 25.4,
+              "min": 22.6,
+              "median": 23.1,
+              "mean": 23.5,
+              "max": 24.8,
               "sampleCount": 3,
               "unit": "ms"
             },
             "stylesheetParseMs": {
               "min": 0.2,
               "median": 0.2,
-              "mean": 0.2,
-              "max": 0.2,
+              "mean": 2.1,
+              "max": 6,
               "sampleCount": 3,
               "unit": "ms"
             },
             "styleRecalculationMs": {
               "min": 0.7,
-              "median": 0.8,
-              "mean": 0.8,
-              "max": 0.8,
+              "median": 0.7,
+              "mean": 1.1,
+              "max": 1.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
               "min": 4.5,
-              "median": 4.7,
+              "median": 4.6,
               "mean": 4.7,
-              "max": 4.7,
+              "max": 4.9,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -969,7 +969,7 @@
               "min": 0.6,
               "median": 0.6,
               "mean": 0.6,
-              "max": 0.6,
+              "max": 0.7,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1061,9 +1061,9 @@
               "brotliBytes": 1955
             },
             "externalCSS": {
-              "rawBytes": 6832,
-              "gzipBytes": 2400,
-              "brotliBytes": 2051
+              "rawBytes": 6405,
+              "gzipBytes": 2256,
+              "brotliBytes": 1931
             },
             "inlineCSS": {
               "rawBytes": 0,
@@ -1093,42 +1093,42 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 22.3,
-              "median": 23.5,
-              "mean": 23.2,
-              "max": 23.7,
+              "min": 23,
+              "median": 25,
+              "mean": 25.3,
+              "max": 27.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "stylesheetParseMs": {
               "min": 0.1,
-              "median": 0.2,
-              "mean": 0.2,
-              "max": 0.2,
+              "median": 0.1,
+              "mean": 0.1,
+              "max": 0.1,
               "sampleCount": 3,
               "unit": "ms"
             },
             "styleRecalculationMs": {
               "min": 0.8,
               "median": 0.9,
-              "mean": 0.9,
-              "max": 0.9,
+              "mean": 1.2,
+              "max": 1.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 6.4,
-              "median": 6.5,
-              "mean": 6.6,
-              "max": 6.8,
+              "min": 6.8,
+              "median": 6.9,
+              "mean": 7.5,
+              "max": 8.6,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 1.1,
-              "median": 1.1,
-              "mean": 1.2,
-              "max": 1.2,
+              "min": 1.2,
+              "median": 1.3,
+              "mean": 1.5,
+              "max": 2.1,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1247,10 +1247,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 39,
-              "median": 39,
-              "mean": 39.1,
-              "max": 39.3,
+              "min": 38.8,
+              "median": 39.2,
+              "mean": 39.2,
+              "max": 39.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1266,7 +1266,7 @@
               "min": 0.7,
               "median": 0.7,
               "mean": 0.7,
-              "max": 0.7,
+              "max": 0.8,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1274,7 +1274,7 @@
               "min": 3.6,
               "median": 3.7,
               "mean": 3.7,
-              "max": 3.8,
+              "max": 3.9,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1303,34 +1303,34 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 16.6,
-              "median": 16.7,
-              "mean": 17,
-              "max": 17.7,
+              "min": 17.2,
+              "median": 17.3,
+              "mean": 17.6,
+              "max": 18.2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 8.3,
-              "median": 8.4,
-              "mean": 8.6,
-              "max": 9.1,
+              "min": 8.6,
+              "median": 8.7,
+              "mean": 8.9,
+              "max": 9.3,
               "sampleCount": 3,
               "unit": "ms"
             },
             "programLoadMs": {
               "min": 0.5,
               "median": 0.5,
-              "mean": 0.6,
-              "max": 0.7,
+              "mean": 0.5,
+              "max": 0.6,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeObserveMs": {
-              "min": 4,
-              "median": 4.4,
-              "mean": 4.4,
-              "max": 4.8,
+              "min": 4.3,
+              "median": 4.5,
+              "mean": 4.7,
+              "max": 5.2,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1402,7 +1402,7 @@
           "timing": {
             "navigationReadyMs": {
               "min": 38.8,
-              "median": 38.8,
+              "median": 39,
               "mean": 39.2,
               "max": 39.9,
               "sampleCount": 3,
@@ -1418,17 +1418,17 @@
             },
             "styleRecalculationMs": {
               "min": 0.5,
-              "median": 0.5,
-              "mean": 0.5,
-              "max": 0.6,
+              "median": 0.6,
+              "mean": 0.6,
+              "max": 0.7,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 3.4,
-              "median": 3.5,
+              "min": 3.5,
+              "median": 3.6,
               "mean": 3.6,
-              "max": 3.8,
+              "max": 3.7,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1457,18 +1457,18 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 12,
-              "median": 12,
-              "mean": 12.1,
-              "max": 12.2,
+              "min": 12.1,
+              "median": 13.4,
+              "mean": 13.1,
+              "max": 13.7,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 5.3,
-              "median": 5.3,
-              "mean": 5.3,
-              "max": 5.4,
+              "min": 5.2,
+              "median": 5.4,
+              "mean": 5.4,
+              "max": 5.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1482,9 +1482,9 @@
             },
             "runtimeObserveMs": {
               "min": 0.3,
-              "median": 0.4,
-              "mean": 0.4,
-              "max": 0.5,
+              "median": 0.3,
+              "mean": 0.3,
+              "max": 0.3,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1555,42 +1555,42 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 22.8,
-              "median": 23.1,
-              "mean": 23.3,
-              "max": 24,
+              "min": 25.2,
+              "median": 25.8,
+              "mean": 25.8,
+              "max": 26.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "stylesheetParseMs": {
               "min": 0.2,
               "median": 0.2,
-              "mean": 0.2,
-              "max": 0.2,
+              "mean": 0.3,
+              "max": 0.3,
               "sampleCount": 3,
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 0.9,
-              "median": 0.9,
-              "mean": 0.9,
-              "max": 1,
+              "min": 1,
+              "median": 1,
+              "mean": 1,
+              "max": 1.1,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 6.5,
-              "median": 6.7,
-              "mean": 6.7,
-              "max": 6.8,
+              "min": 7.2,
+              "median": 7.7,
+              "mean": 7.6,
+              "max": 7.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 1,
-              "median": 1,
-              "mean": 1.1,
-              "max": 1.1,
+              "min": 1.2,
+              "median": 1.2,
+              "mean": 1.3,
+              "max": 1.4,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1682,9 +1682,9 @@
               "brotliBytes": 1928
             },
             "externalCSS": {
-              "rawBytes": 7089,
-              "gzipBytes": 2397,
-              "brotliBytes": 2033
+              "rawBytes": 6662,
+              "gzipBytes": 2251,
+              "brotliBytes": 1904
             },
             "inlineCSS": {
               "rawBytes": 0,
@@ -1714,10 +1714,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 21.5,
-              "median": 22.5,
-              "mean": 22.2,
-              "max": 22.5,
+              "min": 22.6,
+              "median": 23.7,
+              "mean": 23.5,
+              "max": 24.2,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1730,26 +1730,26 @@
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 7.2,
-              "median": 7.5,
-              "mean": 7.5,
-              "max": 7.8,
+              "min": 7.6,
+              "median": 8,
+              "mean": 8.2,
+              "max": 9.2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 2.5,
+              "min": 2.7,
               "median": 2.7,
-              "mean": 2.7,
-              "max": 2.8,
+              "mean": 2.9,
+              "max": 3.4,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 1.3,
+              "min": 1.4,
               "median": 1.4,
-              "mean": 1.4,
-              "max": 1.4,
+              "mean": 1.6,
+              "max": 2.1,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1868,10 +1868,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 39.4,
-              "median": 39.7,
-              "mean": 40,
-              "max": 40.8,
+              "min": 40,
+              "median": 40.7,
+              "mean": 41.1,
+              "max": 42.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1886,24 +1886,24 @@
             "styleRecalculationMs": {
               "min": 5.7,
               "median": 5.8,
-              "mean": 5.9,
-              "max": 6.2,
+              "mean": 5.7,
+              "max": 5.8,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
               "min": 1.9,
               "median": 2,
-              "mean": 2.1,
-              "max": 2.4,
+              "mean": 2,
+              "max": 2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 0.7,
-              "median": 0.8,
-              "mean": 0.7,
-              "max": 0.8,
+              "min": 0.8,
+              "median": 0.9,
+              "mean": 0.9,
+              "max": 1.1,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -1924,34 +1924,34 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 17.8,
-              "median": 19.2,
-              "mean": 18.9,
-              "max": 19.6,
+              "min": 17.5,
+              "median": 17.7,
+              "mean": 17.7,
+              "max": 17.9,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 9.3,
-              "median": 9.4,
-              "mean": 9.4,
-              "max": 9.4,
+              "min": 9,
+              "median": 9.1,
+              "mean": 9.1,
+              "max": 9.2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "programLoadMs": {
               "min": 0.5,
               "median": 0.6,
-              "mean": 0.7,
-              "max": 0.9,
+              "mean": 0.6,
+              "max": 0.7,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeObserveMs": {
               "min": 4.4,
-              "median": 4.8,
-              "mean": 4.7,
-              "max": 4.9,
+              "median": 4.6,
+              "mean": 4.5,
+              "max": 4.6,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2022,10 +2022,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 38.4,
-              "median": 38.8,
-              "mean": 38.7,
-              "max": 38.9,
+              "min": 39,
+              "median": 42.4,
+              "mean": 41.4,
+              "max": 42.7,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2038,18 +2038,18 @@
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 5,
-              "median": 5.2,
-              "mean": 5.2,
+              "min": 5.3,
+              "median": 5.4,
+              "mean": 5.4,
               "max": 5.4,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 1.7,
-              "median": 1.9,
-              "mean": 1.8,
-              "max": 1.9,
+              "min": 1.8,
+              "median": 1.8,
+              "mean": 1.9,
+              "max": 2,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2078,18 +2078,18 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 12.8,
-              "median": 12.9,
-              "mean": 13.1,
+              "min": 13,
+              "median": 13.1,
+              "mean": 13.2,
               "max": 13.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 5.8,
+              "min": 6.1,
               "median": 6.2,
               "mean": 6.2,
-              "max": 6.5,
+              "max": 6.4,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2102,10 +2102,10 @@
               "unit": "ms"
             },
             "runtimeObserveMs": {
-              "min": 0.4,
+              "min": 0.3,
               "median": 0.4,
-              "mean": 0.5,
-              "max": 0.7,
+              "mean": 0.4,
+              "max": 0.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2176,10 +2176,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 22.6,
-              "median": 22.7,
-              "mean": 22.8,
-              "max": 23.1,
+              "min": 22.8,
+              "median": 23.1,
+              "mean": 23.1,
+              "max": 23.4,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2192,26 +2192,26 @@
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 7.5,
-              "median": 7.9,
-              "mean": 7.8,
-              "max": 8,
+              "min": 8,
+              "median": 9,
+              "mean": 8.8,
+              "max": 9.3,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 2.3,
-              "median": 2.4,
-              "mean": 2.4,
-              "max": 2.5,
+              "min": 2.5,
+              "median": 2.7,
+              "mean": 2.7,
+              "max": 2.8,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 1,
-              "median": 1.1,
-              "mean": 1.1,
-              "max": 1.1,
+              "min": 1.1,
+              "median": 1.2,
+              "mean": 1.2,
+              "max": 1.2,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2303,9 +2303,9 @@
               "brotliBytes": 2233
             },
             "externalCSS": {
-              "rawBytes": 13075,
-              "gzipBytes": 3286,
-              "brotliBytes": 2189
+              "rawBytes": 12648,
+              "gzipBytes": 3148,
+              "brotliBytes": 2049
             },
             "inlineCSS": {
               "rawBytes": 0,
@@ -2335,10 +2335,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 22.1,
-              "median": 22.2,
-              "mean": 22.6,
-              "max": 23.4,
+              "min": 23.1,
+              "median": 24.1,
+              "mean": 24.4,
+              "max": 26.1,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2351,26 +2351,26 @@
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 1.2,
-              "median": 1.2,
-              "mean": 1.2,
-              "max": 1.2,
+              "min": 1.3,
+              "median": 1.3,
+              "mean": 1.3,
+              "max": 1.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 5.4,
-              "median": 5.4,
-              "mean": 5.4,
-              "max": 5.5,
+              "min": 5.6,
+              "median": 5.9,
+              "mean": 6,
+              "max": 6.6,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
               "min": 1,
-              "median": 1,
-              "mean": 1,
-              "max": 1,
+              "median": 1.1,
+              "mean": 1.2,
+              "max": 1.3,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2489,10 +2489,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 39,
-              "median": 39.2,
-              "mean": 39.4,
-              "max": 39.9,
+              "min": 39.3,
+              "median": 39.4,
+              "mean": 39.6,
+              "max": 40,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2507,16 +2507,16 @@
             "styleRecalculationMs": {
               "min": 1.1,
               "median": 1.1,
-              "mean": 1.1,
+              "mean": 1.2,
               "max": 1.2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 3.2,
-              "median": 3.4,
-              "mean": 3.4,
-              "max": 3.7,
+              "min": 3.5,
+              "median": 3.6,
+              "mean": 3.6,
+              "max": 3.8,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2545,34 +2545,34 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 19.8,
-              "median": 20.5,
-              "mean": 20.6,
-              "max": 21.5,
+              "min": 20.6,
+              "median": 21.5,
+              "mean": 21.9,
+              "max": 23.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 11.7,
-              "median": 12.1,
-              "mean": 12,
-              "max": 12.2,
+              "min": 11.9,
+              "median": 12.6,
+              "mean": 13,
+              "max": 14.5,
               "sampleCount": 3,
               "unit": "ms"
             },
             "programLoadMs": {
-              "min": 0.4,
-              "median": 0.5,
+              "min": 0.5,
+              "median": 0.6,
               "mean": 0.6,
               "max": 0.8,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeObserveMs": {
-              "min": 7.2,
+              "min": 7.8,
               "median": 7.9,
-              "mean": 7.7,
-              "max": 7.9,
+              "mean": 8.5,
+              "max": 9.7,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2644,9 +2644,9 @@
           "timing": {
             "navigationReadyMs": {
               "min": 39,
-              "median": 39,
-              "mean": 39.6,
-              "max": 40.7,
+              "median": 39.3,
+              "mean": 39.3,
+              "max": 39.5,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2659,26 +2659,26 @@
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 0.9,
-              "median": 0.9,
+              "min": 1,
+              "median": 1,
               "mean": 1,
-              "max": 1,
+              "max": 1.2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 3.1,
-              "median": 3.1,
-              "mean": 3.1,
-              "max": 3.2,
+              "min": 3.4,
+              "median": 3.6,
+              "mean": 3.6,
+              "max": 3.8,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 0.6,
-              "median": 0.6,
-              "mean": 0.6,
-              "max": 0.6,
+              "min": 0.7,
+              "median": 0.7,
+              "mean": 0.7,
+              "max": 0.8,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2699,18 +2699,18 @@
               "unit": "count"
             },
             "runtimeReadyMs": {
-              "min": 12.1,
-              "median": 12.1,
-              "mean": 12.2,
-              "max": 12.4,
+              "min": 13.6,
+              "median": 14.1,
+              "mean": 14,
+              "max": 14.2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "runtimeBootstrapMs": {
-              "min": 5.1,
-              "median": 5.2,
-              "mean": 5.2,
-              "max": 5.3,
+              "min": 5.6,
+              "median": 6.1,
+              "mean": 6.1,
+              "max": 6.7,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2723,10 +2723,10 @@
               "unit": "ms"
             },
             "runtimeObserveMs": {
-              "min": 0.5,
-              "median": 0.6,
-              "mean": 0.6,
-              "max": 0.6,
+              "min": 0.6,
+              "median": 0.7,
+              "mean": 0.7,
+              "max": 0.8,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2797,10 +2797,10 @@
           },
           "timing": {
             "navigationReadyMs": {
-              "min": 21.8,
-              "median": 22.2,
-              "mean": 22.4,
-              "max": 23.1,
+              "min": 23,
+              "median": 23.3,
+              "mean": 23.3,
+              "max": 23.8,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2813,26 +2813,26 @@
               "unit": "ms"
             },
             "styleRecalculationMs": {
-              "min": 1.7,
-              "median": 1.8,
-              "mean": 1.8,
+              "min": 1.8,
+              "median": 1.9,
+              "mean": 1.9,
               "max": 2,
               "sampleCount": 3,
               "unit": "ms"
             },
             "layoutMs": {
-              "min": 5.5,
-              "median": 5.5,
-              "mean": 5.5,
-              "max": 5.7,
+              "min": 5.8,
+              "median": 5.8,
+              "mean": 5.9,
+              "max": 6,
               "sampleCount": 3,
               "unit": "ms"
             },
             "paintMs": {
-              "min": 0.9,
-              "median": 0.9,
+              "min": 1,
+              "median": 1,
               "mean": 1,
-              "max": 1,
+              "max": 1.1,
               "sampleCount": 3,
               "unit": "ms"
             },
@@ -2915,7 +2915,7 @@
   ],
   "limits": [
     "This suite measures local Chromium initial payload, page load, and Master CSS runtime/progressive adoption cost only.",
-    "Master static and Tailwind static variants use CLI-generated external CSS from equivalent rendered fixture intent, not identical class strings. Master CSS files of the generated @import graph are delivered flattened into one stylesheet.",
+    "Master static and Tailwind static variants each load one CLI-generated external stylesheet from equivalent rendered fixture intent, not identical class strings.",
     "Master runtime uses the built browser runtime bundle and its compiled default program; no upfront generated CSS is delivered.",
     "Master progressive payload excludes the default program, which startup fetches only for a class missing from the hydration data; program-load-ms records whether that fetch happened.",
     "Master progressive uses @master/css-server to inline style#master-css and hydration manifest, then the built browser runtime adopts that CSS.",

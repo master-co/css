@@ -703,7 +703,7 @@ test('delivery payload charts count complete responses once and omit absent asse
   // Independently checked against the committed docs fixture's Brotli response bodies:
   // HTML embeds CSS/hydration; progressive startup does not fetch the runtime program.
   const expected = [
-    { label: 'Master CSS static', bytes: 4006, parts: ['HTML', 'External CSS'] },
+    { label: 'Master CSS static', bytes: 3886, parts: ['HTML', 'External CSS'] },
     { label: 'Master CSS runtime', bytes: 50903, parts: ['HTML', 'Runtime JS', 'Runtime program'] },
     { label: 'Master CSS progressive', bytes: 36743, parts: ['HTML', 'Runtime JS'] },
     { label: 'Tailwind CSS static', bytes: 4521, parts: ['HTML', 'External CSS'] },

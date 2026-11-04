@@ -9,7 +9,6 @@ import { collectStylesheetDirectives, mergeStylesheetDirectives, mergeStylesheet
 import { hasStylesheetResourceReferences, renderCompiledManifestCSS } from './render'
 import { resolveReferenceOrigins } from './reference-origins'
 import { referenceFileInputs } from './reference-files'
-import { compilePreparedGraph } from '../prepared-graph-cache'
 import { stylesheetOutputMap } from './output-map'
 import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import { MasterCSSError } from '@master/css-schema'
@@ -30,6 +29,11 @@ export interface StylesheetDeliveryOptions {
   readonly resourceURL: (file: string) => string
   /** Standalone sibling assets only; the resulting manifest is not for inline CSS. */
   readonly relativeResourceURLs?: boolean
+  /**
+   * Flatten local imports into their importers wherever import order and namespace
+   * scope survive. Only assets that retained boundaries still import are returned.
+   */
+  readonly inlineImports?: boolean
   /** Resolve CSS package exports with the Node host and preserve their native rules. */
   readonly resolveNodePackageImports?: boolean
   /** Async registration only: resolve imports with a build host before Node fallback. */
@@ -120,7 +124,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   prepared.resources.push(...reference.resources)
   const binding = createCompilerBindingSessionSync()
   try {
-    const result = compilePreparedGraph(binding, {
+    const result = binding.compileCSSStylesheetGraph({
       graph,
       pruneNativeStylesheets: Object.keys(graph.files).filter(file => {
         const policy = collectStylesheetDirectives(graph.files[file], owners[file] ?? file, options.projectDir)
@@ -128,7 +132,8 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
       }),
       urls: prepared.urls,
       resourceURLs: inlineImports ? undefined : prepared.resourceURLs,
-      inlineImports, hostImports,
+      // Delivered inlining keeps relocated resource URLs; Rust omits unreachable assets.
+      inlineImports: inlineImports || delivery.inlineImports === true, hostImports,
       relativeResourceURLs: delivery.relativeResourceURLs,
       classesByStylesheet,
       nativeStylesheets,
