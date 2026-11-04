@@ -35,6 +35,30 @@ This is archive identity validation, not a substitute for installation tests.
 `rehearse` models every interrupted upload and promotion boundary in memory. Its
 mock outcomes are not evidence of an actual registry publication.
 
+Rehearse the assembled archives without publishing after building every public
+package and staging all eight native payloads:
+
+```sh
+node scripts/release-archive-consumers.mjs prepare --root "$CHECKOUT" --output "$EVIDENCE/archives" --version 0.0.0-archive.1 --native-revision "$NATIVE_REVISION"
+node scripts/release-archive-consumers.mjs consume --input "$EVIDENCE/archives" --proof "$EVIDENCE/archive-consumers.json"
+node --test scripts/release-archive-consumers.test.mjs
+```
+
+Use a fresh output directory. The native revision records the supplied payload
+provenance; it does not verify that provenance or replace same-source native
+target proofs. Final acceptance requires a clean approved source and matching
+payload evidence. Missing native targets fail preparation unless `--host-only`
+explicitly selects an incomplete rehearsal.
+
+The consumer installs through an isolated loopback registry using npm, Bun and
+pnpm, with fresh caches and disabled dependency lifecycle scripts. Every Master
+dependency must match its candidate archive version and integrity. Host smoke
+checks exercise native/Wasm, compiler, CLI, runtime, integrations, installer and
+MCP; npm additionally builds packed Astro/Svelte fixtures and exercises the
+browser runtime. The report records each manager's actual coverage. These local
+tarball checks do not establish public package availability, registry provenance,
+published-version installation, or other-platform execution.
+
 Before authorizing publication, retain:
 
 - Full validation, eight native consumers, Wasm/browser consumers, Windows
