@@ -7,11 +7,12 @@ use lightningcss::{
     values::{image::Image, url::Url},
     visitor::{Visit, VisitTypes, Visitor},
 };
-use mastercss_lexer::utf16_to_byte_offset;
-use mastercss_schema::{CssDirectiveSourceReference, CssDirectiveStyleDefinition, SourceRange};
+use mastercss_schema::{
+    CssDirectiveSourceReference, CssDirectiveStyleDefinition, SourceLocationRange, SourceRange,
+};
 use serde::{Deserialize, Serialize};
 
-use crate::CompilerError;
+use crate::{CompilerError, source_index::SourceIndex};
 
 /// Positions refer to the original source and span the containing URL/image-set.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -72,26 +73,30 @@ impl RelocatedStylesheet {
         error
     }
 
+    /// `original` indexes the authored source once; scanning it from its start for
+    /// every reference made restoring a large stylesheet quadratic.
     pub(crate) fn restore_reference(
         &self,
-        original: &str,
+        original: &SourceIndex<'_>,
         reference: &mut CssDirectiveSourceReference,
     ) {
         self.restore_range(&mut reference.range);
-        reference.loc = utf16_to_byte_offset(original, reference.range.start)
-            .zip(utf16_to_byte_offset(original, reference.range.end))
+        reference.loc = original
+            .byte_offset(reference.range.start)
+            .zip(original.byte_offset(reference.range.end))
             .and_then(|(start, end)| {
-                crate::native_selectors::source_reference_from_bytes(
-                    original,
-                    reference.file.as_deref().unwrap_or_default(),
-                    start,
-                    end,
-                )
-            })
-            .and_then(|source| source.loc);
+                Some(SourceLocationRange {
+                    start: original.location(start)?,
+                    end: original.location(end)?,
+                })
+            });
     }
 
-    pub fn restore_definition(&self, original: &str, definition: &mut CssDirectiveStyleDefinition) {
+    pub(crate) fn restore_definition(
+        &self,
+        original: &SourceIndex<'_>,
+        definition: &mut CssDirectiveStyleDefinition,
+    ) {
         match definition {
             CssDirectiveStyleDefinition::Apply {
                 source,

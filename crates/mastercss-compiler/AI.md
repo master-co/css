@@ -12,6 +12,7 @@ and compiler report IR.
 - `manifest/`: normalization, preset merge, mixins, variants, and variables.
 - `lower/`: public lowering API, resolution, merge, render, and focused tests.
 - `pattern.rs`: pattern semantics shared by compiler domains.
+- `graph_memo.rs`: process-wide reuse of identical JSON graph requests for the native and Wasm bindings.
 
 ## Guardrails
 

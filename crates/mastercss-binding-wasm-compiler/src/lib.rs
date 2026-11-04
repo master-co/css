@@ -249,15 +249,17 @@ pub fn binding_info() -> Result<JsValue, JsValue> {
     .map_err(serialization_error)
 }
 
+/// JSON in and out, like the native binding, so both share the compiler's reuse of
+/// identical requests.
 #[wasm_bindgen(js_name = compileCSSStylesheetGraph)]
-pub fn compile_css_stylesheet_graph(request: JsValue) -> Result<JsValue, JsValue> {
-    let request = serde_wasm_bindgen::from_value::<
-        mastercss_compiler::CompileCssStylesheetGraphInput,
-    >(request)
-    .map_err(serialization_error)?;
-    let result =
-        mastercss_compiler::compile_css_stylesheet_graph_input(&request).map_err(compiler_error)?;
-    render_value(&result)
+pub fn compile_css_stylesheet_graph(request_json: &str) -> Result<String, JsValue> {
+    use mastercss_compiler::CompileCssStylesheetGraphJsonError as GraphError;
+    mastercss_compiler::compile_css_stylesheet_graph_json(request_json)
+        .map(|response| response.to_string())
+        .map_err(|error| match error {
+            GraphError::Request(error) | GraphError::Response(error) => serialization_error(error),
+            GraphError::Compile(error) => compiler_error(error),
+        })
 }
 
 #[wasm_bindgen(js_name = prepareCSSStylesheetBundle)]
