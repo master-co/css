@@ -79,7 +79,7 @@ export default async function runProgram(argv: string[] = process.argv) {
     })
 
   configure(program.command('add').description('Add Master CSS to an existing project.'))
-    .action(runAdd)
+    .action((_options: CommandOptions, command: Command) => runAdd(command.optsWithGlobals<CommandOptions>()))
 
   await program.parseAsync(argv)
 }
