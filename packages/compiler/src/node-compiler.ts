@@ -3,7 +3,6 @@ import { noticeDiagnostics } from './notices'
 import { readFileSync, realpathSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { compilePreparedGraph } from './prepared-graph-cache'
 import { pureCSSCache } from './pure-css-cache'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import {
@@ -534,7 +533,7 @@ export function compileCSSManifestGraph(
       return [[url, resource.href]]
     }))
   ])) : undefined
-  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => compilePreparedGraph(nativeCompiler(), {
+  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => nativeCompiler().compileCSSStylesheetGraph({
     graph,
     ...(options.definitionsOnly ? { nativeStylesheets: [] } : {}),
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),

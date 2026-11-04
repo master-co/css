@@ -140,7 +140,7 @@ test('loads the isolated compiler Wasm surface', async () => {
     ['index.css', 'base.css', 'theme.css', 'colors.css', 'media.css', 'container.css', 'utilities.css']
       .map(async file => [`/${file}`, await readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')])
   ))
-  const result = compiler.compileCSSStylesheetGraph({
+  const result = JSON.parse(compiler.compileCSSStylesheetGraph(JSON.stringify({
     graph: {
       entry: '/index.css', files,
       resourceOwners: Object.fromEntries(Object.keys(files).map(id => [id, `@master/css-preset/src${id}`])),
@@ -151,7 +151,7 @@ test('loads the isolated compiler Wasm surface', async () => {
     },
     urls: Object.fromEntries(Object.keys(files).map(id => [id, id])),
     options: { classes: [] }, inlineImports: true
-  }) as { directives: { manifestInput: unknown, styleDefinitions?: unknown[] } }
+  }))) as { directives: { manifestInput: unknown, styleDefinitions?: unknown[] } }
   const presetDirectives = result.directives
   const preset = compiler.compileDefaultPresetManifest({
     manifestInput: presetDirectives.manifestInput,
@@ -169,10 +169,10 @@ test('static mixins decode parameter identifiers and CSS function names in Wasm'
   const source = `@theme {
   --step-hero:2rem;
 }@mixin --label(--step <string>){font-size:VAR(IDENT("--step-" VaR(--st\\65 p)))} @utility label(--step <string>) {font-size:VAR(IDENT("--step-" VaR(--st\\65 p)))}@utility label-(--label <string>) {font-size:VAR(IDENT("--label-" VaR(--st\\65 p)))}.caption{@apply --label("hero")}`
-  const result = toPlainValue(compiler.compileCSSStylesheetGraph({
+  const result = JSON.parse(compiler.compileCSSStylesheetGraph(JSON.stringify({
     graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] },
     urls: { '/entry.css': '/out/entry.css' }
-  })) as { manifest: unknown; stylesheets: { css: string }[] }
+  }))) as { manifest: unknown; stylesheets: { css: string }[] }
   expect(result.stylesheets).toHaveLength(1)
   const css = result.stylesheets[0].css
   expect(css).toMatch(/font-size:\s*VAR\(--step-hero\)/)
@@ -186,8 +186,8 @@ test('static mixins decode parameter identifiers and CSS function names in Wasm'
     render.free()
   }
   expect(css).not.toContain('@apply')
-  expect(() => compiler.compileCSSStylesheetGraph({
+  expect(() => compiler.compileCSSStylesheetGraph(JSON.stringify({
     graph: { entry: '/entry.css', files: { '/entry.css': '@mixin --x(--n){width:var(--n);height:var(--n)} @utility x(--n) {width:var(--n);height:var(--n)}.x{@apply --x(VAR(--external))}' }, edges: [] },
     urls: { '/entry.css': '/out/entry.css' }
-  })).toThrow('must be static')
+  }))).toThrow('must be static')
 })

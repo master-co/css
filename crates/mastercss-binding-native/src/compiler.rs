@@ -429,13 +429,14 @@ pub fn resolve_css_stylesheet_graph_json(request_json: String) -> Result<String>
 
 #[napi]
 pub fn compile_css_stylesheet_graph_json(request_json: String) -> Result<String> {
-    let request =
-        serde_json::from_str::<mastercss_compiler::CompileCssStylesheetGraphInput>(&request_json)
-            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
-    to_json(
-        &mastercss_compiler::compile_css_stylesheet_graph_input(&request)
-            .map_err(compiler_to_napi_error)?,
-    )
+    use mastercss_compiler::CompileCssStylesheetGraphJsonError as GraphError;
+    mastercss_compiler::compile_css_stylesheet_graph_json(&request_json)
+        .map(|response| response.to_string())
+        .map_err(|error| match error {
+            GraphError::Request(error) => Error::new(Status::InvalidArg, error.to_string()),
+            GraphError::Compile(error) => compiler_to_napi_error(error),
+            GraphError::Response(error) => Error::new(Status::GenericFailure, error.to_string()),
+        })
 }
 
 #[napi]

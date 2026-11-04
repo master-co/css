@@ -9,7 +9,6 @@ import { collectStylesheetDirectives, mergeStylesheetDirectives, mergeStylesheet
 import { hasStylesheetResourceReferences, renderCompiledManifestCSS } from './render'
 import { resolveReferenceOrigins } from './reference-origins'
 import { referenceFileInputs } from './reference-files'
-import { compilePreparedGraph } from '../prepared-graph-cache'
 import { stylesheetOutputMap } from './output-map'
 import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import { MasterCSSError } from '@master/css-schema'
@@ -125,7 +124,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   prepared.resources.push(...reference.resources)
   const binding = createCompilerBindingSessionSync()
   try {
-    const result = compilePreparedGraph(binding, {
+    const result = binding.compileCSSStylesheetGraph({
       graph,
       pruneNativeStylesheets: Object.keys(graph.files).filter(file => {
         const policy = collectStylesheetDirectives(graph.files[file], owners[file] ?? file, options.projectDir)
