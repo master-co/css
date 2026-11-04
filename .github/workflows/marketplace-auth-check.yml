@@ -19,10 +19,10 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          persist-credentials: false
-      - name: Validate Azure configuration
+          node-version: "24"
+      - name: Validate the existing Azure identity configuration
         shell: bash
         env:
           AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -36,18 +36,29 @@ jobs:
               exit 1
             fi
           done
-      - uses: ./.github/actions/setup-bun
-        with:
-          ignore-scripts: "true"
-          turbo-cache: "false"
-      - name: Azure login for VSCE
+      - name: Install the release-matched VSCE in isolated tools
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/marketplace-auth-tools" --ignore-scripts --no-audit --no-fund @vscode/vsce@4.0.0
+      - name: Azure login for the existing federated identity
         uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Verify Marketplace publisher authorization
-        run: bun run --filter @master/css-vscode vsce verify-pat --azure-credential masterco
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          verification_output=$(mktemp)
+          trap 'unlink "$verification_output"' EXIT
+          if timeout 120s node "$RUNNER_TEMP/marketplace-auth-tools/node_modules/@vscode/vsce/vsce" verify-pat --azure-credential masterco </dev/null >"$verification_output" 2>&1; then
+            echo "Marketplace credentials verified for masterco. No publication was performed."
+          else
+            verification_status=$?
+            echo "::error::Marketplace authorization check failed (exit $verification_status); no publication was attempted."
+            exit "$verification_status"
+          fi
 
   verify_open_vsx:
     name: Verify Open VSX credentials without publishing
@@ -57,13 +68,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup-bun
-        with:
-          ignore-scripts: "true"
-          turbo-cache: "false"
+          node-version: "24"
+      - name: Install the release-matched Open VSX CLI in isolated tools
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/open-vsx-auth-tools" --ignore-scripts --no-audit --no-fund ovsx@1.0.2
       - name: Verify Open VSX namespace authorization
         shell: bash
         env:
@@ -76,10 +86,8 @@ jobs:
           fi
           umask 077
           verification_output=$(mktemp)
-          trap 'rm -f "$verification_output"' EXIT
-          # Match the release CLI and namespace. Do not expose remote error
-          # bodies or retain them as artifacts; they may contain account data.
-          if timeout 120s bun x ovsx@1.0.2 --registryUrl https://open-vsx.org verify-pat master </dev/null >"$verification_output" 2>&1; then
+          trap 'unlink "$verification_output"' EXIT
+          if timeout 120s node "$RUNNER_TEMP/open-vsx-auth-tools/node_modules/ovsx/bin/ovsx" --registryUrl https://open-vsx.org verify-pat master </dev/null >"$verification_output" 2>&1; then
             echo "Open VSX credentials verified for the master namespace. No publication was performed."
           else
             verification_status=$?

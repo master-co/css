@@ -16,6 +16,13 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of Master CSS are you running?
+      placeholder: ex. v2.0.0
+
   - type: textarea
     id: reproduction
     attributes:
@@ -36,6 +43,24 @@ body:
         OS: macOS 12.0.1 (amd64)
         Node.js: 16.31.1
         Package Manager: Bun 1.4.4
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
 
   - type: markdown
     attributes:
