@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { realpath } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
@@ -563,15 +564,22 @@ describe('@master/css-mcp', () => {
     expect(existsSync(join(outside, 'planted.css'))).toBe(false)
   })
 
-  it('does not follow linked directories while resolving source files', async () => {
+  it.each(['direct', 'junction alias'])('does not follow linked directories while resolving source files through a %s root', async (rootKind) => {
     const root = createTempDir('master-css-mcp-loop-')
     mkdirSync(join(root, 'sub'))
     writeFileSync(join(root, 'sub/index.html'), '<div class="block"></div>')
     symlinkSync(root, join(root, 'sub/l1'), 'junction')
     symlinkSync(root, join(root, 'sub/l2'), 'junction')
-    const context = new MasterCSSMCPContext({ root })
+    let configuredRoot = root
+    if (rootKind === 'junction alias') {
+      configuredRoot = join(createTempDir('master-css-mcp-loop-alias-'), 'workspace')
+      symlinkSync(root, configuredRoot, 'junction')
+    }
+    const context = new MasterCSSMCPContext({ root: configuredRoot })
 
-    expect(await resolveSourceFiles(context)).toEqual([join(root, 'sub/index.html')])
+    // Existing files are returned canonically, including Windows 8.3 temp aliases.
+    // Keep exact cardinality: traversing either loop would return extra entries.
+    expect(await resolveSourceFiles(context)).toEqual([await realpath(join(root, 'sub/index.html'))])
   })
 
   it('only previews generated CSS into .css files', async () => {
