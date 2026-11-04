@@ -39,8 +39,18 @@ test.each(['', ' layer(cards)', ' supports(display:grid) print'])('publishes ext
     writeFileSync(join(root, 'entry.css'), `@import "./child.css"${qualifier};@import "@master/css";@preserve native;.root{display:block}`)
     writeFileSync(join(root, 'child.css'), '@import "https://external.invalid/font.css";.card{color:red}')
     const result = await build(root)
-    expect(result.contents[result.css]).toMatch(/^@import /)
-    expect(result.files.filter(file => file.endsWith('.css')).length).toBeGreaterThan(2)
+    const entry = result.contents[result.css]
+    const [firstImport = ''] = entry.match(/^@import [^;]+;/) ?? []
+    if (qualifier) {
+      // A qualified child keeps its boundary: the condition stays on the import of the child's own asset.
+      expect(result.files.filter(file => file.endsWith('.css'))).toHaveLength(2)
+      expect(firstImport).toMatch(/^@import "\.\/master-css-[^"]+"/)
+      expect(firstImport.endsWith(`"${qualifier};`)).toBe(true)
+    } else {
+      // An unqualified child is inlined, and its external import leads the single stylesheet.
+      expect(result.files.filter(file => file.endsWith('.css'))).toEqual([result.css])
+      expect(firstImport).toBe('@import "https://external.invalid/font.css";')
+    }
     expect(Object.values(result.contents).join('\n')).toContain('https://external.invalid/font.css')
     expect(Object.values(result.contents).join('\n')).toContain('.card{color:red}')
     expect(result.dependencies).toContain(join(root, 'child.css'))
