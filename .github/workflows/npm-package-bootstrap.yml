@@ -1,0 +1,75 @@
+name: Bootstrap six npm package names
+on:
+  workflow_dispatch:
+    inputs:
+      source_ci_run_id:
+        description: Completed CI release_candidate run on this exact HEAD
+        required: true
+        type: string
+      source_ci_attempt:
+        description: Latest successful attempt of that CI run
+        required: true
+        type: string
+      publish:
+        description: Publish only the six inactive bootstrap versions (default is dry run)
+        type: boolean
+        default: false
+      confirm:
+        description: Type BOOTSTRAP SIX NPM NAMES only for the reviewed one-time publication
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: master-css-npm-package-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    if: ${{ github.repository == 'master-co/css' && github.ref_type == 'branch' && (github.ref_name == 'main' || github.ref_name == 'rc') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache: "false"
+      - name: Test the isolated bootstrap guards
+        run: node --test scripts/npm-package-bootstrap.test.mjs
+      - name: Plan against completed exact-source CI and absent public names
+        run: node scripts/npm-package-bootstrap.mjs plan --run-id "$SOURCE_CI_RUN_ID" --attempt "$SOURCE_CI_ATTEMPT" --output bootstrap-artifacts
+        env:
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_ATTEMPT: ${{ inputs.source_ci_attempt }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify native ZIPs and perform standard build and release preparation
+        run: node scripts/npm-package-bootstrap.mjs prepare --plan bootstrap-artifacts/plan.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install the pinned provenance-capable npm CLI
+        run: npm install --global npm@11.21.0
+      - name: Dry-run or explicitly publish the reviewed six archives
+        run: node scripts/npm-package-bootstrap.mjs publish --plan bootstrap-artifacts/plan.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOOTSTRAP_PUBLISH: ${{ inputs.publish }}
+          BOOTSTRAP_CONFIRM: ${{ inputs.confirm }}
+          NPM_PACKAGE_BOOTSTRAP_TOKEN: ${{ inputs.publish && secrets.NPM_PACKAGE_BOOTSTRAP_TOKEN || '' }}
+      - name: Retain original archives and source/integrity/provenance receipts even after failure
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-package-bootstrap-${{ github.sha }}-${{ github.run_attempt }}
+          path: bootstrap-artifacts/
+          if-no-files-found: warn
+          retention-days: 90
