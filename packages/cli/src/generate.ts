@@ -77,6 +77,10 @@ function normalizeGlobPatterns(patterns: readonly string[]) {
   return patterns.map((pattern) => pattern.replace(/\\/g, '/'))
 }
 
+function filesystemSourceIdentity(cwd: string, source: string) {
+  return path.relative(cwd, path.resolve(cwd, source)).split(path.sep).join('/')
+}
+
 function resolveSourcePaths(
   scanner: MasterCSSScanner,
   fg: FastGlob,
@@ -84,11 +88,12 @@ function resolveSourcePaths(
   ignore: readonly string[] = [],
   explicit = false
 ) {
-  return fg.sync(normalizeGlobPatterns(sourcePatterns), {
+  const sources = fg.sync(normalizeGlobPatterns(sourcePatterns), {
     cwd: scanner.cwd,
     ignore: normalizeGlobPatterns(ignore)
   })
     .filter(source => source && scanner.isSourceAllowed(source, { explicit }))
+  return [...new Set(sources.map(source => filesystemSourceIdentity(scanner.cwd, source)))]
 }
 
 async function scanSourceFile(scanner: MasterCSSScanner, source: string) {
@@ -351,8 +356,9 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
         ignoreInitial: true,
         ignored: (file, stats) => (options.export && outputFiles.has(path.resolve(scanner.cwd, file))) || sourcePlan.ignored(file, stats)
       })
-      const scanChangedSource = (source: string) => {
-        if (!sourcePlan.matches(source)) return
+      const scanChangedSource = (file: string) => {
+        if (!sourcePlan.matches(file)) return
+        const source = filesystemSourceIdentity(scanner.cwd, file)
         void enqueue(async () => {
           if (!pipelineReady) return rebuild()
           if (scanner.isSourceAllowed(source, { explicit: specifiedSourcePaths.length > 0 })) await scanSourceFile(scanner, source)
@@ -362,8 +368,9 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       }
       next.on('add', scanChangedSource)
       next.on('change', scanChangedSource)
-      next.on('unlink', source => {
-        if (!sourcePlan.matches(source)) return
+      next.on('unlink', file => {
+        if (!sourcePlan.matches(file)) return
+        const source = filesystemSourceIdentity(scanner.cwd, file)
         void enqueue(async () => { scanner.removeSource(source); await writeOutput() })
       })
       next.on('addDir', () => {

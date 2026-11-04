@@ -7,6 +7,8 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 
+const generatedCSS = (display: string) => `@layer utilities{.\\(display\\:${display}\\){display:${display}}}`
+
 for (const timing of ['before', 'after'] as const) {
   test(`485 discovers an explicit source authored ${timing} native directory registration`, async () => {
     const cwd = fs.mkdtempSync(path.join(tmpdir(), 'master-css-485-gap-'))
@@ -36,7 +38,7 @@ for (const timing of ['before', 'after'] as const) {
       fs.mkdirSync(path.join(cwd, 'pages'))
       fs.writeFileSync(path.join(cwd, 'pages/other.html'), '<div class="(display:grid)"></div>')
       await wait(() => stderr.includes(`WATCH_GAP_INJECTED ${timing}`))
-      await wait(() => css().includes('.\\(display\\:block\\){display:block}'))
+      await wait(() => css() === generatedCSS('block'))
       const events = fs.readFileSync(trace, 'utf8').trim().split('\n').map(line => JSON.parse(line))
       const snapshot = events.findIndex(event => event.kind === 'directory.snapshot')
       const authored = events.findIndex(event => event.kind === 'source.write.end')
@@ -46,15 +48,15 @@ for (const timing of ['before', 'after'] as const) {
       expect(authored).toBeGreaterThan(snapshot)
       expect(timing === 'before' ? authored < watching : authored > watching).toBe(true)
       fs.writeFileSync(path.join(cwd, 'pages/only.html'), '<div class="(display:none)"></div>')
-      await wait(() => css().includes('.\\(display\\:none\\){display:none}'))
+      await wait(() => css() === generatedCSS('none'))
       fs.rmSync(path.join(cwd, 'pages'), { recursive: true, force: true })
-      await wait(() => !css().includes('display:none'))
+      await wait(() => css() === '')
       fs.mkdirSync(path.join(cwd, 'pages'))
       fs.writeFileSync(path.join(cwd, 'pages/other.html'), '<div class="(display:grid)"></div>')
       fs.writeFileSync(path.join(cwd, 'pages/only.html'), '<div class="(display:flex)"></div>')
-      await wait(() => css().includes('.\\(display\\:flex\\){display:flex}'))
+      await wait(() => css() === generatedCSS('flex'))
       fs.writeFileSync(path.join(cwd, 'pages/only.html'), '<div class="(display:block)"></div>')
-      await wait(() => css().includes('.\\(display\\:block\\){display:block}'))
+      await wait(() => css() === generatedCSS('block'))
       expect(css()).not.toContain('display:grid')
       await new Promise(resolve => setTimeout(resolve, 300))
       const exports = stderr.match(/master\.css exported/g)?.length ?? 0
@@ -82,3 +84,50 @@ for (const timing of ['before', 'after'] as const) {
     }
   }, 30000)
 }
+
+test.each(['pages/only.html', '../external/only.html'])('485 absolute and relative includes of %s share one identity through edits, unlink and recreation', async relativeFile => {
+  const fixture = fs.mkdtempSync(path.join(tmpdir(), 'master-css-485-source-identity-'))
+  const cwd = path.join(fixture, 'project')
+  fs.mkdirSync(cwd)
+  const file = path.resolve(cwd, relativeFile), output = path.join(cwd, 'master.css')
+  fs.mkdirSync(path.dirname(file), { recursive: true })
+  fs.writeFileSync(file, '<div class="(display:block)"></div>')
+  const child = spawn(process.execPath, ['--import', pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href,
+    path.resolve(__dirname, '../../src/bin/index.ts'), 'generate', '--watch', file, relativeFile.replace('/only.html', '/./only.html')], {
+    cwd, env: { ...process.env, TSX_TSCONFIG_PATH: path.resolve(__dirname, '../../../../tsconfig.json') }
+  })
+  let stderr = ''
+  child.stderr.on('data', chunk => { stderr += chunk })
+  child.stdout.resume()
+  const css = () => fs.existsSync(output) ? fs.readFileSync(output, 'utf8') : ''
+  const wait = async (check: () => boolean) => {
+    const deadline = Date.now() + 10000
+    while (!check() && Date.now() < deadline && child.exitCode === null && child.signalCode === null) await new Promise(resolve => setTimeout(resolve, 20))
+    expect(check(), stderr + '\nCSS: ' + css()).toBe(true)
+  }
+  try {
+    await wait(() => stderr.includes('Start watching source changes'))
+    expect(css()).toBe(generatedCSS('block'))
+    fs.writeFileSync(file, '<div class="(display:none)"></div>')
+    await wait(() => css() === generatedCSS('none'))
+    fs.unlinkSync(file)
+    await wait(() => css() === '')
+    fs.writeFileSync(file, '<div class="(display:flex)"></div>')
+    await wait(() => css() === generatedCSS('flex'))
+    fs.writeFileSync(file, '<div class="(display:block)"></div>')
+    await wait(() => css() === generatedCSS('block'))
+  } finally {
+    if (child.exitCode === null && child.signalCode === null) {
+      const exited = once(child, 'exit')
+      child.kill('SIGTERM')
+      const kill = setTimeout(() => child.kill('SIGKILL'), 3000)
+      let deadline: ReturnType<typeof setTimeout> | undefined
+      try {
+        await Promise.race([exited, new Promise<never>((_, reject) => {
+          deadline = setTimeout(() => reject(new Error('CLI watcher did not terminate after SIGKILL')), 4000)
+        })])
+      } finally { clearTimeout(kill); clearTimeout(deadline) }
+    }
+    fs.rmSync(fixture, { recursive: true, force: true })
+  }
+}, 30000)

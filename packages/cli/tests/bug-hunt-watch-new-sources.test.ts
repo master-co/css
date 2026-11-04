@@ -56,9 +56,9 @@ for (const scenario of [
       write(scenario.excluded, "<div class=\"(display:grid)\"></div>")
       write('ignored.json', '{"class":"grid"}')
       write(scenario.file, scenario.file.endsWith('.mjs') ? 'export const classes = "(display:block)"' : "<div class=\"(display:block)\"></div>")
-      await wait(() => css().includes(".\\(display\\:block\\){display:block}"))
+      await wait(() => css() === '@layer utilities{.\\(display\\:block\\){display:block}}')
       write(scenario.file, scenario.file.endsWith('.mjs') ? 'export const classes = "(display:none)"' : "<div class=\"(display:none)\"></div>")
-      await wait(() => css().includes(".\\(display\\:none\\){display:none}"))
+      await wait(() => css() === '@layer utilities{.\\(display\\:none\\){display:none}}')
       await new Promise(resolveWait => setTimeout(resolveWait, 300))
       expect(css()).not.toContain(".\\(display\\:grid\\){display:grid}")
       const exports = stderr.match(/master\.css exported/g)?.length ?? 0
