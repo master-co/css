@@ -5,7 +5,7 @@ import brands from '@master/internal-site/data/brands'
 import { workflowFrameworks, workflowIntegrations } from './workflow-content'
 import WorkflowCanvas from './WorkflowCanvas.svelte'
 
-/** Canvas draws the assembly; the original brand marks and installation links remain native. */
+/** External SVG images keep each brand's gradient IDs separate from the navigation's inline marks. */
 const { t } = siteOf(Astro)
 ---
 
@@ -24,7 +24,7 @@ const { t } = siteOf(Astro)
             data-wf-pick={index}
             href={`/guide/installation/${framework.guide}`}
             title={name}>
-            <Logo aria-hidden="true" class={['home-wf-framework-logo', className].filter(Boolean).join(' ')} height={30} width={30} />
+            <img alt="" aria-hidden="true" src={Logo.src} class={['home-wf-framework-logo', className].filter(Boolean).join(' ')} height={30} width={30} />
           </Link>
         )
       })}
