@@ -15,7 +15,8 @@ test('graph fragment names depend on rendered CSS, not on host stylesheet paths'
   const extracted = (root: string) => {
     // Graph IDs are host files; temporary delivery URLs digest them.
     const href = `./master-css-source-${createHash('sha256').update(join(root, 'src/child.css')).digest('hex').slice(0, 20)}.css`
-    return { css: `@import "${href}";.entry{color:red}`, stylesheets: [{ id: join(root, 'src/child.css'), href, css: '.child{color:blue}' }], diagnostics: [], emittedGlobals }
+    // The external import keeps the child as a fragment rather than inlining it.
+    return { css: `@import "${href}";.entry{color:red}`, stylesheets: [{ id: join(root, 'src/child.css'), href, css: '@import "https://remote.test/font.css";.child{color:blue}' }], diagnostics: [], emittedGlobals }
   }
   // Hosts publish each asset's href and CSS; graph IDs stay internal.
   const prepare = (root: string) => {
@@ -62,7 +63,11 @@ test('production output is identical when the project moves', async () => {
     }
     const fileNames = outputs[0].map(([fileName]) => fileName)
     expect(fileNames).toContainEqual(expect.stringMatching(/master-css-program.*\.bin$/))
-    expect(fileNames).toContainEqual(expect.stringMatching(/master-css-[0-9a-f]{20}-\d+\.css$/))
+    // Managed and local stylesheets flatten into Vite's one CSS entry.
+    const stylesheets = outputs[0].filter(([fileName]) => fileName.endsWith('.css'))
+    expect(stylesheets).toHaveLength(1)
+    expect(stylesheets[0][1]).not.toContain('@import')
+    expect(stylesheets[0][1]).toMatch(/\.a\s*\{\s*display:\s*block/)
     expect(outputs[1]).toEqual(outputs[0])
     for (const [, source] of outputs[0]) expect(source).not.toContain(roots[0])
   } finally {

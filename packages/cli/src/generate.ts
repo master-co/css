@@ -197,7 +197,9 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
     } : undefined,
     stylesheetURL: (file, variant) => `./${assetPrefix}-${revision}${hash(path.relative(scanner.cwd, file) + (variant?.slice(file.length) ?? ''))}.css`,
     resourceURL: file => `./${assetPrefix}-${hash(readResource(file))}${encodeURIComponent(path.extname(file))}`,
-    relativeResourceURLs: true
+    relativeResourceURLs: true,
+    // One render-blocking request; only boundaries Rust must retain stay sidecars.
+    inlineImports: true
   } : undefined
 
   const writeOutput = async () => {

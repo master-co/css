@@ -125,7 +125,10 @@ Disabling native output suppresses that file's rules, native variant output and
 external imports. Local links from suppressed files remain only when needed to
 reach selected output, so empty imports cannot declare excluded cascade layers.
 Unreachable stylesheet assets are omitted; authoring definitions and dependencies
-still contribute to compilation. The low-level graph
+still contribute to compilation. Set `inlineImports: true` on `delivery` to
+flatten local imports into their importers with the same Rust rules as bundle
+rendering below; only the stylesheets that a retained boundary still imports are
+returned, and resource URLs keep their delivery destinations. The low-level graph
 request exposes the same native selection through `nativeStylesheets` (file IDs).
 `preserveNativeCSS: false` omits raw native rules and unresolved external imports
 while retaining compiled native `@apply` in otherwise included stylesheets;
@@ -200,7 +203,10 @@ nonempty asset `href` values so Rust can reconnect the graph after relocation.
 
 For CSS string delivery, rendering accepts `inlineImports: true`. Rust expands
 import-free local children when import order and namespace scope remain intact;
-a wrapper containing only one unqualified import can also promote its child.
+a wrapper containing only one unqualified import can also promote its child. A
+child whose remaining imports all precede its rules expands through an
+unqualified import that only external imports precede, keeping those imports
+ahead of every inlined rule.
 Select the returned asset whose ID is `bundle.graph.entry` for the CSS string.
 Publish the remaining referenced assets and supply URLs valid at the insertion
 site. Boundaries that protect external imports or separate namespaces remain

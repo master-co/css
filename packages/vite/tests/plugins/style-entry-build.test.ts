@@ -224,7 +224,9 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       await (plugin as any).generateBundle.call({ warn, emitFile: (asset: { source: string }) => assets.push(asset) }, {}, bundle)
       await (plugin as any).closeBundle()
 
-      const css = assets.map(asset => asset.source).join('\n')
+      // Production delivery flattens the managed graph into Vite's CSS asset.
+      expect(assets).toEqual([])
+      const css = bundle['assets/index-abc.css'].source
       expect(css).toContain('body')
       expect(css).toContain('.native-card')
       expect(css).not.toContain('.unused-card')
@@ -287,7 +289,9 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       await (plugin as any).generateBundle.call({ warn, emitFile: (asset: { source: string }) => assets.push(asset) }, {}, bundle)
       await (plugin as any).closeBundle()
 
-      const css = assets.map(asset => asset.source).join('\n')
+      // Production delivery flattens the managed graph into Vite's CSS asset.
+      expect(assets).toEqual([])
+      const css = bundle['assets/index-abc.css'].source
       expect(css).toContain('.native-used')
       expect(css).not.toContain('.native-unused')
       expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)

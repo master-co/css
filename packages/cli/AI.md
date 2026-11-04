@@ -40,6 +40,7 @@
 - Manifest path loading.
 - Cross-platform glob behavior.
 - Respecting `--no-export` when output paths are configured.
+- File export sets delivery `inlineImports`; Rust flattens the graph and decides which sibling stylesheets remain.
 
 ## Safe Changes
 

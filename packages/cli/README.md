@@ -9,6 +9,8 @@ npx @master/css-cli generate
 
 Use the explicit `generate`, `lint`, `inspect`, or `suggest` command. The app CSS entry starts with `@import '@master/css';`, loading the complete preset. Static generation emits CSS without a Master browser runtime. Native CSS is preserved unless pruning is explicitly enabled.
 
+`generate --output` flattens the import graph into the output file in cascade order and writes referenced images and fonts beside it. External imports at the top of an imported stylesheet move up with it when only other external imports precede it. An imported stylesheet that keeps a namespace or an import under a media, supports or layer qualifier, or whose external imports would follow inlined rules, stays a sibling CSS file, as do the imports before it; deploy the output directory as a whole.
+
 ```bash
 npx @master/css-cli generate 'src/**/*.{html,tsx}' --output public/master.css
 npx @master/css-cli generate --watch
