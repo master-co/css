@@ -1,6 +1,22 @@
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
+import { platform } from 'node:os'
 import path from 'node:path'
+
+// Windows can temporarily deny atomic replacement while another process reads
+// the destination. Keep the same prepared file and old destination throughout.
+function renameStylesheetFile(from: string, to: string) {
+  const deadline = performance.now() + 1000
+  let waitBuffer: Int32Array | undefined
+  while (true) {
+    try { fs.renameSync(from, to); return } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code
+      if (platform() !== 'win32' || !['EPERM', 'EACCES', 'EBUSY'].includes(code ?? '') || performance.now() >= deadline) throw error
+      waitBuffer ??= new Int32Array(new SharedArrayBuffer(4))
+      Atomics.wait(waitBuffer, 0, 0, Math.min(10, Math.max(0, deadline - performance.now())))
+    }
+  }
+}
 
 function matchesAsset(file: string, bytes: Buffer) {
   const stat = fs.lstatSync(file, { throwIfNoEntry: false })
@@ -40,7 +56,7 @@ function removeTemporaryFile(file: string, outputFiles: Set<string>) {
 
 export function replaceStylesheetFile(file: string, bytes: Buffer, outputFiles: Set<string>, mode?: number) {
   const temporary = prepareTemporaryFile(file, bytes, outputFiles, mode)
-  try { fs.renameSync(temporary, file) } finally { removeTemporaryFile(temporary, outputFiles) }
+  try { renameStylesheetFile(temporary, file) } finally { removeTemporaryFile(temporary, outputFiles) }
 }
 
 export function resolveEntryTarget(file: string) {
@@ -89,7 +105,7 @@ export function publishStylesheet(entry: string, css: string, assets: ReadonlyMa
         if ((error as NodeJS.ErrnoException).code !== 'EEXIST' || !matchesAsset(file, assets.get(file)!)) throw error
       }
     }
-    fs.renameSync(entryTemporary, target)
+    renameStylesheetFile(entryTemporary, target)
     journal?.afterPublish()
   } finally {
     for (const temporary of prepared.values()) removeTemporaryFile(temporary, outputFiles)
