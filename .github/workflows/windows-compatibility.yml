@@ -1,0 +1,65 @@
+name: Windows compatibility
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Full compatibility or focused regression diagnosis
+        type: choice
+        options: [full, focused]
+        default: full
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-compatibility-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    name: Windows ${{ inputs.mode }} validation
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: compat
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: windows-compatibility
+          cache-workspace-crates: true
+          cache-on-failure: true
+      - name: Install Chromium headless shell
+        run: bun run playwright install --only-shell chromium
+      - name: Build Rust Wasm artifacts
+        run: bun run build:rust:wasm
+      - name: Build regression test dependencies
+        id: build
+        run: bun run turbo run build --filter=@master/css-cli... --filter=@master/css-mcp... --filter=@master/css-next... --concurrency=2
+      - name: Repeat CLI and MCP regressions and verify Next lock recovery
+        shell: bash
+        run: |
+          set -uo pipefail
+          result=0
+          for iteration in {1..10}; do
+            echo "Regression iteration $iteration of 10"
+            bun run --cwd packages/cli test tests/bug-hunt-stylesheet-delivery.test.ts -t 'watch republishes changed resources' || result=1
+            bun run --cwd packages/mcp test tests/core.test.ts -t 'does not follow linked directories' || result=1
+          done
+          bun run --cwd packages/next test tests/issues/475.test.ts tests/static-state.test.ts || result=1
+          exit "$result"
+      - name: Test every package
+        if: ${{ !cancelled() && inputs.mode == 'full' && steps.build.outcome == 'success' }}
+        run: bun run turbo run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful
+      - name: Build every example
+        if: ${{ !cancelled() && inputs.mode == 'full' && steps.build.outcome == 'success' }}
+        run: bun run turbo run build '--filter=./examples/*' --concurrency=4
+      - name: Retain the Turbo cache
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}

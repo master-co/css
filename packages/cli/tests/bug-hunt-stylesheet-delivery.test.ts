@@ -59,7 +59,7 @@ test('BH-0004 CLI watch republishes changed resources and ignores its output fil
   writeFileSync(join(cwd, 'entry.css'), "@import \"@master/css\";.example{background-image:url('./image.svg')}")
   writeFileSync(join(cwd, 'index.html'), "<div class=\"example (display:block)\">test</div>")
   writeFileSync(join(cwd, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><path fill="red"/></svg>')
-  const child = spawn(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], {
+  const child = spawn(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '1'], {
     cwd, env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
   })
   let stderr = ''
@@ -93,7 +93,7 @@ test('BH-0004 CLI watch republishes changed resources and ignores its output fil
     expect(css).not.toContain(before)
     const restarts = stderr.match(/Restart watching source changes/g)?.length
     await new Promise(resolve => setTimeout(resolve, 400))
-    expect(stderr.match(/Restart watching source changes/g)?.length).toBe(restarts)
+    expect(stderr.match(/Restart watching source changes/g)?.length, stderr).toBe(restarts)
     expect(child.exitCode).toBeNull()
   } finally {
     if (child.exitCode === null) {
