@@ -1,0 +1,218 @@
+name: Release artifact verification
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-artifact-verification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Pack the public dependency closure without publishing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: build
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: closure-verification
+      - name: Test the closure verification harness
+        run: node --test scripts/binding-closure-*.test.mjs
+      - name: Build the public engine dependency closure
+        run: |
+          bun run build:rust:wasm
+          bun run turbo run build --filter=@master/css... --concurrency=2
+      - name: Pack through the release preparation path
+        run: node scripts/binding-closure-prepare.mjs --output closure --version 0.0.0-closure.${{ github.run_id }}.${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verification-closure
+          path: closure/
+          if-no-files-found: error
+          retention-days: 7
+
+  native:
+    name: closure-${{ matrix.package }}
+    needs: prepare
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: binding-darwin-arm64
+            runner: macos-15
+          - package: binding-darwin-x64
+            runner: macos-15-intel
+          - package: binding-linux-arm64-gnu
+            runner: ubuntu-24.04-arm
+          - package: binding-linux-x64-gnu
+            runner: ubuntu-24.04
+          - package: binding-win32-arm64-msvc
+            runner: windows-11-arm
+          - package: binding-win32-x64-msvc
+            runner: windows-2025
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          install: "false"
+          turbo-cache: "false"
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: native-${{ matrix.package }}
+      - name: Build the matching native target
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: cargo xtask stage-native-target ${{ matrix.package }} --release
+      - uses: actions/download-artifact@v7
+        with:
+          name: verification-closure
+          path: closure
+      - name: Install the packed closure and exercise its native addon and CLI
+        run: node scripts/binding-closure-consumer.mjs --closure closure --target packages/${{ matrix.package }} --proof proofs/${{ matrix.package }}.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verification-proof-${{ matrix.package }}
+          path: proofs/${{ matrix.package }}.json
+          if-no-files-found: error
+          retention-days: 7
+
+  musl:
+    name: closure-${{ matrix.package }}
+    needs: prepare
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: binding-linux-arm64-musl
+            runner: ubuntu-24.04-arm
+          - package: binding-linux-x64-musl
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v7
+        with:
+          name: verification-closure
+          path: closure
+      - name: Build and execute the packed consumer inside musl
+        shell: bash
+        env:
+          TARGET_PACKAGE: ${{ matrix.package }}
+        run: |
+          docker run --rm \
+            -e TARGET_PACKAGE \
+            -e GITHUB_SHA \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            rust:1.98.1-alpine \
+            sh -ec '
+              apk add --no-cache build-base git nodejs npm
+              RUSTFLAGS="-C target-feature=-crt-static" \
+                cargo xtask stage-native-target "$TARGET_PACKAGE" --release
+              node scripts/binding-closure-consumer.mjs \
+                --closure closure --target "packages/$TARGET_PACKAGE" \
+                --proof "proofs/$TARGET_PACKAGE.json"
+            '
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verification-proof-${{ matrix.package }}
+          path: proofs/${{ matrix.package }}.json
+          if-no-files-found: error
+          retention-days: 7
+
+  compat_windows:
+    name: Windows compatibility
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: compat
+      - name: Install Chromium headless shell
+        run: bun run playwright install --only-shell chromium
+      - name: Build Rust Wasm artifacts
+        run: bun run build:rust:wasm
+      - name: Test every package, including the Next lock regressions
+        run: bun run turbo run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful
+      - name: Build examples
+        run: bun run turbo run build '--filter=./examples/*' --concurrency=4
+
+  required:
+    name: Require Windows and every native consumer
+    if: ${{ always() }}
+    needs: [prepare, native, musl, compat_windows]
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - name: Check every validation result
+        env:
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          NATIVE_RESULT: ${{ needs.native.result }}
+          MUSL_RESULT: ${{ needs.musl.result }}
+          WINDOWS_RESULT: ${{ needs.compat_windows.result }}
+        run: |
+          for result in "$PREPARE_RESULT" "$NATIVE_RESULT" "$MUSL_RESULT" "$WINDOWS_RESULT"; do
+            if [ "$result" != success ]; then
+              echo "Validation did not succeed: $result"
+              exit 1
+            fi
+          done
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: verification-proof-*
+          path: proofs
+          merge-multiple: true
+      - name: Require exactly eight target proofs
+        env:
+          CANDIDATE_SHA: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict'
+          import { readFileSync, readdirSync } from 'node:fs'
+          const targets = [
+            'darwin-arm64', 'darwin-x64',
+            'linux-arm64-gnu', 'linux-x64-gnu',
+            'linux-arm64-musl', 'linux-x64-musl',
+            'win32-arm64-msvc', 'win32-x64-msvc'
+          ].map(target => `binding-${target}.json`).sort()
+          assert.deepEqual(readdirSync('proofs').sort(), targets)
+          let referencePackages, version
+          for (const file of targets) {
+            const proof = JSON.parse(readFileSync(`proofs/${file}`, 'utf8'))
+            const targetPackage = `@master/css-${file.slice(0, -5)}`
+            assert.equal(proof.schemaVersion, 1)
+            assert.equal(proof.revision, process.env.CANDIDATE_SHA)
+            assert.equal(proof.targetPackage, targetPackage)
+            assert.equal(proof.detected.packageName, targetPackage)
+            assert.equal(proof.poisonArtifactsExcluded, true)
+            assert.equal(proof.binding.target, proof.nativeTarget)
+            assert.equal(proof.selfTest.binary.target, proof.nativeTarget)
+            assert.ok(proof.installed.includes(targetPackage))
+            assert.equal(proof.publicEngine, 'native bg-red-60 output passed')
+            version ??= proof.version
+            assert.equal(proof.version, version)
+            const packages = proof.packages.filter(entry => entry.name !== targetPackage)
+              .map(({ name, integrity }) => ({ name, integrity })).sort((a, b) => a.name.localeCompare(b.name))
+            referencePackages ??= packages
+            assert.deepEqual(packages, referencePackages)
+          }
+          console.log(`All eight consumer proofs retained for ${process.env.CANDIDATE_SHA}`)
+          NODE
