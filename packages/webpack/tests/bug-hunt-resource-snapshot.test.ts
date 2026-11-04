@@ -24,7 +24,8 @@ test.each(['write', 'delete', 'none'])('resource names and bytes share one snaps
   compiler.hooks.thisCompilation.tap('TestResourceSnapshot', compilation => {
     const emitAsset = compilation.emitAsset.bind(compilation)
     compilation.emitAsset = (name, source, info) => {
-      if (armed && name.includes('master-css-') && name.endsWith('.css')) {
+      // Flattened stylesheets leave a resource as the first Master CSS asset emitted.
+      if (armed && name.includes('master-css-')) {
         armed = false;triggered = true
         if (mutation === 'delete') rmSync(resource)
         else writeFileSync(resource, svg('blue'))

@@ -96,10 +96,16 @@ Import the default stylesheet from your application CSS so the plugin can replac
 The Webpack plugin uses `MasterCSSScanner` from `@master/css-tooling/scanner/node` for source scanning and writes generated CSS through virtual modules.
 
 For production builds with `mode: 'static'` that emit CSS assets, the plugin
-preserves imported stylesheet boundaries and emits the required CSS fragments
-and resources beside the host CSS asset. Deploy these emitted files together.
-Changes to imported CSS or resource contents participate in the entry CSS
-content hash.
+flattens managed stylesheet imports into the host CSS asset, so a page loads one
+render-blocking stylesheet. Cascade order is unchanged: layer statements and the
+rules of other modules in the same CSS chunk keep their positions, `layer()`,
+`supports()` and media qualifiers become the equivalent `@layer`, `@supports`
+and `@media` blocks, and empty stylesheets disappear. A stylesheet that keeps an
+external import, a namespace, or an import under a qualifier stays a separate
+`master-css-*` CSS asset, as do the imports before it in the same file, because
+an `@import` cannot follow rules. Those CSS assets and the `master-css-resource-*`
+files are emitted beside the host CSS asset; deploy them together. Changes to
+imported CSS or resource contents participate in the entry CSS content hash.
 Each emitted resource uses the same captured bytes for its filename and contents.
 Later builds read a fresh snapshot, including changes made during publication.
 
