@@ -1,10 +1,12 @@
 import { fileExists, transforms, Walker, type AstTypes, type TransformFn } from '@sveltejs/sv-utils'
+import { readFileSync } from 'node:fs'
 import type { Workspace } from 'sv'
 
+const packageJSON = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version?: string }
 export const MASTER_CSS_PACKAGE = '@master/css'
-export const MASTER_CSS_VERSION = 'rc'
+export const MASTER_CSS_VERSION = packageJSON.version ?? 'rc'
 export const MASTER_CSS_SVELTE_PACKAGE = '@master/css-svelte'
-export const MASTER_CSS_SVELTE_VERSION = 'rc'
+export const MASTER_CSS_SVELTE_VERSION = MASTER_CSS_VERSION
 export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css-svelte/vite'
 export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css-svelte/hooks.server'
 
