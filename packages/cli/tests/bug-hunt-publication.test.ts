@@ -45,7 +45,8 @@ test('BH-0004 immutable sidecar collision preserves user-modified files', () => 
   try {
     prepare(cwd, 'red')
     const first = run(cwd); expect(first.status, first.stderr).toBe(0)
-    const file = readdirSync(directory).find(file => file !== 'output.css' && file.endsWith('.css'))!
+    // Local imports flatten into the entry; the resource remains an immutable sidecar.
+    const file = readdirSync(directory).find(file => file.endsWith('.svg'))!
     writeFileSync(join(directory, file), '/* manually modified user file */')
     const before = snapshot(directory)
     const collision = run(cwd)

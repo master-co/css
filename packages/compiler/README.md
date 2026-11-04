@@ -125,7 +125,10 @@ Disabling native output suppresses that file's rules, native variant output and
 external imports. Local links from suppressed files remain only when needed to
 reach selected output, so empty imports cannot declare excluded cascade layers.
 Unreachable stylesheet assets are omitted; authoring definitions and dependencies
-still contribute to compilation. The low-level graph
+still contribute to compilation. Set `inlineImports: true` on `delivery` to
+flatten local imports into their importers with the same Rust rules as bundle
+rendering below; only the stylesheets that a retained boundary still imports are
+returned, and resource URLs keep their delivery destinations. The low-level graph
 request exposes the same native selection through `nativeStylesheets` (file IDs).
 `preserveNativeCSS: false` omits raw native rules and unresolved external imports
 while retaining compiled native `@apply` in otherwise included stylesheets;

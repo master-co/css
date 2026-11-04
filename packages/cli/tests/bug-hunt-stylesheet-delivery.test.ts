@@ -47,10 +47,69 @@ test('BH-0004 CLI preserves shared native imports by default', () => {
     execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], {
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
-    const css = readdirSync(join(cwd, 'dist')).filter(file => file.endsWith('.css')).map(file => readFileSync(join(cwd, 'dist', file), 'utf8'))
-    expect(css.filter(text => text.includes('.unscanned'))).toHaveLength(2)
-    expect(css.some(text => text.includes('print'))).toBe(true)
-    expect(css.some(text => text.includes('screen'))).toBe(true)
+    // Both qualified imports flatten into their equivalent media wrappers.
+    expect(readdirSync(join(cwd, 'dist')).filter(file => file.endsWith('.css'))).toEqual(['output.css'])
+    const css = readFileSync(join(cwd, 'dist/output.css'), 'utf8')
+    expect(css).not.toContain('@import')
+    expect(css.match(/\.unscanned/g)).toHaveLength(2)
+    expect(css).toMatch(/@media print\s*\{\s*\.unscanned/)
+    expect(css).toMatch(/@media screen\s*\{\s*\.unscanned/)
+  } finally { rmSync(cwd, { recursive: true, force: true }) }
+})
+
+const generate = (cwd: string) => execFileSync(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--output', 'dist/output.css', '--verbose', '0'], {
+  cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
+})
+
+test('BH-0004 CLI flattens same-build imports into one ordered stylesheet', () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-flat-'))
+  try {
+    mkdirSync(join(cwd, 'styles'))
+    writeFileSync(join(cwd, 'entry.css'), "@layer reset, app;@import 'https://remote.test/font.css';@import \"@master/css\";@import './styles/base.css' layer(reset);@import './styles/print.css' print;@import './styles/empty.css';.after{color:green}")
+    writeFileSync(join(cwd, 'styles/base.css'), "@import './nested.css';.base{background-image:url('../image.svg')}")
+    writeFileSync(join(cwd, 'styles/nested.css'), '.nested{color:blue}')
+    writeFileSync(join(cwd, 'styles/print.css'), '.print{color:black}')
+    writeFileSync(join(cwd, 'styles/empty.css'), '')
+    writeFileSync(join(cwd, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    writeFileSync(join(cwd, 'index.html'), '<div class="(display:block)"></div>')
+    generate(cwd)
+    const files = readdirSync(join(cwd, 'dist'))
+    expect(files.filter(file => file.endsWith('.css'))).toEqual(['output.css'])
+    const resource = files.find(file => file.endsWith('.svg'))
+    expect(resource).toBeDefined()
+    const css = readFileSync(join(cwd, 'dist/output.css'), 'utf8')
+    // Only the external import remains, after the layer statement and before every inlined rule.
+    expect(css.match(/@import/g)).toHaveLength(1)
+    const order = ['@layer reset, app;', '@import "https://remote.test/font.css";', '@layer base', '@layer reset{', '.nested', '.base', `url("./${resource}")`, '@media print', '.print', '.after', '.\\(display\\:block\\)']
+    const positions = order.map(text => css.indexOf(text))
+    expect(positions.every(position => position >= 0), css).toBe(true)
+    expect(positions).toEqual([...positions].sort((a, b) => a - b))
+  } finally { rmSync(cwd, { recursive: true, force: true }) }
+})
+
+test('BH-0004 CLI keeps only nonempty stylesheets that retained import boundaries reach', () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-retained-'))
+  try {
+    mkdirSync(join(cwd, 'styles'))
+    writeFileSync(join(cwd, 'entry.css'), "@import \"@master/css\";@import './styles/remote.css';.after{color:green}")
+    // An external import cannot move into the entry's rules, so this child keeps its boundary.
+    writeFileSync(join(cwd, 'styles/remote.css'), "@import 'https://remote.test/font.css';.remote{color:red}")
+    writeFileSync(join(cwd, 'index.html'), '<div class="(display:block)"></div>')
+    generate(cwd)
+    const files = readdirSync(join(cwd, 'dist')).filter(file => file.endsWith('.css'))
+    const visited: string[] = []
+    const readGraph = (file: string): string => {
+      visited.push(file)
+      const text = readFileSync(join(cwd, 'dist', file), 'utf8')
+      expect(text.trim(), file).not.toBe('')
+      return text.replace(/@import "\.\/([^"]+)";/g, (_, href: string) => readGraph(decodeURIComponent(href)))
+    }
+    const css = readGraph('output.css')
+    expect([...visited].sort()).toEqual([...files].sort())
+    expect(files.length).toBeLessThanOrEqual(3)
+    const positions = ['@layer base', '@import "https://remote.test/font.css";', '.remote', '.after'].map(text => css.indexOf(text))
+    expect(positions.every(position => position >= 0), css).toBe(true)
+    expect(positions).toEqual([...positions].sort((a, b) => a - b))
   } finally { rmSync(cwd, { recursive: true, force: true }) }
 })
 

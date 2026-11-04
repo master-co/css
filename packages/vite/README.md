@@ -100,12 +100,17 @@ When Vite uses an `assetFileNames` pattern containing `[hash]`, managed CSS part
 
 Custom `assetFileNames` callbacks receive the CSS entry at the naming stage, including its content-sensitive import URL when managed output is delivered as separate assets. Hash length and `hashCharacters` settings are honored. Vite can still include its own naming metadata and perform later output processing, so the filename hash is not a checksum of the final file on disk. Fixed filename patterns remain fixed and require the application's own cache invalidation policy.
 
-Production builds retain managed stylesheet imports as separate CSS assets. Local
-and external imports keep their order, media/supports conditions and layer scopes;
-ordinary rules before or after the managed entry keep their positions. Deploy the
-complete output directory, including the generated `master-css-*` CSS and resource
-files. Additional CSS files are placed beside Vite's CSS entry so ordinary relative
-resource URLs retain their base. Managed and Node-resolved package resources receive
+Production builds flatten managed stylesheet imports into Vite's CSS asset, so a
+page loads one render-blocking stylesheet. Cascade order is unchanged: layer
+statements and ordinary rules before or after the managed entry keep their
+positions, `layer()`, `supports()` and media qualifiers become the equivalent
+`@layer`, `@supports` and `@media` blocks, and empty stylesheets disappear. A
+stylesheet that keeps an external import, a namespace, or an import under a
+qualifier stays a separate `master-css-*` CSS asset, as do the imports before it in
+the same file, because an `@import` cannot follow rules. Deploy the complete output
+directory, including those CSS files and the `master-css-resource-*` files.
+Additional files are placed beside Vite's CSS entry so ordinary relative resource
+URLs retain their base. Managed and Node-resolved package resources receive
 content-sensitive filenames and preserve query strings and fragments.
 
 Node-resolved package CSS imports retain native rules when project CSS is pruned.
