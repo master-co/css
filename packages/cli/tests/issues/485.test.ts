@@ -11,7 +11,9 @@ for (const timing of ['before', 'after'] as const) {
   test(`485 discovers an explicit source authored ${timing} native directory registration`, async () => {
     const cwd = fs.mkdtempSync(path.join(tmpdir(), 'master-css-485-gap-'))
     const output = path.join(cwd, 'master.css')
-    const traceRoot = process.env.CLI_WATCH_TRACE_DIR ?? cwd
+    const ownedTraceRoot = process.env.CLI_WATCH_TRACE_DIR ? undefined
+      : fs.mkdtempSync(path.join(tmpdir(), 'master-css-485-traces-'))
+    const traceRoot = process.env.CLI_WATCH_TRACE_DIR ?? ownedTraceRoot!
     fs.mkdirSync(traceRoot, { recursive: true })
     const trace = path.join(traceRoot, `gap-${timing}-${path.basename(cwd)}.jsonl`)
     const require = createRequire(import.meta.url)
@@ -45,6 +47,14 @@ for (const timing of ['before', 'after'] as const) {
       expect(timing === 'before' ? authored < watching : authored > watching).toBe(true)
       fs.writeFileSync(path.join(cwd, 'pages/only.html'), '<div class="(display:none)"></div>')
       await wait(() => css().includes('.\\(display\\:none\\){display:none}'))
+      fs.rmSync(path.join(cwd, 'pages'), { recursive: true, force: true })
+      await wait(() => !css().includes('display:none'))
+      fs.mkdirSync(path.join(cwd, 'pages'))
+      fs.writeFileSync(path.join(cwd, 'pages/other.html'), '<div class="(display:grid)"></div>')
+      fs.writeFileSync(path.join(cwd, 'pages/only.html'), '<div class="(display:flex)"></div>')
+      await wait(() => css().includes('.\\(display\\:flex\\){display:flex}'))
+      fs.writeFileSync(path.join(cwd, 'pages/only.html'), '<div class="(display:block)"></div>')
+      await wait(() => css().includes('.\\(display\\:block\\){display:block}'))
       expect(css()).not.toContain('display:grid')
       await new Promise(resolve => setTimeout(resolve, 300))
       const exports = stderr.match(/master\.css exported/g)?.length ?? 0
@@ -68,6 +78,7 @@ for (const timing of ['before', 'after'] as const) {
         }
       }
       fs.rmSync(cwd, { recursive: true, force: true })
+      if (ownedTraceRoot) fs.rmSync(ownedTraceRoot, { recursive: true, force: true })
     }
   }, 30000)
 }

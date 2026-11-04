@@ -1,5 +1,6 @@
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createHash } from 'node:crypto'
+import { once } from 'node:events'
 import type {
   MasterCSSScanner
 } from '@master/css-tooling/scanner/node'
@@ -149,7 +150,7 @@ function createDependencyWatchPlan(dependencies: Set<string>) {
 }
 
 async function waitForWatcherReady(watcher: FSWatcher) {
-  await new Promise<void>((resolve) => watcher.once('ready', resolve))
+  await once(watcher, 'ready')
   // Let chokidar finish registering native watchers before callers mutate files.
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
@@ -253,7 +254,15 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
     let stopped = false
     let writing = Promise.resolve()
     let planWatcher: FSWatcher | undefined
+    let sourceWatcher: FSWatcher | undefined
+    let sourceRefreshQueued = false
+    let sourceRefreshRequested = false
     let watchedDependencies = new Set<string>()
+    const closeWatcher = async (watcher: FSWatcher) => {
+      const index = watchers.indexOf(watcher)
+      if (index >= 0) watchers.splice(index, 1)
+      await watcher.close()
+    }
     const closeWatchers = async () => {
       await Promise.all(watchers.splice(0).map((watcher) => watcher.close()))
     }
@@ -325,11 +334,15 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       return writing
     }
     const rebuildDependency = createDependencyRebuild(() => rebuild(), () => pipelineReady)
-    const startSourceWatcher = async () => {
-      const sourcePlan = createSourceWatchPlan(fg, scanner.cwd, sourcePatterns,
-        specifiedSourcePaths.length ? [] : scanner.options.exclude)
+    // Retain the original ancestor coverage across rotations so deleting and
+    // recreating a formerly missing source directory remains observable.
+    const sourcePlan = createSourceWatchPlan(fg, scanner.cwd, sourcePatterns,
+      specifiedSourcePaths.length ? [] : scanner.options.exclude)
+    const startSourceWatcher = async (reconcile = false) => {
+      if (stopped) return
       if (!sourcePlan.roots.length) return
-      const sourceWatcher = chokidar.watch(sourcePlan.roots, {
+      const previous = sourceWatcher
+      const next = chokidar.watch(sourcePlan.roots, {
         cwd: scanner.cwd,
         ignoreInitial: true,
         ignored: (file, stats) => (options.export && outputFiles.has(path.resolve(scanner.cwd, file))) || sourcePlan.ignored(file, stats)
@@ -343,14 +356,47 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
           await writeOutput()
         })
       }
-      sourceWatcher.on('add', scanChangedSource)
-      sourceWatcher.on('change', scanChangedSource)
-      sourceWatcher.on('unlink', source => {
+      next.on('add', scanChangedSource)
+      next.on('change', scanChangedSource)
+      next.on('unlink', source => {
         if (!sourcePlan.matches(source)) return
         void enqueue(async () => { scanner.removeSource(source); await writeOutput() })
       })
-      watchers.push(sourceWatcher)
-      await waitForWatcherReady(sourceWatcher)
+      next.on('addDir', () => {
+        // The initial full scan after readiness already covers startup changes.
+        if (stopped || !sourceWatcher) return
+        sourceRefreshRequested = true
+        if (sourceRefreshQueued) return
+        sourceRefreshQueued = true
+        void enqueue(async () => {
+          try {
+            while (sourceRefreshRequested && !stopped) {
+              sourceRefreshRequested = false
+              await startSourceWatcher(true)
+            }
+          } finally { sourceRefreshQueued = false }
+        })
+      })
+      watchers.push(next)
+      try {
+        await waitForWatcherReady(next)
+        if (stopped) return
+        sourceWatcher = next
+        if (reconcile) {
+          // Chokidar reads a newly found directory before registering its native
+          // watcher. A source authored around registration can receive no add
+          // event. Initialize a replacement while the old watcher stays alive,
+          // then reconcile the current source snapshot after readiness.
+          if (!pipelineReady) await rebuild()
+          else {
+            await scanSourceFiles(scanner, scanPaths())
+            await writeOutput()
+          }
+        }
+      } finally {
+        if (sourceWatcher !== next) await closeWatcher(next)
+        else if (previous) await closeWatcher(previous)
+      }
     }
     process.once('SIGTERM', () => {
       void shutdown().finally(() => process.exit(0))
