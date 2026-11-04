@@ -13,6 +13,7 @@ import { DEFAULT_SCAN_OUTPUT } from './constants'
 import { createSourceWatchPlan } from './source-watch'
 import { publishOwnedStylesheet, stylesheetStatePath } from './asset-ownership'
 import { withStylesheetPublicationLock } from './publication-lock'
+import { createDependencyRebuild } from './dependency-rebuild'
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 type FastGlob = Pick<typeof import('fast-glob'), 'sync' | 'generateTasks'>
@@ -278,7 +279,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
           planWatcher.on(event, file => {
             if (!plan.matches(file) || (options.export && outputFiles.has(path.resolve(scanner.cwd, file)))) return
             if (scanner.options.verbose) process.stderr.write(`\n[change] ${formatWatchedPath(scanner.cwd, file)}\n`)
-            void enqueue(() => rebuild())
+            void enqueue(() => rebuildDependency(file))
           })
         }
         watchers.push(planWatcher)
@@ -323,6 +324,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       })
       return writing
     }
+    const rebuildDependency = createDependencyRebuild(() => rebuild(), () => pipelineReady)
     const startSourceWatcher = async () => {
       const sourcePlan = createSourceWatchPlan(fg, scanner.cwd, sourcePatterns,
         specifiedSourcePaths.length ? [] : scanner.options.exclude)
