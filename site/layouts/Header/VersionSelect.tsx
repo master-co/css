@@ -11,7 +11,7 @@ export default function VersionSelect() {
             defaultValue="v1"
             onChange={(event) => {
                 if (event.currentTarget.value === 'v2') {
-                    window.location.assign('https://css.master.co')
+                    window.location.assign(locale === 'tw' ? 'https://css.master.co/tw' : 'https://css.master.co')
                 }
             }}>
             <option value="v1">v1.37.8</option>

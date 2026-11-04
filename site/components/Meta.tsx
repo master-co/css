@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
-const Meta = ({ title, suffix, description, cover, type, t, subdomain }: MetaProps) => {
-    const host = subdomain ? `https://${subdomain}.master.co` : 'https://master.co'
+const Meta = ({ title, suffix, description, cover, type, t }: MetaProps) => {
+    const host = 'https://v1.css.master.co'
     title = t(title) + (suffix ? ` - ${suffix}` : '')
     cover = host + `/images/covers/${cover || 'main.jpg'}`
     return (

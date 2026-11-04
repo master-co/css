@@ -16,6 +16,7 @@ import { useRef } from 'react'
 import ALink from '~/components/ALink'
 import copy from 'copy-to-clipboard'
 import ChevronRightSvg from '~/svgs/chevron-right.svg';
+import { useRouter } from 'next/router'
 
 export interface DocProps extends MetaProps {
     contents?: any,
@@ -36,6 +37,7 @@ export interface DocProps extends MetaProps {
 export default function Doc(props: any) {
     const { t, h1ClassName } = props
     const { t: tCommon } = useTranslation('common')
+    const { locale } = useRouter()
     const sidebarRef = useRef<HTMLElement>()
     let subtitle = props.subtitle
     if (!subtitle) {
@@ -75,7 +77,7 @@ export default function Doc(props: any) {
                             )
                         })
                 }
-                <ALink href="https://css.master.co" className='r:3 inline-flex font:medium center-content bg:rgba(251,224,157,.1)@dark f:rgb(251,224,157)@dark bg:rgba(235,187,64,.1) f:#dca000 text:12 p:4|10 my:-4 ml:5'>
+                <ALink href={locale === 'tw' ? 'https://css.master.co/tw' : 'https://css.master.co'} className='r:3 inline-flex font:medium center-content bg:rgba(251,224,157,.1)@dark f:rgb(251,224,157)@dark bg:rgba(235,187,64,.1) f:#dca000 text:12 p:4|10 my:-4 ml:5'>
                     {tCommon('v2.0 is now available')}
                     <ChevronRightSvg width="16" height="16" className="my:-4 ml:4 mr:-4" fill="currentColor" />
                 </ALink>
