@@ -69,17 +69,22 @@ jobs:
             CLI_WATCH_TRACE_RUN="focused-$iteration" bun run --cwd packages/cli test tests/bug-hunt-watch-new-sources.test.ts || result=1
           done
           exit "$result"
+      - name: Test every package
+        if: ${{ !cancelled() && inputs.mode == 'full' && steps.build.outcome == 'success' }}
+        env:
+          CLI_WATCH_TRACE_DIR: ${{ runner.temp }}/cli-watch-traces
+          CLI_WATCH_TRACE_RUN: workspace-${{ github.run_id }}-${{ github.run_attempt }}
+        # Re-execute Turbo tasks to match the original cache-miss workload;
+        # cached suites cannot provide new events or diagnostic traces.
+        run: bun run turbo run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful --force
       - name: Retain source watcher diagnostics
-        if: ${{ always() && inputs.mode == 'source-watch' }}
+        if: ${{ always() && inputs.mode != 'focused' }}
         uses: actions/upload-artifact@v7
         with:
           name: cli-source-watch-traces
           path: ${{ runner.temp }}/cli-watch-traces/
           if-no-files-found: warn
           retention-days: 7
-      - name: Test every package
-        if: ${{ !cancelled() && inputs.mode == 'full' && steps.build.outcome == 'success' }}
-        run: bun run turbo run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful
       - name: Build every example
         if: ${{ !cancelled() && inputs.mode == 'full' && steps.build.outcome == 'success' }}
         run: bun run turbo run build '--filter=./examples/*' --concurrency=4

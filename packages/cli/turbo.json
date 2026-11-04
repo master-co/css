@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      "env": ["CLI_WATCH_TRACE_RUN"],
+      "passThroughEnv": ["CLI_WATCH_TRACE_DIR"]
+    }
+  }
+}
