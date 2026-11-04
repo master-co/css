@@ -48,3 +48,41 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Verify Marketplace publisher authorization
         run: bun run --filter @master/css-vscode vsce verify-pat --azure-credential masterco
+
+  verify_open_vsx:
+    name: Verify Open VSX credentials without publishing
+    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/rc' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          ignore-scripts: "true"
+          turbo-cache: "false"
+      - name: Verify Open VSX namespace authorization
+        shell: bash
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::error::OVSX_PAT is required for the read-only authorization check."
+            exit 1
+          fi
+          umask 077
+          verification_output=$(mktemp)
+          trap 'rm -f "$verification_output"' EXIT
+          # Match the release CLI and namespace. Do not expose remote error
+          # bodies or retain them as artifacts; they may contain account data.
+          if timeout 120s bun x ovsx@1.0.2 --registryUrl https://open-vsx.org verify-pat master </dev/null >"$verification_output" 2>&1; then
+            echo "Open VSX credentials verified for the master namespace. No publication was performed."
+          else
+            verification_status=$?
+            echo "::error::Open VSX authorization check failed (exit $verification_status); no publication was attempted."
+            exit "$verification_status"
+          fi

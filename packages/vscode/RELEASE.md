@@ -43,6 +43,17 @@ Release workflow for this purpose. Introducing this workflow still requires a
 remote update: honor any release/deployment hold before pushing, because the
 existing push-triggered release workflow and hosting integrations are separate.
 
+The same manual workflow separately checks Open VSX with the release-pinned
+`ovsx@1.0.2 verify-pat master` command against `https://open-vsx.org`, using the
+existing `OVSX_PAT` secret only through the environment. The explicit `master`
+namespace is required; the source package's Marketplace publisher is `masterco`.
+This is a read-only token and namespace-permission check, with a two-minute
+command deadline and no interactive input. It does not create a namespace or
+publish an extension. Both authorization jobs must succeed. Raw command output
+is discarded to keep unexpected service error bodies out of public CI logs and
+artifacts. Token verification does not establish final VSIX acceptance, listing
+versions, or successful public installation.
+
 ## Release
 
 Preview the release plan without changing files:
