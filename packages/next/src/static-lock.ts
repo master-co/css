@@ -16,7 +16,8 @@ async function abandoned(file: string) {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false
     // A newly acquired lock may still be writing its owner information.
-    return Date.now() - (await stat(file)).mtimeMs > 30_000
+    try { return Date.now() - (await stat(file)).mtimeMs > 30_000 }
+    catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false; throw error }
   }
 }
 async function release(file: string, token: string) {
