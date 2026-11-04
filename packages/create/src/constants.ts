@@ -1,4 +1,7 @@
-export const MASTER_CSS_VERSION = 'rc'
+import { readFileSync } from 'node:fs'
+
+const packageJSON = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version?: string }
+export const MASTER_CSS_VERSION = packageJSON.version || 'rc'
 
 export const MASTER_CSS_PACKAGES = {
   css: '@master/css',

@@ -6,6 +6,7 @@ import { Command, InvalidArgumentError } from 'commander'
 import { applyMasterCSSSetupPlan, planMasterCSSSetup } from '.'
 import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
 import { formatRenderingModes, isRenderingMode } from './modes'
+import { MASTER_CSS_VERSION } from './constants'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -18,7 +19,7 @@ type CommandPackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 const newProjectCommands = [
   'npm create vite@latest my-app',
   'cd my-app',
-  'npm create @master/css@rc -- --yes'
+  `npm create @master/css@${MASTER_CSS_VERSION} -- --yes`
 ]
 
 export interface CommandOptions {
