@@ -51,6 +51,7 @@ for (const timing of ['before', 'after'] as const) {
       await new Promise(resolve => setTimeout(resolve, 300))
       expect(stderr.match(/master\.css exported/g)?.length ?? 0).toBe(exports)
       expect(child.exitCode).toBeNull()
+      expect(child.signalCode).toBeNull()
     } finally {
       if (child.exitCode === null && child.signalCode === null) {
         const exited = once(child, 'exit')
