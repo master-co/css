@@ -5,7 +5,7 @@ on:
       mode:
         description: Full compatibility or focused regression diagnosis
         type: choice
-        options: [full, focused, source-watch]
+        options: [full, focused, source-watch, registration-gap]
         default: full
 
 permissions:
@@ -18,6 +18,7 @@ concurrency:
 jobs:
   windows:
     name: Windows ${{ inputs.mode }} validation
+    if: ${{ inputs.mode != 'registration-gap' }}
     runs-on: windows-latest
     timeout-minutes: 90
     steps:
@@ -94,3 +95,30 @@ jobs:
         with:
           path: .turbo/cache
           key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}
+
+  registration_gap:
+    name: Observe native directory registration on Windows
+    if: ${{ inputs.mode == 'registration-gap' }}
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Install the pinned watcher in isolated tools
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/watch-gap-tools" --ignore-scripts --no-audit --no-fund chokidar@5.0.0
+      - name: Observe the actual Windows directory events
+        shell: bash
+        run: node packages/cli/tests/fixtures/watch-registration-gap-runner.mjs "$RUNNER_TEMP/watch-gap-tools/node_modules/chokidar/index.js" "$RUNNER_TEMP/watch-gap-traces"
+      - name: Retain bounded registration timelines
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cli-watch-registration-gap
+          path: ${{ runner.temp }}/watch-gap-traces/
+          if-no-files-found: error
+          retention-days: 7
