@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",
-    "test": "bun run differential",
+    "test": "bun run verify:program && bun run differential",
     "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
     "differential": "bun scripts/differential.mts",
     "check:size": "bun scripts/check-size.mjs",

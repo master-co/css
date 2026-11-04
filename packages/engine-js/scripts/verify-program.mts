@@ -5,7 +5,7 @@
 // - truncated and bit-flipped programs are accepted or rejected exactly when the Rust
 //   engine Wasm accepts or rejects them, without the decoder throwing.
 //
-//   node --import tsx packages/engine-js/scripts/verify-program.mts [--flips 4000] [--seed 1]
+//   bun packages/engine-js/scripts/verify-program.mts [--flips 4000] [--seed 1]
 import { readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -137,6 +137,7 @@ function encode(program: Program) {
   w.vec(program.keyframes, keyframe)
   w.vec([...program.animationVariables].sort(([left], [right]) => byteOrder(left, right)), ([name, values]) => { s(name); strings(values) })
   w.vec([...program.customMedia].sort(([left], [right]) => byteOrder(left, right)), ([name, query]) => { s(name); media(query) })
+  w.vec([...program.customContainers].sort(([left], [right]) => byteOrder(left, right)), ([name, query]) => { s(name); s(query) })
   w.vec(program.mixins, mixin)
   w.vec(program.utilityDefinitions, (definition) => { w.uint(['static', 'token', 'function'].indexOf(definition.kind)); mixin(definition.recipe) })
   w.vec(program.tokenFamilies, (family) => { s(family.utility); s(family.prefix); s(family.namespace); w.uint(family.argument === 'value' ? 0 : 1); strings(family.properties) })
@@ -191,6 +192,7 @@ interface ManifestJSON {
   utilities?: { name: string }[]
   variables?: Record<string, { key: string, values: unknown[] }[]>
   customMedia?: Record<string, unknown>
+  customContainers?: Record<string, string>
   keyframes?: { id: string }[]
 }
 
@@ -212,6 +214,10 @@ async function verifyManifest(label: string, manifestJSON: string) {
   const manifest = JSON.parse(manifestJSON) as ManifestJSON
   const manifestMedia = Object.keys(manifest.customMedia ?? {}).sort()
   if (!same([...program.customMedia.keys()].sort(), manifestMedia)) fail(`${label}: custom media names differ from the manifest`)
+  const manifestContainers = Object.entries(manifest.customContainers ?? {}).sort(([left], [right]) => byteOrder(left, right))
+  if (!same([...program.customContainers].sort(([left], [right]) => byteOrder(left, right)), manifestContainers)) {
+    fail(`${label}: custom container names or queries differ from the manifest`)
+  }
   const manifestVariables = Object.entries(manifest.variables ?? {}).flatMap(([namespace, entries]) => entries.map((entry) => ({ namespace, ...entry })))
   if (program.variables.size !== manifestVariables.length) fail(`${label}: ${program.variables.size} variables, manifest has ${manifestVariables.length}`)
   for (const entry of manifestVariables) {
@@ -225,7 +231,7 @@ async function verifyManifest(label: string, manifestJSON: string) {
   if (!same((manifest.utilities ?? []).map((utility) => utility.name), program.utilityDefinitions.map((definition) => definition.recipe.name))) {
     fail(`${label}: recipe names differ from the manifest utilities`)
   }
-  summaries.push(`| ${label} | ${bytes.length} | ${registered.length} | ${program.utilities.length} | ${program.tokenUtilities.size} | ${program.variables.size} | ${program.customMedia.size} | ${program.keyframes.length} | ${program.mixins.length} | ${program.utilityDefinitions.length} | ${program.tokenFamilies.length} |`)
+  summaries.push(`| ${label} | ${bytes.length} | ${registered.length} | ${program.utilities.length} | ${program.tokenUtilities.size} | ${program.variables.size} | ${program.customMedia.size} | ${program.customContainers.size} | ${program.keyframes.length} | ${program.mixins.length} | ${program.utilityDefinitions.length} | ${program.tokenFamilies.length} |`)
   return { bytes, program }
 }
 
@@ -306,8 +312,8 @@ const lines = [
   '',
   failures.length ? `**${failures.length} failure(s)**` : '**All checks pass.**',
   '',
-  '| manifest | bytes | registered utilities | all utilities | token prefixes | variables | custom media | keyframes | mixins | recipes | token families |',
-  '|---|---|---|---|---|---|---|---|---|---|---|',
+  '| manifest | bytes | registered utilities | all utilities | token prefixes | variables | custom media | custom containers | keyframes | mixins | recipes | token families |',
+  '|---|---|---|---|---|---|---|---|---|---|---|---|',
   ...summaries,
   '',
   mutation ? `Mutations of the default program: ${mutation.truncations} truncations, ${mutation.flips} bit flips; both accept ${mutation.bothAccept}, both reject ${mutation.bothReject}, mismatched ${mutation.mismatched}, decoder threw ${mutation.threw}.` : '',
