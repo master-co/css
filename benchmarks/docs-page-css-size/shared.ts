@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { brotliCompressSync } from 'node:zlib'
+import { measureSelectorUsage, selectorUsageViewport, type SelectorUsage } from './usage'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -11,10 +12,16 @@ const committedSnapshotFile = resolve(__dirname, 'snapshot.json')
 const transientSnapshotFile = resolve(benchmarkRoot, '.results/docs-page-css-size/snapshot.json')
 const inputFile = resolve(__dirname, 'input.json')
 const fetchTimeoutMS = Number(process.env.DOCS_PAGE_CSS_SIZE_FETCH_TIMEOUT_MS || 15_000)
+// Maps a published origin to the origin that serves the build being measured, such as a local
+// production build that has not been deployed yet: {"https://rc.css.master.co":"http://127.0.0.1:4517"}.
+const originOverrides: Record<string, string> = JSON.parse(process.env.DOCS_PAGE_CSS_SIZE_ORIGIN_OVERRIDES || '{}')
 
 type PageInput = {
   name: string
   url: string
+  samples?: string[]
+  // Measures every page the sitemap lists, resolved against the site's own origin.
+  sitemap?: string
 }
 
 type ByteSummary = {
@@ -31,9 +38,9 @@ type CSSAsset = ByteSummary & {
   contentType?: string
 }
 
-type PageCSSSize = {
-  name: string
+type PageMeasurement = {
   url: string
+  measuredUrl?: string
   resolvedUrl: string
   status: number
   contentType: string
@@ -43,12 +50,36 @@ type PageCSSSize = {
     external: ByteSummary
   }
   assets: CSSAsset[]
+  usage: SelectorUsage
+}
+
+type Range = { min: number, median: number, max: number }
+
+type PageCSSSize = PageMeasurement & {
+  name: string
+  // The listed page followed by the sampled pages of the same site.
+  sample: {
+    pageCount: number
+    rawBytes: Range
+    brotliBytes: Range
+    matchedRuleShare: Range
+    pages: Omit<PageMeasurement, 'assets'>[]
+  }
+  site?: {
+    sitemap: string
+    pageCount: number
+    rawBytes: Range
+    brotliBytes: Range
+    matchedRuleShare: Range
+  }
 }
 
 export type DocsPageCSSSizeSnapshot = {
-  schemaVersion: 1
+  schemaVersion: 2
   suite: 'docs-page-css-size'
   generatedAt: string
+  browser: { name: string, version: string, viewport: typeof selectorUsageViewport }
+  originOverrides: Record<string, string>
   pages: PageCSSSize[]
   limits: string[]
 }
@@ -61,20 +92,85 @@ type FetchedResource = {
   text: string
 }
 
-export async function collectDocsPageCSSSizeSnapshot(): Promise<DocsPageCSSSizeSnapshot> {
+export async function collectDocsPageCSSSizeSnapshot(options: {
+  measureUsage?: typeof measureSelectorUsage
+  readBrowserVersion?: () => Promise<string>
+} = {}): Promise<DocsPageCSSSizeSnapshot> {
+  const { measureUsage = measureSelectorUsage, readBrowserVersion = readChromiumVersion } = options
   const input = JSON.parse(await readFile(inputFile, 'utf8')) as PageInput[]
-  const pages = await requireAllResources(input.map(collectPageCSSSize))
+  const sitemapPages = await Promise.all(input.map(async (site) => site.sitemap ? readSitemapPages(site.sitemap, site.url) : []))
+  const targets = input.flatMap((site, index) => [
+    ...[site.url, ...(site.samples || [])].map((url) => ({ site: site.name, url, kind: 'sample' as const })),
+    ...sitemapPages[index].map((url) => ({ site: site.name, url, kind: 'site' as const }))
+  ])
+  const collected = await requireAllResources(targets.map((target) => collectPageCSSSize(target.url)))
+  const usage = await measureUsage(collected.map((page) => ({ url: page.measurement.measuredUrl || page.measurement.resolvedUrl, cssTexts: page.cssTexts })))
+  const measurements = collected.map((page, index) => ({ ...page.measurement, usage: usage[index] }))
+  const select = (name: string, kind: 'sample' | 'site') => measurements.filter((_, index) => targets[index].site === name && targets[index].kind === kind)
+  const summarize = (pages: PageMeasurement[]) => ({
+    pageCount: pages.length,
+    rawBytes: range(pages.map((page) => page.css.total.rawBytes)),
+    brotliBytes: range(pages.map((page) => page.css.total.brotliBytes)),
+    matchedRuleShare: range(pages.map((page) => page.usage.matchedStyleRules / Math.max(1, page.usage.styleRules)), 3)
+  })
+  const pages = input.map((site) => {
+    const sitePages = select(site.name, 'sample')
+    const [listed] = sitePages
+    const sitemapMeasurements = select(site.name, 'site')
+    return {
+      name: site.name,
+      ...listed,
+      sample: {
+        ...summarize(sitePages),
+        pages: sitePages.map(({ assets: _assets, ...page }) => page)
+      },
+      ...(site.sitemap && { site: { sitemap: site.sitemap, ...summarize(sitemapMeasurements) } })
+    }
+  })
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     suite: 'docs-page-css-size',
     generatedAt: new Date().toISOString(),
+    browser: { name: 'Chromium', version: await readBrowserVersion(), viewport: selectorUsageViewport },
+    originOverrides,
     pages: pages.sort((a, b) => b.css.total.rawBytes - a.css.total.rawBytes),
     limits: [
       'All documents and linked stylesheets must complete successfully with an expected MIME type; any failure rejects the complete snapshot.',
       'This measures static inline style and linked stylesheet bodies, not browser transfer sizes, JavaScript-injected CSS, CSS import graphs, or applied-rule validity.',
-      'Brotli totals sum independently compressed asset bodies; linked occurrences and inline tags are counted as authored.'
+      'Brotli totals sum independently compressed asset bodies; linked occurrences and inline tags are counted as authored.',
+      'Each site is represented by its listed page; the sample adds four more documentation pages of the same site and reports the range across all five.',
+      'Matched rules are style rules whose selector, without state pseudo-classes and pseudo-elements, matches an element of the loaded page at the recorded viewport; conditional rules count whatever their condition. A rule used only after later interaction counts as unmatched.',
+      'Pages fetched through an origin override are recorded with their published URL and the measured URL.',
+      'A site with a sitemap also reports the range across every page the sitemap lists; its pages are not stored individually.'
     ]
+  }
+}
+
+async function readSitemapPages(sitemap: string, siteUrl: string) {
+  const resource = await fetchResource(overrideOrigin(sitemap), 'XML')
+  const origin = new URL(siteUrl).origin
+  return [...resource.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => {
+    const url = new URL(match[1].trim())
+    return new URL(url.pathname + url.search, origin).toString()
+  })
+}
+
+function range(values: number[], digits = 0): Range {
+  const sorted = [...values].sort((a, b) => a - b)
+  const middle = sorted.length / 2
+  const median = sorted.length % 2 ? sorted[Math.floor(middle)] : (sorted[middle - 1] + sorted[middle]) / 2
+  const round = (value: number) => Number(value.toFixed(digits))
+  return { min: round(sorted[0]), median: round(median), max: round(sorted[sorted.length - 1]) }
+}
+
+async function readChromiumVersion() {
+  const { chromium } = await import('@playwright/test')
+  const browser = await chromium.launch()
+  try {
+    return browser.version()
+  } finally {
+    await browser.close()
   }
 }
 
@@ -98,6 +194,13 @@ export function printSnapshotSummary(snapshot: DocsPageCSSSizeSnapshot) {
   }
 
   console.log('')
+  console.log('Five-page sample (brotli min / median / max, matched rule share median):')
+  for (const page of snapshot.pages) {
+    const { brotliBytes, matchedRuleShare } = page.sample
+    console.log(`${page.name.padEnd(14)}  ${formatBytes(brotliBytes.min)} / ${formatBytes(brotliBytes.median)} / ${formatBytes(brotliBytes.max)}  ${(matchedRuleShare.median * 100).toFixed(0)}%`)
+  }
+
+  console.log('')
   console.log('Total page CSS size (raw):')
   for (const page of snapshot.pages) {
     console.log(formatPageLine(page, masterCSSPage, 'rawBytes'))
@@ -111,12 +214,15 @@ export function printSnapshotSummary(snapshot: DocsPageCSSSizeSnapshot) {
   console.log('')
 }
 
-async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
-  const page = await fetchResource(input.url, 'HTML')
+async function collectPageCSSSize(url: string): Promise<{ measurement: Omit<PageMeasurement, 'usage'>, cssTexts: string[] }> {
+  const measuredUrl = overrideOrigin(url)
+  const page = await fetchResource(measuredUrl, 'HTML')
   const $ = load(page.text)
+  const cssTexts: string[] = []
   const inlineAssets = $('style')
     .map((_: number, element: any) => {
       const text = $(element).text()
+      cssTexts.push(text)
       const summary = summarizeBytes(Buffer.from(text))
 
       return {
@@ -132,9 +238,12 @@ async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
     .get()
     .filter((href: unknown): href is string => typeof href === 'string' && href.length > 0)
 
+  // Relative stylesheet URLs resolve against the document base, as in the browser.
+  const baseUrl = new URL($('base[href]').first().attr('href') || '', page.resolvedUrl)
   const externalAssets = await requireAllResources(externalHrefs.map(async (href: string) => {
-    const resolvedUrl = new URL(href, page.resolvedUrl).toString()
+    const resolvedUrl = new URL(href, baseUrl).toString()
     const resource = await fetchResource(resolvedUrl, 'CSS')
+    cssTexts.push(resource.text)
 
     return {
       kind: 'external' as const,
@@ -150,21 +259,30 @@ async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
   const external = sumByteSummaries(externalAssets)
 
   return {
-    name: input.name,
-    url: input.url,
-    resolvedUrl: page.resolvedUrl,
-    status: page.status,
-    contentType: page.contentType,
-    css: {
-      total: addByteSummaries(inline, external),
-      inline,
-      external
-    },
-    assets: [
-      ...externalAssets,
-      ...inlineAssets
-    ]
+    cssTexts,
+    measurement: {
+      url,
+      ...(measuredUrl !== url && { measuredUrl }),
+      resolvedUrl: page.resolvedUrl,
+      status: page.status,
+      contentType: page.contentType,
+      css: {
+        total: addByteSummaries(inline, external),
+        inline,
+        external
+      },
+      assets: [
+        ...externalAssets,
+        ...inlineAssets
+      ]
+    }
   }
+}
+
+function overrideOrigin(url: string) {
+  const parsed = new URL(url)
+  const origin = originOverrides[parsed.origin]
+  return origin ? new URL(parsed.pathname + parsed.search, origin).toString() : url
 }
 
 async function requireAllResources<T>(resources: Promise<T>[]): Promise<T[]> {
@@ -177,12 +295,12 @@ async function requireAllResources<T>(resources: Promise<T>[]): Promise<T[]> {
   return results.map(result => (result as PromiseFulfilledResult<T>).value)
 }
 
-async function fetchResource(url: string, kind: 'HTML' | 'CSS'): Promise<FetchedResource> {
+async function fetchResource(url: string, kind: 'HTML' | 'CSS' | 'XML'): Promise<FetchedResource> {
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(fetchTimeoutMS) })
     const contentType = response.headers.get('content-type') || ''
     const mime = contentType.split(';')[0].trim().toLowerCase()
-    const expected = kind === 'CSS' ? ['text/css'] : ['text/html', 'application/xhtml+xml']
+    const expected = { CSS: ['text/css'], HTML: ['text/html', 'application/xhtml+xml'], XML: ['application/xml', 'text/xml'] }[kind]
     const failure = !response.ok || response.status === 206
       ? `HTTP ${response.status} ${response.statusText}`
       : !expected.includes(mime) ? `Expected ${kind} MIME ${expected.join(' or ')}, received ${contentType || '(missing Content-Type)'}` : undefined

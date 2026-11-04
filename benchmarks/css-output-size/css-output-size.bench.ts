@@ -45,6 +45,12 @@ const metrics: BenchmarkMetric[] = [
     description: 'Brotli bytes for the generated CSS payload.'
   },
   {
+    id: 'css-brotli-file-sum-bytes',
+    label: 'CSS brotli bytes per file',
+    unit: 'B',
+    description: 'Sum of Brotli bytes with each generated CSS file compressed on its own, as separate responses transfer them.'
+  },
+  {
     id: 'css-file-count',
     label: 'Generated CSS files',
     unit: 'count',

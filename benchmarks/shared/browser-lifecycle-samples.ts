@@ -24,7 +24,7 @@ export function createPayloadSamples(variantId: string, payload: {
   externalCSS: Buffer
   inlineCSS: Buffer
   runtimeJS: Buffer
-  manifestJSON: Buffer
+  runtimeProgram: Buffer
   hydrationManifestJSON: Buffer
 }): BenchmarkSample[] {
   return [
@@ -32,7 +32,7 @@ export function createPayloadSamples(variantId: string, payload: {
     ...createByteSamples(variantId, 'external-css', payload.externalCSS),
     ...createByteSamples(variantId, 'inline-css', payload.inlineCSS),
     ...createByteSamples(variantId, 'runtime-js', payload.runtimeJS),
-    ...createByteSamples(variantId, 'manifest-json', payload.manifestJSON),
+    ...createByteSamples(variantId, 'runtime-program', payload.runtimeProgram),
     ...createByteSamples(variantId, 'hydration-manifest', payload.hydrationManifestJSON)
   ]
 }

@@ -42,6 +42,7 @@ export interface StaticBuildResult {
   cssFiles: string[]
   cssFileCount: number
   cssBytes: ByteSummary
+  fileBrotliBytes: number
 }
 
 export const staticBuildTools = [
@@ -149,6 +150,8 @@ export async function runPreparedStaticBuild(workspace: string, fixtureId: Bench
   }
 
   const cssBuffer = await readFiles(cssFiles)
+  const fileBrotliBytes = (await Promise.all(cssFiles.map(async (file) => summarizeBytes(await readFiles([file])).brotliBytes)))
+    .reduce((total, bytes) => total + bytes, 0)
   const fixture = getStaticFixtureSource(fixtureId)
   for (const marker of fixture.expectedCSSMarkers) {
     if (!cssBuffer.includes(marker)) {
@@ -161,7 +164,8 @@ export async function runPreparedStaticBuild(workspace: string, fixtureId: Bench
     artifacts: await Promise.all(cssFiles.map((file) => measureRelativeArtifact(file))),
     cssFiles,
     cssFileCount: cssFiles.length,
-    cssBytes: summarizeBytes(cssBuffer)
+    cssBytes: summarizeBytes(cssBuffer),
+    fileBrotliBytes
   }
 }
 
@@ -189,6 +193,12 @@ export function createByteSamples(variantId: string, result: StaticBuildResult):
       variantId,
       round: 0,
       value: result.cssBytes.brotliBytes
+    },
+    {
+      metricId: 'css-brotli-file-sum-bytes',
+      variantId,
+      round: 0,
+      value: result.fileBrotliBytes
     },
     {
       metricId: 'css-file-count',

@@ -355,8 +355,8 @@ export function countTemporaryClasses(state: RuntimeState, temporaryClassNames: 
 
 export function getTemporaryClassNames() {
   return [
-    'fg:green-60',
-    'w:1px'
+    'fg-green-60',
+    'w(1)'
   ]
 }
 

@@ -74,22 +74,22 @@ export const browserLifecycleMetrics = [
     description: 'Brotli bytes for the Master CSS browser runtime bundle.'
   },
   {
-    id: 'manifest-json-raw-bytes',
-    label: 'Manifest JSON raw bytes',
+    id: 'runtime-program-raw-bytes',
+    label: 'Runtime program raw bytes',
     unit: 'B',
-    description: 'Raw bytes for the runtime default manifest JSON payload.'
+    description: 'Raw bytes for the compiled default program fetched by the browser runtime.'
   },
   {
-    id: 'manifest-json-gzip-bytes',
-    label: 'Manifest JSON gzip bytes',
+    id: 'runtime-program-gzip-bytes',
+    label: 'Runtime program gzip bytes',
     unit: 'B',
-    description: 'Gzip bytes for the runtime default manifest JSON payload.'
+    description: 'Gzip bytes for the compiled default program fetched by the browser runtime.'
   },
   {
-    id: 'manifest-json-brotli-bytes',
-    label: 'Manifest JSON brotli bytes',
+    id: 'runtime-program-brotli-bytes',
+    label: 'Runtime program brotli bytes',
     unit: 'B',
-    description: 'Brotli bytes for the runtime default manifest JSON payload.'
+    description: 'Brotli bytes for the compiled default program fetched by the browser runtime.'
   },
   {
     id: 'hydration-manifest-raw-bytes',

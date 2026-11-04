@@ -17,6 +17,7 @@ Benchmark results are evidence for investigation. They do not replace correctnes
 - Standalone architecture experiments and the second-change evaluation protocol under `architecture-evaluation/`; model trials remain separate from deterministic fixture controls.
 - CI helpers that normalize engine/runtime benchmark reports and compare GitHub Actions artifact history.
 - Tailwind static comparison snapshot tooling.
+- Same-machine revision comparison snapshots built from two revisions' own reports (`revision-comparison/`).
 
 ## Does Not Own
 
@@ -54,6 +55,8 @@ Benchmark results are evidence for investigation. They do not replace correctnes
 - Hiding measurement limits, machine details, package versions, browser versions, or sample counts.
 - Letting diagnostics change runtime, server, compiler, CSS output, or hydration behavior.
 - Comparing Master CSS and Tailwind CSS fixtures as identical source code rather than equivalent rendered UI intent.
+- Publishing fixture results without checking that every Master CSS fixture class still generates CSS under the current syntax; rejected classes silently shrink the output.
+- Comparing timings from snapshots recorded on different machines, browsers or JavaScript runtimes instead of a same-machine revision comparison.
 
 ## Safe Changes
 

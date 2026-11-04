@@ -42,22 +42,22 @@ export type { InteractionModeId, InteractionPage, InteractionPageSuite, Interact
 
 const masterClasses = {
   family: 'master',
-  body: ['m:0', 'min-h:100vh', 'bg:gray-5', 'fg:slate-90', '(font:14px)', '(font:system)'],
-  shell: ['max-w:1180px', 'mx:auto', 'p:6x', 'grid', '(gap:5x)'],
-  header: ['p:5x', '(r:12px)', 'bg:white', '(border:1px|solid|gray-20)', 'grid', '(gap:2x)'],
-  title: ['m:0', '(font:32px)', '(font:heavy)', 'tracking:-.02em'],
-  subtitle: ['m:0', 'fg:slate-60', 'leading:1.6'],
-  grid: ['grid', 'grid-cols:4', '(gap:3x)'],
-  itemBase: ['interaction-item', 'p:3x', '(r:10px)', '(border:1px|solid|gray-20)', 'min-h:72px'],
-  itemLight: ['bg:white', 'fg:slate-80'],
-  itemActive: ['bg:blue-60', 'fg:white'],
-  itemDark: ['bg:slate-90', 'fg:white'],
-  itemNew: ['(outline:2px|solid|red-60)'],
-  itemTemp: ['fg:green-60', 'w:1px'],
-  itemTitle: ['block', '(font:13px)', '(font:semibold)'],
-  itemMeta: ['block', '(font:12px)', 'fg:slate-50', 'mt:1x'],
-  panel: ['p:4x', '(r:12px)', 'bg:white', '(border:1px|solid|gray-20)'],
-  button: ['h:40px', 'px:4x', '(r:8px)', '(border:0)', 'bg:blue-60', 'fg:white', '(font:13px)', '(font:semibold)']
+  body: ['m(0)', '(min-height:100vh)', 'bg-gray-5', 'fg-slate-90', 'font-sm', 'font-sans'],
+  shell: ['max-w(1180)', 'mx-auto', 'p-lg', 'grid', 'gap(20)'],
+  header: ['p(20)', 'r-xl', 'bg-white', 'b(1)', 'b-gray-20', 'grid', 'gap-xs'],
+  title: ['m(0)', 'font-3xl', 'font-heavy', 'tracking-tight'],
+  subtitle: ['m(0)', 'fg-slate-60', 'leading-md'],
+  grid: ['grid', 'grid-cols(4)', 'gap-sm'],
+  itemBase: ['interaction-item', 'p-sm', 'r(10)', 'b(1)', 'b-gray-20', 'min-h(72)'],
+  itemLight: ['bg-white', 'fg-slate-80'],
+  itemActive: ['bg-blue-60', 'fg-white'],
+  itemDark: ['bg-slate-90', 'fg-white'],
+  itemNew: ['outline(2)', 'outline-solid', 'outline-red-60'],
+  itemTemp: ['fg-green-60', 'w(1)'],
+  itemTitle: ['block', '(font-size:13px)', 'font-semibold'],
+  itemMeta: ['block', 'font-xs', 'fg-slate-50', 'mt-3xs'],
+  panel: ['p-md', 'r-xl', 'bg-white', 'b(1)', 'b-gray-20'],
+  button: ['h(40)', 'px-md', 'r-lg', 'b(0)', 'bg-blue-60', 'fg-white', '(font-size:13px)', 'font-semibold']
 } satisfies InteractionClassModel
 
 const tailwindClasses = {
@@ -191,7 +191,7 @@ async function createInteractionCostReport(): Promise<BenchmarkReport> {
     limits: [
       'This suite measures local Chromium post-load interaction cost only; it does not publish public result tables yet.',
       'The default command is a fast internal pass with one measured round and no warmup; use INTERACTION_COST_ROUNDS and INTERACTION_COST_WARMUP_ROUNDS for review-grade repeated samples.',
-      'Master runtime and progressive variants use the built global runtime bundle and default manifest JSON.',
+      'Master runtime and progressive variants use the built global runtime bundle and its compiled default program.',
       'Master progressive samples fail if the page falls back to runtime rendering before the measured interaction.',
       'Master static and Tailwind static variants are static-CSS browser controls; Tailwind CSS has no runtime rule-generation equivalent.',
       'The new-class scenario is limited to Master runtime and progressive variants because it measures client-side rule generation.',
@@ -297,7 +297,7 @@ export async function createInteractionPage(options: {
         runtimeMutationStrategy: options.runtimeMutationStrategy
       }),
       runtimeJS: await readRuntimeBundle(),
-      manifestJSON: await readDefaultManifestJSON()
+      runtimeProgram: await readRuntimeProgram()
     })
   }
 
@@ -321,7 +321,7 @@ export async function createInteractionPage(options: {
     inlineCSS,
     hydrationManifestJSON,
     runtimeJS: await readRuntimeBundle(),
-    manifestJSON: await readDefaultManifestJSON()
+    runtimeProgram: await readRuntimeProgram()
   })
 }
 
@@ -480,7 +480,7 @@ async function writeInteractionPage(options: {
   externalCSS?: string
   inlineCSS?: string
   runtimeJS?: Buffer
-  manifestJSON?: Buffer
+  runtimeProgram?: Buffer
   hydrationManifestJSON?: string
 }): Promise<InteractionPage> {
   const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'interaction-cost', 'pages', options.variantId)
@@ -493,7 +493,7 @@ async function writeInteractionPage(options: {
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
   if (options.runtimeJS) files['global.min.js'] = options.runtimeJS
-  if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
+  if (options.runtimeProgram) files['default-program.bin'] = options.runtimeProgram
 
   await writeWorkspaceFiles(root, files)
 
@@ -861,6 +861,12 @@ async function readRuntimeBundle() {
     })()
   }
   return runtimeBundlePromise
+}
+
+async function readRuntimeProgram() {
+  const file = resolveBenchmarkPackageFile('@master/css-runtime', 'dist/default-program.bin')
+  assertExistingFile(file, 'Run `bun run --filter @master/css-runtime build` before browser benchmarks.')
+  return readFile(file)
 }
 
 async function readDefaultManifestJSON() {

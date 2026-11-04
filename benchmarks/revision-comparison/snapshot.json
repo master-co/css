@@ -1,0 +1,439 @@
+{
+  "schemaVersion": 1,
+  "suite": "revision-comparison",
+  "generatedAt": "2026-11-04T14:27:34.861Z",
+  "revisions": {
+    "baseline": {
+      "revision": "cd5a3972a",
+      "label": "Jul 2, 2026",
+      "description": "The revision that produced the July 2026 snapshots, before the engine moved to Rust."
+    },
+    "current": {
+      "revision": "3fc239c6c",
+      "label": "Nov 4, 2026",
+      "description": "Rust engine and compiled browser program; fixtures express the same rendered values in the current class syntax."
+    }
+  },
+  "environment": {
+    "os": {
+      "platform": "darwin",
+      "release": "27.0.0",
+      "arch": "arm64"
+    },
+    "node": "v24.22.1",
+    "cpu": {
+      "model": "Apple M5 Max",
+      "count": 18
+    }
+  },
+  "runtimes": {
+    "baseline": "v24.22.1",
+    "current": "v24.22.1"
+  },
+  "browser": {
+    "name": "Chromium",
+    "version": "156.0.8078.4"
+  },
+  "sourceReports": {
+    "baseline": [
+      {
+        "suite": "css-output-size",
+        "generatedAt": "2026-11-04T13:52:05.786Z"
+      },
+      {
+        "suite": "build-performance",
+        "generatedAt": "2026-11-04T13:52:44.048Z"
+      },
+      {
+        "suite": "master-delivery-modes",
+        "generatedAt": "2026-11-04T14:07:57.560Z"
+      },
+      {
+        "suite": "interaction-cost",
+        "generatedAt": "2026-11-04T14:10:05.935Z"
+      }
+    ],
+    "current": [
+      {
+        "suite": "css-output-size",
+        "generatedAt": "2026-11-04T13:35:43.031Z"
+      },
+      {
+        "suite": "build-performance",
+        "generatedAt": "2026-11-04T13:53:44.246Z"
+      },
+      {
+        "suite": "master-delivery-modes",
+        "generatedAt": "2026-11-04T14:10:55.741Z"
+      },
+      {
+        "suite": "interaction-cost",
+        "generatedAt": "2026-11-04T13:49:47.263Z"
+      }
+    ]
+  },
+  "rows": [
+    {
+      "group": "Static CSS output",
+      "label": "Master CSS CLI CSS (Brotli)",
+      "unit": "B",
+      "fixtureId": "docs",
+      "variantId": "docs-master-static-cli",
+      "metricId": "css-brotli-bytes",
+      "baseline": {
+        "median": 1835,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 2115,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Static CSS output",
+      "label": "Master CSS CLI CSS files",
+      "unit": "count",
+      "fixtureId": "docs",
+      "variantId": "docs-master-static-cli",
+      "metricId": "css-file-count",
+      "baseline": {
+        "median": 1,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 10,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Static CSS output",
+      "label": "Master CSS Vite CSS files",
+      "unit": "count",
+      "fixtureId": "docs",
+      "variantId": "docs-master-static-vite",
+      "metricId": "css-file-count",
+      "baseline": {
+        "median": 1,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 13,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Static CSS output",
+      "label": "Tailwind CSS CLI CSS (Brotli, control)",
+      "unit": "B",
+      "fixtureId": "docs",
+      "variantId": "docs-tailwind-cli",
+      "metricId": "css-brotli-bytes",
+      "baseline": {
+        "median": 2565,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 2628,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Production build",
+      "label": "Master CSS CLI cold build",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-static-cli",
+      "metricId": "cold-build-ms",
+      "baseline": {
+        "median": 142.3,
+        "sampleCount": 5
+      },
+      "current": {
+        "median": 472.1,
+        "sampleCount": 5
+      }
+    },
+    {
+      "group": "Production build",
+      "label": "Master CSS Vite cold build",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-static-vite",
+      "metricId": "cold-build-ms",
+      "baseline": {
+        "median": 206.7,
+        "sampleCount": 5
+      },
+      "current": {
+        "median": 455.5,
+        "sampleCount": 5
+      }
+    },
+    {
+      "group": "Production build",
+      "label": "Tailwind CSS CLI cold build (control)",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-tailwind-cli",
+      "metricId": "cold-build-ms",
+      "baseline": {
+        "median": 74.1,
+        "sampleCount": 5
+      },
+      "current": {
+        "median": 70.1,
+        "sampleCount": 5
+      }
+    },
+    {
+      "group": "Production build",
+      "label": "Tailwind CSS Vite cold build (control)",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-tailwind-vite",
+      "metricId": "cold-build-ms",
+      "baseline": {
+        "median": 133.2,
+        "sampleCount": 5
+      },
+      "current": {
+        "median": 119.4,
+        "sampleCount": 5
+      }
+    },
+    {
+      "group": "Runtime delivery",
+      "label": "Runtime JS (Brotli)",
+      "unit": "B",
+      "fixtureId": "docs",
+      "variantId": "docs-master-runtime",
+      "metricId": "runtime-js-brotli-bytes",
+      "baseline": {
+        "median": 22757,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 33279,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Runtime delivery",
+      "label": "Runtime default data (Brotli)",
+      "unit": "B",
+      "fixtureId": "docs",
+      "variantId": "docs-master-runtime",
+      "metricId": [
+        "manifest-json-brotli-bytes",
+        "runtime-program-brotli-bytes"
+      ],
+      "baseline": {
+        "median": 9795,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 15390,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Runtime delivery",
+      "label": "Runtime bootstrap",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-runtime",
+      "metricId": "runtime-bootstrap-ms",
+      "baseline": {
+        "median": 10.3,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 8.4,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Runtime delivery",
+      "label": "Runtime observe",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-runtime",
+      "metricId": "runtime-observe-ms",
+      "baseline": {
+        "median": 4.8,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 4.4,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Runtime delivery",
+      "label": "Runtime navigation ready",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-runtime",
+      "metricId": "navigation-ready-ms",
+      "baseline": {
+        "median": 43,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 39,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Progressive delivery",
+      "label": "Progressive requests on load",
+      "unit": "count",
+      "fixtureId": "docs",
+      "variantId": "docs-master-progressive",
+      "metricId": "request-count",
+      "baseline": {
+        "median": 3,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 2,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Progressive delivery",
+      "label": "Progressive hydration data (Brotli)",
+      "unit": "B",
+      "fixtureId": "docs",
+      "variantId": "docs-master-progressive",
+      "metricId": "hydration-manifest-brotli-bytes",
+      "baseline": {
+        "median": 1574,
+        "sampleCount": 1
+      },
+      "current": {
+        "median": 464,
+        "sampleCount": 1
+      }
+    },
+    {
+      "group": "Progressive delivery",
+      "label": "Progressive bootstrap",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-progressive",
+      "metricId": "runtime-bootstrap-ms",
+      "baseline": {
+        "median": 12.9,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 5.3,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Progressive delivery",
+      "label": "Progressive observe and hydrate",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-progressive",
+      "metricId": "runtime-observe-ms",
+      "baseline": {
+        "median": 2,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 0.4,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Progressive delivery",
+      "label": "Progressive navigation ready",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-master-progressive",
+      "metricId": "navigation-ready-ms",
+      "baseline": {
+        "median": 42.3,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 38.8,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Progressive delivery",
+      "label": "Tailwind CSS static navigation ready (control)",
+      "unit": "ms",
+      "fixtureId": "docs",
+      "variantId": "docs-tailwind-static",
+      "metricId": "navigation-ready-ms",
+      "baseline": {
+        "median": 25,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 23.1,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Interaction",
+      "label": "Runtime first-time class: mutation work",
+      "unit": "ms",
+      "fixtureId": "dynamic",
+      "variantId": "dynamic-master-runtime-new-class-toggle",
+      "metricId": "runtime-mutation-ms",
+      "baseline": {
+        "median": 0.2,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 0.4,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Interaction",
+      "label": "Progressive first-time class: mutation work",
+      "unit": "ms",
+      "fixtureId": "dynamic",
+      "variantId": "dynamic-master-progressive-new-class-toggle",
+      "metricId": "runtime-mutation-ms",
+      "baseline": {
+        "median": 0.6,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 0.3,
+        "sampleCount": 3
+      }
+    },
+    {
+      "group": "Interaction",
+      "label": "Tailwind CSS existing-class toggle ready (control)",
+      "unit": "ms",
+      "fixtureId": "dynamic",
+      "variantId": "dynamic-tailwind-static-existing-class-toggle",
+      "metricId": "interaction-ready-ms",
+      "baseline": {
+        "median": 63.5,
+        "sampleCount": 3
+      },
+      "current": {
+        "median": 63.8,
+        "sampleCount": 3
+      }
+    }
+  ],
+  "limits": [
+    "Both revisions ran their own benchmark runner and fixtures on the same machine on the same day; browser suites used the same Chromium build.",
+    "The baseline fixtures use the class syntax of that revision; the current fixtures express the same values in the current syntax, so class strings and HTML bytes differ.",
+    "The benchmark harnesses also changed between the revisions: HTML payloads include harness scripts, and readiness timings include the harness frame waits.",
+    "Production build timings run every command with the recorded Node.js version so that both revisions use the same JavaScript runtime.",
+    "Medians of a few local runs show direction and magnitude; small timing differences are within run-to-run noise."
+  ]
+}

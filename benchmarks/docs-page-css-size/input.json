@@ -1,34 +1,73 @@
 [
   {
     "name": "Material UI",
-    "url": "https://mui.com/material-ui/getting-started"
+    "url": "https://mui.com/material-ui/getting-started",
+    "samples": [
+      "https://mui.com/material-ui/getting-started/installation/",
+      "https://mui.com/material-ui/react-button/",
+      "https://mui.com/material-ui/customization/theming/",
+      "https://mui.com/material-ui/api/button/"
+    ]
   },
   {
     "name": "Next.js",
-    "url": "https://nextjs.org/docs"
-  },
-  {
-    "name": "React",
-    "url": "https://react.dev/learn"
+    "url": "https://nextjs.org/docs",
+    "samples": [
+      "https://nextjs.org/docs/app/getting-started/installation",
+      "https://nextjs.org/docs/app/getting-started/layouts-and-pages",
+      "https://nextjs.org/docs/app/getting-started/css",
+      "https://nextjs.org/docs/app/api-reference/components/image"
+    ]
   },
   {
     "name": "Vue.js",
-    "url": "https://vuejs.org/guide/introduction"
+    "url": "https://vuejs.org/guide/introduction",
+    "samples": [
+      "https://vuejs.org/guide/quick-start",
+      "https://vuejs.org/guide/essentials/reactivity-fundamentals",
+      "https://vuejs.org/guide/components/props",
+      "https://vuejs.org/api/reactivity-core"
+    ]
   },
   {
     "name": "Angular",
-    "url": "https://angular.dev/overview"
+    "url": "https://angular.dev/overview",
+    "samples": [
+      "https://angular.dev/installation",
+      "https://angular.dev/essentials/components",
+      "https://angular.dev/guide/signals",
+      "https://angular.dev/api/core/Component"
+    ]
   },
   {
     "name": "Bootstrap",
-    "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction"
+    "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction",
+    "samples": [
+      "https://getbootstrap.com/docs/5.3/layout/grid/",
+      "https://getbootstrap.com/docs/5.3/components/buttons/",
+      "https://getbootstrap.com/docs/5.3/forms/overview/",
+      "https://getbootstrap.com/docs/5.3/utilities/spacing/"
+    ]
   },
   {
     "name": "Tailwind CSS",
-    "url": "https://tailwindcss.com/docs"
+    "url": "https://tailwindcss.com/docs",
+    "samples": [
+      "https://tailwindcss.com/docs/styling-with-utility-classes",
+      "https://tailwindcss.com/docs/responsive-design",
+      "https://tailwindcss.com/docs/colors",
+      "https://tailwindcss.com/docs/padding"
+    ]
   },
   {
     "name": "Master CSS",
-    "url": "https://rc.css.master.co/en/guide"
+    "url": "https://rc.css.master.co/guide",
+    "samples": [
+      "https://rc.css.master.co/guide/installation",
+      "https://rc.css.master.co/guide/syntax-tutorial",
+      "https://rc.css.master.co/guide/rendering-modes",
+      "https://rc.css.master.co/reference/tokens/color"
+    ],
+    "sitemap": "https://rc.css.master.co/sitemap.xml"
   }
 ]

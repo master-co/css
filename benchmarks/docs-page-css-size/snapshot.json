@@ -1,474 +1,1818 @@
 {
-    "schemaVersion": 1,
-    "suite": "docs-page-css-size",
-    "generatedAt": "2026-07-01T20:10:11.829Z",
-    "pages": [
+  "schemaVersion": 2,
+  "suite": "docs-page-css-size",
+  "generatedAt": "2026-11-04T15:17:40.009Z",
+  "browser": {
+    "name": "Chromium",
+    "version": "156.0.8078.4",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    }
+  },
+  "originOverrides": {
+    "https://rc.css.master.co": "http://127.0.0.1:4517"
+  },
+  "pages": [
+    {
+      "name": "Tailwind CSS",
+      "url": "https://tailwindcss.com/docs",
+      "resolvedUrl": "https://tailwindcss.com/docs/installation/using-vite",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "css": {
+        "total": {
+          "rawBytes": 657703,
+          "brotliBytes": 58360
+        },
+        "inline": {
+          "rawBytes": 0,
+          "brotliBytes": 0
+        },
+        "external": {
+          "rawBytes": 657703,
+          "brotliBytes": 58360
+        }
+      },
+      "assets": [
         {
-            "name": "Tailwind CSS",
+          "kind": "external",
+          "url": "/_next/static/chunks/017r-ibrf-le-.css",
+          "resolvedUrl": "https://tailwindcss.com/_next/static/chunks/017r-ibrf-le-.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 654795,
+          "brotliBytes": 57721
+        },
+        {
+          "kind": "external",
+          "url": "/_next/static/chunks/0n9_1tq74i09x.css",
+          "resolvedUrl": "https://tailwindcss.com/_next/static/chunks/0n9_1tq74i09x.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 2908,
+          "brotliBytes": 639
+        }
+      ],
+      "usage": {
+        "styleRules": 5342,
+        "matchedStyleRules": 370,
+        "ruleBytes": 513251,
+        "matchedRuleBytes": 24360,
+        "tokenRules": 522,
+        "domElements": 1119
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 657703,
+          "median": 657703,
+          "max": 657703
+        },
+        "brotliBytes": {
+          "min": 58360,
+          "median": 58360,
+          "max": 58360
+        },
+        "matchedRuleShare": {
+          "min": 0.069,
+          "median": 0.077,
+          "max": 0.093
+        },
+        "pages": [
+          {
             "url": "https://tailwindcss.com/docs",
             "resolvedUrl": "https://tailwindcss.com/docs/installation/using-vite",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
             "css": {
-                "total": {
-                    "rawBytes": 698368,
-                    "brotliBytes": 60581
-                },
-                "inline": {
-                    "rawBytes": 0,
-                    "brotliBytes": 0
-                },
-                "external": {
-                    "rawBytes": 698368,
-                    "brotliBytes": 60581
-                }
+              "total": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              }
             },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/_next/static/chunks/13.qyaai7-a5-.css",
-                    "resolvedUrl": "https://tailwindcss.com/_next/static/chunks/13.qyaai7-a5-.css",
-                    "rawBytes": 695460,
-                    "brotliBytes": 59942
-                },
-                {
-                    "kind": "external",
-                    "url": "/_next/static/chunks/0n9_1tq74i09x.css",
-                    "resolvedUrl": "https://tailwindcss.com/_next/static/chunks/0n9_1tq74i09x.css",
-                    "rawBytes": 2908,
-                    "brotliBytes": 639
-                }
-            ]
+            "usage": {
+              "styleRules": 5342,
+              "matchedStyleRules": 370,
+              "ruleBytes": 513251,
+              "matchedRuleBytes": 24360,
+              "tokenRules": 522,
+              "domElements": 1119
+            }
+          },
+          {
+            "url": "https://tailwindcss.com/docs/styling-with-utility-classes",
+            "resolvedUrl": "https://tailwindcss.com/docs/styling-with-utility-classes",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              }
+            },
+            "usage": {
+              "styleRules": 5342,
+              "matchedStyleRules": 496,
+              "ruleBytes": 513251,
+              "matchedRuleBytes": 35029,
+              "tokenRules": 522,
+              "domElements": 3481
+            }
+          },
+          {
+            "url": "https://tailwindcss.com/docs/responsive-design",
+            "resolvedUrl": "https://tailwindcss.com/docs/responsive-design",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              }
+            },
+            "usage": {
+              "styleRules": 5342,
+              "matchedStyleRules": 400,
+              "ruleBytes": 513251,
+              "matchedRuleBytes": 27062,
+              "tokenRules": 522,
+              "domElements": 1983
+            }
+          },
+          {
+            "url": "https://tailwindcss.com/docs/colors",
+            "resolvedUrl": "https://tailwindcss.com/docs/colors",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              }
+            },
+            "usage": {
+              "styleRules": 5342,
+              "matchedStyleRules": 473,
+              "ruleBytes": 513251,
+              "matchedRuleBytes": 32052,
+              "tokenRules": 522,
+              "domElements": 5294
+            }
+          },
+          {
+            "url": "https://tailwindcss.com/docs/padding",
+            "resolvedUrl": "https://tailwindcss.com/docs/padding",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 657703,
+                "brotliBytes": 58360
+              }
+            },
+            "usage": {
+              "styleRules": 5342,
+              "matchedStyleRules": 410,
+              "ruleBytes": 513251,
+              "matchedRuleBytes": 26999,
+              "tokenRules": 522,
+              "domElements": 1687
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Next.js",
+      "url": "https://nextjs.org/docs",
+      "resolvedUrl": "https://nextjs.org/docs",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "css": {
+        "total": {
+          "rawBytes": 479904,
+          "brotliBytes": 61449
+        },
+        "inline": {
+          "rawBytes": 0,
+          "brotliBytes": 0
+        },
+        "external": {
+          "rawBytes": 479904,
+          "brotliBytes": 61449
+        }
+      },
+      "assets": [
+        {
+          "kind": "external",
+          "url": "/_next/static/immutable/chunks/223dqk48bjgy3.css",
+          "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/223dqk48bjgy3.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 23985,
+          "brotliBytes": 5189
         },
         {
-            "name": "Next.js",
+          "kind": "external",
+          "url": "/_next/static/immutable/chunks/2sl_p4a7qfh-f.css",
+          "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/2sl_p4a7qfh-f.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 448589,
+          "brotliBytes": 54677
+        },
+        {
+          "kind": "external",
+          "url": "/_next/static/immutable/chunks/2lra4q96-7lip.css",
+          "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/2lra4q96-7lip.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 7330,
+          "brotliBytes": 1583
+        }
+      ],
+      "usage": {
+        "styleRules": 4541,
+        "matchedStyleRules": 507,
+        "ruleBytes": 386575,
+        "matchedRuleBytes": 39628,
+        "tokenRules": 266,
+        "domElements": 774
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 479904,
+          "median": 479904,
+          "max": 479904
+        },
+        "brotliBytes": {
+          "min": 61449,
+          "median": 61449,
+          "max": 61449
+        },
+        "matchedRuleShare": {
+          "min": 0.112,
+          "median": 0.13,
+          "max": 0.142
+        },
+        "pages": [
+          {
             "url": "https://nextjs.org/docs",
             "resolvedUrl": "https://nextjs.org/docs",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
             "css": {
-                "total": {
-                    "rawBytes": 424816,
-                    "brotliBytes": 54543
-                },
-                "inline": {
-                    "rawBytes": 0,
-                    "brotliBytes": 0
-                },
-                "external": {
-                    "rawBytes": 424816,
-                    "brotliBytes": 54543
-                }
+              "total": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              }
             },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/_next/static/immutable/chunks/06jeco1sf4hjj.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/06jeco1sf4hjj.css",
-                    "rawBytes": 17189,
-                    "brotliBytes": 3621
-                },
-                {
-                    "kind": "external",
-                    "url": "/_next/static/immutable/chunks/3zlwhcx-a_s0h.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/3zlwhcx-a_s0h.css",
-                    "rawBytes": 17638,
-                    "brotliBytes": 2997
-                },
-                {
-                    "kind": "external",
-                    "url": "/_next/static/immutable/chunks/0uehoq303d8fn.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/0uehoq303d8fn.css",
-                    "rawBytes": 389657,
-                    "brotliBytes": 47755
-                },
-                {
-                    "kind": "external",
-                    "url": "/_next/static/immutable/chunks/3hcatbgun-7ra.css",
-                    "resolvedUrl": "https://nextjs.org/_next/static/immutable/chunks/3hcatbgun-7ra.css",
-                    "rawBytes": 332,
-                    "brotliBytes": 170
-                }
-            ]
+            "usage": {
+              "styleRules": 4541,
+              "matchedStyleRules": 507,
+              "ruleBytes": 386575,
+              "matchedRuleBytes": 39628,
+              "tokenRules": 266,
+              "domElements": 774
+            }
+          },
+          {
+            "url": "https://nextjs.org/docs/app/getting-started/installation",
+            "resolvedUrl": "https://nextjs.org/docs/app/getting-started/installation",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              }
+            },
+            "usage": {
+              "styleRules": 4541,
+              "matchedStyleRules": 625,
+              "ruleBytes": 386575,
+              "matchedRuleBytes": 48251,
+              "tokenRules": 266,
+              "domElements": 1844
+            }
+          },
+          {
+            "url": "https://nextjs.org/docs/app/getting-started/layouts-and-pages",
+            "resolvedUrl": "https://nextjs.org/docs/app/getting-started/layouts-and-pages",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              }
+            },
+            "usage": {
+              "styleRules": 4541,
+              "matchedStyleRules": 590,
+              "ruleBytes": 386575,
+              "matchedRuleBytes": 45699,
+              "tokenRules": 266,
+              "domElements": 1808
+            }
+          },
+          {
+            "url": "https://nextjs.org/docs/app/getting-started/css",
+            "resolvedUrl": "https://nextjs.org/docs/app/getting-started/css",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              }
+            },
+            "usage": {
+              "styleRules": 4541,
+              "matchedStyleRules": 587,
+              "ruleBytes": 386575,
+              "matchedRuleBytes": 45235,
+              "tokenRules": 266,
+              "domElements": 1597
+            }
+          },
+          {
+            "url": "https://nextjs.org/docs/app/api-reference/components/image",
+            "resolvedUrl": "https://nextjs.org/docs/app/api-reference/components/image",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 479904,
+                "brotliBytes": 61449
+              }
+            },
+            "usage": {
+              "styleRules": 4541,
+              "matchedStyleRules": 645,
+              "ruleBytes": 386575,
+              "matchedRuleBytes": 50512,
+              "tokenRules": 266,
+              "domElements": 5976
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Bootstrap",
+      "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction",
+      "resolvedUrl": "https://getbootstrap.com/docs/5.3/getting-started/introduction/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "css": {
+        "total": {
+          "rawBytes": 293950,
+          "brotliBytes": 32607
+        },
+        "inline": {
+          "rawBytes": 0,
+          "brotliBytes": 0
+        },
+        "external": {
+          "rawBytes": 293950,
+          "brotliBytes": 32607
+        }
+      },
+      "assets": [
+        {
+          "kind": "external",
+          "url": "/docs/5.3/dist/css/bootstrap.min.css",
+          "resolvedUrl": "https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 232111,
+          "brotliBytes": 22970
         },
         {
-            "name": "Bootstrap",
+          "kind": "external",
+          "url": "/docs/5.3/assets/_slug_.CJzlHdSW.css",
+          "resolvedUrl": "https://getbootstrap.com/docs/5.3/assets/_slug_.CJzlHdSW.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 61839,
+          "brotliBytes": 9637
+        }
+      ],
+      "usage": {
+        "styleRules": 2976,
+        "matchedStyleRules": 338,
+        "ruleBytes": 248304,
+        "matchedRuleBytes": 33833,
+        "tokenRules": 226,
+        "domElements": 1087
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 293950,
+          "median": 293950,
+          "max": 293950
+        },
+        "brotliBytes": {
+          "min": 32607,
+          "median": 32607,
+          "max": 32607
+        },
+        "matchedRuleShare": {
+          "min": 0.114,
+          "median": 0.125,
+          "max": 0.132
+        },
+        "pages": [
+          {
             "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction",
             "resolvedUrl": "https://getbootstrap.com/docs/5.3/getting-started/introduction/",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
             "css": {
-                "total": {
-                    "rawBytes": 293950,
-                    "brotliBytes": 32607
-                },
-                "inline": {
-                    "rawBytes": 0,
-                    "brotliBytes": 0
-                },
-                "external": {
-                    "rawBytes": 293950,
-                    "brotliBytes": 32607
-                }
+              "total": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              }
             },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/docs/5.3/dist/css/bootstrap.min.css",
-                    "resolvedUrl": "https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css",
-                    "rawBytes": 232111,
-                    "brotliBytes": 22970
-                },
-                {
-                    "kind": "external",
-                    "url": "/docs/5.3/assets/_slug_.CJzlHdSW.css",
-                    "resolvedUrl": "https://getbootstrap.com/docs/5.3/assets/_slug_.CJzlHdSW.css",
-                    "rawBytes": 61839,
-                    "brotliBytes": 9637
-                }
-            ]
+            "usage": {
+              "styleRules": 2976,
+              "matchedStyleRules": 338,
+              "ruleBytes": 248304,
+              "matchedRuleBytes": 33833,
+              "tokenRules": 226,
+              "domElements": 1087
+            }
+          },
+          {
+            "url": "https://getbootstrap.com/docs/5.3/layout/grid/",
+            "resolvedUrl": "https://getbootstrap.com/docs/5.3/layout/grid/",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              }
+            },
+            "usage": {
+              "styleRules": 2976,
+              "matchedStyleRules": 393,
+              "ruleBytes": 248304,
+              "matchedRuleBytes": 38346,
+              "tokenRules": 226,
+              "domElements": 2883
+            }
+          },
+          {
+            "url": "https://getbootstrap.com/docs/5.3/components/buttons/",
+            "resolvedUrl": "https://getbootstrap.com/docs/5.3/components/buttons/",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              }
+            },
+            "usage": {
+              "styleRules": 2976,
+              "matchedStyleRules": 374,
+              "ruleBytes": 248304,
+              "matchedRuleBytes": 36943,
+              "tokenRules": 226,
+              "domElements": 3410
+            }
+          },
+          {
+            "url": "https://getbootstrap.com/docs/5.3/forms/overview/",
+            "resolvedUrl": "https://getbootstrap.com/docs/5.3/forms/overview/",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              }
+            },
+            "usage": {
+              "styleRules": 2976,
+              "matchedStyleRules": 373,
+              "ruleBytes": 248304,
+              "matchedRuleBytes": 37585,
+              "tokenRules": 226,
+              "domElements": 1300
+            }
+          },
+          {
+            "url": "https://getbootstrap.com/docs/5.3/utilities/spacing/",
+            "resolvedUrl": "https://getbootstrap.com/docs/5.3/utilities/spacing/",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 293950,
+                "brotliBytes": 32607
+              }
+            },
+            "usage": {
+              "styleRules": 2976,
+              "matchedStyleRules": 355,
+              "ruleBytes": 248304,
+              "matchedRuleBytes": 34403,
+              "tokenRules": 226,
+              "domElements": 1715
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Material UI",
+      "url": "https://mui.com/material-ui/getting-started",
+      "resolvedUrl": "https://mui.com/material-ui/getting-started/",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "css": {
+        "total": {
+          "rawBytes": 277436,
+          "brotliBytes": 27052
+        },
+        "inline": {
+          "rawBytes": 197462,
+          "brotliBytes": 19469
+        },
+        "external": {
+          "rawBytes": 79974,
+          "brotliBytes": 7583
+        }
+      },
+      "assets": [
+        {
+          "kind": "external",
+          "url": "/_next/static/css/de1166621e156283.css",
+          "resolvedUrl": "https://mui.com/_next/static/css/de1166621e156283.css",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "rawBytes": 79974,
+          "brotliBytes": 7583
         },
         {
-            "name": "Material UI",
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 656,
+          "brotliBytes": 210
+        },
+        {
+          "kind": "inline",
+          "tag": "<style id=\"material-icon-font\">",
+          "rawBytes": 0,
+          "brotliBytes": 1
+        },
+        {
+          "kind": "inline",
+          "tag": "<style id=\"font-awesome-css\">",
+          "rawBytes": 0,
+          "brotliBytes": 1
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 37,
+          "brotliBytes": 41
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 1018,
+          "brotliBytes": 401
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 21608,
+          "brotliBytes": 2793
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 48,
+          "brotliBytes": 52
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 8452,
+          "brotliBytes": 1451
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 2627,
+          "brotliBytes": 408
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 51,
+          "brotliBytes": 53
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 33406,
+          "brotliBytes": 3220
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 129559,
+          "brotliBytes": 10836
+        },
+        {
+          "kind": "inline",
+          "tag": "<style id=\"app-search\">",
+          "rawBytes": 0,
+          "brotliBytes": 1
+        },
+        {
+          "kind": "inline",
+          "tag": "<style id=\"prismjs\">",
+          "rawBytes": 0,
+          "brotliBytes": 1
+        }
+      ],
+      "usage": {
+        "styleRules": 975,
+        "matchedStyleRules": 366,
+        "ruleBytes": 202901,
+        "matchedRuleBytes": 100783,
+        "tokenRules": 20,
+        "domElements": 469
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 277436,
+          "median": 292222,
+          "max": 442738
+        },
+        "brotliBytes": {
+          "min": 26934,
+          "median": 27576,
+          "max": 36220
+        },
+        "matchedRuleShare": {
+          "min": 0.375,
+          "median": 0.398,
+          "max": 0.479
+        },
+        "pages": [
+          {
             "url": "https://mui.com/material-ui/getting-started",
             "resolvedUrl": "https://mui.com/material-ui/getting-started/",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
             "css": {
-                "total": {
-                    "rawBytes": 277706,
-                    "brotliBytes": 26860
-                },
-                "inline": {
-                    "rawBytes": 197431,
-                    "brotliBytes": 19239
-                },
-                "external": {
-                    "rawBytes": 80275,
-                    "brotliBytes": 7621
-                }
+              "total": {
+                "rawBytes": 277436,
+                "brotliBytes": 27052
+              },
+              "inline": {
+                "rawBytes": 197462,
+                "brotliBytes": 19469
+              },
+              "external": {
+                "rawBytes": 79974,
+                "brotliBytes": 7583
+              }
             },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/_next/static/css/34d138851e782eff.css",
-                    "resolvedUrl": "https://mui.com/_next/static/css/34d138851e782eff.css",
-                    "rawBytes": 80275,
-                    "brotliBytes": 7621
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 656,
-                    "brotliBytes": 210
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style id=\"material-icon-font\">",
-                    "rawBytes": 0,
-                    "brotliBytes": 1
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style id=\"font-awesome-css\">",
-                    "rawBytes": 0,
-                    "brotliBytes": 1
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 37,
-                    "brotliBytes": 41
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 1018,
-                    "brotliBytes": 401
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 21491,
-                    "brotliBytes": 2723
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 48,
-                    "brotliBytes": 52
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 7204,
-                    "brotliBytes": 1273
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 2679,
-                    "brotliBytes": 416
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 51,
-                    "brotliBytes": 53
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 33278,
-                    "brotliBytes": 3190
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 130969,
-                    "brotliBytes": 10876
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style id=\"app-search\">",
-                    "rawBytes": 0,
-                    "brotliBytes": 1
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style id=\"prismjs\">",
-                    "rawBytes": 0,
-                    "brotliBytes": 1
-                }
-            ]
+            "usage": {
+              "styleRules": 975,
+              "matchedStyleRules": 366,
+              "ruleBytes": 202901,
+              "matchedRuleBytes": 100783,
+              "tokenRules": 20,
+              "domElements": 469
+            }
+          },
+          {
+            "url": "https://mui.com/material-ui/getting-started/installation/",
+            "resolvedUrl": "https://mui.com/material-ui/getting-started/installation/",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 277884,
+                "brotliBytes": 26934
+              },
+              "inline": {
+                "rawBytes": 197910,
+                "brotliBytes": 19351
+              },
+              "external": {
+                "rawBytes": 79974,
+                "brotliBytes": 7583
+              }
+            },
+            "usage": {
+              "styleRules": 999,
+              "matchedStyleRules": 390,
+              "ruleBytes": 203666,
+              "matchedRuleBytes": 102426,
+              "tokenRules": 17,
+              "domElements": 783
+            }
+          },
+          {
+            "url": "https://mui.com/material-ui/react-button/",
+            "resolvedUrl": "https://mui.com/material-ui/react-button/",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 442738,
+                "brotliBytes": 36220
+              },
+              "inline": {
+                "rawBytes": 362764,
+                "brotliBytes": 28637
+              },
+              "external": {
+                "rawBytes": 79974,
+                "brotliBytes": 7583
+              }
+            },
+            "usage": {
+              "styleRules": 1731,
+              "matchedStyleRules": 830,
+              "ruleBytes": 348586,
+              "matchedRuleBytes": 228824,
+              "tokenRules": 37,
+              "domElements": 3168
+            }
+          },
+          {
+            "url": "https://mui.com/material-ui/customization/theming/",
+            "resolvedUrl": "https://mui.com/material-ui/customization/theming/",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 328876,
+                "brotliBytes": 29100
+              },
+              "inline": {
+                "rawBytes": 248902,
+                "brotliBytes": 21517
+              },
+              "external": {
+                "rawBytes": 79974,
+                "brotliBytes": 7583
+              }
+            },
+            "usage": {
+              "styleRules": 1268,
+              "matchedStyleRules": 505,
+              "ruleBytes": 253092,
+              "matchedRuleBytes": 148614,
+              "tokenRules": 17,
+              "domElements": 1924
+            }
+          },
+          {
+            "url": "https://mui.com/material-ui/api/button/",
+            "resolvedUrl": "https://mui.com/material-ui/api/button/",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 292222,
+                "brotliBytes": 27576
+              },
+              "inline": {
+                "rawBytes": 212248,
+                "brotliBytes": 19993
+              },
+              "external": {
+                "rawBytes": 79974,
+                "brotliBytes": 7583
+              }
+            },
+            "usage": {
+              "styleRules": 1079,
+              "matchedStyleRules": 439,
+              "ruleBytes": 217396,
+              "matchedRuleBytes": 112409,
+              "tokenRules": 18,
+              "domElements": 1321
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vue.js",
+      "url": "https://vuejs.org/guide/introduction",
+      "resolvedUrl": "https://vuejs.org/guide/introduction",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "css": {
+        "total": {
+          "rawBytes": 186308,
+          "brotliBytes": 33436
+        },
+        "inline": {
+          "rawBytes": 0,
+          "brotliBytes": 0
+        },
+        "external": {
+          "rawBytes": 186308,
+          "brotliBytes": 33436
+        }
+      },
+      "assets": [
+        {
+          "kind": "external",
+          "url": "/assets/style.BMnqHME7.css",
+          "resolvedUrl": "https://vuejs.org/assets/style.BMnqHME7.css",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "rawBytes": 186308,
+          "brotliBytes": 33435
         },
         {
-            "name": "Angular",
-            "url": "https://angular.dev/overview",
-            "resolvedUrl": "https://angular.dev/overview",
-            "css": {
-                "total": {
-                    "rawBytes": 230232,
-                    "brotliBytes": 33220
-                },
-                "inline": {
-                    "rawBytes": 67510,
-                    "brotliBytes": 12034
-                },
-                "external": {
-                    "rawBytes": 162722,
-                    "brotliBytes": 21186
-                }
-            },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap",
-                    "resolvedUrl": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap",
-                    "rawBytes": 1550,
-                    "brotliBytes": 322
-                },
-                {
-                    "kind": "external",
-                    "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
-                    "resolvedUrl": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
-                    "rawBytes": 602,
-                    "brotliBytes": 298
-                },
-                {
-                    "kind": "external",
-                    "url": "styles-HRWHOM5S.css",
-                    "resolvedUrl": "https://angular.dev/styles-HRWHOM5S.css",
-                    "rawBytes": 80285,
-                    "brotliBytes": 10283
-                },
-                {
-                    "kind": "external",
-                    "url": "styles-HRWHOM5S.css",
-                    "resolvedUrl": "https://angular.dev/styles-HRWHOM5S.css",
-                    "rawBytes": 80285,
-                    "brotliBytes": 10283
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 186,
-                    "brotliBytes": 71
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 34336,
-                    "brotliBytes": 5092
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 2250,
-                    "brotliBytes": 566
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 8464,
-                    "brotliBytes": 1347
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 3938,
-                    "brotliBytes": 686
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 3202,
-                    "brotliBytes": 499
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 137,
-                    "brotliBytes": 126
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 1560,
-                    "brotliBytes": 357
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 1842,
-                    "brotliBytes": 440
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 5184,
-                    "brotliBytes": 1091
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 324,
-                    "brotliBytes": 151
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 453,
-                    "brotliBytes": 182
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 3115,
-                    "brotliBytes": 774
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 2519,
-                    "brotliBytes": 652
-                }
-            ]
+          "kind": "external",
+          "url": "/vp-icons.css",
+          "resolvedUrl": "https://vuejs.org/vp-icons.css",
+          "status": 200,
+          "contentType": "text/css; charset=UTF-8",
+          "rawBytes": 0,
+          "brotliBytes": 1
+        }
+      ],
+      "usage": {
+        "styleRules": 1217,
+        "matchedStyleRules": 311,
+        "ruleBytes": 167553,
+        "matchedRuleBytes": 30876,
+        "tokenRules": 26,
+        "domElements": 1244
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 186308,
+          "median": 186308,
+          "max": 186308
         },
-        {
-            "name": "Vue.js",
+        "brotliBytes": {
+          "min": 33436,
+          "median": 33436,
+          "max": 33436
+        },
+        "matchedRuleShare": {
+          "min": 0.222,
+          "median": 0.26,
+          "max": 0.275
+        },
+        "pages": [
+          {
             "url": "https://vuejs.org/guide/introduction",
             "resolvedUrl": "https://vuejs.org/guide/introduction",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
             "css": {
-                "total": {
-                    "rawBytes": 186308,
-                    "brotliBytes": 33515
-                },
-                "inline": {
-                    "rawBytes": 0,
-                    "brotliBytes": 0
-                },
-                "external": {
-                    "rawBytes": 186308,
-                    "brotliBytes": 33515
-                }
+              "total": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              }
             },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/assets/style.C-fAR_7P.css",
-                    "resolvedUrl": "https://vuejs.org/assets/style.C-fAR_7P.css",
-                    "rawBytes": 186308,
-                    "brotliBytes": 33514
-                },
-                {
-                    "kind": "external",
-                    "url": "/vp-icons.css",
-                    "resolvedUrl": "https://vuejs.org/vp-icons.css",
-                    "rawBytes": 0,
-                    "brotliBytes": 1
-                }
-            ]
+            "usage": {
+              "styleRules": 1217,
+              "matchedStyleRules": 311,
+              "ruleBytes": 167553,
+              "matchedRuleBytes": 30876,
+              "tokenRules": 26,
+              "domElements": 1244
+            }
+          },
+          {
+            "url": "https://vuejs.org/guide/quick-start",
+            "resolvedUrl": "https://vuejs.org/guide/quick-start",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              }
+            },
+            "usage": {
+              "styleRules": 1217,
+              "matchedStyleRules": 335,
+              "ruleBytes": 167553,
+              "matchedRuleBytes": 38255,
+              "tokenRules": 26,
+              "domElements": 1679
+            }
+          },
+          {
+            "url": "https://vuejs.org/guide/essentials/reactivity-fundamentals",
+            "resolvedUrl": "https://vuejs.org/guide/essentials/reactivity-fundamentals",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              }
+            },
+            "usage": {
+              "styleRules": 1217,
+              "matchedStyleRules": 317,
+              "ruleBytes": 167553,
+              "matchedRuleBytes": 31356,
+              "tokenRules": 26,
+              "domElements": 2096
+            }
+          },
+          {
+            "url": "https://vuejs.org/guide/components/props",
+            "resolvedUrl": "https://vuejs.org/guide/components/props",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              }
+            },
+            "usage": {
+              "styleRules": 1217,
+              "matchedStyleRules": 316,
+              "ruleBytes": 167553,
+              "matchedRuleBytes": 31014,
+              "tokenRules": 26,
+              "domElements": 2367
+            }
+          },
+          {
+            "url": "https://vuejs.org/api/reactivity-core",
+            "resolvedUrl": "https://vuejs.org/api/reactivity-core",
+            "status": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "css": {
+              "total": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              },
+              "inline": {
+                "rawBytes": 0,
+                "brotliBytes": 0
+              },
+              "external": {
+                "rawBytes": 186308,
+                "brotliBytes": 33436
+              }
+            },
+            "usage": {
+              "styleRules": 1217,
+              "matchedStyleRules": 270,
+              "ruleBytes": 167553,
+              "matchedRuleBytes": 26426,
+              "tokenRules": 26,
+              "domElements": 2350
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Angular",
+      "url": "https://angular.dev/overview",
+      "resolvedUrl": "https://angular.dev/overview",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "css": {
+        "total": {
+          "rawBytes": 151849,
+          "brotliBytes": 23346
         },
-        {
-            "name": "React",
-            "url": "https://react.dev/learn",
-            "resolvedUrl": "https://react.dev/learn",
-            "css": {
-                "total": {
-                    "rawBytes": 108587,
-                    "brotliBytes": 16215
-                },
-                "inline": {
-                    "rawBytes": 0,
-                    "brotliBytes": 0
-                },
-                "external": {
-                    "rawBytes": 108587,
-                    "brotliBytes": 16215
-                }
-            },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/_next/static/css/90fb947bd70db324.css",
-                    "resolvedUrl": "https://react.dev/_next/static/css/90fb947bd70db324.css",
-                    "rawBytes": 108587,
-                    "brotliBytes": 16215
-                }
-            ]
+        "inline": {
+          "rawBytes": 67600,
+          "brotliBytes": 12078
         },
-        {
-            "name": "Master CSS",
-            "url": "https://rc.css.master.co/en/guide",
-            "resolvedUrl": "https://rc.css.master.co/guide",
-            "css": {
-                "total": {
-                    "rawBytes": 25836,
-                    "brotliBytes": 6052
-                },
-                "inline": {
-                    "rawBytes": 23583,
-                    "brotliBytes": 5182
-                },
-                "external": {
-                    "rawBytes": 2253,
-                    "brotliBytes": 870
-                }
-            },
-            "assets": [
-                {
-                    "kind": "external",
-                    "url": "/_next/static/chunks/32tk_nbm3zoxu.css",
-                    "resolvedUrl": "https://rc.css.master.co/_next/static/chunks/32tk_nbm3zoxu.css",
-                    "rawBytes": 2253,
-                    "brotliBytes": 870
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style>",
-                    "rawBytes": 204,
-                    "brotliBytes": 118
-                },
-                {
-                    "kind": "inline",
-                    "tag": "<style id=\"master-css\">",
-                    "rawBytes": 23379,
-                    "brotliBytes": 5064
-                }
-            ]
+        "external": {
+          "rawBytes": 84249,
+          "brotliBytes": 11268
         }
-    ]
+      },
+      "assets": [
+        {
+          "kind": "external",
+          "url": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap",
+          "resolvedUrl": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 1550,
+          "brotliBytes": 322
+        },
+        {
+          "kind": "external",
+          "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
+          "resolvedUrl": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 602,
+          "brotliBytes": 298
+        },
+        {
+          "kind": "external",
+          "url": "styles-V46FXCBJ.css",
+          "resolvedUrl": "https://angular.dev/styles-V46FXCBJ.css",
+          "status": 200,
+          "contentType": "text/css; charset=utf-8",
+          "rawBytes": 82097,
+          "brotliBytes": 10648
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 186,
+          "brotliBytes": 71
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 34486,
+          "brotliBytes": 5141
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 2250,
+          "brotliBytes": 566
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 8396,
+          "brotliBytes": 1339
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 3966,
+          "brotliBytes": 691
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 3202,
+          "brotliBytes": 498
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 137,
+          "brotliBytes": 126
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 1560,
+          "brotliBytes": 357
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 1822,
+          "brotliBytes": 439
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 5184,
+          "brotliBytes": 1091
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 324,
+          "brotliBytes": 151
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 453,
+          "brotliBytes": 182
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 3115,
+          "brotliBytes": 774
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 2519,
+          "brotliBytes": 652
+        }
+      ],
+      "usage": {
+        "styleRules": 742,
+        "matchedStyleRules": 392,
+        "ruleBytes": 117574,
+        "matchedRuleBytes": 59676,
+        "tokenRules": 98,
+        "domElements": 943
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 148372,
+          "median": 151849,
+          "max": 156795
+        },
+        "brotliBytes": {
+          "min": 23181,
+          "median": 23346,
+          "max": 24496
+        },
+        "matchedRuleShare": {
+          "min": 0.428,
+          "median": 0.494,
+          "max": 0.528
+        },
+        "pages": [
+          {
+            "url": "https://angular.dev/overview",
+            "resolvedUrl": "https://angular.dev/overview",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 151849,
+                "brotliBytes": 23346
+              },
+              "inline": {
+                "rawBytes": 67600,
+                "brotliBytes": 12078
+              },
+              "external": {
+                "rawBytes": 84249,
+                "brotliBytes": 11268
+              }
+            },
+            "usage": {
+              "styleRules": 742,
+              "matchedStyleRules": 392,
+              "ruleBytes": 117574,
+              "matchedRuleBytes": 59676,
+              "tokenRules": 98,
+              "domElements": 943
+            }
+          },
+          {
+            "url": "https://angular.dev/installation",
+            "resolvedUrl": "https://angular.dev/installation",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 148372,
+                "brotliBytes": 23181
+              },
+              "inline": {
+                "rawBytes": 64123,
+                "brotliBytes": 11913
+              },
+              "external": {
+                "rawBytes": 84249,
+                "brotliBytes": 11268
+              }
+            },
+            "usage": {
+              "styleRules": 721,
+              "matchedStyleRules": 361,
+              "ruleBytes": 114877,
+              "matchedRuleBytes": 55953,
+              "tokenRules": 91,
+              "domElements": 817
+            }
+          },
+          {
+            "url": "https://angular.dev/essentials/components",
+            "resolvedUrl": "https://angular.dev/essentials/components",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 156795,
+                "brotliBytes": 24496
+              },
+              "inline": {
+                "rawBytes": 72546,
+                "brotliBytes": 13228
+              },
+              "external": {
+                "rawBytes": 84249,
+                "brotliBytes": 11268
+              }
+            },
+            "usage": {
+              "styleRules": 777,
+              "matchedStyleRules": 367,
+              "ruleBytes": 122547,
+              "matchedRuleBytes": 59188,
+              "tokenRules": 99,
+              "domElements": 1054
+            }
+          },
+          {
+            "url": "https://angular.dev/guide/signals",
+            "resolvedUrl": "https://angular.dev/guide/signals",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 149215,
+                "brotliBytes": 23283
+              },
+              "inline": {
+                "rawBytes": 64966,
+                "brotliBytes": 12015
+              },
+              "external": {
+                "rawBytes": 84249,
+                "brotliBytes": 11268
+              }
+            },
+            "usage": {
+              "styleRules": 719,
+              "matchedStyleRules": 355,
+              "ruleBytes": 115276,
+              "matchedRuleBytes": 56797,
+              "tokenRules": 96,
+              "domElements": 1442
+            }
+          },
+          {
+            "url": "https://angular.dev/api/core/Component",
+            "resolvedUrl": "https://angular.dev/api/core/Component",
+            "status": 200,
+            "contentType": "text/html; charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 156295,
+                "brotliBytes": 23981
+              },
+              "inline": {
+                "rawBytes": 72046,
+                "brotliBytes": 12713
+              },
+              "external": {
+                "rawBytes": 84249,
+                "brotliBytes": 11268
+              }
+            },
+            "usage": {
+              "styleRules": 773,
+              "matchedStyleRules": 331,
+              "ruleBytes": 122527,
+              "matchedRuleBytes": 54028,
+              "tokenRules": 94,
+              "domElements": 2536
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Master CSS",
+      "url": "https://rc.css.master.co/guide",
+      "measuredUrl": "http://127.0.0.1:4517/guide",
+      "resolvedUrl": "http://127.0.0.1:4517/guide",
+      "status": 200,
+      "contentType": "text/html;charset=utf-8",
+      "css": {
+        "total": {
+          "rawBytes": 110480,
+          "brotliBytes": 23164
+        },
+        "inline": {
+          "rawBytes": 1790,
+          "brotliBytes": 560
+        },
+        "external": {
+          "rawBytes": 108690,
+          "brotliBytes": 22604
+        }
+      },
+      "assets": [
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-ee7f387de6780d6386d0.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-ee7f387de6780d6386d0.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 15120,
+          "brotliBytes": 3356
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-64f3031c9662d35a5fb5.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-64f3031c9662d35a5fb5.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 7299,
+          "brotliBytes": 1663
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-2322deca0931bba5924e.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-2322deca0931bba5924e.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 7375,
+          "brotliBytes": 1675
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-a8c2249cce4c2bdb95f1.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-a8c2249cce4c2bdb95f1.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 17650,
+          "brotliBytes": 2961
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-cb11aacee734b338e890.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-cb11aacee734b338e890.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 2459,
+          "brotliBytes": 780
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-c09e019346ebdc9d5f51.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-c09e019346ebdc9d5f51.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 5191,
+          "brotliBytes": 1161
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-234b88184e80e7d1f741.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-234b88184e80e7d1f741.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 2926,
+          "brotliBytes": 843
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-df368d786414315f9058.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-df368d786414315f9058.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 5793,
+          "brotliBytes": 1365
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-37f75f814d492196e26b.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-37f75f814d492196e26b.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 4705,
+          "brotliBytes": 1271
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-2b162eb4b9d2c9e547dc.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-2b162eb4b9d2c9e547dc.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 23085,
+          "brotliBytes": 3834
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-7067d004c243a8389cf2.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-7067d004c243a8389cf2.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 10842,
+          "brotliBytes": 1828
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/dictionaries.Cx3NG2vZ.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/dictionaries.Cx3NG2vZ.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 331,
+          "brotliBytes": 155
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-a62afc5446c95cdbfffc.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-a62afc5446c95cdbfffc.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 2505,
+          "brotliBytes": 756
+        },
+        {
+          "kind": "external",
+          "url": "/_astro/site-style-a63db355e4c2dc215277.css",
+          "resolvedUrl": "http://127.0.0.1:4517/_astro/site-style-a63db355e4c2dc215277.css",
+          "status": 200,
+          "contentType": "text/css;charset=utf-8",
+          "rawBytes": 3409,
+          "brotliBytes": 956
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 898,
+          "brotliBytes": 185
+        },
+        {
+          "kind": "inline",
+          "tag": "<style id=\"master-css\">",
+          "rawBytes": 833,
+          "brotliBytes": 329
+        },
+        {
+          "kind": "inline",
+          "tag": "<style>",
+          "rawBytes": 59,
+          "brotliBytes": 46
+        }
+      ],
+      "usage": {
+        "styleRules": 541,
+        "matchedStyleRules": 261,
+        "ruleBytes": 76340,
+        "matchedRuleBytes": 38708,
+        "tokenRules": 111,
+        "domElements": 1057
+      },
+      "sample": {
+        "pageCount": 5,
+        "rawBytes": {
+          "min": 110480,
+          "median": 130708,
+          "max": 155256
+        },
+        "brotliBytes": {
+          "min": 23164,
+          "median": 28932,
+          "max": 34265
+        },
+        "matchedRuleShare": {
+          "min": 0.464,
+          "median": 0.553,
+          "max": 0.603
+        },
+        "pages": [
+          {
+            "url": "https://rc.css.master.co/guide",
+            "measuredUrl": "http://127.0.0.1:4517/guide",
+            "resolvedUrl": "http://127.0.0.1:4517/guide",
+            "status": 200,
+            "contentType": "text/html;charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 110480,
+                "brotliBytes": 23164
+              },
+              "inline": {
+                "rawBytes": 1790,
+                "brotliBytes": 560
+              },
+              "external": {
+                "rawBytes": 108690,
+                "brotliBytes": 22604
+              }
+            },
+            "usage": {
+              "styleRules": 541,
+              "matchedStyleRules": 261,
+              "ruleBytes": 76340,
+              "matchedRuleBytes": 38708,
+              "tokenRules": 111,
+              "domElements": 1057
+            }
+          },
+          {
+            "url": "https://rc.css.master.co/guide/installation",
+            "measuredUrl": "http://127.0.0.1:4517/guide/installation",
+            "resolvedUrl": "http://127.0.0.1:4517/guide/installation",
+            "status": 200,
+            "contentType": "text/html;charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 133509,
+                "brotliBytes": 29630
+              },
+              "inline": {
+                "rawBytes": 2233,
+                "brotliBytes": 643
+              },
+              "external": {
+                "rawBytes": 131276,
+                "brotliBytes": 28987
+              }
+            },
+            "usage": {
+              "styleRules": 691,
+              "matchedStyleRules": 382,
+              "ruleBytes": 93758,
+              "matchedRuleBytes": 52717,
+              "tokenRules": 138,
+              "domElements": 2559
+            }
+          },
+          {
+            "url": "https://rc.css.master.co/guide/syntax-tutorial",
+            "measuredUrl": "http://127.0.0.1:4517/guide/syntax-tutorial",
+            "resolvedUrl": "http://127.0.0.1:4517/guide/syntax-tutorial",
+            "status": 200,
+            "contentType": "text/html;charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 130708,
+                "brotliBytes": 28932
+              },
+              "inline": {
+                "rawBytes": 1790,
+                "brotliBytes": 560
+              },
+              "external": {
+                "rawBytes": 128918,
+                "brotliBytes": 28372
+              }
+            },
+            "usage": {
+              "styleRules": 661,
+              "matchedStyleRules": 377,
+              "ruleBytes": 91487,
+              "matchedRuleBytes": 53826,
+              "tokenRules": 136,
+              "domElements": 6012
+            }
+          },
+          {
+            "url": "https://rc.css.master.co/guide/rendering-modes",
+            "measuredUrl": "http://127.0.0.1:4517/guide/rendering-modes",
+            "resolvedUrl": "http://127.0.0.1:4517/guide/rendering-modes",
+            "status": 200,
+            "contentType": "text/html;charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 121452,
+                "brotliBytes": 26741
+              },
+              "inline": {
+                "rawBytes": 1790,
+                "brotliBytes": 560
+              },
+              "external": {
+                "rawBytes": 119662,
+                "brotliBytes": 26181
+              }
+            },
+            "usage": {
+              "styleRules": 622,
+              "matchedStyleRules": 375,
+              "ruleBytes": 84139,
+              "matchedRuleBytes": 52721,
+              "tokenRules": 128,
+              "domElements": 2116
+            }
+          },
+          {
+            "url": "https://rc.css.master.co/reference/tokens/color",
+            "measuredUrl": "http://127.0.0.1:4517/reference/tokens/color",
+            "resolvedUrl": "http://127.0.0.1:4517/reference/tokens/color",
+            "status": 200,
+            "contentType": "text/html;charset=utf-8",
+            "css": {
+              "total": {
+                "rawBytes": 155256,
+                "brotliBytes": 34265
+              },
+              "inline": {
+                "rawBytes": 3118,
+                "brotliBytes": 951
+              },
+              "external": {
+                "rawBytes": 152138,
+                "brotliBytes": 33314
+              }
+            },
+            "usage": {
+              "styleRules": 824,
+              "matchedStyleRules": 382,
+              "ruleBytes": 112017,
+              "matchedRuleBytes": 51433,
+              "tokenRules": 154,
+              "domElements": 2680
+            }
+          }
+        ]
+      },
+      "site": {
+        "sitemap": "https://rc.css.master.co/sitemap.xml",
+        "pageCount": 74,
+        "rawBytes": {
+          "min": 110480,
+          "median": 133799,
+          "max": 156401
+        },
+        "brotliBytes": {
+          "min": 23164,
+          "median": 29699,
+          "max": 34441
+        },
+        "matchedRuleShare": {
+          "min": 0.381,
+          "median": 0.509,
+          "max": 0.603
+        }
+      }
+    }
+  ],
+  "limits": [
+    "All documents and linked stylesheets must complete successfully with an expected MIME type; any failure rejects the complete snapshot.",
+    "This measures static inline style and linked stylesheet bodies, not browser transfer sizes, JavaScript-injected CSS, CSS import graphs, or applied-rule validity.",
+    "Brotli totals sum independently compressed asset bodies; linked occurrences and inline tags are counted as authored.",
+    "Each site is represented by its listed page; the sample adds four more documentation pages of the same site and reports the range across all five.",
+    "Matched rules are style rules whose selector, without state pseudo-classes and pseudo-elements, matches an element of the loaded page at the recorded viewport; conditional rules count whatever their condition. A rule used only after later interaction counts as unmatched.",
+    "Pages fetched through an origin override are recorded with their published URL and the measured URL.",
+    "A site with a sitemap also reports the range across every page the sitemap lists; its pages are not stored individually."
+  ]
 }

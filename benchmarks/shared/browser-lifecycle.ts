@@ -281,25 +281,25 @@ export const browserLifecycleScenarios = [
 
 const masterClasses = {
   family: 'master',
-  body: ['benchmark-root', 'm:0', 'min-h:100vh', 'bg:gray-5', 'fg:slate-90', '(font:14px)', '(font:system)'],
-  shell: ['max-w:1180px', 'mx:auto', 'p:6x', 'grid', '(gap:5x)'],
-  header: ['p:5x', '(r:12px)', 'bg:white', '(border:1px|solid|gray-20)', 'grid', '(gap:2x)'],
-  title: ['m:0', '(font:32px)', '(font:heavy)', 'tracking:-.02em'],
-  subtitle: ['m:0', 'fg:slate-60', 'leading:1.6'],
-  panel: ['p:4x', '(r:12px)', 'bg:white', '(border:1px|solid|gray-20)'],
-  grid: ['grid', 'grid-cols:4', '(gap:3x)'],
-  cardBase: ['lifecycle-card', 'p:3x', '(r:10px)', '(border:1px|solid|gray-20)', 'min-h:72px'],
-  cardLight: ['bg:white', 'fg:slate-80'],
-  cardActive: ['bg:blue-60', 'fg:white'],
-  cardSelected: ['bg:green-60', 'fg:white'],
-  cardExpanded: ['shadow:md', '(scale:1.01)'],
-  cardDark: ['bg:slate-90', 'fg:white'],
-  cardNew: ['(outline:2px|solid|red-60)'],
-  cardTitle: ['block', '(font:13px)', '(font:semibold)'],
-  cardMeta: ['block', '(font:12px)', 'fg:slate-50', 'mt:1x'],
-  button: ['h:40px', 'px:4x', '(r:8px)', '(border:0)', 'bg:blue-60', 'fg:white', '(font:13px)', '(font:semibold)'],
-  routeShell: ['grid', '(gap:4x)'],
-  routeHero: ['p:5x', '(r:12px)', 'bg:blue-5', '(border:1px|solid|blue-20)']
+  body: ['benchmark-root', 'm(0)', '(min-height:100vh)', 'bg-gray-5', 'fg-slate-90', 'font-sm', 'font-sans'],
+  shell: ['max-w(1180)', 'mx-auto', 'p-lg', 'grid', 'gap(20)'],
+  header: ['p(20)', 'r-xl', 'bg-white', 'b(1)', 'b-gray-20', 'grid', 'gap-xs'],
+  title: ['m(0)', 'font-3xl', 'font-heavy', 'tracking-tight'],
+  subtitle: ['m(0)', 'fg-slate-60', 'leading-md'],
+  panel: ['p-md', 'r-xl', 'bg-white', 'b(1)', 'b-gray-20'],
+  grid: ['grid', 'grid-cols(4)', 'gap-sm'],
+  cardBase: ['lifecycle-card', 'p-sm', 'r(10)', 'b(1)', 'b-gray-20', 'min-h(72)'],
+  cardLight: ['bg-white', 'fg-slate-80'],
+  cardActive: ['bg-blue-60', 'fg-white'],
+  cardSelected: ['bg-green-60', 'fg-white'],
+  cardExpanded: ['shadow-md', '(scale:1.01)'],
+  cardDark: ['bg-slate-90', 'fg-white'],
+  cardNew: ['outline(2)', 'outline-solid', 'outline-red-60'],
+  cardTitle: ['block', '(font-size:13px)', 'font-semibold'],
+  cardMeta: ['block', 'font-xs', 'fg-slate-50', 'mt-3xs'],
+  button: ['h(40)', 'px-md', 'r-lg', 'b(0)', 'bg-blue-60', 'fg-white', '(font-size:13px)', 'font-semibold'],
+  routeShell: ['grid', 'gap-md'],
+  routeHero: ['p(20)', 'r-xl', 'bg-blue-5', 'b(1)', 'b-blue-20']
 } satisfies LifecycleClassModel
 
 const tailwindClasses = {
@@ -535,7 +535,7 @@ async function createBrowserLifecyclePage(variant: BrowserLifecycleVariant): Pro
         hideUntilRuntime: true
       }),
       runtimeJS: await readRuntimeBundle(),
-      manifestJSON: await readDefaultManifestJSON(),
+      runtimeProgram: await readRuntimeProgram(),
       deliveredCSS: ''
     })
   }
@@ -557,7 +557,7 @@ async function createBrowserLifecyclePage(variant: BrowserLifecycleVariant): Pro
     inlineCSS,
     hydrationManifestJSON,
     runtimeJS: await readRuntimeBundle(),
-    manifestJSON: await readDefaultManifestJSON(),
+    runtimeProgram: await readRuntimeProgram(),
     deliveredCSS: inlineCSS
   })
 }
@@ -626,7 +626,7 @@ async function writeBrowserLifecyclePage(options: {
   externalCSS?: string
   inlineCSS?: string
   runtimeJS?: Buffer
-  manifestJSON?: Buffer
+  runtimeProgram?: Buffer
   hydrationManifestJSON?: string
   buildArtifacts?: BenchmarkArtifact[]
 }): Promise<BrowserLifecyclePage> {
@@ -640,7 +640,7 @@ async function writeBrowserLifecyclePage(options: {
   if (options.externalCSS !== undefined) files['style.css'] = options.externalCSS
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.runtimeJS) files['global.min.js'] = options.runtimeJS
-  if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
+  if (options.runtimeProgram) files['default-program.bin'] = options.runtimeProgram
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
 
   await writeWorkspaceFiles(root, files)
@@ -655,7 +655,7 @@ async function writeBrowserLifecyclePage(options: {
         externalCSS: Buffer.from(options.externalCSS || ''),
         inlineCSS: Buffer.from(options.inlineCSS || ''),
         runtimeJS: options.runtimeJS || Buffer.alloc(0),
-        manifestJSON: options.manifestJSON || Buffer.alloc(0),
+        runtimeProgram: options.runtimeProgram || Buffer.alloc(0),
         hydrationManifestJSON: Buffer.from(options.hydrationManifestJSON || '')
       }),
       ...createDeliveredCSSStructureSamples(options.variantId, options.deliveredCSS)
@@ -887,6 +887,12 @@ async function readRuntimeBundle() {
     })()
   }
   return runtimeBundlePromise
+}
+
+async function readRuntimeProgram() {
+  const file = resolveBenchmarkPackageFile('@master/css-runtime', 'dist/default-program.bin')
+  assertExistingFile(file, 'Run `bun run --filter @master/css-runtime build` before browser benchmarks.')
+  return readFile(file)
 }
 
 async function readDefaultManifestJSON() {

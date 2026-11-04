@@ -1,4 +1,5 @@
 import { execFile, spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { readdir, readFile, rm, mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
@@ -43,8 +44,13 @@ export async function writeWorkspaceFiles(root: string, files: Record<string, st
   }))
 }
 
+// The package manager may hoist benchmark dependencies above `benchmarks/node_modules`.
 export function resolveBenchmarkPackageFile(packageName: string, file: string) {
-  return resolve(benchmarkRoot, 'node_modules', ...packageName.split('/'), file)
+  for (let directory = benchmarkRoot; ; directory = dirname(directory)) {
+    const packageDirectory = resolve(directory, 'node_modules', ...packageName.split('/'))
+    if (existsSync(resolve(packageDirectory, 'package.json'))) return resolve(packageDirectory, file)
+    if (dirname(directory) === directory) throw new Error(`Cannot resolve benchmark package ${packageName} from ${benchmarkRoot}`)
+  }
 }
 
 export async function runCommand(command: string, args: string[], cwd: string, options: CommandRunOptions = {}): Promise<CommandRunResult> {

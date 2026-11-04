@@ -15,9 +15,9 @@ const metricIds = [
   'runtime-js-raw-bytes',
   'runtime-js-gzip-bytes',
   'runtime-js-brotli-bytes',
-  'manifest-json-raw-bytes',
-  'manifest-json-gzip-bytes',
-  'manifest-json-brotli-bytes',
+  'runtime-program-raw-bytes',
+  'runtime-program-gzip-bytes',
+  'runtime-program-brotli-bytes',
   'hydration-manifest-raw-bytes',
   'hydration-manifest-gzip-bytes',
   'hydration-manifest-brotli-bytes',
@@ -61,7 +61,7 @@ const byteGroups = [
   'external-css',
   'inline-css',
   'runtime-js',
-  'manifest-json',
+  'runtime-program',
   'hydration-manifest'
 ]
 

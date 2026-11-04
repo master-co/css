@@ -304,7 +304,8 @@ async function createStaticDeliveryModePage(options: {
     round: 0,
     workspaceName: `${options.variantId}-static-build`
   })
-  const css = (await readFiles(buildResult.cssFiles)).toString('utf8')
+  // Master CSS builds emit an @import graph of per-source files; deliver it flattened as one stylesheet.
+  const css = (await readFiles(buildResult.cssFiles)).toString('utf8').replace(/^@import "\.\/[^"]+\.css";\n?/gm, '')
   const fixture = getStaticFixtureSource(options.fixtureId)
   const sourceHtml = tool.family === 'master' ? fixture.masterHtml : fixture.tailwindHtml
   const html = addStaticHarness(sourceHtml)
@@ -334,7 +335,7 @@ async function createRuntimeDeliveryModePage(options: {
     variantId: options.variantId,
     html,
     runtimeJS: await readRuntimeBundle(),
-    manifestJSON: await readDefaultManifestJSON(),
+    runtimeProgram: await readRuntimeProgram(),
     deliveredCSS: ''
   })
 }
@@ -367,7 +368,8 @@ async function createProgressiveDeliveryModePage(options: {
     inlineCSS,
     hydrationManifestJSON,
     runtimeJS: await readRuntimeBundle(),
-    manifestJSON: await readDefaultManifestJSON(),
+    // Progressive startup fetches the engine program only for a class missing from the hydration data.
+    deferredRuntimeProgram: await readRuntimeProgram(),
     deliveredCSS: inlineCSS
   })
 }
@@ -380,7 +382,8 @@ async function writeDeliveryModePage(options: {
   externalCSS?: string
   inlineCSS?: string
   runtimeJS?: Buffer
-  manifestJSON?: Buffer
+  runtimeProgram?: Buffer
+  deferredRuntimeProgram?: Buffer
   hydrationManifestJSON?: string
   buildArtifacts?: BenchmarkArtifact[]
 }): Promise<DeliveryModePage> {
@@ -395,7 +398,8 @@ async function writeDeliveryModePage(options: {
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
   if (options.runtimeJS) files['global.min.js'] = options.runtimeJS
-  if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
+  const program = options.runtimeProgram || options.deferredRuntimeProgram
+  if (program) files['default-program.bin'] = program
 
   await writeWorkspaceFiles(root, files)
 
@@ -409,7 +413,7 @@ async function writeDeliveryModePage(options: {
         externalCSS: Buffer.from(options.externalCSS || ''),
         inlineCSS: Buffer.from(options.inlineCSS || ''),
         runtimeJS: options.runtimeJS || Buffer.alloc(0),
-        manifestJSON: options.manifestJSON || Buffer.alloc(0),
+        runtimeProgram: options.runtimeProgram || Buffer.alloc(0),
         hydrationManifestJSON: Buffer.from(options.hydrationManifestJSON || '')
       }),
       ...createDeliveredCSSStructureSamples(options.variantId, options.deliveredCSS)
@@ -682,14 +686,14 @@ async function assertDeliveryModeCorrect(page: Page, modeId: DeliveryModeId) {
 async function readDeliveryMetrics(page: Page) {
   return page.evaluate(() => {
     const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
-    const manifestEntry = resources.find((entry) => entry.name.endsWith('/default-manifest.json'))
+    const programEntry = resources.find((entry) => entry.name.endsWith('/default-program.bin'))
     const metrics = globalThis.__deliveryMetrics || {}
 
     return {
       requestCount: resources.filter((entry) => entry.name.startsWith(location.origin)).length + 1,
       runtimeReadyMs: metrics.runtimeReadyMs || 0,
       runtimeBootstrapMs: metrics.runtimeBootstrapMs || 0,
-      manifestLoadMs: manifestEntry?.duration || 0,
+      programLoadMs: programEntry?.duration || 0,
       runtimeObserveMs: metrics.runtimeObserveMs || 0,
       progressiveAdopted: metrics.progressiveAdopted || 0,
       runtimeGeneratedRuleCount: metrics.runtimeGeneratedRuleCount || 0,
@@ -813,6 +817,12 @@ function getContentType(file: string) {
 async function readRuntimeBundle() {
   const file = resolveBenchmarkPackageFile('@master/css-runtime', 'dist/global.min.js')
   assertExistingFile(file, 'Run `bun run --filter @master/css-runtime build` before `bench:master-delivery-modes`.')
+  return readFile(file)
+}
+
+async function readRuntimeProgram() {
+  const file = resolveBenchmarkPackageFile('@master/css-runtime', 'dist/default-program.bin')
+  assertExistingFile(file, 'Run `bun run --filter @master/css-runtime build` before browser benchmarks.')
   return readFile(file)
 }
 

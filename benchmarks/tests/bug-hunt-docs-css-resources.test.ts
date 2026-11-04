@@ -1,12 +1,23 @@
 import { afterEach, expect, test, vi } from 'vitest'
-import { collectDocsPageCSSSizeSnapshot } from '../docs-page-css-size/shared'
+import { collectDocsPageCSSSizeSnapshot as collect } from '../docs-page-css-size/shared'
 
 const css = '.x{color:red}'
 const page = '<style>.a{color:blue}</style><link rel="stylesheet" href="https://assets.example/style.css">'
 afterEach(() => vi.unstubAllGlobals())
 
+const usage = { styleRules: 1, matchedStyleRules: 1, ruleBytes: 1, matchedRuleBytes: 1, tokenRules: 0, domElements: 1 }
+// Collection is network-stubbed; selector usage needs a browser and is replaced here.
+const collectDocsPageCSSSizeSnapshot = () => collect({
+  measureUsage: async (pages) => pages.map(() => usage),
+  readBrowserVersion: async () => 'test'
+})
+const sitemap = '<urlset><url><loc>https://example.test/a</loc></url><url><loc>https://example.test/b</loc></url></urlset>'
+const sitemapResponse = () => new Response(sitemap, { headers: { 'content-type': 'application/xml' } })
+// Five pages for each of the seven sites, plus every page of the one sitemap.
+const pageCount = 37
+
 function stub(asset: () => Response | Promise<Response>, html = page, pageOptions: ResponseInit = {}) {
-  vi.stubGlobal('fetch', vi.fn(async (url: string) => url.startsWith('https://assets.example/')
+  vi.stubGlobal('fetch', vi.fn(async (url: string) => url.endsWith('/sitemap.xml') ? sitemapResponse() : url.startsWith('https://assets.example/')
     ? asset() : new Response(html, { headers: { 'content-type': 'text/html;charset=utf-8' }, ...pageOptions })))
 }
 
@@ -35,10 +46,14 @@ test('rejects non-HTML document MIME', async () => {
 test('valid CSS metadata and exact body bytes survive collection', async () => {
   stub(() => new Response(css, { headers: { 'content-type': 'Text/CSS; charset=utf-8' } }))
   const snapshot = await collectDocsPageCSSSizeSnapshot()
-  expect(snapshot.pages).toHaveLength(8)
+  expect(snapshot.pages).toHaveLength(7)
   for (const result of snapshot.pages) {
     expect(result.css.external.rawBytes).toBe(Buffer.byteLength(css))
     expect(result.assets[0]).toMatchObject({ kind: 'external', status: 200, contentType: 'Text/CSS; charset=utf-8' })
+    expect(result.sample.pageCount).toBe(5)
+    if (result.name === 'Master CSS') expect(result.site).toMatchObject({ pageCount: 2 })
+    else expect(result.site).toBeUndefined()
+    expect(result.sample.pages.map((page) => page.css.external.rawBytes)).toEqual(Array(5).fill(Buffer.byteLength(css)))
   }
 })
 test('network rejection includes the failing URL', async () => {
@@ -52,6 +67,7 @@ test('body-read rejection includes the failing URL', async () => {
 test('one failed stylesheet rejects the complete report rather than publishing a partial total', async () => {
   let finished = 0
   vi.stubGlobal('fetch', async (url: string) => {
+    if (url.endsWith('/sitemap.xml')) return sitemapResponse()
     if (url.endsWith('good.css')) {
       await new Promise(resolve => setTimeout(resolve, 15));finished++
       return new Response(css, { headers: { 'content-type': 'text/css' } })
@@ -60,5 +76,16 @@ test('one failed stylesheet rejects the complete report rather than publishing a
     return new Response('<link rel="stylesheet" href="https://assets.example/good.css"><link rel="stylesheet" href="https://assets.example/bad.css">', { headers: { 'content-type': 'text/html' } })
   })
   await expect(collectDocsPageCSSSizeSnapshot()).rejects.toThrow(/bad.css.*404/)
-  expect(finished).toBe(8)
+  expect(finished).toBe(pageCount)
+})
+test('relative stylesheet URLs resolve against the document base', async () => {
+  const requested: string[] = []
+  vi.stubGlobal('fetch', async (url: string) => {
+    if (url.endsWith('/sitemap.xml')) return sitemapResponse()
+    requested.push(url)
+    if (url.endsWith('.css')) return new Response(css, { headers: { 'content-type': 'text/css' } })
+    return new Response('<base href="/"><link rel="stylesheet" href="styles.css">', { headers: { 'content-type': 'text/html' } })
+  })
+  await collectDocsPageCSSSizeSnapshot()
+  expect(requested.filter((url) => url.endsWith('.css')).every((url) => new URL(url).pathname === '/styles.css')).toBe(true)
 })

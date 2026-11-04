@@ -1,5 +1,6 @@
+import { createHash } from 'node:crypto'
 import { readFile, writeFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const fixtureIds = ['minimal', 'docs', 'dashboard', 'stress-css']
@@ -109,6 +110,7 @@ const snapshot = {
       'css-raw-bytes',
       'css-gzip-bytes',
       'css-brotli-bytes',
+      'css-brotli-file-sum-bytes',
       'css-file-count'
     ]),
     ...getMetrics(reports['build-performance'], [
@@ -171,16 +173,16 @@ function validateReports() {
 
   for (const fixtureId of fixtureIds) {
     for (const variantId of variantIds) {
-      const cssArtifact = findArtifact(reports['css-output-size'], fixtureId, variantId)
-      const buildArtifact = findArtifact(reports['build-performance'], fixtureId, variantId)
-      const structureArtifact = findArtifact(reports['css-structure'], fixtureId, variantId)
+      const cssDigest = digestArtifacts(reports['css-output-size'], fixtureId, variantId)
+      const buildDigest = digestArtifacts(reports['build-performance'], fixtureId, variantId)
+      const structureDigest = digestArtifacts(reports['css-structure'], fixtureId, variantId)
 
-      if (cssArtifact.sha256 !== buildArtifact.sha256 || cssArtifact.sha256 !== structureArtifact.sha256) {
+      if (cssDigest !== buildDigest || cssDigest !== structureDigest) {
         throw new Error([
           `CSS artifact SHA mismatch for ${fixtureId}-${variantId}:`,
-          `css-output-size=${cssArtifact.sha256},`,
-          `build-performance=${buildArtifact.sha256},`,
-          `css-structure=${structureArtifact.sha256}`
+          `css-output-size=${cssDigest},`,
+          `build-performance=${buildDigest},`,
+          `css-structure=${structureDigest}`
         ].join(' '))
       }
     }
@@ -188,17 +190,18 @@ function validateReports() {
 }
 
 function createVariantResult(fixtureId, variantId) {
-  const cssArtifact = findArtifact(reports['css-output-size'], fixtureId, variantId)
+  const css = (metricId) => findSummary(reports['css-output-size'], fixtureId, variantId, metricId).median
   const coldBuild = findSummary(reports['build-performance'], fixtureId, variantId, 'cold-build-ms')
   const repeatBuild = findSummary(reports['build-performance'], fixtureId, variantId, 'repeat-build-ms')
 
   return {
     css: {
-      rawBytes: cssArtifact.rawBytes,
-      gzipBytes: cssArtifact.gzipBytes,
-      brotliBytes: cssArtifact.brotliBytes,
-      fileCount: findSummary(reports['css-output-size'], fixtureId, variantId, 'css-file-count').median,
-      sha256: cssArtifact.sha256
+      rawBytes: css('css-raw-bytes'),
+      gzipBytes: css('css-gzip-bytes'),
+      brotliBytes: css('css-brotli-bytes'),
+      brotliFileSumBytes: css('css-brotli-file-sum-bytes'),
+      fileCount: css('css-file-count'),
+      sha256: digestArtifacts(reports['css-output-size'], fixtureId, variantId)
     },
     build: {
       coldMedianMs: roundOne(coldBuild.median),
@@ -248,13 +251,16 @@ function findSummary(report, fixtureId, variantId, metricId) {
   return summary
 }
 
-function findArtifact(report, fixtureId, variantId) {
+// A build can emit several CSS files; one digest identifies the complete output by file name and content.
+function digestArtifacts(report, fixtureId, variantId) {
   const workspaceSegment = `/workspaces/${createFullVariantId(fixtureId, variantId)}/`
-  const artifact = report.artifacts.find((candidate) => candidate.path.includes(workspaceSegment))
-  if (!artifact) {
-    throw new Error(`${report.suite} is missing artifact for ${fixtureId}-${variantId}.`)
+  const artifacts = report.artifacts.filter((candidate) => candidate.path.includes(workspaceSegment))
+  if (!artifacts.length) {
+    throw new Error(`${report.suite} is missing artifacts for ${fixtureId}-${variantId}.`)
   }
-  return artifact
+  if (artifacts.length === 1) return artifacts[0].sha256
+  const entries = artifacts.map((artifact) => `${basename(artifact.path)}:${artifact.sha256}`).sort()
+  return createHash('sha256').update(entries.join('\n')).digest('hex')
 }
 
 function getMetrics(report, metricIds) {

@@ -74,7 +74,7 @@ export async function seedRetainedRuntimeRules(page: Page, count: number) {
   return page.evaluate(async (classCount) => {
     const runtime = globalThis.masterCSSRuntime
     if (!runtime) throw new Error('Retained-volume preparation requires a runtime.')
-    const names = Array.from({ length: classCount }, (_, index) => `z:${10000 + index}`)
+    const names = Array.from({ length: classCount }, (_, index) => `(z-index:${10000 + index})`)
     const before = runtime.snapshot()
     if (names.some((name) => before.classRules[name]?.rules.length)) throw new Error('Retained-volume classes already exist.')
     const container = document.createElement('div')

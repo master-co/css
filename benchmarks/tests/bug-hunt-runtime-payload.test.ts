@@ -29,7 +29,7 @@ for (const [name, samples, metrics] of [
   test(`${name} accounts for the runtime JS, which includes the engine`, () => {
     const result = samples('variant', {
       html: Buffer.from('<html></html>'), externalCSS: Buffer.alloc(0), inlineCSS: Buffer.alloc(0),
-      runtimeJS: Buffer.from('console.log(1)'), manifestJSON: Buffer.alloc(0), hydrationManifestJSON: Buffer.alloc(0)
+      runtimeJS: Buffer.from('console.log(1)'), runtimeProgram: Buffer.alloc(0), hydrationManifestJSON: Buffer.alloc(0)
     })
     expect(result.find((sample) => sample.metricId === 'runtime-js-raw-bytes')?.value).toBe(14)
     expect(result.every((sample) => metrics.some((metric) => metric.id === sample.metricId))).toBe(true)
