@@ -81,11 +81,6 @@ export async function stageSnapshot(entries, stage, version, revision) {
   const roots = []
   for (const { directory, manifest } of entries) {
     if (!manifest.files?.length) throw new Error(`Missing publication files allowlist: ${manifest.name}`)
-    // The generic loader resolves these development artifacts before optional
-    // target packages. Shipping the build host's binaries breaks other hosts.
-    if (manifest.name === '@master/css-binding' && existsSync(join(directory, 'artifacts'))) {
-      throw new Error('Remove local development artifacts from @master/css-binding before packing; native binaries belong in target packages')
-    }
     const root = `packages/${manifest.name.replace(/^@/, '').replaceAll('/', '-')}`
     const destination = join(stage, root)
     await mkdir(destination, { recursive: true })

@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { execa } from 'execa'
-import { packedManifest } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
 import { createSnapshot, releaseClosure, snapshotManifest, snapshotVersion, stageSnapshot } from './site-toolchain-snapshot.mjs'
 
 const revision = 'f'.repeat(40)
@@ -87,6 +87,10 @@ test('missing native artifacts fail before publication', async () => {
 
 test('a development binding cannot shadow the platform-specific release binaries', async () => {
   const root = await mkdtemp(join(tmpdir(), 'master-site-development-binding-'))
+  const plugin = createWorkspaceRelease({ run: (command, args, options) => {
+    assert.equal(command, 'bun', 'this check must never publish')
+    return execa(command, args, options)
+  } })
   try {
     const directory = join(root, 'binding')
     await mkdir(join(directory, 'dist'), { recursive: true })
@@ -96,8 +100,12 @@ test('a development binding cannot shadow the platform-specific release binaries
     const manifest = { name: '@master/css-binding', files: ['dist', 'artifacts'], exports: { '.': './dist/index.js' } }
     const entries = [{ directory, manifest }]
     const version = snapshotVersion(revision, '1')
-    await assert.rejects(stageSnapshot(entries, join(root, 'rejected'), version, revision), /local development artifacts/)
-    await rm(join(directory, 'artifacts'), { recursive: true })
+    const rejected = join(root, 'rejected')
+    const rejectedRoots = await stageSnapshot(entries, rejected, version, revision)
+    await assert.rejects(plugin.prepare({ pkgRoot: rejectedRoots[0], workspaceRoots: rejectedRoots }, {
+      cwd: rejected, env: process.env, nextRelease: { version }
+    }), /Generic @master\/css-binding tarball contains native artifact/)
+    manifest.files = ['dist']
     const stage = join(root, 'accepted')
     const roots = await stageSnapshot(entries, stage, version, revision)
     const archive = join(root, 'binding.tgz')
@@ -105,5 +113,6 @@ test('a development binding cannot shadow the platform-specific release binaries
     const files = (await execa('tar', ['-tzf', archive])).stdout
     assert.ok(files.includes('package/dist/index.js'))
     assert.ok(!files.includes('artifacts/'))
-  } finally { await rm(root, { recursive: true, force: true }) }
+    assert.equal(await readFile(join(directory, 'artifacts/mastercss.node'), 'utf8'), 'wrong-platform-development-binary')
+  } finally { await plugin.fail(); await rm(root, { recursive: true, force: true }) }
 })

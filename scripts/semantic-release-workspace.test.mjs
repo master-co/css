@@ -183,3 +183,56 @@ test('real Bun packing resolves workspace protocols after every release version 
     assert.equal(packed.peerDependencies['@fixture/b'], '^3.2.1')
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })
+
+test('real release preparation excludes checkout artifacts from the generic binding archive', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'master-binding-release-'))
+  const plugin = createWorkspaceRelease({ run: (command, args, options) => {
+    assert.equal(command, 'bun', 'this check must never publish')
+    return execa(command, args, options)
+  } })
+  try {
+    const sourceManifest = JSON.parse(await readFile(new URL('../packages/binding/package.json', import.meta.url)))
+    await mkdir(join(cwd, 'dist'))
+    await mkdir(join(cwd, 'artifacts'))
+    await writeFile(join(cwd, 'dist/index.js'), 'export {}\n')
+    for (const file of ['mastercss.node', 'mcss', 'mcss.exe']) {
+      await writeFile(join(cwd, 'artifacts', file), 'wrong-platform-development-binary')
+    }
+    const manifest = { name: sourceManifest.name, version: '0.0.0', files: sourceManifest.files }
+    await writeFile(join(cwd, 'package.json'), JSON.stringify(manifest))
+    const config = { pkgRoot: '.', workspaceRoots: ['.'] }
+    const context = { cwd, env: process.env, nextRelease: { version: '3.2.1' } }
+    await plugin.prepare(config, context)
+    const archive = join(cwd, 'release-artifacts/packages/master-css-binding-3.2.1.tgz')
+    const files = (await execa('tar', ['-tzf', archive])).stdout.split('\n')
+    assert.ok(files.includes('package/dist/index.js'))
+    assert.ok(!files.some(file => file.includes('/artifacts/')))
+    assert.equal(await readFile(join(cwd, 'artifacts/mastercss.node'), 'utf8'), 'wrong-platform-development-binary')
+
+    // A future allowlist regression must fail in the actual release prepare path,
+    // even if the metadata entry occurs before the native payload in the tarball.
+    manifest.version = context.nextRelease.version
+    await writeFile(join(cwd, 'package.json'), JSON.stringify({ ...manifest, files: ['dist', 'artifacts'] }))
+    await assert.rejects(plugin.prepare(config, context), /Generic @master\/css-binding tarball contains native artifact/)
+    await writeFile(join(cwd, 'package.json'), JSON.stringify(manifest))
+    await writeFile(join(cwd, 'dist/mastercss.node'), 'misplaced-native-binary')
+    await assert.rejects(plugin.prepare(config, context), /Generic @master\/css-binding tarball contains native artifact/)
+  } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
+})
+
+test('platform target archives retain their native addon and executable', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'master-binding-target-release-'))
+  const plugin = createWorkspaceRelease({ run: (command, args, options) => {
+    assert.equal(command, 'bun', 'this check must never publish')
+    return execa(command, args, options)
+  } })
+  try {
+    await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@master/css-binding-linux-x64-gnu', files: ['mastercss.node', 'mcss'] }))
+    await writeFile(join(cwd, 'mastercss.node'), 'target-addon')
+    await writeFile(join(cwd, 'mcss'), 'target-executable')
+    await plugin.prepare({ pkgRoot: '.', workspaceRoots: ['.'] }, { cwd, env: process.env, nextRelease: { version: '3.2.1' } })
+    const files = (await execa('tar', ['-tzf', join(cwd, 'release-artifacts/packages/master-css-binding-linux-x64-gnu-3.2.1.tgz')])).stdout
+    assert.ok(files.includes('package/mastercss.node'))
+    assert.ok(files.includes('package/mcss'))
+  } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
+})

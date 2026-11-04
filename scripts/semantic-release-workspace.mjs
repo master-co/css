@@ -6,17 +6,35 @@ import { execa } from 'execa'
 import { getChannel, readPackage, writeReleaseVersion } from '@aronrepo/semantic-release-pnpm'
 import { assertNpmOidcEnvironment, assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 
-export function packedManifest(archive) {
+function* packedEntries(archive) {
   const tar = gunzipSync(archive)
   for (let offset = 0; offset + 512 <= tar.length;) {
     const header = tar.subarray(offset, offset + 512)
-    const name = header.subarray(0, 100).toString().replace(/\0.*$/, '')
+    const filename = header.subarray(0, 100).toString().replace(/\0.*$/, '')
+    const prefix = header.subarray(345, 500).toString().replace(/\0.*$/, '')
+    const name = prefix ? `${prefix}/${filename}` : filename
     const size = Number.parseInt(header.subarray(124, 136).toString().replace(/\0.*$/, '').trim() || '0', 8)
-    if (!Number.isSafeInteger(size) || size < 0) throw new Error('Invalid release tarball header')
-    if (name === 'package/package.json') return JSON.parse(tar.subarray(offset + 512, offset + 512 + size).toString())
+    if (!Number.isSafeInteger(size) || size < 0 || offset + 512 + size > tar.length) throw new Error('Invalid release tarball header')
+    if (name) yield { name, content: tar.subarray(offset + 512, offset + 512 + size) }
     offset += 512 + Math.ceil(size / 512) * 512
   }
+}
+
+export function packedManifest(archive) {
+  for (const { name, content } of packedEntries(archive)) {
+    if (name === 'package/package.json') return JSON.parse(content.toString())
+  }
   throw new Error('Release tarball is missing package/package.json')
+}
+
+export function validatePackedArchive(archive, expectedName, version) {
+  validatePackedManifest(packedManifest(archive), expectedName, version)
+  if (expectedName !== '@master/css-binding') return
+  for (const { name } of packedEntries(archive)) {
+    if (/^package\/artifacts(?:\/|$)|\.node$|(?:^|\/)mcss(?:\.exe)?$/.test(name)) {
+      throw new Error(`Generic @master/css-binding tarball contains native artifact ${name}; native binaries belong in target packages`)
+    }
+  }
 }
 
 export function validatePackedManifest(manifest, expectedName, version) {
@@ -69,7 +87,7 @@ export function createWorkspaceRelease({ run = execa } = {}) {
     await mkdir(directory, { recursive: true })
     const archive = join(directory, `${pkg.name.replace(/^@/, '').replaceAll('/', '-')}-${version}.tgz`)
     await execute('bun', ['pm', 'pack', '--filename', archive, '--ignore-scripts'], context, { cwd: resolve(cwd, config.pkgRoot) })
-    validatePackedManifest(packedManifest(await readFile(archive)), pkg.name, version)
+    validatePackedArchive(await readFile(archive), pkg.name, version)
     tarballs.set(`${cwd}:${config.pkgRoot}:${version}`, archive)
   }
 
