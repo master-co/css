@@ -5,13 +5,13 @@ Add Master CSS to an existing project.
 ## Usage
 
 ```bash
-npm create @master/css@rc -- --yes
+npm create @master/css@latest -- --yes
 ```
 
 or run the package directly:
 
 ```bash
-npx @master/create-css@rc add --yes
+npx @master/create-css@latest add --yes
 ```
 
 The recommended workflow adds Master CSS to the detected framework and includes the development guardrails Master CSS expects by default:
@@ -29,7 +29,7 @@ Use `--minimal` for core framework setup only, or disable individual recommended
 Without `--mode`, the installer configures static rendering. Use `--mode <mode>` when the framework integration should be configured for a specific rendering mode during setup:
 
 ```bash
-npm create @master/css@rc -- --framework nextjs --mode static --yes
+npm create @master/css@latest -- --framework nextjs --mode static --yes
 ```
 
 Supported `--mode` values are `runtime`, `static`, `progressive`, and `pre-render`. All four modes are supported for `vite`, `react`, `react-router`, `tanstack-start`, `vue`, `nextjs`, `nuxt`, `astro`, `webpack`, `rspack`, `rsbuild`, and `lit`. `laravel` supports `static` only; `angular` and `none` support `static` and `runtime`. SvelteKit setup is delegated to the Svelte CLI add-on and does not accept `--mode` here.
@@ -39,33 +39,33 @@ If you do not have a project yet, create one first:
 ```bash
 npm create vite@latest my-app
 cd my-app
-npm create @master/css@rc -- --yes
+npm create @master/css@latest -- --yes
 ```
 
 ## Examples
 
 ```bash
-npx @master/create-css@rc add --yes
+npx @master/create-css@latest add --yes
 ```
 
 ```bash
-npx @master/create-css@rc add --minimal
+npx @master/create-css@latest add --minimal
 ```
 
 ```bash
-npx @master/create-css@rc add --no-mcp --no-ai
+npx @master/create-css@latest add --no-mcp --no-ai
 ```
 
 ```bash
-npx @master/create-css@rc add --json --minimal --eslint
+npx @master/create-css@latest add --json --minimal --eslint
 ```
 
 ```bash
-npx @master/create-css@rc add --framework nextjs --mode runtime --yes
+npx @master/create-css@latest add --framework nextjs --mode runtime --yes
 ```
 
 ```bash
-npx @master/create-css@rc add --framework webpack --mode static --yes
+npx @master/create-css@latest add --framework webpack --mode static --yes
 ```
 
 Supported `--framework` values:

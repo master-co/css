@@ -11,7 +11,7 @@ npm install -D @master/css-mcp
 You can also run it directly:
 
 ```bash
-npx -y @master/css-mcp@rc --root /absolute/path/to/project
+npx -y @master/css-mcp@latest --root /absolute/path/to/project
 ```
 
 ## MCP client config
@@ -23,7 +23,7 @@ Most MCP clients accept a command and arguments for stdio servers:
   "mcpServers": {
     "master-css": {
       "command": "npx",
-      "args": ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+      "args": ["-y", "@master/css-mcp@latest", "--root", "/absolute/path/to/project"]
     }
   }
 }
@@ -101,8 +101,8 @@ Concurrent applies coordinate across MCP processes for the same OS user through 
 
 ## Related docs
 
-- [MCP Server guide](https://rc.css.master.co/guide/ai-coding#connect-the-mcp-server)
-- [AI Coding guide](https://rc.css.master.co/guide/ai-coding)
+- [MCP Server guide](https://css.master.co/guide/ai-coding#connect-the-mcp-server)
+- [AI Coding guide](https://css.master.co/guide/ai-coding)
 
 
 ## Compare a project before and after editing

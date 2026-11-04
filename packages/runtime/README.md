@@ -84,7 +84,7 @@ cssRuntime.observe()
 
 ## CDN IIFE
 
-Use the CDN runtime for a plain HTML page with the default preset. The CSS-first CDN release is pending; the current `rc` channel still serves the earlier RC88 runtime. Replace every `VERSION` below with the same published CSS-first runtime and preset version.
+Use the CDN runtime for a plain HTML page with the default preset. Keep the script, compiled program and base stylesheet pinned to the same release. This example uses version `2.0.0`.
 
 ```html
 <!DOCTYPE html>
@@ -93,11 +93,11 @@ Use the CDN runtime for a plain HTML page with the default preset. The CSS-first
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
-  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@VERSION">
-  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/default-program.bin">
-  <link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">
-  <script src="https://cdn.master.co/css-runtime@VERSION"></script>
+  <link rel="preload" as="style" href="https://cdn.master.co/css-preset@2.0.0/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@2.0.0">
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@2.0.0/dist/default-program.bin">
+  <link rel="stylesheet" href="https://cdn.master.co/css-preset@2.0.0/src/base.css">
+  <script src="https://cdn.master.co/css-runtime@2.0.0"></script>
 </head>
 
 <body>
@@ -177,6 +177,6 @@ Concurrent `start()` calls for the same root share one startup. The first call's
 
 ## Related docs
 
-- [General installation](https://rc.css.master.co/guide/installation)
-- [Using CDNs](https://rc.css.master.co/guide/installation#cdn)
-- [Runtime rendering](https://rc.css.master.co/guide/rendering-modes#runtime-rendering)
+- [General installation](https://css.master.co/guide/installation)
+- [Using CDNs](https://css.master.co/guide/installation#cdn)
+- [Runtime rendering](https://css.master.co/guide/rendering-modes#runtime-rendering)
