@@ -8,8 +8,8 @@ installable third-party adapter surface or a general-purpose shared utility pack
 ## Responsibility
 
 `@master/css-internal` is adapter-neutral glue for official build, framework, editor,
-and tooling hosts. It owns virtual module IDs, `?master-css-manifest` request helpers,
-generated manifest, emittedGlobals, and runtime-bootstrap module source, default build
+and tooling hosts. It owns virtual module IDs, manifest and runtime-program request helpers,
+generated manifest, runtime-program, emittedGlobals, and runtime-bootstrap module source, default build
 manifest helpers, and explicit Node/workspace helper subpaths.
 
 It does not implement project manifest discovery, CSS import graph resolution,
@@ -25,6 +25,9 @@ the same adapter-neutral implementation and no public owning package is appropri
 | `@master/css-internal/module` | General virtual module helpers. |
 | `@master/css-internal/manifest-module` | Manifest virtual module IDs, query helpers, and JSON helpers. |
 | `@master/css-internal/manifest-facade` | Generated manifest facade source helpers. |
+| `@master/css-internal/manifest-loader` | Manifest loading orchestration through host-provided project APIs. |
+| `@master/css-internal/manifest-virtual-module` | Shared manifest and runtime-program virtual module lifecycle. |
+| `@master/css-internal/program-module` | Runtime-program virtual IDs, query helpers, and generated module source. |
 | `@master/css-internal/style-module` | Generated style module helpers. |
 | `@master/css-internal/emitted-globals-module` | Generated emittedGlobals module helpers. |
 | `@master/css-internal/runtime-bootstrap` | Runtime bootstrap virtual IDs and generated module source. |

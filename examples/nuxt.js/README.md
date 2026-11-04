@@ -13,5 +13,19 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/nuxtjs).
+## Master CSS Nuxt example
+
+This example registers `@master/css-nuxt` in `nuxt.config.ts` and uses its default `static` mode. The global style block in `app.vue` imports `@master/css`.
+
+Install and build the workspace packages from the repository root, then start the example:
+
+```sh
+bun install --frozen-lockfile
+bun run build
+cd examples/nuxt.js
+bun run dev
+```
+
+Open the URL printed by Nuxt. From this directory, run `bun run build`, then `bun run preview` to inspect the production build. Use `bun run generate` to produce a prerendered site.
+
+See the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs).

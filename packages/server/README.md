@@ -17,7 +17,7 @@
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=212022&label=&style=for-the-badge&logo=github&logoColor=fff">
       <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github&logoColor=%23000">
-      <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
+      <img alt="GitHub release" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
   <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-server">
@@ -27,13 +27,6 @@
       <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-server?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
-  <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/discord/917780624314613760?color=212022&label=%20&logo=discord&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
-      <img alt="Discord online" src="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
-    </picture>
-  </a>
   <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/static/v1?label=%20&message=twitter&color=212022&logo=twitter&style=for-the-badge">
@@ -41,11 +34,11 @@
       <img alt="Follow @mastercorg" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
     </picture>
   </a>
-  <a aria-label="Github Actions" href="https://github.com/master-co/css/actions/workflows/ci-release.yml">
+  <a aria-label="GitHub Actions" href="https://github.com/master-co/css/actions/workflows/release.yml">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/ci-release.yml?branch=rc&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/ci-release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-      <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/ci-release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=212022&logo=githubactions&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <img alt="GitHub release workflow" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
     </picture>
   </a>
 </p>

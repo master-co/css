@@ -1,4 +1,7 @@
 # Contributing to Master CSS
+
+For usage questions, ideas, and bug-report routing, see the [support guide](./SUPPORT.md).
+
 ```bash
 bun install --frozen-lockfile
 ```

@@ -13,5 +13,19 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/vite).
+## Master CSS Vite example
+
+This example explicitly selects `masterCSS({ mode: 'static' })` from `@master/css-vite`. `src/main.ts` imports the shared `src/style.css` stylesheet.
+
+Install and build the workspace packages from the repository root, then start the example:
+
+```sh
+bun install --frozen-lockfile
+bun run build
+cd examples/vite
+bun run dev
+```
+
+Open the URL printed by Vite. From this directory, run `bun run build` to generate `dist/`, then `bun run preview` to inspect the production build.
+
+See the [Vite installation guide](https://rc.css.master.co/guide/installation/vite).

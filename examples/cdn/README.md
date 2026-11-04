@@ -41,13 +41,6 @@
       <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
     </picture>
   </a>
-  <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/discord/917780624314613760?color=212022&label=%20&logo=discord&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
-      <img alt="Discord online" src="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
-    </picture>
-  </a>
   <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/static/v1?label=%20&message=twitter&color=212022&logo=twitter&style=for-the-badge">
@@ -55,11 +48,11 @@
       <img alt="Follow @mastercorg" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
     </picture>
   </a>
-  <a aria-label="Github Actions" href="https://github.com/master-co/css/actions/workflows/ci-release.yml">
+  <a aria-label="Github Actions" href="https://github.com/master-co/css/actions/workflows/release.yml">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/ci-release.yml?branch=rc&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/ci-release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-      <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/ci-release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=212022&logo=githubactions&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
     </picture>
   </a>
 </p>

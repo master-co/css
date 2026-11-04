@@ -12,7 +12,7 @@ export default {
   navs: primaryNavs,
   communityNavs,
   header: {
-    communityNavs: communityNavs.filter(({ name }) => name === 'GitHub'),
+    communityNavs: communityNavs.filter(({ name }) => name === 'Discussions' || name === 'GitHub'),
     searchOnHome: true
   },
   versions: [

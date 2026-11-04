@@ -1,7 +1,7 @@
 import type { AppNavItem } from '~/site/app-config'
-import IconBrandDiscord from '@tabler/icons-svelte-runes/icons/brand-discord'
 import IconBrandGithub from '@tabler/icons-svelte-runes/icons/brand-github'
 import IconBrandX from '@tabler/icons-svelte-runes/icons/brand-x'
+import IconBug from '@tabler/icons-svelte-runes/icons/bug'
 import IconCompass from '@tabler/icons-svelte-runes/icons/compass'
 import IconFileText from '@tabler/icons-svelte-runes/icons/file-text'
 import IconMessages from '@tabler/icons-svelte-runes/icons/messages'
@@ -23,9 +23,9 @@ export const primaryNavs = [
 ] satisfies AppNavItem[]
 
 export const communityNavs = [
-  { name: 'GitHub', href: repositoryURL, Icon: IconBrandGithub },
   { name: 'Discussions', href: discussionsURL, Icon: IconMessages },
-  { name: 'Discord', href: 'https://discord.com/invite/sZNKpAAAw6', Icon: IconBrandDiscord },
+  { name: 'Issues', href: `${repositoryURL}/issues`, Icon: IconBug },
+  { name: 'GitHub', href: repositoryURL, Icon: IconBrandGithub },
   { name: 'X', href: 'https://twitter.com/mastercorg', Icon: IconBrandX },
 ] satisfies AppNavItem[]
 
@@ -49,7 +49,11 @@ export const footerNavGroups = [
   },
   {
     name: 'Community',
-    links: communityNavs.map(({ name, href }) => ({ name, href }))
+    links: [
+      ...communityNavs.map(({ name, href }) => ({ name, href })),
+      { name: 'Releases', href: `${repositoryURL}/releases` },
+      { name: 'Discord', href: 'https://discord.com/invite/sZNKpAAAw6' },
+    ]
   },
   {
     name: 'Legal',

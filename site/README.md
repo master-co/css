@@ -4,14 +4,14 @@ This workspace builds the public Master CSS documentation site. Install the repo
 
 ## Ownership
 
-- `content/` owns pages and guide content; `routes.ts` maps them to URLs.
-- `src/` owns the Astro route and document layout; `sections/` owns each section's shell.
-- `islands/` hydrates `'use client'` React components.
-- `docs-shell/` owns the documentation navigation, layouts, contexts, MDX rendering, and page factories.
-- `components/`, `reference/`, and `utils/` own Master CSS-specific features.
-- `styles/docs-shell/` and `public/` contain the shell's styles and required public assets.
+- `content/` owns product pages, guides, and examples; its directory structure determines page URLs.
+- `site.config.ts` configures content, navigation, sections, styles, and export adapters.
+- `@master/internal-site/astro` provides the Astro route and shared document shell, including navigation, layouts, MDX rendering, and page factories.
+- Astro components render markup; interactive Svelte 5 components hydrate through Astro client directives.
+- `components/`, `reference/`, `sections/`, `layouts/`, and `utils/` own product-specific features and composition.
+- `styles/` and `public/` contain product styles and assets; shared styles and artwork come from `@master/internal-site`.
 
-The site owns its shell and dependency versions. The old root `internal` submodule is gone. `packages/internal` is a separate repository-private package used by the CSS packages.
+The shared shell is maintained in the Master repository and consumed as an exact published `@master/internal-site` version. Update shared implementation there, then validate and upgrade the consumer. `packages/internal` is a separate repository-private package used by the CSS packages.
 
 ## Development and checks
 
@@ -20,9 +20,8 @@ The site owns its shell and dependency versions. The old root `internal` submodu
 | `bun run --filter site dev` | Prepare generated data and start the Astro development server. |
 | `bun run --filter site build` | Build the static site and verify public assets. |
 | `bun run --filter site prepare-app` | Regenerate page categories and search data. |
-| `bun run --filter site type-check` | Check TypeScript. |
+| `bun run --filter site type-check` | Check Astro, Svelte, and TypeScript. |
 | `bun run --filter site lint` | Run site lint rules. |
-| `bun run --filter site test:islands` | Check client island rendering and serialization. |
 | `bun run --filter site test:reference` | Check reference catalog and syntax behavior. |
 | `bun run --filter site test:llms` | Check generated LLM documentation. |
 | `bun run --filter site test:assets` | After a build, check that public images, icons, and fonts exist and are used. |

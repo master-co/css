@@ -7,16 +7,19 @@ npm install --save-dev @master/css-cli
 npx @master/css-cli generate
 ```
 
-Use the explicit `generate`, `lint` or `inspect` command. The app CSS entry starts with `@import '@master/css';`, loading the complete preset. Static generation emits CSS without a Master browser runtime. Native CSS is preserved unless pruning is explicitly enabled.
+Use the explicit `generate`, `lint`, `inspect`, or `suggest` command. The app CSS entry starts with `@import '@master/css';`, loading the complete preset. Static generation emits CSS without a Master browser runtime. Native CSS is preserved unless pruning is explicitly enabled.
 
 ```bash
 npx @master/css-cli generate 'src/**/*.{html,tsx}' --output public/master.css
 npx @master/css-cli generate --watch
 npx @master/css-cli lint --format json
 npx @master/css-cli inspect --include-css --format json
+npx @master/css-cli suggest 'display: flex; align-items: center;'
 ```
 
 Without source paths, `lint` follows the scanner source policy and skips generated output and `.gitignore` matches. Pass a path or glob to lint an ignored artifact explicitly.
+
+`suggest` proposes project-aware classes for an isolated CSS declaration block without writing files. It checks declaration output; review the surrounding cascade and browser rendering before applying a suggestion.
 
 Inspection reports distinguish class matching, CSS syntax, CSS values and browser support. Generated CSS is not visual verification. `--exit-code never` suppresses the diagnostic failure exit code; `--max-warnings` sets the warning threshold.
 
@@ -30,7 +33,7 @@ npx @master/css-cli inspect --snapshot > before.json
 npx @master/css-cli inspect --compare before.json > impact.json
 ```
 
-Both options produce JSON on stdout and are mutually exclusive. Snapshots and comparison reports have independent `version: 1` contracts. `--compare` resolves its path relative to `--cwd` (the current directory by default). Invalid snapshots or failed project resolution, stylesheet compilation or extraction fail the command. Class validation errors remain comparable, so deleting a token can reveal consumers that lose their generated rules. Differences alone do not fail; run ordinary `inspect` for diagnostic exit codes.
+Both options produce JSON on stdout and are mutually exclusive. Snapshots and comparison reports have independent `version: 1` contracts. `--compare` resolves its path relative to the current working directory. Invalid snapshots or failed project resolution, stylesheet compilation or extraction fail the command. Class validation errors remain comparable, so deleting a token can reveal consumers that lose their generated rules. Differences alone do not fail; run ordinary `inspect` for diagnostic exit codes.
 
 The impact report includes changed definitions, known consumers and files, before/after rules, transitive dependencies and asset/order changes. Read `coverage` for excluded and unresolved sources. Native references are conservative at stylesheet granularity; the report does not evaluate the DOM cascade, remote stylesheets or binary resource contents. Capture uses local file URLs for asset identities.
 

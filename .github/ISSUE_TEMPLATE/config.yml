@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Documentation
+    url: https://rc.css.master.co/guide/installation
+    about: Read the installation guide and reference before opening a support request.
   - name: Questions & Discussions
     url: https://github.com/master-co/css/discussions
-    about: Use GitHub discussions for forum-like discussions and questions.
-  - name: Discord Chat
-    url: https://discord.gg/sZNKpAAAw6
-    about: A friendly chat room, where you can ask questions and get help from other users in real time.
+    about: Ask usage questions and discuss ideas here. English and Chinese are welcome.

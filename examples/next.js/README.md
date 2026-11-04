@@ -13,5 +13,19 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/nextjs).
+## Master CSS Next.js example
+
+This App Router example uses `withMasterCSS()` from `@master/css-next` in its default `static` mode. `app/layout.tsx` imports the shared `app/globals.css` stylesheet.
+
+Install and build the workspace packages from the repository root, then start the example:
+
+```sh
+bun install --frozen-lockfile
+bun run build
+cd examples/next.js
+bun run dev
+```
+
+Open the URL printed by Next.js. From this directory, run `bun run build`, then `bun run start` to inspect the production server. Run `bun run lint` to check the example.
+
+See the [Next.js installation guide](https://rc.css.master.co/guide/installation/nextjs).

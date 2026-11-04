@@ -17,6 +17,7 @@ Most applications should import preset styles through `@master/css`. Use this pa
 @import '@master/css-preset/base.css';
 @import '@master/css-preset/theme.css';
 @import '@master/css-preset/media.css';
+@import '@master/css-preset/container.css';
 @import '@master/css-preset/utilities.css';
 ```
 
@@ -30,6 +31,7 @@ The default index entry contains:
 @import "./base.css";
 @import "./theme.css";
 @import "./media.css";
+@import "./container.css";
 @import "./utilities.css";
 ```
 

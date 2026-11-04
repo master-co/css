@@ -1,27 +1,29 @@
-# AngularWithProgressiveRendering
+# Master CSS Angular example
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.0.
+This example combines Angular server rendering with the Master CSS browser runtime. `server.ts` passes rendered HTML to `renderHTML()` from `@master/css-server` and injects the hydration manifest. `src/main.ts` starts `MasterCSSRuntime` with the default compiled program and observes class changes.
 
-## Development server
+## Run the example
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Install and build the workspace packages from the repository root, then start Angular:
 
-## Code scaffolding
+```sh
+bun install --frozen-lockfile
+bun run build
+cd examples/angular
+bun run start
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Open the URL printed by Angular, normally `http://localhost:4200`. Use the production server to exercise the custom `server.ts` rendering path.
 
-## Build
+## Build and verify
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```sh
+bun run build
+bun run start:ssr
+```
 
-## Running unit tests
+The production server listens on `http://localhost:4000` by default, or the port set in `PORT`. Inspect the response HTML for the generated Master CSS stylesheet and hydration manifest, then confirm that browser class changes receive styles.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `bun run test` for the configured Karma unit tests. No end-to-end test runner is configured.
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+See the [Angular installation guide](https://rc.css.master.co/guide/installation/angular) for application setup options.

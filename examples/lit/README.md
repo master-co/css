@@ -13,5 +13,19 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/lit).
+## Master CSS Lit example
+
+This example uses the Vite integration's default `static` mode. `src/my-element.ts` imports the generated `index.css?inline` stylesheet and installs it in the Lit component's shadow root with `unsafeCSS()`.
+
+Install and build the workspace packages from the repository root, then start the example:
+
+```sh
+bun install --frozen-lockfile
+bun run build
+cd examples/lit
+bun run dev
+```
+
+Open the URL printed by Vite. From this directory, run `bun run build` to generate `dist/`, then `bun run preview` to inspect the production build.
+
+See the [Lit installation guide](https://rc.css.master.co/guide/installation/lit).

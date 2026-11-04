@@ -241,12 +241,13 @@ See the [language service guide](https://rc.css.master.co/guide/language-service
 
 ## Community
 
-The Master CSS community can be found here:
+- [Documentation](https://rc.css.master.co/guide/language-service) — Start with setup, features, and troubleshooting.
+- [GitHub Discussions](https://github.com/master-co/css/discussions) — Ask usage questions and share ideas in English or Chinese.
+- [GitHub Issues](https://github.com/master-co/css/issues) — Report reproducible bugs with your editor, extension version, and project setup.
 
-- [Discuss on GitHub](https://github.com/master-co/css/discussions) - Ask questions, voice ideas, and do any other discussion
-- [Join our Discord Server](https://discord.com/invite/sZNKpAAAw6) - Casually chat with other people using the language <sup><sub>✓ 中文</sub></sup>
+[Discord](https://discord.com/invite/sZNKpAAAw6) remains available for informal community chat. Official support requests belong in GitHub Discussions or Issues; Discord has no guaranteed maintainer response.
 
-<sub>Our [《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.</sub>
+<sub>Our [《 Code of Conduct 》](https://github.com/master-co/css/blob/rc/.github/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.</sub>
 
 ## Contributing
 

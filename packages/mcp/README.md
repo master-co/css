@@ -35,6 +35,7 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 
 | Tool | Use |
 | --- | --- |
+| `mastercss_suggest_classes` | Suggest project-aware classes for an isolated CSS declaration block without writing files. Preserves the block when conversion needs review; checks declaration output, not surrounding cascade or browser rendering. |
 | `mastercss_workspace_info` | Report workspace roots, resolved packages, and manifest status. |
 | `mastercss_setup_audit` | Audit package, entry stylesheet, manifest, integration, and package-resolution setup. |
 | `mastercss_inspect_class` | Inspect one class and return generated rules and CSS text. |

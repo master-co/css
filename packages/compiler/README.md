@@ -180,7 +180,7 @@ same two-phase API:
 
 ```ts
 const bundle = compiler.prepareStylesheetBundle({
-  source: 'body{margin:0}#master-css-slot{--slot:0}body{color-green}',
+  source: 'body{margin:0}#master-css-slot{--slot:0}body{color:green}',
   from: 'bundle.css',
   slotCSSRule: '#master-css-slot{--slot:0}',
   managed: result // The complete compileStylesheets result above
@@ -252,17 +252,18 @@ const compiler = createCompilerSync()
 
 ## Node file helpers
 
-The root entry also provides Node convenience functions such as `compileCSSFile`,
-`compileCSSManifestFile`, `compileProjectManifest`, and `resolveCSSImportGraph`.
-These functions supply files and Node package `exports` resolution to the Rust
-compiler; they do not contain a TypeScript semantic fallback.
+Use `compileManifestFileSync` from `@master/css-compiler/node` to compile a file.
+Project discovery and loading use `discoverManifestEntries`, `loadProjectManifest`,
+and `compileProjectManifest` from `@master/css-compiler/project`; their synchronous
+variants are exported from `@master/css-compiler/project/sync`. These functions
+supply files and Node package `exports` resolution to the Rust compiler; they do
+not contain a TypeScript semantic fallback.
 
 The native binding's filesystem project loader retains imported file boundaries
 when collecting managed definitions, resolving references and planning source
 scans. Native `@apply` output keeps import conditions and layer scopes, while
 the separate `generatedCSS` field remains a definition metadata view. Ordinary
-native CSS and asset publication belong to stylesheet delivery APIs. This does
-not extend the raw `resolveCSSImportGraph().source` flattening contract.
+native CSS and asset publication belong to stylesheet delivery APIs.
 
 Compiler binding sessions also expose `resolveCSSStylesheetGraph(request)` for
 metadata consumers. It accepts prepared files and import edges, returns each
@@ -298,33 +299,33 @@ and returns assets without writing output files. `css`, `nativeCSS` and
 `generatedCSS` describe the entry only, so publishing only `css` is insufficient.
 Relative resource URLs are rewritten for their original source owner and retain
 query strings and fragments. Reference-only stylesheets are not published.
-Omitting `preserveNativeCSS` retains the file API's existing default of removing
-raw native CSS while preserving compiled native `@apply` and its conditions.
+`preserveNativeCSS` defaults to `true`, retaining raw native CSS alongside compiled
+native `@apply` and its conditions. Set it to `false` to omit raw native rules.
 Omitting `delivery` continues to use the single-string file path, whose
 external-import limitations remain; other build and `--no-export` consumers
 still require their own asset publishing integration.
 
-## Browser entry
+## Browser compilation
 
 ```ts
-import { createCompiler } from '@master/css-compiler/browser'
+import { createCompiler } from '@master/css-compiler'
 
-const compiler = await createCompiler()
+const compiler = await createCompiler({ binding: 'wasm' })
 const result = compiler.compileCSS(source)
 compiler.dispose()
 ```
 
-The browser entry loads only `binding-wasm-compiler`. Browser compilation cannot resolve
+The Wasm binding loads `binding-wasm-compiler`. Browser compilation cannot resolve
 filesystem `@reference` directives unless the host provides a prepared graph.
 
 
 ## Project, stylesheet, and inspection APIs
 
 Project entry discovery and manifest loading are available from
-`@master/css-compiler/project` and its `sync`, `entries`, and `workspace` subpaths.
+`@master/css-compiler/project` and `@master/css-compiler/project/sync`.
 Managed stylesheet composition is available from
-`@master/css-compiler/stylesheet`; browser-safe compilation and directive helpers use
-its explicit subpaths. Complete project inspection reports are exposed from
+`@master/css-compiler/stylesheet`; `compileBrowserStylesheet` is available from
+`@master/css-compiler/stylesheet/browser`. Complete project inspection reports are exposed from
 `@master/css-compiler/diagnostics`.
 
 Inspection reports associate each file's `discovered` classes with that file's

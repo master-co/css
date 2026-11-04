@@ -13,5 +13,19 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/webpack).
+## Master CSS Webpack example
+
+This example uses `MasterCSSPlugin` from `@master/css-webpack` in its default `static` mode, alongside `HtmlWebpackPlugin`. `src/index.js` imports the shared `src/style.css` stylesheet.
+
+Install and build the workspace packages from the repository root, then start the example:
+
+```sh
+bun install --frozen-lockfile
+bun run build
+cd examples/webpack
+bun run dev
+```
+
+Open the URL printed by Webpack. From this directory, run `bun run build` to generate the production files in `dist/`.
+
+See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack).
