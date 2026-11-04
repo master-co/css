@@ -5,6 +5,9 @@ const versionPattern = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/
 const packageName = '(?:css(?:-[a-z0-9-]+)?|create-css|eslint-(?:config|plugin)-css)'
 const packageReference = new RegExp(`(@master/${packageName}@)VERSION(?![\\w.-])`, 'g')
 const cdnReference = new RegExp(`(https://cdn\\.master\\.co/${packageName}@)VERSION(?![\\w.-])`, 'g')
+// Literal MDX Code strings escape their quotes; ordinary JSON fences do not.
+const jsonWhitespace = String.raw`(?:\s|\\[nrt])*`
+const packageDependency = new RegExp(String.raw`((\\?)"@master/${packageName}\2"${jsonWhitespace}:${jsonWhitespace}\2")VERSION(\2")`, 'g')
 
 /**
  * One version projection for rendered MDX and portable Markdown code examples.
@@ -16,6 +19,7 @@ export function releaseCode(source, version) {
   assert.match(version, versionPattern, 'Release examples require an explicit version')
   return source.replace(packageReference, (_, prefix) => prefix + version)
     .replace(cdnReference, (_, prefix) => prefix + version)
+    .replace(packageDependency, (_, prefix, _escape, suffix) => prefix + version + suffix)
 }
 
 /**

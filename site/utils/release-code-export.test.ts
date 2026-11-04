@@ -29,6 +29,8 @@ test('product MDX export projects the exact release through fences, literal Code
     'VERSION @sm 日本語 한국어 繁體 简体'
   ].join('\n')
   const literalHTML = '<script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@VERSION/dist/index.min.js"></script>'
+  const packageJSON = JSON.stringify({ dependencies: { '@master/css': 'VERSION' }, devDependencies: { '@master/css-vite': 'VERSION', vite: '^8' } }, null, 2)
+    .replaceAll(': "VERSION"', '\r\n:\n\t"VERSION"')
 
   try {
     delete process.env.MASTER_CSS_PUBLIC_ENV_FILE
@@ -38,8 +40,10 @@ test('product MDX export projects the exact release through fences, literal Code
       '## Install \\{#installation\\}',
       fence('bash', 'npm create @master/css@VERSION -- --yes\nnpm install -D @master/css-cli@VERSION @master/eslint-config-css@VERSION'),
       fence('js', 'const compiler = "@master/css-compiler@VERSION"'),
+      fence('json', packageJSON),
       fence('html', '<script src="https://cdn.master.co/css-runtime@VERSION"></script>\n<link rel="stylesheet" href="https://cdn.master.co/css-preset@VERSION/src/base.css">'),
       `<Code lang="html">{${JSON.stringify(literalHTML)}}</Code>`,
+      `<Code lang="json">{${JSON.stringify(packageJSON)}}</Code>`,
       '<Included />',
       fence('text', unchanged)
     ].join('\n\n'))
@@ -51,6 +55,8 @@ test('product MDX export projects the exact release through fences, literal Code
         assert.deepEqual(result.notes, [])
         assert.ok(result.markdown.includes(fence('bash', `npm create @master/css@${version} -- --yes\nnpm install -D @master/css-cli@${version} @master/eslint-config-css@${version}`)))
         assert.ok(result.markdown.includes(fence('js', `const compiler = "@master/css-compiler@${version}"`)))
+        const exportedJSON = [...result.markdown.matchAll(/```json\n([\s\S]*?)\n```/g)].map(match => JSON.parse(match[1]))
+        assert.deepEqual(exportedJSON, Array.from({ length: 2 }, () => ({ dependencies: { '@master/css': version }, devDependencies: { '@master/css-vite': version, vite: '^8' } })))
         assert.ok(result.markdown.includes(fence('html', `<script src="https://cdn.master.co/css-runtime@${version}"></script>\n<link rel="stylesheet" href="https://cdn.master.co/css-preset@${version}/src/base.css">`)))
         assert.ok(result.markdown.includes(fence('html', `<script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@${version}/dist/index.min.js"></script>`)))
         assert.ok(result.markdown.includes(fence('bash', `npm install @master/css-runtime@${version}`)))

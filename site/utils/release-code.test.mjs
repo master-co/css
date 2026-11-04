@@ -25,6 +25,28 @@ test('preserves source examples, real pinned versions, unrelated packages and la
   }
 })
 
+test('package JSON and its escaped MDX Code literal resolve only explicit product dependency placeholders', () => {
+  const dependencies = {
+    dependencies: { '@master/css': 'VERSION', '@other/css': 'VERSION' },
+    devDependencies: { '@master/css-vite': 'VERSION', '@master/css-cli': 'rc', '@master/literal': 'VERSION', vite: '^8' }
+  }
+  const inline = JSON.stringify(dependencies, null, 2)
+  for (const source of [inline, inline.replaceAll(': "VERSION"', '\r\n:\n\t"VERSION"')]) {
+    for (const version of ['2.0.0', '2.0.0-rc.89']) {
+      const expected = {
+        ...dependencies,
+        dependencies: { ...dependencies.dependencies, '@master/css': version },
+        devDependencies: { ...dependencies.devDependencies, '@master/css-vite': version }
+      }
+      assert.deepEqual(JSON.parse(releaseCode(source, version)), expected)
+      assert.deepEqual(JSON.parse(JSON.parse(releaseCode(JSON.stringify(source), version))), expected)
+    }
+  }
+  for (const source of ['"@master/css": "VERSION-preview"', '"@master/css": "2.0.0"', "'@master/css': 'VERSION'"]) {
+    assert.equal(releaseCode(source, '2.0.0'), source)
+  }
+})
+
 test('MDX render and Markdown export share the exact projection without changing anchors', () => {
   const root = resolve('/tmp/master-css-release-site')
   const plugin = releaseCodeMdx({ siteRoot: root, version: '2.0.0' })
