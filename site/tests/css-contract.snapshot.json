@@ -50748,7 +50748,7 @@
         "light"
       ]
     },
-    "15d376f9875e37a7": {
+    "a6c3fbfe020eadbe": {
       "cssBytes": 123947,
       "cssSha256": "21d14e6b3eae2daf958c884b5d36a7a2f296bfa7c541cd34a242f1c24992faf1",
       "cssSegments": [
@@ -51640,7 +51640,7 @@
         "e6422dea50641f54"
       ],
       "hydrationBytes": 2842,
-      "hydrationSha256": "b52582ad0c76534c35ce1e9a90a4c30517af8c9f4aa537303326812fa5df15fe",
+      "hydrationSha256": "d2d54acdd920c462bb941bcff2e362dc35e67fa1f9849c55168eb50ffe830491",
       "hydrationVersion": 5,
       "resourceOrder": {
         "variables": [
@@ -51736,6 +51736,7 @@
         "ui-anchor",
         "shiki",
         "ui-inline-code",
+        "benchmark-value",
         "ui-table",
         "ui-segmented",
         "segment-panel-label",
@@ -51745,10 +51746,9 @@
         "segment-panel",
         "segment-views",
         "page-css-benchmark",
-        "benchmark-value",
-        "ui-badge",
         "ui-expand-control",
         "ui-expand",
+        "ui-badge",
         "ui-legend",
         "ui-docs-article",
         "ui-prose",
@@ -135475,7 +135475,7 @@
   "routes": {
     "/": "3ddae1f31aeeb90d",
     "/404": "eeec2d27096fa62c",
-    "/benchmarks": "15d376f9875e37a7",
+    "/benchmarks": "a6c3fbfe020eadbe",
     "/examples/article-transitions": "304dd729783231f2",
     "/examples/layout-system": "1bfb2319f98a742b",
     "/examples/responsive-button": "5d24b06939726622",
@@ -135554,7 +135554,7 @@
     "/reference/tools/mcp": "399889f7443635aa",
     "/reference/truncation": "cb6fe4690e279171",
     "/tw": "3ddae1f31aeeb90d",
-    "/tw/benchmarks": "15d376f9875e37a7",
+    "/tw/benchmarks": "a6c3fbfe020eadbe",
     "/tw/guide": "b3de34decc8be097",
     "/tw/guide/ai-coding": "dcf9b7e51c3acc89",
     "/tw/guide/authoring-packages": "1c3c3fd82b866fa9",
@@ -135630,6 +135630,6 @@
     "/tw/reference/truncation": "cb6fe4690e279171"
   },
   "approval": {
-    "reference": ".ai/reports/internal-release-2026-11-04.md; site/tests/home-refactor-qa-2026-11-03.md; site/tests/guide-ownership-qa-2026-11-03.md; site/tests/header-version-qa-2026-11-04.md; site/tests/community-navigation-qa-2026-11-04.md"
+    "reference": ".ai/reports/internal-release-2026-11-04.md; site/tests/home-refactor-qa-2026-11-03.md; site/tests/guide-ownership-qa-2026-11-03.md; site/tests/header-version-qa-2026-11-04.md; site/tests/community-navigation-qa-2026-11-04.md; site/tests/community-navigation-qa-2026-11-04.md#benchmark-hydration-baseline--2026-11-05"
   }
 }

@@ -700,15 +700,16 @@ test('delivery payload charts count complete responses once and omit absent asse
   const { MasterDeliveryPayloadChart: chart, MasterDeliveryModesTables } = await import('../content/benchmarks/components/MasterDeliveryModesBenchmark')
   const { benchmarkMarkdown } = await import('../utils/benchmark-content')
   const items = chart.items
-  // Independently checked against the committed docs fixture: HTML already embeds CSS and hydration JSON.
+  // Independently checked against the committed docs fixture's Brotli response bodies:
+  // HTML embeds CSS/hydration; progressive startup does not fetch the runtime program.
   const expected = [
-    { label: 'Master CSS static', bytes: 2996, parts: ['HTML', 'External CSS'] },
-    { label: 'Master CSS runtime', bytes: 34148, parts: ['HTML', 'Runtime JS', 'Manifest JSON'] },
-    { label: 'Master CSS progressive', bytes: 36138, parts: ['HTML', 'Runtime JS', 'Manifest JSON'] },
-    { label: 'Tailwind CSS static', bytes: 3698, parts: ['HTML', 'External CSS'] },
+    { label: 'Master CSS static', bytes: 4006, parts: ['HTML', 'External CSS'] },
+    { label: 'Master CSS runtime', bytes: 50903, parts: ['HTML', 'Runtime JS', 'Runtime program'] },
+    { label: 'Master CSS progressive', bytes: 36743, parts: ['HTML', 'Runtime JS'] },
+    { label: 'Tailwind CSS static', bytes: 4521, parts: ['HTML', 'External CSS'] },
   ]
   assert.equal(items.length, expected.length)
-  assert.equal(chart.max, 36138, 'all rows use the largest complete-response total as their scale')
+  assert.equal(chart.max, 50903, 'all rows use the largest complete-response total as their scale')
   for (const [index, row] of expected.entries()) {
     assert.equal(items[index].label, row.label)
     assert.equal(items[index].total, row.bytes)
@@ -716,9 +717,10 @@ test('delivery payload charts count complete responses once and omit absent asse
     assert.equal(items[index].segments.reduce((sum, segment) => sum + segment.value, 0), row.bytes)
   }
   const table = benchmarkMarkdown(MasterDeliveryModesTables)
-  assert.match(table, /Response assets.*Inline CSS \(in HTML\).*Hydration \(in HTML\)/)
-  assert.match(table, /Docs \| Master CSS progressive \| 36\.1 kB/)
-  assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.1 kB/)
+  assert.match(table, /Response assets.*Inline CSS \(in HTML\).*Runtime program.*Hydration \(in HTML\)/)
+  assert.match(table, /Docs \| Master CSS progressive \| 36\.7 kB/)
+  assert.match(benchmarkMarkdown(chart), /Master CSS runtime\*\* · 50\.9 kB/)
+  assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.7 kB/)
 })
 
 test('additional article figures retain their complete lesson in Markdown and both search indexes', async () => {
