@@ -28,7 +28,7 @@
   },
   "engines": {
     "node": "^24",
-    "vscode": "^1.120.0"
+    "vscode": "^1.123.0"
   },
   "activationEvents": [
     "onStartupFinished"

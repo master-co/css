@@ -1,7 +1,7 @@
-/* global require, exports, __dirname, setTimeout */
+/* global require, exports, __dirname, setTimeout, process */
 /* eslint-disable @typescript-eslint/no-require-imports -- VS Code loads this extension test runner as CommonJS. */
 const assert = require('node:assert/strict')
-const { readFileSync, writeFileSync, realpathSync } = require('node:fs')
+const { readFileSync, writeFileSync, realpathSync, existsSync } = require('node:fs')
 const { join, relative, isAbsolute } = require('node:path')
 const vscode = require('vscode')
 
@@ -22,6 +22,16 @@ exports.run = async () => {
   const installedRelative = relative(realpathSync(expected.extensionsDir), realpathSync(extension.extensionPath))
   assert.ok(installedRelative && !installedRelative.startsWith('..') && !isAbsolute(installedRelative))
   assert.equal(extension.packageJSON.version, expected.version)
+  const remote = expected.remote ? { platform: process.platform, arch: process.arch,
+    musl: process.platform === 'linux' && existsSync('/etc/alpine-release') && !process.report.getReport().header.glibcVersionRuntime,
+    node: process.versions.node, remoteName: vscode.env.remoteName, uiKind: vscode.env.uiKind } : null
+  if (expected.remote) {
+    assert.equal(extension.extensionKind, vscode.ExtensionKind.Workspace)
+    assert.equal(remote.uiKind, vscode.UIKind.Web)
+    assert.ok(typeof remote.remoteName === 'string' && remote.remoteName.length > 0)
+    assert.equal(remote.node.split('.')[0], '24', 'The remote language server requires Node.js 24')
+    for (const key of ['platform', 'arch', 'musl']) assert.equal(remote[key], expected.remote[key])
+  }
   await extension.activate()
   assert.equal(extension.isActive, true)
   assert.ok((await vscode.commands.getCommands()).includes('masterCSS.restart'))
@@ -42,7 +52,7 @@ exports.run = async () => {
   await vscode.commands.executeCommand('masterCSS.restart')
   await checkCompletion()
   writeFileSync(join(__dirname, 'host-proof.json'), JSON.stringify({
-    id: extension.id, version: extension.packageJSON.version, vscode: vscode.version,
+    id: extension.id, version: extension.packageJSON.version, vscode: vscode.version, kind: expected.remote ? 'remote' : 'desktop', remote,
     extensionPath: extension.extensionPath, activated: true, completion: true, hover: true, restarted: true
   }, null, 2))
 }

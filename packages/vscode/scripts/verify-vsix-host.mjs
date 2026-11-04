@@ -18,7 +18,7 @@ export async function verifyExtensionHost({ vsix, manifest, temporary, env, test
     'workbench.startupEditor': 'none', 'chat.disableAIFeatures': true
   }))
   await writeFile(join(driver, 'package.json'), JSON.stringify({ name: 'vsix-verification-driver',
-    version: '0.0.0', publisher: 'verification', engines: { vscode: '^1.120.0' }, main: 'index.cjs' }))
+    version: '0.0.0', publisher: 'verification', engines: { vscode: manifest.engines.vscode }, main: 'index.cjs' }))
   await writeFile(join(driver, 'index.cjs'), 'exports.activate = () => {}\n')
   await cp(new URL('../tests/vsix-extension-host.cjs', import.meta.url), join(driver, 'test.cjs'))
   const id = `${manifest.publisher}.${manifest.name}`

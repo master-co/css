@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url'
 import { getCurrentTarget, getRuntimePackagesForTarget } from './package-target-core.js'
 import { verifyLanguageServer } from './verify-vsix-lsp.mjs'
 import { verifyExtensionHost } from './verify-vsix-host.mjs'
+import { extractVSIX } from './extract-vsix.mjs'
 
 export function verificationEnvironment(original) {
   // Explicit undefined also removes inherited values in test-electron's env merge.
@@ -15,15 +16,14 @@ export function verificationEnvironment(original) {
     /^(?:NODE_PATH|NODE_OPTIONS|ELECTRON_RUN_AS_NODE|MASTER_CSS_NATIVE_(?:BINDING|CLI)_PATH|VSCE_PAT|OVSX_PAT)$/i.test(key) ? undefined : value]))
 }
 
-export async function verifyVSIX({ vsix, target, publisher, proof, testElectronModule, executable, vscodeVersion = '1.144.0' }) {
+export async function verifyVSIX({ vsix, target, publisher, proof, testElectronModule, executable, vscodeVersion = '1.123.0' }) {
   assert.equal(target, getCurrentTarget(), 'Native verification must run on its actual target')
   assert.ok(['masterco', 'master'].includes(publisher))
   // Keep macOS's extension-host IPC socket below its Unix-domain path limit.
   const temporary = await mkdtemp(join(tmpdir(), 'mcv-'))
   const env = verificationEnvironment(process.env)
   try {
-    if (process.platform === 'win32') execFileSync('tar', ['-xf', vsix, '-C', temporary], { env })
-    else execFileSync('unzip', ['-q', vsix, '-d', temporary], { env })
+    extractVSIX(vsix, temporary, { env })
     const root = join(temporary, 'extension')
     const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
     assert.equal(manifest.name, 'master-css-vscode')

@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { TARGETS, getRuntimePackagesForTarget, packageDir } from './package-target-core.js'
+import { extractVSIX } from './extract-vsix.mjs'
 
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 
@@ -28,8 +29,7 @@ export async function verifyArchives({ marketplaceDir, openVSXDir, proof }) {
         const filename = `master-css-vscode-${source.version}-${target}.vsix`
         const file = join(directory, filename), extracted = join(temporary, `${publisher}-${target}`)
         await mkdir(extracted)
-        if (process.platform === 'win32') execFileSync('tar', ['-xf', file, '-C', extracted])
-        else execFileSync('unzip', ['-q', file, '-d', extracted])
+        extractVSIX(file, extracted)
         const root = join(extracted, 'extension')
         const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
         assert.equal(manifest.name, 'master-css-vscode')

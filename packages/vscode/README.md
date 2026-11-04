@@ -218,7 +218,7 @@ Use this after changing dependencies, workspace layout, or project manifest file
 
 ## Requirements and Limitations
 
-- Requires VS Code `1.120.0` or newer.
+- Requires VS Code `1.123.0` or newer.
 - Native packages cover macOS x64/ARM64, Windows x64/ARM64, Linux glibc x64/ARM64, and Alpine musl x64/ARM64. The Alpine artifacts are for compatible remote extension hosts; VS Code Desktop itself is not an Alpine application. A packaged artifact alone does not establish compatibility with every downstream editor or remote host.
 - Linux ARM32 (`linux-armhf`) and Universal VSIX files are not provided. Install only the package matching a supported architecture.
 - Requires a trusted local workspace because the language server loads configuration and code from the workspace.
