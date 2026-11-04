@@ -37,10 +37,10 @@ function createMode(id: HomePageCSSSizeModeId, kind: CSSSizeKind): HomePageCSSSi
   }
 }
 
-/** Page CSS totals from the committed documentation page snapshot, smallest first. */
+/** Page CSS totals from the committed documentation page snapshot, smallest first; the chart opens on the first mode. */
 export function getHomePageCSSSize(): HomePageCSSSizeMode[] {
   return [
-    createMode('brotli', 'brotliBytes'),
-    createMode('raw', 'rawBytes')
+    createMode('raw', 'rawBytes'),
+    createMode('brotli', 'brotliBytes')
   ]
 }

@@ -22,8 +22,8 @@ const chartBrands = modes[0].rows.map((row) => Object.values(brands).find((eachB
       icon="section-css-size"
       index="04"
       label={t('CSS size')}
-      title={t('Only the CSS a page uses.')}
-      body={t('The total CSS each documentation page delivers, measured raw and with Brotli. Master CSS ships only the rules a page uses.')}>
+      title={t('Measured on real documentation pages.')}
+      body={t('The CSS each page loads, raw and with Brotli. Master CSS adds only the utilities a page uses; the rest is each site’s own styles.')}>
       <Link class="home-section-link" href="/benchmarks#page-css-size">{t('View benchmark details')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
     </HomeSectionHeader>
     <div class="home-bench home-marks">

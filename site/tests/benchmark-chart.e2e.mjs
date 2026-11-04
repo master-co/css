@@ -12,6 +12,9 @@ after(async () => { await browser?.close() })
 
 // The chart shows the committed snapshot, smallest page first.
 const kilobytes = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
+// The chart opens on raw sizes; the other measure is one segment away.
+const initialKind = 'rawBytes'
+const otherKind = 'brotliBytes'
 const measured = kind => [...snapshot.pages]
   .sort((a, b) => a.css.total[kind] - b.css.total[kind])
   .map(page => ({ name: page.name, size: `${kilobytes.format(page.css.total[kind] / 1000)} kB` }))
@@ -108,7 +111,7 @@ async function values({ js, motion = 'no-preference' }) {
 test(`${browserName}: the CSS size chart reads its measured sizes without scripts`, async () => {
   const withoutScripts = await values({ js: false })
   const animated = await values({ js: true })
-  assert.deepEqual(withoutScripts.settled, measured('brotliBytes').map(row => row.size), 'the server renders the snapshot')
+  assert.deepEqual(withoutScripts.settled, measured(initialKind).map(row => row.size), 'the server renders the snapshot')
   assert.deepEqual(withoutScripts.settled, animated.settled, 'server output matches where the animation ends')
   assert.deepEqual(animated.errors, [])
 })
@@ -145,8 +148,8 @@ for (const width of [1440, 390]) {
         }
       }
       const settled = await settle(page)
-      assert.deepEqual(settled.map(row => row.text), measured('brotliBytes').map(row => row.size))
-      assert.deepEqual(settled.map(row => row.spoken), measured('brotliBytes').map(row => row.size), 'screen readers read the measured size')
+      assert.deepEqual(settled.map(row => row.text), measured(initialKind).map(row => row.size))
+      assert.deepEqual(settled.map(row => row.spoken), measured(initialKind).map(row => row.size), 'screen readers read the measured size')
       for (const row of settled) {
         assert.ok(Math.abs(row.bar - row.expected) <= 2, `${row.name} settles at its measured length`)
         assert.ok(row.ratio === null || row.ratio === 1, `${row.name}'s ratio appears once settled`)
@@ -190,7 +193,7 @@ test(`${browserName}: the chart paints only while it moves, on screen and in a v
       document.dispatchEvent(new Event('visibilitychange'))
     })
     const rows = await settle(page)
-    assert.deepEqual(rows.map(row => row.text), measured('brotliBytes').map(row => row.size))
+    assert.deepEqual(rows.map(row => row.text), measured(initialKind).map(row => row.size))
     // At rest: no frames and no running animation anywhere in the section, the satin included.
     await page.waitForTimeout(500)
     const rest = await paints(page)
@@ -210,17 +213,17 @@ test(`${browserName}: changing the measure animates the bars to the other data a
   try {
     await chart.evaluate(element => element.scrollIntoView({ block: 'center' }))
     await settle(page)
-    await page.locator('#css-cost').getByRole('button', { name: 'Raw' }).click()
+    await page.locator('#css-cost').getByRole('button', { name: 'Brotli' }).click()
     await page.waitForTimeout(200)
     const moving = await readRows(page)
-    const brotli = new Map(measured('brotliBytes').map(row => [row.name, row.size]))
-    const raw = new Map(measured('rawBytes').map(row => [row.name, row.size]))
-    assert.ok(moving.some(row => row.text !== brotli.get(row.name) && row.text !== raw.get(row.name)), `counts move between the two measures: ${moving.map(row => row.text)}`)
+    const initial = new Map(measured(initialKind).map(row => [row.name, row.size]))
+    const other = new Map(measured(otherKind).map(row => [row.name, row.size]))
+    assert.ok(moving.some(row => row.text !== initial.get(row.name) && row.text !== other.get(row.name)), `counts move between the two measures: ${moving.map(row => row.text)}`)
     assert.ok(moving.every(row => !row.settled && !row.ratio), 'ratios step aside while the bars move')
     const settled = await settle(page)
-    assert.deepEqual(settled.map(row => row.name), measured('rawBytes').map(row => row.name), 'rows take their new ranks')
-    assert.deepEqual(settled.map(row => row.text), measured('rawBytes').map(row => row.size))
-    for (const row of settled) assert.ok(Math.abs(row.bar - row.expected) <= 2, `${row.name} settles at its raw length`)
+    assert.deepEqual(settled.map(row => row.name), measured(otherKind).map(row => row.name), 'rows take their new ranks')
+    assert.deepEqual(settled.map(row => row.text), measured(otherKind).map(row => row.size))
+    for (const row of settled) assert.ok(Math.abs(row.bar - row.expected) <= 2, `${row.name} settles at its Brotli length`)
     assert.deepEqual(errors, [])
   } finally {
     await context.close()
