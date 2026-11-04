@@ -114,6 +114,9 @@ jobs:
       - name: Observe the actual Windows directory events
         shell: bash
         run: node packages/cli/tests/fixtures/watch-registration-gap-runner.mjs "$RUNNER_TEMP/watch-gap-tools/node_modules/chokidar/index.js" "$RUNNER_TEMP/watch-gap-traces"
+      - name: Repeat original writes from a separate process
+        shell: bash
+        run: node packages/cli/tests/fixtures/watch-new-sources-stress.mjs "$RUNNER_TEMP/watch-gap-tools/node_modules/chokidar/index.js" "$RUNNER_TEMP/watch-gap-traces" 200
       - name: Retain bounded registration timelines
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
