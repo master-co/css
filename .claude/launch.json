@@ -26,7 +26,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/aron/master-css/site && exec bun --bun astro dev --ignore-lock --port 3102"
+        "cd /Users/aron/master-css/site && exec ../node_modules/.bin/astro dev --ignore-lock --port 3102"
       ],
       "port": 3102,
       "autoPort": false
