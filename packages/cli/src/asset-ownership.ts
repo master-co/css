@@ -158,4 +158,5 @@ export function publishOwnedStylesheet(entry: string, css: string, assets: Reado
     // valid output into a failed export or deleting unverified files.
     process.stderr.write(`Cannot clean stylesheet assets: ${error}\n`)
   }
+  return !unchanged
 }

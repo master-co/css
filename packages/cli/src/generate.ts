@@ -183,6 +183,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
   const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex').slice(0, 20)
   const assetPrefix = `master-${hash(path.relative(scanner.cwd, outputPath))}`
   let revision = ''
+  let reportedOutput = false
   let resourceBytes: Map<string, Buffer> | undefined
   const readResource = (file: string) => {
     const bytes = resourceBytes?.get(file) ?? fs.readFileSync(file)
@@ -228,9 +229,12 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
         }
         for (const asset of composition.stylesheets || []) addAsset(asset.href, Buffer.from(asset.css))
         for (const asset of composition.resources || []) addAsset(asset.href, readResource(asset.file))
-        await withStylesheetPublicationLock(() => publishOwnedStylesheet(outputPath, composition.css, assets, outputFiles))
+        const published = await withStylesheetPublicationLock(() => publishOwnedStylesheet(outputPath, composition.css, assets, outputFiles))
         scanner.resetDependencies = [...new Set([...scanner.resetDependencies, ...(composition.dependencies || [])])]
-        await reportExport(scanner, composition.css, output)
+        if (!watch || published || !reportedOutput) {
+          await reportExport(scanner, composition.css, output)
+          reportedOutput = true
+        }
       } else {
         process.stdout.write(`${composition.css}\n`)
       }
