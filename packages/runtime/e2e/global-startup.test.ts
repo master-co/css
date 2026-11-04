@@ -84,7 +84,9 @@ test('keeps streamed HTML hidden until all initial classes can be rendered', asy
     const address = server.address()
     if (!address || typeof address === 'string') throw new Error('Missing streaming fixture address')
     await page.goto(`http://127.0.0.1:${address.port}/`, { waitUntil: 'commit' })
-    await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().engine === 'ready')
+    // This document is intentionally hidden and still streaming. Engine startup
+    // must not depend on the browser scheduling its first animation frame.
+    await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().engine === 'ready', undefined, { polling: 50 })
     expect(programRequests).toBe(1)
     expect(await page.evaluate(() => ({
       readyState: document.readyState,

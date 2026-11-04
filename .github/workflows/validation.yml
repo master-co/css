@@ -256,7 +256,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: site-validation-${{ github.sha }}
-          path: site/test-results/release-site.json
+          path: |
+            site/out/
+            site/test-results/release-site.json
           if-no-files-found: error
           retention-days: 7
       - name: Build examples
@@ -430,6 +432,16 @@ jobs:
             args+=(--affected)
           fi
           bun run turbo "${args[@]}"
+      - name: Retain E2E failure and retry diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-diagnostics-${{ github.sha }}
+          path: |
+            packages/*/test-results/
+            packages/*/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
       # Pull requests restore the cache but never write it, so one shared entry
       # per scope is refreshed by pushes instead of every run adding a new one.
       - name: Prune and save Turbo cache
