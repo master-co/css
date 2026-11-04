@@ -26,7 +26,7 @@ for (const timing of ['before', 'after'] as const) {
     const css = () => fs.existsSync(output) ? fs.readFileSync(output, 'utf8') : ''
     const wait = async (check: () => boolean) => {
       const deadline = Date.now() + 10000
-      while (!check() && Date.now() < deadline && child.exitCode === null) await new Promise(resolve => setTimeout(resolve, 30))
+      while (!check() && Date.now() < deadline && child.exitCode === null && child.signalCode === null) await new Promise(resolve => setTimeout(resolve, 30))
       expect(check(), stderr + '\n' + (fs.existsSync(trace) ? fs.readFileSync(trace, 'utf8') : '')).toBe(true)
     }
     try {
@@ -52,12 +52,19 @@ for (const timing of ['before', 'after'] as const) {
       expect(stderr.match(/master\.css exported/g)?.length ?? 0).toBe(exports)
       expect(child.exitCode).toBeNull()
     } finally {
-      if (child.exitCode === null) {
+      if (child.exitCode === null && child.signalCode === null) {
         const exited = once(child, 'exit')
         child.kill('SIGTERM')
         const timer = setTimeout(() => child.kill('SIGKILL'), 3000)
-        await exited
-        clearTimeout(timer)
+        let deadline: ReturnType<typeof setTimeout> | undefined
+        try {
+          await Promise.race([exited, new Promise<never>((_, reject) => {
+            deadline = setTimeout(() => reject(new Error('CLI watcher did not terminate after SIGKILL')), 4000)
+          })])
+        } finally {
+          clearTimeout(timer)
+          clearTimeout(deadline)
+        }
       }
       fs.rmSync(cwd, { recursive: true, force: true })
     }
