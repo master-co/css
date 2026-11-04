@@ -35,7 +35,7 @@ bun run --filter site prepare-app
 bun run --filter site build:llms
 ```
 
-The importer updates this download kit, the site's existing image URLs, its favicon, example copies, and the Figma and VS Code icons. `/images/logo.svg` retains the dark-background standalone mark; choose an explicit background variant from this kit for new placements. `/images/css-logotype@light.png` is the supplied 2× PNG used to render page sharing images. The source checkout is needed only for importing; verification works from the committed files alone. Keep generated files intact. This document is maintained in the Master repository at `site/content/brand/master-css/assets.md`; the product importer copies it into the download kit. Shared artwork supplied by `@master/internal-site` must be updated through a new package release before importing changed artwork into Master CSS.
+The importer updates this download kit, the site's existing image URLs, its favicon, example copies, and the VS Code icon. `/images/logo.svg` retains the dark-background standalone mark; choose an explicit background variant from this kit for new placements. `/images/css-logotype@light.png` is the supplied 2× PNG used to render page sharing images. The source checkout is needed only for importing; verification works from the committed files alone. Keep generated files intact. This document is maintained in the Master repository at `site/content/brand/master-css/assets.md`; the product importer copies it into the download kit. Shared artwork supplied by `@master/internal-site` must be updated through a new package release before importing changed artwork into Master CSS.
 
 ## Usage policy
 

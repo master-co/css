@@ -21,12 +21,10 @@ const expectedBindingTargetPackages = new Set([
 ])
 const publishedDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']
 const hostArtifactPackages = new Set([
-  '@master/css-figma',
   '@master/css-vscode'
 ])
 const packagesWithoutTypeDeclarations = new Set([
   '@master/css-cli',
-  '@master/css-figma',
   '@master/css-preset',
   '@master/css-vscode'
 ])
@@ -383,7 +381,6 @@ assert.equal(
 
 const expectedAdapterNames = {
   astro: '@master/css-astro',
-  figma: '@master/css-figma',
   next: '@master/css-next',
   nuxt: '@master/css-nuxt',
   svelte: '@master/css-svelte',

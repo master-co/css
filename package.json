@@ -64,7 +64,6 @@
     "@master/css-astro": "workspace:^",
     "@master/css-cli": "workspace:^",
     "@master/css-compiler": "workspace:^",
-    "@master/css-figma": "workspace:^",
     "@master/css-language-server": "workspace:^",
     "@master/css-language-service": "workspace:^",
     "@master/css-mcp": "workspace:^",

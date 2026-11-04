@@ -636,13 +636,6 @@
       },
       "surface": "6b3d5374138558a9"
     },
-    "@master/css-figma": {
-      "directory": "figma",
-      "exports": [],
-      "bins": [],
-      "entrypoints": {},
-      "surface": "44136fa355b3678a"
-    },
     "@master/css-language-server": {
       "directory": "language-server",
       "exports": [

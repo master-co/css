@@ -50,7 +50,6 @@ def aliases():
         'site/public/favicon.svg': 'icon/favicon.svg',
         'site/public/favicon.ico': 'icon/favicon.ico',
         'packages/vscode/icon.png': 'icon/png/avatar-460.png',
-        'packages/figma/master.svg': 'icon/favicon.svg',
         'examples/svelte/static/master-css.logotype@light.svg': 'logo/master-css/master-css-horizontal-on-light.svg',
     }
     for mode in ['dark', 'light']:

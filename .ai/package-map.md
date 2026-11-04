@@ -60,7 +60,6 @@ than loading every crate:
 | `@master/create-css` | `.`, `create-css` binary | Project setup and dependency transforms |
 | `@master/css-mcp` | `.` | Model Context Protocol server factories |
 | `@master/css-svelte-addon` | `.` | Svelte CLI add-on |
-| `@master/css-figma` | host artifact | Figma variable import/export plugin |
 | `@master/css-vscode` | extension artifact, `./server` | VS Code extension; staged Marketplace id remains `master-css-vscode` |
 
 ## Repository-Private Package

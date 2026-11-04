@@ -20,9 +20,6 @@
       "path": "./packages/eslint-plugin/tsconfig.typecheck.json"
     },
     {
-      "path": "./packages/figma/tsconfig.typecheck.json"
-    },
-    {
       "path": "./packages/internal/tsconfig.typecheck.json"
     },
     {

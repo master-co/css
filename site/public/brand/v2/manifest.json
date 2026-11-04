@@ -1,6 +1,6 @@
 {
   "sourceRepository": "https://github.com/master-co/master",
-  "sourceRevision": "b0d663a84f2d3a6724aec8d3b5ebc7db7d3bbc0f",
+  "sourceRevision": "d61f7a45b6634b90207ecafd46e9380dd2bc1409",
   "assets": [
     {
       "src": "/brand/v2/icon/app-icon-dark-rounded.svg",
@@ -295,7 +295,6 @@
     "site/public/favicon.svg": "icon/favicon.svg",
     "site/public/favicon.ico": "icon/favicon.ico",
     "packages/vscode/icon.png": "icon/png/avatar-460.png",
-    "packages/figma/master.svg": "icon/favicon.svg",
     "examples/svelte/static/master-css.logotype@light.svg": "logo/master-css/master-css-horizontal-on-light.svg",
     "examples/next.js/public/css-logotype@dark.svg": "logo/master-css/master-css-horizontal-on-dark.svg",
     "examples/next.js/public/css-logotype@light.svg": "logo/master-css/master-css-horizontal-on-light.svg",

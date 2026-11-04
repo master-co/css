@@ -23,7 +23,6 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/vite/**`, `packages/webpack/**`, `packages/next/**` | build integrations | `package-boundaries.md`, `css-output.md` |
 | `packages/astro/**`, `packages/nuxt/**`, `packages/svelte/**` | framework integrations | `testing.md`, `css-output.md` |
 | `packages/cli/**` | CLI | `testing.md`, `package-boundaries.md` |
-| `packages/figma/**` | app/plugin surface | `testing.md` |
 
 ## Rust Crate Paths
 

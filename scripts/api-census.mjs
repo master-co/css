@@ -50,13 +50,6 @@ const packagePolicies = new Map(Object.entries({
     visibility: 'public',
     disposition: 'retain'
   },
-  '@master/css-figma': {
-    owner: 'Figma host integration',
-    platform: 'figma-host',
-    lifecycle: 'host-application',
-    visibility: 'host-artifact',
-    disposition: 'retain'
-  },
   '@master/css-language-server': {
     owner: 'LSP transport and workspace lifecycle',
     platform: 'node',
