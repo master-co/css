@@ -1,6 +1,7 @@
 name: Editor artifact verification
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -227,35 +228,5 @@ jobs:
         with:
           name: editor-vsix
           path: candidate-vsix
-      - name: Verify exact coverage and candidate identities
-        env:
-          CANDIDATE_SHA: ${{ github.sha }}
-        run: |
-          node --input-type=module <<'NODE'
-          import assert from 'node:assert/strict'
-          import { readFileSync, readdirSync } from 'node:fs'
-          import { assertEditorHostProof } from './packages/vscode/scripts/verify-editor-host-proof.mjs'
-          const targets = ['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64', 'win32-arm64', 'win32-x64', 'alpine-arm64', 'alpine-x64']
-          const files = targets.flatMap(target => ['masterco', 'master'].map(publisher => `${target}-${publisher}.json`)).sort()
-          assert.deepEqual(readdirSync('proofs').sort(), files)
-          const inventory = JSON.parse(readFileSync('candidate-vsix/inventory.json', 'utf8'))
-          assert.equal(inventory.schemaVersion, 1)
-          assert.equal(inventory.revision, process.env.CANDIDATE_SHA)
-          assert.equal(inventory.archives.length, 16)
-          assert.equal(new Set(inventory.archives.map(item => `${item.target}-${item.publisher}`)).size, 16)
-          for (const target of targets) for (const publisher of ['masterco', 'master']) {
-            const proof = JSON.parse(readFileSync(`proofs/${target}-${publisher}.json`, 'utf8'))
-            assert.equal(proof.revision, process.env.CANDIDATE_SHA)
-            assert.equal(proof.target, target)
-            assert.equal(proof.publisher, publisher)
-            assert.equal(proof.version, inventory.version)
-            const artifact = inventory.archives.find(item => item.target === target && item.publisher === publisher)
-            assert.ok(artifact)
-            assert.equal(proof.vsix.sha256, artifact.sha256)
-            assert.equal(proof.binding.surface, 'native')
-            assert.equal(proof.lsp.shutdown, 0)
-            assert.equal(proof.lsp.completion, ':first-child')
-            assertEditorHostProof(proof)
-          }
-          console.log(`Verified ${inventory.version}: eight native/LSP targets, six desktop and two official Alpine remote extension hosts for both publishers.`)
-          NODE
+      - name: Verify exact coverage, candidate identities and tested VSIX bytes
+        run: node packages/vscode/scripts/verify-editor-evidence.mjs --candidate-dir candidate-vsix --proof-dir proofs

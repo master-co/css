@@ -88,9 +88,13 @@ The legacy listing's version is independent of the current extension's version; 
 
 ## Verify VSIX artifacts without publishing
 
-The manual-only **Editor artifact verification** workflow (`editor-verification.yml`) builds native artifacts on eight matching hosts, packages both publisher identities, and tests the extracted VSIX native addon, CLI self-test, and bundled LSP initialize/completion/hover/shutdown cycle. All jobs use repository read access; there are no publication credentials, version changes, pushes, or deployment steps.
+The **Editor artifact verification** workflow (`editor-verification.yml`) runs manually or as a required reusable workflow during release validation when editor inputs changed. It builds native artifacts on eight matching hosts, packages both publisher identities, and tests the extracted VSIX native addon, CLI self-test, and bundled LSP initialize/completion/hover/shutdown cycle. All verification jobs use repository read access; there are no publication credentials, version changes, pushes, or deployment steps.
 
-The candidate inventory checks all 16 archives against the source version, publisher, target, bundled JavaScript, and staged native payloads. The final gate matches each execution proof to its archive's SHA-256 and the workflow revision. Run `verify-vsix-archives.mjs` with `--marketplace-dir`, `--open-vsx-dir`, and `--proof` to perform the same content check before publication.
+For a complete candidate rehearsal, manually run **CI** with `release_candidate: true` (default: `false`). This enables release artifact validation and all editor host checks even when the comparison base equals the candidate SHA. It never publishes or deploys. Normal full validation does not by itself select editor publication.
+
+The candidate inventory checks all 16 archives against the source version, publisher, target, bundled JavaScript, and staged native payloads. The final gate reads every VSIX again and matches its SHA-256 to the inventory, execution proof, source version, and workflow revision. `verify-vsix-archives.mjs` produces the inventory from the build inputs; `verify-editor-evidence.mjs --candidate-dir <directory> --proof-dir <directory>` validates the complete downloaded artifacts and host proofs against `GITHUB_SHA` and the source extension version.
+
+An authorized release waits for that same-run gate before npm publication. Editor publication then downloads the same run's `editor-vsix` and `editor-proof-*` artifacts, repeats the complete evidence check, and uploads those exact 16 VSIX files to the stores without rebuilding or repackaging. Evidence from a prior manual run or another revision cannot satisfy this gate.
 
 Six desktop targets additionally install their real VSIX into a fresh VS Code profile and test extension activation, completion, hover, and language-server restart at the declared minimum VS Code version, `1.123.0`. User profiles and workspace dependencies are not reused. The official `@vscode/test-electron` helper is installed at a pinned version in a disposable tools directory, outside the project dependency graph.
 

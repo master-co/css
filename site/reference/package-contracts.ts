@@ -16,7 +16,7 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
   ]
   body.push('## Choose an entrypoint {#choose-an-entrypoint}',
     '| Work | Start with |', '| --- | --- |',
-    '| Connect a framework or build tool | [Installation](/guide/installation) and its integration package below. |',
+    '| Connect a framework or build tool | [Installation →](/guide/installation) and its integration package below. |',
     '| Compile CSS definitions or resolve stylesheet files | [`@master/css-compiler`](#css-compiler) |',
     '| Generate class rules from compiled definitions | [`@master/css`](#css) |',
     '| Observe classes in a browser DOM | [`@master/css-runtime`](#css-runtime) |',

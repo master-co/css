@@ -170,19 +170,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
         with:
-          turbo-cache-scope: build
-      - name: Install release platform dependencies
-        run: bun install --frozen-lockfile --os='*' --cpu='*' --libc='*'
-      - name: Download validated native artifacts for every editor target
+          ignore-scripts: "true"
+          turbo-cache: "false"
+      - name: Download the exact VSIX candidates verified in this release run
         uses: actions/download-artifact@v7
         with:
-          pattern: mastercss-binding-*
-          path: binding-artifacts
-      - name: Verify and stage editor native artifacts
-        run: cargo xtask assemble-native-release binding-artifacts release-artifacts/editor-checksums.json --stage
+          name: editor-vsix
+          path: candidate-vsix
+      - name: Download every installed extension-host proof from this run
+        uses: actions/download-artifact@v7
+        with:
+          pattern: editor-proof-*
+          path: editor-proofs
+          merge-multiple: true
+      - name: Require the tested bytes, exact source revision and all sixteen host proofs
+        run: node packages/vscode/scripts/verify-editor-evidence.mjs --candidate-dir candidate-vsix --proof-dir editor-proofs
       - name: Validate editor publishing configuration
         run: |
           if [ -z "$OVSX_PAT" ]; then
@@ -191,36 +197,13 @@ jobs:
           fi
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
-      - name: Build and package editor extension releases
-        run: |
-          bun run build
-          bun run --filter @master/css-vscode type-check
-          bun run --filter @master/css-vscode vscode:package
-          bun run --filter @master/css-vscode vscode:package -- --publisher master --out-dir open-vsx
-      - name: Verify both stores use the reviewed build and native payloads
-        shell: bash
-        run: |
-          set -euo pipefail
-          node packages/vscode/scripts/verify-vsix-archives.mjs \
-            --marketplace-dir packages/vscode/vsix --open-vsx-dir packages/vscode/open-vsx \
-            --proof release-artifacts/editor-vsix.json
-          for publisher in masterco master; do
-            directory=packages/vscode/vsix
-            if [ "$publisher" = master ]; then directory=packages/vscode/open-vsx; fi
-            files=("$directory"/*-linux-x64.vsix)
-            test "${#files[@]}" -eq 1
-            node packages/vscode/scripts/verify-vsix.mjs \
-              --vsix "${files[0]}" --target linux-x64 --publisher "$publisher" \
-              --proof "release-artifacts/editor-$publisher-linux-x64.json"
-          done
       - name: Preserve the exact editor candidates before publication
         uses: actions/upload-artifact@v7
         with:
           name: editor-release-${{ github.sha }}
           path: |
-            packages/vscode/vsix/*.vsix
-            packages/vscode/open-vsx/*.vsix
-            release-artifacts/editor-*.json
+            candidate-vsix/
+            editor-proofs/
           if-no-files-found: error
           retention-days: 90
       - name: Azure login for VSCE
@@ -234,9 +217,9 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          files=(packages/vscode/vsix/*.vsix)
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No VS Code Marketplace VSIX files found in packages/vscode/vsix."
+          files=("$GITHUB_WORKSPACE"/candidate-vsix/masterco/*.vsix)
+          if [ "${#files[@]}" -ne 8 ]; then
+            echo "Expected eight verified Marketplace VSIX files."
             exit 1
           fi
 
@@ -249,9 +232,9 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          files=(packages/vscode/open-vsx/*.vsix)
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No Open VSX VSIX files found in packages/vscode/open-vsx."
+          files=("$GITHUB_WORKSPACE"/candidate-vsix/master/*.vsix)
+          if [ "${#files[@]}" -ne 8 ]; then
+            echo "Expected eight verified Open VSX VSIX files."
             exit 1
           fi
 

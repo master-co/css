@@ -11,6 +11,11 @@ on:
   schedule:
     - cron: "17 3 * * 1"
   workflow_dispatch:
+    inputs:
+      release_candidate:
+        description: Verify all release artifacts and editor hosts without publishing or deploying
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,7 +31,7 @@ jobs:
       base_sha: ${{ github.event.pull_request.base.sha || github.sha }}
       head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
       full: ${{ github.event_name != 'pull_request' }}
-      release_build: false
+      release_build: ${{ github.event_name == 'workflow_dispatch' && inputs.release_candidate }}
 
   required:
     name: required

@@ -93,6 +93,14 @@ jobs:
             echo "range_valid=$range_valid"
           } >> "$GITHUB_OUTPUT"
 
+  editor_evidence:
+    name: editor-release-evidence
+    needs: quality_linux
+    if: ${{ inputs.release_build && (github.event_name == 'workflow_dispatch' || needs.quality_linux.outputs.vscode_release_affected == 'true') }}
+    uses: ./.github/workflows/editor-verification.yml
+    permissions:
+      contents: read
+
   quality_linux:
     name: quality-linux
     needs: preflight
@@ -117,7 +125,7 @@ jobs:
         run: |
           bun run check:toolchain
           bun run test:toolchain
-          bun test scripts/validation-workflow.test.mjs
+          bun test scripts/validation-workflow.test.mjs scripts/editor-release-gate.test.mjs
           node --test scripts/pages-release-target.test.mjs scripts/release-outcome.test.mjs scripts/release-readiness.test.mjs scripts/semantic-release-promotion.test.mjs scripts/release-recovery-artifact.test.mjs
       - name: Validate package contracts
         run: |
