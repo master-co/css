@@ -116,3 +116,21 @@ test('a development binding cannot shadow the platform-specific release binaries
     assert.equal(await readFile(join(directory, 'artifacts/mastercss.node'), 'utf8'), 'wrong-platform-development-binary')
   } finally { await plugin.fail(); await rm(root, { recursive: true, force: true }) }
 })
+
+test('snapshot publication requires both stage and promotion authorization before reading source', async () => {
+  const keys = ['GITHUB_ACTIONS', 'ACTIONS_ID_TOKEN_REQUEST_URL', 'ACTIONS_ID_TOKEN_REQUEST_TOKEN', 'MASTER_CSS_RELEASE_STAGE', 'MASTER_CSS_RELEASE_PROMOTE']
+  const saved = Object.fromEntries(keys.map(key => [key, process.env[key]]))
+  try {
+    Object.assign(process.env, { GITHUB_ACTIONS: 'true', ACTIONS_ID_TOKEN_REQUEST_URL: 'https://fixture.invalid', ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture' })
+    delete process.env.MASTER_CSS_RELEASE_STAGE
+    delete process.env.MASTER_CSS_RELEASE_PROMOTE
+    await assert.rejects(createSnapshot({ root: '/nonexistent-flag-fixture', output: '/nonexistent-flag-fixture', sequence: '1', publish: true }), /MASTER_CSS_RELEASE_STAGE/)
+    process.env.MASTER_CSS_RELEASE_STAGE = '1'
+    await assert.rejects(createSnapshot({ root: '/nonexistent-flag-fixture', output: '/nonexistent-flag-fixture', sequence: '1', publish: true }), /MASTER_CSS_RELEASE_PROMOTE/)
+  } finally {
+    for (const key of keys) {
+      if (saved[key] === undefined) delete process.env[key]
+      else process.env[key] = saved[key]
+    }
+  }
+})

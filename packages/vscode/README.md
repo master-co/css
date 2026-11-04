@@ -14,7 +14,7 @@ For the complete VS Code workflow, use this extension together with the official
 
 ## Quick Start
 
-Install the extension from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=masterco.master-css) or open it directly in VS Code with [vscode:extension/masterco.master-css](vscode:extension/masterco.master-css).
+Install [Master CSS from the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode), or use extension ID `masterco.master-css-vscode` in VS Code. Editors using [Open VSX](https://open-vsx.org/extension/master/master-css-vscode) use `master.master-css-vscode`.
 
 Enable suggestions inside strings so utility completions appear in markup, JSX, template strings, and helper calls:
 
@@ -219,9 +219,13 @@ Use this after changing dependencies, workspace layout, or project manifest file
 ## Requirements and Limitations
 
 - Requires VS Code `1.120.0` or newer.
+- Native packages cover macOS x64/ARM64, Windows x64/ARM64, Linux glibc x64/ARM64, and Alpine musl x64/ARM64. The Alpine artifacts are for compatible remote extension hosts; VS Code Desktop itself is not an Alpine application. A packaged artifact alone does not establish compatibility with every downstream editor or remote host.
+- Linux ARM32 (`linux-armhf`) and Universal VSIX files are not provided. Install only the package matching a supported architecture.
 - Requires a trusted local workspace because the language server loads configuration and code from the workspace.
 - Does not support VS Code virtual workspaces or untrusted workspaces.
 - Uses a TextMate injection grammar for CSS directive syntax and semantic tokens for Master CSS class-list spans. It does not contribute a custom `.mcss` language.
+
+Keep only one Master CSS language extension enabled to avoid competing language servers. See the [maintainer release notes](https://github.com/master-co/css/blob/rc/packages/vscode/RELEASE.md).
 
 ## Troubleshooting
 

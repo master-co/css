@@ -9,6 +9,8 @@ on:
       - scripts/site-toolchain-snapshot.test.mjs
       - scripts/semantic-release-workspace.mjs
       - scripts/semantic-release-workspace.test.mjs
+      - scripts/semantic-release-promotion.mjs
+      - scripts/release-registry-consumer.mjs
       - scripts/npm-oidc.mjs
       - scripts/release-config-check.mjs
       - scripts/binding-package-smoke.mjs
@@ -57,10 +59,14 @@ jobs:
         run: bun run check:release && node --test scripts/site-toolchain-snapshot.test.mjs scripts/semantic-release-workspace.test.mjs
       - name: Publish exact site snapshot
         run: node scripts/site-toolchain-snapshot.mjs --output release-artifacts/site-toolchains --publish
+        env:
+          MASTER_CSS_RELEASE_STAGE: "1"
+          MASTER_CSS_RELEASE_PROMOTE: "1"
       - name: Retain snapshot manifest and verified tarballs
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: site-toolchain-${{ github.sha }}-${{ github.run_attempt }}
           path: release-artifacts/site-toolchains/
-          if-no-files-found: ignore
+          if-no-files-found: warn
+          retention-days: 90

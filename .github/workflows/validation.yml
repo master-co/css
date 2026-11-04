@@ -22,6 +22,9 @@ on:
       site_affected:
         description: Whether the site build is affected by this change.
         value: ${{ jobs.quality_linux.outputs.site_affected }}
+      vscode_release_affected:
+        description: Whether editor inputs changed, independent of full validation selection.
+        value: ${{ jobs.quality_linux.outputs.vscode_release_affected }}
       vscode_affected:
         description: Whether the VS Code extension build is affected by this change.
         value: ${{ jobs.quality_linux.outputs.vscode_affected }}
@@ -97,6 +100,7 @@ jobs:
     outputs:
       site_affected: ${{ steps.consumers.outputs.site_affected }}
       vscode_affected: ${{ steps.consumers.outputs.vscode_affected }}
+      vscode_release_affected: ${{ steps.delivery.outputs.vscode_release_affected }}
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
       TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
@@ -113,23 +117,28 @@ jobs:
         run: |
           bun run check:toolchain
           bun run test:toolchain
+          bun test scripts/validation-workflow.test.mjs
+          node --test scripts/pages-release-target.test.mjs scripts/release-outcome.test.mjs scripts/release-readiness.test.mjs scripts/semantic-release-promotion.test.mjs scripts/release-recovery-artifact.test.mjs
       - name: Validate package contracts
         run: |
           bun run check:mdn-registry
           bun run check:boundaries
           bun run check:packages
+          bun run check:api-census
+          bun run check:release
       - name: Detect affected release consumers
         id: consumers
         shell: bash
         env:
           RANGE_VALID: ${{ needs.preflight.outputs.range_valid }}
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
         run: |
           set -euo pipefail
 
           site_affected=true
           vscode_affected=true
 
-          if [ "$RANGE_VALID" = true ]; then
+          if [ "$RANGE_VALID" = true ] && [ "$FULL_VALIDATION" != true ]; then
             site_affected=false
             vscode_affected=false
 
@@ -149,6 +158,31 @@ jobs:
             echo "site_affected=$site_affected"
             echo "vscode_affected=$vscode_affected"
           } >> "$GITHUB_OUTPUT"
+      - name: Select editor delivery from actual input changes
+        id: delivery
+        shell: bash
+        env:
+          RANGE_VALID: ${{ needs.preflight.outputs.range_valid }}
+        run: |
+          set -euo pipefail
+          vscode_release_affected=true
+          if [ "$RANGE_VALID" = true ]; then
+            vscode_release_affected=$(bun run turbo run build --filter=@master/css-vscode --affected --dry=json \
+              | jq -r 'any(.tasks[]; .taskId == "@master/css-vscode#build")')
+            # Turbo's affected package selection does not include task inputs
+            # outside package roots. These can change the bundled native payload
+            # or JavaScript even when the editor's own files did not change.
+            changed_files=$(git diff --name-only "$TURBO_SCM_BASE...$TURBO_SCM_HEAD")
+            while IFS= read -r file; do
+              case "$file" in
+                crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml|.cargo/*|shared/*|scripts/build-rust-mdn-completion-registry.mjs|scripts/typescript-api.mjs|scripts/typescript-declarations.mjs|scripts/toolchain-policy.mjs|scripts/isolate-tooling-typescript.mjs)
+                  vscode_release_affected=true
+                  break
+                  ;;
+              esac
+            done <<< "$changed_files"
+          fi
+          echo "vscode_release_affected=$vscode_release_affected" >> "$GITHUB_OUTPUT"
       - name: Audit site translations
         run: bun run --filter site audit:i18n
       - name: Install Chromium headless shell
@@ -181,6 +215,16 @@ jobs:
       - name: Summarize browser engine differences
         if: ${{ failure() && steps.differential.outcome == 'failure' && hashFiles('packages/engine-js/.reports/differential.md') != '' }}
         run: cat packages/engine-js/.reports/differential.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify browser runtime budgets
+        run: |
+          bun run turbo run build --filter=@master/css-runtime... --concurrency=2
+          bun run check:runtime-size
+          bun run --filter @master/css-engine-js check:size
+      - name: Verify the complete release artifact surface
+        if: ${{ needs.preflight.outputs.full == 'true' || inputs.release_build }}
+        run: |
+          bun run build
+          bun run check:artifacts
       - name: Build and verify site
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}
         shell: bash
@@ -193,9 +237,28 @@ jobs:
           fi
           bun run --filter site build
           bun run --filter site test:css-contract
-          bun run --filter site test:lint-cache
+          node --test site/scripts/verify-release-site.test.mjs
+          for check in test:home test:image-loader test:public-env test:llms test:docs-examples test:mdx-imports test:syntax test:reference test:atomic-classes test:lint-cache; do
+            bun run --filter site "$check"
+          done
           bun run --filter site lint:full
           bun run --filter site type-check
+      - name: Verify built site in Chromium, Firefox and WebKit
+        if: ${{ steps.consumers.outputs.site_affected == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun run playwright install --with-deps chromium firefox webkit
+          site_origin=$(node -p "JSON.parse(require('fs').readFileSync('site/.generated/public-env.json', 'utf8')).PUBLIC_URL")
+          node site/scripts/verify-release-site.mjs --out site/out --origin "$site_origin" --report site/test-results/release-site.json
+      - name: Retain site validation evidence
+        if: ${{ !cancelled() && steps.consumers.outputs.site_affected == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-validation-${{ github.sha }}
+          path: site/test-results/release-site.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Build examples
         shell: bash
         env:
@@ -383,6 +446,60 @@ jobs:
     name: compat-windows
     needs: preflight
     runs-on: windows-latest
+    env:
+      TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
+      TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: compat
+      - name: Install Chromium headless shell
+        run: bun run playwright install --only-shell chromium
+      - name: Build Rust Wasm artifacts
+        run: bun run build:rust:wasm
+      - name: Test packages
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          # Each Vitest suite can use half the runner's CPU. Keep two task
+          # slots so concurrent cold builds do not starve bounded watch tests.
+          args=(run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful)
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          bun run turbo "${args[@]}"
+      - name: Build examples
+        shell: bash
+        env:
+          FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
+        run: |
+          set -euo pipefail
+          args=(run build '--filter=./examples/*' --concurrency=4)
+          if [ "$FULL_VALIDATION" != true ]; then
+            args+=(--affected)
+          fi
+          bun run turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}
+
+  compat_macos:
+    name: compat-macos
+    needs: preflight
+    runs-on: macos-15
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
       TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}

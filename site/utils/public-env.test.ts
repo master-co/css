@@ -183,6 +183,34 @@ test('uses localhost for local development even on rc', () => {
   assert.equal(publicEnv.PUBLIC_URL, 'http://localhost:3001')
 })
 
+for (const commitRef of ['main', 'refs/heads/main']) {
+  for (const host of [{}, { CF_PAGES_URL: 'https://candidate.pages.dev' }, { VERCEL_URL: 'candidate.vercel.app' }]) {
+    test(`stable origin stays canonical for ${commitRef} with ${JSON.stringify(host)}`, () => {
+      const resolved = resolvePublicEnv({
+        env: { PUBLIC_COMMIT_REF: commitRef, PUBLIC_VERSION: '2.0.0', ...host },
+        repositoryUrl: JSON.parse(repository).repository.url,
+        runGit: unexpectedGit
+      })
+      assert.equal(resolved.PUBLIC_URL, 'https://css.master.co')
+      assert.equal(resolved.PUBLIC_HOST, 'css.master.co')
+    })
+  }
+}
+
+test('explicit preview origins and local development override the stable default', () => {
+  for (const [env, origin] of [
+    [{ PUBLIC_URL: 'https://candidate.example.com' }, 'https://candidate.example.com'],
+    [{ NODE_ENV: 'development', PORT: '3100' }, 'http://localhost:3100']
+  ] as const) {
+    const resolved = resolvePublicEnv({
+      env: { PUBLIC_COMMIT_REF: 'main', PUBLIC_VERSION: '2.0.0', ...env },
+      repositoryUrl: JSON.parse(repository).repository.url,
+      runGit: unexpectedGit
+    })
+    assert.equal(resolved.PUBLIC_URL, origin)
+  }
+})
+
 for (const [name, overrides, expectedUrl] of [
   ['preview', {}, 'https://master-preview.vercel.app'],
   ['explicit URL', { PUBLIC_URL: 'https://docs.example.com' }, 'https://docs.example.com'],

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 
 export const publicProjectName = 'Master CSS'
 export const defaultRcUrl = 'https://rc.css.master.co'
+export const defaultStableUrl = 'https://css.master.co'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const repoRoot = resolve(siteDir, '..')
@@ -97,6 +98,7 @@ function resolveSiteUrl(env, commitRef) {
   const localUrl = `http://localhost:${port}`
   if (env.NODE_ENV === 'development' && !env.CF_PAGES_URL) return localUrl
   if (isRcBranch(commitRef)) return defaultRcUrl
+  if (getReleaseChannel(commitRef) === 'stable') return defaultStableUrl
   if (env.CF_PAGES_URL) return env.CF_PAGES_URL
   if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`
 

@@ -11,6 +11,8 @@ import { assertNpmOidcEnvironment, createNpmOidcSession, npmRegistry } from './n
 const githubEnv = {
   ...process.env,
   GITHUB_ACTIONS: 'true',
+  GITHUB_SHA: 'a'.repeat(40),
+  MASTER_CSS_RELEASE_STAGE: '1',
   ACTIONS_ID_TOKEN_REQUEST_URL: 'https://actions.example.test/oidc',
   ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture-actions-request-token'
 }
@@ -28,10 +30,15 @@ test('release versions all workspaces before packing and publishes verified tarb
   const roots = ['packages/a', 'packages/b']
   const calls = []
   const sessions = []
+  const registry = new Map()
   const plugin = createWorkspaceRelease({
+    fetchMetadata: async url => Response.json(registry.get(decodeURIComponent(url.split('/').at(-1))) ?? { versions: {}, 'dist-tags': {} }),
     run: async (command, args, options) => {
       calls.push({ command, args })
       if (command === 'npm') {
+        const manifest = packedManifest(await readFile(args[1]))
+        const { createHash } = await import('node:crypto')
+        registry.set(manifest.name, { versions: { [manifest.version]: { ...manifest, dist: { integrity: `sha512-${createHash('sha512').update(await readFile(args[1])).digest('base64')}`, attestations: { url: 'https://registry.npmjs.org/fixture' } } } }, 'dist-tags': {} })
         sessions.push(options.cwd)
         assert.notEqual(options.cwd, cwd)
         assert.equal(options.extendEnv, false)
@@ -65,13 +72,13 @@ test('release versions all workspaces before packing and publishes verified tarb
     const publish = calls.find(call => call.args[0] === 'publish')
     assert.equal(publish.command, 'npm')
     assert.ok(publish.args.includes('--provenance'))
-    assert.equal(publish.args[publish.args.indexOf('--tag') + 1], 'rc')
+    assert.equal(publish.args[publish.args.indexOf('--tag') + 1], 'candidate-1.2.3')
     assert.equal(packedManifest(await readFile(publish.args[1])).dependencies['@fixture/b'], '1.2.3')
     await plugin.addChannel(config, context)
-    assert.ok(calls.some(call => call.command === 'npm' && call.args[0] === 'dist-tag'))
+    assert.ok(!calls.some(call => call.command === 'npm' && call.args[0] === 'dist-tag'))
     assert.ok(calls.every(call => call.command !== 'pnpm'))
-    assert.deepEqual(calls.filter(call => call.command === 'npm').map(call => call.args[0]), ['publish', 'dist-tag'])
-    assert.equal(new Set(sessions).size, 2, 'every npm operation gets a fresh OIDC context')
+    assert.deepEqual(calls.filter(call => call.command === 'npm').map(call => call.args[0]), ['publish'])
+    assert.equal(new Set(sessions).size, 1, 'every npm operation gets a fresh OIDC context')
     await plugin.success()
     for (const session of sessions) await assert.rejects(stat(session), { code: 'ENOENT' })
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
@@ -136,7 +143,7 @@ test('OIDC command failure propagates without retrying credentials or requiring 
   const cwd = await mkdtemp(join(tmpdir(), 'master-oidc-failure-'))
   const sessions = [], calls = []
   const failure = new Error('Fixture: npm rejected the workflow OIDC identity')
-  const plugin = createWorkspaceRelease({ run: async (command, args, options) => {
+  const plugin = createWorkspaceRelease({ fetchMetadata: async () => new Response('{}', { status: 404 }), run: async (command, args, options) => {
     calls.push(args[0])
     if (command === 'bun') {
       await writeFile(args[args.indexOf('--filename') + 1], archive({ name: '@fixture/a', version: '1.2.3' }))
@@ -151,14 +158,14 @@ test('OIDC command failure propagates without retrying credentials or requiring 
   try {
     await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@fixture/a', version: '0.0.0' }))
     const local = { ...context, env: { NPM_TOKEN: 'unused' } }
-    for (const operation of ['verifyConditions', 'publish', 'addChannel']) {
+    for (const operation of ['verifyConditions', 'publish']) {
       await assert.rejects(plugin[operation](config, local), /requires GitHub Actions OIDC/)
     }
     assert.deepEqual(calls, [], 'reject local publication before even packing')
     await plugin.verifyConditions(config, context)
     await assert.rejects(plugin.publish(config, context), error => error === failure)
-    await assert.rejects(plugin.addChannel(config, context), error => error === failure)
-    assert.deepEqual(calls, ['pm', 'publish', 'dist-tag'])
+    assert.equal(await plugin.addChannel(config, context), false)
+    assert.deepEqual(calls, ['pm', 'publish'])
     for (const session of sessions) await assert.rejects(stat(session), { code: 'ENOENT' })
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })

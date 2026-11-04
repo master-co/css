@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
 import { assertNpmOidcEnvironment } from './npm-oidc.mjs'
+import { createReleasePromotion, assertReleaseFlag } from './semantic-release-promotion.mjs'
 
 export const siteToolchainRoots = ['@master/css-astro', '@master/css-language-service', '@master/eslint-config-css']
 const dependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']
@@ -106,7 +107,10 @@ export async function stageSnapshot(entries, stage, version, revision) {
 }
 
 export async function createSnapshot({ root, output, sequence, publish = false }) {
-  if (publish) assertNpmOidcEnvironment(process.env)
+  if (publish) {
+    assertNpmOidcEnvironment(process.env)
+    for (const flag of ['MASTER_CSS_RELEASE_STAGE', 'MASTER_CSS_RELEASE_PROMOTE']) assertReleaseFlag({ env: process.env }, flag)
+  }
   const revision = (await execa('git', ['rev-parse', 'HEAD'], { cwd: root })).stdout.trim()
   const dirty = (await execa('git', ['status', '--porcelain', '--untracked-files=no'], { cwd: root })).stdout
   if (dirty) throw new Error('Commit tracked changes before creating a source-pinned toolchain snapshot')
@@ -118,7 +122,9 @@ export async function createSnapshot({ root, output, sequence, publish = false }
   const plugin = createWorkspaceRelease()
   try {
     const workspaceRoots = await stageSnapshot(entries, stage, version, revision)
-    const context = { cwd: stage, env: process.env, stdout: process.stdout, stderr: process.stderr, nextRelease: { version, channel: 'site' } }
+    const context = { cwd: stage,
+      env: { ...process.env, MASTER_CSS_RELEASE_STATE: join(root, 'release-artifacts/site-toolchains/promotion-state.json') },
+      stdout: process.stdout, stderr: process.stderr, nextRelease: { version, channel: 'site', gitHead: revision } }
     const configurations = workspaceRoots.map(pkgRoot => ({ pkgRoot, workspaceRoots, tarballDir: join(directory, 'packages') }))
     const packages = []
     for (const config of configurations) {
@@ -138,7 +144,10 @@ export async function createSnapshot({ root, output, sequence, publish = false }
     const manifest = { schemaVersion: 1, source: { repository: 'https://github.com/master-co/css', revision }, version, tag: 'site', roots: siteToolchainRoots, packages }
     await writeFile(join(directory, 'snapshot.json'), JSON.stringify(manifest, null, 2) + '\n')
     // Pack and verify the whole closure before the first external mutation.
-    if (publish) for (const config of configurations) await plugin.publish(config, context)
+    if (publish) {
+      for (const config of configurations) await plugin.publish(config, context)
+      await createReleasePromotion().publish({ workspaceRoots }, context)
+    }
     await writeFile(join(directory, publish ? 'published.json' : 'packed.json'), JSON.stringify({ revision, version, packages: packages.length }) + '\n')
     return manifest
   } finally {

@@ -1,5 +1,23 @@
 name: Release
 on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Original Release run ID (or a previous recovery run) for this exact branch SHA
+        required: true
+        type: string
+      source_attempt:
+        description: Original run attempt containing the retained npm evidence
+        required: true
+        type: string
+      version:
+        description: Exact archived npm version to resume
+        required: true
+        type: string
+      confirm:
+        description: Type RECOVER NPM ONLY to authorize resuming this cohort without deployment
+        required: true
+        type: string
   push:
     branches:
       - main
@@ -17,15 +35,21 @@ concurrency:
 
 jobs:
   validation:
+    if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/validation.yml
     with:
       base_sha: ${{ github.event.before }}
       head_sha: ${{ github.sha }}
-      full: false
+      full: true
       release_build: true
 
   release:
+    if: ${{ github.event_name == 'push' }}
     needs: validation
+    outputs:
+      released: ${{ steps.outcome.outputs.released }}
+      version: ${{ steps.outcome.outputs.version }}
+      revision: ${{ steps.outcome.outputs.revision }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -53,36 +77,95 @@ jobs:
         run: npm install --global npm@11.21.0
       - name: Verify OIDC publication and package order
         run: bun run check:release && node --test scripts/semantic-release-workspace.test.mjs
+      - name: Require unused editor versions before publishing npm
+        if: ${{ needs.validation.outputs.vscode_release_affected == 'true' }}
+        run: node packages/vscode/scripts/verify-store-availability.mjs
       - run: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MASTER_CSS_RELEASE_STAGE: "1"
+          MASTER_CSS_RELEASE_PROMOTE: "1"
+      - name: Bind delivery to the actual completed release
+        id: outcome
+        run: node scripts/release-outcome.mjs
+      - name: Preserve publication inventory and recovery evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-release-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            release-artifacts/promotion-state.json
+            release-artifacts/packages/*.tgz
+            release-artifacts/checksums.json
+          if-no-files-found: warn
+          retention-days: 90
 
   deploy-site:
     needs:
       - validation
       - release
-    if: ${{ github.ref_name == 'rc' && needs.validation.outputs.site_affected == 'true' }}
+    if: ${{ github.event_name == 'push' && needs.release.outputs.released == 'true' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.site_affected == 'true' }}
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      contents: read
+    env:
+      PUBLIC_COMMIT_REF: ${{ github.ref_name }}
+      PUBLIC_VERSION: ${{ needs.release.outputs.version }}
+      PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
     steps:
-      - name: Trigger Cloudflare Pages site deploy
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: build
+      # Build after npm publication so metadata resolves the tag on this exact
+      # source revision. A branch deploy hook could build a newer, untested head.
+      - name: Build and verify the exact site revision
         run: |
-          if [ -z "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK" ]; then
-            echo "CLOUDFLARE_PAGES_RC_DEPLOY_HOOK is required to deploy the site after release."
-            exit 1
-          fi
-          curl -fsS -X POST "$CLOUDFLARE_PAGES_RC_DEPLOY_HOOK"
+          bun run build:site
+          bun run --filter site test:css-contract
+          bun run --filter site test:llms
+          bun run --filter site test:docs-examples
+          bun run playwright install --with-deps chromium firefox webkit
+          node site/scripts/verify-release-site.mjs --out site/out --origin "$PUBLIC_URL" --report site/test-results/release-site.json
+      - name: Retain the verified site output
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-release-${{ github.sha }}
+          path: |
+            site/out/
+            site/test-results/release-site.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Deploy the verified output to its configured Pages project
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${CLOUDFLARE_API_TOKEN:?Configure the scoped Pages token before release}"
+          : "${CLOUDFLARE_ACCOUNT_ID:?Configure the Pages account before release}"
+          : "${PAGES_PROJECT:?Configure the Pages project for this release channel}"
+          node scripts/pages-release-target.mjs
+          bun run --cwd site wrangler pages deploy out \
+            --project-name "$PAGES_PROJECT" \
+            --branch "$PUBLIC_COMMIT_REF" \
+            --commit-hash "$GITHUB_SHA" \
+            --commit-dirty=false
         env:
-          CLOUDFLARE_PAGES_RC_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_PAGES_RC_DEPLOY_HOOK }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT: ${{ github.ref_name == 'main' && vars.CLOUDFLARE_PAGES_STABLE_PROJECT || vars.CLOUDFLARE_PAGES_RC_PROJECT }}
 
   publish-editors:
     needs:
       - validation
       - release
-    if: ${{ github.ref_name == 'rc' && needs.validation.outputs.vscode_affected == 'true' }}
+    if: ${{ github.event_name == 'push' && needs.release.outputs.released == 'true' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.vscode_release_affected == 'true' }}
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v6
@@ -92,7 +175,14 @@ jobs:
         with:
           turbo-cache-scope: build
       - name: Install release platform dependencies
-        run: bun install --frozen-lockfile --os=win32 --os=darwin --os=linux --cpu=x64 --cpu=arm64 --cpu=arm --libc='*'
+        run: bun install --frozen-lockfile --os='*' --cpu='*' --libc='*'
+      - name: Download validated native artifacts for every editor target
+        uses: actions/download-artifact@v7
+        with:
+          pattern: mastercss-binding-*
+          path: binding-artifacts
+      - name: Verify and stage editor native artifacts
+        run: cargo xtask assemble-native-release binding-artifacts release-artifacts/editor-checksums.json --stage
       - name: Validate editor publishing configuration
         run: |
           if [ -z "$OVSX_PAT" ]; then
@@ -103,15 +193,36 @@ jobs:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
       - name: Build and package editor extension releases
         run: |
-          bun run release:vscode -- --patch --no-publish
+          bun run build
+          bun run --filter @master/css-vscode type-check
+          bun run --filter @master/css-vscode vscode:package
           bun run --filter @master/css-vscode vscode:package -- --publisher master --out-dir open-vsx
-      - name: Commit VS Code extension version bump
+      - name: Verify both stores use the reviewed build and native payloads
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add packages/vscode/package.json bun.lock
-          git commit -m "Chore(VSCode): Bump extension version [skip ci]"
-          git push origin "HEAD:$GITHUB_REF_NAME"
+          set -euo pipefail
+          node packages/vscode/scripts/verify-vsix-archives.mjs \
+            --marketplace-dir packages/vscode/vsix --open-vsx-dir packages/vscode/open-vsx \
+            --proof release-artifacts/editor-vsix.json
+          for publisher in masterco master; do
+            directory=packages/vscode/vsix
+            if [ "$publisher" = master ]; then directory=packages/vscode/open-vsx; fi
+            files=("$directory"/*-linux-x64.vsix)
+            test "${#files[@]}" -eq 1
+            node packages/vscode/scripts/verify-vsix.mjs \
+              --vsix "${files[0]}" --target linux-x64 --publisher "$publisher" \
+              --proof "release-artifacts/editor-$publisher-linux-x64.json"
+          done
+      - name: Preserve the exact editor candidates before publication
+        uses: actions/upload-artifact@v7
+        with:
+          name: editor-release-${{ github.sha }}
+          path: |
+            packages/vscode/vsix/*.vsix
+            packages/vscode/open-vsx/*.vsix
+            release-artifacts/editor-*.json
+          if-no-files-found: error
+          retention-days: 90
       - name: Azure login for VSCE
         uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
@@ -132,7 +243,6 @@ jobs:
           bun run --filter @master/css-vscode vsce verify-pat --azure-credential masterco
           bun run --filter @master/css-vscode vsce publish \
             --azure-credential \
-            --skip-duplicate \
             --packagePath "${files[@]}"
       - name: Publish Open VSX extension
         shell: bash
@@ -150,3 +260,51 @@ jobs:
           done
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+  npm-recovery:
+    name: Recover the explicitly selected npm cohort
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref_type == 'branch' && contains(fromJSON('["main","alpha","beta","rc","canary"]'), github.ref_name) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          ignore-scripts: "true"
+          turbo-cache: "false"
+      - name: Verify and restore the original release evidence
+        id: evidence
+        run: node scripts/release-recovery-artifact.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RECOVERY_RUN_ID: ${{ inputs.source_run_id }}
+          RECOVERY_ATTEMPT: ${{ inputs.source_attempt }}
+          RECOVERY_VERSION: ${{ inputs.version }}
+          RECOVERY_CONFIRM: ${{ inputs.confirm }}
+      - name: Install the OIDC-capable publishing npm CLI
+        run: npm install --global npm@11.21.0
+      - name: Resume verified npm uploads and promotion only
+        run: node scripts/release-recover.mjs --state "$RECOVERY_STATE" --channel "$RECOVERY_CHANNEL"
+        env:
+          RECOVERY_STATE: ${{ steps.evidence.outputs.state }}
+          RECOVERY_CHANNEL: ${{ steps.evidence.outputs.channel }}
+          MASTER_CSS_RELEASE_STAGE: "1"
+          MASTER_CSS_RELEASE_PROMOTE: "1"
+          MASTER_CSS_RELEASE_RECOVERY: "1"
+      - name: Preserve recovery evidence even after partial failure
+        if: ${{ always() && steps.evidence.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-release-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            release-artifacts/recovery/promotion-state.json
+            release-artifacts/recovery/packages/*.tgz
+            release-artifacts/recovery/checksums.json
+          if-no-files-found: error
+          retention-days: 90

@@ -2,6 +2,7 @@ import configure from '@aronrepo/semantic-release-config/configure'
 
 const SOURCE_RELEASE_PLUGIN = '@aronrepo/semantic-release-pnpm'
 const WORKSPACE_RELEASE_PLUGIN = './scripts/semantic-release-workspace.mjs'
+const PROMOTION_PLUGIN = './scripts/semantic-release-promotion.mjs'
 const BINDING_TARGET_PACKAGE_PATTERN = /^packages\/binding-(?:darwin|linux|win32)-/
 const WASM_PACKAGE_ROOTS = new Set([
   'packages/binding-wasm-compiler',
@@ -10,7 +11,8 @@ const WASM_PACKAGE_ROOTS = new Set([
 ])
 
 function packageReleasePriority(plugin) {
-  if (Array.isArray(plugin) && plugin[0] === '@semantic-release/github') return 4
+  if (Array.isArray(plugin) && plugin[0] === '@semantic-release/github') return 5
+  if (Array.isArray(plugin) && plugin[0] === PROMOTION_PLUGIN) return 4
   if (!Array.isArray(plugin) || plugin[0] !== WORKSPACE_RELEASE_PLUGIN) return 0
   const packageRoot = plugin[1]?.pkgRoot
   if (BINDING_TARGET_PACKAGE_PATTERN.test(packageRoot)) return 1
@@ -56,10 +58,10 @@ const workspaceRoots = config.plugins
   .filter(plugin => Array.isArray(plugin) && plugin[0] === SOURCE_RELEASE_PLUGIN)
   .map(plugin => plugin[1].pkgRoot).sort()
 
-config.plugins = orderReleasePlugins(config.plugins.map(plugin =>
+config.plugins = orderReleasePlugins([...config.plugins.map(plugin =>
   Array.isArray(plugin) && plugin[0] === SOURCE_RELEASE_PLUGIN
     ? [WORKSPACE_RELEASE_PLUGIN, { ...plugin[1], workspaceRoots }]
     : plugin
-))
+), [PROMOTION_PLUGIN, { workspaceRoots }]])
 
 export default config

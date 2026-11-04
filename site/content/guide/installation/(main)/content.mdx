@@ -26,6 +26,12 @@ For runtime and server-rendered setups, see [rendering support by integration](/
 
 Use Node.js 24 and open the app's root directory, where its `package.json` lives. The installer updates an existing project; it does not create a framework starter. Your app should already have a working development command.
 
+### Package availability \{#package-availability\}
+
+These instructions require a coordinated release of the installer, integrations and their dependencies. That package set is not fully available on npm yet. The `@rc` commands below describe the intended installation channel; they are not a verified way to install this candidate today. Wait for the matching packages to be published before following those commands. A package that exists under another tag does not establish compatibility with this setup.
+
+For a local runtime evaluation, use the [built-checkout CDN example](#cdn). Keep its script, compiled program and base stylesheet from the same build.
+
 For manual setup or framework-specific files, use the [integration guides](/guide/installation#integrations). If your project has no matching build integration, follow the [standalone CLI setup](/guide/installation#cli).
 
 <StepSection>
@@ -86,7 +92,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
 
 A CDN installation runs Master CSS in the browser without a build tool. It suits a plain HTML prototype; generated styles depend on JavaScript. Use an integration or the CLI when the page needs styles without JavaScript.
 
-The CSS-first CDN release is not published yet. The current `rc` channel still serves the earlier RC88 runtime. The template below targets the new runtime: replace every `VERSION` with the same published CSS-first version of the runtime and preset before using it. Until then, use a local build as described below, or choose [Integrations](#integrations) or [CLI](#cli).
+The CSS-first CDN release is not published yet. Before using the template, replace every `VERSION` below with the same published CSS-first version of the runtime and preset. Until that release is available, use a local build as described below. The same [package availability requirement](#package-availability) applies to [Integrations](#integrations) and [CLI](#cli).
 
 Save this template as `index.html`:
 

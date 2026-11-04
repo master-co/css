@@ -3,8 +3,9 @@ import { resolve, join } from 'node:path'
 import { gunzipSync } from 'node:zlib'
 import { execa } from 'execa'
 // Reuse manifest/version helpers only; npm CLI owns OIDC authentication.
-import { getChannel, readPackage, writeReleaseVersion } from '@aronrepo/semantic-release-pnpm'
+import { readPackage, writeReleaseVersion } from '@aronrepo/semantic-release-pnpm'
 import { assertNpmOidcEnvironment, assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
+import { assertReleaseFlag, recoveryArchive, stagePackage } from './semantic-release-promotion.mjs'
 
 function* packedEntries(archive) {
   const tar = gunzipSync(archive)
@@ -47,7 +48,7 @@ export function validatePackedManifest(manifest, expectedName, version) {
   }
 }
 
-export function createWorkspaceRelease({ run = execa } = {}) {
+export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch } = {}) {
   const versions = new Map()
   const tarballs = new Map()
 
@@ -83,6 +84,12 @@ export function createWorkspaceRelease({ run = execa } = {}) {
     await versions.get(key)
     const pkg = await readPackage(cwd, config.pkgRoot)
     if (pkg.private || config.npmPublish === false) return
+    const recovered = await recoveryArchive(config, context, pkg.name)
+    if (recovered) {
+      validatePackedArchive(await readFile(recovered), pkg.name, version)
+      tarballs.set(`${cwd}:${config.pkgRoot}:${version}`, recovered)
+      return
+    }
     const directory = resolve(cwd, config.tarballDir || 'release-artifacts/packages')
     await mkdir(directory, { recursive: true })
     const archive = join(directory, `${pkg.name.replace(/^@/, '').replaceAll('/', '-')}-${version}.tgz`)
@@ -96,6 +103,7 @@ export function createWorkspaceRelease({ run = execa } = {}) {
     if (!pkg.private && config.npmPublish !== false) {
       assertNpmOidcEnvironment(context.env)
       assertNpmPublishConfig(pkg)
+      assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     }
   }
 
@@ -105,21 +113,19 @@ export function createWorkspaceRelease({ run = execa } = {}) {
     if (pkg.private || config.npmPublish === false) return false
     assertNpmOidcEnvironment(context.env)
     assertNpmPublishConfig(pkg)
+    assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     const key = `${cwd}:${config.pkgRoot}:${context.nextRelease.version}`
     if (!tarballs.has(key)) await prepare(config, context)
-    const channel = getChannel(context.nextRelease.channel)
-    const args = ['publish', tarballs.get(key), '--tag', channel, '--ignore-scripts']
-    if (pkg.publishConfig?.provenance) args.push('--provenance')
-    await executeNpm(pkg, args, context)
+    const channel = await stagePackage(config, context, pkg, tarballs.get(key), executeNpm, fetchMetadata)
     return { name: `npm package (@${channel} dist-tag)`, channel, url: `https://www.npmjs.com/package/${pkg.name}/v/${context.nextRelease.version}` }
   }
 
   async function addChannel(config, context) {
     const pkg = await readPackage(context.cwd ?? process.cwd(), config.pkgRoot)
     if (pkg.private || config.npmPublish === false) return false
-    const channel = getChannel(context.nextRelease.channel)
-    await executeNpm(pkg, ['dist-tag', 'add', `${pkg.name}@${context.nextRelease.version}`, channel], context)
-    return { name: `npm package (@${channel} dist-tag)`, channel }
+    // The final promotion plugin verifies the entire archived cohort before moving
+    // any formal channel. Individual packages must never promote themselves.
+    return false
   }
 
   async function cleanup() {

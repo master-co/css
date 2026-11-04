@@ -1,0 +1,238 @@
+name: Editor artifact verification
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editor-verification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    name: Build editor native target ${{ matrix.package }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { package: binding-darwin-arm64, runner: macos-15 }
+          - { package: binding-darwin-x64, runner: macos-15-intel }
+          - { package: binding-linux-arm64-gnu, runner: ubuntu-24.04-arm }
+          - { package: binding-linux-x64-gnu, runner: ubuntu-24.04 }
+          - { package: binding-win32-arm64-msvc, runner: windows-11-arm }
+          - { package: binding-win32-x64-msvc, runner: windows-2025 }
+          - { package: binding-linux-arm64-musl, runner: ubuntu-24.04-arm, musl: true }
+          - { package: binding-linux-x64-musl, runner: ubuntu-24.04, musl: true }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
+        if: ${{ !matrix.musl }}
+        with:
+          shared-key: native-${{ matrix.package }}
+      - name: Build native artifacts
+        if: ${{ !matrix.musl }}
+        run: cargo xtask stage-native-target ${{ matrix.package }} --release
+      - name: Build native artifacts in musl
+        if: ${{ matrix.musl }}
+        shell: bash
+        env:
+          TARGET_PACKAGE: ${{ matrix.package }}
+        run: |
+          docker run --rm -e TARGET_PACKAGE -v "$PWD:/workspace" -w /workspace rust:1.98.1-alpine sh -ec '
+            apk add --no-cache build-base
+            RUSTFLAGS="-C target-feature=-crt-static" cargo xtask stage-native-target "$TARGET_PACKAGE" --release
+          '
+      - name: Preserve artifact modes in transport
+        shell: bash
+        run: tar -czf editor-${{ matrix.package }}.tgz -C packages ${{ matrix.package }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: editor-${{ matrix.package }}
+          path: editor-${{ matrix.package }}.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  package:
+    name: Package both publisher identities without versioning or publishing
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          all-platforms: "true"
+          turbo-cache-scope: build
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: editor-binding-*
+          path: editor-native
+          merge-multiple: true
+      - name: Restore every target from this workflow run
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=0
+          for archive in editor-native/*.tgz; do
+            tar -xzf "$archive" -C packages
+            count=$((count + 1))
+          done
+          test "$count" -eq 8
+      - name: Build and check the extension
+        run: |
+          bun run build:rust:wasm
+          bun run turbo run build --filter=@master/css-vscode... --concurrency=2
+          bun run --filter @master/css-vscode test
+          bun run --filter @master/css-vscode lint
+          bun run --filter @master/css-vscode type-check
+      - name: Package the reviewed version for both stores
+        run: |
+          bun run --filter @master/css-vscode vscode:package -- --out-dir vsix/masterco
+          bun run --filter @master/css-vscode vscode:package -- --publisher master --out-dir vsix/master
+          node packages/vscode/scripts/verify-vsix-archives.mjs --marketplace-dir packages/vscode/vsix/masterco --open-vsx-dir packages/vscode/vsix/master --proof packages/vscode/vsix/inventory.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: editor-vsix
+          path: packages/vscode/vsix/
+          if-no-files-found: error
+          retention-days: 7
+
+  verify:
+    name: Verify installed editor artifact ${{ matrix.target }}
+    needs: package
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: darwin-arm64, runner: macos-15 }
+          - { target: darwin-x64, runner: macos-15-intel }
+          - { target: linux-arm64, runner: ubuntu-24.04-arm }
+          - { target: linux-x64, runner: ubuntu-24.04 }
+          - { target: win32-arm64, runner: windows-11-arm }
+          - { target: win32-x64, runner: windows-2025 }
+          - { target: alpine-arm64, runner: ubuntu-24.04-arm, musl: true }
+          - { target: alpine-x64, runner: ubuntu-24.04, musl: true }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v7
+        with:
+          name: editor-vsix
+          path: candidate-vsix
+      - uses: actions/setup-node@v6
+        if: ${{ !matrix.musl }}
+        with:
+          node-version: "24"
+      - name: Install isolated official VS Code testing tools
+        if: ${{ !matrix.musl }}
+        shell: bash
+        run: npm install --prefix "$RUNNER_TEMP/editor-tools" --ignore-scripts --no-audit --no-fund @vscode/test-electron@2.5.2
+      - name: Install virtual display for Linux desktop testing
+        if: ${{ runner.os == 'Linux' && !matrix.musl }}
+        run: sudo apt-get update && sudo apt-get install -y xvfb libasound2t64 libgbm1 libnss3
+      - name: Install each publisher VSIX and test the official extension host
+        if: ${{ !matrix.musl }}
+        shell: bash
+        env:
+          EDITOR_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          prefix=()
+          if [ "$RUNNER_OS" = Linux ]; then prefix=(xvfb-run -a); fi
+          for publisher in masterco master; do
+            files=(candidate-vsix/$publisher/*-$EDITOR_TARGET.vsix)
+            test "${#files[@]}" -eq 1
+            "${prefix[@]}" node packages/vscode/scripts/verify-vsix.mjs \
+              --vsix "${files[0]}" --target "$EDITOR_TARGET" --publisher "$publisher" \
+              --proof "proofs/$EDITOR_TARGET-$publisher.json" \
+              --vscode-version 1.120.0 \
+              --test-electron-module "$RUNNER_TEMP/editor-tools/node_modules/@vscode/test-electron/out/index.js"
+          done
+      - name: Exercise Alpine VSIX native payload and bundled LSP
+        if: ${{ matrix.musl }}
+        shell: bash
+        env:
+          EDITOR_TARGET: ${{ matrix.target }}
+        run: |
+          docker run --rm -e EDITOR_TARGET -e GITHUB_SHA -v "$PWD:/workspace" -w /workspace alpine:3.24 sh -ec '
+            apk add --no-cache nodejs unzip libstdc++
+            for publisher in masterco master; do
+              set -- candidate-vsix/$publisher/*-$EDITOR_TARGET.vsix
+              test "$#" -eq 1
+              node packages/vscode/scripts/verify-vsix.mjs \
+                --vsix "$1" --target "$EDITOR_TARGET" --publisher "$publisher" \
+                --proof "proofs/$EDITOR_TARGET-$publisher.json"
+            done
+          '
+      - uses: actions/upload-artifact@v7
+        with:
+          name: editor-proof-${{ matrix.target }}
+          path: proofs/
+          if-no-files-found: error
+          retention-days: 7
+
+  required:
+    name: Require every editor artifact proof
+    if: ${{ always() }}
+    needs: [native, package, verify]
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - name: Require successful build, packaging and verification
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: node -e 'for (const job of Object.values(JSON.parse(process.env.RESULTS))) if (job.result !== "success") process.exit(1)'
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: editor-proof-*
+          path: proofs
+          merge-multiple: true
+      - uses: actions/download-artifact@v7
+        with:
+          name: editor-vsix
+          path: candidate-vsix
+      - name: Verify exact coverage and candidate identities
+        env:
+          CANDIDATE_SHA: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict'
+          import { readFileSync, readdirSync } from 'node:fs'
+          const targets = ['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64', 'win32-arm64', 'win32-x64', 'alpine-arm64', 'alpine-x64']
+          const files = targets.flatMap(target => ['masterco', 'master'].map(publisher => `${target}-${publisher}.json`)).sort()
+          assert.deepEqual(readdirSync('proofs').sort(), files)
+          const inventory = JSON.parse(readFileSync('candidate-vsix/inventory.json', 'utf8'))
+          assert.equal(inventory.schemaVersion, 1)
+          assert.equal(inventory.revision, process.env.CANDIDATE_SHA)
+          assert.equal(inventory.archives.length, 16)
+          assert.equal(new Set(inventory.archives.map(item => `${item.target}-${item.publisher}`)).size, 16)
+          for (const target of targets) for (const publisher of ['masterco', 'master']) {
+            const proof = JSON.parse(readFileSync(`proofs/${target}-${publisher}.json`, 'utf8'))
+            assert.equal(proof.revision, process.env.CANDIDATE_SHA)
+            assert.equal(proof.target, target)
+            assert.equal(proof.publisher, publisher)
+            assert.equal(proof.version, inventory.version)
+            const artifact = inventory.archives.find(item => item.target === target && item.publisher === publisher)
+            assert.ok(artifact)
+            assert.equal(proof.vsix.sha256, artifact.sha256)
+            assert.equal(proof.binding.surface, 'native')
+            assert.equal(proof.lsp.shutdown, 0)
+            assert.equal(proof.lsp.completion, ':first-child')
+            if (target.startsWith('alpine-')) assert.equal(proof.extensionHost, null)
+            else {
+              assert.equal(proof.extensionHost.id, `${publisher}.master-css-vscode`)
+              for (const key of ['activated', 'completion', 'hover', 'restarted']) assert.equal(proof.extensionHost[key], true)
+            }
+          }
+          console.log(`Verified ${inventory.version}: eight native/LSP targets and six desktop extension hosts for both publishers. Alpine remote activation remains unverified.`)
+          NODE
