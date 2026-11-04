@@ -53,13 +53,14 @@ export default function Doc(props: any) {
     }
     return (
         <>
-            <Header {...props}>
+            <Header {...props} navStart={
                 <button className="headerNav hide@lg" onClick={() => {
                     sidebarRef.current?.classList.toggle('hide@<lg')
                 }}>
                     <MenuSvg className="fill:current ml:-4" width="20" height="20" />
                 </button>
-                {
+            }>
+                {props.name !== 'CSS' &&
                     Object
                         .keys(props.seriesContents)
                         .map((name) => {
@@ -74,8 +75,8 @@ export default function Doc(props: any) {
                             )
                         })
                 }
-                <ALink href="https://rc.css.master.co/docs" className='r:3 inline-flex font:medium center-content bg:rgba(251,224,157,.1)@dark f:rgb(251,224,157)@dark bg:rgba(235,187,64,.1) f:#dca000 text:12 p:4|10 my:-4 ml:5'>
-                    {tCommon('v2.0 release candidate is now available')}
+                <ALink href="https://css.master.co" className='r:3 inline-flex font:medium center-content bg:rgba(251,224,157,.1)@dark f:rgb(251,224,157)@dark bg:rgba(235,187,64,.1) f:#dca000 text:12 p:4|10 my:-4 ml:5'>
+                    {tCommon('v2.0 is now available')}
                     <ChevronRightSvg width="16" height="16" className="my:-4 ml:4 mr:-4" fill="currentColor" />
                 </ALink>
             </Header>

@@ -16,6 +16,11 @@
     color-scheme: light;
 }
 
+.headerVersion:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+}
+
 @font-face {
     font-family: 'Fira Code VF';
     src: url('../public/fonts/FiraCode-VF.woff2') format('woff2-variations');

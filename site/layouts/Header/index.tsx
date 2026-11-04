@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import DiscussionSvg from '~/svgs/discussion.svg';
 import LanguageButton from '~/components/LanguageButton';
 import ThemeButton from '~/components/ThemeButton';
+import VersionSelect from './VersionSelect';
 
 export default function Header(props: any) {
     const { top } = props
@@ -78,6 +79,8 @@ export default function Header(props: any) {
 
     const Navs = ({ className }: any) => (
         <div className={clsx(className, 'flex h:full align-items:center min-w:0')}>
+            {props.navStart}
+            {lowerCaseName === 'css' && <VersionSelect />}
             {props.children}
         </div>
     )
