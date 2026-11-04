@@ -23,10 +23,11 @@ If the publisher has not authorized the managed identity, Marketplace returns `I
 ## Check CI authorization without publishing
 
 Manually run **Marketplace authorization check** (`marketplace-auth-check.yml`)
-on `rc` after the workflow is available on GitHub:
+on each intended release branch after the workflow is available on that branch:
 
 ```sh
 gh workflow run marketplace-auth-check.yml --repo master-co/css --ref rc
+gh workflow run marketplace-auth-check.yml --repo master-co/css --ref main
 ```
 
 The workflow uses the release job's Azure identity and locked VSCE dependency,
@@ -34,7 +35,11 @@ then runs only `vsce verify-pat --azure-credential masterco`. Dependency lifecyc
 scripts are disabled. It does not build or package the extension, change versions,
 push commits, publish packages, or deploy the website. It grants only repository
 read access and OIDC token access, and only runs against this repository's `rc`
-branch to match the release identity's federated subject.
+and `main` branches. Azure must have a federated credential for each exact branch
+subject (`repo:master-co/css:ref:refs/heads/rc` and
+`repo:master-co/css:ref:refs/heads/main`). A successful `rc` check does not verify
+the `main` subject. Record each run's branch, source revision and both job results;
+merely inspecting the Azure credential configuration does not prove CI login.
 
 Check that both the Azure login and Marketplace verification steps succeed; a
 skipped job is not a successful authorization check. This checks credentials and

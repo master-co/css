@@ -12,7 +12,7 @@ concurrency:
 jobs:
   verify:
     name: Verify Marketplace credentials without publishing
-    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/rc' }}
+    if: ${{ github.repository == 'master-co/css' && (github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -51,7 +51,7 @@ jobs:
 
   verify_open_vsx:
     name: Verify Open VSX credentials without publishing
-    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/rc' }}
+    if: ${{ github.repository == 'master-co/css' && (github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
