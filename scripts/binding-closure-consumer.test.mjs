@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
-import { cleanEnvironment, verifyInstalledLock, verifyRevision } from './binding-closure-consumer.mjs'
+import { cleanEnvironment, installedLocations, verifyInstalledLock, verifyRevision } from './binding-closure-consumer.mjs'
 import { prepareClosure } from './binding-closure-prepare.mjs'
 import { packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
 
@@ -29,12 +29,44 @@ test('installed closure rejects missing, substituted and registry workspace pack
   const names = new Set([name, '@master/css-binding-darwin-arm64'])
   const entry = { version: '0.0.0-closure.1', resolved: 'file:/candidate.tgz', integrity: 'sha512-candidate' }
   const lock = value => ({ packages: { [`node_modules/${name}`]: value } })
-  assert.deepEqual(verifyInstalledLock(lock(entry), expected, names), [name])
-  assert.throws(() => verifyInstalledLock({ packages: {} }, expected, names), /Candidate package missing/)
-  assert.throws(() => verifyInstalledLock(lock({ ...entry, version: '2.0.0' }), expected, names), /Wrong installed version/)
-  assert.throws(() => verifyInstalledLock(lock({ ...entry, integrity: 'sha512-other' }), expected, names), /Wrong installed archive integrity/)
-  assert.throws(() => verifyInstalledLock(lock({ ...entry, resolved: 'https://registry.npmjs.org/candidate.tgz' }), expected, names), /came from a registry/)
-  assert.throws(() => verifyInstalledLock({ packages: { 'node_modules/@master/css-binding-darwin-arm64': entry } }, expected, names), /Unexpected workspace package/)
+  const physical = new Set([`node_modules/${name}`])
+  const verify = value => verifyInstalledLock(value, expected, names, physical)
+  assert.deepEqual(verify(lock(entry)), [name])
+  assert.throws(() => verify({ packages: {} }), /Candidate package missing/)
+  assert.throws(() => verifyInstalledLock(lock(entry), expected, names, new Set()), /absent from disk/)
+  assert.throws(() => verify(lock({ ...entry, version: '2.0.0' })), /Wrong installed version/)
+  assert.throws(() => verify(lock({ ...entry, integrity: 'sha512-other' })), /Wrong installed archive integrity/)
+  assert.throws(() => verify(lock({ ...entry, resolved: 'https://registry.npmjs.org/candidate.tgz' })), /came from a registry/)
+  assert.throws(() => verify({ packages: { 'node_modules/@master/css-binding-darwin-arm64': entry } }), /Unexpected workspace package/)
+})
+
+test('npm 11.12 optional placeholders require known targets and no physical package or metadata', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'mastercss-optional-lock-'))
+  const name = '@master/css-binding-darwin-x64'
+  const location = `node_modules/@master/css-binding/node_modules/${name}`
+  const names = new Set([name])
+  const lock = { packages: { [location]: { optional: true } } }
+  const verify = async (value = lock, targets = names) => verifyInstalledLock(value, new Map(), names,
+    await installedLocations(root, value, names), targets)
+  try {
+    assert.deepEqual(await verify(), [])
+    await assert.rejects(verify(lock, new Set()), /Unexpected workspace package installed/)
+    for (const entry of [{}, { optional: false }, { optional: true, resolved: 'https://registry.npmjs.org/foreign.tgz' },
+      { optional: true, integrity: 'sha512-foreign' }, { optional: true, version: '2.0.0' }]) {
+      await assert.rejects(verify({ packages: { [location]: entry } }), /Unexpected optional target metadata/)
+    }
+    await mkdir(join(root, location), { recursive: true })
+    await assert.rejects(verify(), /Unexpected workspace package on disk/)
+    await rm(join(root, location), { recursive: true })
+    // A top-level foreign package cannot hide behind an absent nested lock entry.
+    await mkdir(join(root, 'node_modules', name), { recursive: true })
+    await assert.rejects(verify(), /Unexpected workspace package on disk/)
+    await rm(join(root, 'node_modules', name), { recursive: true })
+    await symlink(join(root, 'missing-target'), join(root, location), 'junction')
+    await assert.rejects(verify(), /Unexpected workspace package on disk/)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })
 
 async function fixture() {

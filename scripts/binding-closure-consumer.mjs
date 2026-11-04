@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { createServer } from 'node:http'
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { cp, lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -27,13 +27,42 @@ export function verifyRevision(manifest, expectedRevision) {
 }
 
 /** Every installed workspace package must be one of the verified local archives. */
-export function verifyInstalledLock(lock, expected, workspaceNames) {
+export async function installedLocations(consumer, lock, workspaceNames) {
+  const locations = new Set([...Object.keys(lock.packages ?? {}),
+    ...[...workspaceNames].map(name => `node_modules/${name}`)])
+  const physical = new Set()
+  for (const location of locations) {
+    if (!workspaceNames.has(location.split('node_modules/').at(-1))) continue
+    try {
+      // lstat also catches dangling links, which must not count as absent packages.
+      await lstat(join(consumer, location))
+      physical.add(location)
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error
+    }
+  }
+  return physical
+}
+
+export function verifyInstalledLock(lock, expected, workspaceNames, physical, optionalTargets = new Set()) {
+  assert.ok(physical instanceof Set, 'Inspect installed package paths before validating the lock')
+  for (const location of physical) {
+    const name = location.split('node_modules/').at(-1)
+    if (workspaceNames.has(name)) assert.ok(expected.has(name), `Unexpected workspace package on disk: ${name}`)
+  }
   const installed = new Set()
   for (const [location, entry] of Object.entries(lock.packages ?? {})) {
     const name = location.split('node_modules/').at(-1)
     if (!workspaceNames.has(name)) continue
     const candidate = expected.get(name)
+    if (!candidate && optionalTargets.has(name) && !physical.has(location)) {
+      // npm 11.12 retains failed optional resolutions as nested { optional: true }
+      // placeholders. They contain no package metadata and have no filesystem entry.
+      assert.deepEqual(entry, { optional: true }, `Unexpected optional target metadata: ${name}`)
+      continue
+    }
     assert.ok(candidate, `Unexpected workspace package installed: ${name}`)
+    assert.ok(physical.has(location), `Candidate package is absent from disk: ${name}`)
     assert.equal(entry.version, candidate.version, `Wrong installed version: ${name}`)
     assert.ok(entry.resolved?.startsWith('file:'), `Workspace package came from a registry: ${name}`)
     assert.equal(entry.integrity, candidate.integrity, `Wrong installed archive integrity: ${name}`)
@@ -143,13 +172,14 @@ export async function consumeClosure({ closure, target, proof }) {
     const expected = new Map(packages.map(entry => [entry.name, entry]))
     const workspaceNames = new Set([...manifest.packages.map(entry => entry.name), ...manifest.targets])
     const lock = await readJSON(join(consumer, 'package-lock.json'))
-    const installed = verifyInstalledLock(lock, expected, workspaceNames)
+    const unavailableTargets = new Set(manifest.targets.filter(name => name !== targetManifest.name))
+    const physical = await installedLocations(consumer, lock, workspaceNames)
+    const installed = verifyInstalledLock(lock, expected, workspaceNames, physical, unavailableTargets)
     for (const entry of packages) {
       const actual = await readJSON(join(consumer, 'node_modules', entry.name, 'package.json'))
       assert.equal(actual.name, entry.name)
       assert.equal(actual.version, manifest.version)
     }
-    const unavailableTargets = new Set(manifest.targets.filter(name => name !== targetManifest.name))
     for (const request of registryRequests) assert.ok(unavailableTargets.has(request.replace(/^\//, '')), `Unexpected workspace registry request: ${request}`)
     await writeFile(join(consumer, 'expected.json'), JSON.stringify(manifest))
     await writeFile(join(consumer, 'smoke.mjs'), consumerSource)
