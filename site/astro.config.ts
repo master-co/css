@@ -4,6 +4,7 @@ import masterSite from '@master/internal-site/astro'
 import siteConfig from './site.config'
 import { readPublicEnv } from './utils/public-env.js'
 import { shouldUseCloudflareImageLoader } from './utils/cloudflare-image-loader.js'
+import { releaseCodeMdx } from './utils/release-code.mjs'
 
 const publicEnv = readPublicEnv()
 // Vite exposes PUBLIC_* process variables through import.meta.env.
@@ -22,6 +23,7 @@ export default defineConfig({
     port: 3000
   },
   vite: {
+    plugins: [releaseCodeMdx({ siteRoot: fileURLToPath(new URL('.', import.meta.url)), version: publicEnv.PUBLIC_VERSION })],
     server: {
       // A build writes thousands of files into outDir while a dev server may be
       // running; each one would otherwise be processed as a source change.
