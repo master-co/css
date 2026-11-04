@@ -11,7 +11,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import preset from '@master/internal-site/css/preset-manifest.ts'
 import { toolingExample, toolingOptions } from '../utils/tooling-guide-data'
-import { deliveryFences, deliverySource } from './delivery-examples'
+import { toolingGuideContent } from '../utils/tooling-content'
+import { deliveryFences, deliverySource, siteRoot } from './delivery-examples'
 import { packageEditorial } from '../reference/package-editorial'
 
 export function verifyLintExamples() {
@@ -78,7 +79,7 @@ export function verifyLintExamples() {
   } finally { rmSync(root, { recursive: true, force: true }) }
 }
 
-export function verifyLanguageExamples() {
+export async function verifyLanguageExamples() {
   // Exercise the article's project token, not just completion against the preset.
   const fences = deliveryFences(deliverySource('language-service'))
   const theme = fences.find(fence => fence.language === 'css' && fence.text.includes('--spacing-card'))!
@@ -116,12 +117,20 @@ export function verifyLanguageExamples() {
     assert.ok(service.settings.classAttributes?.includes('class'))
     const settings = JSON.parse(readFileSync(new URL('../../packages/vscode/package.json', import.meta.url), 'utf8')).contributes.configuration.properties
     for (const option of toolingOptions.languageSettings.options) assert.equal(String(settings[option.name].default), option.defaultValue)
-    const documentedSettings = [...deliverySource('language-service').matchAll(/^\| `(masterCSS\.[^`]+)` \| ([^|]+) \|/gm)]
-    assert.ok(documentedSettings.length, 'Read the actual Guide settings table, not only gallery fixtures')
+    // Read the same authored DocumentOptionList that feeds the page and exports;
+    // gallery fixtures alone cannot detect a missing or incorrect article default.
+    const { markdown } = await toolingGuideContent(siteRoot, 'language-service')
+    const documentedSettings = [...markdown.matchAll(/^\*\*`(masterCSS\.[^`]+)`\*\*\n\nDefault: ([^\n]+)$/gm)]
+    assert.deepEqual(documentedSettings.map(([, name]) => name).sort(), Object.keys(settings).sort(), 'The Guide documents every extension setting exactly once')
     for (const [, name, value] of documentedSettings) {
       assert.ok(settings[name], `The extension defines ${name}`)
-      const literal = /^`([^`]+)`$/.exec(value.trim())
-      if (literal && !Array.isArray(settings[name].default)) assert.equal(String(settings[name].default), literal[1], name)
+      const literal = /^`([^`]+)`\.$/.exec(value.trim())
+      if (typeof settings[name].default !== 'object') {
+        assert.ok(literal, `The Guide states the literal default for ${name}`)
+        assert.equal(String(settings[name].default), literal[1], name)
+      } else if (literal?.[1] === '[]') {
+        assert.deepEqual(settings[name].default, [], name)
+      }
     }
   } finally { service.dispose() }
 }

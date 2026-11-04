@@ -46567,6 +46567,7 @@
     "3dfd95504853390b": "\n\n  .ref-surface-sample {\n    aspect-ratio: 1;\n    border-radius: var(--ui-radius-lg);\n    background: var(--ui-surface-sheet);\n    width: 5rem;\n    max-width: 100%;\n  }",
     "3e078aea454bcede": "\n\n  ::-moz-focus-inner {\n    border-style: none;\n    padding: 0;\n  }",
     "3e0fca2e3b56b272": "\n\n  .home-agent-tabs {\n    align-items: flex-end;\n    gap: var(--spacing-sm);\n    padding-inline: var(--home-agent-inset) var(--spacing-xs);\n    grid-area: tabs;\n\n    & > .home-agent-dots {\n      flex: none;\n      align-self: center;\n\n      @container home-agent (width < 24rem) {\n        display: none;\n      }\n    }\n\n    @container home-agent (width >= 56rem) {\n      display: none;\n    }\n  }",
+    "3e15a37ecac29be9": ".home-header .ui-version{display:none}",
     "3e470690a7eb9d08": ".max-w-full{max-width:100%}",
     "3e4c3d75192faddb": "\n\n  .ui-input, .ui-select {\n    border-radius: var(--ui-radius-md);\n    background: var(--ui-surface-well);\n    width: 100%;\n    min-height: 2.5rem;\n    color: var(--ui-text-strong);\n    box-shadow: var(--ui-elevation-sink);\n    font: var(--ui-weight-regular) var(--ui-text-small)/1.45 var(--font-family-sans);\n    resize: vertical;\n    transition: box-shadow var(--ui-duration-quick), background-color var(--ui-duration-quick);\n    border: 0;\n    padding: .5625rem .75rem;\n  }",
     "3e9bb3a60e455cee": "\n\n  .home-delivery-pane-bar {\n    gap: .5rem;\n    padding-inline: .875rem;\n  }",
@@ -89160,9 +89161,9 @@
         "light"
       ]
     },
-    "9619b1ee2a691c1e": {
-      "cssBytes": 340031,
-      "cssSha256": "7d1db9f0e5f6eaa6ddafe30705a375e72b32c81b35f858e28805cc612b6612d7",
+    "c77f391557cef54f": {
+      "cssBytes": 340069,
+      "cssSha256": "35d0adf40b155448d721f5ba4f5bba7a5915276007253570f78e3c71976dc641",
       "cssSegments": [
         "9662aca5917826ed",
         "10971e47c0bbc03d",
@@ -89885,6 +89886,7 @@
         "dac01b4138f42818",
         "82c19b056f8911d6",
         "05fd35b419e6cfa0",
+        "3e15a37ecac29be9",
         "d10b36aa74a59bcf",
         "c494a949eb3bb95d",
         "c98ce845fe5dca8c",
@@ -135471,7 +135473,7 @@
     }
   },
   "routes": {
-    "/": "9619b1ee2a691c1e",
+    "/": "c77f391557cef54f",
     "/404": "ac69bff59438b8ab",
     "/benchmarks": "9a72f50a9fb93c0b",
     "/examples/article-transitions": "304dd729783231f2",
@@ -135551,7 +135553,7 @@
     "/reference/tools/cli": "f40a86e6b3321533",
     "/reference/tools/mcp": "e69159c3b8b68f75",
     "/reference/truncation": "3f1cbd6b3c55df57",
-    "/tw": "9619b1ee2a691c1e",
+    "/tw": "c77f391557cef54f",
     "/tw/benchmarks": "9a72f50a9fb93c0b",
     "/tw/guide": "1d448cd0d816531b",
     "/tw/guide/ai-coding": "c41db1aed1e7bc8d",
@@ -135628,6 +135630,6 @@
     "/tw/reference/truncation": "3f1cbd6b3c55df57"
   },
   "approval": {
-    "reference": ".ai/reports/internal-release-2026-11-04.md; site/tests/home-refactor-qa-2026-11-03.md; site/tests/guide-ownership-qa-2026-11-03.md"
+    "reference": ".ai/reports/internal-release-2026-11-04.md; site/tests/home-refactor-qa-2026-11-03.md; site/tests/guide-ownership-qa-2026-11-03.md; site/tests/header-version-qa-2026-11-04.md"
   }
 }

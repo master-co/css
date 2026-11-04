@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md",
+  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md; homepage version visibility reviewed in header-version-qa-2026-11-04.md",
   "routes": {
     "/404": {
       "files": 9,
@@ -320,8 +320,8 @@
     "/": {
       "files": 10,
       "depth": 1,
-      "gzip": 63126,
-      "brotli": 49510,
+      "gzip": 63144,
+      "brotli": 49554,
       "inlineBytes": 13266
     },
     "/reference": {
@@ -558,8 +558,8 @@
     "/tw": {
       "files": 10,
       "depth": 1,
-      "gzip": 63126,
-      "brotli": 49510,
+      "gzip": 63144,
+      "brotli": 49554,
       "inlineBytes": 13266
     },
     "/tw/benchmarks": {

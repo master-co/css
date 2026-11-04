@@ -21,14 +21,23 @@ bun run test --watch
 Taking the CSS project as an example, create a focused `*.test.ts` file under `packages/css/tests` for unit testing:
 
 ```ts
-import { createCSS } from '../src'
+import { expect, it } from 'vitest'
+import { createEngine } from '../src'
+import defaultManifest from '@master/css-preset/default-manifest.json'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-it('should generated with `background-color:` instead of `background:`', () => {
-  expect(createCSS().create('bg:red')?.declarations).toStrictEqual({ 'background-color': '#d11a1e' })
+const manifest = defaultManifest as unknown as MasterCSSManifest
+
+it('uses background-color for palette backgrounds', async () => {
+  using engine = await createEngine({ manifest })
+  expect(engine.inspect('bg-red-60').rules.map(rule => rule.text))
+    .toEqual(['.bg-red-60{background-color:var(--color-red-60)}'])
 })
 
-it('should contain the `:hover` selector', () => {
-  expect(createCSS().create('fg:white:hover')?.text).toBe('.f\\:white\\:hover:hover{color:#ffffff}')
+it('preserves the hover selector', async () => {
+  using engine = await createEngine({ manifest })
+  expect(engine.inspect('fg-white:hover').rules.map(rule => rule.text))
+    .toEqual([String.raw`.fg-white\:hover:hover{color:var(--color-white)}`])
 })
 ```
 

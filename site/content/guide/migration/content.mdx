@@ -76,6 +76,11 @@ Record intentional visual differences and remaining dependencies with the batch.
 
 ## Ask an agent to plan the work
 
+The official [`master-css` skill](/guide/ai-coding#use-the-master-css-skill) includes
+an **Import external styles** workflow for bringing one CSS or Tailwind component
+into Master CSS. It preserves the component's values and behavior unless you ask
+for a redesign. Use the comparison checks in this guide to verify the result.
+
 ### With MCP \{#plan-an-external-system-conversion-with-mcp\}
 
 The [Master CSS MCP server](/guide/ai-coding#connect-the-mcp-server) provides a `migrate-to-mastercss` prompt for planning a conversion from an external styling system. It instructs the agent to inspect the project and return a rendering mode, a first batch, CSS output risks and validation commands. The prompt supplies instructions; it is not an automatic code converter.
