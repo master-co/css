@@ -4,6 +4,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSy
 import { tmpdir } from 'node:os'
 import { delimiter, dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { compileFunction } from 'node:vm'
 import { describe, expect, test } from 'vitest'
 import {
   applyMasterCSSSetupPlan,
@@ -47,6 +48,13 @@ function writeProjectFile(root: string, file: string, content: string) {
   const filePath = join(root, file)
   mkdirSync(dirname(filePath), { recursive: true })
   writeFileSync(filePath, content, 'utf8')
+}
+
+function evaluateNextConfig(content: string, adapter: (config: object, options?: object) => unknown) {
+  // Model evaluating the config as a synchronous module before calling its
+  // default export. Module-scope await must not be needed to get that export.
+  const body = content.replace(/^import withMasterCSS from '@master\/css-next'\r?\n/m, '').replace(/^export default /m, 'return ')
+  return compileFunction(body, ['withMasterCSS'])(adapter)
 }
 
 function runCLI(args: string[], options: { cwd?: string, env?: NodeJS.ProcessEnv } = {}) {
@@ -579,7 +587,7 @@ bootstrapApplication(AppComponent)
     expect(readProjectFile(root, 'src/styles.css')).toBe("@import '@master/css';\n")
   })
 
-  test('updates existing Next.js config wrappers', () => {
+  test('defers the static Next.js adapter until the config is called', async () => {
     const root = createTempProject('master-css-create-next-', {
       dependencies: {
         next: '^16.0.0'
@@ -594,8 +602,16 @@ export default nextConfig;
 
     applySetup({ root, install: false })
 
-    expect(readProjectFile(root, 'next.config.mjs')).toContain("import withMasterCSS from '@master/css-next'")
-    expect(readProjectFile(root, 'next.config.mjs')).toContain('export default await withMasterCSS(nextConfig);')
+    const config = readProjectFile(root, 'next.config.mjs')
+    expect(config).toContain("import withMasterCSS from '@master/css-next'")
+    let calls = 0
+    const load = evaluateNextConfig(config, async existing => {
+      calls++
+      return { ...existing, adapterLoaded: true }
+    })
+    expect(calls).toBe(0)
+    await expect(load()).resolves.toEqual({ reactStrictMode: true, adapterLoaded: true })
+    expect(calls).toBe(1)
   })
 
   test('writes async Next.js config for static mode', () => {
@@ -613,7 +629,7 @@ export default nextConfig;
       install: false
     })
 
-    expect(readProjectFile(root, 'next.config.js')).toContain("const nextConfig = await withMasterCSS({}, { mode: 'static' })")
+    expect(readProjectFile(root, 'next.config.js')).toContain("const nextConfig = async () => withMasterCSS({}, { mode: 'static' })")
   })
 
   test('writes synchronous Next.js config for runtime mode', () => {
@@ -634,6 +650,41 @@ export default nextConfig;
     const config = readProjectFile(root, 'next.config.js')
     expect(config).toContain("const nextConfig = withMasterCSS({}, { mode: 'runtime' })")
     expect(config).not.toContain('await withMasterCSS')
+  })
+
+  test('repairs legacy Next.js exports and switches installer-managed runtime configs to static', async () => {
+    for (const [existing, mode] of [
+      ['const nextConfig = {}\nexport default await withMasterCSS(nextConfig)\n', undefined],
+      ["const nextConfig = await withMasterCSS({}, { mode: 'static' })\n\nexport default nextConfig\n", undefined],
+      ["const nextConfig = withMasterCSS({}, { mode: 'runtime' })\n\nexport default nextConfig\n", 'static']
+    ] as const) {
+      const root = createTempProject('master-css-create-next-managed-', { dependencies: { next: '^16.0.0' } })
+      writeProjectFile(root, 'next.config.mjs', "import withMasterCSS from '@master/css-next'\n\n" + existing)
+      applySetup({ root, install: false, minimal: true, mode })
+      const config = readProjectFile(root, 'next.config.mjs')
+      const load = evaluateNextConfig(config, async (_config, options) => ({ options }))
+      await expect(load()).resolves.toEqual({ options: existing.includes('mode:') ? { mode: 'static' } : undefined })
+      applySetup({ root, install: false, minimal: true, mode })
+      expect(readProjectFile(root, 'next.config.mjs')).toBe(config)
+    }
+  })
+
+  test('preserves an existing async Next.js function and its adapter options when switching modes', async () => {
+    const root = createTempProject('master-css-create-next-async-', { dependencies: { next: '^16.0.0' } })
+    writeProjectFile(root, 'next.config.mjs', `import withMasterCSS from '@master/css-next'
+
+export default async function configure(phase) {
+  const nextConfig = { reactStrictMode: phase === 'production' }
+  return await withMasterCSS(nextConfig, { mode: 'static', pruneNativeCSS: false })
+}
+`)
+    applySetup({ root, install: false, minimal: true, mode: 'runtime' })
+    const config = readProjectFile(root, 'next.config.mjs')
+    expect(config).toContain('return await withMasterCSS(')
+    const load = evaluateNextConfig(config, (existing, options) => ({ ...existing, options }))
+    await expect(load('production')).resolves.toEqual({ reactStrictMode: true, options: { mode: 'runtime', pruneNativeCSS: false } })
+    applySetup({ root, install: false, minimal: true, mode: 'runtime' })
+    expect(readProjectFile(root, 'next.config.mjs')).toBe(config)
   })
 
   test('writes requested modes into supported integration configs', () => {

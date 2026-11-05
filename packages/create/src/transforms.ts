@@ -14,10 +14,15 @@ function formatNuxtModule(mode?: MasterCSSRenderingMode) {
 }
 
 function formatNextCall(target: string, mode?: MasterCSSRenderingMode) {
-  const awaited = !mode || mode === 'static' ? 'await ' : ''
   return mode
-    ? `${awaited}withMasterCSS(${target}, { mode: '${mode}' })`
-    : `await withMasterCSS(${target})`
+    ? `withMasterCSS(${target}, { mode: '${mode}' })`
+    : `withMasterCSS(${target})`
+}
+
+function formatNextExport(target: string, mode?: MasterCSSRenderingMode) {
+  // Next's TypeScript config loader can compile the module as CommonJS. Let
+  // Next call the async config instead of awaiting during module evaluation.
+  return `${!mode || mode === 'static' ? 'async () => ' : ''}${formatNextCall(target, mode)}`
 }
 
 function addImport(content: string, statement: string) {
@@ -234,27 +239,49 @@ export default defineConfig({
 export function createNextConfig(mode?: MasterCSSRenderingMode) {
   return `import withMasterCSS from '@master/css-next'
 
-const nextConfig = ${formatNextCall('{}', mode)}
+const nextConfig = ${formatNextExport('{}', mode)}
 
 export default nextConfig
 `
 }
 
 export function addMasterCSSNextConfig(content: string, mode?: MasterCSSRenderingMode) {
-  if (content.includes('@master/css-next')) return mode ? addMasterCSSNextMode(content, mode) : content
+  if (content.includes('@master/css-next')) return updateMasterCSSNextConfig(content, mode)
   const next = addImport(content, "import withMasterCSS from '@master/css-next'")
   if (/export\s+default\s+/.test(next)) {
-    return next.replace(/export\s+default\s+([^;\n]+)(;?)(\n|$)/, `export default ${formatNextCall('$1', mode)}$2$3`)
+    return next.replace(/export\s+default\s+([^;\r\n]+)(;?)(\r?\n|$)/, `export default ${formatNextExport('$1', mode)}$2$3`)
   }
   return `${next.trimEnd()}
 
-export default ${formatNextCall('{}', mode)}
+export default ${formatNextExport('{}', mode)}
 `
 }
 
-function addMasterCSSNextMode(content: string, mode: MasterCSSRenderingMode) {
-  const callPattern = /(?:await\s+)?withMasterCSS\(\s*(\{\s*\}|[A-Za-z_$][\w$]*)\s*(?:,\s*\{[^)]*\})?\s*\)/g
-  return content.replace(callPattern, (_match, target: string) => formatNextCall(target, mode))
+function updateMasterCSSNextConfig(content: string, mode?: MasterCSSRenderingMode) {
+  const callPattern = /(await[ \t]+)?\b(withMasterCSS\(\s*(\{\s*\}|[A-Za-z_$][\w$]*)\s*(?:,\s*(\{[^)]*\}))?\s*\))/g
+  return content.replace(callPattern, (match, awaited: string | undefined, call: string, target: string, options: string | undefined, offset: number) => {
+    let updated = call
+    if (mode) {
+      if (!options || /^\{\s*(?:mode\s*:\s*['"][a-z-]+['"]\s*,?\s*)?\}$/.test(options)) {
+        updated = formatNextCall(target, mode)
+      } else {
+        const original = /^\{ \.\.\.(\{[^)]*\}), mode: '[a-z-]+' \}$/.exec(options)?.[1] ?? options
+        updated = `withMasterCSS(${target}, { ...${original}, mode: '${mode}' })`
+      }
+    }
+
+    // Only normalize top-level wrappers written by this installer. An await
+    // inside an existing async configuration still belongs to that function.
+    const before = content.slice(content.lastIndexOf('\n', offset - 1) + 1, offset)
+    const after = content.slice(offset + match.length)
+    const exportedCall = /^export[ \t]+default[ \t]+$/.test(before) && /^;?[ \t]*(?:\r?\n|$)/.test(after)
+    const exportedBinding = /^const[ \t]+nextConfig[ \t]*=[ \t]*$/.test(before)
+      && /^;?[ \t]*(?:\r?\n[ \t]*)+export[ \t]+default[ \t]+nextConfig;?[ \t]*(?:\r?\n|$)/.test(after)
+    if ((exportedCall || exportedBinding) && (awaited || mode === 'static')) {
+      return `${!mode || mode === 'static' ? 'async () => ' : ''}${updated}`
+    }
+    return (awaited ?? '') + updated
+  })
 }
 
 export function addMasterCSSNuxtModule(content: string, mode?: MasterCSSRenderingMode) {

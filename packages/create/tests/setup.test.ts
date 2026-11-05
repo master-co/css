@@ -346,7 +346,7 @@ export default defineConfig([
 
     expect(result.status).toBe(0)
     expect(plan.mode).toBe("static")
-    expect(plan.files.find((file: { path: string }) => file.path === 'next.config.js').content).toContain("await withMasterCSS({}, { mode: 'static' })")
+    expect(plan.files.find((file: { path: string }) => file.path === 'next.config.js').content).toContain("async () => withMasterCSS({}, { mode: 'static' })")
     expect(existsSync(join(root, 'next.config.js'))).toBe(false)
   })
 
