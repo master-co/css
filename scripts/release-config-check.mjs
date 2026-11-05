@@ -14,6 +14,7 @@ const expectedFirstPackages = [
   'packages/binding-linux-x64-musl',
   'packages/binding-win32-arm64-msvc',
   'packages/binding-win32-x64-msvc',
+  'packages/schema',
   'packages/binding-wasm-compiler',
   'packages/binding-wasm-engine',
   'packages/binding-wasm-tooling'
@@ -23,10 +24,23 @@ const packageRoots = config.plugins
   .filter((plugin) => Array.isArray(plugin) && plugin[0] === WORKSPACE_RELEASE_PLUGIN)
   .map((plugin) => plugin[1]?.pkgRoot)
 
+const manifests = packageRoots.map(root => JSON.parse(readFileSync(new URL(`../${root}/package.json`, import.meta.url))))
+const positions = new Map(manifests.map(({ name }, index) => [name, index]))
+assert.equal(positions.size, manifests.length, 'Release package names must be unique.')
+for (const [index, manifest] of manifests.entries()) {
+  assert.notEqual(manifest.private, true, `Private workspace cannot be released: ${manifest.name}`)
+  for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies']) {
+    for (const dependency of Object.keys(manifest[field] ?? {})) {
+      if (positions.has(dependency)) assert.ok(positions.get(dependency) < index,
+        `Publish ${dependency} before its ${field} consumer ${manifest.name}.`)
+    }
+  }
+}
+
 assert.deepEqual(
   packageRoots.slice(0, expectedFirstPackages.length),
   expectedFirstPackages,
-  'Release packages must publish native targets, then Wasm packages, before public wrappers.'
+  'Release packages must publish native targets first, followed by schema and Wasm before public wrappers.'
 )
 assert.equal(new Set(packageRoots).size, packageRoots.length, 'Release package roots must be unique.')
 assert.ok(packageRoots.length > expectedFirstPackages.length, 'Release config must include public wrapper packages.')
@@ -36,9 +50,7 @@ assert.equal(
   'GitHub release assets must publish only after all npm packages succeed.'
 )
 
-for (const root of packageRoots) {
-  assertNpmPublishConfig(JSON.parse(readFileSync(new URL(`../${root}/package.json`, import.meta.url))))
-}
+for (const manifest of manifests) assertNpmPublishConfig(manifest)
 for (const [file, jobName] of [['release.yml', 'release'], ['site-toolchain-snapshot.yml', 'snapshot']]) {
   const workflow = YAML.parse(readFileSync(new URL(`../.github/workflows/${file}`, import.meta.url), 'utf8'))
   const job = workflow.jobs[jobName]

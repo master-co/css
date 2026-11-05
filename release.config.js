@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs'
 import configure from '@aronrepo/semantic-release-config/configure'
 import { releaseBodyTemplate, releaseNotesPath } from './scripts/semantic-release-notes.mjs'
+import { dependencyOrder, publishedDependencies } from './scripts/release-readiness.mjs'
 
 const SOURCE_RELEASE_PLUGIN = '@aronrepo/semantic-release-pnpm'
 const WORKSPACE_RELEASE_PLUGIN = './scripts/semantic-release-workspace.mjs'
@@ -11,24 +13,27 @@ const WASM_PACKAGE_ROOTS = new Set([
   'packages/binding-wasm-tooling'
 ])
 
-function packageReleasePriority(plugin) {
-  if (Array.isArray(plugin) && plugin[0] === '@semantic-release/github') return 5
-  if (Array.isArray(plugin) && plugin[0] === PROMOTION_PLUGIN) return 4
-  if (!Array.isArray(plugin) || plugin[0] !== WORKSPACE_RELEASE_PLUGIN) return 0
-  const packageRoot = plugin[1]?.pkgRoot
-  if (BINDING_TARGET_PACKAGE_PATTERN.test(packageRoot)) return 1
-  if (WASM_PACKAGE_ROOTS.has(packageRoot)) return 2
-  return 3
+function packageReleasePriority(root) {
+  if (BINDING_TARGET_PACKAGE_PATTERN.test(root)) return 0
+  // All Wasm packages depend on schema. Keep it in their early upload group.
+  if (root === 'packages/schema' || WASM_PACKAGE_ROOTS.has(root)) return 1
+  return 2
 }
 
 function orderReleasePlugins(plugins) {
-  return plugins
-    .map((plugin, index) => ({ plugin, index, priority: packageReleasePriority(plugin) }))
-    .sort((left, right) => left.priority - right.priority
-      || (left.priority >= 1 && left.priority <= 3
-        ? left.plugin[1].pkgRoot.localeCompare(right.plugin[1].pkgRoot)
-        : left.index - right.index))
-    .map(({ plugin }) => plugin)
+  const named = name => plugins.filter(plugin => Array.isArray(plugin) && plugin[0] === name)
+  const workspaces = named(WORKSPACE_RELEASE_PLUGIN).map(plugin => {
+    const root = plugin[1].pkgRoot
+    const manifest = JSON.parse(readFileSync(new URL(`${root}/package.json`, import.meta.url)))
+    return { name: manifest.name, manifest, root, plugin }
+  })
+  const publishedNames = new Set(workspaces.map(({ name }) => name))
+  const ordered = dependencyOrder(workspaces.map(entry => ({ ...entry,
+    dependencies: publishedDependencies(entry.manifest, publishedNames)
+  })), (a, b) => packageReleasePriority(a.root) - packageReleasePriority(b.root) || a.root.localeCompare(b.root))
+  const publication = [...ordered.map(({ plugin }) => plugin), ...named(PROMOTION_PLUGIN), ...named('@semantic-release/github')]
+  const publicationSet = new Set(publication)
+  return [...plugins.filter(plugin => !publicationSet.has(plugin)), ...publication]
 }
 
 const config = configure({

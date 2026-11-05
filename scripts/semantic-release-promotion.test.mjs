@@ -380,15 +380,41 @@ test('Git tagging requires a readable package tag map and stops if any tag alrea
   assert.deepEqual(f.calls, [])
 })
 
-test('configured release places cohort promotion after every package and before GitHub', async () => {
+test('configured release uploads the public dependency graph before cohort promotion and GitHub', async () => {
   const { default: config } = await import('../release.config.js')
+  const { publishedDependencies } = await import('./release-readiness.mjs')
   const workspace = './scripts/semantic-release-workspace.mjs'
   const promotion = './scripts/semantic-release-promotion.mjs'
   const positions = config.plugins.map((plugin, index) => [Array.isArray(plugin) ? plugin[0] : plugin, index])
   const promoteAt = positions.find(([name]) => name === promotion)[1]
   assert.ok(positions.filter(([name]) => name === workspace).every(([, index]) => index < promoteAt))
+  assert.deepEqual(positions.slice(0, 3).map(([name]) => name), [
+    '@semantic-release/commit-analyzer', '@semantic-release/release-notes-generator', './scripts/semantic-release-notes.mjs'
+  ])
   assert.equal(config.plugins.at(-2)[0], promotion)
   assert.equal(config.plugins.at(-1)[0], '@semantic-release/github')
+
+  const packageRoots = config.plugins.filter(plugin => Array.isArray(plugin) && plugin[0] === workspace).map(plugin => plugin[1].pkgRoot)
+  const packages = await Promise.all(packageRoots.map(async root => JSON.parse(await readFile(new URL(`../${root}/package.json`, import.meta.url)))))
+  const order = new Map(packages.map(({ name }, index) => [name, index]))
+  assert.equal(order.size, 34)
+  for (const pkg of packages) {
+    assert.notEqual(pkg.private, true)
+    for (const dependency of publishedDependencies(pkg, order)) {
+      assert.ok(order.get(dependency) < order.get(pkg.name), `Upload ${dependency} before ${pkg.name}`)
+    }
+  }
+  assert.deepEqual(packageRoots.slice(8, 12), ['packages/schema', 'packages/binding-wasm-compiler',
+    'packages/binding-wasm-engine', 'packages/binding-wasm-tooling'])
+
+  const installFields = {
+    dependencies: { '@fixture/runtime': 'workspace:*', '@fixture/private': 'workspace:*', external: '^1.0.0' },
+    optionalDependencies: { '@fixture/native': 'workspace:*' },
+    peerDependencies: { '@fixture/peer': 'workspace:*' },
+    devDependencies: { '@fixture/build-only': 'workspace:*' }
+  }
+  assert.deepEqual(publishedDependencies(installFields, new Set(['@fixture/runtime', '@fixture/native', '@fixture/peer', '@fixture/build-only'])),
+    ['@fixture/runtime', '@fixture/native', '@fixture/peer'])
 })
 
 test('corrupted recovery state cannot publish missing packages directly to a formal tag', async t => {

@@ -7,7 +7,7 @@ import { execa } from 'execa'
 import { createReleasePromotion, stagePackage, assertReleaseFlag } from './semantic-release-promotion.mjs'
 import { packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
 import { readWorkspacePackages, releaseClosure } from './site-toolchain-snapshot.mjs'
-import { dependencyOrder } from './release-readiness.mjs'
+import { dependencyOrder, publishedDependencies } from './release-readiness.mjs'
 import { assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 
 /** Explicit recovery only: no semantic-release version selection, Git writes or deployment. */
@@ -27,14 +27,14 @@ export async function recoverRelease({ root, stateFile, channel, scope = 'worksp
   // Map the immutable package identities back to this checkout's source roots;
   // snapshot preparation's deleted temporary workspace is never required.
   const config = { workspaceRoots: entries.map(entry => relative(root, entry.directory)) }
+  const publishedNames = new Set(entries.map(({ manifest }) => manifest.name))
   const packages = []
   for (const item of state.packages) {
     const archive = resolve(dirname(stateFile), item.archive)
     const bytes = await readFile(archive)
     validatePackedArchive(bytes, item.name, state.version, state.revision)
     const pkg = packedManifest(bytes)
-    packages.push({ name: pkg.name, pkg, archive,
-      dependencies: Object.keys({ ...pkg.dependencies, ...pkg.optionalDependencies }).filter(name => state.packages.some(item => item.name === name)) })
+    packages.push({ name: pkg.name, pkg, archive, dependencies: publishedDependencies(pkg, publishedNames) })
   }
   const executeNpm = async (pkg, args) => {
     assertNpmPublishConfig(pkg)

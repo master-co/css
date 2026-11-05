@@ -39,29 +39,34 @@ export async function inspectArchives(directory, names, version, revision) {
     const manifest = packedManifest(bytes)
     assert.ok(expected.has(manifest.name), `Unexpected archive ${manifest.name}`)
     validatePackedArchive(bytes, manifest.name, version)
-    const dependencies = new Set()
     for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies']) {
       for (const [name, dependency] of Object.entries(manifest[field] ?? {})) {
         if (!expected.has(name)) continue
         assert.equal(dependency, version, `${manifest.name}: ${field}.${name} must pin ${version}`)
-        if (field !== 'peerDependencies') dependencies.add(name)
       }
     }
     packages.push({ name: manifest.name, version, file: filename, integrity: integrity(bytes),
-      dependencies: [...dependencies].sort() })
+      dependencies: publishedDependencies(manifest, expected).sort() })
   }
   assert.deepEqual(packages.map(pkg => pkg.name).sort(), [...expected].sort(), 'Require exactly one archive per public workspace')
   return { schemaVersion: 1, revision, version, packages: dependencyOrder(packages) }
 }
 
-export function dependencyOrder(packages) {
+export function publishedDependencies(manifest, publishedNames) {
+  return [...new Set(['dependencies', 'optionalDependencies', 'peerDependencies'].flatMap(field =>
+    Object.keys(manifest[field] ?? {}).filter(name => publishedNames.has(name))))]
+}
+
+export function dependencyOrder(packages, compareReady) {
   const remaining = new Map(packages.map(pkg => [pkg.name, pkg]))
   assert.equal(remaining.size, packages.length, 'Duplicate package')
   const ordered = []
   while (remaining.size) {
     const ready = [...remaining.values()].filter(pkg => (pkg.dependencies ?? []).every(name => !remaining.has(name)))
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort(compareReady ?? ((a, b) => a.name.localeCompare(b.name)))
     assert.ok(ready.length, 'Runtime dependency cycle prevents ordered publication')
+    // With a preference, choose again after each upload unlocks dependencies.
+    if (compareReady) ready.length = 1
     for (const pkg of ready) { ordered.push(pkg); remaining.delete(pkg.name) }
   }
   return ordered
