@@ -210,8 +210,9 @@
     .home-wf-repo-directory { display: none; }
   }
 
-  /* Radios select real code without JavaScript; Canvas supplies its floating paper. */
-  .home-wf-routes-tabs {
+  /* Radios select real code without JavaScript; Canvas supplies its floating paper.
+     The compound selector outranks the shared control without relying on stylesheet order. */
+  .home-wf-routes-tabs.home-segmented-control {
     --home-segment-pad: 3px;
     display: inline-grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -359,7 +360,7 @@
   .home-wf-play-icon { display: none; }
   [data-wf-paused] { .home-wf-pause-icon { display: none; } .home-wf-play-icon { display: block; } }
   @media (prefers-reduced-motion: reduce) {
-    .home-wf-routes-tabs::before { transition: none; }
+    .home-wf-routes-tabs.home-segmented-control::before { transition: none; }
     .home-wf-play { display: none !important; }
     .home-wf-anchor, .home-wf-framework-logo { transition: none; }
   }

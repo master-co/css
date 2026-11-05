@@ -191,8 +191,9 @@
     }
   }
 
-  /* The mode switch is the page's segmented control, its options labels for the radios. */
-  .home-delivery-switch {
+  /* The mode switch is the page's segmented control, its options labels for the radios.
+     The compound selector outranks the shared control without relying on stylesheet order. */
+  .home-delivery-switch.home-segmented-control {
     display: grid;
     grid-column: 1 / -1;
     grid-row: 1;
@@ -203,7 +204,7 @@
   .home-delivery-switch input { top: 50%; left: 50%; }
 
   @container home-delivery (width >= 52rem) {
-    .home-delivery-switch {
+    .home-delivery-switch.home-segmented-control {
       display: inline-flex;
       grid-column: 1;
       grid-row: 1;
@@ -375,7 +376,7 @@
   }
 
   @container home-delivery (width < 14rem) {
-    .home-delivery-switch { grid-template-columns: minmax(0, 1fr); border-radius: var(--home-radius-control); }
+    .home-delivery-switch.home-segmented-control { grid-template-columns: minmax(0, 1fr); border-radius: var(--home-radius-control); }
   }
 
   @container home-delivery (width < 11rem) {
