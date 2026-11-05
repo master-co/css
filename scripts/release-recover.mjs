@@ -31,7 +31,7 @@ export async function recoverRelease({ root, stateFile, channel, scope = 'worksp
   for (const item of state.packages) {
     const archive = resolve(dirname(stateFile), item.archive)
     const bytes = await readFile(archive)
-    validatePackedArchive(bytes, item.name, state.version)
+    validatePackedArchive(bytes, item.name, state.version, state.revision)
     const pkg = packedManifest(bytes)
     packages.push({ name: pkg.name, pkg, archive,
       dependencies: Object.keys({ ...pkg.dependencies, ...pkg.optionalDependencies }).filter(name => state.packages.some(item => item.name === name)) })

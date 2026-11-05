@@ -1,4 +1,5 @@
-import { mkdir, readFile } from 'node:fs/promises'
+import assert from 'node:assert/strict'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { resolve, join } from 'node:path'
 import { gunzipSync } from 'node:zlib'
 import { execa } from 'execa'
@@ -28,8 +29,10 @@ export function packedManifest(archive) {
   throw new Error('Release tarball is missing package/package.json')
 }
 
-export function validatePackedArchive(archive, expectedName, version) {
-  validatePackedManifest(packedManifest(archive), expectedName, version)
+export function validatePackedArchive(archive, expectedName, version, gitHead) {
+  const manifest = packedManifest(archive)
+  validatePackedManifest(manifest, expectedName, version)
+  if (gitHead !== undefined) assert.equal(manifest.gitHead, gitHead, `Incorrect packed Git HEAD for ${expectedName}@${version}`)
   if (expectedName !== '@master/css-binding') return
   for (const { name } of packedEntries(archive)) {
     if (/^package\/artifacts(?:\/|$)|\.node$|(?:^|\/)mcss(?:\.exe)?$/.test(name)) {
@@ -71,7 +74,8 @@ export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch } = 
 
   async function prepare(config, context) {
     const cwd = context.cwd ?? process.cwd()
-    const version = context.nextRelease.version
+    const { version, gitHead } = context.nextRelease
+    assert.match(gitHead ?? '', /^[a-f0-9]{40}$/, 'Release packing requires the full source Git HEAD')
     const roots = config.workspaceRoots
     if (!Array.isArray(roots) || !roots.includes(config.pkgRoot)) throw new Error('Release configuration must declare every workspace root')
     const key = `${cwd}:${version}`
@@ -86,15 +90,24 @@ export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch } = 
     if (pkg.private || config.npmPublish === false) return
     const recovered = await recoveryArchive(config, context, pkg.name)
     if (recovered) {
-      validatePackedArchive(await readFile(recovered), pkg.name, version)
+      validatePackedArchive(await readFile(recovered), pkg.name, version, gitHead)
       tarballs.set(`${cwd}:${config.pkgRoot}:${version}`, recovered)
       return
+    }
+    const packageRoot = resolve(cwd, config.pkgRoot)
+    // Bun does not insert gitHead when packing, and npm publishes the tarball's manifest.
+    if (pkg.gitHead !== undefined) assert.equal(pkg.gitHead, gitHead, `Existing Git HEAD differs for ${pkg.name}@${version}`)
+    if (pkg.gitHead === undefined || pkg.devDependencies !== undefined) {
+      pkg.gitHead = gitHead
+      // Build-only workspace helpers are bundled before packing and may have no version.
+      delete pkg.devDependencies
+      await writeFile(join(packageRoot, 'package.json'), JSON.stringify(pkg, null, 4) + '\n')
     }
     const directory = resolve(cwd, config.tarballDir || 'release-artifacts/packages')
     await mkdir(directory, { recursive: true })
     const archive = join(directory, `${pkg.name.replace(/^@/, '').replaceAll('/', '-')}-${version}.tgz`)
-    await execute('bun', ['pm', 'pack', '--filename', archive, '--ignore-scripts'], context, { cwd: resolve(cwd, config.pkgRoot) })
-    validatePackedArchive(await readFile(archive), pkg.name, version)
+    await execute('bun', ['pm', 'pack', '--filename', archive, '--ignore-scripts'], context, { cwd: packageRoot })
+    validatePackedArchive(await readFile(archive), pkg.name, version, gitHead)
     tarballs.set(`${cwd}:${config.pkgRoot}:${version}`, archive)
   }
 

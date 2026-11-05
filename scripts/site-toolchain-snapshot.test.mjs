@@ -103,7 +103,7 @@ test('a development binding cannot shadow the platform-specific release binaries
     const rejected = join(root, 'rejected')
     const rejectedRoots = await stageSnapshot(entries, rejected, version, revision)
     await assert.rejects(plugin.prepare({ pkgRoot: rejectedRoots[0], workspaceRoots: rejectedRoots }, {
-      cwd: rejected, env: process.env, nextRelease: { version }
+      cwd: rejected, env: process.env, nextRelease: { version, gitHead: revision }
     }), /Generic @master\/css-binding tarball contains native artifact/)
     manifest.files = ['dist']
     const stage = join(root, 'accepted')

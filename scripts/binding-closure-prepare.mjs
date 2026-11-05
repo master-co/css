@@ -50,7 +50,7 @@ export async function prepareClosure({ root, output, version = '0.0.0-closure.0'
     for (const name of ['mastercss.node', 'mcss', 'mcss.exe']) {
       await writeFile(join(bindingRoot, 'artifacts', name), `POISON build-host artifact: ${name}\n`)
     }
-    const context = { cwd: stage, env: process.env, nextRelease: { version } }
+    const context = { cwd: stage, env: process.env, nextRelease: { version, gitHead: revision } }
     const packages = []
     for (const entry of entries) {
       const pkgRoot = `packages/${entry.manifest.name.replace(/^@/, '').replaceAll('/', '-')}`

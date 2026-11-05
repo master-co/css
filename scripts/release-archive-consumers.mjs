@@ -42,7 +42,7 @@ export async function prepareArchives({ root, output, version, hostOnly = false,
   await mkdir(output, { recursive: true })
   try {
     const workspaceRoots = await stageSnapshot(selected, stage, version, revision)
-    const context = { cwd: stage, env: registryConsumerEnvironment(process.env, join(output, 'prepare-cache')), nextRelease: { version } }
+    const context = { cwd: stage, env: registryConsumerEnvironment(process.env, join(output, 'prepare-cache')), nextRelease: { version, gitHead: revision } }
     for (const pkgRoot of workspaceRoots) await plugin.prepare({ pkgRoot, workspaceRoots, tarballDir: archives }, context)
     const cohort = await inspectArchives(archives, selected.map(entry => entry.manifest.name), version, revision)
     for (const pkg of cohort.packages) pkg.manifest = packedManifest(await readFile(join(archives, pkg.file)))

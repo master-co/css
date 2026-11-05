@@ -145,7 +145,7 @@ async function initialize(config, context, fetchMetadata) {
     const archivePath = resolve(context.cwd ?? process.cwd(), config.tarballDir ?? 'release-artifacts/packages', `${pkg.name.replace(/^@/, '').replaceAll('/', '-')}-${version}.tgz`)
     const archive = relative(dirname(statePath(context)), archivePath)
     const bytes = await readFile(archivePath)
-    validatePackedArchive(bytes, pkg.name, version)
+    validatePackedArchive(bytes, pkg.name, version, revision(context))
     const packed = packedManifest(bytes)
     for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies']) {
       for (const [name, dependency] of Object.entries(packed[field] ?? {})) {
@@ -179,7 +179,10 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   const state = await initialize(config, context, fetchMetadata)
   const item = state.packages.find(entry => entry.name === pkg.name)
   assert.ok(item, 'Package is outside the release cohort')
-  assert.equal(digest(await readFile(archive)), item.integrity, 'Prepared archive differs from release state')
+  const bytes = await readFile(archive)
+  assert.equal(digest(bytes), item.integrity, 'Prepared archive differs from release state')
+  const { validatePackedArchive } = await import('./semantic-release-workspace.mjs')
+  validatePackedArchive(bytes, pkg.name, state.version, state.revision)
   const existing = await metadata(pkg.name, fetchMetadata)
   if (existing.versions?.[state.version]) {
     assert.equal(context.env?.MASTER_CSS_RELEASE_RECOVERY, '1', `Candidate already exists: ${pkg.name}; explicit recovery is required`)

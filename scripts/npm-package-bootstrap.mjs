@@ -238,7 +238,9 @@ export async function packBootstrap(root, output, plan) {
     const packages = []
     for (const name of Object.keys(bootstrapPackages)) {
       const pkgRoot = `packages/${name.replace(/^@/, '').replaceAll('/', '-')}`
-      await plugin.prepare({ pkgRoot, workspaceRoots, tarballDir: join(output, 'packages') }, { cwd: stage, env: process.env, nextRelease: { version: plan.version } })
+      await plugin.prepare({ pkgRoot, workspaceRoots, tarballDir: join(output, 'packages') }, {
+        cwd: stage, env: process.env, nextRelease: { version: plan.version, gitHead: plan.revision }
+      })
       const file = `packages/${name.replace(/^@/, '').replaceAll('/', '-')}-${plan.version}.tgz`
       const bytes = await readFile(join(output, file))
       bootstrapManifest(bytes, name, plan)

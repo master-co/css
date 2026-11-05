@@ -16,6 +16,7 @@ const githubEnv = {
   ACTIONS_ID_TOKEN_REQUEST_URL: 'https://actions.example.test/oidc',
   ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture-actions-request-token'
 }
+const revision = githubEnv.GITHUB_SHA
 
 function archive(manifest) {
   const body = Buffer.from(JSON.stringify(manifest))
@@ -58,7 +59,7 @@ test('release versions all workspaces before packing and publishes verified tarb
       return { stdout: '' }
     }
   })
-  const context = { cwd, env: { ...githubEnv, NPM_TOKEN: 'must-not-be-used' }, nextRelease: { version: '1.2.3', channel: 'rc' } }
+  const context = { cwd, env: { ...githubEnv, NPM_TOKEN: 'must-not-be-used' }, nextRelease: { version: '1.2.3', channel: 'rc', gitHead: revision } }
   try {
     for (const [index, root] of roots.entries()) {
       await mkdir(join(cwd, root), { recursive: true })
@@ -73,6 +74,7 @@ test('release versions all workspaces before packing and publishes verified tarb
     assert.equal(publish.command, 'npm')
     assert.ok(publish.args.includes('--provenance'))
     assert.equal(publish.args[publish.args.indexOf('--tag') + 1], 'candidate-1.2.3')
+    assert.equal(packedManifest(await readFile(publish.args[1])).gitHead, revision)
     assert.equal(packedManifest(await readFile(publish.args[1])).dependencies['@fixture/b'], '1.2.3')
     await plugin.addChannel(config, context)
     assert.ok(!calls.some(call => call.command === 'npm' && call.args[0] === 'dist-tag'))
@@ -146,7 +148,8 @@ test('OIDC command failure propagates without retrying credentials or requiring 
   const plugin = createWorkspaceRelease({ fetchMetadata: async () => new Response('{}', { status: 404 }), run: async (command, args, options) => {
     calls.push(args[0])
     if (command === 'bun') {
-      await writeFile(args[args.indexOf('--filename') + 1], archive({ name: '@fixture/a', version: '1.2.3' }))
+      const manifest = JSON.parse(await readFile(join(options.cwd, 'package.json')))
+      await writeFile(args[args.indexOf('--filename') + 1], archive(manifest))
       return { stdout: '' }
     }
     sessions.push(options.cwd)
@@ -154,7 +157,7 @@ test('OIDC command failure propagates without retrying credentials or requiring 
     throw failure
   } })
   const config = { pkgRoot: '.', workspaceRoots: ['.'] }
-  const context = { cwd, env: { ...githubEnv, NPM_TOKEN: 'unused' }, nextRelease: { version: '1.2.3', channel: 'site' } }
+  const context = { cwd, env: { ...githubEnv, NPM_TOKEN: 'unused' }, nextRelease: { version: '1.2.3', channel: 'site', gitHead: revision } }
   try {
     await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@fixture/a', version: '0.0.0' }))
     const local = { ...context, env: { NPM_TOKEN: 'unused' } }
@@ -170,7 +173,7 @@ test('OIDC command failure propagates without retrying credentials or requiring 
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })
 
-test('real Bun packing resolves workspace protocols after every release version is written', async () => {
+test('real Bun packing includes the release Git HEAD and resolves workspace protocols', async () => {
   const cwd = await mkdtemp(join(tmpdir(), 'master-bun-real-pack-'))
   const roots = ['packages/a', 'packages/b']
   const plugin = createWorkspaceRelease({ run: (command, args, options) => {
@@ -182,12 +185,44 @@ test('real Bun packing resolves workspace protocols after every release version 
     for (const [index, root] of roots.entries()) {
       await mkdir(join(cwd, root), { recursive: true })
       await writeFile(join(cwd, root, 'package.json'), JSON.stringify({ name: `@fixture/${index ? 'b' : 'a'}`, version: '0.0.0',
-        ...(index ? {} : { dependencies: { '@fixture/b': 'workspace:*' }, peerDependencies: { '@fixture/b': 'workspace:^' } }) }))
+        ...(index ? {} : { dependencies: { '@fixture/b': 'workspace:*' }, peerDependencies: { '@fixture/b': 'workspace:^' },
+          devDependencies: { '@fixture/internal': 'workspace:*' } }) }))
     }
-    await plugin.prepare({ pkgRoot: roots[0], workspaceRoots: roots }, { cwd, env: process.env, nextRelease: { version: '3.2.1' } })
+    await mkdir(join(cwd, 'packages/internal'))
+    await writeFile(join(cwd, 'packages/internal/package.json'), JSON.stringify({ name: '@fixture/internal', private: true }))
+    await execa('git', ['init', '--quiet'], { cwd })
+    await execa('git', ['add', '--all'], { cwd })
+    await execa('git', ['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', '-c', 'commit.gpgsign=false',
+      'commit', '--quiet', '--no-verify', '-m', 'Release source fixture'], { cwd })
+    const { stdout: gitHead } = await execa('git', ['rev-parse', 'HEAD'], { cwd })
+    const context = { cwd, env: process.env, nextRelease: { version: '3.2.1', gitHead } }
+    await plugin.prepare({ pkgRoot: roots[0], workspaceRoots: roots }, context)
     const packed = packedManifest(await readFile(join(cwd, 'release-artifacts/packages/fixture-a-3.2.1.tgz')))
+    assert.equal(packed.gitHead, gitHead)
     assert.equal(packed.dependencies['@fixture/b'], '3.2.1')
     assert.equal(packed.peerDependencies['@fixture/b'], '^3.2.1')
+    assert.equal(packed.devDependencies, undefined)
+    const manifestPath = join(cwd, roots[0], 'package.json')
+    const manifest = JSON.parse(await readFile(manifestPath))
+    manifest.dependencies['@fixture/internal'] = 'workspace:*'
+    await writeFile(manifestPath, JSON.stringify(manifest))
+    await assert.rejects(plugin.prepare({ pkgRoot: roots[0], workspaceRoots: roots }, context), /Failed to resolve workspace version for "@fixture\/internal" in `dependencies`/)
+  } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
+})
+
+test('release packing rejects missing, abbreviated, or conflicting source identity', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'master-bun-release-source-'))
+  const manifestPath = join(cwd, 'package.json')
+  const manifest = { name: '@fixture/a', version: '0.0.0', gitHead: 'b'.repeat(40) }
+  const plugin = createWorkspaceRelease({ run: () => assert.fail('An unverified source must never be packed') })
+  const config = { pkgRoot: '.', workspaceRoots: ['.'] }
+  try {
+    await writeFile(manifestPath, JSON.stringify(manifest))
+    for (const gitHead of [undefined, revision.slice(0, 8)]) {
+      await assert.rejects(plugin.prepare(config, { cwd, env: githubEnv, nextRelease: { version: '3.2.1', gitHead } }), /full source Git HEAD/)
+    }
+    await assert.rejects(plugin.prepare(config, { cwd, env: githubEnv, nextRelease: { version: '3.2.1', gitHead: revision } }), /Existing Git HEAD differs/)
+    assert.equal(JSON.parse(await readFile(manifestPath)).gitHead, manifest.gitHead)
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })
 
@@ -208,7 +243,7 @@ test('real release preparation excludes checkout artifacts from the generic bind
     const manifest = { name: sourceManifest.name, version: '0.0.0', files: sourceManifest.files }
     await writeFile(join(cwd, 'package.json'), JSON.stringify(manifest))
     const config = { pkgRoot: '.', workspaceRoots: ['.'] }
-    const context = { cwd, env: process.env, nextRelease: { version: '3.2.1' } }
+    const context = { cwd, env: process.env, nextRelease: { version: '3.2.1', gitHead: revision } }
     await plugin.prepare(config, context)
     const archive = join(cwd, 'release-artifacts/packages/master-css-binding-3.2.1.tgz')
     const files = (await execa('tar', ['-tzf', archive])).stdout.split('\n')
@@ -237,7 +272,7 @@ test('platform target archives retain their native addon and executable', async 
     await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@master/css-binding-linux-x64-gnu', files: ['mastercss.node', 'mcss'] }))
     await writeFile(join(cwd, 'mastercss.node'), 'target-addon')
     await writeFile(join(cwd, 'mcss'), 'target-executable')
-    await plugin.prepare({ pkgRoot: '.', workspaceRoots: ['.'] }, { cwd, env: process.env, nextRelease: { version: '3.2.1' } })
+    await plugin.prepare({ pkgRoot: '.', workspaceRoots: ['.'] }, { cwd, env: process.env, nextRelease: { version: '3.2.1', gitHead: revision } })
     const files = (await execa('tar', ['-tzf', join(cwd, 'release-artifacts/packages/master-css-binding-linux-x64-gnu-3.2.1.tgz')])).stdout
     assert.ok(files.includes('package/mastercss.node'))
     assert.ok(files.includes('package/mcss'))

@@ -21,9 +21,10 @@ async function fixture(t) {
   const cwd = await mkdtemp(join(tmpdir(), 'master-promotion-'))
   t.after(() => rm(cwd, { recursive: true, force: true }))
   const config = { workspaceRoots: ['packages/a', 'packages/b'] }
-  const context = { cwd, env: { GITHUB_ACTIONS: 'true', GITHUB_SHA: 'a'.repeat(40), GITHUB_RUN_ID: '1',
+  const revision = 'a'.repeat(40)
+  const context = { cwd, env: { GITHUB_ACTIONS: 'true', GITHUB_SHA: revision, GITHUB_RUN_ID: '1',
     ACTIONS_ID_TOKEN_REQUEST_URL: 'https://fixture.invalid', ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture',
-    MASTER_CSS_RELEASE_STAGE: '1', MASTER_CSS_RELEASE_PROMOTE: '1' }, nextRelease: { version: '2.0.0', channel: 'rc' } }
+    MASTER_CSS_RELEASE_STAGE: '1', MASTER_CSS_RELEASE_PROMOTE: '1' }, nextRelease: { version: '2.0.0', channel: 'rc', gitHead: revision } }
   const registry = new Map(), calls = []
   const controls = { failUpload: null, failTag: null, failAfterTag: null, failConsumer: false }
   for (const letter of ['a', 'b']) {
@@ -107,6 +108,16 @@ test('partial upload recovery requires archived state and exact existing integri
   assert.equal(f.calls.filter(args => args[0] === 'publish' && args[1].includes('fixture-a-')).length, 1)
 })
 
+test('wrong packed source anywhere in the cohort blocks the first publish', async t => {
+  const f = await fixture(t)
+  await f.prepare()
+  const file = join(f.cwd, 'release-artifacts/packages/fixture-b-2.0.0.tgz')
+  const original = packedManifest(await readFile(file))
+  await writeFile(file, archive({ ...original, gitHead: 'b'.repeat(40) }))
+  await assert.rejects(f.stage('a'), /Incorrect packed Git HEAD for @fixture\/b/)
+  assert.deepEqual(f.calls, [])
+})
+
 test('partial promotion records interruption and recovers a successful command with a lost response', async t => {
   const f = await fixture(t)
   await f.prepare(); await f.stage('a'); await f.stage('b')
@@ -146,9 +157,9 @@ test('addChannel without state, mismatched revision/cohort and modified archive 
   const f = await fixture(t)
   await assert.rejects(f.promotion.addChannel(f.config, f.context), /requires the archived/)
   await f.prepare(); await f.stage('a'); await f.stage('b')
-  f.context.env.GITHUB_SHA = 'b'.repeat(40)
+  f.context.nextRelease.gitHead = 'b'.repeat(40)
   await assert.rejects(f.promotion.publish(f.config, f.context), /revision differs/)
-  f.context.env.GITHUB_SHA = 'a'.repeat(40)
+  f.context.nextRelease.gitHead = 'a'.repeat(40)
   await assert.rejects(f.promotion.publish({ workspaceRoots: ['packages/a'] }, f.context), /cohort differs/)
   await writeFile(join(f.cwd, 'release-artifacts/packages/fixture-a-2.0.0.tgz'), 'changed')
   await assert.rejects(f.promotion.publish(f.config, f.context), /archive changed/)
