@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { appendFileSync, readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
+import { assertReleaseProvenanceProof } from './release-registry-provenance.mjs'
 
 export function releaseOutcome(state, { revision, branch, resolveTag }) {
   if (!state) return { released: 'false' }
@@ -12,6 +13,7 @@ export function releaseOutcome(state, { revision, branch, resolveTag }) {
   assert.equal(state.channels?.[channel]?.complete, true, 'The complete candidate must be promoted before delivery')
   assert.ok(state.packages?.length > 0, 'Release package inventory is required')
   assert.deepEqual([...state.channels[channel].promoted].sort(), state.packages.map(pkg => pkg.name).sort(), 'Every package must be promoted before delivery')
+  assertReleaseProvenanceProof(state)
   const tag = `v${state.version}`
   assert.equal(resolveTag(tag), revision, 'Release version tag must point to the validated source revision')
   return { released: 'true', version: state.version, revision, tag }

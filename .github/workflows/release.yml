@@ -77,7 +77,10 @@ jobs:
       - name: Install publishing npm CLI
         run: npm install --global npm@11.21.0
       - name: Verify OIDC publication and package order
-        run: bun run check:release && node --test scripts/semantic-release-workspace.test.mjs
+        run: |
+          test "$(npm --version)" = 11.21.0
+          bun run check:release
+          node --test scripts/semantic-release-workspace.test.mjs scripts/semantic-release-promotion.test.mjs scripts/release-registry-provenance.test.mjs
       - name: Require unused editor versions before publishing npm
         if: ${{ needs.validation.outputs.vscode_release_affected == 'true' }}
         run: node packages/vscode/scripts/verify-store-availability.mjs
@@ -295,7 +298,9 @@ jobs:
           RECOVERY_VERSION: ${{ inputs.version }}
           RECOVERY_CONFIRM: ${{ inputs.confirm }}
       - name: Install the OIDC-capable publishing npm CLI
-        run: npm install --global npm@11.21.0
+        run: |
+          npm install --global npm@11.21.0
+          test "$(npm --version)" = 11.21.0
       - name: Resume verified npm uploads and promotion only
         run: node scripts/release-recover.mjs --state "$RECOVERY_STATE" --channel "$RECOVERY_CHANNEL"
         env:

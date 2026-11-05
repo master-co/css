@@ -12,7 +12,7 @@ import { assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm
 
 /** Explicit recovery only: no semantic-release version selection, Git writes or deployment. */
 export async function recoverRelease({ root, stateFile, channel, scope = 'workspace', environment = process.env,
-  run = execa, fetchMetadata = fetch, consumerProbe }) {
+  run = execa, fetchMetadata = fetch, consumerProbe, provenanceProbe }) {
   const context = { cwd: root, env: { ...environment, MASTER_CSS_RELEASE_STATE: resolve(stateFile) } }
   for (const flag of ['MASTER_CSS_RELEASE_STAGE', 'MASTER_CSS_RELEASE_PROMOTE', 'MASTER_CSS_RELEASE_RECOVERY']) assertReleaseFlag(context, flag)
   const state = JSON.parse(await readFile(stateFile))
@@ -47,7 +47,7 @@ export async function recoverRelease({ root, stateFile, channel, scope = 'worksp
   for (const item of dependencyOrder(packages)) {
     await stagePackage(config, context, item.pkg, item.archive, executeNpm, fetchMetadata)
   }
-  return createReleasePromotion({ run, fetchMetadata, consumerProbe }).publish(config, context)
+  return createReleasePromotion({ run, fetchMetadata, consumerProbe, provenanceProbe }).publish(config, context)
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

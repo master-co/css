@@ -103,11 +103,14 @@ operator or another workflow from writing the same tags concurrently.
    Candidate tags do not hide a published version from exact or range installs.
    When a package has no `latest`, npm can select its first stable version for
    a bare install even before channel promotion.
-3. The final promotion plugin verifies every package's exact version and integrity
-   and required provenance metadata. A missing package or mismatch stops before
-   any formal tag is changed. Registry provenance metadata presence is checked;
-   this is not cryptographic verification of the attestation's contents. Before
-   promotion, install exact candidate engine/compiler/CLI versions from public npm
+3. The final promotion plugin verifies every package's exact version and integrity,
+   then cryptographically verifies its public npm provenance. Sigstore verifies
+   the signing certificate and transparency proof. The signed SLSA subject must
+   bind the exact package version and archive to the recorded source, workflow,
+   and upload run. Missing or inconsistent evidence stops before any formal tag
+   write. The resulting cohort proof is retained with the release state and is
+   required for editor and website delivery. Before promotion, install exact
+   candidate engine/compiler/CLI versions from public npm
    in a fresh directory/cache without credentials, scripts, links or overrides.
    Check lockfile versions and SHA-512, physical manifests, native/Wasm parity,
    stacked conditions, explicit public PHP sources and CLI execution. Failure
@@ -179,8 +182,8 @@ tags. It does not execute upload, promotion, rollback or deletion commands.
 | Failure boundary | Required action before any authorized retry |
 | --- | --- |
 | No package uploaded | Fix the cause, confirm no registry versions exist, preserve the evidence, then retry the same candidate only with unchanged archives. |
-| Some packages uploaded | Restore the exact archived state and every archive at the original relative paths. Check revision, full cohort, version, integrity and provenance. Resume only missing uploads; an existing version requires a recorded upload attempt and matching immutable bytes. |
-| Upload succeeded but its response/state update was lost | Inspect registry evidence, including npm's authenticated version status when available. A version under validation may be absent from the public registry. Explicit recovery may recognize the recorded attempt and identical version; never assume an npm error or a public 404 means no write occurred. |
+| Some packages uploaded | Restore the exact archived state and every archive at the original relative paths. Check revision, full cohort, version, integrity and provenance. Resume only uploads that were never attempted; an existing version requires a recorded upload attempt and matching immutable bytes. An unresolved attempt with a missing public version stops for investigation. |
+| Upload succeeded but its response/state update was lost | Inspect registry evidence, including npm's authenticated version status when available. A version under validation may be absent from the public registry. Explicit recovery may recognize the recorded attempt and identical version; it must verify the signature against the upload run recorded for that package. Never assume an npm error or a public 404 means no write occurred. |
 | All uploads complete, no formal tags moved | Verify the complete registry cohort again, then resume promotion under the same exclusive release lock. |
 | Some formal tags moved | Check every current tag against the saved baseline or recorded successful/pending promotion. Resume only after reconciling the partial state. Do not automatically roll back. |
 | An immutable version has different bytes, missing required provenance, or the original state is unavailable | Stop. Never overwrite or unpublish the version to make a retry work. Choose a new version, rebuild the complete cohort, rerun verification and obtain authorization for that new candidate. |

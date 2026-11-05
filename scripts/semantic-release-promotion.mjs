@@ -6,6 +6,7 @@ import { execa } from 'execa'
 import { getChannel, readPackage } from '@aronrepo/semantic-release-pnpm'
 import { assertNpmOidcEnvironment, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 import { verifyRegistryConsumer } from './release-registry-consumer.mjs'
+import { assertReleaseProvenanceProof, verifyReleaseProvenance } from './release-registry-provenance.mjs'
 // semantic-release writes channel Git notes before addChannel. Use the installed
 // release selector in verifyConditions to block that path before those writes.
 import getReleaseToAdd from 'semantic-release/lib/get-release-to-add.js'
@@ -286,9 +287,12 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   assert.ok(!Object.values(tagsBefore).includes(state.version),
     `Registry tag already points to ${pkg.name}@${state.version} but its exact version is unavailable; stop and reconcile`)
   if (item.tagsBefore) assert.deepEqual(tagsBefore, item.tagsBefore, `Registry tags changed after the previous upload attempt: ${pkg.name}`)
+  assert.equal(item.attempt, null, `Previous npm upload of ${pkg.name} is unresolved; do not submit it again while its exact version is unavailable`)
   item.tagsBefore = tagsBefore
   item.attempt = new Date().toISOString()
-  state.events.push({ operation: 'upload-start', name: pkg.name, at: item.attempt })
+  item.uploadRun = runIdentity(context)
+  item.uploadEvent = context.env?.GITHUB_EVENT_NAME ?? null
+  state.events.push({ operation: 'upload-start', name: pkg.name, at: item.attempt, run: item.uploadRun, event: item.uploadEvent })
   await save(context, state)
   const args = ['publish', archive, '--tag', state.candidateTag, '--ignore-scripts', '--fetch-retries=0']
   if (pkg.publishConfig?.provenance) args.push('--provenance')
@@ -301,7 +305,8 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   return state.candidateTag
 }
 
-export function createReleasePromotion({ run = execa, fetchMetadata = fetch, consumerProbe = verifyRegistryConsumer, wait = pause } = {}) {
+export function createReleasePromotion({ run = execa, fetchMetadata = fetch, consumerProbe = verifyRegistryConsumer,
+  provenanceProbe = verifyReleaseProvenance, wait = pause } = {}) {
   async function verifyConditions(_config, context) {
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_PROMOTE')
     if (context.branch && getReleaseToAdd(context)) {
@@ -316,6 +321,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     assert.notEqual(context.env?.MASTER_CSS_RELEASE_RECOVERY, '1', 'Use release-recover.mjs instead of semantic-release for recovery')
     const { version } = context.nextRelease
     for (const { pkg } of await cohort(config, context)) {
+      assert.equal(pkg.publishConfig?.provenance, true, `Formal release requires signed npm provenance: ${pkg.name}`)
       assert.equal(await readRegistryVersion(pkg.name, version, fetchMetadata, wait), null,
         `Version already exists before Git tagging: ${pkg.name}; use archived-state recovery or a new version`)
       const tags = await readRegistryTags(pkg.name, fetchMetadata, wait)
@@ -330,7 +336,15 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     await assertCohort(state, config, context, true)
     const channel = getChannel(context.nextRelease.channel)
     // Complete-cohort registry verification must precede every formal tag write.
-    for (const pkg of state.packages) await readPublishedPackage({ ...pkg, gitHead: state.revision }, state.version, fetchMetadata, wait)
+    const manifests = []
+    for (const pkg of state.packages) manifests.push(await readPublishedPackage({ ...pkg, gitHead: state.revision }, state.version, fetchMetadata, wait))
+    // The internal site snapshot channel is separate from formal product releases.
+    if (channel !== 'site') {
+      assert.ok(state.packages.every(pkg => pkg.provenance), 'Every formal release archive requires signed npm provenance')
+      state.provenanceProof = await provenanceProbe({ state, context, manifests, fetchMetadata, run })
+      assertReleaseProvenanceProof(state)
+      await save(context, state)
+    }
     // Run against actual public registry versions in an isolated host consumer.
     // A failed install, wrong lock identity or failed native/Wasm/CLI/PHP smoke
     // aborts before any formal tag write, including during recovery/addChannel.

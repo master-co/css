@@ -23,10 +23,11 @@ async function fixture(t) {
   const config = { workspaceRoots: ['packages/a', 'packages/b'] }
   const revision = 'a'.repeat(40)
   const context = { cwd, env: { GITHUB_ACTIONS: 'true', GITHUB_SHA: revision, GITHUB_RUN_ID: '1',
-    ACTIONS_ID_TOKEN_REQUEST_URL: 'https://fixture.invalid', ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture',
+    ACTIONS_ID_TOKEN_REQUEST_URL: 'https://fixture.invalid', ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture', GITHUB_EVENT_NAME: 'push',
     MASTER_CSS_RELEASE_STAGE: '1', MASTER_CSS_RELEASE_PROMOTE: '1' }, nextRelease: { version: '2.0.0', channel: 'rc', gitHead: revision } }
   const registry = new Map(), calls = [], waits = []
-  const controls = { failUpload: null, failTag: null, failAfterTag: null, failConsumer: false, afterTagReads: [], autoLatest: false, forbiddenTags: null }
+  const controls = { failUpload: null, failAfterUpload: null, failTag: null, failAfterTag: null, failConsumer: false, failProvenance: false, wrongProof: false,
+    afterTagReads: [], autoLatest: false, forbiddenTags: null }
   const pendingTagReads = new Map()
   for (const letter of ['a', 'b']) {
     const root = join(cwd, 'packages', letter)
@@ -72,6 +73,7 @@ async function fixture(t) {
         } }
         data['dist-tags'][args[args.indexOf('--tag') + 1]] = pkg.version
         if (controls.autoLatest) data['dist-tags'].latest = pkg.version
+        if (controls.failAfterUpload === pkg.name) throw new Error('fixture lost upload response')
       } else {
         assert.deepEqual(args.slice(0, 2), ['dist-tag', 'add'])
         const split = args[2].lastIndexOf('@'), name = args[2].slice(0, split), version = args[2].slice(split + 1)
@@ -84,7 +86,16 @@ async function fixture(t) {
     return { stdout: '' }
   }
   const workspace = createWorkspaceRelease({ run, fetchMetadata })
-  const promotion = createReleasePromotion({ run, fetchMetadata, wait: async delay => { waits.push(delay) }, consumerProbe: async state => {
+  const provenanceProbe = async ({ state, manifests }) => {
+    if (controls.failProvenance) throw new Error('fixture invalid npm provenance signature')
+    assert.deepEqual(manifests.map(manifest => manifest.name), state.packages.map(pkg => pkg.name))
+    const packages = state.packages.map(({ name, integrity, uploadRun, uploadEvent }) =>
+      ({ name, integrity, uploadRun, uploadEvent, version: state.version, attestationSHA256: 'f'.repeat(64) }))
+    if (controls.wrongProof) packages[0].uploadRun = '99:1'
+    return { schemaVersion: 1, revision: state.revision, version: state.version, verifiedCount: manifests.length,
+      cryptographicProvenanceVerified: true, packages }
+  }
+  const promotion = createReleasePromotion({ run, fetchMetadata, provenanceProbe, wait: async delay => { waits.push(delay) }, consumerProbe: async state => {
     if (controls.failConsumer) throw new Error('fixture registry consumer failed')
     return { version: state.version, revision: state.revision }
   } })
@@ -92,7 +103,7 @@ async function fixture(t) {
   const prepare = async () => { for (const pkgRoot of config.workspaceRoots) await workspace.prepare({ ...config, pkgRoot }, context) }
   const stage = async (letter = 'a') => workspace.publish({ ...config, pkgRoot: `packages/${letter}` }, context)
   const state = async () => JSON.parse(await readFile(join(cwd, 'release-artifacts/promotion-state.json')))
-  return { cwd, config, context, registry, calls, waits, controls, workspace, promotion, prepare, stage, state, run, fetchMetadata }
+  return { cwd, config, context, registry, calls, waits, controls, workspace, promotion, prepare, stage, state, run, fetchMetadata, provenanceProbe }
 }
 
 test('all archives stage without formal tags; full verified cohort promotes before addChannel', async t => {
@@ -114,8 +125,8 @@ test('all archives stage without formal tags; full verified cohort promotes befo
 test('partial upload recovery requires archived state and exact existing integrity', async t => {
   const f = await fixture(t)
   await f.prepare(); await f.stage('a')
-  f.controls.failUpload = '@fixture/b'
-  await assert.rejects(f.stage('b'), /upload interruption/)
+  f.controls.failAfterUpload = '@fixture/b'
+  await assert.rejects(f.stage('b'), /lost upload response/)
   f.context.env.GITHUB_RUN_ID = '2'
   await assert.rejects(f.stage('a'), /explicit recovery/)
   f.context.env.MASTER_CSS_RELEASE_RECOVERY = '1'
@@ -124,10 +135,22 @@ test('partial upload recovery requires archived state and exact existing integri
   await f.prepare()
   assert.deepEqual(await readFile(join(f.cwd, 'release-artifacts/packages/fixture-a-2.0.0.tgz')), archived)
   await f.stage('a')
-  f.controls.failUpload = null
   await f.stage('b')
   await f.promotion.publish(f.config, f.context)
-  assert.equal(f.calls.filter(args => args[0] === 'publish' && args[1].includes('fixture-a-')).length, 1)
+  assert.equal(f.calls.filter(args => args[0] === 'publish').length, 2)
+})
+
+test('recovery does not resubmit an ambiguous write while the exact version is absent', async t => {
+  const f = await fixture(t)
+  await f.prepare()
+  f.controls.failUpload = '@fixture/a'
+  await assert.rejects(f.stage('a'), /upload interruption/)
+  f.controls.failUpload = null
+  f.context.env.MASTER_CSS_RELEASE_RECOVERY = '1'
+  f.context.env.GITHUB_RUN_ID = '2'
+  await assert.rejects(f.stage('a'), /Previous npm upload .* is unresolved/)
+  assert.equal(f.calls.filter(args => args[0] === 'publish').length, 1)
+  assert.equal((await f.state()).packages[0].uploadRun, '1:1')
 })
 
 test('wrong packed source anywhere in the cohort blocks the first publish', async t => {
@@ -250,6 +273,26 @@ test('failed fresh registry consumer aborts before any formal tag mutation', asy
   assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 0)
 })
 
+test('an invalid registry provenance signature prevents all formal tag writes', async t => {
+  const f = await fixture(t)
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  f.controls.failProvenance = true
+  await assert.rejects(f.promotion.publish(f.config, f.context), /invalid npm provenance signature/)
+  const state = await f.state()
+  assert.equal(state.provenanceProof, undefined)
+  assert.equal(state.consumerProof, undefined)
+  assert.deepEqual(state.packages.map(({ uploadRun, uploadEvent }) => [uploadRun, uploadEvent]), [['1:1', 'push'], ['1:1', 'push']])
+  assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 0)
+})
+
+test('a same-count provenance receipt cannot substitute another upload identity before promotion', async t => {
+  const f = await fixture(t)
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  f.controls.wrongProof = true
+  await assert.rejects(f.promotion.publish(f.config, f.context), /exact package archives and upload identities/)
+  assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 0)
+})
+
 test('registry eventual absence/transient errors retry within bounds; immutable mismatch fails immediately', async () => {
   const pkg = { name: '@fixture/a', integrity: 'sha512-YQ==', provenance: true, gitHead: 'a'.repeat(40) }
   const version = '2.0.0'
@@ -334,16 +377,20 @@ test('explicit recovery resumes immutable archives independently of semantic-rel
   await f.prepare(); await f.stage('a')
   f.context.env.MASTER_CSS_RELEASE_RECOVERY = '1'
   f.context.env.GITHUB_RUN_ID = '2'
+  f.context.env.GITHUB_EVENT_NAME = 'workflow_dispatch'
   await rename(join(f.cwd, 'packages/a'), join(f.cwd, 'packages/source-a'))
   await rename(join(f.cwd, 'packages/b'), join(f.cwd, 'packages/source-b'))
   await rename(join(f.cwd, 'release-artifacts'), join(f.cwd, 'restored-evidence'))
   const restoredState = join(f.cwd, 'restored-evidence/promotion-state.json')
   const result = await recoverRelease({ root: f.cwd, stateFile: restoredState,
     channel: 'rc', environment: f.context.env, run: f.run, fetchMetadata: f.fetchMetadata,
-    consumerProbe: async state => ({ version: state.version, revision: state.revision }) })
+    provenanceProbe: f.provenanceProbe, consumerProbe: async state => ({ version: state.version, revision: state.revision }) })
   assert.equal(result.channel, 'rc')
   assert.equal(f.calls.filter(args => args[0] === 'publish').length, 2)
-  assert.equal(JSON.parse(await readFile(restoredState)).channels.rc.complete, true)
+  const restored = JSON.parse(await readFile(restoredState))
+  assert.equal(restored.channels.rc.complete, true)
+  assert.deepEqual(restored.provenanceProof.packages.map(({ uploadRun, uploadEvent }) => [uploadRun, uploadEvent]),
+    [['1:1', 'push'], ['2:1', 'workflow_dispatch']])
 })
 
 test('public registry consumer strips release credentials and rejects nonregistry or mismatched locks', () => {
