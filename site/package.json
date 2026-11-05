@@ -78,7 +78,7 @@
         "theme-mode": "^1.1.1",
         "throttle-debounce": "^5.0.2",
         "ts-dedent": "^2.3.0",
-        "@master/internal-site": "0.2.1"
+        "@master/internal-site": "0.2.2"
     },
     "devDependencies": {
         "@astrojs/check": "0.9.12",
