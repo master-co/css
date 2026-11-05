@@ -70,6 +70,11 @@ await check('built route inventory', () => assert.ok(html.length > 0, 'productio
 for (const [file, { nodes, ids }] of documents) await check(routeOf(file), () => {
   const route = routeOf(file)
   assert.equal(new Set(ids).size, ids.length, 'document IDs are unique')
+  if (/^\/(?:(?:ja|tw|ko|cn)\/)?reference(?:\/|$)/.test(route)) {
+    const main = nodes.filter(node => node.tag === 'main')
+    assert.equal(main.length, 1, 'Reference has one main landmark')
+    assert.ok(main[0].class?.split(/\s+/).includes('reference-document'), 'Reference main retains reference-document styles in every locale')
+  }
   const canonical = nodes.filter(node => node.tag === 'link' && node.rel === 'canonical')
   if (/^\/(?:(?:ja|tw|ko|cn)\/)?404$/.test(route)) {
     assert.ok(nodes.some(node => node.tag === 'meta' && node.name === 'robots' && node.content === 'noindex'), '404 stays out of search indexes')

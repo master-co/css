@@ -61,3 +61,16 @@ test('root and all localized 404 pages require noindex and omit canonical URLs',
     assert.notEqual(withCanonical.status, 0)
   }
 })
+
+test('all Reference editions require their main styling boundary', () => {
+  const routes = ['', '/ja', '/tw', '/ko', '/cn'].flatMap(prefix => [`${prefix}/reference`, `${prefix}/reference/tokens/color`])
+  const documents = Object.fromEntries(routes.map(route => [route.slice(1) + '.html', `<html><head><link rel="canonical" href="https://css.master.co${route}"></head><body><main class="ui-docs-main reference-document"><h1>Reference</h1></main></body></html>`]))
+  assert.equal(verify('', '/', documents).status, 0)
+  for (const route of routes) {
+    const file = route.slice(1) + '.html'
+    const broken = verify('', '/', { ...documents, [file]: documents[file].replace(' reference-document', '') })
+    assert.notEqual(broken.status, 0)
+    assert.ok(broken.report.failures.some(({ name, message }) => name === route && message.includes('reference-document')))
+  }
+  assert.equal(verify('', '/', { 'reference-copy.html': '<html><head><link rel="canonical" href="https://css.master.co/reference-copy"></head><body><main>Unrelated page</main></body></html>' }).status, 0)
+})
