@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import test from 'node:test'
 import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
-import { createReleasePromotion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './semantic-release-promotion.mjs'
+import { createReleasePromotion, readInstallableVersion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './semantic-release-promotion.mjs'
 import { recoverRelease } from './release-recover.mjs'
 import { registryConsumerEnvironment, verifyRegistryLock } from './release-registry-consumer.mjs'
 
@@ -44,9 +44,14 @@ async function fixture(t) {
       const delayed = pendingTagReads.get(name)
       return Response.json(delayed?.length ? { ...data['dist-tags'], rc: delayed.shift() } : data['dist-tags'])
     }
+    const packument = /^\/([^/]+)$/.exec(path)
+    if (packument) {
+      const name = decodeURIComponent(packument[1]), data = registry.get(name)
+      assert.ok(data)
+      return Response.json({ ...data, name })
+    }
     const exact = /^\/([^/]+)\/([^/]+)$/.exec(path)
     const data = exact && registry.get(decodeURIComponent(exact[1]))?.versions[decodeURIComponent(exact[2])]
-    // The packument remains absent even after the exact version and tags are visible.
     return data ? Response.json(data) : new Response('{}', { status: 404 })
   }
   const run = async (command, args, options) => {
@@ -276,8 +281,26 @@ test('registry eventual absence/transient errors retry within bounds; immutable 
   const delays = []
   await assert.rejects(readPublishedPackage(pkg, version, async () => { calls++; return new Response('{}', { status: 404 }) },
     async delay => { delays.push(delay) }), /Candidate version missing/)
-  assert.equal(calls, 9)
-  assert.deepEqual(delays, [1000, 2000, 4000, 8000, 15_000, 20_000, 25_000, 30_000])
+  assert.equal(calls, delays.length + 1)
+  assert.ok(delays.reduce((sum, delay) => sum + delay, 0) > 15 * 60_000)
+  assert.ok(delays.reduce((sum, delay) => sum + delay, 0) < 20 * 60_000)
+})
+
+test('the npm install packument must expose the same immutable archive before dependent uploads', async () => {
+  const pkg = { name: '@fixture/a', integrity: 'sha512-YQ==', gitHead: 'a'.repeat(40), provenance: true }
+  const version = '2.0.0'
+  const published = { name: pkg.name, version, dist: { integrity: pkg.integrity } }
+  let reads = 0, pauses = 0
+  assert.deepEqual(await readInstallableVersion(pkg, version, async (url, options) => {
+    assert.equal(url, 'https://registry.npmjs.org/@fixture%2fa')
+    assert.equal(options.headers.accept, 'application/vnd.npm.install-v1+json')
+    return Response.json({ name: pkg.name, versions: ++reads === 1 ? {} : { [version]: published } })
+  }, async () => { pauses++ }), published)
+  assert.equal(reads, 2)
+  assert.equal(pauses, 1)
+  await assert.rejects(readInstallableVersion(pkg, version, async () => Response.json({
+    name: pkg.name, versions: { [version]: { ...published, dist: { integrity: 'sha512-Yg==' } } }
+  }), async () => assert.fail('Never retry wrong immutable bytes')), /integrity differs/)
 })
 
 test('only exact-version HTTP 404 is treated as absence, and tags come from the dedicated public endpoint', async () => {

@@ -76,8 +76,9 @@ Before authorizing publication, retain:
 ## Normal publication sequence
 
 The semantic-release configuration runs workspace publication first, the cohort
-promotion plugin next, and GitHub release creation last. Native targets precede
-Wasm packages and wrappers. Publication requires both explicit workflow flags:
+promotion plugin next, and GitHub release creation last. The workspace plugins
+publish dependencies before their dependents, including optional and peer
+dependencies pinned to this cohort. Publication requires both explicit workflow flags:
 
 ```text
 MASTER_CSS_RELEASE_STAGE=1
@@ -93,10 +94,15 @@ operator or another workflow from writing the same tags concurrently.
 1. `prepare` versions all workspaces before packing. Before the first npm write,
    record the source revision, full archive cohort and SHA-512 values, target
    channel baselines, workflow run identity and an empty operation log.
-2. Publish each archive under `candidate-<exact-version>`. Do not change `latest`,
-   `rc`, or another formal channel during these uploads. Record an upload attempt
-   before calling npm, then verify the registry version, integrity and presence
-   of provenance metadata before recording success. Preserve state on failure.
+2. Publish each archive under `candidate-<exact-version>`. Record an upload attempt
+   before calling npm once. Check that the candidate tag appears and no other tag
+   changed, then verify the exact version, source revision, integrity and
+   provenance metadata. Wait until npm's public install metadata lists the same
+   archive before uploading a dependent package. npm scans new versions after
+   accepting an upload; the workflow retries reads only and retains state on failure.
+   Candidate tags do not hide a published version from exact or range installs.
+   When a package has no `latest`, npm can select its first stable version for
+   a bare install even before channel promotion.
 3. The final promotion plugin verifies every package's exact version and integrity
    and required provenance metadata. A missing package or mismatch stops before
    any formal tag is changed. Registry provenance metadata presence is checked;
@@ -115,6 +121,14 @@ operator or another workflow from writing the same tags concurrently.
    release. Keep editor publication and deployment held until their separate
    validation and authorization gates are met. A completed npm phase does not
    prove those downstream phases succeeded.
+
+For a new name, [npm staged publishing](https://docs.npmjs.com/staged-publishing/)
+can register the package before its first real release. Verify that the only
+public version is npm's `0.0.0-stage` placeholder and keep the reservation in
+staging without approval. Configure Trusted Publishing when the release is ready:
+the first successful publish must validate a new connection within 48 hours.
+Inspect the new name's exact version and tags after every first real write; do
+not assume that npm will preserve the requested tag or assign no default.
 
 Always upload `promotion-state.json` and the exact package archives, including on
 failure. These files contain public package identities, checksums and tags, not
@@ -166,7 +180,7 @@ tags. It does not execute upload, promotion, rollback or deletion commands.
 | --- | --- |
 | No package uploaded | Fix the cause, confirm no registry versions exist, preserve the evidence, then retry the same candidate only with unchanged archives. |
 | Some packages uploaded | Restore the exact archived state and every archive at the original relative paths. Check revision, full cohort, version, integrity and provenance. Resume only missing uploads; an existing version requires a recorded upload attempt and matching immutable bytes. |
-| Upload succeeded but its response/state update was lost | Inspect registry evidence. Explicit recovery may recognize the recorded attempt and identical version; never assume an npm error means no write occurred. |
+| Upload succeeded but its response/state update was lost | Inspect registry evidence, including npm's authenticated version status when available. A version under validation may be absent from the public registry. Explicit recovery may recognize the recorded attempt and identical version; never assume an npm error or a public 404 means no write occurred. |
 | All uploads complete, no formal tags moved | Verify the complete registry cohort again, then resume promotion under the same exclusive release lock. |
 | Some formal tags moved | Check every current tag against the saved baseline or recorded successful/pending promotion. Resume only after reconciling the partial state. Do not automatically roll back. |
 | An immutable version has different bytes, missing required provenance, or the original state is unavailable | Stop. Never overwrite or unpublish the version to make a retry work. Choose a new version, rebuild the complete cohort, rerun verification and obtain authorization for that new candidate. |

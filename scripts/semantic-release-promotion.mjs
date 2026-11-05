@@ -37,8 +37,10 @@ async function load(context) {
 
 const pause = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 const registryRetryDelays = [1000, 2000, 4000, 8000, 15_000]
-// A first published version can take longer to appear than a normal registry read.
-const publicationRetryDelays = [...registryRetryDelays, 20_000, 25_000, 30_000]
+const tagRetryDelays = [...registryRetryDelays, 20_000, 25_000, 30_000]
+// npm scans new versions after accepting an upload. Scan time can exceed 15 minutes.
+const publicationRetryDelays = [...tagRetryDelays, ...Array(23).fill(45_000)]
+const installMetadataMediaType = 'application/vnd.npm.install-v1+json'
 const exactVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/
 
 function registryPackagePath(name) {
@@ -54,13 +56,13 @@ function versionPath(name, version) {
 
 const distTagsPath = name => `-/package/${registryPackagePath(name)}/dist-tags`
 
-async function readRegistry(path, fetchMetadata, wait, inspect, delays = registryRetryDelays) {
+async function readRegistry(path, fetchMetadata, wait, inspect, delays = registryRetryDelays, accept = 'application/json') {
   for (let attempt = 0; attempt <= delays.length; attempt++) {
     const retry = attempt < delays.length
     let response, body
     try {
       response = await fetchMetadata(`${npmRegistry}${path}`, {
-        headers: { accept: 'application/json', 'cache-control': 'no-cache' }, redirect: 'error', signal: AbortSignal.timeout(15_000)
+        headers: { accept, 'cache-control': 'no-cache' }, redirect: 'error', signal: AbortSignal.timeout(15_000)
       })
       if (response.ok) body = await response.json()
     } catch (error) {
@@ -109,7 +111,7 @@ async function confirmRegistryTag(name, channel, version, baseline, fetchMetadat
     if (retry && tag === baseline && tag !== version) return undefined
     assert.equal(tag, version, `Formal tag verification failed: ${name}@${channel}`)
     return tag
-  }, publicationRetryDelays)
+  }, tagRetryDelays)
 }
 
 async function confirmCandidateTags(name, candidate, version, before, fetchMetadata) {
@@ -185,6 +187,19 @@ export async function readPublishedPackage(pkg, version, fetchMetadata = fetch, 
   }, publicationRetryDelays)
 }
 
+export async function readInstallableVersion(pkg, version, fetchMetadata = fetch, wait = pause) {
+  return readRegistry(registryPackagePath(pkg.name), fetchMetadata, wait, (packument, retry) => {
+    if (packument !== null) assert.equal(packument.name, pkg.name, `Registry package name differs: ${pkg.name}`)
+    const published = packument?.versions?.[version]
+    if (!published && retry) return undefined
+    assert.ok(published, `Candidate missing from npm install metadata: ${pkg.name}@${version}`)
+    validateRegistryVersion(published, pkg.name, version)
+    // Abbreviated install metadata does not include gitHead or attestations.
+    validatePublishedArchive({ name: pkg.name, integrity: pkg.integrity }, published)
+    return published
+  }, publicationRetryDelays, installMetadataMediaType)
+}
+
 /** Baselines are saved before the first write. Recovery requires this archived state. */
 async function initialize(config, context, fetchMetadata) {
   let state = await load(context)
@@ -255,6 +270,7 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
       assert.ok(item.tagsBefore, `Archived upload has no pre-write registry tags: ${pkg.name}`)
       await confirmCandidateTags(pkg.name, state.candidateTag, state.version, item.tagsBefore, fetchMetadata)
     }
+    await readInstallableVersion(expected, state.version, fetchMetadata)
     item.staged = true
     state.events.push({ operation: 'verify-existing', name: pkg.name, at: new Date().toISOString() })
     await save(context, state)
@@ -274,11 +290,11 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   item.attempt = new Date().toISOString()
   state.events.push({ operation: 'upload-start', name: pkg.name, at: item.attempt })
   await save(context, state)
-  const args = ['publish', archive, '--tag', state.candidateTag, '--ignore-scripts']
+  const args = ['publish', archive, '--tag', state.candidateTag, '--ignore-scripts', '--fetch-retries=0']
   if (pkg.publishConfig?.provenance) args.push('--provenance')
   await executeNpm(pkg, args, context)
-  await readPublishedPackage(expected, state.version, fetchMetadata)
   await confirmCandidateTags(pkg.name, state.candidateTag, state.version, tagsBefore, fetchMetadata)
+  await Promise.all([readPublishedPackage(expected, state.version, fetchMetadata), readInstallableVersion(expected, state.version, fetchMetadata)])
   item.staged = true
   state.events.push({ operation: 'upload-verified', name: pkg.name, at: new Date().toISOString() })
   await save(context, state)
@@ -341,7 +357,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
       const session = await createNpmOidcSession(context.env)
       try {
         const { cleanup, ...options } = session
-        await run('npm', ['dist-tag', 'add', `${pkg.name}@${state.version}`, channel, '--registry', npmRegistry], options)
+        await run('npm', ['dist-tag', 'add', `${pkg.name}@${state.version}`, channel, '--registry', npmRegistry, '--fetch-retries=0'], options)
       } finally { await session.cleanup() }
       await confirmRegistryTag(pkg.name, channel, state.version, promotion.baseline[pkg.name], fetchMetadata, wait)
       promotion.promoted.push(pkg.name)

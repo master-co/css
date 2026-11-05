@@ -37,6 +37,11 @@ test('release versions all workspaces before packing and publishes verified tarb
       const path = new URL(url).pathname
       const tags = /^\/-\/package\/([^/]+)\/dist-tags$/.exec(path)
       if (tags) return Response.json(registry.get(decodeURIComponent(tags[1]))?.['dist-tags'] ?? {})
+      const packument = /^\/([^/]+)$/.exec(path)
+      if (packument) {
+        const name = decodeURIComponent(packument[1]), data = registry.get(name)
+        return data ? Response.json({ ...data, name }) : new Response('{}', { status: 404 })
+      }
       const exact = /^\/([^/]+)\/([^/]+)$/.exec(path)
       const manifest = exact && registry.get(decodeURIComponent(exact[1]))?.versions[decodeURIComponent(exact[2])]
       return manifest ? Response.json(manifest) : new Response('{}', { status: 404 })
