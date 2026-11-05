@@ -103,4 +103,4 @@ The `options` object is passed to `withMasterCSS(nextConfig, options)`.
 | `debug` | `boolean` | `false` | Log rendered output details during `next build`. |
 | `adapterOrder` | `'master-first' \| 'external-first'` | `'master-first'` | Adapter execution order when composing with another Next adapter. |
 
-See the [Next.js installation guide](https://rc.css.master.co/guide/installation/nextjs) for a full setup.
+See the [Next.js installation guide](https://css.master.co/guide/installation/nextjs) for a full setup.

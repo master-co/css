@@ -36,9 +36,9 @@
   </a>
   <a aria-label="GitHub Actions" href="https://github.com/master-co/css/actions/workflows/release.yml">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=212022&logo=githubactions&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-      <img alt="GitHub release workflow" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=main&label=%20&color=212022&logo=githubactions&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=main&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <img alt="GitHub release workflow" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=main&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
     </picture>
   </a>
 </p>
@@ -106,4 +106,4 @@ If the project already has a server `handle`, compose it with SvelteKit's `seque
 @import '@master/css';
 ```
 
-See the [Svelte installation guide](https://rc.css.master.co/guide/installation/svelte) for a full project setup.
+See the [Svelte installation guide](https://css.master.co/guide/installation/svelte) for a full project setup.

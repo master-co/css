@@ -43,9 +43,9 @@
   </a>
   <a aria-label="Github Actions" href="https://github.com/master-co/css/actions/workflows/release.yml">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=212022&logo=githubactions&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-      <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=main&label=%20&color=212022&logo=githubactions&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=main&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+      <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=main&label=%20&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
     </picture>
   </a>
 </p>
@@ -54,11 +54,11 @@
 
 ## Getting started
 
-Read the [installation guide](https://rc.css.master.co/guide/installation) to set up Master CSS for an application.
+Read the [installation guide](https://css.master.co/guide/installation) to set up Master CSS for an application.
 
 ## Community
 
-- [Documentation](https://rc.css.master.co/guide/installation) — Set up Master CSS and look up supported behavior.
+- [Documentation](https://css.master.co/guide/installation) — Set up Master CSS and look up supported behavior.
 - [GitHub Discussions](https://github.com/master-co/css/discussions) — Ask questions, discuss ideas, and share your work. English and Chinese are welcome.
 - [GitHub Issues](https://github.com/master-co/css/issues) — Report reproducible bugs and track implementation work.
 - [Releases](https://github.com/master-co/css/releases) — Follow version changes and release notes.
