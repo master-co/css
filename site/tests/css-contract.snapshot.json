@@ -46342,7 +46342,7 @@
     "24daf6a3c0b586e7": "\n\n  .documentation-index-section > header {\n    align-content: start;\n    gap: var(--ui-space-xs);\n    display: grid;\n  }",
     "24e50430d41aafaa": ":root,:host{--color-surface-canvas:var(--ui-surface-canvas);--color-surface-shell:var(--ui-surface-tray);--color-surface-ink:var(--ui-surface-ink);--color-text-subtle:var(--ui-text-muted);--color-line-contour:var(--ui-line-contour)}",
     "24f81129807ccfb3": "\n\n  .ui-dialog[data-variant=\"search\"] > .ui-dialog-body {\n    overscroll-behavior: contain;\n    scrollbar-width: thin;\n    flex: 1;\n    min-height: 0;\n    overflow-y: auto;\n  }",
-    "25734679b7211506": "\n\n  @media (prefers-reduced-motion: reduce) {\n    .home-wf-routes-tabs:before {\n      transition: none;\n    }\n\n    .home-wf-play {\n      display: none !important;\n    }\n\n    .home-wf-anchor, .home-wf-framework-logo {\n      transition: none;\n    }\n  }",
+    "79943bbc1cd2f0d6": "\n\n  @media (prefers-reduced-motion: reduce) {\n    .home-wf-routes-tabs.home-segmented-control:before {\n      transition: none;\n    }\n\n    .home-wf-play {\n      display: none !important;\n    }\n\n    .home-wf-anchor, .home-wf-framework-logo {\n      transition: none;\n    }\n  }",
     "257545cb67405bec": "\n\n  .home-hero :is(.home-hero-pill, .home-hero-actions .home-command) {\n    --glass-fill: light-dark(#ffffff14, oklch(12% .012 70 / .28));\n    --glass-top: light-dark(#ffffff29, #ffffff12);\n    --glass-lip: light-dark(#fffffff2, #ffffff29);\n    --glass-pool: light-dark(#ffffff38, #ffffff17);\n    --glass-rim: light-dark(#fff, #ffffff8c);\n    --glass-rim-far: light-dark(#ffffff8c, #ffffff29);\n    --glass-glint: light-dark(oklch(84% .13 82 / .55), oklch(82% .13 82 / .32));\n    --glass-glare: light-dark(oklch(99.5% .02 90 / .95), #fff6);\n    isolation: isolate;\n    background-color: var(--glass-fill);\n    background-image: radial-gradient(ellipse 18% 30% at clamp(10%, var(--lit-x), 90%) 8%, color-mix(in oklab, var(--glass-glare) calc(var(--lit-near) * 100%), transparent), transparent),\n      linear-gradient(180deg, var(--glass-top), transparent 50%);\n    box-shadow: inset 0 1px 1px var(--glass-lip),\n      inset 0 -10px 16px -12px var(--glass-pool),\n      0 1px 2px light-dark(oklch(40% .06 70 / .1), #0000004d),\n      /* Glass passes most of the light, so it casts a faint shadow; the canvas adds its caustic. */\n      var(--cast-x) var(--cast-y) 16px -6px color-mix(in oklab, var(--cast-tone) 50%, transparent);\n    backdrop-filter: blur(6px) saturate(1.35) brightness(1.06);\n    transition: background-color var(--home-quick) var(--home-ease);\n    border: 1px solid #0000;\n    position: relative;\n\n    &:before {\n      z-index: -1;\n      border-radius: inherit;\n      background-image: linear-gradient(var(--lit-angle), var(--glass-rim-far), transparent 32%, transparent 62%, var(--glass-rim));\n      pointer-events: none;\n      content: \"\";\n      padding: 1px;\n      position: absolute;\n      inset: -1px;\n      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);\n    }\n  }",
     "2589015c72653a0e": "\n\n  .ui-prose > :is(p, ul, ol, h2, h3, h4) {\n    overflow-wrap: anywhere;\n  }",
     "259ed49c03416267": "\n\n  .documentation-index-directory > a[data-related] > span {\n    margin-left: var(--ui-space-md);\n    color: var(--ui-text-muted);\n    font-size: var(--ui-text-caption);\n    line-height: 1.5;\n  }",
@@ -46512,7 +46512,7 @@
     "37f90b2c7b835046": "\n\n  .home-agent-panel-tool {\n    min-width: 0;\n    font-family: var(--home-mono);\n    font-size: var(--home-label);\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    color: var(--home-text-quiet);\n    margin-left: auto;\n    overflow: hidden;\n  }",
     "3809d60c652f70f3": "\n\na[data-indicate=\"hash\"]:after {\n  content: \"#\";\n}",
     "380eff9b9fa6f2bc": "\n\n  :is(.ui-tray, .ui-code, .ui-table, .document-comparison, .ui-params, .ui-prompt, .ui-tree, figure, img, video, iframe, picture, p:has( > img:only-child,  > video:only-child,  > picture:only-child,  > a:only-child > img:only-child)):is(.ui-prose > :is(div, section, astro-island, astro-slot):not([class], [role=\"region\"]) > *, .ui-prose > :is(div, section, astro-island, astro-slot):not([class], [role=\"region\"]) > :is(div, section, astro-island, astro-slot):not([class], [role=\"region\"]) > *), :is(figure, img, video, iframe, picture, p:has( > img:only-child,  > video:only-child,  > picture:only-child,  > a:only-child > img:only-child)):is(.ui-prose > *) {\n    margin-inline: calc(var(--prose-bleed) * -1);\n  }",
-    "38aaea5b2ab4b3dd": "\n\n  .home-delivery-switch {\n    grid-area: 1 / 1 / auto / -1;\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    width: auto;\n    display: grid;\n  }",
+    "50f898a9b5ec1569": "\n\n  .home-delivery-switch.home-segmented-control {\n    grid-area: 1 / 1 / auto / -1;\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    width: auto;\n    display: grid;\n  }",
     "38c5c7c385e25279": "\n\n  .ui-prose.ui-docs-article {\n    --measure: var(--docs-text);\n  }",
     "38eb2d5fab4f93ec": ".h-full{height:100%}",
     "39103447c3aad544": "\n\n  .ui-header-nav > a > small {\n    margin-left: var(--ui-space-2xs);\n    border-radius: var(--ui-radius-xs);\n    background: var(--ui-surface-chip);\n    color: var(--ui-text-muted);\n    box-shadow: inset 0 0 0 1px var(--ui-line-hair);\n    font: var(--ui-weight-medium) .6875rem/1.4 var(--font-family-sans);\n    letter-spacing: .02em;\n    padding: 1px 5px;\n  }",
@@ -47869,7 +47869,7 @@
     "d5e693da51c4e915": "\n\n  .ui-item[data-tone=\"red\"], .ui-badge[data-tone=\"red\"], .ui-legend [data-tone=\"red\"] {\n    --tone: var(--ui-tone-red);\n  }",
     "d5e72d96306d3b8a": "\n\n  .home-delivery-routes {\n    z-index: 4;\n    width: 100%;\n    height: 100%;\n    color: var(--home-rule-strong);\n    pointer-events: none;\n    position: absolute;\n    inset: 0;\n    overflow: visible;\n  }",
     "d5eccbec1626511e": ":root,:host{--color-zinc-30:oklch(78% .0025 265);--color-zinc-70:oklch(39.8% .0028 265);--color-slate-50:oklch(55.43% .0949 263.4);--color-amber-5:oklch(96.24% .0573 98.1);--color-amber-80:oklch(53.09% .1677 39.7);--color-green-5:oklch(94.95% .071 145.5);--color-green-80:oklch(51.96% .1768 142.5);--color-blue-5:oklch(93.53% .0305 231.3);--color-blue-70:oklch(46.26% .3057 266.7);--color-red-5:oklch(94.05% .0239 17);--color-red-80:oklch(53.09% .2178 29.2)}",
-    "d616703946a81521": "\n\n  @container home-delivery (width < 14rem) {\n    .home-delivery-switch {\n      border-radius: var(--home-radius-control);\n      grid-template-columns: minmax(0, 1fr);\n    }\n  }",
+    "2dddc8d82ffdacee": "\n\n  @container home-delivery (width < 14rem) {\n    .home-delivery-switch.home-segmented-control {\n      border-radius: var(--home-radius-control);\n      grid-template-columns: minmax(0, 1fr);\n    }\n  }",
     "d63b5b88339b8b49": ".font-regular{font-weight:var(--font-weight-regular)}",
     "d649c8a918aecbcf": "\n\n  .ui-prompt-body var {\n    border-radius: var(--ui-radius-xs);\n    background: var(--ui-surface-chip);\n    color: var(--ui-text-body);\n    box-shadow: inset 0 0 0 1px var(--ui-line-hair);\n    font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono);\n    padding: 0 .25em;\n    font-style: normal;\n  }",
     "d65969e52e5aca7d": "\n\n  .home-delivery-flights > [data-flight=\"class\"], .home-delivery-flights > [data-flight=\"packet\"] {\n    border: 1px solid var(--home-hairline);\n    border-radius: var(--home-radius-chip);\n    font-family: var(--home-mono);\n    white-space: nowrap;\n    color: var(--home-text);\n    background: var(--home-float);\n    box-shadow: var(--home-elevation-2);\n    will-change: transform, opacity;\n    padding: .25rem .5rem;\n    font-size: .625rem;\n    line-height: 1.4;\n    position: absolute;\n    top: 0;\n    left: 0;\n  }",
@@ -47968,7 +47968,7 @@
     "e00aa31f2dc5021a": "\n\n  [data-theme=\"dark\"], :host([data-theme=\"dark\"]) {\n    color-scheme: dark;\n  }",
     "e07923ebfd5457b3": "\n\n  .home-editor-pane {\n    border-radius: var(--home-radius-control);\n    background-color: var(--home-float);\n    box-shadow: var(--home-edge),\n      0 0 0 1px var(--home-rule),\n      0 1px 3px var(--home-shade-near),\n      0 10px 24px -8px var(--home-shade-near),\n      0 22px 48px -20px var(--home-shade-far);\n    opacity: 0;\n    visibility: hidden;\n    transform-origin: 1.5rem 0;\n    transition: opacity .18s var(--home-ease),\n      transform .42s var(--home-ease),\n      visibility 0s linear .42s,\n      left var(--home-base) var(--home-ease),\n      top var(--home-base) var(--home-ease),\n      bottom var(--home-base) var(--home-ease);\n    position: absolute;\n    transform: perspective(60rem) rotateX(-16deg) translateY(-.375rem) scale(.98);\n  }",
     "e08a2d36abdacecf": "\n\n  .ref-table.ui-table :is(td, tbody th) code {\n    box-shadow: none;\n    background: none;\n    border-radius: 0;\n    padding: 0;\n    font-size: .8125rem;\n    line-height: 1.6;\n  }",
-    "e097a92fd341d1c0": "\n\n  @container home-delivery (width >= 52rem) {\n    .home-delivery-switch {\n      grid-area: 1 / 1;\n      justify-self: start;\n      margin-top: .25rem;\n      display: inline-flex;\n    }\n  }",
+    "853de94c256cd3db": "\n\n  @container home-delivery (width >= 52rem) {\n    .home-delivery-switch.home-segmented-control {\n      grid-area: 1 / 1;\n      justify-self: start;\n      margin-top: .25rem;\n      display: inline-flex;\n    }\n  }",
     "e0a2c11cf4c9f7a7": ".ui-expand-control>.ui-button{pointer-events:auto}",
     "e0e32a36a7762ab4": "\n\n  .ui-pagehead-unfinished {\n    vertical-align: top;\n    margin-left: .5em;\n    font-size: .5em;\n  }",
     "e102061fed59a491": ":root,:host{--font-size-xs:.75rem;--font-size-sm:.875rem;--text-xs:var(--font-size-xs);--text-xs--line-height:1.5;--text-xs--letter-spacing:0;--text-sm:var(--font-size-sm);--text-sm--line-height:1.5;--text-sm--letter-spacing:0;--radius-md:.375rem;--radius-lg:.5rem;--spacing-3xs:.25rem;--spacing-sm:.75rem;--spacing-md:1rem}",
@@ -48243,7 +48243,7 @@
     "ff45afc30552e286": "\n\n  #language-service .home-section-caption {\n    flex-wrap: wrap;\n    min-width: 0;\n    max-width: 100%;\n    margin-inline-start: 0;\n\n    & > .home-illustration {\n      margin-inline-start: -.4rem;\n\n      @media (width >= 64rem){\n        margin-inline-start: -.5rem;\n      }\n    }\n  }",
     "ff59f165f4f0b780": "\n\n  .home-hero-actions {\n    justify-content: center;\n    align-items: stretch;\n    gap: var(--spacing-sm);\n    min-width: 0;\n    max-width: 100%;\n    margin-top: var(--spacing-2xl);\n    flex-wrap: wrap;\n    display: flex;\n\n    & .home-action-primary, & .home-command {\n      box-sizing: border-box;\n      min-width: 0;\n      height: auto;\n      min-height: 3.25rem;\n      color: var(--home-text);\n      border-radius: 1.625rem;\n    }\n\n    & .home-action-primary {\n      isolation: isolate;\n      padding: var(--spacing-sm) 1.5rem;\n      font-weight: var(--font-weight-medium);\n      color: var(--stone-text);\n      text-shadow: 0 -1px light-dark(#00000080, #ffffffb3);\n      background-color: var(--stone-mid);\n      background-image: radial-gradient(ellipse 13% 18% at clamp(14%, var(--lit-x), 86%) 24%, color-mix(in oklab, var(--stone-glare) calc(var(--lit-near) * 100%), transparent), color-mix(in oklab, var(--stone-glare) calc(var(--lit-near) * 30%), transparent) 45%, transparent),\n        radial-gradient(ellipse 80% 70% at var(--lit-x) -10%, var(--stone-sheen), transparent 70%),\n        radial-gradient(ellipse 34% 70% at clamp(30%, calc(100% - var(--lit-x) * .5), 70%) 75%, var(--stone-adularescence), transparent),\n        linear-gradient(180deg, var(--stone-top), var(--stone-mid) 52%, var(--stone-bottom));\n      box-shadow: inset 0 1px 0 var(--stone-lip),\n        inset 0 -1px 0 var(--stone-mirror),\n        inset 0 -10px 16px -12px var(--stone-mirror),\n        0 1px 1px var(--stone-contact),\n        var(--cast-x) var(--cast-y) 10px -3px var(--stone-cast),\n        calc(var(--cast-x) * 2.5) calc(var(--cast-y) * 2.5) 28px -10px var(--stone-cast);\n      backdrop-filter: none;\n      transition: background-color var(--home-quick) var(--home-ease);\n      border: 0;\n      position: relative;\n      overflow: hidden;\n\n      &:before {\n        z-index: -1;\n        border-radius: inherit;\n        background-image: linear-gradient(var(--lit-angle), var(--stone-mirror), transparent 40%, transparent 58%, var(--stone-rim));\n        pointer-events: none;\n        content: \"\";\n        padding: 1px;\n        position: absolute;\n        inset: 0;\n        mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);\n      }\n\n      &:after {\n        z-index: -1;\n        border-radius: inherit;\n        background-image: linear-gradient(105deg, transparent 38%, var(--stone-glint) 50%, transparent 62%);\n        pointer-events: none;\n        content: \"\";\n        background-position: 100% 0;\n        background-repeat: no-repeat;\n        background-size: 250% 100%;\n        position: absolute;\n        inset: 0;\n      }\n\n      &:is(:hover, :focus-visible) {\n        --stone-adularescence: light-dark(#0000, oklch(90% .035 240 / .45));\n        box-shadow: inset 0 1px 0 var(--stone-lip),\n          inset 0 -1px 0 var(--stone-mirror),\n          inset 0 -14px 20px -12px var(--stone-mirror),\n          0 1px 1px var(--stone-contact),\n          var(--cast-x) var(--cast-y) 12px -3px var(--stone-cast),\n          calc(var(--cast-x) * 3) calc(var(--cast-y) * 3) 34px -10px var(--stone-cast);\n        border-color: #0000;\n\n        &:after {\n          transition: background-position .9s var(--home-ease);\n          background-position: 0 0;\n        }\n      }\n\n      &:active {\n        box-shadow: inset 0 2px 6px var(--stone-press),\n          inset 0 -1px 0 var(--stone-mirror),\n          0 1px 1px var(--stone-contact),\n          calc(var(--cast-x) * .4) calc(var(--cast-y) * .4) 6px -3px var(--stone-cast);\n      }\n    }\n\n    & .home-command {\n      flex: auto;\n      padding: .1875rem .1875rem .1875rem 1.125rem;\n      font-size: .875rem;\n    }\n\n    & .home-command-copy {\n      width: 2.75rem;\n      height: 2.75rem;\n      color: var(--home-text);\n      border-radius: 3.40282e38px;\n\n      &:hover {\n        color: var(--home-text);\n        background-color: light-dark(#00000009, #ffffff12);\n      }\n\n      &:focus-visible {\n        outline-offset: -2px;\n      }\n    }\n\n    & .home-action-primary:focus-visible {\n      outline: 2px solid var(--home-ink);\n      outline-offset: 4px;\n    }\n\n    @media (width < 40rem) {\n      flex-direction: column;\n      width: min(100%, 21rem);\n\n      & .home-command {\n        width: 100%;\n      }\n    }\n  }",
     "ff655aaefd978170": "\n\n  @media (forced-colors: active), print {\n    .home-stone.home-stone {\n      color: canvastext;\n      box-shadow: none;\n      background: canvas;\n      border-color: currentColor;\n    }\n\n    .home-edge-light, .home-stone-button:after {\n      display: none;\n    }\n\n    .home-stone-type {\n      -webkit-text-fill-color: currentColor;\n      filter: none;\n      background: none;\n    }\n  }",
-    "ff8b54a1c5020911": "\n\n  .home-wf-routes-tabs {\n    --home-segment-pad: 3px;\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    width: min(100%, 14.25rem);\n    margin-bottom: 1rem;\n    display: inline-grid;\n\n    &:before {\n      content: \"\";\n      z-index: -1;\n      inset-block: var(--home-segment-pad);\n      left: var(--home-segment-pad);\n      width: calc((100% - var(--home-segment-pad) * 2) / 3);\n      border-radius: inherit;\n      background-color: light-dark(var(--home-sheet), color-mix(in oklab, var(--home-sheet) 86%, white));\n      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-contact), inset 0 1px 0 var(--home-highlight);\n      transition: translate var(--home-base) var(--home-ease);\n      position: absolute;\n      translate: 0;\n    }\n\n    &:has([value=\"1\"]:checked):before {\n      translate: 100%;\n    }\n\n    &:has([value=\"2\"]:checked):before {\n      translate: 200%;\n    }\n  }",
+    "6411577d8ccb6ae5": "\n\n  .home-wf-routes-tabs.home-segmented-control {\n    --home-segment-pad: 3px;\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    width: min(100%, 14.25rem);\n    margin-bottom: 1rem;\n    display: inline-grid;\n\n    &:before {\n      content: \"\";\n      z-index: -1;\n      inset-block: var(--home-segment-pad);\n      left: var(--home-segment-pad);\n      width: calc((100% - var(--home-segment-pad) * 2) / 3);\n      border-radius: inherit;\n      background-color: light-dark(var(--home-sheet), color-mix(in oklab, var(--home-sheet) 86%, white));\n      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-contact), inset 0 1px 0 var(--home-highlight);\n      transition: translate var(--home-base) var(--home-ease);\n      position: absolute;\n      translate: 0;\n    }\n\n    &:has([value=\"1\"]:checked):before {\n      translate: 100%;\n    }\n\n    &:has([value=\"2\"]:checked):before {\n      translate: 200%;\n    }\n  }",
     "ffc443105c9b8778": "\n\n  .home-delivery-explanation > span {\n    visibility: hidden;\n    grid-area: 1 / 1;\n  }"
   },
   "contracts": {
@@ -103489,9 +103489,9 @@
         "light"
       ]
     },
-    "959317e191d6b58b": {
-      "cssBytes": 340036,
-      "cssSha256": "0b7090c7d61ece2e372288652fc7e67c056fdf8145d7e000ad051614ee5fb29d",
+    "1598f77c4e803832": {
+      "cssBytes": 340151,
+      "cssSha256": "c70d3bb75d776858ac44894bb99cff5b0416e5aeaa3d095fd68ac3d715d5c459",
       "cssSegments": [
         "9662aca5917826ed",
         "10971e47c0bbc03d",
@@ -104435,10 +104435,10 @@
         "0a1cfd6ca2880357",
         "8e0bcd3f3fdc80a8",
         "941d828951b37d38",
-        "38aaea5b2ab4b3dd",
+        "50f898a9b5ec1569",
         "30640d1de4dc930a",
         "ad594a8ca8ca36d4",
-        "e097a92fd341d1c0",
+        "853de94c256cd3db",
         "2676ecdd6438cbdc",
         "392270250951c7ce",
         "81bf4b15a85ead89",
@@ -104458,7 +104458,7 @@
         "4c8562608beb0343",
         "1313289649ec345d",
         "e1bb9a105fd33030",
-        "d616703946a81521",
+        "2dddc8d82ffdacee",
         "80cea4f888209c2f",
         "01ba4719c80b6fe9",
         "d10b36aa74a59bcf",
@@ -104934,7 +104934,7 @@
         "7374d2699b831e2b",
         "b2059689f1fd7ee3",
         "537b5537dd0e9837",
-        "ff8b54a1c5020911",
+        "6411577d8ccb6ae5",
         "1470efe40dfe894c",
         "b21e5dffc26961cd",
         "622baf89898118cd",
@@ -104964,7 +104964,7 @@
         "6152871e6f9dc8ef",
         "8ecf447cf1b202a1",
         "ba3185b4c50471a7",
-        "25734679b7211506",
+        "79943bbc1cd2f0d6",
         "a53dd6da9ec8a473",
         "b0b41d3446ba60f4",
         "01ba4719c80b6fe9",
@@ -135464,10 +135464,10 @@
     }
   },
   "routes": {
-    "/": "959317e191d6b58b",
+    "/": "1598f77c4e803832",
     "/404": "7a5177c3b497d5b0",
     "/benchmarks": "4e0944aae1486ecb",
-    "/cn": "959317e191d6b58b",
+    "/cn": "1598f77c4e803832",
     "/cn/404": "7a5177c3b497d5b0",
     "/cn/benchmarks": "4e0944aae1486ecb",
     "/cn/guide": "a1cb222080ee4ba9",
@@ -135587,7 +135587,7 @@
     "/guide/theme": "6cec2ad806934322",
     "/guide/typography": "0e986ce80b53e2c6",
     "/guide/view-transitions": "a60dc9c6223767e9",
-    "/ja": "959317e191d6b58b",
+    "/ja": "1598f77c4e803832",
     "/ja/404": "7a5177c3b497d5b0",
     "/ja/benchmarks": "4e0944aae1486ecb",
     "/ja/guide": "a1cb222080ee4ba9",
@@ -135663,7 +135663,7 @@
     "/ja/reference/tools/cli": "bccb6f986267087b",
     "/ja/reference/tools/mcp": "71e30cf474c3c8d5",
     "/ja/reference/truncation": "1fac2ae6004265e4",
-    "/ko": "959317e191d6b58b",
+    "/ko": "1598f77c4e803832",
     "/ko/404": "7a5177c3b497d5b0",
     "/ko/benchmarks": "4e0944aae1486ecb",
     "/ko/guide": "a1cb222080ee4ba9",
@@ -135772,7 +135772,7 @@
     "/reference/tools/cli": "bccb6f986267087b",
     "/reference/tools/mcp": "71e30cf474c3c8d5",
     "/reference/truncation": "1fac2ae6004265e4",
-    "/tw": "959317e191d6b58b",
+    "/tw": "1598f77c4e803832",
     "/tw/404": "7a5177c3b497d5b0",
     "/tw/benchmarks": "4e0944aae1486ecb",
     "/tw/guide": "a1cb222080ee4ba9",
@@ -135850,6 +135850,6 @@
     "/tw/reference/truncation": "1fac2ae6004265e4"
   },
   "approval": {
-    "reference": "site/tests/css-contract-qa-2026-11-05.md"
+    "reference": "site/tests/css-contract-qa-2026-11-05.md; site/tests/segmented-control-order-qa-2026-11-05.md"
   }
 }
