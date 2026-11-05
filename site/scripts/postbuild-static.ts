@@ -4,7 +4,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPublicEnv } from '../utils/public-env.js'
 import { organizationRedirects } from './organization-redirects'
-import { locales, languageOf } from '@master/internal-site/common/locales.js'
+import { renderSitemap } from './sitemap'
+import { locales } from '@master/internal-site/common/locales.js'
 
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
 const outDir = path.join(siteDir, 'out')
@@ -22,7 +23,7 @@ await validateInlineScripts()
 async function generateSitemap() {
     const baseUrl = publicEnv.PUBLIC_URL.replace(/\/$/, '')
     const groups = new Map<string, Map<string, string>>()
-    for (const file of (await listFiles(outDir)).filter(file => file.endsWith('.html'))) {
+    for (const file of (await listFiles(outDir)).filter(file => file.endsWith('.html')).sort()) {
         const html = await readFile(file, 'utf8')
         const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? ''
         if (/<meta\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(head)) continue
@@ -36,17 +37,7 @@ async function generateSitemap() {
         if (!groups.has(identity)) groups.set(identity, new Map())
         groups.get(identity)!.set(locale, canonical)
     }
-    const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${[...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).flatMap(([, variants]) => [...variants.values()].map(canonical => `  <url>
-    <loc>${escape(canonical)}</loc>
-${[...variants.entries()].map(([locale, url]) => `    <xhtml:link rel="alternate" hreflang="${languageOf(locale)}" href="${escape(url)}"/>`).join('\n')}
-${variants.has('en') ? `    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(variants.get('en')!)}"/>\n` : ''}  </url>`)).join('\n')}
-</urlset>
-`
-    await writeFile(path.join(outDir, 'sitemap.xml'), xml, 'utf8')
+    await writeFile(path.join(outDir, 'sitemap.xml'), renderSitemap(groups), 'utf8')
 }
 
 async function writeHeaders() {
