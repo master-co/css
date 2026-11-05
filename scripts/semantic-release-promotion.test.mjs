@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import test from 'node:test'
 import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
-import { createReleasePromotion, readPublishedPackage } from './semantic-release-promotion.mjs'
+import { createReleasePromotion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './semantic-release-promotion.mjs'
 import { recoverRelease } from './release-recover.mjs'
 import { registryConsumerEnvironment, verifyRegistryLock } from './release-registry-consumer.mjs'
 
@@ -25,15 +25,30 @@ async function fixture(t) {
   const context = { cwd, env: { GITHUB_ACTIONS: 'true', GITHUB_SHA: revision, GITHUB_RUN_ID: '1',
     ACTIONS_ID_TOKEN_REQUEST_URL: 'https://fixture.invalid', ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture',
     MASTER_CSS_RELEASE_STAGE: '1', MASTER_CSS_RELEASE_PROMOTE: '1' }, nextRelease: { version: '2.0.0', channel: 'rc', gitHead: revision } }
-  const registry = new Map(), calls = []
-  const controls = { failUpload: null, failTag: null, failAfterTag: null, failConsumer: false }
+  const registry = new Map(), calls = [], waits = []
+  const controls = { failUpload: null, failTag: null, failAfterTag: null, failConsumer: false, afterTagReads: [], autoLatest: false, forbiddenTags: null }
+  const pendingTagReads = new Map()
   for (const letter of ['a', 'b']) {
     const root = join(cwd, 'packages', letter)
     await mkdir(root, { recursive: true })
     await writeFile(join(root, 'package.json'), JSON.stringify({ name: `@fixture/${letter}`, version: '0.0.0', publishConfig: { provenance: true } }))
     registry.set(`@fixture/${letter}`, { versions: {}, 'dist-tags': { rc: '1.0.0', latest: '0.9.0' } })
   }
-  const fetchMetadata = async url => Response.json(registry.get(decodeURIComponent(url.split('/').at(-1))))
+  const fetchMetadata = async url => {
+    const path = new URL(url).pathname
+    const tags = /^\/-\/package\/([^/]+)\/dist-tags$/.exec(path)
+    if (tags) {
+      const name = decodeURIComponent(tags[1]), data = registry.get(name)
+      assert.ok(data)
+      if (controls.forbiddenTags === name) return new Response('{}', { status: 401 })
+      const delayed = pendingTagReads.get(name)
+      return Response.json(delayed?.length ? { ...data['dist-tags'], rc: delayed.shift() } : data['dist-tags'])
+    }
+    const exact = /^\/([^/]+)\/([^/]+)$/.exec(path)
+    const data = exact && registry.get(decodeURIComponent(exact[1]))?.versions[decodeURIComponent(exact[2])]
+    // The packument remains absent even after the exact version and tags are visible.
+    return data ? Response.json(data) : new Response('{}', { status: 404 })
+  }
   const run = async (command, args, options) => {
     if (command === 'bun') {
       await writeFile(args[args.indexOf('--filename') + 1], archive(JSON.parse(await readFile(join(options.cwd, 'package.json')))))
@@ -46,23 +61,25 @@ async function fixture(t) {
         if (controls.failUpload === pkg.name) throw new Error('fixture upload interruption')
         const data = registry.get(pkg.name)
         assert.equal(data.versions[pkg.version], undefined, 'Never republish an immutable version')
-        data.versions[pkg.version] = { version: pkg.version, dist: {
+        data.versions[pkg.version] = { name: pkg.name, version: pkg.version, gitHead: pkg.gitHead, dist: {
           integrity: `sha512-${createHash('sha512').update(bytes).digest('base64')}`,
           attestations: { url: 'https://registry.npmjs.org/-/npm/v1/attestations/fixture' }
         } }
         data['dist-tags'][args[args.indexOf('--tag') + 1]] = pkg.version
+        if (controls.autoLatest) data['dist-tags'].latest = pkg.version
       } else {
         assert.deepEqual(args.slice(0, 2), ['dist-tag', 'add'])
         const split = args[2].lastIndexOf('@'), name = args[2].slice(0, split), version = args[2].slice(split + 1)
         if (controls.failTag === name) throw new Error('fixture tag interruption')
         registry.get(name)['dist-tags'][args[3]] = version
+        if (name === '@fixture/a' && controls.afterTagReads.length) pendingTagReads.set(name, [...controls.afterTagReads])
         if (controls.failAfterTag === name) throw new Error('fixture lost tag response')
       }
     }
     return { stdout: '' }
   }
   const workspace = createWorkspaceRelease({ run, fetchMetadata })
-  const promotion = createReleasePromotion({ run, fetchMetadata, consumerProbe: async state => {
+  const promotion = createReleasePromotion({ run, fetchMetadata, wait: async delay => { waits.push(delay) }, consumerProbe: async state => {
     if (controls.failConsumer) throw new Error('fixture registry consumer failed')
     return { version: state.version, revision: state.revision }
   } })
@@ -70,7 +87,7 @@ async function fixture(t) {
   const prepare = async () => { for (const pkgRoot of config.workspaceRoots) await workspace.prepare({ ...config, pkgRoot }, context) }
   const stage = async (letter = 'a') => workspace.publish({ ...config, pkgRoot: `packages/${letter}` }, context)
   const state = async () => JSON.parse(await readFile(join(cwd, 'release-artifacts/promotion-state.json')))
-  return { cwd, config, context, registry, calls, controls, workspace, promotion, prepare, stage, state, run, fetchMetadata }
+  return { cwd, config, context, registry, calls, waits, controls, workspace, promotion, prepare, stage, state, run, fetchMetadata }
 }
 
 test('all archives stage without formal tags; full verified cohort promotes before addChannel', async t => {
@@ -118,6 +135,31 @@ test('wrong packed source anywhere in the cohort blocks the first publish', asyn
   assert.deepEqual(f.calls, [])
 })
 
+test('a candidate upload that also changes latest stops before any further upload', async t => {
+  const f = await fixture(t)
+  await f.prepare()
+  f.controls.autoLatest = true
+  await assert.rejects(f.stage('a'), /Non-candidate registry tags changed while staging @fixture\/a/)
+  assert.deepEqual(f.calls.map(args => args[0]), ['publish'])
+  assert.equal(f.registry.get('@fixture/b').versions['2.0.0'], undefined)
+  const item = (await f.state()).packages.find(pkg => pkg.name === '@fixture/a')
+  assert.ok(item.attempt)
+  assert.equal(item.staged, false)
+  assert.deepEqual(item.tagsBefore, { rc: '1.0.0', latest: '0.9.0' })
+  f.context.env.GITHUB_RUN_ID = '2'
+  f.context.env.MASTER_CSS_RELEASE_RECOVERY = '1'
+  await assert.rejects(f.stage('a'), /Non-candidate registry tags changed while staging @fixture\/a/)
+  assert.deepEqual(f.calls.map(args => args[0]), ['publish'])
+})
+
+test('a visible candidate tag prevents uploading an exact version that is still unavailable', async t => {
+  const f = await fixture(t)
+  await f.prepare()
+  f.registry.get('@fixture/a')['dist-tags']['candidate-2.0.0'] = '2.0.0'
+  await assert.rejects(f.stage('a'), /Candidate tag already exists.*exact version is unavailable/)
+  assert.deepEqual(f.calls, [])
+})
+
 test('partial promotion records interruption and recovers a successful command with a lost response', async t => {
   const f = await fixture(t)
   await f.prepare(); await f.stage('a'); await f.stage('b')
@@ -153,6 +195,26 @@ test('observed concurrent formal-tag change aborts without automatic rollback', 
   assert.equal(f.registry.get('@fixture/a')['dist-tags'].rc, '2.1.0')
 })
 
+test('a successful tag write can wait for the saved baseline to advance without reissuing the write', async t => {
+  const f = await fixture(t)
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  f.controls.afterTagReads = ['1.0.0', '1.0.0']
+  await f.promotion.publish(f.config, f.context)
+  assert.equal((await f.state()).channels.rc.complete, true)
+  assert.deepEqual(f.waits, [1000, 2000])
+  assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 2)
+})
+
+test('an unrelated observed tag after a successful write stops before touching another package', async t => {
+  const f = await fixture(t)
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  f.controls.afterTagReads = ['2.1.0']
+  await assert.rejects(f.promotion.publish(f.config, f.context), /Formal tag verification failed: @fixture\/a@rc/)
+  assert.equal((await f.state()).channels.rc.pending, '@fixture/a')
+  assert.deepEqual(f.waits, [])
+  assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 1)
+})
+
 test('addChannel without state, mismatched revision/cohort and modified archive fail closed', async t => {
   const f = await fixture(t)
   await assert.rejects(f.promotion.addChannel(f.config, f.context), /requires the archived/)
@@ -184,23 +246,51 @@ test('failed fresh registry consumer aborts before any formal tag mutation', asy
 })
 
 test('registry eventual absence/transient errors retry within bounds; immutable mismatch fails immediately', async () => {
-  const pkg = { name: '@fixture/a', integrity: 'sha512-YQ==', provenance: true }
-  const published = { versions: { '2.0.0': { version: '2.0.0', dist: { integrity: pkg.integrity, attestations: { url: 'https://registry.npmjs.org/proof' } } } } }
-  const responses = [new Response('', { status: 503 }), new Response('{}', { status: 404 }), Response.json(published)]
+  const pkg = { name: '@fixture/a', integrity: 'sha512-YQ==', provenance: true, gitHead: 'a'.repeat(40) }
+  const version = '2.0.0'
+  const published = { name: pkg.name, version, gitHead: pkg.gitHead,
+    dist: { integrity: pkg.integrity, attestations: { url: 'https://registry.npmjs.org/proof' } } }
+  const responses = [new Response('', { status: 503 }), new Response('{}', { status: 404 }),
+    Response.json({ ...published, dist: { integrity: pkg.integrity } }), Response.json(published)]
   let calls = 0
-  await readPublishedPackage(pkg, '2.0.0', async (_url, options) => {
+  assert.deepEqual(await readPublishedPackage(pkg, version, async (url, options) => {
+    assert.equal(url, 'https://registry.npmjs.org/@fixture%2fa/2.0.0')
     assert.ok(options.signal instanceof AbortSignal)
+    assert.equal(options.headers['cache-control'], 'no-cache')
+    assert.equal(options.redirect, 'error')
     calls++
     return responses.shift()
-  }, async () => {})
-  assert.equal(calls, 3)
+  }, async () => {}), published)
+  assert.equal(calls, 4)
+  for (const [wrong, message] of [
+    [{ ...published, dist: { integrity: 'sha512-Yg==' } }, /integrity differs/],
+    [{ ...published, gitHead: 'b'.repeat(40) }, /source differs/],
+    [{ ...published, name: '@fixture/b' }, /package name differs/],
+    [{ ...published, version: '2.0.1' }, /version differs/]
+  ]) {
+    calls = 0
+    await assert.rejects(readPublishedPackage(pkg, version, async () => { calls++; return Response.json(wrong) }, async () => {}), message)
+    assert.equal(calls, 1)
+  }
   calls = 0
-  published.versions['2.0.0'].dist.integrity = 'sha512-Yg=='
-  await assert.rejects(readPublishedPackage(pkg, '2.0.0', async () => { calls++; return Response.json(published) }, async () => {}), /integrity differs/)
-  assert.equal(calls, 1)
-  calls = 0
-  await assert.rejects(readPublishedPackage(pkg, '2.0.0', async () => { calls++; return new Response('{}', { status: 404 }) }, async () => {}), /Candidate version missing/)
-  assert.equal(calls, 3)
+  const delays = []
+  await assert.rejects(readPublishedPackage(pkg, version, async () => { calls++; return new Response('{}', { status: 404 }) },
+    async delay => { delays.push(delay) }), /Candidate version missing/)
+  assert.equal(calls, 9)
+  assert.deepEqual(delays, [1000, 2000, 4000, 8000, 15_000, 20_000, 25_000, 30_000])
+})
+
+test('only exact-version HTTP 404 is treated as absence, and tags come from the dedicated public endpoint', async () => {
+  assert.equal(await readRegistryVersion('@fixture/a', '2.0.0', async () => new Response('{}', { status: 404 })), null)
+  await assert.rejects(readRegistryVersion('@fixture/a', '2.0.0', async () => Response.json(null)), /Invalid registry document/)
+  const tags = { latest: '1.0.0', bootstrap: '0.0.0-bootstrap.1' }
+  assert.deepEqual(await readRegistryTags('@fixture/a', async url => {
+    assert.equal(url, 'https://registry.npmjs.org/-/package/@fixture%2fa/dist-tags')
+    return Response.json({ ...tags, _etag: 'fixture-etag' })
+  }), tags)
+  await assert.rejects(readRegistryTags('@fixture/a', async () => new Response('{}', { status: 404 })), /dist-tags unavailable/)
+  await assert.rejects(readRegistryTags('@fixture/a', async () => new Response('{}', { status: 401 })), /401/)
+  await assert.rejects(readRegistryTags('@fixture/a', async () => Response.json({ error: 'Not found' })), /dist-tags unavailable/)
 })
 
 
@@ -252,9 +342,19 @@ test('public registry consumer strips release credentials and rejects nonregistr
 test('known registry version collisions fail verifyRelease before semantic-release creates its Git tag', async t => {
   const f = await fixture(t)
   await f.promotion.verifyRelease(f.config, f.context)
-  f.registry.get('@fixture/a').versions['2.0.0'] = { version: '2.0.0' }
+  f.registry.get('@fixture/a').versions['2.0.0'] = { name: '@fixture/a', version: '2.0.0' }
   await assert.rejects(f.promotion.verifyRelease(f.config, f.context), /before Git tagging/)
   assert.equal(f.calls.length, 0)
+})
+
+test('Git tagging requires a readable package tag map and stops if any tag already points to the proposed version', async t => {
+  const f = await fixture(t)
+  f.controls.forbiddenTags = '@fixture/a'
+  await assert.rejects(f.promotion.verifyRelease(f.config, f.context), /dist-tags: 401/)
+  f.controls.forbiddenTags = null
+  f.registry.get('@fixture/a')['dist-tags'].latest = '2.0.0'
+  await assert.rejects(f.promotion.verifyRelease(f.config, f.context), /tag already points to @fixture\/a@2\.0\.0 before Git tagging/)
+  assert.deepEqual(f.calls, [])
 })
 
 test('configured release places cohort promotion after every package and before GitHub', async () => {

@@ -33,13 +33,20 @@ test('release versions all workspaces before packing and publishes verified tarb
   const sessions = []
   const registry = new Map()
   const plugin = createWorkspaceRelease({
-    fetchMetadata: async url => Response.json(registry.get(decodeURIComponent(url.split('/').at(-1))) ?? { versions: {}, 'dist-tags': {} }),
+    fetchMetadata: async url => {
+      const path = new URL(url).pathname
+      const tags = /^\/-\/package\/([^/]+)\/dist-tags$/.exec(path)
+      if (tags) return Response.json(registry.get(decodeURIComponent(tags[1]))?.['dist-tags'] ?? {})
+      const exact = /^\/([^/]+)\/([^/]+)$/.exec(path)
+      const manifest = exact && registry.get(decodeURIComponent(exact[1]))?.versions[decodeURIComponent(exact[2])]
+      return manifest ? Response.json(manifest) : new Response('{}', { status: 404 })
+    },
     run: async (command, args, options) => {
       calls.push({ command, args })
       if (command === 'npm') {
         const manifest = packedManifest(await readFile(args[1]))
         const { createHash } = await import('node:crypto')
-        registry.set(manifest.name, { versions: { [manifest.version]: { ...manifest, dist: { integrity: `sha512-${createHash('sha512').update(await readFile(args[1])).digest('base64')}`, attestations: { url: 'https://registry.npmjs.org/fixture' } } } }, 'dist-tags': {} })
+        registry.set(manifest.name, { versions: { [manifest.version]: { ...manifest, dist: { integrity: `sha512-${createHash('sha512').update(await readFile(args[1])).digest('base64')}`, attestations: { url: 'https://registry.npmjs.org/fixture' } } } }, 'dist-tags': { [args[args.indexOf('--tag') + 1]]: manifest.version } })
         sessions.push(options.cwd)
         assert.notEqual(options.cwd, cwd)
         assert.equal(options.extendEnv, false)
@@ -145,7 +152,8 @@ test('OIDC command failure propagates without retrying credentials or requiring 
   const cwd = await mkdtemp(join(tmpdir(), 'master-oidc-failure-'))
   const sessions = [], calls = []
   const failure = new Error('Fixture: npm rejected the workflow OIDC identity')
-  const plugin = createWorkspaceRelease({ fetchMetadata: async () => new Response('{}', { status: 404 }), run: async (command, args, options) => {
+  const plugin = createWorkspaceRelease({ fetchMetadata: async url => url.endsWith('/dist-tags')
+    ? Response.json({}) : new Response('{}', { status: 404 }), run: async (command, args, options) => {
     calls.push(args[0])
     if (command === 'bun') {
       const manifest = JSON.parse(await readFile(join(options.cwd, 'package.json')))

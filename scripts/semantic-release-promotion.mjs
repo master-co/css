@@ -36,23 +36,91 @@ async function load(context) {
 }
 
 const pause = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
-async function metadata(name, fetchMetadata, wait = pause) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    let response
+const registryRetryDelays = [1000, 2000, 4000, 8000, 15_000]
+// A first published version can take longer to appear than a normal registry read.
+const publicationRetryDelays = [...registryRetryDelays, 20_000, 25_000, 30_000]
+const exactVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/
+
+function registryPackagePath(name) {
+  assert.match(name, /^(?:@[a-z0-9][a-z0-9_.-]*\/)?[a-z0-9][a-z0-9_.-]*$/i, 'Expected an npm package name')
+  // Match npm-package-arg's escapedName, which npm uses for its registry routes.
+  return name.replace('/', '%2f')
+}
+
+function versionPath(name, version) {
+  assert.match(version, exactVersion, 'Expected an exact npm version')
+  return `${registryPackagePath(name)}/${encodeURIComponent(version)}`
+}
+
+const distTagsPath = name => `-/package/${registryPackagePath(name)}/dist-tags`
+
+async function readRegistry(path, fetchMetadata, wait, inspect, delays = registryRetryDelays) {
+  for (let attempt = 0; attempt <= delays.length; attempt++) {
+    const retry = attempt < delays.length
+    let response, body
     try {
-      response = await fetchMetadata(`${npmRegistry}${encodeURIComponent(name)}`, {
-        headers: { accept: 'application/json' }, signal: AbortSignal.timeout(15_000)
+      response = await fetchMetadata(`${npmRegistry}${path}`, {
+        headers: { accept: 'application/json', 'cache-control': 'no-cache' }, redirect: 'error', signal: AbortSignal.timeout(15_000)
       })
+      if (response.ok) body = await response.json()
     } catch (error) {
-      if (attempt === 2) throw error
-      await wait(1000 * (attempt + 1)); continue
+      if (!retry || error instanceof SyntaxError) throw error
+      response = undefined
     }
-    if ((response.status === 429 || response.status >= 500) && attempt < 2) {
-      await wait(1000 * (attempt + 1)); continue
+    if (response && (!retry || (response.status !== 429 && response.status < 500))) {
+      assert.ok(response.ok || response.status === 404, `Registry request failed for ${path}: ${response.status}`)
+      if (response.ok) assert.ok(body && typeof body === 'object' && !Array.isArray(body), `Invalid registry document for ${path}`)
+      const value = inspect(response.status === 404 ? null : body, retry)
+      if (value !== undefined) return value
     }
-    assert.ok(response.ok || response.status === 404, `Registry request failed for ${name}: ${response.status}`)
-    return response.status === 404 ? { versions: {}, 'dist-tags': {} } : await response.json()
+    if (retry) await wait(delays[attempt])
   }
+  throw new Error(`Registry read exhausted for ${path}`)
+}
+
+function validateRegistryVersion(published, name, version) {
+  assert.equal(published.name, name, `Registry package name differs: ${name}`)
+  assert.equal(published.version, version, `Registry version differs: ${name}`)
+}
+
+export async function readRegistryVersion(name, version, fetchMetadata = fetch, wait = pause) {
+  return readRegistry(versionPath(name, version), fetchMetadata, wait, published => {
+    if (published !== null) validateRegistryVersion(published, name, version)
+    return published
+  })
+}
+
+function validateRegistryTags(tags, name) {
+  assert.ok(tags, `Registry dist-tags unavailable for ${name}`)
+  const values = { ...tags }
+  delete values._etag // Match the metadata removal in npm dist-tag.
+  assert.ok(Object.values(values).every(tag => typeof tag === 'string' && exactVersion.test(tag)),
+    `Registry dist-tags unavailable for ${name}`)
+  return values
+}
+
+export async function readRegistryTags(name, fetchMetadata = fetch, wait = pause) {
+  return readRegistry(distTagsPath(name), fetchMetadata, wait, tags => validateRegistryTags(tags, name))
+}
+
+async function confirmRegistryTag(name, channel, version, baseline, fetchMetadata, wait) {
+  return readRegistry(distTagsPath(name), fetchMetadata, wait, (tags, retry) => {
+    const tag = validateRegistryTags(tags, name)[channel] ?? null
+    if (retry && tag === baseline && tag !== version) return undefined
+    assert.equal(tag, version, `Formal tag verification failed: ${name}@${channel}`)
+    return tag
+  }, publicationRetryDelays)
+}
+
+async function confirmCandidateTags(name, candidate, version, before, fetchMetadata) {
+  const { [candidate]: previousCandidate, ...baseline } = before
+  return readRegistry(distTagsPath(name), fetchMetadata, pause, (tags, retry) => {
+    const { [candidate]: observedCandidate, ...observed } = validateRegistryTags(tags, name)
+    assert.deepEqual(observed, baseline, `Non-candidate registry tags changed while staging ${name}`)
+    if (retry && observedCandidate === previousCandidate && observedCandidate !== version) return undefined
+    assert.equal(observedCandidate, version, `Candidate tag verification failed: ${name}@${candidate}`)
+    return observedCandidate
+  }, publicationRetryDelays)
 }
 
 function assertIdentity(state, context) {
@@ -98,29 +166,23 @@ export async function recoveryArchive(config, context, name) {
   return resolve(dirname(statePath(context)), item.archive)
 }
 
-function checkPublished(pkg, data, version) {
-  const published = data.versions?.[version]
-  assert.ok(published, `Candidate version missing: ${pkg.name}@${version}`)
-  assert.equal(published.version, version, `Registry version differs: ${pkg.name}`)
+function validatePublishedArchive(pkg, published) {
   assert.equal(published.dist?.integrity, pkg.integrity, `Immutable registry integrity differs: ${pkg.name}; choose a new version and rebuild`)
-  if (pkg.provenance) assert.ok(published.dist?.attestations?.url, `Registry provenance is missing: ${pkg.name}`)
+  if (pkg.gitHead !== undefined) assert.equal(published.gitHead, pkg.gitHead, `Registry source differs: ${pkg.name}`)
 }
 
-export async function readPublishedPackage(pkg, version, fetchMetadata, wait = pause) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const data = await metadata(pkg.name, fetchMetadata, wait)
-    const published = data.versions?.[version]
-    // Integrity disagreement is not eventual absence: never retry it into success.
-    if (published) {
-      assert.equal(published.version, version, `Registry version differs: ${pkg.name}`)
-      assert.equal(published.dist?.integrity, pkg.integrity, `Immutable registry integrity differs: ${pkg.name}; choose a new version and rebuild`)
+export async function readPublishedPackage(pkg, version, fetchMetadata = fetch, wait = pause) {
+  return readRegistry(versionPath(pkg.name, version), fetchMetadata, wait, (published, retry) => {
+    if (published === null && retry) return undefined
+    assert.ok(published, `Candidate version missing: ${pkg.name}@${version}`)
+    validateRegistryVersion(published, pkg.name, version)
+    validatePublishedArchive(pkg, published)
+    if (pkg.provenance && !published.dist?.attestations?.url) {
+      if (retry) return undefined
+      assert.fail(`Registry provenance is missing: ${pkg.name}`)
     }
-    if ((!published || (pkg.provenance && !published.dist?.attestations?.url)) && attempt < 2) {
-      await wait(1000 * (attempt + 1)); continue
-    }
-    checkPublished(pkg, data, version)
-    return data
-  }
+    return published
+  }, publicationRetryDelays)
 }
 
 /** Baselines are saved before the first write. Recovery requires this archived state. */
@@ -152,8 +214,8 @@ async function initialize(config, context, fetchMetadata) {
         if (names.has(name)) assert.equal(dependency, version, `Candidate must pin its complete dependency cohort: ${pkg.name} -> ${name}`)
       }
     }
-    const data = await metadata(pkg.name, fetchMetadata)
-    assert.ok(!data.versions?.[version], `Version already exists: ${pkg.name}@${version}; recover with archived state or choose a new version`)
+    assert.equal(await readRegistryVersion(pkg.name, version, fetchMetadata), null,
+      `Version already exists: ${pkg.name}@${version}; recover with archived state or choose a new version`)
     packages.push({ name: pkg.name, archive, integrity: digest(bytes), provenance: pkg.publishConfig?.provenance === true,
       staged: false, attempt: null })
   }
@@ -167,8 +229,7 @@ async function initializeChannel(state, channel, context, fetchMetadata) {
   if (state.channels[channel]) return
   const baseline = {}
   for (const pkg of state.packages) {
-    const data = await metadata(pkg.name, fetchMetadata)
-    baseline[pkg.name] = data['dist-tags']?.[channel] ?? null
+    baseline[pkg.name] = (await readRegistryTags(pkg.name, fetchMetadata))[channel] ?? null
   }
   state.channels[channel] = { baseline, promoted: [], pending: null, complete: false }
   await save(context, state)
@@ -183,31 +244,48 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   assert.equal(digest(bytes), item.integrity, 'Prepared archive differs from release state')
   const { validatePackedArchive } = await import('./semantic-release-workspace.mjs')
   validatePackedArchive(bytes, pkg.name, state.version, state.revision)
-  const existing = await metadata(pkg.name, fetchMetadata)
-  if (existing.versions?.[state.version]) {
+  const expected = { ...item, gitHead: state.revision }
+  const existing = await readRegistryVersion(pkg.name, state.version, fetchMetadata)
+  if (existing) {
     assert.equal(context.env?.MASTER_CSS_RELEASE_RECOVERY, '1', `Candidate already exists: ${pkg.name}; explicit recovery is required`)
-    checkPublished(item, existing, state.version)
     assert.ok(item.attempt, 'Archived state has no upload attempt for this existing version')
+    validatePublishedArchive(expected, existing)
+    if (item.provenance && !existing.dist?.attestations?.url) await readPublishedPackage(expected, state.version, fetchMetadata)
+    if (!item.staged) {
+      assert.ok(item.tagsBefore, `Archived upload has no pre-write registry tags: ${pkg.name}`)
+      await confirmCandidateTags(pkg.name, state.candidateTag, state.version, item.tagsBefore, fetchMetadata)
+    }
     item.staged = true
     state.events.push({ operation: 'verify-existing', name: pkg.name, at: new Date().toISOString() })
     await save(context, state)
     return state.candidateTag
   }
   assert.equal(item.staged, false, `Previously staged candidate disappeared: ${pkg.name}`)
+  const tagsBefore = await readRegistryTags(pkg.name, fetchMetadata)
+  const channel = getChannel(context.nextRelease.channel)
+  assert.equal(tagsBefore[channel] ?? null, state.channels[channel].baseline[pkg.name],
+    `Formal tag changed outside this release: ${pkg.name}@${channel}; stop and reconcile`)
+  assert.equal(tagsBefore[state.candidateTag], undefined,
+    `Candidate tag already exists for ${pkg.name} but its exact version is unavailable; stop and reconcile`)
+  assert.ok(!Object.values(tagsBefore).includes(state.version),
+    `Registry tag already points to ${pkg.name}@${state.version} but its exact version is unavailable; stop and reconcile`)
+  if (item.tagsBefore) assert.deepEqual(tagsBefore, item.tagsBefore, `Registry tags changed after the previous upload attempt: ${pkg.name}`)
+  item.tagsBefore = tagsBefore
   item.attempt = new Date().toISOString()
   state.events.push({ operation: 'upload-start', name: pkg.name, at: item.attempt })
   await save(context, state)
   const args = ['publish', archive, '--tag', state.candidateTag, '--ignore-scripts']
   if (pkg.publishConfig?.provenance) args.push('--provenance')
   await executeNpm(pkg, args, context)
-  await readPublishedPackage(item, state.version, fetchMetadata)
+  await readPublishedPackage(expected, state.version, fetchMetadata)
+  await confirmCandidateTags(pkg.name, state.candidateTag, state.version, tagsBefore, fetchMetadata)
   item.staged = true
   state.events.push({ operation: 'upload-verified', name: pkg.name, at: new Date().toISOString() })
   await save(context, state)
   return state.candidateTag
 }
 
-export function createReleasePromotion({ run = execa, fetchMetadata = fetch, consumerProbe = verifyRegistryConsumer } = {}) {
+export function createReleasePromotion({ run = execa, fetchMetadata = fetch, consumerProbe = verifyRegistryConsumer, wait = pause } = {}) {
   async function verifyConditions(_config, context) {
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_PROMOTE')
     if (context.branch && getReleaseToAdd(context)) {
@@ -220,9 +298,12 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_PROMOTE')
     assert.notEqual(context.env?.MASTER_CSS_RELEASE_RECOVERY, '1', 'Use release-recover.mjs instead of semantic-release for recovery')
+    const { version } = context.nextRelease
     for (const { pkg } of await cohort(config, context)) {
-      const data = await metadata(pkg.name, fetchMetadata)
-      assert.ok(!data.versions?.[context.nextRelease.version], `Version already exists before Git tagging: ${pkg.name}; use archived-state recovery or a new version`)
+      assert.equal(await readRegistryVersion(pkg.name, version, fetchMetadata, wait), null,
+        `Version already exists before Git tagging: ${pkg.name}; use archived-state recovery or a new version`)
+      const tags = await readRegistryTags(pkg.name, fetchMetadata, wait)
+      assert.ok(!Object.values(tags).includes(version), `Registry tag already points to ${pkg.name}@${version} before Git tagging`)
     }
   }
   async function promote(config, context) {
@@ -233,7 +314,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     await assertCohort(state, config, context, true)
     const channel = getChannel(context.nextRelease.channel)
     // Complete-cohort registry verification must precede every formal tag write.
-    for (const pkg of state.packages) await readPublishedPackage(pkg, state.version, fetchMetadata)
+    for (const pkg of state.packages) await readPublishedPackage({ ...pkg, gitHead: state.revision }, state.version, fetchMetadata, wait)
     // Run against actual public registry versions in an isolated host consumer.
     // A failed install, wrong lock identity or failed native/Wasm/CLI/PHP smoke
     // aborts before any formal tag write, including during recovery/addChannel.
@@ -244,8 +325,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     await initializeChannel(state, channel, context, fetchMetadata)
     const promotion = state.channels[channel]
     for (const pkg of state.packages) {
-      const data = await metadata(pkg.name, fetchMetadata)
-      const tag = data['dist-tags']?.[channel] ?? null
+      const tag = (await readRegistryTags(pkg.name, fetchMetadata, wait))[channel] ?? null
       const completed = promotion.promoted.includes(pkg.name)
       if (tag === state.version && (completed || promotion.pending === pkg.name)) {
         if (!completed) promotion.promoted.push(pkg.name)
@@ -263,7 +343,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
         const { cleanup, ...options } = session
         await run('npm', ['dist-tag', 'add', `${pkg.name}@${state.version}`, channel, '--registry', npmRegistry], options)
       } finally { await session.cleanup() }
-      assert.equal((await metadata(pkg.name, fetchMetadata))['dist-tags']?.[channel], state.version, `Formal tag verification failed: ${pkg.name}`)
+      await confirmRegistryTag(pkg.name, channel, state.version, promotion.baseline[pkg.name], fetchMetadata, wait)
       promotion.promoted.push(pkg.name)
       promotion.pending = null
       state.events.push({ operation: 'promotion-verified', name: pkg.name, channel, at: new Date().toISOString() })
