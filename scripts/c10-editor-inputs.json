@@ -1,0 +1,139 @@
+{
+  "revision": "6bf9adc4432b67e62613caea59d3b554711b4d54",
+  "releaseVersion": "2.0.0",
+  "editorVersion": "2.0.37",
+  "originalRun": 42053502169,
+  "originalAttempt": 1,
+  "originalReleaseJob": 127365217227,
+  "originalEditorGate": 127364982079,
+  "editorArtifacts": [
+    {
+      "artifact": 13432466370,
+      "name": "editor-proof-alpine-arm64",
+      "size": 2033,
+      "providerDigest": "sha256:cde38e753d4d60fbfae51dcabcf3a60ccda7578794566e091cfe8a925fcd3a22",
+      "expiresAt": "2026-11-12T16:04:35Z",
+      "job": 127362165894,
+      "uploadStepMatched": true,
+      "logSHA256": "f287f32781c4063cb47e9d14140f48f054d4454d3b6784189a19869a723184e6",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13432057103,
+      "name": "editor-proof-alpine-x64",
+      "size": 2032,
+      "providerDigest": "sha256:45281f4c4ae250ff0dda17da864c4700bd5cd97acd869e1ad93fcc2d30d9242f",
+      "expiresAt": "2026-11-12T16:04:25Z",
+      "job": 127362122055,
+      "uploadStepMatched": true,
+      "logSHA256": "1dcf3a4a9675c64f05b8702847f607f488caf00e403b9f27b530ccbc98cc1acc",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13432002037,
+      "name": "editor-proof-linux-arm64",
+      "size": 1679,
+      "providerDigest": "sha256:20679e398cff299e88301efc2b4f5bc2bc0a5f26ae482aebbb8a1f35f74e7d42",
+      "expiresAt": "2026-11-12T16:03:54Z",
+      "job": 127362121702,
+      "uploadStepMatched": true,
+      "logSHA256": "e615df857e2664b0938622bf79ad0c626f12cd0e07cfb05f0f1aec935514412b",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13431797935,
+      "name": "editor-proof-darwin-arm64",
+      "size": 1741,
+      "providerDigest": "sha256:a95110b158cefb3c15d118bc1a789b983e41d111993785601027df8f18c08907",
+      "expiresAt": "2026-11-12T16:09:43Z",
+      "job": 127362121807,
+      "uploadStepMatched": true,
+      "logSHA256": "41cb09bb06bd46142cfffdf8442bff9222efa38b59e23d31f04dc59a99c1761f",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13431107642,
+      "name": "editor-proof-darwin-x64",
+      "size": 1731,
+      "providerDigest": "sha256:6fdc805cbbcfca967c4a947791a9042593f9042d39152c3d049255daff5f08f1",
+      "expiresAt": "2026-11-12T16:06:25Z",
+      "job": 127362333641,
+      "uploadStepMatched": true,
+      "logSHA256": "06a3582c871feab38160dd51983c4fee4a6b07d549dc3bf987c9e3c4508eb868",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13430982348,
+      "name": "editor-proof-linux-x64",
+      "size": 1666,
+      "providerDigest": "sha256:662e660824883bdf8bacd77312862f0b41a8cd87cf591b06ee52e8ee68e0c696",
+      "expiresAt": "2026-11-12T16:03:50Z",
+      "job": 127362121917,
+      "uploadStepMatched": true,
+      "logSHA256": "c597ef4180cc247c17ba633c10b99161ce3e9bc4c92ec77869da0f3c0255c1bf",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13430527926,
+      "name": "editor-proof-win32-arm64",
+      "size": 1732,
+      "providerDigest": "sha256:fbd61859cea6533e18d1a0022427803ea4db7b9de958f807d1f40878aeb2b025",
+      "expiresAt": "2026-11-12T16:06:04Z",
+      "job": 127362332279,
+      "uploadStepMatched": true,
+      "logSHA256": "bdbf39cb4e90a16fd8e50599b38670119c1ec6e5250cd23aff86ef72f5a9d388",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13430492980,
+      "name": "editor-proof-win32-x64",
+      "size": 1727,
+      "providerDigest": "sha256:1fbd5bf63f05c544dfaf197e9853df43287f0477bb865e00cbd8cbca66bc76f0",
+      "expiresAt": "2026-11-12T16:05:19Z",
+      "job": 127362167848,
+      "uploadStepMatched": true,
+      "logSHA256": "d7e336bacb40838e0c20a48c732f0732774a14bc9b11e5950ced359cfbba2fca",
+      "entryCount": 2
+    },
+    {
+      "artifact": 13430442716,
+      "name": "editor-vsix",
+      "size": 152422278,
+      "providerDigest": "sha256:f0edcb172f56c89061568f40ae4185a998a8d312785436f1306ca4b425e9f537",
+      "expiresAt": "2026-11-12T16:02:46Z",
+      "job": 127358267071,
+      "uploadStepMatched": true,
+      "logSHA256": "b0442215d87f4ead1f403f83d6d76c8de4a1784b3df35692ee21d61779594da2",
+      "entryCount": 17
+    }
+  ],
+  "npmArtifact": {
+    "id": 13435232411,
+    "name": "npm-release-6bf9adc4432b67e62613caea59d3b554711b4d54-1",
+    "size": 73467578,
+    "sha256": "52e18c8d3a972a0123190f18ad18cb4aceaadfaa7977d4d1c1cf3878ea9e98d9",
+    "owningJob": 127365217227
+  },
+  "releaseAssets": [
+    {
+      "name": "checksums-v2.0.0.json",
+      "bytes": 4463,
+      "sha256": "cbcd7f32860fbb96ca3806e16e7b8367b795b8c4cfd8dcf3ff48c9cd698e69e1"
+    },
+    {
+      "name": "default-program-v2.0.0.bin",
+      "bytes": 77430,
+      "sha256": "34bd30b73cac71ed7db204abd2cc2a2b08515413723e94ef6a6626f0655734ae"
+    },
+    {
+      "name": "global-v2.0.0.min.js",
+      "bytes": 119006,
+      "sha256": "21c9a59f21410c51ba75cf9d7eef165df181c307d00bf838f65f6d48e7ecb35d"
+    },
+    {
+      "name": "release-notes-v2.0.0.md",
+      "bytes": 302090,
+      "sha256": "31c66548a213a2505be5836f538be8b76d9a6e11e5ff54ccba00461bb1df1528"
+    }
+  ]
+}

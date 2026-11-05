@@ -1,0 +1,93 @@
+name: Build recovered Master CSS 2.0.0 site
+run-name: Build exact recovered 2.0.0 stable site
+on:
+  workflow_dispatch:
+    inputs:
+      final_npm_recovery_run:
+        description: Exact successful C10 npm-only recovery run on main, attempt 1
+        required: true
+        type: string
+      final_npm_artifact_id:
+        description: Original provider artifact ID owned by that recovery
+        required: true
+        type: string
+      final_npm_artifact_sha256:
+        description: SHA-256 of the verified original recovery ZIP
+        required: true
+        type: string
+      confirm:
+        description: Type BUILD RECOVERED 2.0.0 SITE
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: master-css-2-0-0-recovery-site-build
+  cancel-in-progress: false
+
+jobs:
+  build-stable-site:
+    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/rc' && inputs.confirm == 'BUILD RECOVERED 2.0.0 SITE' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      PUBLIC_COMMIT_REF: main
+      PUBLIC_VERSION: 2.0.0
+      PUBLIC_URL: https://css.master.co
+      MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
+      FINAL_NPM_RECOVERY_RUN: ${{ inputs.final_npm_recovery_run }}
+      FINAL_NPM_RECOVERY_ARTIFACT_ID: ${{ inputs.final_npm_artifact_id }}
+      FINAL_NPM_RECOVERY_ARTIFACT_SHA256: ${{ inputs.final_npm_artifact_sha256 }}
+      OPERATOR_WORKFLOW_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: 6bf9adc4432b67e62613caea59d3b554711b4d54
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache-scope: build
+      - name: Load the reviewed helper without modifying the product checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$OPERATOR_WORKFLOW_SHA" =~ ^[a-f0-9]{40}$ ]]
+          test "$(git rev-parse HEAD)" = 6bf9adc4432b67e62613caea59d3b554711b4d54
+          git fetch --no-tags https://github.com/master-co/css.git "$OPERATOR_WORKFLOW_SHA"
+          git show "$OPERATOR_WORKFLOW_SHA:.github/scripts/build-site-from-npm-recovery.mjs" > "$RUNNER_TEMP/build-site-from-npm-recovery.mjs"
+          node --check "$RUNNER_TEMP/build-site-from-npm-recovery.mjs"
+      - name: Verify the exact successful npm recovery and public release prerequisites
+        run: node "$RUNNER_TEMP/build-site-from-npm-recovery.mjs" preflight
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build exact C10 with stable 2.0.0 metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun run build:site
+          bun run --filter site test:css-contract
+          bun run --filter site test:llms
+          bun run --filter site test:docs-examples
+          node "$RUNNER_TEMP/build-site-from-npm-recovery.mjs" identity
+      - name: Verify stable output in Chromium Firefox and WebKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun run playwright install --with-deps chromium firefox webkit
+          node site/scripts/verify-release-site.mjs --out site/out --origin "$PUBLIC_URL" --report site/test-results/release-site.json
+          node "$RUNNER_TEMP/build-site-from-npm-recovery.mjs" manifest
+      - name: Retain exact stable build and registry correspondence
+        uses: actions/upload-artifact@v7
+        with:
+          name: recovered-site-6bf9adc4432b67e62613caea59d3b554711b4d54
+          path: |
+            site/out/
+            site/test-results/release-site.json
+            release-artifacts/site.manifest.json
+            release-artifacts/recovery-site-source.json
+          if-no-files-found: error
+          retention-days: 30

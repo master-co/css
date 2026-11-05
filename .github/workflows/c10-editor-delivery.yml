@@ -1,0 +1,209 @@
+name: C10 editor delivery only
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: Submit the exact 16 reviewed VSIX files to their stores
+        type: boolean
+        default: false
+      confirm:
+        description: Exact confirmation for a real write
+        type: string
+        required: false
+      recovery_run:
+        description: Successful C10 main npm recovery run ID
+        type: string
+        required: true
+      recovery_attempt:
+        description: Owning npm recovery attempt number
+        type: string
+        required: true
+      recovery_artifact:
+        description: Owning npm recovery archive artifact ID
+        type: string
+        required: true
+      recovery_sha256:
+        description: Independently verified original recovery ZIP SHA-256
+        type: string
+        required: true
+
+permissions: {}
+
+concurrency:
+  group: Release-refs/heads/main
+  cancel-in-progress: false
+
+env:
+  PRODUCT_SOURCE: 6bf9adc4432b67e62613caea59d3b554711b4d54
+
+jobs:
+  verify:
+    name: Verify C10 editor delivery prerequisites
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      bundle-id: ${{ steps.upload.outputs.artifact-id }}
+      bundle-sha256: ${{ steps.bundle.outputs.sha256 }}
+    steps:
+      - name: Require the reviewed rc dispatch identity
+        shell: bash
+        env:
+          EDITOR_EXECUTE: ${{ inputs.execute }}
+          EDITOR_CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" == master-co/css && "$GITHUB_REF" == refs/heads/rc ]]
+          [[ "$GITHUB_EVENT_NAME" == workflow_dispatch && "$GITHUB_RUN_ATTEMPT" == 1 ]]
+          case "$EDITOR_EXECUTE" in
+            true) [[ "$EDITOR_CONFIRM" == 'PUBLISH C10 EDITORS 2.0.37 ONCE' ]] ;;
+            false) [[ -z "$EDITOR_CONFIRM" ]] ;;
+            *) exit 2 ;;
+          esac
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.PRODUCT_SOURCE }}
+          path: product
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: "1.4.4"
+      - name: Load the exact C10 validators without lifecycle scripts
+        working-directory: product
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Install the pinned read-only Sigstore verifier runtime
+        run: |
+          npm install --global --ignore-scripts --registry https://registry.npmjs.org/ npm@11.21.0
+          test "$(npm --version)" = 11.21.0
+      - name: Bind original uploads and the successful npm-only recovery
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RECOVERY_RUN: ${{ inputs.recovery_run }}
+          RECOVERY_ATTEMPT: ${{ inputs.recovery_attempt }}
+          RECOVERY_ARTIFACT: ${{ inputs.recovery_artifact }}
+          RECOVERY_SHA: ${{ inputs.recovery_sha256 }}
+          EDITOR_EXECUTE: ${{ inputs.execute }}
+        run: |
+          set -euo pipefail
+          umask 077
+          args=()
+          if [[ "$EDITOR_EXECUTE" == true ]]; then args+=(--execute); fi
+          python3 -I controller/scripts/c10-editor-evidence.py \
+            --current-run "$GITHUB_RUN_ID" --recovery-run "$RECOVERY_RUN" \
+            --recovery-attempt "$RECOVERY_ATTEMPT" --recovery-artifact "$RECOVERY_ARTIFACT" \
+            --recovery-sha "$RECOVERY_SHA" --output "$RUNNER_TEMP/c10-editor-evidence" "${args[@]}"
+      - name: Verify original hosts, complete public npm provenance and unoccupied store version
+        run: node controller/scripts/c10-editor-gates.mjs preflight "$GITHUB_WORKSPACE/product" "$RUNNER_TEMP/c10-editor-evidence"
+      - name: Bundle only the verified editor bytes and evidence
+        id: bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c10-editor-evidence"
+          tar --sort=name -cf "$RUNNER_TEMP/c10-editor-bundle.tar" -C "$evidence" \
+            candidate-vsix editor-proofs verified-inputs.json
+          printf 'sha256=%s\n' "$(sha256sum "$RUNNER_TEMP/c10-editor-bundle.tar" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Retain exactly the tested files and proof for this dispatch
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: c10-editor-verified-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/c10-editor-bundle.tar
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  publish:
+    name: Publish exact C10 editor bytes once
+    if: ${{ inputs.execute && needs.verify.result == 'success' }}
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.PRODUCT_SOURCE }}
+          path: product
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: "1.4.4"
+      - name: Load C10 locked tools without lifecycle scripts
+        working-directory: product
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Install exact Open VSX CLI before the PAT is in scope
+        run: npm install --prefix "$RUNNER_TEMP/c10-ovsx" --ignore-scripts --no-audit --no-fund --registry https://registry.npmjs.org/ ovsx@1.0.2
+      - uses: actions/download-artifact@v7
+        with:
+          artifact-ids: ${{ needs.verify.outputs.bundle-id }}
+          path: ${{ runner.temp }}/c10-editor-transport
+      - name: Recheck transfer, tested identities and latest store availability
+        shell: bash
+        env:
+          EXPECTED_BUNDLE_SHA: ${{ needs.verify.outputs.bundle-sha256 }}
+          EDITOR_EXECUTE: ${{ inputs.execute }}
+          EDITOR_CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REPOSITORY" == master-co/css && "$GITHUB_REF" == refs/heads/rc ]]
+          [[ "$GITHUB_EVENT_NAME" == workflow_dispatch && "$GITHUB_RUN_ATTEMPT" == 1 ]]
+          [[ "$EDITOR_EXECUTE" == true && "$EDITOR_CONFIRM" == 'PUBLISH C10 EDITORS 2.0.37 ONCE' ]]
+          [[ "$EXPECTED_BUNDLE_SHA" =~ ^[a-f0-9]{64}$ ]]
+          bundle="$RUNNER_TEMP/c10-editor-transport/c10-editor-bundle.tar"
+          printf '%s  %s\n' "$EXPECTED_BUNDLE_SHA" "$bundle" | sha256sum --check --status
+          mkdir "$RUNNER_TEMP/c10-editor-publish"
+          tar -xf "$bundle" --no-same-owner --no-same-permissions -C "$RUNNER_TEMP/c10-editor-publish"
+          node controller/scripts/c10-editor-gates.mjs transport "$GITHUB_WORKSPACE/product" "$RUNNER_TEMP/c10-editor-publish"
+      - name: Azure login for the existing rc Marketplace identity
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Publish Marketplace targets for masterco
+        env:
+          EDITOR_EXECUTE: ${{ inputs.execute }}
+          EDITOR_CONFIRM: ${{ inputs.confirm }}
+        run: |
+          bash controller/scripts/c10-editor-publish.sh "$GITHUB_WORKSPACE/product" \
+            "$RUNNER_TEMP/c10-editor-publish" marketplace "$RUNNER_TEMP/c10-editor-publication.ndjson"
+      - name: Publish Open VSX targets for master
+        env:
+          EDITOR_EXECUTE: ${{ inputs.execute }}
+          EDITOR_CONFIRM: ${{ inputs.confirm }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          bash controller/scripts/c10-editor-publish.sh "$GITHUB_WORKSPACE/product" \
+            "$RUNNER_TEMP/c10-editor-publish" open-vsx "$RUNNER_TEMP/c10-editor-publication.ndjson"
+      - name: Retain target-level acknowledgments and unresolved submissions
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: c10-editor-submissions-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/c10-editor-publication.ndjson
+          if-no-files-found: ignore
+          retention-days: 90
