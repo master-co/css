@@ -87,3 +87,14 @@ Local evidence: `/tmp/master-css-shared021-integration/`,
 `/tmp/master-css-c2-cascade-review/`. Their reports preserve the actual producer
 revisions, dirty-source boundaries and failed harness attempts. Final clean-C2
 CI and actual public/edge acceptance must use that final revision's own artifacts.
+
+## Astro installation guide follow-up
+
+The production Astro integration now emits the utilities used by static pages,
+so the five Astro installation guides remove the obsolete limitation callout.
+In a new stable build, only those five routes change their CSS contract. The
+hydration class list drops `tabler-icon-info-circle` and `ui-callout`; the
+remaining class order, resource order and hydration version are unchanged.
+All 384 route keys, the complete project manifest and all 2,279 exact CSS
+segments are unchanged. Each affected route retains the same delivered CSS
+SHA256, `a05cd9f33d911e2df3ba3d58985fb02b085572d2d266a624bf836a6e58ab8dac`.
