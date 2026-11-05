@@ -46,7 +46,8 @@ for (const version of ['2.0.0', '2.0.0-rc.42', '0.0.0']) {
       execFileSync('bun', ['pm', 'pack', '--ignore-scripts', '--destination', archives], { cwd: stage, stdio: 'pipe' })
       const packed = readdirSync(archives).filter(file => file.endsWith('.tgz'))
       expect(packed).toHaveLength(1)
-      execFileSync('tar', ['-xzf', join(archives, packed[0]), '-C', installed, '--strip-components', '1'])
+      // GNU tar treats a Windows drive in the archive name as a remote host.
+      execFileSync('tar', ['-xzf', packed[0], '-C', installed, '--strip-components', '1'], { cwd: archives })
       expect(JSON.parse(readFileSync(join(installed, 'package.json'), 'utf8')).version).toBe(version)
       // sv supplies the one external peer when it loads a community add-on.
       symlinkSync(svRoot, join(consumer, 'node_modules/sv'), process.platform === 'win32' ? 'junction' : 'dir')
