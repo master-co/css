@@ -1,0 +1,67 @@
+name: Reserve npm names through staging
+on:
+  workflow_dispatch:
+    inputs:
+      selection:
+        description: Select the one-name Nuxt canary or the four remaining names
+        type: choice
+        options: [nuxt-canary, remaining-four]
+        default: nuxt-canary
+      canary_run_id:
+        description: Successful same-source Nuxt canary run for the four-name operation
+        type: string
+        default: ""
+      stage:
+        description: Submit inert archives to private staging after review
+        type: boolean
+        default: false
+      confirm:
+        description: Exact confirmation for the selected names
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: master-css-npm-package-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  reserve:
+    name: Reserve npm names without releasing staged contents
+    if: ${{ github.repository == 'master-co/css' && github.ref == 'refs/heads/rc' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache: "false"
+      - name: Test the staging-only reservation guards
+        run: node --test scripts/npm-name-reservation.test.mjs
+      - name: Install the pinned npm CLI
+        run: npm install --global npm@11.21.0
+      - name: Plan or submit only the selected staged name reservations
+        run: node scripts/npm-name-reservation.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESERVATION_SELECTION: ${{ inputs.selection }}
+          RESERVATION_CANARY_RUN: ${{ inputs.canary_run_id }}
+          RESERVATION_STAGE: ${{ inputs.stage }}
+          RESERVATION_CONFIRM: ${{ inputs.confirm }}
+          NPM_PACKAGE_BOOTSTRAP_TOKEN: ${{ inputs.stage && ((inputs.selection == 'nuxt-canary' && inputs.confirm == 'STAGE NUXT NAME ONLY' && !inputs.canary_run_id) || (inputs.selection == 'remaining-four' && inputs.confirm == 'STAGE REMAINING FOUR NAMES ONLY' && inputs.canary_run_id)) && secrets.NPM_PACKAGE_BOOTSTRAP_TOKEN || '' }}
+      - name: Retain prepared archives, staging identifiers, and verification receipts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-name-reservation-${{ github.sha }}-${{ github.run_attempt }}
+          path: reservation-artifacts/
+          if-no-files-found: warn
+          retention-days: 90
