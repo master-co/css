@@ -12,8 +12,6 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 Connect Master CSS to an Astro site through a shared CSS entry. The integration supports static, runtime and progressive delivery; Astro still owns page rendering.
 
-(i) **Static production limitation:** the current integration can emit base styles without the scanned utility rules. Check the production result below. For a static stylesheet that does not depend on this integration path, use the [CLI build](#cli-build).
-
 ## Installation \{#installation\}
 
 <StepSection>
@@ -74,8 +72,6 @@ npm run preview
 ```
 
 Disable JavaScript and reload. The paragraph should retain its padding, rounded corners and raised surface. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration. For custom definitions and scoped styles, see [Global styles](/guide/global-styles).
-
-If a production build links the base styles but omits the utility rules, check the output CSS for the `.p-md` rule and inspect its computed padding. Use the independent CLI build below, or choose progressive rendering when a runtime handoff fits the application.
 
 ## Build static CSS with the CLI \{#cli-build\}
 

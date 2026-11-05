@@ -5,7 +5,8 @@ import { join, relative } from 'node:path'
 import masterCSS, {
   ASTRO_MIDDLEWARE_ENTRYPOINT,
   ASTRO_RUNTIME_INJECTION,
-  ASTRO_SSR_EXTERNAL
+  ASTRO_SSR_EXTERNAL,
+  type createAstroVitePlugins
 } from '../src/core'
 import { resolveMasterCSSAstroIntegrationOptions } from '../src/options'
 import { externalizeAstroHydrationManifests } from '../src/external-hydration-manifest'
@@ -34,9 +35,10 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
       build?: { rollupOptions?: { external?: string[] } }
     }
   } | undefined
-  const plugins = (config?.vite?.plugins || []).flat(Infinity) as { name?: string }[]
+  const plugins = (config?.vite?.plugins || []).flat(Infinity) as ReturnType<typeof createAstroVitePlugins>
 
   return {
+    integration,
     addMiddleware,
     injectScript,
     plugins,
@@ -49,6 +51,24 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
 describe('@master/css-astro integration', () => {
   it('defaults to static mode', () => {
     expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe("static")
+  })
+
+  it('uses the final Astro output when a later adapter switches to server output', async () => {
+    const { integration, plugins } = await setup()
+    let buildOutput: 'static' | 'server' = 'static'
+    await integration.hooks['astro:config:done']?.({
+      config: { base: '/' },
+      get buildOutput() { return buildOutput }
+    } as never)
+
+    const apply = plugins.find(plugin => plugin.name === 'master-css:usage-graph')?.apply
+    if (typeof apply !== 'function') throw new Error('Expected the Vite usage graph apply hook')
+    const environment = { command: 'build', mode: 'production', isSsrBuild: true } as const
+    expect(apply({}, environment)).toBe(true)
+    // A later integration's setAdapter call changes Astro's shared settings.
+    buildOutput = 'server'
+    expect(apply({}, environment)).toBe(false)
+    expect(apply({}, { ...environment, isSsrBuild: false })).toBe(true)
   })
 
   it('adds Astro middleware and runtime script in progressive mode', async () => {

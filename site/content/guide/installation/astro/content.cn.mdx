@@ -20,8 +20,6 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 通过共享 CSS 入口将 Master CSS 接入 Astro 网站。集成支持静态、运行时和渐进式交付；页面渲染仍由 Astro 负责。
 
-(i) **静态生产输出的限制：**当前集成可能只输出基础样式，未包含扫描得到的工具类规则。请按下文检查生产结果。若要生成不依赖此集成路径的静态样式表，请使用 [CLI 构建](#cli-build)。
-
 ## 安装 \{#installation\}
 
 <StepSection>
@@ -82,8 +80,6 @@ npm run preview
 ```
 
 禁用 JavaScript 并重新加载。段落应保留内边距、圆角和凸起表面。如果没有样式，请确认页面或其布局导入了 `global.css`，并且 Astro 配置包含 Master CSS 集成。自定义定义和局部作用域样式请参阅[全局样式](/guide/global-styles)。
-
-如果生产构建链接了基础样式，却缺少工具类规则，请在输出 CSS 中查找 `.p-md` 规则，并检查计算后的内边距。可以使用下方独立的 CLI 构建，或在应用适合交由运行时接管时选择渐进式渲染。
 
 ## 使用 CLI 构建静态 CSS \{#cli-build\}
 

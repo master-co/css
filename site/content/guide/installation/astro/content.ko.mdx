@@ -20,8 +20,6 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 공유 CSS 진입점으로 Master CSS를 Astro 사이트에 연결합니다. 통합은 정적, 런타임, 점진적 전달을 지원하며 페이지 렌더링은 계속 Astro가 담당합니다.
 
-(i) **정적 프로덕션 출력의 제한:** 현재 통합은 스캔한 유틸리티 규칙 없이 기본 스타일만 출력할 수 있습니다. 아래 절차로 프로덕션 결과를 확인하세요. 이 통합 경로에 의존하지 않는 정적 스타일시트가 필요하다면 [CLI 빌드](#cli-build)를 사용하세요.
-
 ## 설치 \{#installation\}
 
 <StepSection>
@@ -82,8 +80,6 @@ npm run preview
 ```
 
 JavaScript를 끄고 새로고침하세요. 문단의 안쪽 여백, 둥근 모서리, 떠 있는 표면이 유지되어야 합니다. 스타일이 없다면 페이지나 레이아웃에서 `global.css`를 가져오는지, Astro 설정에 Master CSS 통합이 있는지 확인하세요. 사용자 지정 정의와 범위가 지정된 스타일은 [전역 스타일](/guide/global-styles)을 참고하세요.
-
-프로덕션 빌드가 기본 스타일을 연결하지만 유틸리티 규칙은 누락한다면 출력 CSS의 `.p-md` 규칙과 계산된 안쪽 여백을 확인하세요. 아래의 독립된 CLI 빌드를 사용하거나, 앱에 런타임으로 인계하는 방식이 적합하다면 점진적 렌더링을 선택하세요.
 
 ## CLI로 정적 CSS 빌드하기 \{#cli-build\}
 

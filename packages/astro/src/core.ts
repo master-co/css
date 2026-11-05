@@ -99,7 +99,7 @@ export function deliverServerEmittedGlobals(plugins: readonly Plugin[]) {
   }
 }
 
-export function createAstroVitePlugins(options: MasterCSSVitePluginOptions) {
+export function createAstroVitePlugins(options: MasterCSSVitePluginOptions, isStaticOutput?: () => boolean): Plugin[] {
   const plugins = createMasterCSSVitePlugin(options)
   // Progressive hydration manifests carry each page's emitted globals instead;
   // a union across server environments could claim more than a page links.
@@ -107,6 +107,17 @@ export function createAstroVitePlugins(options: MasterCSSVitePluginOptions) {
   return plugins
     .filter(plugin => !ASTRO_OMITTED_VITE_PLUGINS.has(plugin.name))
     .map(inlineServerManifests)
+    .map(plugin => {
+      if ((options.mode ?? 'static') !== 'static' || !isStaticOutput || plugin.name !== 'master-css:usage-graph') return plugin
+      const apply = plugin.apply
+      if (typeof apply !== 'function') return plugin
+      return {
+        ...plugin,
+        // Astro bundles its static pages and their linked CSS on the server.
+        // Include those modules before the stylesheet is finalized.
+        apply: (config, env) => (env.command === 'build' && env.isSsrBuild && isStaticOutput()) || apply(config, env)
+      }
+    })
 }
 
 function getViteOptions(options: ResolvedMasterCSSAstroIntegrationOptions): MasterCSSVitePluginOptions {
@@ -131,6 +142,7 @@ export function createMasterCSSAstroIntegration(
   }
   let astroBase: string | undefined
   let buildOutput: 'static' | 'server' | undefined
+  let getBuildOutput: (() => 'static' | 'server') | undefined
   let clientDir: URL | undefined
   let outputStylesheets: ReturnType<typeof describeOutputStylesheets> | undefined
   return {
@@ -164,7 +176,7 @@ export function createMasterCSSAstroIntegration(
           vite: {
             define: { __MASTER_CSS_ASTRO_PROGRESSIVE__: JSON.stringify(options.mode === 'progressive') },
             // Vite owns one manifest/emitted-globals pipeline.
-            plugins: createAstroVitePlugins(getViteOptions(options)) as never,
+            plugins: createAstroVitePlugins(getViteOptions(options), () => getBuildOutput?.() === 'static') as never,
             ssr: {
               external: ASTRO_SSR_EXTERNAL
             },
@@ -176,7 +188,10 @@ export function createMasterCSSAstroIntegration(
           }
         })
       },
-      'astro:config:done': async ({ config, buildOutput: output }) => {
+      'astro:config:done': async context => {
+        const { config, buildOutput: output } = context
+        // Another integration can still register an adapter and change the output.
+        getBuildOutput = () => context.buildOutput
         astroBase = config.base
         buildOutput = output
         clientDir = output === 'static' ? config.outDir : config.build?.client
