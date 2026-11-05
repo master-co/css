@@ -1,0 +1,31 @@
+# Reference prose: illustrations/source-relative-base
+
+## title \{#copy-title\}
+
+
+來源路徑以宣告它的樣式表為起點
+
+## alt \{#copy-alt\}
+
+
+匯入的 styles/shared.css 宣告 ./views/*.html，並指向 styles/views；應用程式的工作目錄則另外標示。
+
+## caption \{#copy-caption\}
+
+
+樹狀圖描繪同一個檔案系統。從 apps/shop 匯入樣式表，不會讓其中撰寫的 @source 模式改以該應用程式為基準。
+
+## description-0 \{#copy-description-0\}
+
+
+儲存庫包含 styles/shared.css 與 styles/views/card.html。shared.css 宣告 @source "./views/*.html"。
+
+## description-1 \{#copy-description-1\}
+
+
+相對模式從 styles/shared.css 解析，因此即使使用它的應用程式在 apps/shop 執行，仍會納入 styles/views/card.html。
+
+## description-2 \{#copy-description-2\}
+
+
+掃描器透過程式另外傳入的 cwd 選項有自己的契約；本圖說明的是撰寫於 CSS 的指令。

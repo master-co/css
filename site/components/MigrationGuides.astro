@@ -3,14 +3,16 @@ import '@master/internal-site/styles/system/logos.css'
 import brands from '@master/internal-site/data/brands'
 import Link from '@master/internal-site/components/Link.svelte'
 import { migrationGuides } from '../utils/migration-guides'
+import { siteOf } from '@master/internal-site/astro/site-context'
+const { t } = siteOf(Astro)
 ---
 
-<nav aria-label="Migration guides" class="ui-logos">
+<nav aria-label={t('Migration guides')} class="ui-logos">
   {migrationGuides.map(guide => {
     const { src: Logo, className } = brands[guide.brand]
     return <Link href={`/guide/migration/${guide.slug}`}>
       <Logo class={className} width={20} height={20} aria-hidden="true" />
-      <span>{guide.title}</span>
+      <span>{t(guide.title)}</span>
     </Link>
   })}
 </nav>

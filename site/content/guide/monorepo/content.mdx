@@ -3,7 +3,7 @@ import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import MonorepoIllustration from './components/MonorepoIllustration.astro'
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Give each application its own project boundary, then share CSS vocabulary through imports. The [Language Service](/guide/language-service), [code linting](/guide/code-linting), and build integrations can use the same app-specific project context.
 
 A project CSS entry importing `@master/css` or a package declaring Master CSS dependencies identifies a workspace. These boundaries are independent of the package manager's workspace list. Start each app's build from its project directory and keep its CSS entry there. Package-manager workspace membership alone does not create a shared Master CSS configuration.
@@ -12,7 +12,7 @@ A project CSS entry importing `@master/css` or a package declaring Master CSS de
 
 ---
 
-## One project, one workspace
+## One project, one workspace \{#one-project-one-workspace\}
 Each `package.json` project has one Master CSS workspace: one project manifest graph, source-scanning context, and set of tool integrations.
 
 For independent applications, use separate package projects such as `projects/admin` and `projects/shop`. Each owns its CSS entry and application setup:
@@ -44,7 +44,7 @@ Keep shared definitions in a dedicated source file. In this example it supplies 
 }
 ```
 
-### Share CSS definitions
+### Share CSS definitions \{#share-css-definitions\}
 In each workspace, import shared project CSS files and add workspace-specific definitions after them.
 ```css name=projects/admin/index.css
 @import '@master/css';
@@ -89,7 +89,7 @@ Shared files define the vocabulary; each app's entry decides what to import. Kee
 
 ---
 
-## Include shared component sources
+## Include shared component sources \{#include-shared-component-sources\}
 
 A shared CSS import supplies definitions. Class strings inside a shared component still need to reach the consuming app's scanner. Vite can scan imported workspace modules, while a CLI build started inside an app does not follow JavaScript imports into sibling packages.
 
@@ -101,7 +101,7 @@ Installed dependency directories are excluded from automatic scanning. A package
 
 <GuideStudy id="shared-source-inputs" />
 
-## Verify the boundary before sharing more
+## Verify the boundary before sharing more \{#verify-the-boundary-before-sharing-more\}
 
 From each application's directory, run its production build. Check both outputs after changing one local override: the admin value should change only in admin. Then add a complete class used only by a shared component and confirm the consuming app emits its rule.
 

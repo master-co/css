@@ -1,10 +1,12 @@
+import { referenceLabel as label, referenceHeader } from './ui'
+import { referenceEditorial, referenceText } from './copy'
 import { foundationFamilies, namespaceFamilies, namespaceTokens } from '@master/internal-site/css/foundation-data/tokens.ts'
 import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
 import preset from '@master/internal-site/css/preset-manifest.ts'
 import { configuredExampleCSS, configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
-import { familyText } from './family-editorial'
+import { familyText as sourceFamilyText } from './family-editorial'
 import { referenceIllustrationMarkdown } from './illustrations'
-import { tokenPages, type RecipePageEditorial, type SheetExampleSource, type TokenGroupEditorial, type TokenPageEditorial } from './sheet-editorial'
+import { localizedTokenPages, type RecipePageEditorial, type SheetExampleSource, type TokenGroupEditorial, type TokenPageEditorial } from './sheet-editorial'
 import type { ReferenceExample } from './types'
 
 /**
@@ -21,7 +23,7 @@ export interface SheetExample extends ReferenceExample {
 }
 export interface SheetGuide { label: string, href: string }
 export interface SheetValue { id: string, key: string, className: string, variable: string, value: string, cells?: string[] }
-export interface SheetGroup { id: string, title?: string, namespace: string, head: string[], palette?: boolean, values: SheetValue[] }
+export interface SheetGroup { modes?: boolean, id: string, title?: string, namespace: string, head: string[], palette?: boolean, values: SheetValue[] }
 
 export interface TokenSheet {
   kind: 'tokens'
@@ -126,7 +128,7 @@ function groupTokens(group: TokenGroupEditorial) {
   return tokens
 }
 
-export function tokenSheet(page: TokenPageEditorial): TokenSheet {
+export function tokenSheet(page: TokenPageEditorial, locale = 'en'): TokenSheet {
   const roles = page.id === 'color-roles'
   const syntax = new Map<string, SheetSyntax>()
   for (const group of page.groups) {
@@ -159,7 +161,7 @@ export function tokenSheet(page: TokenPageEditorial): TokenSheet {
     })
     const modes = values.length > 0 && values.every(row => modePair(row.value))
     const head = group.namespace === 'text' ? ['Class', 'Size', 'Line height', 'Letter spacing'] : modes ? ['Class', 'Light', 'Dark'] : ['Class', 'Value']
-    return { id: group.keys ?? group.namespace, title: group.title, namespace: group.namespace, head, palette: group.palette, values }
+    return { id: group.keys ?? group.namespace, title: group.title, namespace: group.namespace, head, palette: group.palette, modes, values }
   })
   // Any family writing any of the page's values is a subject class: bg-green-5 and fg-green-70 alike.
   const classes = new Set(page.groups.flatMap(group => namespaceFamilies(group.namespace).flatMap(family =>
@@ -168,13 +170,13 @@ export function tokenSheet(page: TokenPageEditorial): TokenSheet {
   return {
     kind: 'tokens', id: page.id, title: page.title, summary: page.summary, guide: page.guide, note: page.note, explanation: page.explanation, valuesLead: page.valuesLead,
     syntax: primary, more: rows.filter(row => !primary.some(other => other.syntax === row.syntax)), groups,
-    usage: sheetExample('usage', 'Usage', page.usage, name => classes.has(name.split(/[@:]/)[0])),
-    customize: sheetExample('customize', 'Customize', page.customize, name => customClasses.includes(name), page.customize.theme) as TokenSheet['customize'],
+    usage: sheetExample('usage', label(locale, 'usage'), page.usage, name => classes.has(name.split(/[@:]/)[0])),
+    customize: sheetExample('customize', label(locale, 'customize'), page.customize, name => customClasses.includes(name), page.customize.theme) as TokenSheet['customize'],
   }
 }
 
 /** Class rows read each preset definition; parameters display as their syntax placeholder. */
-export function recipeSheet(page: RecipePageEditorial, source: string): RecipeSheet {
+export function recipeSheet(page: RecipePageEditorial, source: string, locale = 'en'): RecipeSheet {
   const definitions: string[] = []
   const rows = page.names.map(name => {
     const utility = preset.utilities?.find(utility => utility.name === name)
@@ -195,13 +197,13 @@ export function recipeSheet(page: RecipePageEditorial, source: string): RecipeSh
     syntax: rows.filter(row => primary.includes(row.name)).map(row => row.row),
     more: rows.filter(row => !primary.includes(row.name)).map(row => row.row),
     definitions: definitions.join('\n\n'),
-    usage: sheetExample('examples', 'Usage', page.usage, subject),
+    usage: sheetExample('examples', label(locale, 'usage'), page.usage, subject),
   }
 }
 
-export function familiesSheet(): FamiliesSheet {
+export function familiesSheet(locale = 'en'): FamiliesSheet {
   const groups: FamiliesSheet['groups'] = []
-  for (const page of tokenPages) {
+  for (const page of localizedTokenPages(locale)) {
     // A prefix may own several families, such as font- for family, size and weight.
     const families = page.groups.flatMap(group => namespaceFamilies(group.namespace))
       .filter((family, index, all) => all.findIndex(other => other.prefix === family.prefix && other.namespace === family.namespace) === index)
@@ -228,84 +230,85 @@ export function sheetExampleMarkdown(sheet: SheetExample, source = true) {
   return [sheet.lead, sheet.configuration && fence('css', sheet.configuration), source && fence('html', sheet.code), fence('css disclosure=generated-css', sheet.css)].filter(Boolean).join('\n\n')
 }
 
-function classesMarkdown(rows: SheetSyntax[], linked: boolean) {
+function classesMarkdown(rows: SheetSyntax[], linked: boolean, locale = 'en') {
   // Token pages also name each property on its own, so a property lookup finds its row.
-  if (linked) return `| Class | Property | Declarations |\n| --- | --- | --- |\n${rows.map(row => `| [${cell(row.syntax)}](/reference/tokens/families#family-${row.prefix}) | ${cell(row.property!)} | ${row.declarations.split('\n').map(cell).join(' ')} |`).join('\n')}`
-  return `| Class | Declarations |\n| --- | --- |\n${rows.map(row => `| ${cell(row.syntax)} | ${row.declarations.split('\n').map(cell).join(' ')} |`).join('\n')}`
+  if (linked) return `| ${referenceHeader(locale, 'Class')} | ${referenceHeader(locale, 'Property')} | ${referenceHeader(locale, 'Declarations')} |\n| --- | --- | --- |\n${rows.map(row => `| [${cell(row.syntax)}](/reference/tokens/families#family-${row.prefix}) | ${cell(row.property!)} | ${row.declarations.split('\n').map(cell).join(' ')} |`).join('\n')}`
+  return `| ${referenceHeader(locale, 'Class')} | ${referenceHeader(locale, 'Declarations')} |\n| --- | --- |\n${rows.map(row => `| ${cell(row.syntax)} | ${row.declarations.split('\n').map(cell).join(' ')} |`).join('\n')}`
 }
 
-const seeAlso = (links: string[]) => `See ${links.join(' and ')}.`
+const seeAlso = (links: string[], locale = 'en') => `${label(locale, 'see')} ${links.join(label(locale, 'and'))}.`
 
-function explanationMarkdown(explanation: TokenPageEditorial['explanation']) {
+function explanationMarkdown(explanation: TokenPageEditorial['explanation'], locale = 'en') {
   return explanation ? [
     `## ${explanation.title} {#${explanation.id}}`,
     explanation.paragraphs[0],
-    referenceIllustrationMarkdown(explanation.illustration),
+    referenceIllustrationMarkdown(explanation.illustration, locale),
     ...explanation.paragraphs.slice(1),
-    explanation.links?.length ? seeAlso(explanation.links.map(link => `[${link.label}](${link.href})`)) : '',
+    explanation.links?.length ? seeAlso(explanation.links.map(link => `[${link.label}](${link.href})`), locale) : '',
   ] : []
 }
 
-export function tokenSheetMarkdown(sheet: TokenSheet) {
+export function tokenSheetMarkdown(sheet: TokenSheet, locale = 'en') {
   const values = sheet.groups.map(group => {
     const head = group.namespace === 'text' ? ['Class', 'Variable', 'Size', 'Line height', 'Letter spacing'] : ['Class', 'Variable', 'Value']
     const rows = group.values.map(row => `| ${cell(row.className)} | ${cell(row.variable)} | ${(row.cells ?? [row.value]).map(cell).join(' | ')} |`).join('\n')
-    return `${group.title && sheet.groups.length > 1 ? `### ${group.title} {#${group.id}}\n\n` : ''}| ${head.join(' | ')} |\n| ${head.map(() => '---').join(' | ')} |\n${rows}`
+    return `${group.title && sheet.groups.length > 1 ? `### ${group.title} {#${group.id}}\n\n` : ''}| ${head.map(header => referenceHeader(locale, header)).join(' | ')} |\n| ${head.map(() => '---').join(' | ')} |\n${rows}`
   }).join('\n\n')
   return [
-    '## Classes {#consumers}',
-    classesMarkdown([...sheet.syntax, ...sheet.more], true),
+    `## ${label(locale, 'classes')} {#consumers}`,
+    classesMarkdown([...sheet.syntax, ...sheet.more], true, locale),
     sheet.note,
-    '## Values {#values}',
+    `## ${label(locale, 'values')} {#values}`,
     sheet.valuesLead,
     values,
-    ...explanationMarkdown(sheet.explanation),
-    '## Usage {#usage}',
+    ...explanationMarkdown(sheet.explanation, locale),
+    `## ${label(locale, 'usage')} {#usage}`,
     sheetExampleMarkdown(sheet.usage),
-    '## Customize {#customize}',
+    `## ${label(locale, 'customize')} {#customize}`,
     sheetExampleMarkdown(sheet.customize, false),
-    seeAlso(['[theme directives](/reference/directives/theme)', ...sheet.guide ? [`[${sheet.guide.label}](${sheet.guide.href})`] : []]),
+    seeAlso([`[${label(locale, 'themeDirectives')}](/reference/directives/theme)`, ...sheet.guide ? [`[${sheet.guide.label}](${sheet.guide.href})`] : []], locale),
   ].filter(Boolean).join('\n\n')
 }
 
-export function recipeSheetMarkdown(sheet: RecipeSheet) {
+export function recipeSheetMarkdown(sheet: RecipeSheet, locale = 'en') {
   return [
-    '## Classes {#overview}',
-    classesMarkdown([...sheet.syntax, ...sheet.more], false),
+    `## ${label(locale, 'classes')} {#overview}`,
+    classesMarkdown([...sheet.syntax, ...sheet.more], false, locale),
     sheet.note,
-    ...explanationMarkdown(sheet.explanation),
-    '## Usage {#examples}',
+    ...explanationMarkdown(sheet.explanation, locale),
+    `## ${label(locale, 'usage')} {#examples}`,
     sheetExampleMarkdown(sheet.usage),
     sheet.caption,
-    '## Customize {#customize}',
-    'The preset defines these classes with `@utility`. Define the same name in your stylesheet to replace it.',
+    `## ${label(locale, 'customize')} {#customize}`,
+    referenceText('recipes', 'definition-note', locale),
     fence('css', sheet.definitions),
-    seeAlso(['[utility definitions](/reference/directives/definitions)', ...sheet.guide ? [`[${sheet.guide.label}](${sheet.guide.href})`] : []]),
+    seeAlso([`[${label(locale, 'utilityDefinitions')}](/reference/directives/definitions)`, ...sheet.guide ? [`[${sheet.guide.label}](${sheet.guide.href})`] : []], locale),
   ].filter(Boolean).join('\n\n')
 }
 
-export function familiesSheetMarkdown(sheet: FamiliesSheet) {
+export function familiesSheetMarkdown(sheet: FamiliesSheet, locale = 'en') {
+  const familyText = referenceEditorial(sourceFamilyText, 'tokens/families', locale)
   const rest = ungroupedFamilies(sheet)
   const seen = new Set<string>()
-  const table = (rows: FamilyRow[]) => `| Prefix | Token namespace | Properties |\n| --- | --- | --- |\n${rows.map(row => {
+  const table = (rows: FamilyRow[]) => `| ${referenceHeader(locale, 'Prefix')} | ${referenceHeader(locale, 'Token namespace')} | ${referenceHeader(locale, 'Properties')} |\n| --- | --- | --- |\n${rows.map(row => {
     const anchor = seen.has(row.prefix) ? '' : `<a id="family-${row.prefix}"></a>`
     seen.add(row.prefix)
     return `| ${anchor}${cell(`${row.prefix}-`)} | ${cell(`--${row.namespace}-*`)} | ${cell(row.property)} |`
   }).join('\n')}`
   return [
     familyText.intro,
-    '## Read a family {#reading-a-family}',
+    `## ${label(locale, 'readFamily')} {#reading-a-family}`,
     familyText.mapping,
-    referenceIllustrationMarkdown('namespace-lookup'),
+    referenceIllustrationMarkdown('namespace-lookup', locale),
     sheetExampleMarkdown(sheet.usage),
     familyText.lookup,
-    ...sheet.groups.map(group => `## ${group.pages.map(page => page.title).join(' and ')} {#${group.id}}\n\n${table(group.rows)}\n\nValues in ${group.pages.map(page => `[${page.title}](${page.href})`).join(' and ')}.`),
-    ...rest.length ? [`## Other families {#other}\n\n${table(rest.toSorted(byPrefix))}`] : [],
-    '## Resolution boundaries {#resolution-boundaries}',
+    ...sheet.groups.map(group => `## ${group.pages.map(page => page.title).join(label(locale, 'and'))} {#${group.id}}\n\n${table(group.rows)}\n\n${label(locale, 'valuesIn')} ${group.pages.map(page => `[${page.title}](${page.href})`).join(label(locale, 'and'))}.`),
+    ...rest.length ? [`## ${label(locale, 'otherFamilies')} {#other}\n\n${table(rest.toSorted(byPrefix))}`] : [],
+    `## ${label(locale, 'resolution')} {#resolution-boundaries}`,
     familyText.shared,
     familyText.registration,
     familyText.roles,
     familyText.limits,
-    seeAlso(['[token registration and resolution](/reference/rules/modes#namespace-resolution)', '[utility definitions](/reference/directives/definitions#utilities)', '[declaration forms](/reference/rules/declarations)', '[building a theme](/guide/theme#define-tokens)']),
+    seeAlso([`[${label(locale, 'registration')}](/reference/rules/modes#namespace-resolution)`, `[${label(locale, 'utilityDefinitions')}](/reference/directives/definitions#utilities)`, `[${label(locale, 'declarationForms')}](/reference/rules/declarations)`, `[${label(locale, 'buildingTheme')}](/guide/theme#define-tokens)`], locale),
   ].join('\n\n')
 }

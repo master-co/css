@@ -1,0 +1,248 @@
+---
+{
+  "title": "在 Vite 設定 Master CSS",
+  "description": "將 Master CSS 接入 Vite、React、Vue、React Router 或 TanStack Start，再驗證靜態 CSS 與可選的瀏覽器產生樣式。",
+  "category": "整合"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/vite/cover-light.webp'
+import dark from '~/site/assets/images/integrations/vite/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Vite" />
+
+將 Master CSS 加入以 Vite 建置的應用程式，包括 React、Vue、React Router 框架模式與 TanStack Start。整合會依原始碼中的完整類別名稱產生 CSS。保留框架既有的 Vite 外掛與掛載程式碼；Master CSS 會透過共用樣式表加入建置流程。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 加入 Master CSS \{#add-master-css\}
+      在既有的 [Vite 專案](https://vite.dev/guide/)中，從專案根目錄執行安裝程式，並使用[框架表格](#frameworks)中的 `--framework` 值。預設使用靜態模式：原始碼中的完整類別名稱會轉成一般 CSS。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework vite --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 檢查 CSS 進入點 \{#check-the-css-entry\}
+    安裝程式會將 `masterCSS()` 加入 Vite 外掛，並更新[框架進入點](#frameworks)所列的樣式表。在純 JavaScript 起始專案中，該檔案是：
+
+    ```css name=src/style.css
+    @import '@master/css';
+    ```
+
+    請讓應用程式持續匯入此進入點。若專案使用不同檔名，請檢查安裝程式輸出，讓匯入指向該檔案。安裝程式不會建立框架應用程式，也不會取代既有掛載程式碼。
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+    若是包含 `#app` 元素的純 JavaScript 起始專案，請使用以下進入點並執行 `npm run dev`。框架應用程式則改用下方對應的[元件範例](#frameworks)。
+  </Step>
+  <InstallationPreview>
+
+```js name=src/main.js
+import './style.css'
+
+document.querySelector('#app').innerHTML = `
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+`
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 各框架的進入點 \{#frameworks\}
+選擇應用程式對應的安裝程式值。下列是慣用的起始專案路徑；React 與 Vue 設定也可重用其他受支援的既有 CSS 進入點。未指定此旗標時，安裝程式會從專案偵測框架。
+
+| 框架 | `--framework` | CSS 進入點 |
+| --- | --- | --- |
+| Vite 搭配純 JavaScript | `vite` | `src/style.css` |
+| [React](#react) | `react` | `src/index.css` |
+| [Vue](#vue) | `vue` | `src/assets/main.css` |
+| [React Router](#react-router) 框架模式 | `react-router` | `app/app.css` |
+| [TanStack Start](#tanstack-start) | `tanstack-start` | `src/styles/app.css` |
+
+### React \{#react\}
+在[以 Vite 建置的 React 專案](https://vite.dev/guide/#scaffolding-your-first-vite-project)中，取代 `src/App.tsx`。保留 `src/main.tsx` 中的 `src/index.css` 匯入。
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+### Vue \{#vue\}
+在 [Vue 專案](https://vuejs.org/guide/quick-start)中，取代 `src/App.vue`。保留應用程式進入點中的 `src/assets/main.css` 匯入。
+
+```vue name=src/App.vue
+<template>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+</template>
+```
+
+### React Router \{#react-router\}
+在 [React Router 框架模式](https://reactrouter.com/start/framework/installation)專案中，安裝程式會從 `app/root.tsx` 匯入 `app/app.css`。取代首頁路由，並保留它在 `app/routes.ts` 的註冊。請保留 `app/root.tsx` 中的 `Links`、`Scripts`、`Outlet` 與文件結構；它們負責傳遞頁面及樣式表。
+
+```tsx name=app/routes/home.tsx
+export default function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+### TanStack Start \{#tanstack-start\}
+在以 Vite 建置的 [TanStack Start](https://tanstack.com/start/latest) 專案中，取代索引路由。安裝程式會從 `src/routes/__root.tsx` 匯入 `src/styles/app.css`，讓每個路由載入相同的 CSS 進入點。
+
+```tsx name=src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+  component: Home
+})
+
+function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 檢查設定 \{#check-the-setup\}
+開發伺服器執行時，將原始碼中的 `p-md` 改成 `p-lg`。內距應從 `1rem` 增加為 `1.5rem`。改回 `p-md` 後，建置應用程式：
+
+```bash
+npm run build
+```
+
+使用專案的預覽或啟動指令提供正式環境輸出。純 Vite、React 與 Vue 起始專案通常使用 `npm run preview`；React Router 與 TanStack Start 則使用其設定的伺服器或部署轉接器。確認段落仍有 `1rem` 內距，且靜態模式不會附帶 Master CSS 瀏覽器執行階段。
+
+用戶端渲染的應用程式需要 JavaScript 才能建立段落。對於已啟用伺服器渲染的 React Router 或 TanStack Start 路由，請停用 JavaScript 並重新載入，檢查伺服器 HTML 是否取得相同樣式表。
+
+若檔案有載入但缺少某個類別，請在原始碼保留其完整名稱；參閱[掃描類別名稱](/guide/scanning-and-pruning)。若所有 utility 都無效，請確認 CSS 進入點已匯入，且 Vite 設定在框架外掛旁註冊 `masterCSS()`。若起始專案樣式遮蓋結果，可移除其外觀規則，但保留 `@import '@master/css';`。
+
+---
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+預設使用靜態模式，無須 Master CSS 啟動程式碼。切換模式時，請保留 CSS 進入點：
+
+| 框架 | 安裝程式選項 | 執行階段啟動方式 |
+| --- | --- | --- |
+| Vite、React、Vue | `--mode runtime` | 由 Vite 外掛注入 `index.html` |
+| React Router、TanStack Start | `--mode runtime` | 根路由中僅在瀏覽器執行的匯入 |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+執行安裝程式時，指定 `--mode runtime` 與你的 `--framework` 值：
+
+```bash
+npm create @master/css@VERSION -- --framework vite --mode runtime --yes
+```
+
+對 Vite、React 與 Vue，外掛會將執行階段注入 `index.html`，並輸出編譯後的程式。請勿另外加入第二次執行階段匯入。
+
+React Router 與 TanStack Start 自行產生 HTML，不會經過 Vite 的 `index.html` 注入流程。請在既有根路由的樣式表匯入旁，加入僅限瀏覽器的執行階段匯入，並保留路由定義與元件匯出：
+
+```tsx name=app/root.tsx
+import './app.css'
+
+if (!import.meta.env.SSR) {
+  void import('virtual:master-css-runtime')
+}
+```
+
+```tsx name=src/routes/__root.tsx
+import '../styles/app.css'
+
+if (!import.meta.env.SSR) {
+  void import('virtual:master-css-runtime')
+}
+```
+
+此條件判斷可避免在伺服器執行虛擬執行階段；每份文件載入一次即可。在 `app/master-css.d.ts` 或 `src/master-css.d.ts` 等宣告檔加入用戶端型別：
+
+```ts
+/// <reference types="@master/css/client" />
+```
+
+建置並預覽應用程式，再於瀏覽器主控台執行以下程式碼。無須重新建置，段落就應出現底線：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+JavaScript 執行前，伺服器渲染的 HTML 不會包含執行階段產生的 CSS。若類別無效，請檢查主控台與輸出程式的請求。
+
+</DocumentDisclosure>
+
+
+## 選擇樣式表載入方式 \{#stylesheet-loading\}
+
+文件樣式表請維持[一般 CSS 匯入](https://vite.dev/guide/features#css)。只有其他使用端需要 CSS 文字或網址時，才使用不同請求。這些請求不會取代應用程式的 Master CSS 進入點，也不會改變渲染模式。
+
+<DocumentComparison>
+
+| 請求 | 結果與責任 |
+| --- | --- |
+| `import './app.css'` | Vite 為文件載入處理後的樣式表。 |
+| `import styles from './Card.module.css'` | Vite 載入具作用範圍的 CSS，並回傳區域類別名稱對應。 |
+| `import css from './app.css?inline'` | 回傳處理後的 CSS 文字但不注入；使用端必須自行附加。 |
+| `import source from './app.css?raw'` | 回傳撰寫的原始碼，包含 Master 指令；不是瀏覽器可直接使用的 CSS。 |
+| `import href from './local.css?url'` | 回傳網址；文件需要這些樣式時，請將它附加為樣式表連結。 |
+
+</DocumentComparison>
+
+例如，將可信任的建置輸出插入你管理的文件：
+
+```js
+import css from './app.css?inline'
+
+const style = document.createElement('style')
+style.textContent = css
+document.head.append(style)
+```
+
+處理後的文字仍可能包含匯入。只有不含匯入的輸出才能使用 `CSSStyleSheet.replaceSync()`；它不會載入匯入的樣式表。若用於 shadow root，請遵循 [Lit 設定](/guide/installation/lit)，包含樣式表順序與資產基底路徑要求。
+
+### Sass 與 CSS Modules \{#sass-and-css-modules\}
+
+保留專案的 Sass 相依套件與 Vite 預處理選項。將 Master CSS 進入點匯入寫成 CSS URL 匯入，讓 Sass 留給 Master CSS 處理：
+
+```scss name=src/app.scss
+@import url("@master/css");
+```
+
+解析後的 Sass partial 會保留各自的資源目錄。Source map 會盡可能將診斷連回原始檔；產生或未對應的內容只能指出預處理後的位置。請將 Master mixin 定義保留在 `.css`，或使用 [Sass 互通模式](/reference/directives/definitions#sass-interoperability)。
+
+CSS Modules 會保留具作用範圍的匯出與 `composes` 關係。原生宣告可使用專案定義，無須再次匯入全域輸出。框架 HMR 或使用該模組的程式碼，必須接受變更後的類別名稱匯出，才能不重新載入頁面就更新。`?inline` 回傳具作用範圍的 CSS 文字；`?raw` 回傳原始碼。Vite 8.3.5 會拒絕 `.module.css` 與 `.module.scss` 的 `?url` 請求；不要用這條路徑載入模組樣式表。
+
+### 檢查部署後的資產 \{#check-the-deployed-assets\}
+
+部署完整正式環境輸出，包含保留的子樣式表、圖片、字型及任何執行階段程式。Master CSS 會保留匯入的 media、supports 與 layer 限定條件，並依原始來源檔重寫資源網址。因此，行內字串也可能需要獨立資產；[匯入契約](/reference/directives/imports#publish-stylesheet-assets)說明了這個邊界。
+
+SSR 的 `?inline` 使用端會依設定的公開 `base` 產生網址。Vite 預設不輸出 SSR 資產：請部署對應用戶端建置的資產，或在伺服器建置必須發布資產時，啟用 [`build.ssrEmitAssets`](https://vite.dev/config/build-options#build-ssremitassets)。將建置移至部署位置後，檢查實際回應與 Network 面板；僅在原地建置，無法確認網址可移轉性。
+
+開發時刪除被參照的資源，會回報編譯錯誤；已發布的資源版本可能在該伺服器脈絡關閉前仍可使用。請還原相依資源，確認使用端更新且錯誤消失。頁面仍有樣式，不能單獨證明最新編譯成功。

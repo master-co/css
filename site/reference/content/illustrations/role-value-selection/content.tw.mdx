@@ -1,0 +1,36 @@
+# Reference prose: illustrations/role-value-selection
+
+## title \{#copy-title\}
+
+
+一個角色，兩種區域配色方案
+
+## alt \{#copy-alt\}
+
+
+弱化文字 light-dark 函式的兩個參數，分別連到淺色與深色範例。兩個範例顯示相同的次要文字，淺色底使用 zinc-60，深色底使用 zinc-40。
+
+## caption \{#copy-caption\}
+
+
+實際使用的配色方案會選取第一個或第二個色彩。兩個範例都保留 fg-text-muted 與 bg-surface-base，由區域配色方案改變它們的計算色彩。
+
+## description-0 \{#copy-description-0\}
+
+
+fg-text-muted 產生 color: var(--color-text-muted)。其預設 token 包含 light-dark(var(--color-zinc-60), var(--color-zinc-40))。
+
+## description-1 \{#copy-description-1\}
+
+
+淺色範例使用第一個參數 --color-zinc-60，深色範例使用第二個參數 --color-zinc-40。
+
+## description-2 \{#copy-description-2\}
+
+
+兩個範例都使用 bg-surface-base 與相同的文字 class。有色引導線用來識別兩個參數，是標註線，不是最後的文字色彩。
+
+## description-3 \{#copy-description-3\}
+
+
+實際使用的區域配色方案會選取分支。這個比較不表示系統媒體查詢會跟隨手動選取的區域主題。

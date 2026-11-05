@@ -185,7 +185,7 @@ test('installation routes use static entry points and explicit optional modes', 
     const content = await readFile(path.join(root, slug, 'content.mdx'), 'utf8')
     assert.doesNotMatch(content, /mode:\s*['"]runtime['"],\s*runtime:\s*false/, slug)
     // The first installer command on each page is the default static setup.
-    const primarySetup = content.match(/npm create @master\/css@rc[^\n]*/)?.[0]
+    const primarySetup = content.match(/npm create @master\/css@VERSION[^\n]*/)?.[0]
     if (primarySetup) assert.doesNotMatch(primarySetup, /--mode\s+(?:runtime|progressive)/, slug)
   }
 

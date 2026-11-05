@@ -1,0 +1,31 @@
+# Reference prose: illustrations/parameter-known-vs-live
+
+## title \{#copy-title\}
+
+
+정적 레시피 인수와 실시간 CSS 값은 다름
+
+## alt \{#copy-alt\}
+
+
+pair(2rem)은 두 크기로 확장된다. 두 선언 레시피는 pair(var(--size))를 거부하며 명시적인 네이티브 width 변수는 브라우저 평가로 이어진다.
+
+## caption \{#copy-caption\}
+
+
+그림의 pair 유틸리티는 두 선언을 가집니다. 별도의 단일 매개변수·단일 선언 기호 참조 예외는 적용되지 않습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+@utility pair(--size) \{ width: var(--size); height: var(--size); \}는 pair(2rem)의 알려진 인수를 받아 두 선언에 바인딩합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+이 레시피는 인수가 브라우저에 의존하는 pair(var(--size))를 거부합니다. 동적으로 유지할 값에는 명시적인 네이티브 선언 클래스를 사용하세요.
+
+## description-2 \{#copy-description-2\}
+
+
+(width:var(--size))는 브라우저를 위해 변수 참조를 유지하고 너비만 바꿉니다. 높이도 필요하면 별도 높이 선언을 추가하세요.

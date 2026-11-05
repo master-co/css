@@ -1,6 +1,9 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
 import DemoWaterfall from '@master/internal-site/demo/DemoWaterfall.astro'
-import { resourceWaterfalls } from '../../utils/first-paint-examples'
+import { resourceWaterfalls as original } from '../../utils/first-paint-examples'
+const resourceWaterfalls = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'ResourceWaterfall', original)
 ---
 
 <div data-first-paint="waterfalls">{resourceWaterfalls.map(scenario => <DemoWaterfall {...scenario} />)}</div>

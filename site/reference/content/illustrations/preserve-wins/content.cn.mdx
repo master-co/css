@@ -1,0 +1,31 @@
+# Reference prose: illustrations/preserve-wins
+
+## title \{#copy-title\}
+
+
+同文件中 preserve 优先于 prune
+
+## alt \{#copy-alt\}
+
+
+两种相反指令顺序均保留原生 widget 规则，表明 preserve 优先顺序不受文本顺序影响。
+
+## caption \{#copy-caption\}
+
+
+两种情况均启用原生交付。此策略保留原生 CSS，不会将未使用受管理工具类加入安全列表。
+
+## description-0 \{#copy-description-0\}
+
+
+@preserve native 与 @prune native 同文件出现时，无论顺序均以保留为准。
+
+## description-1 \{#copy-description-1\}
+
+
+因此即使没有扫描到 widget 类，原生 .widget 规则仍保留。
+
+## description-2 \{#copy-description-2\}
+
+
+preserveNativeCSS: false 是独立输出开关，可不受两个指令影响而抑制原生交付。

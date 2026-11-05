@@ -1,0 +1,29 @@
+# Reference prose: illustrations/motion-duration-override
+
+## title \{#copy-title\}
+
+A duration class changes timing while keeping the same keyframes
+
+## alt \{#copy-alt\}
+
+Two animations are compared on a shared time scale. animate-pulse alone lasts 1000 milliseconds per iteration; adding animation-slow reduces the duration to 300 milliseconds while keeping the same keyframes.
+
+## caption \{#copy-caption\}
+
+Both cases use the same pulse keyframes. Bars measure one iteration’s duration, not animation progress or rendering speed. The preset repeats; the comparison isolates a single iteration.
+
+## description-0 \{#copy-description-0\}
+
+The animate-pulse shorthand supplies pulse 1s infinite. Its duration is one second per iteration.
+
+## description-1 \{#copy-description-1\}
+
+Under the same conditions, animation-slow sorts after animate-pulse and replaces only its duration with var(--duration-slow), or 300ms. The pulse keyframes and infinite iteration count remain the same.
+
+## description-2 \{#copy-description-2\}
+
+Both horizontal bars start at zero. Their lengths have a 1000:300 ratio on the same millisecond axis. They measure declared duration per iteration, not performance or the distance a shape travels.
+
+## description-3 \{#copy-description-3\}
+
+The preset pulse token repeats infinitely. Add a native iteration count or define a custom token to run once; changing the order of class names does not change generated rule order.

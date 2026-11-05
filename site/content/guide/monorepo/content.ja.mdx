@@ -1,0 +1,144 @@
+---
+{
+  "title": "モノレポ",
+  "description": "アプリごとに独立したプロジェクトコンテキストを持たせ、ワークスペースのパッケージ間で CSS の語彙を共有します。",
+  "category": "基本",
+  "figures": {
+    "MonorepoIllustration": {
+      "title": "ソースを共有し、二つのプロジェクトコンテキストを保つ",
+      "alt": "admin と shop は styles/shared.css をインポートし、各自の index.css で color-primary を上書きする。同じ bg-primary が admin では紫、shop では青緑になり、一方の上書きは他方へ漏れない。",
+      "caption": "インポートで定義を共有します。各アプリは自身のエントリー、上書き、ソース選択、生成出力を持ち続けます。",
+      "description": [
+        {
+          "title": "定義を共有する",
+          "text": "両方のアプリのエントリーが styles/shared.css をインポートします。"
+        },
+        {
+          "title": "Admin のコンテキスト",
+          "text": "projects/admin/index.css は color-primary を #4f46e5 に上書きします。その bg-primary クラスはこの紫の値を使います。"
+        },
+        {
+          "title": "Shop のコンテキスト",
+          "text": "projects/shop/index.css は color-primary を #0f766e に上書きします。その bg-primary クラスは独立してこの青緑の値を使います。"
+        }
+      ]
+    },
+    "GuideStudy:shared-source-inputs": {
+      "title": "共通 CSS と共通マークアップは別々の入力",
+      "alt": "CSS 定義ファイルとコンポーネントのソースファイルが、インポートとソース選択という別々の経路で利用アプリに入る。",
+      "caption": "共通 CSS のインポートは、すべての兄弟コンポーネントファイルを自動で走査対象にするものではありません。"
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MonorepoIllustration from './components/MonorepoIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 概要 [sr-only] \{#overview\}
+アプリごとにプロジェクトの境界を設け、インポートで CSS の語彙を共有します。[言語サービス](/guide/language-service)、[コード lint](/guide/code-linting)、ビルドインテグレーションは、同じアプリ固有のプロジェクトコンテキストを使えます。
+
+`@master/css` をインポートするプロジェクトの CSS エントリー、または Master CSS の依存関係を宣言するパッケージが、ワークスペースを識別します。この境界はパッケージマネージャーのワークスペース一覧とは独立しています。各アプリのプロジェクトディレクトリーからビルドを開始し、CSS エントリーもそこに置いてください。パッケージマネージャーの同じワークスペースに属するだけでは、共通の Master CSS 設定は作られません。
+
+<MonorepoIllustration />
+
+---
+
+## 一つのプロジェクトに一つのワークスペース \{#one-project-one-workspace\}
+各 `package.json` のプロジェクトには、一つの Master CSS ワークスペースがあります。一つのプロジェクトマニフェストのグラフ、ソース走査のコンテキスト、ツールインテグレーションの組です。
+
+独立したアプリには、`projects/admin` と `projects/shop` のように別々のパッケージプロジェクトを使います。それぞれが CSS エントリーとアプリの設定を持ちます：
+
+<ExplorerView items={[
+  { name: 'projects', children: [
+    { name: 'admin', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]},
+    { name: 'shop', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]}
+  ]},
+  { name: 'package.json' },
+  { name: 'styles', children: [{ name: 'shared.css' }] }
+]} />
+
+各アプリで対応する[フレームワークの設定](/guide/installation#integrations)を完了します。そのアプリのディレクトリーから開発サーバーと本番ビルドを起動してください。生成 CSS、ソース走査、診断、エディターの状態をプロジェクトのルートにそろえられます。
+
+共通の定義は専用のソースファイルに置きます。この例では共有ファイルがトークンを供給し、各アプリが完全な Master CSS エントリーを自身でインポートします：
+
+```css name=styles/shared.css
+@theme {
+  --color-primary: #123456;
+}
+```
+
+### CSS 定義を共有する \{#share-css-definitions\}
+各ワークスペースで共通のプロジェクト CSS ファイルをインポートし、その後にワークスペース固有の定義を加えます。
+```css name=projects/admin/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #4f46e5;
+}
+
+@layer components {
+  .app-shell {
+    background-color: var(--color-surface-base);
+    min-height: 100vh;
+  }
+}
+```
+共有インポートの後の定義は、共通のトークンとユーティリティを上書きできます。同じレイヤーのネイティブなコンポーネントルールは、CSS のソース順序に従います。
+
+shop は同じ共通ソースをインポートし、自身の色を選びます：
+
+```css name=projects/shop/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #0f766e;
+}
+```
+
+両方のアプリで同じクラスを使えます：
+
+```html
+<p class="flex items-center gap-xs text-sm">
+  <span aria-hidden="true" class="h(8) w(8) pill bg-primary"></span>
+  Workspace
+</p>
+```
+
+admin のビルドは自身の主色 `#4f46e5` を、shop は `#0f766e` を出力します。admin の上書きを変えても、shop の出力は変わらないはずです。両方をビルドし、それぞれの生成スタイルシートの `--color-primary` を調べて境界を確認してください。
+
+共有ファイルが語彙を定義し、各アプリのエントリーが何をインポートするかを決めます。アプリ固有の走査ディレクティブと配信方針は、共通スタイルシートではなく、そのアプリに置いてください。
+
+---
+
+## 共通コンポーネントのソースを含める \{#include-shared-component-sources\}
+
+共通 CSS のインポートが供給するのは定義です。共通コンポーネント内のクラス文字列は、利用アプリのスキャナーへ別途届ける必要があります。Vite はインポートしたワークスペースモジュールを走査できますが、アプリ内で起動した CLI ビルドは JavaScript のインポートをたどって兄弟パッケージへ進みません。
+
+コンポーネントが `packages/ui` にある場合、各利用アプリの CSS エントリーに `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";` を追加します。この明示パスで共有ソースがアプリのビルドに含まれます。宣言する CSS ファイルからの相対なので、エントリーを移動したらパスも調整してください。
+
+<ReferenceIllustration id="source-relative-base" />
+
+インストールされた依存ディレクトリーは自動走査から除外されます。パッケージ化したコンポーネントライブラリーでは、配布ソースファイルを指す限定的な `@source` パターンが必要な場合があります。そのパッケージだけに現れるクラスを、アプリの本番出力で確認してください。除外規則とほかのソース種別は[ソースの境界](/reference/rules/extraction#source-boundaries)を参照します。
+
+<GuideStudy id="shared-source-inputs" />
+
+## 共有を増やす前に境界を確認する \{#verify-the-boundary-before-sharing-more\}
+
+各アプリのディレクトリーで本番ビルドを実行します。ローカルな上書きを一つ変えて両方の出力を確認し、admin の値が admin だけで変わることを確かめます。次に共通コンポーネントだけが使う完全なクラスを加え、利用アプリがそのルールを出力するか確認してください。
+
+トークンがない場合は CSS のインポートグラフを確認します。定義はあるのに共通コンポーネントのユーティリティがない場合は、ソースの選択を確認してください。これらは別々の入力で、共通 CSS のインポートは、すべての兄弟コンポーネントファイルを自動では含めません。
+
+語彙にバージョン管理されたパッケージの契約が必要なら、[パッケージの作成](/guide/authoring-packages)を参照してください。[クラス名の走査](/guide/scanning-and-pruning)で各アプリの走査ファイルを定義し、[CSS 配信の最適化](/guide/optimizing-css-delivery#native-pruning)で削除できるネイティブルールを判断します。

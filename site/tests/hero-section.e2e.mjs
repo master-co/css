@@ -6,6 +6,9 @@ import { chromium, webkit } from '@playwright/test'
 const browserName = process.env.MASTER_HERO_BROWSER ?? 'chromium'
 const base = process.env.MASTER_HERO_URL ?? 'http://localhost:3000'
 const full = process.env.MASTER_HERO_MATRIX === 'full'
+const expectedVersion = process.env.MASTER_HERO_VERSION ?? '2.0.0'
+assert.match(expectedVersion, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/)
+const expectedInstallCommand = `npm create @master/css@${expectedVersion}`
 let browser
 before(async () => { browser = await ({ chromium, webkit })[browserName].launch({ args: browserName === 'chromium' && process.env.MASTER_HERO_GPU === 'metal' ? ['--use-angle=metal'] : [] }) })
 after(async () => { await browser?.close() })
@@ -180,7 +183,7 @@ for (const width of full ? [320, 390, 768, 1440, 1920] : [390, 1440]) {
         assert.equal(await section.locator('p').count(), 0, 'the hero has no description paragraph')
         assert.equal(state.actionBackground[3], 255, 'the primary action has a solid fill')
         assert.ok(scheme === 'light' ? state.actionBackground[0] < 80 && state.actionInk[0] > 200 : state.actionBackground[0] > 200 && state.actionInk[0] < 80, 'the primary action reverses the page theme')
-        assert.equal(await section.locator('code').textContent(), 'npm create @master/css@rc')
+        assert.equal(await section.locator('code').textContent(), expectedInstallCommand)
         assert.equal(await section.locator('.home-action-primary').getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/introduction`)
         assert.equal(await section.locator('.home-hero-pill').getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/ai-coding#connect-the-mcp-server`)
         assert.deepEqual(errors, [])
@@ -205,7 +208,7 @@ for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: 320px and enl
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })
     await settled(page)
     assert.deepEqual((await geometry(section)).clipped, [])
-    assert.equal(await section.locator('code').textContent(), 'npm create @master/css@rc')
+    assert.equal(await section.locator('code').textContent(), expectedInstallCommand)
     const readingWidth = await section.locator('code').evaluate(element => ({ width: element.getBoundingClientRect().width, font: parseFloat(getComputedStyle(element).fontSize) }))
     assert.ok(readingWidth.width >= readingWidth.font * 4.5, 'enlarged commands retain a usable reading column')
     assert.equal(await section.locator('.home-command-copy').evaluate(element => getComputedStyle(element).gridColumnStart), '2')
@@ -224,7 +227,7 @@ for (const clipboard of ['success', 'failed', 'missing']) test(`${browserName}: 
     await page.waitForFunction(() => document.querySelector('.home-hero [aria-live]').textContent !== '')
     assert.equal(await section.locator('[aria-live]').textContent(), clipboard === 'success' ? 'Copied' : 'Copy failed')
     if (clipboard === 'success') {
-      assert.equal(await page.evaluate(() => window.heroCopied), 'npm create @master/css@rc')
+      assert.equal(await page.evaluate(() => window.heroCopied), expectedInstallCommand)
       assert.notEqual(await button.getAttribute('aria-label'), label)
     }
     assert.deepEqual(await section.locator('.home-command').boundingBox(), before)
@@ -383,7 +386,7 @@ test(`${browserName}: native touch copies the command without leaving a pressed 
   try {
     const button = await section.locator('.home-command-copy').boundingBox()
     await page.touchscreen.tap(button.x + button.width / 2, button.y + button.height / 2)
-    await page.waitForFunction(() => window.heroCopied === 'npm create @master/css@rc')
+    await page.waitForFunction(expected => window.heroCopied === expected, expectedInstallCommand)
     const action = section.locator('.home-action-primary')
     const bounds = await action.boundingBox()
     assert.equal(await action.evaluate(element => element.matches(':active')), false)

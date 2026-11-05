@@ -1,0 +1,58 @@
+# Reference prose: rules/named-conditions
+
+
+## intro \{#copy-intro\}
+
+The preset defines independent media and container conditions. They share short names, but neither registry is a set of theme tokens. A bare `@md` queries the viewport; `@container(--md)` queries an eligible ancestor container.
+
+## media \{#copy-media\}
+
+Media names come from `media.css`. Width conditions use their authored rem values; orientation and preference conditions use native media features. `@dark` and `@light` test the system preference, not a manually selected site theme.
+
+## container \{#copy-container\}
+
+Container names come from `container.css`. The definition supplies only a query condition: `@container(--md)` uses the nearest eligible container, while `@container(card|--md)` selects an eligible container named `card`. Neither form establishes a container.
+
+## scope \{#copy-scope\}
+
+The same key can name different thresholds in different query domains. Container sizing tokens such as `--container-md` belong to a third, independent role: they supply lengths to sizing utilities.
+
+## complement \{#copy-complement\}
+
+Each preset `max-` condition is the complement of its matching minimum condition. The expanded queries below do not overlap at the boundary. The source definitions reference their corresponding names with `not (--name)`.
+
+## customize \{#copy-customize\}
+
+Declare a custom media name for a viewport or preference query, or a custom container name for a component query. Native units are retained. When replacing a condition in an already-compiled manifest, redeclare its complement too if both thresholds must change.
+
+## viewport-widths-title \{#copy-viewport-widths-title\}
+
+Minimum viewport widths
+
+## below-viewport-widths-title \{#copy-below-viewport-widths-title\}
+
+Below viewport widths
+
+## media-features-title \{#copy-media-features-title\}
+
+Orientation and preferences
+
+## container-widths-title \{#copy-container-widths-title\}
+
+Minimum container widths
+
+## below-container-widths-title \{#copy-below-container-widths-title\}
+
+Below container widths
+
+## usage-lead \{#copy-usage-lead\}
+
+This layout uses one column below the preset md viewport threshold and three columns from that threshold onward.
+
+## title \{#copy-title\}
+
+Named conditions
+
+## description \{#copy-description\}
+
+Every preset media and container condition, its expanded query and the scope it measures.

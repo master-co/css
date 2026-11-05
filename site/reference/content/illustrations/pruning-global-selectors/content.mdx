@@ -1,0 +1,25 @@
+# Reference prose: illustrations/pruning-global-selectors
+
+## title \{#copy-title\}
+
+Native pruning leaves classless rules available
+
+## alt \{#copy-alt\}
+
+With card used, body and root rules remain along with card; an unused class rule is crossed out.
+
+## caption \{#copy-caption\}
+
+The source opts into @prune native. Retained classless selectors still obey ordinary CSS matching and cascade rules.
+
+## description-0 \{#copy-description-0\}
+
+body and :root have no class selectors, so native pruning preserves their rules.
+
+## description-1 \{#copy-description-1\}
+
+A used .card rule remains; an unused .unused class rule is removed in this example.
+
+## description-2 \{#copy-description-2\}
+
+Native pruning is based on class usage, not a browser analysis of every selector or a guarantee that all retained rules currently match.

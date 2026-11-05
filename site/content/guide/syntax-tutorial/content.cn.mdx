@@ -1,0 +1,226 @@
+---
+title: "语法教程"
+description: "读懂并组合 Master CSS class，加入交互状态与条件，建立随可用空间调整的指南卡片。"
+figures: {"SyntaxIllustration":{"title":"读懂样式、选择器与条件","alt":"完整 class fg-blue-60:hover@sm 用括号标出三个范围：fg-blue-60 是样式，:hover 是选择器，@sm 是条件。","caption":"只有视口符合 sm 时，颜色才应用到悬停的元素。两个后缀都只属于这个 class。","description":[{"title":"样式","text":"fg-blue-60 将 color 设为 var(--color-blue-60)。"},{"title":"选择器","text":":hover 在悬停时匹配持有 class 的元素。"},{"title":"条件","text":"@sm 将规则包在预设具名 sm 媒体查询内。选择器与条件都匹配时，此 class 才会应用。"}]},"GuideStudy:pipes-and-quotes":{"title":"竖线在引号内有不同含义","alt":"两个字面输入对应各自输出。rgb(30|60|90) 变成 rgb(30 60 90)；引号字符串 New|collection 保留竖线。","caption":"空白解码只作用于引号字符串之外。输出字符串仍是一个字面值。"},"GuideStudy:conditions-intersection":{"title":"两个条件都必须匹配","alt":"二乘二矩阵只高亮视口符合 sm 且支持 display:grid 的交集。","caption":"对于 grid@sm@supports(display:grid)，单独符合任一条件都不会启用声明。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import TokenValues from '~/site/reference/TokenValues.astro'
+import SyntaxIllustration from './components/SyntaxIllustration.astro'
+
+指南卡片需要间距、易读文本，以及能响应交互的链接。Master CSS 让你在 HTML 中做这些决策：先选择样式，再加上选择器或条件，决定样式何时应用。
+
+请先完成[安装](/guide/installation)。这些示例使用默认预设，没有自定义工具类定义。将标记放在集成工具会扫描的源文件中，并加载应用样式表：
+
+```css name=app.css
+@import '@master/css';
+```
+
+每个**生成的 CSS** 展开区域都展示随附 class 编译后的输出。打开即可查看送到浏览器的内容；无需把输出复制进样式表。
+
+## 读懂 class \{#declarations\}
+
+从一个链接开始：只有视口符合预设 `sm` 查询时，悬停才变成蓝色。
+
+```html
+<a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
+  Read the guide
+</a>
+```
+
+此 class 有三个部分。`fg-blue-60` 选择样式，`:hover` 选择状态，`@sm` 加上条件。只有选择器与条件都匹配时才应用样式。没有这些后缀时，`fg-blue-60` 不受悬停或视口宽度限制。
+
+<SyntaxIllustration />
+
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+生成的规则通过 CSS 变量设置 `color`，并放在媒体查询内。选择器会转义标点，以匹配 HTML 中的字面 class 名称。在 HTML 编写易读形式即可；转义后的 CSS 选择器属于生成的输出。
+
+<ReferenceIllustration id="suffix-ownership" />
+
+## 选择提供值的方式 \{#values\}
+
+常见决策使用预设名称。需要精确的局部值时，将数字传给支持的函数，或写出原生声明：
+
+<DocumentComparison>
+
+| 写法 | 决策 |
+| --- | --- |
+| `flex` | 设置 `display: flex` 的固定工具类 |
+| `p-md` | 具名间距的 token class |
+| `p(12)` | 直接值：12 像素内边距 |
+| `(max-width:32rem)` | 包含完整 CSS 属性与值的原生声明 |
+| `text-sm` | 协调字号、行高与字距的配方 |
+
+</DocumentComparison>
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']} />
+
+`items-center`、`text-center` 这类固定工具类覆盖常见声明。`m(4)`、`b(1)` 与 `grow(1)` 这类直接值函数接受数字；长度函数使用像素，`grow(1)` 则提供无单位的 flex 系数。原生声明在括号内保留完整属性名称。`text-sm` 或 `grid-cols(2)` 这类配方可协调多个声明。所有形式都支持选择器与条件后缀。
+
+### 在单个 class 中保留空格 \{#keep-spaces-inside-one-class\}
+
+HTML 用空白分隔 class。在引号字符串之外，CSS 值需要空格时请写成 `|`，逗号、斜线与括号则原样保留：
+
+```html
+<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
+  <span class="(content:'New|collection')::before"></span>
+</div>
+```
+
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+
+颜色会变成 `rgb(30 60 90 / 80%)`。在引号包住的 content 字符串内，竖线保留字面含义：文本为 `New|collection`。Master CSS 也会规范化 `calc(100%-2rem)` 这类表达式的运算符间距，表达式则由浏览器计算。原生声明边界、引号值与转义方式请见[声明与值](/reference/rules/declarations)。
+
+<GuideStudy id="pipes-and-quotes" />
+
+## 共用值使用 token \{#token-families\}
+
+Token class 将前缀连到具名值。`p-md` 与 `gap-md` 都读取间距 token `--spacing-md`，但设置不同属性：
+
+<DocumentComparison>
+
+| Class | 声明 |
+| --- | --- |
+| `p-md` | `padding: var(--spacing-md)` |
+| `gap-md` | `gap: var(--spacing-md)` |
+| `fg-text-muted` | `color: var(--color-text-muted)` |
+
+</DocumentComparison>
+
+<Class2CSS classes={['p-md', 'gap-md', 'fg-text-muted']} />
+
+以下选用的间距值直接来自预设：
+
+<TokenValues namespace="spacing" keys={['sm', 'md', 'lg']} />
+
+`p-md` 与 `(padding:1rem)` 看起来可能相同，但代表不同决策。调整 `--spacing-md` 会改变 token 内边距，字面值则保持 `1rem`。样式应跟随共用值时使用 token。[主题 token](/guide/theme)说明如何定义与限定自定义值的范围；[家族索引](/reference/tokens/families)列出前缀与命名空间。
+
+## 组合独立决策 \{#composition\}
+
+让每个决策使用自己的 class，建立小型表面：
+
+```html
+<article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+  <h2 class="m(0) text-lg fg-text-strong">Field notes</h2>
+  <p class="mt-sm mb(0) text-sm fg-text-muted">Keep useful ideas close.</p>
+</article>
+```
+
+<Class2CSS classes={['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']} />
+
+这里 `b(1)` 设置边框宽度，`b-solid` 设置样式，`b-line-divider` 设置颜色。改变其中一项，无需重复其他项。内边距、圆角与文本样式也保持独立，让之后的变化很小：较宽布局可改变内边距，同时保留表面与文本。
+
+### Class 顺序不决定优先级 \{#cascade\}
+
+写成 `p-md p(12)` 时，此属性的直接值会优先于 token。反转 HTML class 顺序仍生成相同 CSS：
+
+<Class2CSS classes={['p-md', 'p(12)']} />
+
+除非刻意覆盖，基础内边距应择一。混合原生组件 CSS 与工具类时，层叠层顺序也有影响：预设将普通 `utilities` 声明放在 `components` 之后。[层叠层](/guide/cascade-layers)说明竞争规则；[样式复用](/guide/reusing-styles)说明如何保留组件共用外观，同时改变单个实例。
+
+## 加入状态与选择器关系 \{#states\}
+
+将选择器附加到行为改变的 class。这个按钮在悬停时改变表面，通过键盘获得焦点时显示轮廓：
+
+<DemoConfiguredExample
+  name="syntax-button"
+  title="表面变化与焦点轮廓"
+  source=""
+  html={`<button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+  Save changes
+</button>`}
+  caption="将鼠标移到按钮上，再用 Tab 移到按钮。悬停会改变表面；键盘焦点会加上轮廓。此按钮仅演示样式，不会保存数据。"
+/>
+
+Hover 后缀只属于 `bg-surface-inset:hover`，不会让相邻 class 一起带条件。这里可使用原生伪类与伪元素，包括 `:disabled`、`:nth-child(2)` 与 `::before`。选择器函数也适用：`fg-blue-60:is(:hover,:focus-visible)` 响应任一状态。
+
+选择器也能指定其他元素。此例 class 放在 article 上，但 article 被悬停时，颜色会应用到其直接子链接：
+
+```html
+<article class="fg-blue-60:hover>a">
+  <h3>Field notes</h3>
+  <a href="/guide/reusing-styles">Read the guide</a>
+</article>
+```
+
+<Class2CSS classes={['fg-blue-60:hover>a']} />
+
+直接子元素使用 `>`，后代使用 `_`：`fg-blue-60_a` 会作用到后代链接。持有 class 的元素仍是后缀的定位基准。[选择器](/reference/rules/selectors)说明兄弟组合器、属性、选择器列表与优先级。
+
+## 加入条件 \{#conditions\}
+
+条件决定 class 何时应用。加上 `@sm`，只在视口符合该具名查询时改变样式。此预览让开头示例的行为可直接观察：
+
+<DemoConfiguredExample
+  name="syntax-viewport"
+  title="悬停颜色取决于视口宽度"
+  source=""
+  html={`<div class="p-sm p-lg@sm">
+  <a href="/guide/responsive-design" target="_top" class="inline-flex py-xs text-sm fg-text-body underline fg-blue-60:hover@sm">
+    Explore responsive design
+  </a>
+</div>`}
+  responsive
+  widthPresets={[{ label: 'Below sm', width: 640 }, { label: 'Above sm', width: 900 }]}
+  caption="选择 Above sm 并将鼠标移到链接上，链接会变蓝。Below sm 时，悬停仍保留基础文本颜色。内边距也会在 sm 增加。这些控件只调整预览视口，与外层页面无关。"
+/>
+
+`@sm` 指向预设的自定义媒体查询。一次性的视口阈值可写成 `p-lg@media(width>=48rem)` 这类原生查询。其他条件形式也遵循相同模式：
+
+<DocumentComparison>
+
+| Class | 条件 |
+| --- | --- |
+| `hidden@media(print)` | 打印时 |
+| `grid@supports(display:grid)` | 支持该声明时 |
+| `grid@sm@supports(display:grid)` | 具名视口查询与声明支持同时成立 |
+
+</DocumentComparison>
+
+<Class2CSS classes={['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']} />
+
+多个条件由左至右嵌套包裹，因此每一层都必须匹配。自定义媒体查询与其他包裹形式请见[条件](/reference/rules/conditions)。
+
+<GuideStudy id="conditions-intersection" />
+
+### 跟随组件可用空间 \{#follow-a-components-available-space\}
+
+即使视口宽度相同，侧栏卡片也比主内容区卡片的空间小。在父元素加上 `container-inline`，再为卡片布局 class 加上容器条件。最后的示例用 `(container-name:card)` 为父元素命名，并用 `@container(card|width>=28rem)` 查询。
+
+父元素建立容器，子元素改变布局。`28rem` 阈值是显式的查询值，与 `--container-md` 这类尺寸 token 分开。[响应式设计](/guide/responsive-design#based-on-container-sizes)通过具名与嵌套容器，进一步说明两者差异。
+
+## 组合完整卡片 \{#complete-card\}
+
+这张卡片结合前述决策。起初为单列；具名父容器达到 `28rem` 时，链接移到文本旁，内边距也随之增加。链接的悬停与焦点样式仍独立于布局。
+
+<DemoConfiguredExample
+  name="syntax-complete"
+  title="适应可用空间的指南卡片"
+  source=""
+  html={`<section class="container-inline (container-name:card)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+    <div>
+      <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
+      <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
+    </div>
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+      Read the guide <span aria-hidden="true">→</span>
+    </a>
+  </article>
+</section>`}
+  responsive
+  container
+  widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]}
+  caption="切换 Narrow 与 Wide。具名容器控制卡片列数与内边距。将鼠标移到 Read the guide，或用 Tab 获得焦点以检查状态；激活链接会打开“样式复用”。"
+/>
+
+选择变体时，在源码中保留完整 class 名称，例如 `'p-md'` 与 `'p-lg'`。用 `'p-' + size` 这类片段组合 class，源码扫描器无法获取完整名称。连续值请使用原生自定义属性，搭配 `(width:var(--progress))` 这类固定 class。[扫描 class 名称](/guide/scanning-and-pruning)说明源码发现；[渲染模式](/guide/rendering-modes)说明 CSS 何时生成。
+
+预期样式未出现时，先打开**生成的 CSS** 检查 class，再检查选择器指向哪个元素、条件是否匹配、解析后的自定义属性，以及浏览器中的竞争规则。重新排列 HTML class 无法解决层叠问题。
+
+接着阅读[主题 token](/guide/theme)，定义共用值；或阅读[样式复用](/guide/reusing-styles)，选择组件 class、工具类与 mixin。完整契约仍以 Reference 为准。

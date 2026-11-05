@@ -1,0 +1,463 @@
+---
+{
+  "title": "サーバーレンダリングのアプリで Master CSS を設定する",
+  "description": "Vite で Master CSS をビルドし、PHP、Laravel、Rails、WordPress、Shopify、ASP.NET Core、Blazor、Express のテンプレートから読み込みます。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/server-rendered/cover-light.webp'
+import dark from '~/site/assets/images/integrations/server-rendered/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="サーバーのシンボルと Master CSS" />
+
+サーバーや CMS が HTML をレンダリングする場合、Vite が Master CSS のアセットをビルドし、ホスト側がそのファイルを読み込みます。対象は PHP、Rails、WordPress、Shopify、ASP.NET Core、Blazor、Express です。[Laravel](#laravel) は独自の Vite パイプラインを使います。ページ、ルート、ほかのアセットは引き続きホスト側が配信します。共通手順を適用する前に[ホスト別の節](#hosts)を選んでください。テンプレートのパスと公開ディレクトリーが走査対象とスタイルシートの配信先を決めます。Laravel は[既存の Vite パイプライン](#laravel)に直接進めます。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Vite と Master CSS をインストールする \{#install-vite-and-master-css\}
+      既存プロジェクトのルートまたはテーマのディレクトリーで、Vite と Master CSS の Vite インテグレーションをインストールします。`package.json` がなければ、先に `npm init -y` を実行してください。
+    </StepL>
+    <StepR>
+      ```bash
+      npm install @master/css@VERSION
+      npm install -D vite @master/css-vite@VERSION
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### Vite を設定する \{#configure-vite\}
+      アセットのエントリーをホスト側の公開アセットディレクトリーへビルドします。[ホストの表](#hosts)に合わせて `outDir` を設定してください。`emptyOutDir: false` はホスト側のほかのファイルを保持します。
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css-vite'
+
+      export default defineConfig({
+        base: './',
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: false,
+          rollupOptions: {
+            input: 'src/master.ts',
+            output: {
+              entryFileNames: '[name].js',
+              assetFileNames: '[name][extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### アセットのエントリーを作成する \{#create-the-asset-entry\}
+      エントリーから Master CSS をインポートします。テンプレートは Vite のモジュールグラフに含まれないため、[ホスト別の節](#hosts)の `@source` 行をスタイルシートに追加してください。
+    </StepL>
+    <StepR>
+      ```ts name=src/master.ts
+      import './master.css'
+      ```
+
+      ```css name=src/master.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### ビルドスクリプトを追加する \{#add-build-scripts\}
+      次のスクリプトを `package.json` に統合します。ホストの起動や公開前にビルドし、開発中は監視プロセスとホストのサーバーを並行して動かしてください。
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### スタイルシートを読み込む \{#load-the-stylesheet\}
+    `npm run build:assets` を実行し、ホスト別の節に従ってレイアウトからビルド済み `master.css` にリンクし、レンダリングされるテンプレートに段落を追加します。
+  </Step>
+  <InstallationPreview>
+
+```html
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## アセットの接続を確認する \{#check-the-asset-connection\}
+
+ホストのサーバーを動かし、例のテンプレートを実際にレンダリングするページを開きます。段落には浮き上がった面、角丸、`1rem` のパディングがあるはずです。ホストと `npm run watch:assets` の両方が動く状態で `p-md` を `p-lg` に変えてください。CSS の再ビルドとページ再読み込みの後、パディングが `1.5rem` に増えます。確認後はクラスを元に戻します。
+
+スタイルが付かない場合は、三つの接続を順に確認します：
+
+- **テンプレートからスキャナーへ：**ホストの `@source` 行を `src/master.css` に追加します。パスはそのスタイルシートからの相対です。追加時に `@import` を残してください。
+- **ビルドから公開ディレクトリーへ：**ホストが配信する前に、`npm run build:assets` が設定済み `outDir` へ `master.css` を書き出すか確認します。
+- **公開 URL からページへ：**レイアウトのスタイルシートリクエストが 404 や代替 HTML ではなく CSS を返すか確認し、段落に一致するルールを調べます。
+
+静的生成には完全なクラス文字列が必要です。データベースやエディターの値を完全なクラス名に対応付けるか、[`@safelist`](/reference/directives/scanning#safelist) で有限の候補を追加してください。`bg-${color}` のような文字列連結では、生成するクラスをスキャナーに伝えられません。
+
+`master.css` と、それがインポートするすべての CSS ファイルを、名前と相対パスを保持して一緒にデプロイします。ホストが HTML を供給する場合は JavaScript を無効にしてデプロイ先のページを確認してください。単独の Blazor WebAssembly は、ページのレンダリングに引き続き JavaScript が必要です。固定アセット名には、以下の Rails、WordPress、ASP.NET Core で示すような、ホスト側のキャッシュバージョン管理も必要です。
+
+## ビルドしたアセットを読み込む \{#hosts\}
+
+| ホスト | `outDir` | テンプレートのソース |
+| --- | --- | --- |
+| [PHP](#php) | `public/assets` | `.php` ファイル |
+| [Rails](#rails) | `public/assets` | ERB ビュー |
+| [WordPress](#wordpress) | テーマ内の `assets` | テーマの `.php` テンプレート |
+| [Shopify](#shopify) | テーマ内の `assets` | Liquid ファイルとテンプレート JSON |
+| [ASP.NET Core](#aspnet-core) | `wwwroot/assets` | Razor Pages と MVC ビュー |
+| [Blazor](#blazor) | `wwwroot/assets` | `.razor`、`.cshtml`、ホスト HTML |
+| [Express](#express) | `public/assets` | テンプレートエンジンのビュー |
+
+### PHP \{#php\}
+PHP テンプレートを走査し、ページの head からスタイルシートにリンクします。CodeIgniter では `app/Views/**/*.php` を走査し、通常のアセットヘルパーで `/assets/master.css` を読み込みます。
+
+```css name=src/master.css
+@source "../app/**/*.php";
+@source "../public/**/*.php";
+```
+
+```html name=public/index.php
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+プレーン PHP プロジェクトでは、`public` を Web ルートとする場合、ビルド後に `php -S localhost:8000 -t public` を実行します。
+
+### Rails \{#rails\}
+ERB ビューを走査し、アプリのレイアウトからスタイルシートを参照します：
+
+```css name=src/master.css
+@source "../app/views/**/*.erb";
+```
+
+```erb name=app/views/layouts/application.html.erb
+<%= stylesheet_link_tag "/assets/master.css", "data-turbo-track": "reload" %>
+```
+
+ルートとコントローラーから到達するビューで段落をレンダリングし、`bin/rails server` を起動します。これらの URL は `public/assets` 内のファイルを直接配信します。新しいリリースでは `/assets/master.css?v=2` のように URL をバージョン付けしてください。Turbo の[アセット追跡](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change)はタグを比較するため、同じ URL のファイルを上書きしても再読み込みは起きません。
+
+### WordPress \{#wordpress\}
+有効なテーマまたは子テーマのディレクトリーで作業し、`outDir: 'assets'` を設定します。`woocommerce/**/*.php` などの上書きも含むテーマの PHP テンプレートを走査し、プラグインの内部は走査しません：
+
+```css name=src/master.css
+@source "../**/*.php";
+@source not "../vendor/**";
+@source not "../node_modules/**";
+```
+
+既存の設定を保持し、`functions.php` からスタイルシートをエンキューします。子テーマが有効なら、[スタイルシートディレクトリーのヘルパー](https://developer.wordpress.org/reference/functions/get_stylesheet_directory_uri/)は子テーマを指します：
+
+```php name=functions.php
+add_action('wp_enqueue_scripts', function () {
+  wp_enqueue_style(
+    'master-css',
+    get_stylesheet_directory_uri() . '/assets/master.css',
+    [],
+    filemtime(get_stylesheet_directory() . '/assets/master.css')
+  );
+});
+```
+
+ページを読み込む前にビルドし、`filemtime()` がファイルを読めるようにします。WordPress がエンキューしたアセットを出力できるよう、テーマの `wp_head()` と `wp_footer()` を保持してください。
+
+### Shopify \{#shopify\}
+ローカルのテーマディレクトリーで作業し、`outDir: 'assets'` を設定します。テーマの [Liquid テンプレート、セクション、ブロック、スニペット](https://shopify.dev/docs/storefronts/themes/architecture)を走査します：
+
+```css name=src/master.css
+@source "../layout/**/*.liquid";
+@source "../sections/**/*.liquid";
+@source "../blocks/**/*.liquid";
+@source "../snippets/**/*.liquid";
+@source "../templates/**/*.liquid";
+@source "../templates/**/*.json";
+```
+
+テーマレイアウトの `<head>` 内にタグを追加し、`content_for_header`、`content_for_layout`、テーマのほかのアセットを保持します：
+
+```liquid name=layout/theme.liquid
+{{ 'master.css' | asset_url | stylesheet_tag }}
+```
+
+現在のテンプレートがレンダリングするセクションに段落を置き、Vite の監視を `shopify theme dev` と並行して動かします。プレビューの更新は CSS を再ビルドしません。プリセットにはグローバルなベーススタイルがあるため、既存のストアフロントコンポーネントを確認し、[カスケードレイヤー](/guide/cascade-layers)で残すテーマスタイルを判断してください。アセットビルドのないテーマでは、同じソースに [CLI](/guide/installation#cli) を使えます。
+
+### ASP.NET Core \{#aspnet-core\}
+`outDir: 'wwwroot/assets'` を設定し、Razor Pages と MVC ビューを走査して、共通レイアウトからスタイルシートを参照します：
+
+```css name=src/master.css
+@source "../Pages/**/*.cshtml";
+@source "../Views/**/*.cshtml";
+@source not "../bin/**";
+@source not "../obj/**";
+```
+
+```html name=Pages/Shared/_Layout.cshtml
+<link rel="stylesheet" href="~/assets/master.css" asp-append-version="true">
+```
+
+`dotnet build` または `dotnet publish` の前に Vite のアセットをビルドし、.NET の静的アセット出力に含めます。新しい .NET テンプレートには Bootstrap が含まれる場合があり、レイヤーに属さない宣言が、レイヤー内の Master CSS ユーティリティを上書きする場合があります。[カスケードレイヤー](/guide/cascade-layers)を参照してください。
+
+### Blazor \{#blazor\}
+Blazor は ASP.NET Core の設定に従い、`outDir: 'wwwroot/assets'` を使ってコンポーネントとホストページを走査します：
+
+```css name=src/master.css
+@source "../**/*.{razor,cshtml,html}";
+@source not "../bin/**";
+@source not "../obj/**";
+@source not "../node_modules/**";
+@source not "../wwwroot/assets/**";
+```
+
+`Components/App.razor`、`wwwroot/index.html`、`Pages/_Host.cshtml` など、[使用する Blazor モデルのホストドキュメント](https://learn.microsoft.com/en-us/aspnet/core/blazor/project-structure?view=aspnetcore-10.0)の `<head>` にスタイルシートを追加します。`<base>`、`<HeadOutlet />`、ルート、Blazor の起動スクリプトは保持してください。相対パスは `<base>` に対して解決されます。
+
+```html name=Components/App.razor
+<link rel="stylesheet" href="assets/master.css">
+```
+
+サーバーレンダリングしたコンポーネントは、JavaScript を無効にしてもスタイルを保ちます。WebAssembly 専用のアプリは、コンポーネントのレンダリングにフレームワークの JavaScript が引き続き必要です。
+
+### Express \{#express\}
+テンプレートエンジンのビューを走査し、公開ディレクトリーを配信して、ページをレンダリングするレイアウトからスタイルシートにリンクします：
+
+```css name=src/master.css
+@source "../views/**/*.{ejs,hbs,pug}";
+```
+
+```js name=app.js
+app.use(express.static('public'))
+```
+
+```html name=views/layout.ejs
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+Network パネルで、`/assets/master.css` が代替 HTML ページではなく CSS を返すことを確認してください。
+
+### Laravel \{#laravel\}
+Laravel はすでに Vite でアセットをビルドするため、上記の手順は省きます。既存の [Laravel プロジェクト](https://laravel.com/docs/installation)でインストーラーを実行してください。`resources/css/app.css` に Master CSS を追加し、`laravel-vite-plugin` とともにプラグインを登録します：
+
+```bash
+npm create @master/css@VERSION -- --framework laravel --mode static --yes
+```
+
+CSS エントリーから Blade ビューを走査し、そのエントリーを Laravel プラグインの `input` リストに保持します。既存アプリの JavaScript エントリーとほかのプラグインは残してください：
+
+```css name=resources/css/app.css
+@import '@master/css';
+@source '../views/**/*.blade.php';
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [
+    laravel({ input: ['resources/css/app.css'], refresh: true }),
+    masterCSS({ mode: 'static' })
+  ]
+})
+```
+
+Laravel のビルドマニフェストからバージョン付きファイルを解決する `@vite` でエントリーを読み込み、`npm run build` を実行して Laravel 経由でページを開きます：
+
+```html name=resources/views/app.blade.php
+<head>
+  @vite('resources/css/app.css')
+</head>
+```
+
+アプリが JavaScript エントリーから CSS をインポートする場合は、そのエントリーを保持し、二つの経路で同じ CSS を読み込まないでください。[Laravel の Vite インテグレーション](https://laravel.com/docs/vite)を参照できます。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定は静的モードです。モードを変えてもアセットのエントリーを保持してください：
+
+| モード | ホスト | 変更点 |
+| --- | --- | --- |
+| 静的 | すべて | 実行時の変更なし |
+| ランタイム | PHP、Rails、WordPress、ASP.NET Core、Blazor、Express | `mode: 'runtime'`、ランタイムエントリー、モジュールスクリプト |
+| プログレッシブ | Express | サーバーが初回レスポンスの CSS をレンダリングし、後からのクラスはランタイムが処理 |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+ランタイムをインストールし、`vite.config.ts` に `masterCSS({ mode: 'runtime' })` を設定して、アセットのエントリーから起動します。ランタイム生成では `@source` 行は不要です：
+
+```bash
+npm install @master/css-runtime@VERSION
+```
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+runtime.observe()
+```
+
+スタイルシートとともに `master.js` をモジュールとして読み込み、レイアウトのほかのタグは保持します：
+
+<DocumentComparison>
+
+| ホスト | モジュールスクリプト |
+| --- | --- |
+| PHP、Express | `</body>` の前に `<script type="module" src="/assets/master.js"></script>` |
+| Rails | `<%= javascript_include_tag "/assets/master.js", type: "module", "data-turbo-track": "reload" %>` |
+| ASP.NET Core | `<script type="module" src="~/assets/master.js" asp-append-version="true"></script>` |
+| Blazor | Blazor の起動スクリプトの後に `<script type="module" src="assets/master.js"></script>` |
+
+</DocumentComparison>
+
+WordPress 6.5 以降では、同じフック内の [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/) でモジュールを読み込みます：
+
+```php name=functions.php
+wp_enqueue_script_module(
+  'master-css-runtime',
+  get_stylesheet_directory_uri() . '/assets/master.js',
+  [],
+  filemtime(get_stylesheet_directory() . '/assets/master.js')
+);
+```
+
+Blazor Web Apps は[拡張ナビゲーション](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/navigation?view=aspnetcore-10.0)中に DOM を更新し、ランタイムのスタイルシートを削除する場合があります。各 `enhancedload` の後でランタイムを再起動し、ストリームの更新を直列に処理してください。単独の WebAssembly と古い Blazor Server のホストでは、上記のエントリーを使います。
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+declare const Blazor: {
+  addEventListener(name: 'enhancedload', listener: () => void): void
+}
+
+async function startRuntime() {
+  const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+  runtime.observe()
+  return runtime
+}
+
+let runtime = await startRuntime()
+let navigation = Promise.resolve()
+
+Blazor.addEventListener('enhancedload', () => {
+  navigation = navigation.then(async () => {
+    runtime.dispose()
+    runtime = await startRuntime()
+  }).catch(console.error)
+})
+```
+
+生成したすべてのスタイルシート、インポート、プログラムのアセットを一緒にデプロイします。ランタイムのスタイル適用は JavaScript の読み込み後に始まります。スクリプトが使えない場合も、[レンダリングモード](/guide/rendering-modes#prevent-premature-rendering)の説明どおりドキュメントを表示したままにしてください。起動後にブラウザーのコンソールで次を実行すると、再ビルドせずに段落に下線が付くはずです：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+ランタイムはページのドキュメントを監視します。独立した iframe やシャドウルート内の内容には、個別の CSS 配信が必要です。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Express でサーバーレンダリングしたスタイルを含める">
+
+プログレッシブレンダリングでは、Express がテンプレートをレンダリングし、`@master/css-server` が初回レスポンスの CSS を挿入し、ランタイムがそれを取り込んで後からのクラスを処理します。ランタイムに加えてサーバーレンダラーとプリセットをインストールします：
+
+```bash
+npm install @master/css-runtime@VERSION @master/css-server@VERSION @master/css-preset@VERSION
+```
+
+`masterCSS({ mode: 'runtime' })` を保持し、エントリーからプログラムを遅延読み込みします。これにより、すべてのクラスがカバー済みのページは、新しいクラスが必要になるまでエンジンを遅らせられます：
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({
+  program: () => import('virtual:master-css-program').then(module => module.default),
+  emittedGlobals
+})
+runtime.observe()
+```
+
+まずテンプレートをレンダリングしてから、ドキュメント全体をレンダラーに渡します。ES モジュールのサーバーには、`package.json` の `"type": "module"` が必要です：
+
+```js name=app.js
+import express from 'express'
+import ejs from 'ejs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
+
+const app = express()
+const renderer = createServerRenderer({ manifest })
+
+app.use('/assets', express.static('public/assets'))
+
+app.get('/', async (_request, response) => {
+  const body = await ejs.renderFile('views/index.ejs')
+  const document = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/assets/master.css">
+</head>
+<body>
+  ${body}
+  <script type="module" src="/assets/master.js"></script>
+</body>
+</html>`
+
+  const rendered = renderer.renderHTML(document, {
+    hydrationManifest: 'inject'
+  })
+  response.send(rendered.html)
+})
+
+const server = app.listen(3000)
+server.on('close', () => renderer.dispose())
+```
+
+初回レスポンスには `style#master-css` と小さなハイドレーションレコードが含まれ、サーバーマニフェストはサーバーに残ります。この例は `src/master.css` のプリセットと一致する、既定のプリセットマニフェストでレンダリングします。プロジェクトのトークンやユーティリティを追加する場合は、サーバー用のプロジェクトマニフェストもコンパイルしてください。そうしなければ、初期 CSS がブラウザーの定義と一致しません。
+
+JavaScript を無効にしても、段落には最初からスタイルが付くはずです。JavaScript を再び有効にして読み込み直し、コンソールから `underline` を追加すると、新しいサーバーレスポンスなしに適用されるはずです。
+
+</DocumentDisclosure>

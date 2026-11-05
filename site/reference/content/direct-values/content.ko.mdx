@@ -1,0 +1,66 @@
+# Reference prose: direct-values
+
+## title \{#copy-title\}
+
+
+값 직접 지정
+
+## summary \{#copy-summary\}
+
+
+길이 또는 숫자 속성에 정적 숫자 하나를 전달합니다.
+
+## note \{#copy-note\}
+
+
+길이 함수는 숫자에 `1px`를 곱하고, `grow()`, `shrink()`, `order()`는 숫자를 그대로 전달합니다. 다른 단위나 동적 값에는 `(margin:1rem)` 같은 네이티브 선언을 사용하세요.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+숫자의 의미는 속성에 따라 달라집니다
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p(12)`는 `padding: calc(12 * 1px)`를 출력하므로 숫자는 픽셀 수를 뜻합니다. 간격 척도의 키나 테마 간격 토큰의 배수가 아닙니다. `p(1.5)` 같은 소수도 허용됩니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`grow(1)`과 `shrink(1)`은 단위가 없는 flex 계수입니다. 확장은 남은 여유 공간을 분배합니다. 그림에서는 기준 크기를 0으로 하고 콘텐츠의 최소 크기 제약을 없애 1:2 비율만 보여 줍니다. 다른 기준 크기나 최소 크기를 사용하면 계수만으로 최종 너비가 결정되지는 않습니다. 축소 분배에는 각 항목의 flex 기준 크기도 반영됩니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`order()`는 숫자를 그대로 출력하지만 CSS 속성은 정수를 요구합니다. 음수 값에는 각 속성의 규칙이 적용됩니다. `m(-4)`는 유효한 음수 마진이지만 음수 padding이나 음수 flex 계수로 음수 사용값을 요청할 수는 없습니다.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+정적 숫자 하나만 전달할 수 있습니다. 단위, `var()`, 산술식은 `(padding:var(--panel-space))` 같은 네이티브 선언에 작성하세요. 이름을 붙여 공유하는 길이에는 `p-card` 같은 테마 토큰을 사용합니다.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+이 함수들은 표에 나열된 선언만 설정합니다. `b(1)`에는 테두리 스타일이, `top(4)`에는 inset이 적용되는 위치 지정 방식이, `gap(12)`에는 간격이 적용되는 레이아웃이 필요합니다. 표에서는 논리 속성과 물리 속성을 구분합니다.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+간격 토큰
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+네이티브 선언
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+flex 계수
+
+## usage-lead \{#copy-usage-lead\}
+
+
+정확한 픽셀 길이를 지정하고 상자 하나가 남은 공간을 차지하도록 합니다.

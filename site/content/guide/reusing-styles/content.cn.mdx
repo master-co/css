@@ -1,0 +1,267 @@
+---
+{
+  "title": "复用样式",
+  "description": "根据哪些内容应一起变化，选择令牌、组件类名、工具类和混入，同时保留易于表达的局部变化。",
+  "category": "编写",
+  "figures": {
+    "ReuseIllustration": {
+      "title": "一份定义，两处使用",
+      "alt": "一份 action 定义提供两个 Save changes 按钮。第二个另用 px-lg，因此水平内边距更宽，图中以蓝色检查辅助线标示。",
+      "caption": "两个按钮共享 .action。辅助线标示水平内边距：组件每边 1rem，使用 px-lg 则为 1.5rem。蓝线是注释，不是按钮样式。",
+      "description": [
+        {
+          "title": "共享定义",
+          "text": "components 层中的原生 .action 规则为两个按钮提供外观、交互状态和默认内边距。"
+        },
+        {
+          "title": "第一个实例",
+          "text": "class=\"action\" 使用组件左右各 1rem 的水平内边距。"
+        },
+        {
+          "title": "第二个实例",
+          "text": "class=\"action px-lg\" 请求左右各 1.5rem 的水平内边距。utilities 层位于 components 之后，因此 px-lg 只覆盖此实例的水平内边距，其他组件样式仍然适用。图中的蓝色带和尺标仅标示内边距，是检查注释，不是工具类新增的样式。"
+        }
+      ]
+    },
+    "GuideStudy:reuse-ownership": {
+      "title": "工具类拥有类名；混入填入选择器",
+      "alt": "请求 stack 工具类会输出带 display:grid 的 .stack。在 .card 内应用 --stack 混入，会在 .card 下输出相同声明；选择器由调用方拥有。",
+      "caption": "方框代表 CSS 产物。@apply 展开不会注册另一个标记类名。"
+    },
+    "GuideStudy:independent-parameters": {
+      "title": "一份定义，各自传入值",
+      "alt": "相同 action-size 工具类分别以默认 2.5rem 和 3rem 调用。第二个控件具有更大最小高度和水平内边距，两者仍保有各自实参。",
+      "caption": "根字体为 16px 时，最小高度为 40px 和 48px；padding-inline 为所选高度的一半。高亮的内缩区域是测量辅助线。"
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReuseIllustration from './components/ReuseIllustration.astro'
+
+两个页面可以共享保存按钮，又让其中一个实例拥有更大间距。将按钮的共享外观放入组件类名，局部调整则保留在标记中。更小尺度也适用相同方法：多个使用方应一起变化时为值命名；多条规则需要同一段 CSS 时就共享它。
+
+请先完成[安装](/guide/installation)和[语法教程](/guide/syntax-tutorial)。下方每个示例都提供自己的 CSS 和标记。将 CSS 加在应用样式表现有的预设导入之后，并将标记放入集成会扫描的源文件：
+
+```css name=app.css
+@import '@master/css';
+```
+
+## 将组件共享外观放在一起 \{#keep-a-components-shared-appearance-together\}
+
+操作按钮这类产品角色无论用于哪里，都需要可识别的外观。请在 `@layer components` 中用原生类名定义此角色，并包含每个实例都应有的状态。
+
+<DemoConfiguredExample
+  name="reuse-component"
+  title="同一种按钮，局部间距调整"
+  source={`@theme {
+  --spacing-action-x: 1rem;
+  --color-action: var(--color-surface-raised);
+}
+
+@layer components {
+  .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.375rem;
+    padding: .5rem var(--spacing-action-x);
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-action);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    line-height: 1.2;
+
+    &:is(:hover, :focus-visible) {
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      background-color: var(--color-surface-inset);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-text-strong);
+      outline-offset: 3px;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap items-start gap-lg">
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Shared component</p>
+    <button type="button" class="action">Save changes</button>
+  </div>
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Local adjustment</p>
+    <button type="button" class="action px-lg">Save changes</button>
+  </div>
+</div>`}
+  caption="比较水平内边距，再悬停各按钮或用 Tab 聚焦。两者共享操作状态，只有第二个使用 px-lg。这些按钮只演示样式，不会保存数据。"
+/>
+
+`px-lg` 的普通工具类声明优先于组件内边距，因为预设将 `utilities` 层放在 `components` 之后。HTML 类名顺序不决定胜负。请将局部调整保留在第二个按钮上；仅当所有实例都需要时才放入 `.action`。竞争声明请参阅[层叠层](/guide/cascade-layers)。
+
+<ReuseIllustration />
+
+原生组件规则默认随样式表输出；[原生裁剪](/guide/optimizing-css-delivery#native-pruning)需要显式启用。将组件状态写在 CSS 规则中。原生 `.action` 定义不会注册 `action:hover` 工具类。
+
+共享外观和共享交付是两个不同决策。如果可复用组件让无关页面也加载其规则，请参阅[优化 CSS 交付](/guide/optimizing-css-delivery#ownership)。
+
+## 选择哪些内容应一起变化 \{#choose-what-should-change-together\}
+
+抽取重复类名列表前，先确认共享的是哪个决策。外观相似的元素不一定应一起变化。
+
+<DocumentComparison>
+
+| 共享内容 | 使用方式 |
+| --- | --- |
+| 跨样式共享值 | 主题令牌 |
+| 产品角色和状态 | 原生组件类名 |
+| 在标记中组合的能力 | 工具类 |
+| CSS 内的声明或包装 | 混入 |
+
+</DocumentComparison>
+
+第一个示例为操作颜色和内边距分别提供令牌。其他组件可以在 CSS 中用 `var()`，或在标记中用 `px-action-x` 读取 `--spacing-action-x`，无需一并采用按钮背景、形状和状态。两个使用方都应变化时才修改令牌；数值只是碰巧相同但用途不同时，请分别定义。[主题令牌](/guide/theme)说明了命名、别名和局部覆盖。
+
+重复使用的组件也可将类名列表保留在框架组件内部。需要有用的共享样式契约时再引入 CSS 名称；不要只因 class 属性很长就抽取它。
+
+## 为样式能力注册工具类 \{#register-a-utility-for-a-styling-capability\}
+
+假设多个控件都需要内容居中、带小间隔的行内排列，但各自保有外观和间距。仅将共享布局注册为 `@utility`：
+
+<DemoConfiguredExample
+  name="reuse-utility"
+  title="相同布局，不同控件"
+  source={`@utility action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-row px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm shadow-md:hover bg-surface-inset:active">
+    <span aria-hidden="true">＋</span> Add note
+  </button>
+  <a href="/guide/theme" target="_top" class="action-row px-sm py-xs text-sm fg-text-body fg-text-strong:hover underline">
+    Choose tokens <span aria-hidden="true">→</span>
+  </a>
+</div>`}
+  caption="action-row 让两个控件具有相同对齐和间隔；其他类名提供外观。Add note 是样式示例；Choose tokens 会打开主题指南。"
+/>
+
+完整类名提出请求时，工具类才生成规则。它也接受与预设工具类相同的选择器和条件后缀，例如 `action-row@sm`。名称描述布局能力，不会规定整个按钮的样式。
+
+预设中已有工具类能表达共享决策时，直接使用即可。例如，只改间隔需要的是 `gap-sm` 或 `gap(8)`，无需另一个自定义工具类。多个声明形成调用方应一起复用的能力时，再定义配方。[工具类契约](/reference/directives/definitions#utilities)定义了注册和替换方式。
+
+## 通过混入复用 CSS \{#reuse-css-with-a-mixin\}
+
+如果原生 CSS 规则需要相同的行布局，请定义混入并用 `@apply` 展开。本示例让操作按钮和工具栏链接保留不同组件角色，同时共享对齐方式：
+
+<ConfiguredExample source={`@mixin --action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+@layer components {
+  .action {
+    @apply --action-row;
+    padding: .5rem 1rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+  }
+
+  .toolbar-link {
+    @apply --action-row;
+    color: var(--color-text-body);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    text-decoration-line: underline;
+  }
+}`} html={`<button type="button" class="action">
+  <span aria-hidden="true">＋</span> Add note
+</button>
+<a href="/guide/theme" class="toolbar-link">
+  Choose tokens <span aria-hidden="true">→</span>
+</a>`} />
+
+打开**生成的 CSS**：行声明会出现在两条原生规则中，而各规则保留其余独立声明。定义 `--action-row` 不会建立标记类名。`@apply` 指定的是混入，不接受工具类列表。
+
+CSS 和标记都需要相同能力时，将混入保留为声明来源，再加入调用它的工具类：
+
+```css
+@utility action-row {
+  @apply --action-row;
+}
+```
+
+将此定义加入混入示例的样式表。它替换先前独立的工具类主体：修改 `--action-row` 现在会同时影响原生组件和工具类。请按照[全局样式](/guide/global-styles#organize-global-files)将这些定义整理到应用入口图。
+
+<GuideStudy id="reuse-ownership" />
+
+## 通过 contents 共享包装 \{#share-a-wrapper-with-contents\}
+
+有时重复的是包住不同声明的条件。悬停与键盘焦点混入可以提供选择器，再由各调用方通过 `@contents` 提供样式：
+
+<DemoConfiguredExample
+  name="reuse-wrapper"
+  title="一个交互包装，两处调用"
+  source={`@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+
+@layer components {
+  .action {
+    @apply --hocus {
+      text-decoration-line: underline;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap gap-md">
+  <button type="button" class="action px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">CSS call site</button>
+  <button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm underline@apply(--hocus) outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">Class call site</button>
+</div>`}
+  caption="悬停或用 Tab 聚焦任一按钮，标签就会出现下划线。第一个在原生 CSS 内提供声明，第二个包装 underline 工具类。焦点轮廓单独指定。"
+/>
+
+CSS 中，`@apply --hocus` 后的块填入 `@contents`。标记中，`@apply(--hocus)` 包住该类名生成的声明。包装不会注册令牌，也不会将相邻类名收进主体。复用一组声明请使用工具类或混入；调用方需要自行选择共享选择器或条件内的内容时，才使用 contents。转发和回退行为请参阅 [混入 contents](/reference/directives/definitions#contents)。
+
+## 调用方需要时才开放参数 \{#expose-a-parameter-when-callers-need-one\}
+
+共享控件尺寸可能联动多个属性。如果分开的预设工具类会让调用方重复计算，请用参数表达此关系：
+
+<DemoConfiguredExample
+  name="reuse-parameter"
+  title="一个尺寸控制高度和内边距"
+  source={`@utility action-size(--height: 2.5rem) {
+  min-height: var(--height);
+  padding-inline: calc(var(--height) / 2);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-size() text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Default size</button>
+  <button type="button" class="action-size(3rem) text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Larger size</button>
+</div>`}
+  caption="action-size() 使用 2.5rem；action-size(3rem) 使用 3rem。最小高度和水平内边距都跟随实参。这些按钮只演示尺寸。"
+/>
+
+<GuideStudy id="independent-parameters" />
+
+空调用使用声明的默认值。实参必须在编译时已知；选择尺寸时请使用完整类名字符串。随 JavaScript 连续变化的值应放入原生 CSS 自定义属性。[参数契约](/reference/directives/definitions#dynamic-values)说明了接受的类型和限制。
+
+更改共享定义前，请至少比较两处调用，包括一个有局部覆盖的实例。检查悬停、键盘状态和生成的 CSS。如果调用方不再需要相同行为，请拆分定义，不要给每个实例追加例外。跨项目共享稳定词汇时，请继续阅读[编写软件包](/guide/authoring-packages)。

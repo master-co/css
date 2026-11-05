@@ -1,0 +1,31 @@
+# Reference prose: illustrations/contents-default-vs-empty
+
+## title \{#copy-title\}
+
+
+contents ブロックの省略と空は異なる
+
+## alt \{#copy-alt\}
+
+
+同じミックスインの 3 呼び出しで、既定の grid 宣言、明示的な空ブロックで宣言なし、渡した flex 内容で既定値を置換する場合を示す。
+
+## caption \{#copy-caption\}
+
+
+ミックスインは @contents \{ display: grid; \} を持ちます。呼び出し側の波括弧で、意図的な空ブロックと省略を区別します。
+
+## description-0 \{#copy-description-0\}
+
+
+@apply --panel; は contents ブロックを省略し、代替の display: grid を使います。
+
+## description-1 \{#copy-description-1\}
+
+
+@apply --panel \{\} は空ブロックを渡して代替を抑制するため、この例では宣言を加えません。
+
+## description-2 \{#copy-description-2\}
+
+
+@apply --panel \{ display: flex; \} は独自の内容で代替を置き換え、2 つの display 宣言は結合しません。

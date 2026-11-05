@@ -1,0 +1,31 @@
+# Reference prose: illustrations/fixed-name-reservation
+
+## title \{#copy-title\}
+
+
+固定の綴りは自身の定義を保つ
+
+## alt \{#copy-alt\}
+
+
+w-full は親を満たし、同じ構造のもう一方の子は明示的なネイティブ width 宣言で独自の 12rem の container-full トークンを読み、幅を決める。
+
+## caption \{#copy-caption\}
+
+
+両方の親の幅は 240px です。独自の --container-full は 12rem（ルートのフォントサイズが 16px なら 192px）ですが、w-full は固定の 100% ユーティリティのままです。
+
+## description-0 \{#copy-description-0\}
+
+
+設定は @theme \{ --container-full: 12rem; \} を定義します。プリセットはすでに完全な固定名 w-full を width: 100% として登録しています。
+
+## description-1 \{#copy-description-1\}
+
+
+そのため w-full は幅 240px の親を満たします。明示的な (width:var(--container-full)) クラスは --container-full を読み、2 番目のブロックを幅 192px にします。
+
+## description-2 \{#copy-description-2\}
+
+
+トークンは明示的な var() 参照で引き続き使えます。定義しても固定の w-full 登録は置き換わりません。

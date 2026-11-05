@@ -1,0 +1,21 @@
+# Reference prose: illustrations/layer-token-separation
+
+## title \{#copy-title\}
+
+Selecting a style layer does not move its token
+
+## alt \{#copy-alt\}
+
+p-md@layer(defaults) maps to a padding rule in defaults, while its spacing-md dependency remains in theme.
+
+## caption \{#copy-caption\}
+
+The two layer bands show output ownership. Their positions are not a complete cascade comparison.
+
+## description-0 \{#copy-description-0\}
+
+p-md@layer(defaults) emits the generated padding declaration in the defaults layer.
+
+## description-1 \{#copy-description-1\}
+
+Its --spacing-md dependency still emits under :root,:host in the theme layer. @layer(defaults) selects the class rule’s layer, not its dependency’s layer.

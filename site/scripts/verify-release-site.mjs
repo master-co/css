@@ -14,7 +14,7 @@ const out = path.resolve(argument('--out', 'site/out'))
 const origin = new URL(argument('--origin', 'https://css.master.co')).origin
 const reportPath = path.resolve(argument('--report', 'site/test-results/release-site/report.json'))
 const engines = argument('--browsers', 'chromium,firefox,webkit').split(',')
-const report = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), origin, out, pages: 0, localLinks: 0, profiles: [], failures: [] }
+const report = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), origin, out, pages: 0, localLinks: 0, profiles: [], noJavaScript: [], failures: [] }
 report.sourceStatus = execFileSync('git', ['status', '--porcelain=v1', '--untracked-files=normal'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean)
 const files = directory => readdirSync(directory, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(path.join(directory, entry.name)) : [path.join(directory, entry.name)])
 const inventory = files(out)
@@ -71,7 +71,7 @@ for (const [file, { nodes, ids }] of documents) await check(routeOf(file), () =>
   const route = routeOf(file)
   assert.equal(new Set(ids).size, ids.length, 'document IDs are unique')
   const canonical = nodes.filter(node => node.tag === 'link' && node.rel === 'canonical')
-  if (route === '/404') {
+  if (/^\/(?:(?:ja|tw|ko|cn)\/)?404$/.test(route)) {
     assert.ok(nodes.some(node => node.tag === 'meta' && node.name === 'robots' && node.content === 'noindex'), '404 stays out of search indexes')
     assert.equal(canonical.length, 0, '404 does not advertise an indexable canonical URL')
   } else {
@@ -139,13 +139,23 @@ if (!process.argv.includes('--static-only')) {
   })
   const require = createRequire(import.meta.url)
   const axe = createRequire(require.resolve('eslint-plugin-jsx-a11y')).resolve('axe-core/axe.min.js')
-  const routes = ['/', '/tw', '/guide/installation', '/guide/migration', '/guide/language-service', '/reference/packages', '/tw/guide/installation']
+  const editions = [
+    { prefix: '', language: 'en', search: 'Search documentation' },
+    { prefix: '/ja', language: 'ja', search: 'ドキュメントを検索' },
+    { prefix: '/tw', language: 'zh-TW', search: '搜尋文件' },
+    { prefix: '/ko', language: 'ko', search: '문서 검색' },
+    { prefix: '/cn', language: 'zh-CN', search: '搜索文档' }
+  ]
+  const routes = editions.flatMap(edition => ['', '/guide/installation', '/reference/packages'].map(suffix => ({
+    ...edition, route: edition.prefix + suffix || '/'
+  })))
+  routes.push(...['/guide/migration', '/guide/language-service'].map(route => ({ ...editions[0], route })))
   try {
     for (const engine of engines) await check(`${engine}: launch and profiles`, async () => {
       assert.ok({ chromium, firefox, webkit }[engine], `unknown browser ${engine}`)
       const browser = await ({ chromium, firefox, webkit })[engine].launch()
       try {
-        for (const route of routes) for (const width of [390, 1280]) for (const scheme of ['light', 'dark']) await check(`${engine} ${route} ${width} ${scheme}`, async () => {
+        for (const { route, language, search } of routes) for (const width of [390, 1280]) for (const scheme of ['light', 'dark']) await check(`${engine} ${route} ${width} ${scheme}`, async () => {
           const context = await browser.newContext({ viewport: { width, height: 1000 }, colorScheme: scheme, reducedMotion: 'reduce' })
           try {
             const page = await context.newPage()
@@ -154,6 +164,7 @@ if (!process.argv.includes('--static-only')) {
             await page.addInitScript(theme => localStorage.setItem('theme-preference', theme), scheme)
             assert.equal((await page.goto(base + route, { waitUntil: 'networkidle' })).status(), 200)
             await page.evaluate(() => document.fonts.ready)
+            assert.equal(await page.locator('html').getAttribute('lang'), language, 'document language matches its edition')
             assert.equal(await page.locator('main').count(), 1)
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2), false, 'no horizontal overflow')
             await page.addScriptTag({ path: axe })
@@ -161,7 +172,7 @@ if (!process.argv.includes('--static-only')) {
             const violations = audit.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map(node => ({ target: node.target, summary: node.failureSummary })) }))
             assert.deepEqual(violations, [], JSON.stringify(violations))
             if (route.includes('/guide/installation')) {
-              const name = route.startsWith('/tw') ? '搜尋文件' : 'Search documentation'
+              const name = search
               const trigger = page.getByRole('button', { name, exact: true }).first()
               await trigger.focus(); await page.keyboard.press('Enter')
               const dialog = page.getByRole('dialog', { name, exact: true })
@@ -175,9 +186,17 @@ if (!process.argv.includes('--static-only')) {
             report.profiles.push({ engine, route, width, scheme, axeRules: audit.passes.length, incomplete: audit.incomplete.map(({ id }) => id) })
           } finally { await context.close(); save() }
         })
-        await check(`${engine}: no-JavaScript reading`, async () => {
+        for (const { prefix, language } of editions) await check(`${engine}: ${language} no-JavaScript reading`, async () => {
           const page = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } })
-          try { await page.goto(base + '/guide/installation'); assert.ok((await page.locator('main').innerText()).includes('Installation')); assert.equal(await page.locator('main').isVisible(), true) } finally { await page.close() }
+          try {
+            assert.equal((await page.goto(base + prefix + '/guide/installation')).status(), 200)
+            assert.equal(await page.locator('html').getAttribute('lang'), language)
+            assert.equal(await page.locator('main').isVisible(), true)
+            const article = await page.locator('main').innerText()
+            assert.ok(article.trim().length > 100, 'article text is rendered without JavaScript')
+            if (language === 'en') assert.ok(article.includes('Installation'))
+            report.noJavaScript.push({ engine, language, route: prefix + '/guide/installation' })
+          } finally { await page.close() }
         })
       } finally { await browser.close() }
     })

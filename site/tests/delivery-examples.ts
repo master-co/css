@@ -22,7 +22,9 @@ export function deliverySection(slug: string, heading: string) {
 }
 
 function sectionOf(source: string, slug: string, heading: string) {
-  const start = source.indexOf(`## ${heading}\n`)
+  const title = heading.replace(/\s*\\?\{#[\w-]+\\?\}$/, '')
+  const start = [...source.matchAll(/^## (.+)$/gm)]
+    .find(match => match[1].replace(/\s*\\?\{#[\w-]+\\?\}$/, '') === title)?.index ?? -1
   if (start < 0) throw new Error(`Missing section ${slug}: ${heading}`)
   const end = source.indexOf('\n## ', start + 4)
   return source.slice(start, end < 0 ? undefined : end)

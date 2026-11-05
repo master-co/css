@@ -40,7 +40,7 @@ export function themeInstallationFixture(route: typeof themeInstallationRoutes[n
       const plan = planMasterCSSSetup({ root, framework: 'laravel', mode: 'static', install: false, yes: true })
       applyMasterCSSSetupPlan(plan, { install: false })
       assert.match(readFileSync(join(root, 'vite.config.js'), 'utf8'), /@master\/css-vite/)
-      assert.match(source, /npm create @master\/css@rc -- --framework laravel --mode static --yes/)
+      assert.match(source, /npm create @master\/css@VERSION -- --framework laravel --mode static --yes/)
       for (const name of ['vite.config.js', entry, 'resources/views/app.blade.php', 'routes/web.php']) write(name, file(name))
       const checked = spawnSync('php', ['-l', 'routes/web.php'], { cwd: root, encoding: 'utf8' })
       assert.equal(checked.status, 0, checked.stderr)

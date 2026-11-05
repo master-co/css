@@ -1,4 +1,6 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel } from './ui'
 import '@master/internal-site/styles/system/stage.css'
 import '@master/internal-site/styles/system/tray.css'
 import '@master/internal-site/styles/system/tray-code.css'
@@ -11,10 +13,11 @@ interface Props {
 
 /** Complete visual lookup from the same values as the adjacent table. */
 const { group } = Astro.props
+const { locale } = siteOf(Astro)
 const radius = group.namespace === 'radius'
 ---
 
-{(radius || group.namespace === 'shadow') && <DocumentDisclosure title={`Compare all ${radius ? 'radius' : 'shadow'} values`}>
+{(radius || group.namespace === 'shadow') && <DocumentDisclosure title={referenceLabel(locale, radius ? 'radiusScale' : 'shadowScale')}>
   <div class="ui-tray">
     <div class="ref-surface-scale ui-stage" data-kind={group.namespace}>
       {group.values.map(value => <div class="ref-surface-specimen">

@@ -12,7 +12,7 @@ import dark from '~/site/assets/images/integrations/installation/cover-dark.webp
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS with Astro, Vite, Nuxt, Svelte, Next.js, Angular, Lit, webpack and Storybook" />
 
-Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, and [CLI](#cli) generates a stylesheet for projects without a bundler. [CDN](#cdn) provides a plain HTML setup for the default preset; its CSS-first release is pending.
+Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, and [CLI](#cli) generates a stylesheet for projects without a bundler. [CDN](#cdn) provides a plain HTML setup for the default preset.
 
 ## Integrations \{#integrations\}
 
@@ -26,9 +26,9 @@ For runtime and server-rendered setups, see [rendering support by integration](/
 
 Use Node.js 24 and open the app's root directory, where its `package.json` lives. The installer updates an existing project; it does not create a framework starter. Your app should already have a working development command.
 
-### Package availability \{#package-availability\}
+### Package versions \{#package-availability\}
 
-These instructions require a coordinated release of the installer, integrations and their dependencies. That package set is not fully available on npm yet. The `@rc` commands below describe the intended installation channel; they are not a verified way to install this candidate today. Wait for the matching packages to be published before following those commands. A package that exists under another tag does not establish compatibility with this setup.
+Use the version shown in this documentation for the installer, integrations and other Master CSS packages. Keep these packages on the same version when installing or upgrading them manually. A package that exists under another npm tag does not establish compatibility with this setup.
 
 For a local runtime evaluation, use the [built-checkout CDN example](#cdn). Keep its script, compiled program and base stylesheet from the same build.
 
@@ -36,12 +36,12 @@ For manual setup or framework-specific files, use the [integration guides](/guid
 
 <StepSection>
   <Step>
-    ### Add Master CSS
+    ### Add Master CSS \{#add-master-css\}
 
-    Run the installer from the project root. It detects the framework and package manager, updates the setup files, and installs the matching Master CSS packages from the `rc` channel.
+    Run the installer from the project root. It detects the framework and package manager, updates the setup files, and installs Master CSS packages that match the installer's version.
 
     ```bash
-    npm create @master/css@rc -- --yes
+    npm create @master/css@VERSION -- --yes
     ```
 
     <DocumentDisclosure title="Review or limit the setup">
@@ -51,7 +51,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
     Add `--dry-run` to inspect the plan without changing project files or installing the planned dependencies:
 
     ```bash
-    npm create @master/css@rc -- --yes --dry-run
+    npm create @master/css@VERSION -- --yes --dry-run
     ```
 
     For only the core framework setup, add `--minimal` to the install command. It skips the ESLint, MCP and agent-guidance additions. If you prefer to install dependencies yourself, add `--no-install`.
@@ -59,7 +59,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
     </DocumentDisclosure>
   </Step>
   <Step>
-    ### Check the stylesheet connection
+    ### Check the stylesheet connection \{#check-the-stylesheet-connection\}
 
     Read the setup summary and finish any framework-specific instructions it prints. Some integrations need a follow-up setup command or a separate CSS generation process; see your [framework's guide](/guide/installation#integrations) for those steps.
 
@@ -74,7 +74,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
     <InstallationIllustration />
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
 
     Start or restart your app's development server with its existing command, such as `npm run dev`. Put this markup in a visible page or component. In JSX, write `className` in place of `class`.
 
@@ -92,7 +92,7 @@ For manual setup or framework-specific files, use the [integration guides](/guid
 
 A CDN installation runs Master CSS in the browser without a build tool. It suits a plain HTML prototype; generated styles depend on JavaScript. Use an integration or the CLI when the page needs styles without JavaScript.
 
-The CSS-first CDN release is not published yet. Before using the template, replace every `VERSION` below with the same published CSS-first version of the runtime and preset. Until that release is available, use a local build as described below. The same [package availability requirement](#package-availability) applies to [Integrations](#integrations) and [CLI](#cli).
+Keep the runtime script, compiled program and preset stylesheet on the same Master CSS version. The template uses matching versioned URLs. The same [package version requirement](#package-availability) applies to [Integrations](#integrations) and [CLI](#cli).
 
 Save this template as `index.html`:
 
@@ -121,7 +121,7 @@ The heading should have a `3rem` margin, a `2.5rem` italic font at weight `900`,
 
 The stylesheet supplies the base rules and layer order. The classic script starts automatically, loads its matching compiled program, then generates the initial classes after the document finishes parsing. It removes `hidden` when those rules are ready. The three preload links start the stylesheet, script, and program requests early; the binary uses `as="fetch" crossorigin` because the runtime fetches data, not a module. The binary preload and runtime fetch use the jsDelivr destination directly because the Master CDN redirect does not carry CORS headers. The CDN setup uses the default preset; use an integration to compile custom `@theme` or `@utility` definitions.
 
-<DocumentDisclosure title="Try a local build before the CDN release">
+<DocumentDisclosure title="Try a local build">
 
 From a built checkout, copy `packages/preset/src/base.css`, `packages/runtime/dist/global.min.js`, and `packages/runtime/dist/default-program.bin` into one directory beside `index.html`. Keep the script and program from the same build.
 
@@ -139,15 +139,15 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
 
 <StepSection>
   <Step>
-    ### Install Master CSS
+    ### Install Master CSS \{#install-master-css\}
     Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) as a development dependency.
 
     ```bash
-    npm install -D @master/css-cli@rc
+    npm install -D @master/css-cli@VERSION
     ```
   </Step>
   <Step>
-    ### Create your CSS entry
+    ### Create your CSS entry \{#create-your-css-entry\}
     Create a stylesheet that imports the default Master CSS entry.
 
     ```css name=main.css
@@ -155,7 +155,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
     ```
   </Step>
   <Step>
-    ### Run the build command
+    ### Run the build command \{#run-the-build-command\}
     Run the command to scan sources and write `master.css`.
 
     ```bash
@@ -163,7 +163,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
     ```
   </Step>
   <Step>
-    ### Load the generated stylesheet
+    ### Load the generated stylesheet \{#load-the-generated-stylesheet\}
     Save the document below as `index.html`. The watcher generates `master.css` from its class names. Serve the directory and open the page to see the styled paragraph.
     <InstallationPreview>
 
@@ -185,7 +185,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
   </Step>
 </StepSection>
 
-### Build for deployment
+### Build for deployment \{#build-for-deployment\}
 
 The watch command stays running and updates the output when a selected source changes. For a production build, omit `--watch` so the command writes its output and exits:
 
@@ -197,7 +197,7 @@ Deploy `index.html`, `master.css` and the neighboring CSS assets referenced by t
 
 Load the deployed page and check that every stylesheet request succeeds. The paragraph should keep its generated padding, border and surface colors with JavaScript disabled. [Scanning class names](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
 
-## If the style does not appear
+## If the style does not appear \{#if-the-style-does-not-appear\}
 
 Check that the page renders the markup you edited and loads the app stylesheet. Then check that the build integration is enabled and scans that source file. Keep class names complete, as in `p-lg`; constructing them from fragments such as `p-${size}` prevents a static scan from seeing the final class.
 

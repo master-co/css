@@ -1,0 +1,25 @@
+# Reference prose: illustrations/contents-insertion
+
+## title \{#copy-title\}
+
+The wrapper places the caller’s declarations
+
+## alt \{#copy-alt\}
+
+The contents slot inside an is-hover-or-focus-visible selector is filled with text-decoration-line: underline from an underline class.
+
+## caption \{#copy-caption\}
+
+The highlighted slot and inserted declaration share one position inside the selector boundary. The wrapper controls where the declaration applies.
+
+## description-0 \{#copy-description-0\}
+
+@mixin --hocus \{ &:is(:hover, :focus-visible) \{ @contents; \} \} defines a selector wrapper with an explicit contents slot.
+
+## description-1 \{#copy-description-1\}
+
+underline@apply(--hocus) supplies text-decoration-line: underline to that slot. The emitted rule matches the class owner in either state.
+
+## description-2 \{#copy-description-2\}
+
+The visual result abbreviates the escaped class owner as & to keep the placement readable; the generated CSS retains the full owner.

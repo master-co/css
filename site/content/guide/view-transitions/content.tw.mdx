@@ -1,0 +1,381 @@
+---
+{
+  "title": "檢視轉場",
+  "description": "結合瀏覽器檢視轉場、穩定的快照名稱與 Master CSS 版面配置 utility，連接文章的不同檢視。",
+  "category": "基礎",
+  "figures": {
+    "TransitionIllustration": {
+      "title": "跨版面配置保持圖片連結",
+      "alt": "文章集合中的小圖與詳細檢視中的大圖，共用 view-transition-name article-aurora-image。即使 DOM 與版面配置改變，相同名稱仍會連接新舊擷取畫面。",
+      "caption": "瀏覽器以名稱配對擷取畫面。新舊元素可以是不同 DOM 節點；每個已渲染狀態內，只能使用該名稱一次。",
+      "description": [
+        {
+          "title": "擷取文章集合",
+          "text": "舊狀態中，選取的文章圖片名稱為 article-aurora-image。"
+        },
+        {
+          "title": "更新 DOM",
+          "text": "在轉場回呼內，以詳細檢視取代文章集合。詳細圖片使用相同名稱。"
+        },
+        {
+          "title": "配對擷取畫面",
+          "text": "瀏覽器可在圖片的新舊邊界間製作動畫。名稱識別這組配對，不代表必須保留同一 DOM 節點。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-lifecycle": {
+      "title": "動畫開始前，DOM 已經改變",
+      "alt": "先擷取舊圖片，DOM 再變成詳細檢視；新舊檢視在已更新 DOM 上方的覆蓋層中播放動畫。",
+      "caption": "回呼提交新檢視，瀏覽器接著為暫時覆蓋層製作動畫，不是逐步替換 DOM。",
+      "description": [
+        {
+          "title": "更新之前",
+          "text": "瀏覽器擷取舊的文章集合，包含另行命名的圖片。"
+        },
+        {
+          "title": "回呼之內",
+          "text": "應用程式以詳細 DOM 取代集合。updateCallbackDone 代表這次更新已完成。"
+        },
+        {
+          "title": "擷取之後",
+          "text": "偽元素覆蓋層混合舊影像與新檢視。ready 表示動畫準備完成；動畫被略過時，finished 也會解決。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-identity": {
+      "title": "名稱配對畫面，類別共用樣式",
+      "alt": "兩個不同名稱在前後狀態配對，同時使用相同 article 轉場類別。另一個狀態在內部重複使用名稱，因此標示為無效。",
+      "caption": "每個狀態內，識別名稱必須唯一。功能內每個具名擷取畫面都能共用轉場類別。",
+      "description": [
+        {
+          "title": "配對名稱",
+          "text": "article-aurora-image 會與新狀態相同名稱配對；標題具有另一個名稱，獨立配對。"
+        },
+        {
+          "title": "共用樣式",
+          "text": "兩個具名元素都有 view-transition-class: article。::view-transition-group(.article) 能為兩組套用樣式，與 HTML 類別無關。"
+        },
+        {
+          "title": "拒絕重複名稱",
+          "text": "同一擷取狀態內，兩個已渲染元素都叫 hero，會造成歧義。動畫會略過，但應用程式更新仍能完成。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-tree": {
+      "title": "一個擷取畫面形成群組與影像配對",
+      "alt": "文件根元素的偽元素樹，將群組幾何連到移動的影像矩形，並將 old/new 子元素連到其中混合的兩張影像。",
+      "caption": "群組負責移動與改變大小。old/new 子元素控制兩個檢視如何在這些邊界內混合。",
+      "description": [
+        {
+          "title": "附加到根元素",
+          "text": "文件轉場在文件根元素產生偽元素，不是在原本卡片元素下方。"
+        },
+        {
+          "title": "移動群組",
+          "text": "hero 群組在新舊邊界間製作動畫，其 image-pair 子元素包含離開與進入的影像。"
+        },
+        {
+          "title": "混合檢視",
+          "text": "old/new 子元素為影像內容製作動畫。獨立 root 群組持有頁面其餘擷取內容；缺少 old 或 new 子元素，則代表進場或退場畫面。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-navigation": {
+      "title": "兩種觸發方式，相同具名視覺交接",
+      "alt": "一份文件透過回呼從清單變成詳細檢視。另一條路徑中，一般連結連接兩份同源、且都啟用轉場的文件。",
+      "caption": "DOM 更新使用 startViewTransition()。目的地是另一份文件時，使用一般導覽與 CSS 明確啟用。",
+      "description": [
+        {
+          "title": "原地更新",
+          "text": "startViewTransition(update) 包住目前文件的變更。替換 DOM 的用戶端路由器，也走同文件路徑。"
+        },
+        {
+          "title": "正常導覽",
+          "text": "符合條件的同源導覽連接兩份文件。兩邊都載入 @view-transition { navigation: auto; }；不需要 startViewTransition 回呼。"
+        },
+        {
+          "title": "保留可用的目的地",
+          "text": "兩條路徑都能以相符的明確名稱，連接不同節點。不支援轉場時，DOM 更新或一般連結導覽仍可使用。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import TransitionIllustration from './components/TransitionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoViewTransition from '@master/internal-site/demo/DemoViewTransition.astro'
+
+## 概覽 [sr-only] \{#overview\}
+讀者從文章集合進入詳細檢視時，讓圖片與標題保持視覺連結。以 Master CSS 處理版面配置、原生 CSS 處理轉場，JavaScript 處理狀態改變。先確保介面可用：沒有動畫時，讀者仍必須能進入文章。
+
+## 從文章清單進入詳細內容 \{#article-list-to-detail\}
+
+(click) 開啟任一文章，再返回卡片。觀察圖片、標題與日期位置的變化。鍵盤焦點會移到文章標題，再回到選取的按鈕。
+
+<DemoViewTransition example="articles" />
+
+這是**同文件**轉場：JavaScript 取代文章集合，不會導覽到其他網址。瀏覽器將視覺交接製成動畫。路由、資料載入、瀏覽器歷程與焦點，仍由應用程式負責。實際頁面導覽請使用本指南後面的[跨文件做法](#cross-document-transitions)。
+
+<TransitionIllustration />
+
+## 瀏覽器為哪些內容製作動畫 \{#what-the-browser-animates\}
+
+CSS `transition` 會對留在頁面中的同一元素，插補屬性變化。檢視轉場則能連接不同 DOM 節點與不同版面配置：瀏覽器擷取舊檢視、執行更新，再為舊影像與新檢視建立暫時的偽元素樹，並在文件上方為這棵樹製作動畫。動畫開始時，DOM 其實早已改變。
+
+未命名元素時，瀏覽器通常會交叉淡化根檢視。加入相符名稱，便能讓選定部分獨立移動與調整大小。這些預設動畫由瀏覽器提供，無須自行量測兩種版面配置或撰寫位移關鍵影格。請參閱 [View Transition 渲染模型](https://www.w3.org/TR/css-view-transitions-1/#rendering-model)。
+
+<TransitionIllustration name="capture-lifecycle" />
+
+## 建立文章轉場 \{#build-the-article-transition\}
+
+假設已[安裝 Master CSS](/guide/installation)。將以下標記放在文件 body，在 head 載入 `article-transitions.css`，並將 `article-transitions.js` 作為模組載入。請將圖片路徑換成專案中的圖片。此簡化範例實作一篇文章；即時預覽則將相同命名方式套用至兩篇。
+
+將版面配置 utility 保留在元素上。原生 `style` 屬性提供各快照的識別名稱；`.article-capture` 則指派共用的轉場樣式群組。
+
+```html name=article-list.html
+<section data-articles class="max-w-xl mx-auto p-md">
+  <article class="grid gap-md">
+    <img class="article-capture block w-full h-auto"
+      style="view-transition-name: article-aurora-image"
+      src="/images/article-aurora.jpg" width="1200" height="750"
+      alt="A mountain ridge under soft light" />
+    <time class="article-capture block text-sm"
+      style="view-transition-name: article-aurora-date"
+      datetime="2026-05-12">May 12, 2026</time>
+    <h2 class="article-capture text-xl m(0)"
+      style="view-transition-name: article-aurora-title">
+      Designing transitions that preserve context
+    </h2>
+    <button type="button" data-read-more>Read article</button>
+  </article>
+</section>
+
+<template id="article-detail">
+  <article class="grid gap-lg">
+    <img class="article-capture block w-full h-auto"
+      style="view-transition-name: article-aurora-image"
+      src="/images/article-aurora.jpg" width="1200" height="750"
+      alt="A mountain ridge under soft light" />
+    <time class="article-capture block text-sm"
+      style="view-transition-name: article-aurora-date"
+      datetime="2026-05-12">May 12, 2026</time>
+    <h1 tabindex="-1" class="article-capture text-3xl m(0)"
+      style="view-transition-name: article-aurora-title">
+      Designing transitions that preserve context
+    </h1>
+    <p>The image, title and date retain their identity in a new layout.</p>
+    <button type="button" data-back>Back to collection</button>
+  </article>
+</template>
+```
+
+template 插入前不會啟用，所以名稱不會與文章集合衝突。此功能的樣式表只需載入一次。這裡的時間設定只影響文章快照；檢視其餘部分保留瀏覽器預設交叉淡化。
+
+```css name=article-transitions.css
+@layer components {
+  .article-capture {
+    view-transition-class: article;
+  }
+
+  ::view-transition-group(.article) {
+    animation-duration: .5s;
+    animation-timing-function: ease-in-out;
+  }
+}
+```
+
+支援具名轉場但不支援 `view-transition-class` 的瀏覽器，仍可配對名稱，並保留預設時間設定。固定名稱也可直接以 `::view-transition-group(article-aurora-image)` 選取。
+
+開始轉場前，先準備好內容。動畫路徑會在擷取前解碼圖片；圖片失敗仍允許導覽，替代文字也保持可用。DOM 替換本身則發生在回呼內：
+
+```js name=article-transitions.js
+const root = document.querySelector('[data-articles]')
+const detail = document.querySelector('#article-detail')
+const list = document.createElement('template')
+list.content.append(...root.cloneNode(true).childNodes)
+const motion = matchMedia('(prefers-reduced-motion: reduce)')
+let active
+let revision = 0
+
+motion.addEventListener('change', () => {
+  if (motion.matches) active?.skipTransition()
+})
+
+async function changeView(content, focusSelector) {
+  const request = ++revision
+  active?.skipTransition()
+  const update = () => {
+    if (request !== revision) return
+    root.replaceChildren(content)
+    const target = root.querySelector(focusSelector)
+    target.focus({ preventScroll: true })
+    target.scrollIntoView({ block: 'nearest', behavior: 'instant' })
+  }
+  if (!document.startViewTransition || motion.matches) {
+    update()
+    return
+  }
+
+  await Promise.all([...content.querySelectorAll('img')].map(image =>
+    image.decode().catch(() => {})
+  ))
+  if (request !== revision) return
+  if (motion.matches) { update(); return }
+  const transition = document.startViewTransition(update)
+  active = transition
+  // Skipping an animation does not mean the DOM update failed.
+  transition.ready.catch(() => {})
+  const clear = () => { if (active === transition) active = undefined }
+  transition.finished.then(clear, clear)
+  // Let the caller handle an actual update error. Do not run update twice.
+  await transition.updateCallbackDone
+}
+
+root.addEventListener('click', event => {
+  if (!(event.target instanceof Element)) return
+  if (event.target.closest('[data-read-more]')) {
+    changeView(document.importNode(detail.content, true), 'h1').catch(reportError)
+  } else if (event.target.closest('[data-back]')) {
+    changeView(document.importNode(list.content, true), '[data-read-more]').catch(reportError)
+  }
+})
+```
+
+多篇文章時，以文章 ID 衍生各部分的穩定名稱，並將焦點還給該文章按鈕。在轉場開始前先取得資料，避免等待網路請求期間持續阻擋渲染。React 中請在回呼內使用 `flushSync()` 提交狀態更新；只呼叫 state setter，不能保證新 DOM 已可供擷取。具有自身轉場整合的框架，應負責這個提交邊界。
+
+## 快照命名 \{#naming-snapshots\}
+
+每個擷取狀態中，已渲染元素的 `view-transition-name` 必須唯一。在新舊狀態**之間**重用名稱，才會形成配對；在任一狀態**內部**重複兩次，則會略過轉場。只出現在舊狀態的名稱會退場；只出現在新狀態的名稱會進場。
+
+| 識別項目 | 用途 | 同一狀態可共用？ |
+| --- | --- | --- |
+| HTML `class="article-capture"` | 以一般 CSS 選取實際元素 | 可以 |
+| `view-transition-name: article-aurora-image` | 配對一個舊快照與一個新快照 | 不可 |
+| `view-transition-class: article` | 以 `::view-transition-group(.article)` 選取多個具名群組 | 可以 |
+
+`::view-transition-group(.article)` 的句點代表**轉場類別**，不是 HTML 類別。單獨指定轉場類別，不會建立具名快照。[平台分組範例](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/view-transition-class#examples)說明了這項差異。
+
+<TransitionIllustration name="capture-identity" />
+
+使用 `article-aurora-image` 這類穩定、有效的 CSS 識別字，不要使用標題或任意使用者文字。當更新後仍是**同一 DOM 元素**，例如具 key 的清單重排，`view-transition-name: match-element` 可讓瀏覽器指派識別名稱。它不會配對替換後的節點或不同文件。本範例會替換節點，因此使用明確名稱。
+
+## 為轉場偽元素設定樣式 \{#styling-transition-pseudo-elements\}
+
+文件轉場的偽元素起始於文件根元素，即使具名元素位在元件深處也一樣。預設樹包含 `root` 群組，以及各具名快照的群組。每個群組內有一個影像配對，包含舊和／或新的子元素。
+
+<TransitionIllustration name="capture-tree" />
+
+舊子元素持有靜態快照；新子元素顯示更新後元素的即時渲染。它們是視覺表示，不是標記另外產生的可互動副本。
+
+在 `::view-transition-group(...)` 設定持續時間與緩動，調整移動及尺寸變化。瀏覽器預設的 old/new 動畫會繼承群組的時間設定。若要改變離開與進入內容如何混合，請選取 `::view-transition-old(...)` 與 `::view-transition-new(...)`。群組上的 `animation` 簡寫可能取代瀏覽器產生的移動動畫，因此只覆寫你打算改變的屬性。
+
+將選擇器保留在此功能擁有的全域樣式表：元件作用範圍內的 `.card::view-transition-old(...)`，無法選取文件根元素的偽元素樹。「全域」描述的是選擇器作用範圍，不代表每個功能的規則都必須放進同一個應用程式全域檔案。
+
+## 選擇類別或原生 CSS \{#choosing-classes-or-native-css\}
+
+Master CSS 能表達這些原生屬性與選擇器。若只有小型、固定的快照，下列寫法等同原生宣告：
+
+```html
+<html class="(animation-duration:.5s)::view-transition-group(.article)">
+  <body>
+    <img class="(view-transition-name:article-aurora-image) (view-transition-class:article)"
+      src="/images/article-aurora.jpg" alt="A mountain ridge" />
+  </body>
+</html>
+```
+
+<Class2CSS classes={[
+  '(view-transition-name:article-aurora-image)',
+  '(view-transition-class:article)',
+  '(animation-duration:.5s)::view-transition-group(.article)'
+]} />
+
+偽元素 utility 應放在 `html`，不是圖片上。在掛載元件中加入該類別，也意味著要管理它在共用根元素上的生命週期。動畫選擇器、關鍵影格與動態效果條件逐漸增加時，原生樣式表能把相關決策放在一起，讓作用範圍更容易檢查。
+
+資料驅動的識別名稱，請設定原生屬性，不要組合新 utility 類別：
+
+```js
+// article.id is a stable slug controlled by the application, such as "aurora".
+image.style.viewTransitionName = `article-${article.id}-image`
+```
+
+靜態掃描不會執行字串插值。`'(view-transition-name:article-' + id + '-image)'` 這種組合類別，在原始碼中不是完整類別。原生 style 值不需要新產生的規則。另一種有效方式，是使用完整 utility 類別參照 CSS 自訂屬性；請參閱[改變值而不改變類別](/guide/scanning-and-pruning#keep-changing-values-out-of-class-names)。
+
+類別若能讓區域決策更易讀，就使用類別。本功能的預設分工是：標記放版面配置 utility，資料或原生樣式放識別名稱，CSS 放轉場選擇器。相同分工也為 AI 助理提供各項關注點的明確修改位置；這是撰寫建議，不是 Master CSS 限制。
+
+## 跨文件轉場 \{#cross-document-transitions\}
+
+文章有自己的網址時，請保留一般連結，讓瀏覽器負責導覽。兩個頁面必須同源，且都明確啟用。將以下內容放進**兩份**文件都會載入的樣式表：
+
+```css name=page-transitions.css
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+```
+
+在集合頁面連結至實際文章網址。共用圖片在兩個頁面使用相同的明確名稱：
+
+```html name=collection.html
+<a href="/articles/aurora/">
+  <img src="/images/article-aurora.jpg" alt="Read the Aurora article"
+    style="view-transition-name: article-aurora-image" />
+</a>
+```
+
+```html name=article.html
+<article>
+  <img src="/images/article-aurora.jpg" alt="A mountain ridge"
+    style="view-transition-name: article-aurora-image" />
+  <h1>The Aurora article</h1>
+  <a href="/articles/">Back to collection</a>
+</article>
+```
+
+<TransitionIllustration name="capture-navigation" />
+
+不要用 `startViewTransition()` 包住 `location.href`：該回呼控制的是目前文件更新。跨文件轉場使用符合條件的瀏覽器導覽，不是應用程式回呼。若路由器攔截連結並替換目前 DOM，請改用其同文件整合。不支援的瀏覽器仍會開啟連結。同文件 API 支援不代表跨文件也支援；請查閱[跨文件需求與生命週期](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document)。
+
+## 減少動態效果 \{#reduced-motion\}
+
+同文件範例會在開始前檢查使用者偏好；若偏好改變，也會略過正在執行的動畫。跨文件樣式表則在相同偏好下停用導覽動畫。兩者都不會改變目的地，也不會阻止互動。
+
+只加入 `@motion-safe` 持續時間覆寫，**不會**停用瀏覽器預設轉場：覆寫不再符合時，預設動畫仍存在。必須控制轉場本身是否啟動。若由路由器啟動，請使用其動態效果處理方式，或在減少動態效果規則內停用相關偽元素動畫。
+
+## 備援方式 \{#fallbacks\}
+
+轉場物件提供三個不同階段的訊號：
+
+<DocumentComparison>
+
+| Promise | 代表意義 |
+| --- | --- |
+| `updateCallbackDone` | DOM 更新回呼已完成，或執行失敗 |
+| `ready` | 動畫已準備好，或在開始前被略過 |
+| `finished` | 轉場結束，包含略過動畫的情況；若更新失敗則拒絕 |
+
+</DocumentComparison>
+
+`finished` 已解決，不代表動畫確實完整播放。主要範例處理 `ready` 拒絕時，不會重複更新；更新錯誤則傳給 `reportError`。應用程式中請將此回報換成自己的錯誤邊界或復原介面。參閱[更新回呼契約](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/updateCallbackDone)。
+
+## 驗證完整互動 \{#verify-the-complete-interaction\}
+
+用指標與鍵盤開啟兩篇文章，再返回。檢查焦點、文章識別與可用的捲動，窄螢幕也要測試。啟用減少動態效果及停用 API 後，重複測試：相同內容變更仍必須可用。
+
+內容有改變卻沒有動畫時，請檢查：
+
+- 需要配對時，每個已渲染名稱在舊狀態與新狀態都各出現一次。
+- 回呼完成前，確實已提交 DOM 變更。
+- 偽元素選擇器選取文件根元素，且其 CSS 已載入。
+- 圖片具有尺寸，且已準備好顯示；不可用的圖片不阻擋更新。
+- 擷取與動畫期間，檢視區持續穩定。依內容調整高度的 iframe 若在途中改變高度，可能取消原本有效的轉場。使用固定檢視區與內部捲動，可避免此問題。
+
+請觀察動畫過程中的影格，不只看最終 DOM 或 `finished` promise。[檢視轉場影格演算法](https://www.w3.org/TR/css-view-transitions-1/#handle-transition-frame)明確規定，快照包含區塊尺寸改變時會略過動畫。

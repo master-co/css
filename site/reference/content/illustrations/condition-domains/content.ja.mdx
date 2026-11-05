@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-domains
+
+## title \{#copy-title\}
+
+
+同じ名前でも測る境界は異なる
+
+## alt \{#copy-alt\}
+
+
+64rem のビューポート内に、小さい 28rem のクエリーコンテナーを描いています。md のメディア条件はビューポートを、md のコンテナー条件は内側のコンテナーを参照します。
+
+## caption \{#copy-caption\}
+
+
+プリセットの @md のしきい値は 64rem、@container(--md) は 28rem です。同じ md という名前でも、独立した 2 つの定義は異なる境界をクエリーします。
+
+## description-0 \{#copy-description-0\}
+
+
+外側の境界は、プリセットの @md の最小幅 64rem に達したビューポートを表します。
+
+## description-1 \{#copy-description-1\}
+
+
+内側の境界は、独立した @container(--md) の最小幅 28rem に達したクエリーコンテナーを表します。クエリーを適用する要素はその中にあります。
+
+## description-2 \{#copy-description-2\}
+
+
+2 つの幅は同じ縮尺で描き、初期フォントサイズとルートのフォントサイズはともに 16px です。コンテナーサイズのトークンを変更しても、どちらの条件定義も変わりません。

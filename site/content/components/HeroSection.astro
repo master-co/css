@@ -27,7 +27,7 @@ const { t } = siteOf(Astro)
         {t('Get started')}
         <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
       </HomeAction>
-      <CopyCommand client:idle={{ timeout: 500 }} command={installCommand} wrap />
+      <CopyCommand client:idle={{ timeout: 500 }} command={installCommand(import.meta.env.PUBLIC_VERSION)} wrap />
     </div>
   </div>
 </section>

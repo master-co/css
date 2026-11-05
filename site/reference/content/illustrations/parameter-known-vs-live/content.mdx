@@ -1,0 +1,25 @@
+# Reference prose: illustrations/parameter-known-vs-live
+
+## title \{#copy-title\}
+
+A static recipe argument is different from a live CSS value
+
+## alt \{#copy-alt\}
+
+pair(2rem) expands into two dimensions. pair(var(--size)) is rejected for this two-declaration recipe, while an explicit native width variable reaches browser evaluation.
+
+## caption \{#copy-caption\}
+
+The shown pair utility has two declarations. The separate one-parameter, one-declaration symbolic-reference exception does not apply to it.
+
+## description-0 \{#copy-description-0\}
+
+@utility pair(--size) \{ width: var(--size); height: var(--size); \} accepts the known argument in pair(2rem) and binds it into both declarations.
+
+## description-1 \{#copy-description-1\}
+
+This recipe rejects pair(var(--size)) because its argument is browser-dependent. Use explicit native declaration classes for values that must remain live.
+
+## description-2 \{#copy-description-2\}
+
+(width:var(--size)) preserves the variable reference for the browser; it changes width only. Add a separate height declaration when that is also required.

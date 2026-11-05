@@ -1,0 +1,68 @@
+---
+title: "Master CSS 入門"
+description: "クラスでインターフェースを作り、生成される CSS をたどり、プロジェクトで共有する値を定義します。"
+figures: {"IntroductionIllustration": {"title": "クラスがスタイルを選び、トークンが値を与える", "alt": "HTML の p-lg クラスが、生成 CSS の .p-lg セレクターにつながっています。値が 1.5rem のテーマトークン --spacing-lg は、padding 宣言内の var() 参照につながっています。", "caption": "対応する名前が各部分を結び付けます。p-lg がルールを選び、var(--spacing-lg) が共通の値を読み取ります。図は該当する宣言だけを示しており、下の完全な出力にはレイヤーも含まれます。", "description": [{"title": "クラスの一致", "text": "HTML の p-lg クラスが、生成された .p-lg セレクターに一致します。青い括弧と線が、この二つの記述を結んでいます。"}, {"title": "共通の値", "text": "プリセットは --spacing-lg を 1.5rem と定義しています。紫の括弧と線が、その定義と padding: var(--spacing-lg) 内の参照を結んでいます。"}, {"title": "ブラウザーでの結果", "text": "ブラウザーは CSS 変数を解決し、四辺に 1.5rem のパディングを適用します。生成ルールは値を宣言にコピーせず、変数への参照を保持します。"}]}, "GuideStudy:language-and-delivery": {"title": "配信方式を変えても、クラス体系は変わらない", "alt": "同じクラスとその宣言から、ビルドで生成するスタイルシートと、ブラウザーで生成するスタイルシートの二つの配信経路に分かれています。", "caption": "構文は、どのスタイルを指定するかを表します。レンダリングモードは、その CSS をいつ、どこで生成するかを決めます。"}}
+---
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Overview from './components/Overview.mdx'
+import IntroductionIllustration from './components/IntroductionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+
+Master CSS は、マークアップでインターフェースのスタイルを指定し、CSS で共通スタイルを定義するための CSS フレームワークです。要素を作る場所にクラスを書き、プロジェクト全体で共有する値やパターンはスタイルシートに置きます。Master が、そのクラスに必要な CSS を生成します。
+
+付属の色、余白、文字組みから使い始められます。最初のコンポーネントを作る前に、テーマ全体を設計する必要はありません。
+
+## CSS とユーティリティでインターフェースを作る \{#overview\}
+
+このカードは、ネイティブのコンポーネントクラスとユーティリティを組み合わせています。`.action` は CSS でボタンの基本スタイルを定義し、`w-full`、`mt-md`、`bg-blue-60` はこのカードで使う幅、マージン、色を指定します。ほかのマークアップでは、プリセットのユーティリティでレイアウト、余白、文字組みを整えています。
+
+[インストール](/guide/installation)を終えたら、アプリのスタイルシートでプリセットのインポートより後にこの例の CSS を追加し、連携ツールがスキャンするソースファイルに HTML を置いてください。
+
+```css name=app.css
+@import '@master/css';
+```
+
+<Overview />
+
+プレビューは、表示されている CSS と HTML を組み合わせて動作します。`.action` はこの例の `@layer components` 内で定義され、Master はマークアップのクラスからユーティリティルールを生成します。ボタンに共通する形状やフォーカス表示は `.action` に置き、このインスタンスの青い色と全幅の指定はマークアップに残します。
+
+`p-lg` を `p-md` に変えてみてください。ボタンの基本スタイルを変えずに、カードのコンテンツのパディングを小さくできます。
+
+画像 URL は、アプリが `/building.jpg` を配信することを想定しています。自分の画像と代替テキストに置き換え、リンク先もアプリ内のページに変更してください。
+
+## クラスから CSS をたどる \{#write-your-first-class\}
+
+カードの `p-lg` を見てみましょう。プリセットは `p-` をパディングに、`lg` を余白トークン `--spacing-lg` に結び付けます。Master は、その CSS 変数を宣言から参照するクラスセレクターを生成します。
+
+<IntroductionIllustration />
+
+<Class2CSS classes={['p-lg']} />
+
+ブラウザーは、一致する要素に `padding: var(--spacing-lg)` を適用します。プリセットの値では、四辺とも `1.5rem` です。テーマで共通の値を変えても、クラス名は変わりません。
+
+ほかのクラスは、別の種類の指定を表します。`w-full` は `width: 100%` を指定する固定ユーティリティで、`bg-blue-70:hover` はホバー状態を追加します。[構文チュートリアル](/guide/syntax-tutorial)では、動く例を使って値、セレクター、条件を学べます。
+
+## 一緒に変える値を定義する \{#define-what-should-change-together\}
+
+複数の要素でプロジェクトの設定を共有するときは、テーマトークンを追加します。主要なアクションの色なら、アプリのスタイルシートでインポートより後に `--color-brand` を定義し、マークアップで `bg-brand` を使います。
+
+<ConfiguredExample source={`@theme {
+  --color-brand: #2563eb;
+}`} html={`<a class="inline-flex px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
+  Start building
+</a>`} />
+
+`--color-brand` を変えると、それを使う要素も更新されます。トークンを共有するのは、それらの要素を一緒に変える必要があるからです。無関係な二つの色は、値が同じでも同じ名前にする必要はありません。共通の値の定義と上書きは[テーマトークン](/guide/theme)で説明します。
+
+複数の要素でスタイルの規約を共有するなら `.action` のようなコンポーネントクラスを使い、マークアップを共有するなら UI コンポーネントを使います。クラスリストが長いという理由だけで、新しい CSS 名を付ける必要はありません。[スタイルの再利用](/guide/reusing-styles)では、共通トークン、コンポーネントクラス、独自ユーティリティの使い分けを説明します。
+
+<GuideStudy id="language-and-delivery" />
+
+## 静的 CSS から始める \{#start-with-static-css\}
+
+使用するフレームワークで推奨される静的連携を使ってください。ビルド時にソース内の完全なクラス名を見つけて通常の CSS を配信するため、ブラウザーに Master のランタイムやエンジンは不要です。
+
+インタラクティブなインターフェースもそのまま作れます。既知のクラスを切り替える、`:hover` などのセレクターを使う、進捗や座標などの値を CSS カスタムプロパティで更新するといった方法があります。プレイグラウンド、ビジュアルエディター、配信済みのコンテンツから、未知のクラス名が追加される場合にはランタイムが役立ちます。配信方式の選び方は[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+[インストール](/guide/installation)の手順で Master CSS をアプリに接続し、[構文チュートリアル](/guide/syntax-tutorial)で操作状態やレスポンシブ条件に対応するカードを作りましょう。記述中の入力補完や診断には、[言語サービス](/guide/language-service)を設定してください。

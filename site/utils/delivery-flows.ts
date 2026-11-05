@@ -128,8 +128,7 @@ export function deliveryFlow(name: string) {
   return deliveryFlows[name as DeliveryFlowName]
 }
 
-export function deliveryFlowMarkdown(name: string) {
-  const flow = deliveryFlow(name)
+export function deliveryFlowMarkdown(name: string, flow = deliveryFlow(name)) {
   return `**${flow.title}**\n\n${flow.steps.map((step, i) => `${i + 1}. **${step.title}.** ${step.description}`).join('\n')}\n\n${flow.caption}`
 }
 

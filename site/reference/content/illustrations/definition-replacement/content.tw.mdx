@@ -1,0 +1,36 @@
+# Reference prose: illustrations/definition-replacement
+
+## title \{#copy-title\}
+
+
+較後定義完整取代註冊
+
+## alt \{#copy-alt\}
+
+
+兩個依序排列的 badge utility 定義導向一條最終規則。第一個包含紅色與 padding，第二個只有藍色。輸出只包含藍色。
+
+## caption \{#copy-caption\}
+
+
+兩個定義註冊相同的靜態 utility。第二個完整取代第一個，原有的 padding 也不再保留。這是生成前的定義取代，不是兩條 CSS 規則在階層串接中競爭。
+
+## description-0 \{#copy-description-0\}
+
+
+第一個靜態 badge 定義含有 color: red 與 padding: 1rem。
+
+## description-1 \{#copy-description-1\}
+
+
+較後的靜態 badge 定義只含 color: blue，並完整取代第一個定義。
+
+## description-2 \{#copy-description-2\}
+
+
+使用 badge 會生成一條含 color: blue 的規則。先前的 padding 與其相依關係不會留下。
+
+## description-3 \{#copy-description-3\}
+
+
+靜態與函式註冊仍彼此獨立。token 模式只取代前綴與命名空間相同的分支；mixin 則取代完整具名定義。

@@ -1,0 +1,148 @@
+---
+{
+  "title": "在 SvelteKit 設定 Master CSS",
+  "description": "安裝 SvelteKit 附加元件、連接根樣式表，並選擇靜態、執行階段、漸進式或僅預先渲染的 CSS 傳遞方式。",
+  "category": "整合"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/svelte/cover-light.webp'
+import dark from '~/site/assets/images/integrations/svelte/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Svelte" />
+
+將 Master CSS 加入 SvelteKit 應用程式。附加元件會註冊 Vite 整合，並從根版面配置匯入 CSS 進入點，讓每個路由都能取得共用樣式。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 加入 Master CSS \{#add-master-css\}
+      在既有的 [SvelteKit 專案](https://svelte.dev/docs/kit/creating-a-project)中，從專案根目錄執行 Svelte CLI 附加元件。它會安裝靜態渲染設定，並保留既有的伺服器掛鉤。
+    </StepL>
+    <StepR>
+      ```bash
+      npx sv add @master/css-svelte-addon
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 檢查共用進入點 \{#check-the-shared-entry\}
+    附加元件會在專案的 CSS 進入點加入 `@import '@master/css';`，並從 `src/routes/+layout.svelte` 匯入該檔案。請保留版面配置中既有的指令碼、子內容渲染與其他匯入。不要將全域進入點放在其他路由不會載入的單一頁面中。
+
+    在 `vite.config.ts` 中，同時保留 `masterCSS()` 與 `sveltekit(...)`。靜態模式不需要 Master CSS 的用戶端或伺服器掛鉤。
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+    啟動開發伺服器，並以這個段落取代 `src/routes/+page.svelte`。保留加入 `src/routes/+layout.svelte` 的樣式表匯入。
+  </Step>
+  <InstallationPreview>
+
+```svelte name=src/routes/%2Bpage.svelte
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 檢查靜態設定 \{#check-the-static-setup\}
+執行 `npm run dev`，將頁面中的 `p-md` 改成 `p-lg`。內距應從 `1rem` 增加為 `1.5rem`。改回原值後，檢查正式環境建置：
+
+```bash
+npm run build
+npm run preview
+```
+
+啟用伺服器渲染時，即使停用 JavaScript，段落也應保有內距、圓角與浮起的表面。造訪另一個路由，確認根版面配置也會為它載入進入點。若樣式缺少，請檢查 `vite.config.ts` 中的 Master CSS 外掛，以及根版面配置中的 CSS 匯入。
+
+元件的 `<style>` 區塊可以在原生宣告中使用專案 token。請持續載入全域 CSS 進入點，提供重設樣式、原生元件規則及產生的 utility。專案脈絡之外的定義檔則使用 `@reference`。
+
+---
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+預設使用靜態模式，不需要 Master CSS 掛鉤。切換模式時，請保留 CSS 進入點：
+
+| 模式 | Vite 模式 | Master CSS 掛鉤 |
+| --- | --- | --- |
+| 靜態 | `static` | 無 |
+| 執行階段 | `runtime` | 用戶端 |
+| 漸進式 | `progressive` | 用戶端與伺服器 |
+| 僅預先渲染 | `pre-render` | 伺服器，並停用 hydration manifest |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+在 `vite.config.ts` 中，以下列選項取代既有的 `masterCSS()` 呼叫。保留 `sveltekit(...)` 呼叫、其轉接器設定及其他外掛：
+
+```ts
+masterCSS({ mode: 'runtime' })
+```
+
+從用戶端掛鉤載入啟動程式一次。保留任何既有的掛鉤匯出：
+
+```ts name=src/hooks.client.ts
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+SvelteKit 會自行渲染 HTML，因此只設定 Vite 模式不會插入執行階段指令碼。用戶端匯入會以專案程式啟動執行階段，並處理 Vite HMR。
+
+啟動後，在瀏覽器主控台執行以下程式碼。無須重新建置，段落就應出現底線：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="包含伺服器渲染的樣式">
+
+使用漸進式渲染時，將上方的 Vite 選項改成 `mode: 'progressive'`，保留用戶端掛鉤，再加入伺服器 handle：
+
+```ts name=src/hooks.server.ts
+export { handle } from '@master/css-svelte/hooks.server'
+```
+
+若應用程式已有伺服器 handle，請保留它，並在 SvelteKit 的 [`sequence()`](https://svelte.dev/docs/kit/@sveltejs-kit-hooks#sequence) 中將 Master CSS handle 放在第一個。頁面轉換會以反向順序執行，這樣 Master CSS 才能看到後續處理器產生的 HTML。例如，將既有 handle 移至 `src/hooks.application.ts`，維持其行為不變，再組合兩者：
+
+```ts name=src/hooks.server.ts
+import { sequence } from '@sveltejs/kit/hooks'
+import { handle as masterCSS } from '@master/css-svelte/hooks.server'
+import { handle as application } from './hooks.application'
+
+export const handle = sequence(masterCSS, application)
+```
+
+將 `handleError` 等不相關的匯出保留在 `hooks.server.ts`。
+
+頁面若已由預先渲染的類別完整涵蓋，就能延後載入執行階段引擎。先停用 JavaScript 檢查初始樣式，再重新啟用並測試新類別。
+
+僅需預先渲染時，選擇 `mode: 'pre-render'`，只移除 Master CSS 的用戶端啟動程式，並使用以下伺服器設定：
+
+```ts name=src/hooks.server.ts
+/// <reference types="@master/css/client" />
+
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import { createMasterCSSHandle } from '@master/css-svelte/hooks.server'
+
+export const handle = createMasterCSSHandle({
+  manifest,
+  emittedGlobals,
+  hydrationManifest: false
+})
+```
+
+這會為渲染後的 HTML 提供 CSS，而不使用 Master CSS 瀏覽器執行階段。之後才加入的類別，需要另行提供樣式表，或使用支援執行階段產生樣式的模式。
+
+</DocumentDisclosure>

@@ -1,0 +1,120 @@
+---
+title: "遷移至 Master CSS"
+description: "轉換一個元件或路由，驗證共用樣式的畫面，並在沒有使用處後移除舊相依性。"
+figures: {"MigrationIllustration": {"title": "轉換一個畫面；檢查共用 CSS 的影響範圍", "alt": "同一 CSS 進入點連到 Account、Billing 與 Reports。只有 Account 標為轉換範圍，但三個畫面都要驗證。", "caption": "此應用程式的三個畫面載入相同樣式表進入點。轉換 Account 不會隔離共用重設、token 或選擇器對 Billing 與 Reports 的影響。", "description": [{"title": "同一共用進入點", "text": "範例透過 Account、Billing、Reports 共用的 CSS 進入點，載入原有樣式與 Master CSS。"}, {"title": "單次轉換範圍", "text": "本次只轉換 Account。Billing 與 Reports 仍依賴原有樣式。"}, {"title": "更廣的驗證範圍", "text": "設定或共用定義改變時，檢查三個畫面。元件規模的修改不會讓樣式表自動限定於元件；其他畫面仍需要舊相依性。"}]}, "GuideStudy:migration-local-scope": {"title": "一次遷移一個元件邊界", "alt": "三個相鄰元件維持可見，只有中間元件改變樣式歸屬。", "caption": "遷移明確界定的單一元件時，維持相同使用者行為。共用重設與 token 另行驗證。"}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MigrationGuides from '~/site/components/MigrationGuides.astro'
+import MigrationIllustration from './components/MigrationIllustration.astro'
+
+先選一個能比較修改前後外觀與行為的元件或路由。將 Master CSS 接到既有應用程式，轉換這一小部分並驗證結果，其餘產品介面則繼續使用原本的樣式。
+
+第一批工作應以維持介面為主。重新設計、更換元件庫與遷移樣式各有不同的變更需要審查；可行時，請分開進行。
+
+## 選擇原有的樣式系統 \{#choose-the-source-styling-system\}
+
+<a id="frameworks"></a>
+
+依目前使用的系統選擇指南。如果應用程式混用多種系統，先選擇負責第一個元件樣式的系統；其他系統可以保留。
+
+<MigrationGuides />
+
+## 界定第一批工作 \{#migration-strategy\}
+
+在版本控制中留下可正常運作的基準，並執行應用程式既有的檢查。編輯前先記錄失敗項目，以便區分既有問題與迴歸。擷取所選畫面在重要寬度與互動狀態下的截圖。
+
+帳戶設定表單適合當作第一批工作：範圍明確，有看得見的欄位、按鈕與可觀察的行為。請納入標籤、驗證訊息、焦點狀態與停用控制項。帳務和報表不必一起轉換，但若共用應用程式樣式表，仍要納入視覺檢查。
+
+決定修改哪些檔案前，先檢查下列關聯：
+
+<DocumentComparison>
+
+| 關聯 | 對這批工作的影響 |
+| --- | --- |
+| CSS 進入點、重設樣式與串接層順序 | 設定可能影響標記未修改的畫面。 |
+| 共用 token 與元件 class | 所選元件以外也可能使用同一定義。 |
+| 來源探索與動態 class 名稱 | 生成的 CSS 必須涵蓋元件實際渲染的狀態。 |
+| 元件庫行為 | 替換 class 不會取代元件的焦點管理、事件或無障礙行為。 |
+
+</DocumentComparison>
+
+轉換範圍不等於 CSS 隔離範圍。若 Account、Billing 與 Reports 載入同一個 CSS 進入點，新增 Master CSS 或修改共用規則後，就必須檢查這三個畫面。
+
+<MigrationIllustration />
+
+<GuideStudy id="migration-local-scope" />
+
+## 與既有樣式並存接入 Master CSS \{#connect-master-css-beside-the-existing-styles\}
+
+依應用程式的框架或建置工具完成[安裝](/guide/installation)。確認應用程式載入含有 `@import '@master/css';` 的 CSS 進入點，並選擇能涵蓋 class 名稱來源的[渲染模式](/guide/rendering-modes)。
+
+轉換第一批內容時，繼續載入既有樣式。若兩個系統各自編譯指令，請各自提供輸入，不要讓一個系統的原始碼經過另一個系統的編譯器。上方各系統的指南會說明這些建置邊界。
+
+轉換表單前，先檢查設定本身的影響：Master 的預設樣式集包含標題、清單與表單控制項等元素的基礎樣式。此時就應與基準比較既有畫面。先解決重設樣式差異、token 名稱衝突與 utility 名稱重疊，再判斷視覺變化是否來自元件轉換。
+
+較晚加入 Master 的匯入，不保證它的 utility 會勝出。依 [CSS 串接規則](https://www.w3.org/TR/css-cascade-5/#layer-order)，在相同作者來源與情境下，一般未分層宣告的優先順序高於一般分層宣告。因此，元素上保留的舊 class 可能掩蓋新 utility 是否生效。請在瀏覽器開發者工具檢查勝出的宣告，並依[相容性](/guide/compatibility#third-party-styles)與[串接層](/guide/cascade-layers)明確安排順序。
+
+## 保留元件契約進行轉換 \{#convert-the-component-without-changing-its-contract\}
+
+依原有系統的指南轉換程式碼。比較產生的宣告與計算值，不要假設名稱相近的 class 或 token 會得到相同結果。
+
+- 既有專案 token 的值符合設計需求時，就沿用它。若共用值代表產品決策，請在 [`@theme`](/guide/theme) 定義；修改時也要檢查其他使用處。
+- 若能讓元件更易讀，就把局部視覺樣式移到標記中。原生 CSS 或 CSS Modules 能更清楚表達選擇器或元件契約時，應予以保留。
+- 保留執行階段值、元件 props、事件處理函式、語意元素與鍵盤行為。應用程式仍依賴第三方元件時，保留該元件及其必要 CSS。
+- 使用掃描生成時，class 名稱必須以完整字串提供。依[掃描 class 名稱](/guide/scanning-and-pruning)檢查條件式變體與生成內容。
+
+以帳戶表單為例，完成代表輸入、送出、顯示錯誤與停用操作都仍正常。靜止狀態的截圖相同，只是成果的一部分。
+
+## 驗證這批變更，再移除未使用的樣式 \{#checklist\}
+
+擴大到下一個元件前，先以基準檢查這批變更：
+
+1. 執行相關格式檢查、lint、型別檢查與測試，再執行正式建置。同時檢查建置後的應用程式與開發預覽。
+2. 比較轉換後的畫面在重要寬度、主題與狀態下的表現。操作鍵盤導覽、焦點、驗證與停用控制項。
+3. 檢查共用已修改的重設樣式、token 或全域規則的畫面，包括本批範圍以外的畫面。此例除了 Account，也要檢查 Billing 與 Reports。
+4. 確認舊樣式還有哪些使用處後，才能移除已轉換元件的舊樣式。移除後重新檢查；保留的舊規則可能曾掩蓋新宣告的遺漏。
+5. 只有當所有畫面、元件與建置輸入都不再需要某個樣式相依套件時，才移除它。保留有用的原生與第三方 CSS；不必全數移除，這批工作也能完成。
+
+隨這批變更記錄刻意保留的視覺差異與剩餘相依性。成果可供審查且驗證完成後，再對下一個元件或路由重複此流程。
+
+## 請代理規劃工作 \{#ask-an-agent-to-plan-the-work\}
+
+官方 [`master-css` skill](/guide/ai-coding#use-the-master-css-skill) 提供 **Import external styles** 工作流程，可將單一 CSS 或 Tailwind 元件匯入 Master CSS。除非要求重新設計，否則會保留元件的值與行為。請依本指南的比較項目驗證結果。
+
+### 使用 MCP \{#plan-an-external-system-conversion-with-mcp\}
+
+[Master CSS MCP 伺服器](/guide/ai-coding#connect-the-mcp-server)提供 `migrate-to-mastercss` 提示詞，用來規劃從外部樣式系統轉換。它會要求代理檢查專案，提出渲染模式、第一批工作、CSS 輸出風險與驗證指令。此提示詞提供操作指引，並非自動程式碼轉換器。
+
+<DocumentPrompt title="使用 MCP 規劃轉換" text={`Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+
+Inspect the external styling system, framework, stylesheet entries,
+source discovery, shared tokens and available checks. Do not edit yet.
+
+Return a plan for one component or route: setup changes, conversion
+files, screens affected by shared CSS, validation commands and the
+conditions for removing old styles. Identify uncertainties to inspect.`} />
+
+### 不使用 MCP \{#migration-prompt\}
+
+給本地程式碼代理相同、範圍明確的工作。指出所選元件或路由，再使用以下規劃請求：
+
+<DocumentPrompt title="不使用 MCP 規劃轉換" text={`Plan the first batch of this project's migration to Master CSS.
+Use the documentation matching the installed packages to verify
+current syntax, APIs and setup. Do not invent classes or package names.
+
+Inspect the framework, styling systems, CSS entry, shared definitions,
+source discovery and available checks. Do not edit yet.
+
+Propose the smallest working batch around the selected component or
+route. Explain how the old and new CSS will coexist, which screens
+need comparison, and which component behaviors must be preserved.
+
+List the files to change, validation commands, unresolved questions
+and evidence needed before deleting old styles or dependencies.`} />
+
+依實際專案審查計畫，再要求實作這批工作。無論由代理或人工修改，都要執行相同檢查。
+
+<a id="custom-engine-and-binding-migration"></a>
+自訂引擎宿主請參閱[目前的執行契約](/reference/packages#css)。本指南處理從外部樣式系統轉換的工作。

@@ -1,0 +1,81 @@
+# Reference prose: tokens/text
+
+## title \{#copy-title\}
+
+
+文本
+
+## summary \{#copy-summary\}
+
+
+同时设置字号、行高和字距的文本样式。
+
+## note \{#copy-note\}
+
+
+主要的 `--text-<name>` 令牌创建类；其 `--line-height` 和 `--letter-spacing` 配套令牌可选，未提供时使用 `normal`。字体族、字重和颜色仍由独立类设置。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+每行显示一个类读取的三个值。预设字号引用对应的 font-size 令牌，表格则解析该引用以便阅读。所有预设文本样式都包含两个配套令牌。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+一个主要令牌，三个声明
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`--text-card` 注册 `text-card`。这个类始终输出字号、行高和字距。如果没有 `--text-card--line-height` 或 `--text-card--letter-spacing`，对应声明就使用 `normal`，不会保留继承的值。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+只有配套令牌不会注册文本样式。即使只想自定义行高或字距，也必须添加主要的字号令牌。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+配套令牌是这个组合样式使用的值，不是另一个类名。需要独立调整时，请使用 `font-<size>`、`leading-<name>` 或 `tracking-<name>`。条件相同时，这些单属性工具类排在文本组合样式之后，可覆盖对应声明；class 属性中的顺序不会决定结果。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+这个组合样式不会加载字体、选择字体族或字重、添加外边距，或决定段落宽度。如何选择并组合文本样式来建立层次，见文字排版指南。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+字体
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+行高
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+字距
+
+## explanation-links-3-label \{#copy-explanation-links-3-label\}
+
+
+生成规则的顺序
+
+## usage-lead \{#copy-usage-lead\}
+
+
+为段落应用一组文本样式，字体族、字重和颜色仍可独立设置。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+添加文本样式及其配套令牌：`--text-display` 会创建 `text-display`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

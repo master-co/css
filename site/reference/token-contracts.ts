@@ -1,15 +1,17 @@
+import { languageOf } from '@master/internal-site/common/locales.js'
+import { referenceText as text } from './copy'
 import { createHash } from 'node:crypto'
 import { foundationFamilies, namespaceTokens } from '@master/internal-site/css/foundation-data/tokens.ts'
 import { documentHeadings } from './headings'
-import { tokenPages } from './sheet-editorial'
+import { localizedTokenPages } from './sheet-editorial'
 import { familiesSheet, familiesSheetMarkdown, tokenSheet, tokenSheetMarkdown, ungroupedFamilies, type ReferenceSheet } from './sheets'
 import type { ReferenceDocument } from './types'
 
-function document(id: string, title: string, description: string, markdown: string, sheet: ReferenceSheet, facts: unknown): ReferenceDocument {
+function document(id: string, title: string, description: string, markdown: string, sheet: ReferenceSheet, facts: unknown, locale = 'en'): ReferenceDocument {
   return {
     id: `tokens/${id}`, kind: 'tokens', title, description, category: 'Tokens', url: `/reference/tokens/${id}`,
     source: id === 'families' ? 'packages/preset/src/utilities.css' : 'packages/preset/src/theme.css',
-    sourceDigest: createHash('sha256').update(JSON.stringify(facts)).digest('hex'), language: 'en', aliases: [], terms: [], rows: [], examples: [],
+    sourceDigest: createHash('sha256').update(JSON.stringify(facts)).digest('hex'), language: languageOf(locale), locale, aliases: [], terms: [], rows: [], examples: [],
     related: ['rules/modes', 'directives/theme'], markdown, headings: documentHeadings(markdown), extractionNotes: [], sheet,
   }
 }
@@ -17,9 +19,9 @@ function document(id: string, title: string, description: string, markdown: stri
 const exampleFacts = ({ id, title, classes, css, configuration }: ReferenceDocument['examples'][number]) => ({ id, title, classes, css, configuration })
 
 /** Token pages and the family index, in reading order. */
-export function buildTokenContracts(): ReferenceDocument[] {
-  const familiesView = familiesSheet()
-  const families = document('families', 'Token families', 'Every preset token family: its class prefix, token namespace and native properties.', familiesSheetMarkdown(familiesView), familiesView, foundationFamilies)
+export function buildTokenContracts(locale = 'en'): ReferenceDocument[] {
+  const familiesView = familiesSheet(locale)
+  const families = document('families', text('tokens/families', 'title', locale), text('tokens/families', 'description', locale), familiesSheetMarkdown(familiesView, locale), familiesView, foundationFamilies, locale)
   // A shared property points at its shortest prefix (padding → p); a prefix always names its own row.
   families.identifierAnchors = Object.fromEntries([
     ...foundationFamilies.toReversed().flatMap(family => [family.property, ...family.properties, `(${family.properties[0]}:`].map(key => [key, `family-${family.prefix}`])),
@@ -32,10 +34,10 @@ export function buildTokenContracts(): ReferenceDocument[] {
   if (ungroupedFamilies(familiesView).length) families.terms.push(...ungroupedFamilies(familiesView).map(family => family.prefix))
 
   const documents = [families]
-  for (const page of tokenPages) {
-    const sheet = tokenSheet(page)
+  for (const page of localizedTokenPages(locale)) {
+    const sheet = tokenSheet(page, locale)
     const tokens = page.groups.flatMap(group => namespaceTokens(group.namespace))
-    const doc = document(page.id, page.title, page.summary, tokenSheetMarkdown(sheet), sheet, tokens)
+    const doc = document(page.id, page.title, page.summary, tokenSheetMarkdown(sheet, locale), sheet, tokens, locale)
     const anchors: [string, string][] = []
     for (const group of sheet.groups) for (const value of group.values) {
       const id = group.palette ? group.id : value.id

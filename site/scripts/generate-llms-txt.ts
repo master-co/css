@@ -1,11 +1,18 @@
+import { locales } from '@master/internal-site/common/locales.js'
+import { readLocalizedDocument } from '@master/internal-site/build/localization.ts'
 import { benchmarkContent } from '../utils/benchmark-content'
 import { introductionContent } from '../utils/introduction-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
-import { readFile, writeFile, readdir } from 'node:fs/promises'
+import { readFile, writeFile, readdir, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolvePublicEnv } from '../utils/public-env.js'
-import { generateReference, renderDocumentMarkdown } from '../reference/build'
+import { generateReference, renderDocumentMarkdown, referencePath, localizeReferenceMarkdown } from '../reference/build'
+import { guideOverviewMarkdown } from '../utils/guide-overview'
+import { localizedGuideCategories, publishedLocalizedDocument } from '../utils/localized-content'
+import { writeArticleMarkdownExports } from './article-exports'
+import { translateSite } from '../utils/translations'
+import sharedTranslations from '@master/internal-site/common/translations.js'
 import { referenceOverviewMarkdown } from '../reference/navigation-data'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundation-content'
@@ -26,7 +33,7 @@ export type Page = {
   file: string
   /** Top-level URL section, e.g. "guide". */
   section: string
-  /** Public URL path, e.g. "/en/guide/colors". */
+  /** Public URL path, e.g. "/guide/colors". */
   url: string
   /** Display title from metadata, first H1/H2, or last route segment. */
   title: string
@@ -79,11 +86,16 @@ export function normalizeRoutePath(relPath: string): string {
 /** Convert filesystem path under content/ into a public URL path. */
 export function pageUrl(relPath: string, locale = DEFAULT_LOCALE): string {
   const dir = normalizeRoutePath(relPath)
-  return `/${locale}${dir ? '/' + dir : ''}`
+  return `${locale === DEFAULT_LOCALE ? '' : '/' + locale}${dir ? '/' + dir : ''}` || '/'
 }
 
 export function topSection(relPath: string): string {
   return normalizeRoutePath(relPath).split('/')[0] ?? ''
+}
+
+/** Localize reader links while leaving executable examples byte-for-byte intact. */
+export function localizedMarkdownLinks(markdown: string, locale: string) {
+  return localizeReferenceMarkdown(markdown, locale)
 }
 
 export function cleanMdx(body: string): string {
@@ -109,7 +121,7 @@ function cleanMdxProse(body: string): string {
     .replace(/[ \t]+\n/g, '\n')
 }
 
-export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL): string {
+export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL, t: (text: string) => string = text => text, locale = DEFAULT_LOCALE): string {
   const bySection = new Map<string, Page[]>()
   for (const p of pages) {
     if (!bySection.has(p.section)) bySection.set(p.section, [])
@@ -119,11 +131,11 @@ export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL): string {
 
   const lines: string[] = []
   lines.push(`# ${PROJECT_NAME}`, '')
-  lines.push(`> ${PROJECT_DESC}`, '')
-  lines.push(`Reference discovery: [structured index](${siteUrl}/reference/index.json). Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.`, '')
+  lines.push(`> ${t(PROJECT_DESC)}`, '')
+  lines.push(`${t('Reference discovery')}: [${t('structured index')}](${siteUrl}${locale === DEFAULT_LOCALE ? '' : '/' + locale}/reference/index.json). ${t('Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.')}`, '')
   for (const sec of sortedSections) {
     const items = bySection.get(sec)!.sort((a, b) => a.url.localeCompare(b.url))
-    lines.push(`## ${sectionTitle(sec)}`)
+    lines.push(`## ${sec.split(' / ').map(part => t(sectionTitle(part))).join(' / ')}`)
     for (const p of items) {
       const note = p.description ? `: ${p.description}` : ''
       lines.push(`- [${p.title}](${siteUrl}${p.markdownUrl ?? p.url})${note}`)
@@ -133,14 +145,14 @@ export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL): string {
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n'
 }
 
-export function renderLlmsFull(pages: Page[], siteUrl = SITE_URL): string {
+export function renderLlmsFull(pages: Page[], siteUrl = SITE_URL, t: (text: string) => string = text => text): string {
   const sorted = [...pages].sort((a, b) => a.url.localeCompare(b.url))
-  const out: string[] = [`# ${PROJECT_NAME}`, '', `> ${PROJECT_DESC}`, '']
+  const out: string[] = [`# ${PROJECT_NAME}`, '', `> ${t(PROJECT_DESC)}`, '']
   for (const p of sorted) {
     out.push('---', '')
     out.push(`# ${p.title}`, '')
-    out.push(`Source: ${siteUrl}${p.url}`, '')
-    if (p.description) out.push(`Summary: ${p.description}`, '')
+    out.push(`${t('Source')}: ${siteUrl}${p.url}`, '')
+    if (p.description) out.push(`${t('Summary')}: ${p.description}`, '')
     out.push(p.body.trim(), '')
   }
   return out.join('\n').trimEnd() + '\n'
@@ -159,7 +171,7 @@ async function listMdx(root: string): Promise<string[]> {
     const entries = await readdir(dir, { withFileTypes: true })
     for (const e of entries) {
       const full = path.join(dir, e.name)
-      if (e.isDirectory()) await walk(full)
+      if (e.isDirectory() && e.name !== 'drafts') await walk(full)
       else if (e.isFile() && e.name === 'content.mdx') out.push(full)
     }
   }
@@ -177,15 +189,24 @@ async function loadMetadata(file: string): Promise<PageMetadata> {
   }
 }
 
-export async function loadPages(localeRoot: string): Promise<Page[]> {
+export async function loadPages(localeRoot: string, locale = DEFAULT_LOCALE, { skipMissing = false } = {}): Promise<Page[]> {
   const files = await listMdx(localeRoot)
   const pages: Page[] = []
   for (const file of files) {
     const rel = path.relative(localeRoot, file).split(path.sep).join('/')
-    const [rawBody, metadata] = await Promise.all([
-      readFile(file, 'utf8'),
-      loadMetadata(file)
-    ])
+    const baseMetadata = await loadMetadata(file)
+    if ((baseMetadata as any).draft || (baseMetadata as any).disabled) continue
+    let document: Awaited<ReturnType<typeof readLocalizedDocument>>
+    try {
+      const published = await publishedLocalizedDocument(file, locale, baseMetadata)
+      if (!published) continue
+      document = published
+    }
+    catch (error) {
+      if (skipMissing && (error as Error & { cause?: NodeJS.ErrnoException }).cause?.code === 'ENOENT') continue
+      throw error
+    }
+    const { content: rawBody, metadata, file: localizedFile } = document
     const segments = normalizeRoutePath(rel).split('/')
     const lastSegment = segments[segments.length - 1] ?? ''
     const installationSlug = segments.slice(2).join('/')
@@ -204,50 +225,60 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
     const migration = segments[0] === 'guide' && segments[1] === 'migration' && segments.length <= 3
       && migrationGuideSlugs.includes(migrationSlug as typeof migrationGuideSlugs[number])
     pages.push({
-      file,
+      file: localizedFile,
       section: topSection(rel),
-      url: pageUrl(rel),
+      url: pageUrl(rel, locale),
+      markdownUrl: `${pageUrl(rel, locale)}.md`,
       title: metadataTitle(metadata.title) || deriveTitle(rawBody, lastSegment),
       description: metadata.description,
-      body: normalizeRoutePath(rel) === 'guide/syntax-tutorial'
-        ? (await syntaxTutorialContent(path.resolve(localeRoot, '..'))).markdown
-        : normalizeRoutePath(rel) === 'benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'))).markdown
-        : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '..'))).markdown
-        : installation ? (await installationGuideContent(path.resolve(localeRoot, '..'), installationSlug)).markdown
-        : agent ? (await agentGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
-        : tooling ? (await toolingGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
-        : delivery ? (await deliveryGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
-          : foundation ? (await foundationGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
-          : projectStyle ? (await projectStyleGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
-            : migration ? (await migrationGuideContent(path.resolve(localeRoot, '..'), migrationSlug)).markdown
+      body: normalizeRoutePath(rel) === 'guide'
+        ? guideOverviewMarkdown(await localizedGuideCategories(path.resolve(localeRoot, '..'), JSON.parse(await readFile(path.join(localeRoot, '../.categories/guide.json'), 'utf8')), locale, { skipMissing }), text => translateSite(locale, text))
+        : normalizeRoutePath(rel) === 'guide/syntax-tutorial'
+        ? (await syntaxTutorialContent(path.resolve(localeRoot, '..'), locale)).markdown
+        : normalizeRoutePath(rel) === 'benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'), locale)).markdown
+        : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '..'), locale)).markdown
+        : installation ? (await installationGuideContent(path.resolve(localeRoot, '..'), installationSlug, locale)).markdown
+        : agent ? (await agentGuideContent(path.resolve(localeRoot, '..'), lastSegment, locale)).markdown
+        : tooling ? (await toolingGuideContent(path.resolve(localeRoot, '..'), lastSegment, locale)).markdown
+        : delivery ? (await deliveryGuideContent(path.resolve(localeRoot, '..'), lastSegment, locale)).markdown
+          : foundation ? (await foundationGuideContent(path.resolve(localeRoot, '..'), lastSegment, locale)).markdown
+          : projectStyle ? (await projectStyleGuideContent(path.resolve(localeRoot, '..'), lastSegment, locale)).markdown
+            : migration ? (await migrationGuideContent(path.resolve(localeRoot, '..'), migrationSlug, locale)).markdown
               : cleanMdx(rawBody)
     })
   }
+  for (const page of pages) page.body = localizedMarkdownLinks(page.body, locale)
   return pages
 }
 
 export async function generate(siteRoot: string): Promise<{ index: string; full: string }> {
-  const localeRoot = path.join(siteRoot, 'content')
-  const catalog = await generateReference(siteRoot)
+  await generateReference(siteRoot)
   const published = new Set<string>((JSON.parse(await readFile(path.join(siteRoot, '.pages.json'), 'utf8')) as { pathname: string }[]).map(page => page.pathname))
-  const pages = (await loadPages(localeRoot)).filter(page => page.section !== 'reference'
-    && published.has(page.url.replace(/^\/(en|tw)(?=\/)/, '')))
-  const overview = pages.find(page => page.url === '/en/guide')
-  if (overview) {
-    const { guideOverviewMarkdown } = await import('../utils/guide-overview')
-    overview.body = guideOverviewMarkdown(JSON.parse(await readFile(path.join(siteRoot, '.categories/guide.json'), 'utf8')))
-  }
-  pages.push({ file: 'site/reference/navigation-data.ts', section: 'reference', url: '/reference', markdownUrl: '/reference.md', title: 'Reference', description: 'The language and tool reference for writing, understanding and reviewing Master CSS.', body: referenceOverviewMarkdown(catalog.documents) })
-  pages.push(...catalog.documents.map(doc => ({
-    file: doc.source, section: `reference / ${doc.kind}`, url: doc.url, markdownUrl: `${doc.url}.md`,
-    title: doc.title, description: doc.description, body: renderDocumentMarkdown(doc, catalog)
-  })))
-  const index = renderLlmsIndex(pages)
-  const full = renderLlmsFull(pages)
   const publicDir = path.join(siteRoot, 'public')
-  await writeFile(path.join(publicDir, 'llms.txt'), index, 'utf8')
-  await writeFile(path.join(publicDir, 'llms-full.txt'), full, 'utf8')
-  return { index, full }
+  const defaultOutput = { index: '', full: '' }
+  for (const locale of locales) {
+    const catalogFile = path.join(siteRoot, '.generated', locale === DEFAULT_LOCALE ? 'reference.json' : `reference.${locale}.json`)
+    const catalog = JSON.parse(await readFile(catalogFile, 'utf8'))
+    const dictionary = { ...sharedTranslations[locale], ...JSON.parse(await readFile(path.join(publicDir, 'dictionaries', `${locale}.json`), 'utf8')) }
+    const t = (text: string) => dictionary[text] || text
+    const prefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`
+    const pages = (await loadPages(path.join(siteRoot, 'content'), locale)).filter(page => page.section !== 'reference'
+      && published.has(prefix ? page.url.slice(prefix.length) || '/' : page.url))
+    await writeArticleMarkdownExports(publicDir, pages, locale)
+    pages.push({ file: 'site/reference/navigation-data.ts', section: 'reference', url: `${prefix}/reference`, markdownUrl: `${prefix}/reference.md`, title: t('Reference'), description: t('The language and tool reference for writing, understanding and reviewing Master CSS.'), body: referenceOverviewMarkdown(catalog.documents, locale) })
+    pages.push(...catalog.documents.map((doc: any) => ({
+      file: doc.source, section: `reference / ${doc.kind}`, url: referencePath(doc.url, locale), markdownUrl: `${referencePath(doc.url, locale)}.md`,
+      title: doc.title, description: doc.description, body: renderDocumentMarkdown(doc, catalog, locale)
+    })))
+    const index = renderLlmsIndex(pages, SITE_URL, t, locale)
+    const full = renderLlmsFull(pages, SITE_URL, t)
+    const destination = path.join(publicDir, prefix)
+    await mkdir(destination, { recursive: true })
+    await writeFile(path.join(destination, 'llms.txt'), index, 'utf8')
+    await writeFile(path.join(destination, 'llms-full.txt'), full, 'utf8')
+    if (locale === DEFAULT_LOCALE) Object.assign(defaultOutput, { index, full })
+  }
+  return defaultOutput
 }
 
 const isMain = (() => {

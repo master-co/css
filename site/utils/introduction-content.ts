@@ -1,9 +1,9 @@
-import path from 'node:path'
+import { localizedContentFile } from './localized-content'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { introductionIllustrationMarkdown } from '../content/guide/introduction/illustration'
 
-export async function introductionContent(siteRoot: string) {
-  const result = await extractReferenceMdx(path.join(siteRoot, 'content/guide/introduction/content.mdx'), [], [], {
+export async function introductionContent(siteRoot: string, locale = 'en') {
+  const result = await extractReferenceMdx(await localizedContentFile(siteRoot, 'content/guide/introduction/content.mdx', locale), [], [], {
     overview: 'include',
     component: name => name === 'IntroductionIllustration' ? introductionIllustrationMarkdown() : undefined
   })

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/contents-insertion
+
+## title \{#copy-title\}
+
+
+래퍼가 호출자 선언을 배치
+
+## alt \{#copy-alt\}
+
+
+is-hover-or-focus-visible 선택자의 contents 슬롯에 underline 클래스가 제공하는 text-decoration-line: underline이 들어간다.
+
+## caption \{#copy-caption\}
+
+
+강조한 슬롯과 삽입 선언은 선택자 경계 안의 같은 위치에 있습니다. 래퍼는 선언의 적용 위치를 제어합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+@mixin --hocus \{ &:is(:hover, :focus-visible) \{ @contents; \} \}는 명시적 contents 슬롯이 있는 선택자 래퍼를 정의합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+underline@apply(--hocus)는 슬롯에 text-decoration-line: underline을 제공합니다. 출력 규칙은 어느 상태에서든 클래스 소유 요소에 일치합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+배치를 읽기 쉽도록 그림은 이스케이프 클래스 소유 요소를 &로 줄여 표시합니다. 생성 CSS는 전체 소유 요소를 유지합니다.

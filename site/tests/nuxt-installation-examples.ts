@@ -40,7 +40,7 @@ export function nuxtInstallationFixture(mode: NuxtInstallationMode) {
       const indent = Math.min(...lines.filter(line => line.trim()).map(line => line.match(/^ */)![0].length))
       write(name, lines.map(line => line.slice(indent)).join('\n').replace("mode: 'static'", `mode: '${mode}'`) + '\n')
     }
-    assert.ok(source.includes(`npm create @master/css@rc -- --framework nuxt${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
+    assert.ok(source.includes(`npm create @master/css@VERSION -- --framework nuxt${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
     for (const name of ['nuxt', 'vue', '@master/css', '@master/css-nuxt', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)
       mkdirSync(dirname(destination), { recursive: true })

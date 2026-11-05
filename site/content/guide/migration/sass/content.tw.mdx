@@ -1,0 +1,245 @@
+---
+title: "從 Sass 遷移"
+description: "將 Sass 變數、map、mixin、placeholder 與巢狀元件樣式移向 Master CSS，同時保留有用的 CSS 結構。"
+figures: {"SassIllustration": {"title": "讓各編譯器讀取自己的語言", "alt": "Sass 將 legacy.scss 編譯為一般 legacy.css。獨立 app.css 匯入此結果，並包含 Master CSS 定義。Sass 輸出存在後，Master CSS 才編譯應用程式進入點。", "caption": "Master CSS 定義留在 .css 進入點。匯入 Sass 編譯結果，開發與正式建置都維持相同順序。", "description": [{"title": "前置處理 Sass", "text": "Sass 編譯器將 @mixin stack 與 @include stack 展開為一般 CSS。"}, {"title": "匯入輸出", "text": "生成檔存在後，app.css 才匯入 legacy.css。"}, {"title": "編譯應用程式進入點", "text": "Master CSS 讀取 app.css 中自己的定義，並保留匯入的原生規則。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import SassIllustration from './components/SassIllustration.astro'
+
+Sass 與 Master CSS 可以並存。第三方匯入、生成選擇器、複雜巢狀結構，以及用 CSS 更易讀的樣式，都可以留在 Sass。重複的視覺值與由標記管理的元件樣式，若移到 Master CSS 後更易維護，再進行轉換。
+
+本指南涵蓋使用變數、map、mixin、函式、placeholder、partial 與巢狀選擇器的 `.scss`、`.sass` 專案。
+
+---
+
+CSS `@mixin` 與 Sass `@mixin` 使用相同關鍵字。請將 Master CSS 定義放在 `.css`，或從 Sass 輸出時採用 [SCSS 插值模式](/reference/directives/definitions#sass-interoperability)。[Sass mixin 語法](https://sass-lang.com/documentation/at-rules/mixin/)不接受以 `--` 開頭的 mixin 名稱；Master CSS 定義必須在未被解讀為 Sass mixin 的狀態下送達 Master 編譯器。
+
+## 遷移策略 \{#migration-strategy\}
+從應用程式目前會建置的 Sass 進入點開始。依[共用遷移流程](/guide/migration#migration-strategy)，區分編譯階段工作與瀏覽器應接收的值。
+
+<DocumentComparison>
+
+| 既有 Sass 職責 | 保留或搬移 |
+| --- | --- |
+| 產品色彩、間距與圓角 | 使用處準備好後，將共用值移到 `@theme`。 |
+| 迴圈、生成選擇器、第三方匯入與函式 | 有明確替代方案前，繼續以 Sass 編譯。 |
+| 重複宣告群組 | 依使用位置，選擇原生元件 CSS 或 Master CSS mixin。 |
+| 局部視覺規則 | 標記 class 更易讀時才轉換。 |
+| 結構性巢狀、列印規則與複雜動畫 | 保留有用的原生 CSS。 |
+
+</DocumentComparison>
+
+Sass 變數在前置處理階段解析；CSS 自訂屬性則參與瀏覽器串接。兩者之間搬移值，會改變值可變動的時間與位置，替換前請檢查所有使用處。
+
+<SassIllustration />
+
+---
+
+## 在 Sass 旁加入 Master CSS \{#add-master-css-beside-sass\}
+從應用程式原本就會載入的樣式表匯入 Master CSS，並保留 Sass 編譯流程。
+
+```css name=app.css
+@import "@master/css";
+@import "./legacy.css";
+```
+
+在 Master CSS 解析此匯入圖之前，先將既有 Sass 進入點編譯成 `legacy.css`。Sass 語法留在獨立輸入；匯入結果必須是一般 CSS。監看模式也要維持順序：Sass 修改先更新 `legacy.css`，應用程式 CSS 才重新建置。不要手動編輯生成檔。
+
+一般應用程式檔案使用預設來源探索即可。只有需要自訂納入、排除、safelist 或 blocklist 行為時，才新增明確的來源指令。
+
+Sass 目前若輸出全域重設、第三方 CSS 或生成選擇器，遷移期間應保留匯入。編譯階段 Sass 變數與執行階段 CSS 自訂屬性的行為不同：用於迴圈、選擇器組合或計算的 Sass 值，需等這些用途有替代方式後才移除。
+
+---
+
+## 將變數與 map 移到 `@theme` \{#move-variables-and-maps-into--theme\}
+定義產品值的 Sass 變數與 map，通常可轉成 Master CSS 主題 token。
+
+```scss name=_tokens.scss
+$color-primary: #2563eb;
+$color-body: #172033;
+$space-card: 1.5rem;
+$radius-card: .75rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
+}
+
+```
+
+```html
+<article class="b(1) b-solid b-line-divider r-card bg-white fg-body p-card">
+  ...
+</article>
+```
+
+使用能描述產品用途的 token 名稱。若 Sass 變數名稱只是實作細節，不必保留。
+
+---
+
+## 轉換局部元件樣式 \{#convert-local-component-styles\}
+樣式屬於單一元素或單一元件實例時，可將局部視覺規則移到標記。
+
+```scss name=Card.module.scss
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .75rem;
+  background: #fff;
+  color: #172033;
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md r-card bg-white fg-body p-card">
+      {children}
+    </section>
+  )
+}
+```
+
+選擇器描述文件結構、生成內容、列印規則、複雜動畫時間軸或第三方標記時，保留 Sass 或一般 CSS。
+
+---
+
+## 有意識地替換 placeholder 與 mixin \{#replace-placeholders-and-mixins-intentionally\}
+Sass placeholder 與 mixin 常表達產品用途或底層基本功能。請依歸屬選擇 Master CSS 對應方式。
+
+產品用途使用 `@layer components`。前例的 `@theme` 值保留在同一專案進入點：
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .card {
+    display: grid;
+    border-radius: var(--radius-card);
+    gap: var(--spacing-md);
+    padding: var(--spacing-card);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    color: var(--color-body);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+  }
+}
+```
+
+```html
+<article class="card">...</article>
+<button type="button" class="btn">Save</button>
+```
+
+可重用的 class 配方使用 `@utility`；宣告需要在 CSS 規則內重用時，使用 `@mixin`：
+
+```css name=app.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">...</section>
+```
+
+重複宣告群組若應留在 CSS 中，就以 Master CSS mixin 套用取代 `@include`：
+
+```scss name=_stack.scss
+@mixin stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.article-summary {
+  @include stack;
+}
+```
+
+```css name=app.css
+@mixin --stack {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.article-summary {
+  @apply --stack;
+}
+```
+
+這個定義應放在 Master CSS 的 `.css` 進入點。它不會建立 `stack` utility class；那是 `@utility` 的另一項工作。
+
+Sass mixin 若生成許多選擇器、包含瀏覽器因應處理，或其 CSS 改成 class 後更難理解，就應保留。
+
+---
+
+## 將有用的巢狀結構保留為 CSS \{#keep-useful-nesting-as-css\}
+目標是單一元素時，巢狀 Sass 可以清楚對應到 Master CSS 狀態。
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+巢狀選擇器表達內部結構時，請留在 CSS：
+
+```css name=app.css
+.article-content {
+  h2 {
+    margin-top: 2rem;
+  }
+
+  pre code {
+    white-space: pre;
+  }
+}
+```
+
+Vite、Next.js 與 Webpack 整合會在 Sass 前置處理後，自動提供專案主題變數。
+
+```css name=Article.module.css
+.article {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+```
+
+---
+
+## 驗證遷移結果 \{#validate-the-migration\}
+- 每批工作後執行 Sass 編譯器、格式化、lint、型別檢查、測試與正式建置。
+- 比較轉換頁面在響應式斷點、深色模式、懸停、focus-visible、停用與列印狀態下的表現。
+- 第三方匯入、生成 CSS、複雜巢狀、含瀏覽器因應處理的 mixin，以及以 CSS 更清楚的一次性規則，繼續使用 Sass。
+- 確認所有匯入樣式表、元件與套件都不再依賴 Sass 後，才移除 Sass 套件與建置設定。
+
+---
+
+## 相關參考 \{#useful-references\}
+- [安裝](/guide/installation)：加入 Master CSS。
+- [渲染模式](/guide/rendering-modes)：選擇靜態、執行階段或漸進式渲染。
+- [樣式宣告](/reference/rules/declarations)：class 語法。
+- [主題 token](/guide/theme)：token；[變數與模式](/reference/rules/modes)：模式；[條件](/reference/rules/conditions)：查詢語法。
+- [CSS 指令](/reference#directives)：`@theme`、`@mixin` 與 `@reference`；[串接層](/guide/cascade-layers)：原生元件層。
+- [路由層級樣式](/guide/route-level-styles)：使用專案定義與原生宣告的局部 CSS 檔案。
+- [全域樣式](/guide/global-styles#shared-vocabulary)：選擇標記 class、主題 token、自訂 utility 與元件 class。

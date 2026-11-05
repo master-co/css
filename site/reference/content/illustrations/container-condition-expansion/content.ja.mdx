@@ -1,0 +1,36 @@
+# Reference prose: illustrations/container-condition-expansion
+
+## title \{#copy-title\}
+
+
+名前付き条件の展開はコンテナーを選ばない
+
+## alt \{#copy-alt\}
+
+
+--dense 条件が名前付きの幅条件とスタイルクエリを組み合わせる。@container card で使うと条件を展開し、コンテナー名 card は保持する。
+
+## caption \{#copy-caption\}
+
+
+定義が保存するのは条件です。使用箇所でコンテナー名 card を指定します。--dense の展開は幅とスタイルの両検査を保持します。
+
+## description-0 \{#copy-description-0\}
+
+
+--md は幅条件 (width >= 28rem) を定義し、--dense はその参照と style(--density: compact) を組み合わせます。
+
+## description-1 \{#copy-description-1\}
+
+
+使用箇所の @container card (--dense) が card というコンテナーを選びます。
+
+## description-2 \{#copy-description-2\}
+
+
+展開結果は @container card (width >= 28rem) and style(--density: compact) です。コンテナー名は変わらず、定義の一部にもなりません。
+
+## description-3 \{#copy-description-3\}
+
+
+同じ条件を別のコンテナー名や、最も近い適格なコンテナーで再利用できます。図はコンパイル時の代入であり、DOM ツリーではありません。

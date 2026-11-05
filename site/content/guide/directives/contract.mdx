@@ -15,7 +15,7 @@ The package import is the only project entry marker. It loads the preset's nativ
 
 Explicit standalone compiler and manifest APIs remain available. A manifest alone does not load native CSS; applications using runtime or server rendering must also deliver the relevant native stylesheet.
 
-### Local file URLs
+### Local file URLs \{#local-file-urls\}
 
 Node file compilation reads CSS import names using CSS escaping and case rules.
 Relative `@import` and `@reference` URLs resolve their pathname against the source
@@ -29,7 +29,7 @@ For a prepared virtual stylesheet, the host's explicit filesystem source owner
 also supplies the base for relative CSS references. Resources in a referenced
 theme token remain relative to the reference file when used elsewhere.
 
-### Stylesheet boundaries and resource URLs
+### Stylesheet boundaries and resource URLs \{#stylesheet-boundaries-and-resource-urls\}
 
 Import media, supports and layer qualifiers apply to the imported stylesheet. Keep those boundaries when publishing CSS, and resolve image and font URLs from their original source file. A token used through `@reference` also retains its defining file as the resource owner.
 
@@ -415,7 +415,7 @@ Write native component selectors in `@layer components`.
 
 Native rules are delivered according to the stylesheet import graph. Utility definitions register class names; mixin definitions provide CSS reuse through `@apply`. Both are consumed during compilation and emit CSS only when used.
 
-### Sass interoperability
+### Sass interoperability \{#sass-interoperability\}
 
 Place CSS mixin definitions in a `.css` file when using Sass. Current Dart Sass reserves `@mixin --name` for future CSS support and rejects it as a Sass mixin; see [Sass's compatibility notice](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/). An SCSS file may emit the native at-rule through interpolation before Master CSS compiles it:
 
@@ -655,21 +655,21 @@ Declare keyframes in native CSS, and opt into usage-based output in their owning
 
 Keyframes follow the same file policy as native class rules. By default they are native CSS: they stay in the output in place and verbatim, and Master CSS never emits them again. `@prune native;` turns the file's keyframes into on-demand definitions, like tokens: they leave its native output, and the output that uses one emits it with the generated CSS. `@preserve native;` wins when both appear. The policy applies only to the declaring file and does not propagate through imports. The `pruneNativeCSS` option retains its project-owned file scope. Package CSS stays preserved unless it explicitly opts into pruning. `preserveNativeCSS: false` suppresses native delivery; on-demand definitions are still emitted where they are used.
 
-### Keyframe usage roots
+### Keyframe usage roots \{#keyframe-usage-roots\}
 
 Animation utilities, native animation declarations, static animation tokens and keyframe safelists use their matching definitions. Analysis follows shorthand values, animation-name lists, nested variables, fallbacks, scoped overrides and transitive token dependencies. A used definition also uses the tokens its frames read; a native definition supplies only those tokens, since its stylesheet delivers the frames. Unresolved dynamic names conservatively use all candidate definitions in the compilation graph and produce an information diagnostic.
 
 <ReferenceIllustration id="keyframe-reachability" />
 
-### Keyframe conditions and restrictions
+### Keyframe conditions and restrictions \{#keyframe-conditions-and-restrictions\}
 
 An emitted on-demand definition is wrapped in the conditional and layer rules it was declared in, including the layer of a qualified import, and follows the generated layers. Definitions of one container share one wrapper. Same-name definitions remain separate, in declaration order; the browser determines which definition wins. Names are decoded and case-sensitive. An anonymous layer cannot be re-entered, so on-demand keyframes in one, or imported into one, are compilation errors; name the layer or preserve the file. Their frames are emitted away from their stylesheet, so a relative `url()` in them is a compilation error; use an absolute URL or preserve the file. Definition IDs derive from the declaring file's nearest named `package.json` and its package-relative path, so the same project emits identical CSS from any checkout or installation directory. Renaming that package changes the IDs; files outside any named package fall back to their absolute path.
 
-### Keyframe resource ownership
+### Keyframe resource ownership \{#keyframe-resource-ownership\}
 
 Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Unused utilities and mixins, pruned native rules and undelivered reference styles do not create usage roots. `@reference` makes definitions available on demand without importing their preservation policy or safelists; native keyframes with relative URLs stay with their stylesheet. Native keyframes of a project or base manifest are likewise on demand in a stylesheet that does not deliver them. Emitted globals list the keyframes an output delivers, natively or on demand, so another output does not emit them again. For animation names introduced only by JavaScript, use `@safelist keyframes "reveal";`.
 
-### Runtime keyframe lifetime
+### Runtime keyframe lifetime \{#runtime-keyframe-lifetime\}
 
 The runtime tracks definition IDs separately from names and inserts on-demand definitions into its own stylesheet. DOM removal releases a definition only when no native usage, static token or safelist still uses it. HMR replaces definitions and emitted globals together; SSR hydration uses the same IDs and resource order. Linked stylesheets stay ordinary CSS with no companion files or markers.
 

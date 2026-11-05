@@ -1,0 +1,210 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import FixedUtilities from '~/site/reference/FixedUtilities.astro'
+
+<a id="overview"></a>
+
+class 以已註冊的 utility 或原生宣告開頭，後面可加選擇器、條件與重要性標記。本頁定義這些宣告形式、值解析與拒絕規則。完整教學請見[語法教學](/guide/syntax-tutorial)，原生屬性的意義則請查閱 [CSS 參考](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference)。
+
+下方具名形式假設已透過 `@import '@master/css'` 載入預設集。專案定義可以新增或替換 utilities，原生宣告則不需要已註冊的 utility。
+
+## 可用形式 \{#basic-syntax\}
+
+<a id="utilities"></a>
+
+| 形式 | 範例 | 意義 |
+| --- | --- | --- |
+| 靜態 utility | `flex` | 已註冊名稱；此例為 `display: flex` |
+| Token utility | `p-md` | 已註冊前綴與 token 鍵；此例為 `padding: var(--spacing-md)` |
+| 函式 utility | `p(12)` | 帶參數的已註冊函式；此例為 `padding: calc(12 * 1px)` |
+| 原生宣告 | `(padding:1rem)` | 一個完整 CSS 屬性與值 |
+
+這些是不同語法形式，不是可互換的拼寫。靜態、token 與函式 utilities 都可能包含多個宣告：`truncate`、`text-sm` 與 `grid-cols(2)` 都是組合樣式。原生開頭則恰好包含一個宣告，可使用 CSS 簡寫屬性。
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(padding:1rem)']} />
+
+<a id="combine-with-states-and-queries"></a>
+
+每種形式都接受後綴。在 `p(12):hover@sm!` 中，開頭是 `p(12)`，`:hover` 是選擇器，`@sm` 是條件，`!` 則標記重要性。後綴只影響自己的 class。完整契約請見[選擇器](/reference/rules/selectors)與[條件](/reference/rules/conditions)。
+
+## 原生宣告 \{#declaration-heads\}
+
+<a id="native-properties"></a>
+<a id="native-declaration-fallback"></a>
+
+以完整屬性名稱撰寫 `(property:value)`。Master CSS 會先讀取括號配對完整的開頭，再解析後綴。單獨名稱後的冒號會開始選擇器：`flex:hover` 選取已註冊的 `flex` utility，`display:block` 並不是 `(display:block)` 的替代形式。
+
+### 結束邊界 \{#the-closing-boundary\}
+
+字串、註解、跳脫、巢狀括號與方括號，以及未加引號的 `url()` token，都依循 CSS 組成值邊界。引號字串中的 `)` 不會關閉開頭：
+
+```html
+<span class="(content:')')::before"></span>
+```
+
+<ReferenceIllustration id="native-value-boundary" />
+
+開頭內的其他 CSS 結構也保留各自邊界：
+
+| Class | 值的邊界 |
+| --- | --- |
+| `(width:calc(1px+(2px*3)))` | 巢狀括號屬於計算式 |
+| `(grid-template-columns:[start]\|1fr\|[end])` | 方括號包住 Grid 線名稱 |
+| `(background-image:url(/a{b.svg))` | 大括號屬於未加引號的 URL token |
+
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+
+值內仍適用 CSS 跳脫規則。未加引號的 URL 若含括號，請改用引號 URL 或 CSS 跳脫，維持 token 合法。
+
+### 無效開頭 \{#invalid-heads\}
+
+格式錯誤的開頭不會產生規則，也不會改以 utility 或其他 class 形式重試。
+
+| 拒絕的 class | 原因 |
+| --- | --- |
+| `(display:block` | 缺少結束括號 |
+| `(color:red)(display:block)` | 一個 class 內有兩個開頭 |
+| `(color:red;display:block)` | 超過一個宣告 |
+| `(display:block;)` | 頂層分號，即使出現在結尾也不接受 |
+| `(width:calc(1px])` | 分隔符不配對 |
+| `(width:)` | 一般屬性的值為空 |
+| `(color:{red})` | 將大括號區塊作為一般屬性值 |
+| `(width:calc(((…1px…))))` 巢狀 65 層 | 括號巢狀深度超過 64 層 |
+
+自訂屬性可以有空值或配對完整的大括號區塊：`(--slot:)` 與 `(--state:{open})` 都合法。`(--slot:!important)` 是值為空的重要自訂屬性，`(width:!important)` 則無效。
+
+### 輸出與瀏覽器合法性 \{#vendor-prefixes\}
+
+語法合法的屬性名稱，即使工具沒有列出，也能輸出宣告。原生值不限於預設集，但仍必須是目標瀏覽器中該屬性的合法值。例如 `(font-size:48)` 會輸出 `font-size: 48`，不會自動取得 `px`，而這個非零無單位長度是無效 CSS。請用 `(font-size:48px)` 表達該長度。`(field-sizing:content)` 這類原生屬性不需要註冊 utility。
+
+<Class2CSS classes={['(font-size:48px)', '(field-sizing:content)']} />
+
+Master CSS 會輸出特定相容宣告，例如在 `backdrop-filter` 旁加入 `-webkit-backdrop-filter`，但不會加入廠商專屬選擇器，也不會替瀏覽器功能補上 polyfill。請檢查生成 CSS，並透過[相容性](/guide/compatibility)選擇瀏覽器需求與備援設計。
+
+<Class2CSS classes={['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']} />
+
+## 值的編碼 \{#values\}
+
+### 空白、字串與底線 \{#value-encoding\}
+
+即使值包含 CSS 引號，HTML 空白仍會分隔 class。class 值內未加引號的 `|` 會編碼一個空白；引號字串內的管線符號則維持原樣。逗號與斜線等 CSS 標點應保留在原位。
+
+```html
+<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+```
+
+<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+
+色彩值會成為 `rgb(30 60 90 / 80%)`，content 字串則保留為 `'a|b'`。CSS 字串中需要真正空白時，請使用 `\000020` 這類 CSS 跳脫：`(content:'New\000020collection')::before` 會產生「New collection」。六位數跳脫可避免 HTML class 中出現終止空白。
+
+原生開頭內的底線是字面字元，例如 `slide_in`。開頭結束後，`_` 會開始後代選擇器：`(color:red)_a` 指向後代連結。已註冊 utility 名稱不能包含 `_`，但含底線的 token 鍵仍可透過 `var(--name)` 參照。
+
+### 函式與明確變數 \{#functions\}
+
+CSS 函式仍是原生屬性的值。Master CSS 會正規化 `calc(100%-2rem)` 中的算術空白，涵蓋最多 64 層巢狀括號與 `1px-2px-3px` 這類連續減法；更深的內容則保留原樣。計算由瀏覽器執行。Master CSS 不會從單獨字詞推論 token，也不會把 CSS 函式當作 utility 呼叫求值。
+
+<Class2CSS classes={['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']} />
+
+<a id="rgb-hsl-oklch-"></a>
+<a id="hexadecimal-color"></a>
+
+原生色彩值保留原意：`(color:red)`、`(color:#175fe9)` 與 `(color:rgb(23,95,233))` 都提供 CSS 值，`fg-red` 則選取主題 token。`var()` 參照必須明確撰寫；`(font-family:mono)` 指定的是 CSS 字型家族 `mono`，不是 `--font-mono`。token 解析、模式與衍生值請見[變數與模式](/reference/rules/modes)。
+
+### 數字與單位 \{#units\}
+
+<a id="decimal"></a>
+<a id="unit-conversion"></a>
+<a id="unit-sensing"></a>
+<a id="multiplier-units"></a>
+
+原生宣告會保留單位，不會將 `rem` 轉成像素，也不會依屬性推論單位。小數前的零可以省略：`(opacity:.5)` 與 `(opacity:0.5)` 提供相同數值。
+
+| 原生值 | 解讀方式 |
+| --- | --- |
+| `(margin:1rem)` | 相對於根元素字級的長度 |
+| `(width:50%)` | 依屬性的情境解析百分比 |
+| `(rotate:30deg)` | 明確指定的角度 |
+| `(animation-duration:200ms)` | 明確指定的時間；`.2s` 表達相同時長 |
+| `(opacity:.5)` | 無單位數值 |
+| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | 以每個 CSS 像素的點數指定原生影像解析度 |
+
+屬性是否接受數字、長度、百分比或其他型別，由 [CSS 值與單位](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units)規則決定。`p(12)` 則不同：預設集的函式會明確將引數乘以 `1px`。
+
+### 負值 \{#negative\}
+
+原生負值寫在值內，例如 `(margin-top:-2rem)`。直接數值引數使用 `mt(-8)`。負值 token class 則在完整 class 前加上 `-`：`-mt-sm`。負值 token 形式需要數值型 token 與支援負值的 utility；padding 不支援負值，因此 `-p-sm` 會被拒絕。
+
+<Class2CSS classes={['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']} />
+
+引數驗證不會重新定義 CSS 屬性對值的限制。
+
+## 已註冊的 utility \{#registered-utilities\}
+
+### token 名稱 \{#variable-alias\}
+
+<a id="property-abbreviations"></a>
+
+token 前綴由 utility 定義註冊，不會從屬性縮寫推論。`p-md` 讀取 `--spacing-md`；`fg-red` 與 `bg-red` 都讀取 `--color-red`，但設定不同屬性。不會自動產生 `padding-md` 這類完整屬性名稱的對應形式，也沒有 `p-4` 這類隱含數值尺度：所選命名空間中必須存在該鍵。
+
+靜態名稱優先於拼法相同的 token class。例如，即使專案定義了 `--container-full`，`w-full` 仍是 `width: 100%`；即使存在 `--radius-pill`，`pill` 仍是全圓角半徑。名稱相同的靜態 utility 與函式會各自獨立註冊。
+
+完整的前綴與命名空間對應請見 [token 家族索引](/reference/tokens/families)，註冊與取代規則請見 [utility 定義](/reference/directives/definitions#utilities)。[主題 token](/guide/theme)說明如何定義專案值並設定作用範圍。
+
+<ReferenceIllustration id="fixed-name-reservation" />
+
+### 直接數值 \{#direct-values\}
+
+`m(4)`、`b(1)` 與 `grow(1)` 這類預設函式接受一個靜態數字。長度函式輸出乘以 `1px` 的運算；`grow()`、`shrink()` 與 `order()` 直接傳遞數值，其中 `order()` 要求整數。零、小數與負值引數是否可用，依各參數宣告的型別決定。
+
+單位與動態運算式不屬於數值引數：`m(1px)` 與 `b(var(--x))` 不會生成規則。這類值請使用 `(margin:1rem)` 或 `(border-width:var(--x))`。[直接數值](/reference/direct-values)提供完整函式清單、參數型別與生成宣告。
+
+<a id="motion-properties"></a>
+
+組合樣式可協調多個屬性或伴隨值：`text-sm` 包含字級、行高與字距，`animate-fade` 則提供動畫簡寫。查找與覆寫規則分別見[文字 token](/reference/tokens/text#primary-and-companions)與[動態效果 token](/reference/tokens/motion#duration-overrides)。
+
+## 自訂屬性 \{#variable-properties\}
+
+`(--name:value)` 頭部會在符合選擇器的元素上宣告 CSS 自訂屬性。它可使用與其他宣告相同的選擇器與條件，不會註冊 utility 或主題 token。
+
+```html
+<div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
+  Progress
+</div>
+```
+
+<Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+`var(--progress)` 使用一般 CSS 解析與繼承規則。未解析的變數或替換後不相容的值，可能讓引用該值的宣告失效；請視需要使用 [CSS 變數備援值](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var)。[語法教學](/guide/syntax-tutorial#complete-card)說明如何固定 class，並另外提供動態值。
+
+## 組合與重要性 \{#combining-declarations\}
+
+<a id="group"></a>
+<a id="independent-properties"></a>
+
+分開的 class 表達獨立決策，例如 `b(1) b-solid b-line-control`。原生簡寫仍受支援；這項撰寫偏好不會改變 CSS 語法。需要相同選擇器與條件的每個 class 都要分別加上後綴。
+
+```html
+<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
+```
+
+在相同串接層、條件與選擇器中，組合樣式排在單一宣告 utility 之前，接著才是原生宣告。單一宣告 utility 先依屬性家族與涵蓋範圍排序，再依值的來源排序；同一屬性中，token 會排在固定值或直接數值之前。HTML class 的順序不會決定結果：
+
+<Class2CSS classes={['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']} />
+
+此處原生 padding 排在兩個 utility 之後，而 `mt(0)` 與 `mx-auto` 會覆寫 `m-md` 的對應部分。完整排序契約見[串接層](/reference/rules/layers)。若要選擇元件 class、`@utility` 組合樣式或 CSS mixin，請見[重複使用樣式](/guide/reusing-styles)。
+
+### 重要性 \{#important\}
+
+結尾的 `!` 會將該 class 的宣告標為重要。括號值內尾端的原生 `!important` 效果相同；同時撰寫兩者也只會輸出一次。字串內的 `'!important'` 仍是內容文字。
+
+<Class2CSS classes={['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]} />
+
+<ReferenceIllustration id="important-recipe" />
+
+## 固定 utility 查找表 \{#fixed-utilities\}
+
+預設集提供 292 個固定、單一宣告的 utility，每個只設定表列的屬性：`flex-col` 不會啟用 flex 排版，`b-none` 不會重設邊框寬度，`pill` 也不會設定尺寸。包含多個宣告的 `truncate` 組合樣式另列於[截斷](/reference/truncation)。
+
+<FixedUtilities />
+
+`start` 與 `end` 保留原生語意，與 `flex-start`、`flex-end` 不同。邏輯軸中，`x` 表示行內軸，`y` 表示區塊軸；`t`、`r`、`b`、`l` 則是實體邊。固定 utility 接受選擇器、條件與 `!`，並在使用時輸出 CSS。

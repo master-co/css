@@ -1,0 +1,153 @@
+---
+{
+  "title": "Astro에서 Master CSS 설정하기",
+  "description": "Astro 통합과 공유 CSS 진입점을 연결한 뒤 프로덕션 스타일과 선택적 런타임 또는 점진적 전달을 확인합니다.",
+  "category": "통합"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/astro/cover-light.webp'
+import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
+
+공유 CSS 진입점으로 Master CSS를 Astro 사이트에 연결합니다. 통합은 정적, 런타임, 점진적 전달을 지원하며 페이지 렌더링은 계속 Astro가 담당합니다.
+
+(i) **정적 프로덕션 출력의 제한:** 현재 통합은 스캔한 유틸리티 규칙 없이 기본 스타일만 출력할 수 있습니다. 아래 절차로 프로덕션 결과를 확인하세요. 이 통합 경로에 의존하지 않는 정적 스타일시트가 필요하다면 [CLI 빌드](#cli-build)를 사용하세요.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS 추가하기 \{#add-master-css\}
+      기존 [Astro 프로젝트](https://docs.astro.build/en/install-and-setup/)의 루트에서 설치 프로그램을 실행하세요. 기본값은 정적 모드로, 완전한 클래스 문자열을 스캔해 일반 CSS를 출력합니다.
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework astro --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 스타일시트 연결하기 \{#connect-the-stylesheet\}
+    설치 프로그램은 독립된 CSS 진입점을 만듭니다:
+
+    ```css name=src/styles/global.css
+    @import '@master/css';
+    ```
+
+    [페이지나 레이아웃의 frontmatter에서 가져오세요](https://docs.astro.build/en/guides/imports/#import-statements). 공유 레이아웃은 이를 사용하는 모든 페이지에 스타일을 전달합니다. `astro.config.mjs`에서 기존 통합과 함께 Master CSS 통합을 유지하세요.
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+    개발 서버를 시작하세요. 페이지 frontmatter에서 `src/styles/global.css`를 가져온 뒤 문단을 추가합니다. 여러 페이지에 필요하다면 공유 레이아웃에서 같은 가져오기를 사용하세요.
+  </Step>
+  <InstallationPreview>
+
+```astro name=src/pages/index.astro
+---
+import '../styles/global.css'
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Hello Master CSS</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 설정 확인하기 \{#check-the-setup\}
+`npm run dev`를 실행하고 `p-md`를 `p-lg`로 바꾸어 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나는지 확인하세요. 원래대로 돌린 뒤 프로덕션 페이지를 테스트합니다:
+
+```bash
+npm run build
+npm run preview
+```
+
+JavaScript를 끄고 새로고침하세요. 문단의 안쪽 여백, 둥근 모서리, 떠 있는 표면이 유지되어야 합니다. 스타일이 없다면 페이지나 레이아웃에서 `global.css`를 가져오는지, Astro 설정에 Master CSS 통합이 있는지 확인하세요. 사용자 지정 정의와 범위가 지정된 스타일은 [전역 스타일](/guide/global-styles)을 참고하세요.
+
+프로덕션 빌드가 기본 스타일을 연결하지만 유틸리티 규칙은 누락한다면 출력 CSS의 `.p-md` 규칙과 계산된 안쪽 여백을 확인하세요. 아래의 독립된 CLI 빌드를 사용하거나, 앱에 런타임으로 인계하는 방식이 적합하다면 점진적 렌더링을 선택하세요.
+
+## CLI로 정적 CSS 빌드하기 \{#cli-build\}
+
+Astro 통합 대신 이 방법을 사용할 수 있습니다. 다른 통합은 유지하면서 `astro.config.mjs`에서 Master CSS 등록을 제거하고 페이지나 레이아웃의 `global.css` 가져오기도 제거하세요. CLI를 설치합니다:
+
+```bash
+npm install -D @master/css-cli@VERSION
+```
+
+프로젝트 루트에 소스 진입점을 만드세요. 프로젝트 정의도 이곳에 둡니다:
+
+```css name=master.css
+@import '@master/css';
+```
+
+페이지나 공유 레이아웃의 `<head>`에서 생성된 스타일시트를 연결하세요:
+
+```html
+<link rel="stylesheet" href="/master.css" />
+```
+
+Astro를 빌드하기 전에 CSS를 생성하세요:
+
+```bash
+npx @master/css-cli generate "src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}" --output public/master.css
+npm run build
+npm run preview
+```
+
+개발 중에는 생성 명령에 `--watch`를 추가하고 두 번째 터미널에서 `npm run dev`를 실행하세요. Astro는 `public/`을 빌드 출력으로 복사하므로 생성된 스타일시트와 관련 가져오기를 함께 배포해야 합니다. 기본 경로를 설정한 사이트라면 스타일시트 URL 앞에 해당 경로를 붙이세요. JavaScript를 끄고 문단을 확인합니다.
+
+---
+
+## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
+기본값은 정적 모드입니다. 다른 모드에서는 통합이 페이지 런타임 스크립트를 주입하므로 별도의 브라우저 부트스트랩이 필요하지 않습니다:
+
+| 모드 | 설치 프로그램 옵션 | 전달 방식 |
+| --- | --- | --- |
+| 정적 | 없음 | 소스 스캔으로 생성한 스타일시트 |
+| 런타임 | `--mode runtime` | Astro 미들웨어 사전 렌더링 없이 브라우저 런타임 사용 |
+| 점진적 | `--mode progressive` | 미들웨어가 렌더링한 CSS와 런타임으로의 인계 |
+
+<DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
+
+```bash
+npm create @master/css@VERSION -- --framework astro --mode runtime --yes
+```
+
+빌드와 미리보기 스크립트를 실행하세요. 런타임이 시작되면 문단에 스타일이 적용되어야 합니다. 런타임 모드는 JavaScript와 컴파일된 프로그램이 정상적으로 로드되어야 하므로 스타일이 없다면 콘솔과 네트워크 요청을 확인하세요. 페이지가 생성된 뒤 추가하는 클래스를 테스트하려면 다음 코드를 실행합니다:
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+다시 빌드하지 않아도 문단에 밑줄이 생겨야 합니다.
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="서버에서 렌더링한 스타일 포함하기">
+
+```bash
+npm create @master/css@VERSION -- --framework astro --mode progressive --yes
+```
+
+Astro 미들웨어는 사전 렌더링된 페이지와 서버 HTML 응답에 CSS를 렌더링하고, 런타임은 이후의 클래스 변경을 처리합니다. JavaScript를 끄고 새로고침해도 문단에 스타일이 적용되어야 합니다. JavaScript를 다시 켜고 새로고침한 뒤 위 예제처럼 콘솔에서 `underline`을 추가하세요.
+
+</DocumentDisclosure>

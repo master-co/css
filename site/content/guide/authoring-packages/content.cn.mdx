@@ -1,0 +1,183 @@
+---
+{
+  "title": "编写软件包",
+  "description": "发布共享 CSS 源代码，在各应用中覆盖公开令牌，并通过生产使用方验证打包后的软件包。",
+  "category": "编写",
+  "figures": {
+    "PackageIllustration": {
+      "title": "共享定义，各应用自行编译",
+      "alt": "共享 master.css 定义原生 btn 组件和按需 content-auto 工具类。应用 A 使用 btn，输出组件；应用 B 使用 btn content-auto，也输出请求的工具类。",
+      "caption": "两个应用导入相同 CSS 源代码。原生组件默认包含；各应用仅生成自己标记请求的工具类。",
+      "description": [
+        {
+          "title": "共享源代码",
+          "text": "软件包定义原生 .btn 组件和按需生成的 content-auto 工具类。"
+        },
+        {
+          "title": "应用 A",
+          "text": "标记使用 btn，原生组件会包含在输出中，但未使用的 content-auto 工具类不会输出。"
+        },
+        {
+          "title": "应用 B",
+          "text": "标记使用 btn 和 content-auto。输出包含原生组件和请求的工具类。"
+        }
+      ]
+    },
+    "GuideStudy:consumer-override": {
+      "title": "覆盖值，保留组件",
+      "alt": "软件包与应用共享同一份 .btn 定义。应用修改 --spacing-action-x，增大水平内边距，同时保留按钮本身的角色。",
+      "caption": "使用方覆盖位于软件包导入之后。内缩辅助线以 16px 根字体比较 1rem 和 1.5rem；.btn 规则仍然共享。"
+    }
+  },
+  "demos": {
+    "PackageAuthoringExample": {
+      "title": "共享软件包词汇",
+      "caption": "悬停、按下或聚焦按钮，检查软件包的共享状态；它不会执行保存操作。应用使用软件包的 theme-motion 条件，遵循减少动态效果偏好。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import PackageIllustration from './components/PackageIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample.astro'
+
+## 概览 [sr-only] \{#overview\}
+发布 CSS 源代码以共享稳定的样式词汇。各使用方应用将来源导入自己的 Master CSS 入口，并编译所需令牌、工具类和原生组件。词汇在单个应用中正常工作后，再从这里开始；[复用样式](/guide/reusing-styles)说明了前一步。
+
+这种软件包形式应发布源定义，而非应用生成的样式表或 manifest。应用便能自行选择类名用法、令牌覆盖和交付模式。如果软件包也提供运行时集成，则有另一份产物契约。
+
+<PackageIllustration />
+
+---
+
+## 创建软件包 \{#create-a-package\}
+本示例使用 `@acme/ui-theme`；发布前请将 scope 替换为你拥有的名称。使用方通过包名导入，导出的 CSS 文件为 `master.css`。
+
+<ExplorerView items={[
+  { name: 'my-master-theme', children: [
+    { name: 'package.json' },
+    { name: 'master.css' },
+    { name: 'README.md' }
+  ]}
+]} />
+
+将软件包根导出指向 `master.css`：
+
+```json name=package.json
+{
+  "name": "@acme/ui-theme",
+  "version": "0.1.0",
+  "files": ["master.css"],
+  "style": "./master.css",
+  "exports": {
+    ".": {
+      "style": "./master.css",
+      "default": "./master.css"
+    }
+  },
+  "sideEffects": ["./master.css"]
+}
+```
+
+这种软件包形式不需要打包工具、TypeScript 构建、manifest 生成或编译后的 CSS 输出。软件包发布的是 CSS 源代码，支持 Master CSS 的项目可以将其纳入自己的样式表图进行编译。
+
+---
+
+## 编写 master.css \{#write-mastercss\}
+将使用方项目应可获取的共享词汇放入 `master.css`。
+
+<PackageAuthoringExample part="source" />
+
+此示例提供颜色标记、原生 `.btn` 组件、按需生成的 `content-auto` 工具类，以及具名 `theme-motion` 条件。组件拥有共享状态；应用选择是否需要过渡。原生组件 CSS 默认包含，工具类只在使用时生成规则。
+
+选择使用方需要的最小公开词汇：
+
+- 使用 `@theme` 共享颜色、间距、圆角、文字排版、阴影、动效和容器令牌等值。
+- 媒体名称使用 `@custom-media`；其他可复用包装使用带 `@contents` 的 `@mixin`。
+- 按需生成的类名使用 `@utility`；原生 CSS 内部复用使用 `@mixin`。
+- 仅当软件包刻意拥有 `btn`、`field`、`card`、`toolbar` 这类语义 UI 词汇时，才使用原生 `@layer components`。
+
+令牌命名请参阅[主题令牌](/guide/theme)，指令语法请参阅 [CSS 指令](/reference#directives)，选择抽象方式请参阅[全局样式](/guide/global-styles#shared-vocabulary)。
+
+---
+
+## 使用软件包 \{#use-the-package\}
+安装软件包后，在默认 Master CSS 入口之后导入：
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+```
+
+导入的源代码会成为项目 CSS 入口图的一部分。项目标记可将共享词汇作为工具类和原生 CSS 类名使用：
+
+<PackageAuthoringExample part="preview" />
+
+项目入口已导入的软件包本就可供局部样式表使用。如果只想将软件包加入单个样式表的编译上下文，请使用 `@reference`：
+
+```css name=components/Button.module.css
+@reference '@acme/ui-theme';
+
+.button {
+  padding-inline: var(--spacing-action-x);
+  border-radius: var(--radius-action);
+  background-color: var(--color-brand);
+}
+```
+
+局部 `.button` 使用软件包的间距、圆角和品牌令牌。编译此样式表时，`@reference` 提供定义，输出也包含必要主题资源。它不会复制软件包的原生 `.btn` 规则或生成的工具类。需要这些规则时，请另行加载软件包 CSS。局部样式表模式请参阅[路由级样式](/guide/route-level-styles)。
+
+---
+
+## 在使用方覆盖公开值 \{#override-a-public-value-in-the-consumer\}
+
+将应用专属选择放在软件包导入之后。例如，此应用加宽共享操作按钮，无需复制组件 CSS：
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+
+@theme {
+  --spacing-action-x: 1.5rem;
+}
+```
+
+`.btn` 仍读取 `var(--spacing-action-x)`。应用将水平内边距从 1rem 改为 1.5rem；其他应用保留各自值。请记录使用方可依赖的令牌名称、组件选择器和工具类名称。即使软件包不含 JavaScript，重命名任何公开名称仍会影响使用方的标记或样式表。
+
+<GuideStudy id="consumer-override" />
+
+## 应用策略留在应用内部 \{#keep-app-policy-in-the-app\}
+可复用的样式编写软件包不应决定某个应用如何扫描、筛选或发布源文件。
+
+下列内容保留在使用方应用中：
+
+- 应用专属的 `@source` 和 `@source not` 规则。
+- 应用专属的 `@safelist` 和 `@blocklist` 策略。
+- 路由、页面或组件的一次性类名。
+- 生成的 manifest JSON 和编译后的 CSS 输出。
+
+使用软件包提供共享词汇；使用应用 CSS 入口管理局部源代码边界、交付选择和应用专属策略。
+
+---
+
+## 使用示例验证 \{#validate-with-an-example\}
+从软件包目录打包源代码。`npm pack` 会创建本地归档文件，不会发布到包注册表：
+
+```bash
+npm pack
+```
+
+按照示例名称和版本，归档文件为 `acme-ui-theme-0.1.0.tgz`。确认其中包含 `master.css` 和预期的 `package.json` 导出。`files` 列表会排除无关源代码和构建产物；npm 还会包含标准元数据文件。
+
+将归档文件安装到已集成 Master CSS 的小型使用方应用：
+
+```bash
+npm install ../my-master-theme/acme-ui-theme-0.1.0.tgz
+npm run build
+```
+
+将上方标记放入会扫描的源文件。在生产输出中检查原生 `.btn` 规则、请求的 `content-auto` 工具类和必要主题资源。再打开应用，检查按钮计算后的内边距，并加入局部覆盖后重复检查。除静止状态外，也要验证悬停、键盘焦点和减少动态效果。
+
+使用框架集成的构建验证软件包解析。当前独立 CLI 的检查可能加载应用入口，却将第三方裸包导入留在样式表图之外。请检查列出的样式表依赖：如果不包含软件包的 `master.css`，该检查就尚未验证此词汇。生产使用方还可验证本地仅源码预览无法检查的文件和导出路径。

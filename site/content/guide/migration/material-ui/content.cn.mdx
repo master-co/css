@@ -1,0 +1,217 @@
+---
+title: "从 Material UI 迁移"
+description: "迁移应用自行管理的布局、sx 样式、主题令牌和覆盖，将 Material UI 项目逐步移向 Master CSS，同时保留组件行为。"
+figures: {"MaterialUIIllustration": {"title": "选择令牌前先解析主题", "alt": "按主题解析三个 sx 值：gap 2 为 16px、padding 3 为 24px；示例基础圆角为 8px，所以 borderRadius 2 为 16px。对应类是 gap-md、p-lg 和自定义 r-panel。", "caption": "示例使用默认 8px 间距、明确的 8px 基础圆角和 16px 根字号。sx 中相同数字不一定表示相同 CSS 长度。", "description": [{"title": "解析间距", "text": "默认间距函数下，gap: 2 是 16px，p: 3 是 24px。"}, {"title": "解析形状", "text": "文章将 theme.shape.borderRadius 设为 8px，因此 borderRadius: 2 产生 16px。"}, {"title": "选择匹配令牌", "text": "根字号 16px 时 gap-md 与 p-lg 匹配；自定义 --radius-panel: 1rem 提供 r-panel。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import MaterialUIIllustration from './components/MaterialUIIllustration.astro'
+
+Material UI 与 Master CSS 可以共存。多数项目应先迁移应用自行管理的布局、产品表面和重复的 `sx` 样式；Material UI 组件的无障碍支持、状态管理、插槽和 JavaScript 行为仍有价值时，保留这些组件。
+
+不要将迁移理解为逐一重写组件。合适的迁移常会保留 `Button`、`Dialog`、`Menu`、`Select`、`DataGrid` 或主题驱动的组件覆盖，直到产品有明确的替代方案。
+
+---
+
+## 迁移策略 \{#migration-strategy\}
+对每个应用自行管理的表面，采用[共用迁移流程](/guide/migration#migration-strategy)。Material UI 仍需要时，保留 `ThemeProvider`、`CssBaseline`、Emotion 缓存和 SSR 配置。
+
+转换 `sx` 之前先选定边界：
+
+<DocumentComparison>
+
+| 样式属于…… | 迁移或保留 |
+| --- | --- |
+| 应用的布局包装层 | 解析实际主题刻度后，转换静态 `sx` 值。 |
+| 重复的产品表面 | 定义共享令牌，必要时添加原生组件类。 |
+| MUI 插槽或 owner-state 变体 | 将 `slotProps`、`classes`、`styleOverrides` 或现有包装层与组件一起保留。 |
+| 对话框、菜单、选择器或数据网格 | 保留组件行为；考虑替换前，测试焦点、键盘和状态。 |
+
+</DocumentComparison>
+
+许多项目在共存阶段就已达到目标：Master CSS 管理应用布局和自定义表面，Material UI 继续管理交互控件。
+
+<MaterialUIIllustration />
+
+---
+
+## 在 Material UI 旁加入 Master CSS \{#add-master-css-beside-material-ui\}
+从应用样式表导入 Master CSS，并保留现有 Material UI providers。
+
+```css name=app.css
+@import "@master/css";
+```
+
+多数项目使用默认源文件发现即可。仅在需要自定义包含、排除、safelist 或 blocklist 行为时添加显式源指令。
+
+大规模迁移前先阅读[渲染模式](/guide/rendering-modes)。从默认静态渲染开始：在组件写完整类字符串，以已知类切换状态，通过 CSS 变量传入变化值。只有应用会在浏览器创建新类名时，才选择运行时或渐进式渲染。
+
+---
+
+## 将主题值移入 `@theme` \{#move-theme-values-into--theme\}
+从 Material UI 组件外也应共享的产品自有值开始。
+
+```ts name=theme.ts
+import { createTheme } from '@mui/material/styles'
+
+export const theme = createTheme({
+  palette: {
+    primary: { main: '#2563eb' },
+    background: { paper: '#ffffff' },
+    text: { primary: '#172033' }
+  },
+  shape: {
+    borderRadius: 8
+  }
+})
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-surface: #ffffff;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --radius-panel: 1rem;
+}
+
+```
+
+```html
+<section class="b(1) b-solid b-line-divider fg-body bg-surface r-control">
+  ...
+</section>
+```
+
+不要假定 Material UI 的间距、断点、圆角或调色板刻度与 Master CSS 预设相同。有计划地迁移产品令牌，再审查默认令牌的替换。
+
+---
+
+## 转换应用自有 `sx` \{#convert-app-owned--sx\}
+从为布局包装层、卡片、区段和简单产品 UI 设置样式的 `sx` 块开始。
+
+```tsx name=DashboardPanel.tsx
+import Box from '@mui/material/Box'
+
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <Box component="section" sx={{
+      display: 'grid',
+      gap: 2,
+      p: 3,
+      borderRadius: 2,
+      bgcolor: 'background.paper',
+      color: 'text.primary'
+    }}>
+      {children}
+    </Box>
+  )
+}
+```
+
+```tsx name=DashboardPanel.tsx
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md p-lg bg-surface fg-body r-panel">
+      {children}
+    </section>
+  )
+}
+```
+
+采用默认间距函数时，`gap: 2` 解析为 16px，`p: 3` 为 24px。转换后的预设值在根字号 16px 时相同。使用上方主题时，[MUI 的 `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders)将基础圆角 8px 乘为 16px。`r-panel` 用 1rem 表达面板角色，请按应用根字号比较结果。自定义间距函数需要单独映射。示例保留相同的 `section` 元素和明确的表面／文本配对，避免这些变化干扰刻度比较。
+
+保留 Material UI 组件的行为，先为应用自行管理的包装层设置样式：
+
+```tsx
+<div className="flex justify-flex-end">
+  <Button variant="contained">Save</Button>
+</div>
+```
+
+普通未分层 Material UI／Emotion 规则优先于分层 Master CSS 工具类，与导入顺序无关。仅转发 `className` 不保证能覆盖。项目明确配置并验证层叠层之前，组件内部继续使用 `sx`、`slotProps` 或 `classes`。
+
+---
+
+## 将重复模式转为组件类 \{#convert-repeated-patterns-to-component-classes\}
+许多 `sx` 块表达相同产品角色时，将该角色移为 Master CSS 组件类。上面的产品令牌保留在同一 CSS 入口。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .panel {
+    border-radius: var(--radius-panel);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-height: 3rem;
+  }
+}
+```
+
+```tsx
+<section className="panel">
+  <div className="toolbar">
+    ...
+  </div>
+</section>
+```
+
+项目自有角色优先使用组件类。仍属于设计系统的 Material UI 组件，保留其 Material UI 主题变体。
+
+---
+
+## 处理响应式和状态样式 \{#handle-responsive-and-state-styles\}
+将静态响应式 `sx` 转为相同阈值的条件。默认 [Material UI `md`](https://mui.com/material-ui/customization/breakpoints/)从 900px 开始；Master CSS 预设 `md` 从 64rem 开始。请为原始阈值定义条件，而不是照搬名称。
+
+```tsx
+<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }} />
+```
+
+```css name=app.css
+@custom-media --mui-md (width >= 900px);
+```
+
+```html
+<section class="grid (grid-template-columns:1fr) gap-md (grid-template-columns:repeat(3,1fr))@mui-md">
+  ...
+</section>
+```
+
+组件状态属于自己的标记时，优先使用原生状态或属性。
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+selected、expanded、focused 或 error 等 MUI 状态样式若针对应用未拥有的内部插槽或行为，应保留在 MUI 覆盖中。
+
+---
+
+## 验证迁移 \{#validate-the-migration\}
+- 每批工作后运行格式化、lint、类型检查、测试和生产构建。
+- 比较重要页面在明暗主题、响应式断点、悬停、focus-visible、禁用、选中和加载状态下的表现。
+- 删除 Material UI 组件前，测试对话框、菜单、选择器、弹出层、portal、过渡和焦点陷阱。
+- 在剩余 Material UI 或 Emotion 路径都不再需要前，保留 Emotion 缓存和 SSR 配置。
+- 视觉样式和组件行为都有替代实现后，才删除 Material UI 包。
+
+---
+
+## 相关参考 \{#useful-references\}
+- [安装](/guide/installation)：添加 Master CSS。
+- [渲染模式](/guide/rendering-modes)：选择 CSS 交付方式。
+- [样式声明](/reference/rules/declarations)：类语法。
+- [主题令牌](/guide/theme)：共享值；[响应式设计](/guide/responsive-design)：断点；[变量与模式](/reference/rules/modes)：模式。
+- [全局样式](/guide/global-styles#shared-vocabulary)：标记工具类、组件类和自定义工具类。

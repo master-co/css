@@ -1,0 +1,71 @@
+# Reference prose: tokens/spacing
+
+## title \{#copy-title\}
+
+
+余白と間隔
+
+## summary \{#copy-summary\}
+
+
+padding、margin、gap、inset、オフセットに共通して使える間隔のスケール。
+
+## note \{#copy-note\}
+
+
+ファミリーがプロパティを選び、トークンが距離を指定します。`px-` と `mx-` はインライン軸を、`pl-` と `ml-` は物理的な左側を使います。完全なファミリー表には、それぞれのネイティブプロパティが載っています。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+プリセットのスケールは rem 単位の長さを使います。ピクセル換算はルートのフォントサイズを 16px と仮定していますが、ブラウザーは実際のルートのフォントサイズを使います。ゼロや 1 CSS ピクセルには、`p(0)` や `p(1)` のような値を直接受け取る関数を使えます。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+同じ距離でも作用する境界は異なる
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p-md` と `gap-md` はどちらも `--spacing-md` を参照します。ただし、padding は内容とボックスの端の間に、gap はレイアウト内の項目同士の間に空間を作ります。gap が外側の padding を作ることはありません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`gap-md` が設定するのは間隔の値だけで、Grid や Flexbox を有効にはしません。同様に、inset トークンはオフセットを設定しますが、配置方式は選びません。実際の効果はネイティブプロパティとレイアウトによって決まります。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+負のトークン形式を使えるかどうかは参照側によって異なり、`-mt-md` は有効ですが `-p-md` は拒否されます。プリセットには zero や auto の間隔トークンはありません。ゼロには `m(0)` を、インライン方向の自動マージンには `mx-auto` などの固定ユーティリティを使います。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+負の値
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+直接指定する値
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+ネイティブの gap の動作
+
+## usage-lead \{#copy-usage-lead\}
+
+
+フォームに内側の余白を設け、フィールド同士、および各ラベルとコントロールの間隔を調整します。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+プリセット値を変更したり、トークンを追加したりできます。`--spacing-card` を定義すると、`p-card`、`m-card`、`gap-card` などの間隔クラスが使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+レイアウト

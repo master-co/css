@@ -1,4 +1,6 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel } from './ui'
 import Link from '@master/internal-site/components/Link.svelte'
 import InlineText from './InlineText.astro'
 import ReferenceIllustration from './ReferenceIllustration.astro'
@@ -9,6 +11,9 @@ interface Props {
 }
 
 const { explanation } = Astro.props
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, string | number>) => referenceLabel(locale, key, values)
+
 ---
 
 {explanation && <Fragment>
@@ -16,5 +21,5 @@ const { explanation } = Astro.props
   <p><InlineText text={explanation.paragraphs[0]} /></p>
   <ReferenceIllustration id={explanation.illustration} />
   {explanation.paragraphs.slice(1).map(paragraph => <p><InlineText text={paragraph} /></p>)}
-  {!!explanation.links?.length && <p class="ref-links">See {explanation.links.map((link, index) => <Fragment>{index ? ' and ' : ''}<Link href={link.href}>{link.label}</Link></Fragment>)}.</p>}
+  {!!explanation.links?.length && <p class="ref-links">{l('see')} {explanation.links.map((link, index) => <Fragment>{index ? l('and') : ''}<Link href={link.href}>{link.label}</Link></Fragment>)}.</p>}
 </Fragment>}

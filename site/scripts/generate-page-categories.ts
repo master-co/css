@@ -3,17 +3,21 @@ import { dirname, join, resolve } from 'path'
 import { DefinedMetadata } from '@master/internal-site/types/Metadata'
 import { existsSync, mkdirSync } from 'fs'
 import { writeIfChangedSync } from './write-if-changed'
+import { publishedLocalizedDocument } from '../utils/localized-content'
 
 const { default: units } = await import(resolve('./units'))
 const metadataPaths = FastGlob.sync('./content/**/*metadata.ts')
   .filter((metadataPath) => (existsSync(join(dirname(metadataPath), 'page.astro')) || existsSync(join(dirname(metadataPath), 'content.mdx'))))
-export const pages = await Promise.all(
+export const pages = (await Promise.all(
   metadataPaths
     .map(async (metadataPath) => {
       const { default: metadata } = await import(resolve(metadataPath))
+      if (metadata.draft || metadata.disabled) return undefined
+      const sourceFile = resolve(dirname(metadataPath), 'content.mdx')
+      if (existsSync(sourceFile) && !await publishedLocalizedDocument(sourceFile, 'en', metadata)) return undefined
       return metadata
     })
-)
+)).filter((page): page is DefinedMetadata => Boolean(page))
 
 if (!existsSync(resolve('.categories'))) {
   mkdirSync(resolve('.categories'))

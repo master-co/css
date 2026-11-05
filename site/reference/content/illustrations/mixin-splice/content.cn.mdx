@@ -1,0 +1,31 @@
+# Reference prose: illustrations/mixin-splice
+
+## title \{#copy-title\}
+
+
+混入在调用位置展开
+
+## alt \{#copy-alt\}
+
+
+原生 caption 规则中高亮的 apply 行被两条高亮声明替换，前后的 color 和 font-weight 行不变。
+
+## caption \{#copy-caption\}
+
+
+插入位置前后的相同行保持对齐。选择器、声明顺序和外层的层叠层仍由调用方拥有。
+
+## description-0 \{#copy-description-0\}
+
+
+--caption 混入提供 font-size: 14px 和 line-height: 1.5。
+
+## description-1 \{#copy-description-1\}
+
+
+在 .caption 内，@apply --caption 展开于 color: currentColor 与 font-weight: 600 之间。
+
+## description-2 \{#copy-description-2\}
+
+
+展开不会注册类，也不会将原生规则移至生成层。重复声明和编写顺序均保留。

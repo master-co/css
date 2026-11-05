@@ -1,0 +1,245 @@
+---
+title: "Sass からの移行"
+description: "Sass の変数、マップ、mixin、プレースホルダー、入れ子のコンポーネントスタイルを Master CSS に移し、有用な CSS の構造は保ちます。"
+figures: {"SassIllustration": {"title": "各コンパイラーに自身の言語を渡す", "alt": "Sass は legacy.scss を通常の legacy.css に変換します。別の app.css が結果をインポートし、Master CSS 定義を持ちます。Sass 出力の生成後に Master CSS がアプリをコンパイルします。", "caption": "Master CSS 定義は .css エントリーに残します。Sass のコンパイル結果を読み、開発と本番で同じ順序を守ります。", "description": [{"title": "Sass を前処理する", "text": "Sass が @mixin stack と @include stack を通常の CSS に展開します。"}, {"title": "出力をインポートする", "text": "生成ファイルができてから app.css が legacy.css を読み込みます。"}, {"title": "アプリをコンパイルする", "text": "Master CSS は app.css の自身の定義を読み、インポートしたネイティブルールを維持します。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import SassIllustration from './components/SassIllustration.astro'
+
+Sass と Master CSS は併用できます。ベンダーのインポート、生成セレクター、複雑な入れ子、CSS の方が読みやすいスタイルには Sass を残します。繰り返す視覚的な値や、マークアップ側が管理するスタイルは、保守しやすくなる箇所から Master CSS に移します。
+
+変数、マップ、mixin、関数、プレースホルダー、パーシャル、入れ子のセレクターを使う `.scss` と `.sass` のプロジェクトを扱います。
+
+---
+
+CSS と Sass の `@mixin` は同じキーワードです。Master CSS の定義は `.css` に置くか、Sass から出力する場合は [SCSS の補間パターン](/reference/directives/definitions#sass-interoperability)を使います。[Sass の mixin 構文](https://sass-lang.com/documentation/at-rules/mixin/)は `--` から始まる名前を拒否します。Master の定義は、Sass の mixin と解釈されずに Master コンパイラーに届く必要があります。
+
+## 移行方針 \{#migration-strategy\}
+アプリがすでにビルドする Sass エントリーから始めます。[共通の移行手順](/guide/migration#migration-strategy)に従い、コンパイル時の仕事とブラウザーに渡す値を分けます。
+
+<DocumentComparison>
+
+| 既存 Sass の役割 | 維持または移行 |
+| --- | --- |
+| 製品の色、余白、角丸 | 使用側の準備ができてから共通値を `@theme` に移します。 |
+| ループ、生成セレクター、ベンダーのインポート、関数 | 明確な代替ができるまで Sass でコンパイルします。 |
+| 繰り返す宣言のまとまり | 使用箇所に応じ、ネイティブのコンポーネント CSS か Master CSS の mixin を使います。 |
+| 局所的な視覚ルール | 読みやすくなる場合はマークアップクラスを使います。 |
+| 構造的な入れ子、印刷ルール、複雑なアニメーション | 有用なネイティブ CSS を残します。 |
+
+</DocumentComparison>
+
+Sass 変数は前処理で解決され、CSS カスタムプロパティはブラウザーのカスケードに参加します。両者の間で値を移すと、いつどこで変化できるかも変わるため、置換前にすべての使用箇所を調べます。
+
+<SassIllustration />
+
+---
+
+## Sass と並べて Master CSS を追加する \{#add-master-css-beside-sass\}
+アプリがすでに読み込むスタイルシートから Master CSS をインポートし、Sass のコンパイルは維持します。
+
+```css name=app.css
+@import "@master/css";
+@import "./legacy.css";
+```
+
+Master CSS がこのインポートグラフを解決する前に、既存の Sass エントリーを `legacy.css` にコンパイルします。Sass 構文は専用の入力に置き、インポートする結果は通常の CSS にします。監視時も、Sass の変更で `legacy.css` を更新してからアプリ CSS を再ビルドする順序を守ります。生成ファイルを手で編集しないでください。
+
+通常のアプリファイルは既定のソース探索で十分です。独自の対象追加、除外、safelist、blocklist が必要な場合だけソースディレクティブを明示します。
+
+Sass がグローバルリセット、ベンダー CSS、生成セレクターを出力している場合は、移行中もインポートを残します。コンパイル時の Sass 変数と実行時の CSS カスタムプロパティは動作が異なります。ループ、セレクターの組み立て、計算に使う Sass の値は、その用途に代替ができるまで残します。
+
+---
+
+## 変数とマップを `@theme` に移す \{#move-variables-and-maps-into--theme\}
+製品の値を定義する Sass 変数やマップは、通常 Master CSS のテーマトークンになります。
+
+```scss name=_tokens.scss
+$color-primary: #2563eb;
+$color-body: #172033;
+$space-card: 1.5rem;
+$radius-card: .75rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
+}
+
+```
+
+```html
+<article class="b(1) b-solid b-line-divider r-card bg-white fg-body p-card">
+  ...
+</article>
+```
+
+製品での役割を表すトークン名を使います。単なる実装詳細だった Sass 変数名を残す必要はありません。
+
+---
+
+## ローカルなコンポーネントスタイルを変換する \{#convert-local-component-styles\}
+一つの要素やコンポーネントのインスタンスに属する視覚ルールは、マークアップに移します。
+
+```scss name=Card.module.scss
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .75rem;
+  background: #fff;
+  color: #172033;
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md r-card bg-white fg-body p-card">
+      {children}
+    </section>
+  )
+}
+```
+
+文書構造、生成コンテンツ、印刷ルール、複雑なアニメーションの時間軸、外部マークアップを表すセレクターには、Sass や通常の CSS を残します。
+
+---
+
+## プレースホルダーと mixin を意図的に置き換える \{#replace-placeholders-and-mixins-intentionally\}
+Sass のプレースホルダーや mixin は、製品の役割か低水準の基本機能を表すことがよくあります。管理対象に応じて Master CSS の移行先を選びます。
+
+製品の役割には `@layer components` を使います。前の例の `@theme` の値も同じプロジェクトエントリーに残します。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .card {
+    display: grid;
+    border-radius: var(--radius-card);
+    gap: var(--spacing-md);
+    padding: var(--spacing-card);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    color: var(--color-body);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+  }
+}
+```
+
+```html
+<article class="card">...</article>
+<button type="button" class="btn">Save</button>
+```
+
+再利用するクラスレシピには `@utility`、CSS ルール内で再利用する宣言には `@mixin` を使います。
+
+```css name=app.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">...</section>
+```
+
+CSS に残すべき宣言のまとまりは、`@include` を Master CSS の mixin 適用に置き換えます。
+
+```scss name=_stack.scss
+@mixin stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.article-summary {
+  @include stack;
+}
+```
+
+```css name=app.css
+@mixin --stack {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.article-summary {
+  @apply --stack;
+}
+```
+
+この定義は Master CSS の `.css` エントリーに置きます。`stack` ユーティリティクラスは作りません。それは別途 `@utility` が担う役割です。
+
+多数のセレクターを生成する、ブラウザーへの対処を含む、クラスにすると理解しにくくなる、といった Sass mixin は残します。
+
+---
+
+## 有用な入れ子は CSS に残す \{#keep-useful-nesting-as-css\}
+対象が単一要素なら、入れ子の Sass を Master CSS の状態に明確に対応させられます。
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+内部構造を表す入れ子のセレクターは CSS に残します。
+
+```css name=app.css
+.article-content {
+  h2 {
+    margin-top: 2rem;
+  }
+
+  pre code {
+    white-space: pre;
+  }
+}
+```
+
+Vite、Next.js、Webpack 連携では、Sass の前処理後にプロジェクトのテーマ変数が自動で利用できます。
+
+```css name=Article.module.css
+.article {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+```
+
+---
+
+## 移行を検証する \{#validate-the-migration\}
+- 各作業後に Sass コンパイラー、フォーマッター、lint、型チェック、テスト、本番ビルドを実行します。
+- レスポンシブ境界、ダークモード、ホバー、focus-visible、無効、印刷状態で変換した画面を比較します。
+- ベンダーのインポート、生成 CSS、複雑な入れ子、ブラウザー対策を含む mixin、CSS の方が明確な一度限りのルールには Sass を残します。
+- インポートされるスタイルシート、コンポーネント、パッケージのどれも依存しなくなってから Sass のパッケージとビルド設定を削除します。
+
+---
+
+## 関連資料 \{#useful-references\}
+- [インストール](/guide/installation)：Master CSS の追加。
+- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、プログレッシブの選択。
+- [スタイル宣言](/reference/rules/declarations)：クラス構文。
+- [テーマトークン](/guide/theme)：トークン、[変数とモード](/reference/rules/modes)：モード、[条件](/reference/rules/conditions)：クエリー構文。
+- [CSS ディレクティブ](/reference#directives)：`@theme`、`@mixin`、`@reference`、[カスケードレイヤー](/guide/cascade-layers)：ネイティブのコンポーネントレイヤー。
+- [ルート単位のスタイル](/guide/route-level-styles)：プロジェクト定義とネイティブ宣言を使うローカル CSS。
+- [グローバルスタイル](/guide/global-styles#shared-vocabulary)：マークアップクラス、テーマトークン、独自ユーティリティ、コンポーネントクラスの選択。

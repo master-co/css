@@ -1,0 +1,69 @@
+# Reference prose: tokens/color-roles
+
+## title \{#copy-title\}
+
+Color roles
+
+## summary \{#copy-summary\}
+
+Text, surface and line roles with one value for light and one for dark.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+Text
+
+## groups-1-title \{#copy-groups-1-title\}
+
+Surface
+
+## groups-2-title \{#copy-groups-2-title\}
+
+Line
+
+## note \{#copy-note\}
+
+A role is part of the color key: `fg-text-muted` reads `--color-text-muted` through the color namespace. Every color family accepts role keys, including `bg-text-link` and `outline-line-control`; the role name does not restrict the property.
+
+## valuesLead \{#copy-valuesLead\}
+
+Light and Dark are the two arguments of each preset light-dark() value. They are selected by the element’s used color scheme, not by the class prefix or the operating system alone.
+
+## explanation-title \{#copy-explanation-title\}
+
+The local color scheme selects the value
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`fg-text-muted` emits `color: var(--color-text-muted)`. Its preset value uses `light-dark(var(--color-zinc-60), var(--color-zinc-40))`: light selects the first color, dark the second. The class and generated rule stay the same.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+The preset enables `color-scheme: light dark` on the root. Its `data-theme="light"` and `data-theme="dark"` selectors can choose a scheme on the root, a nested region or a shadow host. Native CSS performs the selection; switching schemes does not require regenerating this utility.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+The `@dark` and `@light` class suffixes test the system preference. A manual `data-theme` choice does not activate those media queries. Use the mode contract for selector-based conditions.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+A role supplies a color, not a component or a contrast guarantee for every background. Inverse surfaces have a paired inverse text role. Divider and subtle lines are decorative; control lines identify boundaries. Recheck the actual pair when changing a surface, opacity or token value.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Variables and modes
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native light-dark() selection
+
+## usage-lead \{#copy-usage-lead\}
+
+Build a card from roles: a raised surface, a divider line, and strong, body and muted text.
+
+## customize-lead \{#copy-customize-lead\}
+
+Add a role with one value per color scheme: `--color-text-brand` creates `fg-text-brand`.
+
+## guide-label \{#copy-guide-label\}
+
+Color

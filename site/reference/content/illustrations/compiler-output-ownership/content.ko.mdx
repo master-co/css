@@ -1,0 +1,36 @@
+# Reference prose: illustrations/compiler-output-ownership
+
+## title \{#copy-title\}
+
+
+컴파일한 manifest는 전달 네이티브 스타일시트를 포함하지 않음
+
+## alt \{#copy-alt\}
+
+
+app.css 컴파일은 네이티브 CSS와 manifest를 별도로 생성한다. Node 렌더 세션은 manifest와 bg-brand로 유틸리티 규칙을 생성하며 네이티브 .card 규칙은 컴파일러 CSS 출력에 남는다.
+
+## caption \{#copy-caption\}
+
+
+컴파일러는 네이티브 CSS와 정의를 별도로 반환합니다. Node 렌더 세션은 제공한 클래스를 유틸리티 CSS로 바꾸며 컴파일러의 네이티브 .card 규칙을 다시 전달하지 않습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+app.css는 테마 토큰과 네이티브 .card 규칙을 포함합니다. @master/css-compiler/node의 compileManifestSync가 명시적인 기본 manifest로 컴파일합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+result.css는 네이티브 규칙을 담습니다. result.manifest는 이후 클래스 생성에 사용할 정의를 담습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+@master/css/node의 Node createRenderSessionSync는 해당 manifest를 받습니다. bg-brand를 확보하면 background-color 규칙과 필요한 토큰 리소스를 생성합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+앱은 네이티브 CSS와 생성 CSS를 모두 전달하고 공유 리소스 소유권을 조정해야 합니다. 브라우저 엔진은 이 Node manifest 경로가 아닌 컴파일한 런타임 프로그램을 사용합니다.

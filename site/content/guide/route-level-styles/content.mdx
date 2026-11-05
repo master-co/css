@@ -3,7 +3,7 @@ import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Keep a page's layout and one-off styles beside that page, and let its route or component load the stylesheet. Shared tokens can still supply the values; sharing definitions does not require delivering every native rule globally.
 
 Complete your framework’s [installation guide](/guide/installation) first. The Vite, Next.js and Webpack integrations let these local styles use your project tokens, mixins and custom media:
@@ -40,7 +40,7 @@ A route import controls **delivery**, not selector scope. Once loaded, `.home-se
 
 <GuideStudy id="delivery-not-scope" />
 
-## Use project definitions
+## Use project definitions \{#use-project-definitions\}
 
 <DeliveryFlow name="route" />
 The integration gives the local stylesheet its project definition context. Use those tokens, mixins and named conditions in ordinary native CSS; the framework keeps ownership of loading the resulting stylesheet.
@@ -55,7 +55,7 @@ The integration gives the local stylesheet its project definition context. Use t
 
 The route output includes these native rules and the theme variables or managed keyframes they use. It stays self-contained even when another entry also uses those resources. Global native rules and utility classes are not copied into it.
 
-### Reference definitions without loading their native rules
+### Reference definitions without loading their native rules \{#reference-definitions-without-loading-their-native-rules\}
 
 Use `@reference` when definitions live outside the app's entry graph. For example, a local marketing stylesheet can provide a color token as well as its own component:
 
@@ -85,7 +85,7 @@ The route output contains `.campaign-banner` and the color resources it needs. I
 
 ---
 
-## Write native selectors
+## Write native selectors \{#write-native-selectors\}
 Write the route's native rules in `app/home/home.css`, then use their classes in the route markup. Keep them in `@layer components` when utility classes should be able to override individual choices.
 
 Loading a native rule does not register a new Master CSS utility. Both cards below use the same native class. The second adds `p-md`, so its utility overrides the component's `var(--spacing-lg)` padding. The class name does not need an `@utility` registration.
@@ -141,7 +141,7 @@ These native rules are emitted with their stylesheet by default. If that source 
 
 ---
 
-## Use variants locally
+## Use variants locally \{#use-variants-locally\}
 Project custom media work inside native rules, beside ordinary media queries:
 
 ```css name=app/home/home.css
@@ -161,7 +161,7 @@ Project custom media work inside native rules, beside ordinary media queries:
 `--dark` follows the system’s `prefers-color-scheme` preference. A manual `data-theme` attribute does not change that query; use [adaptive color tokens](/guide/colors#native-color-scheme-and-manual-themes) for surfaces that should follow a manually selected scheme.
 
 
-## Verify route delivery
+## Verify route delivery \{#verify-route-delivery\}
 
 Open the route directly, then navigate to it from another page. Check that its stylesheet loads, the native selectors match and the expected token values are present. Inspect a shared page as well: local source ownership should not accidentally move route-only CSS into the app entry.
 

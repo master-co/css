@@ -1,0 +1,91 @@
+# Reference prose: tokens/font
+
+## title \{#copy-title\}
+
+
+字体
+
+## summary \{#copy-summary\}
+
+
+字体族、字号和字重，统一使用 font-* 形式。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+字体族
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+字号
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+字重
+
+## note \{#copy-note\}
+
+
+三个命名空间共享 `font-` 前缀，因此名称必须在三者之间保持唯一。同名定义出现在多个命名空间时，会报告 `AMBIGUOUS_TOKEN`，并且不生成 CSS。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+字体族是按顺序尝试的回退列表，字号是 rem 长度，字重则是数值请求。像素换算假设根元素字号为 16px。实际呈现的字体和可用字重取决于页面加载的字体。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+共享一个前缀，属性各自独立
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`font-serif`、`font-4xl` 和 `font-semibold` 分别设置 `font-family`、`font-size` 和 `font-weight`。由于设置不同属性，因此可以组合使用，但其中任何一个都不是完整的文本样式。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+字号类让行高和字距由各自的声明或继承决定。如果三个度量都应来自同一组文本样式，请使用 `text-<name>`。无论哪种形式，字体族和字重都仍然独立。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+字体族令牌只指定字体名称，不会下载字体。预设的 sans、mono 和 serif 字体栈，分别以可选的 `--font-sans`、`--font-mono` 和 `--font-serif` 钩子开头。加载字体和选择全站字体栈的方法，见文字排版指南。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+自定义键必须在三个命名空间之间保持不同。如果 `--font-family-brand` 和 `--font-size-brand` 同时存在，`font-brand` 就会有歧义。`(font-size:var(--font-size-brand))` 这类显式原生声明可以直接指定要使用的属性与变量。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+文本样式
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+命名空间解析
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生字体选择
+
+## usage-lead \{#copy-usage-lead\}
+
+
+为标题设置较大的字号和中等字重，并为代码示例设置等宽字体族。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+每个命名空间接受自己的令牌：`--font-family-display` 创建 `font-display`，`--font-size-hero` 创建 `font-hero`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

@@ -1,0 +1,29 @@
+# Reference prose: illustrations/role-value-selection
+
+## title \{#copy-title\}
+
+One role, two local color schemes
+
+## alt \{#copy-alt\}
+
+The two arguments of the muted-text light-dark function connect to light and dark specimens. Both specimens show the same secondary text, using zinc-60 on a light base and zinc-40 on a dark base.
+
+## caption \{#copy-caption\}
+
+The used color scheme selects the first or second color. Both specimens keep fg-text-muted and bg-surface-base; the local scheme changes their computed colors.
+
+## description-0 \{#copy-description-0\}
+
+fg-text-muted generates color: var(--color-text-muted). Its preset token contains light-dark(var(--color-zinc-60), var(--color-zinc-40)).
+
+## description-1 \{#copy-description-1\}
+
+The light specimen uses the first argument, --color-zinc-60. The dark specimen uses the second, --color-zinc-40.
+
+## description-2 \{#copy-description-2\}
+
+Both specimens use bg-surface-base and the same text class. The colored leaders identify the two arguments; they are annotations, not the resulting text colors.
+
+## description-3 \{#copy-description-3\}
+
+The local used color scheme selects the branch. The comparison does not imply that system media queries follow a manual local theme.

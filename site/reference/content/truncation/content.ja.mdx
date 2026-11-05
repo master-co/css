@@ -1,0 +1,66 @@
+# Reference prose: truncation
+
+## title \{#copy-title\}
+
+
+テキストの省略
+
+## summary \{#copy-summary\}
+
+
+テキストを 1 行または指定の行数に制限し、末尾を省略記号で表示します。
+
+## note \{#copy-note\}
+
+
+どちらも幅に制約が必要です。Flex または Grid の項目内では、その項目に `min-w(0)` を指定して縮められるようにします。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+表示を制限しても全文へのアクセスは残す
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`truncate` は、オーバーフローの非表示、省略記号、折り返し禁止を組み合わせます。オーバーフローを発生させるには、インライン方向の幅が有限のブロックコンテナーが必要です。幅に制約のないインラインの span に適用しても、1 行のプレビューにはなりません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`clamp-lines(2)` は接頭辞付きの line-clamp の組み合わせを使います。具体的には、`display: -webkit-box`、縦方向のボックス、2 行の制限、オーバーフローの非表示です。行数には正の整数を使います。折り返しを許可するため、`truncate` やその `white-space: nowrap` と併用しないでください。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+テキストは DOM に残ります。切り取りは表示上の制約であり、文字列を短くしたり、展開する仕組みを提供したりするものではありません。重要な情報には実際のリンクや展開可能な全文表示からアクセスできるようにし、ホバー時だけ表示される title に頼らないでください。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+Flex または Grid の項目は、自動最小サイズによって利用可能な空間より広いままになることがあります。縮めたい項目に `min-w(0)` を設定し、その中のテキストの幅を制約します。行数を制限する場合は、padding によって隠した行が見えないよう、padding をラッパーに指定してください。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+この組み合わせスタイルは display と overflow の宣言を持っています。`flex`、`grid`、または可視のオーバーフローで上書きすると、行数制限が壊れることがあります。独自の省略ルールには、ネイティブプロパティを明示的に使ってください。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+ネイティブのテキストオーバーフロー
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+従来の行数制限
+
+## usage-lead \{#copy-usage-lead\}
+
+
+ファイル名を 1 行に、要約を 2 行に収めます。詳細を展開すると、どちらも全文を読めます。
+
+## guide-label \{#copy-guide-label\}
+
+
+タイポグラフィ

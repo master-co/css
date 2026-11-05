@@ -12,22 +12,22 @@ Keep Angular's builder and use the Master CSS CLI to generate a stylesheet it ca
 
 This setup assumes an existing browser-rendered Angular app with a global `src/styles.css`, a working `npm start` command and a supported Node.js 24 release. It uses Angular's default [emulated encapsulation](https://angular.dev/guide/components/styling#viewencapsulationemulated), which allows global styles to reach component templates. Shadow DOM components need styles inside their own shadow roots.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step>
-    ### Add Master CSS
+    ### Add Master CSS \{#add-master-css\}
 
     Run the installer from the Angular project root:
 
     ```bash
-    npm create @master/css@rc -- --framework angular --yes
+    npm create @master/css@VERSION -- --framework angular --yes
     ```
 
     The static setup adds `@master/css` and `@master/css-cli`. For the installer's optional tooling and preview options, see [Installation](/guide/installation#installation).
   </Step>
   <Step>
-    ### Check the stylesheet connection
+    ### Check the stylesheet connection \{#check-the-stylesheet-connection\}
 
     The installer creates a Master CSS source entry at the project root:
 
@@ -46,7 +46,7 @@ This setup assumes an existing browser-rendered Angular app with a global `src/s
     Put Master CSS definitions such as `@theme` and `@utility` in `master.css`. Angular consumes the generated native CSS; its ordinary CSS builder does not compile those definitions. Do not edit `src/master.generated.css` or import it back into `master.css`.
   </Step>
   <Step>
-    ### Generate the CSS
+    ### Generate the CSS \{#generate-the-css\}
 
     In one terminal, generate the stylesheet and keep watching for changes:
 
@@ -63,7 +63,7 @@ This setup assumes an existing browser-rendered Angular app with a global `src/s
     Keep both processes running. Angular's watcher alone does not regenerate Master CSS when you add a class.
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
 
     Add this markup to the template referenced by your root component. With Angular's [current naming convention](https://angular.dev/cli/new#file-name-style-guide), that is usually `src/app/app.html`; an existing project may use `src/app/app.component.html`.
 
@@ -73,7 +73,7 @@ This setup assumes an existing browser-rendered Angular app with a global `src/s
   </Step>
 </StepSection>
 
-## Verify the result
+## Verify the result \{#verify-the-result\}
 
 Open the Angular app. The paragraph should match the example's spacing and surface. Change `p-md` to `p-lg` in the template: with both watchers running, its padding should grow from `1rem` to `1.5rem`. Change it back after checking the update.
 
@@ -85,7 +85,7 @@ If the style does not appear, trace the connection in order:
 
 Static generation needs complete class strings in source or an explicit safelist. Keep conditional class names complete; use CSS custom properties for dynamic values. See [Scanning class names](/guide/scanning-and-pruning) when a class is missing from the generated output.
 
-## Build for deployment
+## Build for deployment \{#build-for-deployment\}
 
 Generate CSS before Angular packages the app:
 
@@ -112,7 +112,7 @@ Static rendering is the default. Use runtime rendering when classes must be gene
 For the runtime setup, run:
 
 ```bash
-npm create @master/css@rc -- --framework angular --mode runtime --yes
+npm create @master/css@VERSION -- --framework angular --mode runtime --yes
 ```
 
 The installer starts `MasterCSSRuntime` from `src/main.ts`, loads `@master/css-runtime/default-program` and observes the document for class changes.

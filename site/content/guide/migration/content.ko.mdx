@@ -1,0 +1,120 @@
+---
+title: "Master CSS로 마이그레이션"
+description: "컴포넌트나 라우트 하나를 변환하고 스타일을 공유하는 화면을 검증한 뒤 사용처가 없어진 의존성을 제거합니다."
+figures: {"MigrationIllustration": {"title": "한 화면을 변환하고 공유 CSS 영향 범위 확인", "alt": "하나의 CSS 진입점이 Account, Billing, Reports에 연결됩니다. Account만 변환 대상으로 표시되지만 세 화면 모두 검증 대상입니다.", "caption": "세 화면은 같은 스타일시트 진입점을 읽습니다. Account를 변환해도 공유 리셋, 토큰, 선택자가 Billing과 Reports에 주는 영향은 격리되지 않습니다.", "description": [{"title": "하나의 공유 진입점", "text": "Account, Billing, Reports가 공유하는 CSS 진입점에서 기존 스타일과 Master CSS를 읽습니다."}, {"title": "하나의 변환 범위", "text": "Account만 변환하며 Billing과 Reports는 기존 스타일에 의존합니다."}, {"title": "더 넓은 검증 범위", "text": "설정이나 공유 정의를 바꾸면 세 화면을 확인합니다. 컴포넌트 단위 수정이 스타일시트 범위를 격리하지 않으며 다른 화면에는 이전 의존성이 필요합니다."}]}, "GuideStudy:migration-local-scope": {"title": "컴포넌트 경계를 하나씩 이동", "alt": "세 이웃 컴포넌트가 표시된 상태에서 가운데 컴포넌트의 스타일 소유권만 바뀝니다.", "caption": "한정된 컴포넌트 하나를 옮기며 사용자 동작을 유지합니다. 공유 리셋과 토큰은 별도로 검증하세요."}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MigrationGuides from '~/site/components/MigrationGuides.astro'
+import MigrationIllustration from './components/MigrationIllustration.astro'
+
+변경 전후의 모양과 동작을 비교할 수 있는 컴포넌트나 라우트 하나부터 시작하세요. 기존 앱에 Master CSS를 연결하고 그 부분을 변환한 뒤 검증합니다. 제품의 나머지 부분은 현재 스타일을 계속 사용합니다.
+
+첫 작업은 UI를 유지하는 데 집중하세요. 디자인 변경, 컴포넌트 라이브러리 교체, 스타일 마이그레이션은 각각 다른 검토 사항을 만듭니다. 가능하면 나누어 진행하세요.
+
+## 기존 스타일 시스템 선택 \{#choose-the-source-styling-system\}
+
+<a id="frameworks"></a>
+
+현재 사용 중인 시스템의 가이드를 선택하세요. 여러 시스템을 함께 쓴다면 첫 컴포넌트의 스타일을 담당하는 시스템을 선택합니다. 나머지는 그대로 둘 수 있습니다.
+
+<MigrationGuides />
+
+## 첫 작업 범위 정의 \{#migration-strategy\}
+
+정상 동작하는 기준 상태를 버전 관리에 기록하고 앱의 기존 검사를 실행하세요. 편집 전에 실패 항목을 기록하면 기존 문제와 회귀를 구분할 수 있습니다. 선택한 화면을 주요 너비와 상호작용 상태에서 캡처하세요.
+
+계정 설정 폼은 첫 작업에 적합합니다. 경계가 분명하고 필드와 버튼이 보이며 동작을 관찰할 수 있습니다. 레이블, 유효성 검사 메시지, 포커스 상태, 비활성 컨트롤을 포함하세요. 결제와 보고서는 변환에서 제외하되, 앱 스타일시트를 공유한다면 시각 검사에는 포함합니다.
+
+변경할 파일을 결정하기 전에 다음 연결을 살펴보세요.
+
+<DocumentComparison>
+
+| 연결 | 작업 범위에 미치는 영향 |
+| --- | --- |
+| CSS 진입점, 리셋, 레이어 순서 | 마크업을 바꾸지 않은 화면에도 설정이 영향을 줄 수 있습니다. |
+| 공유 토큰과 컴포넌트 클래스 | 선택한 컴포넌트 밖에서도 같은 정의를 사용할 수 있습니다. |
+| 소스 탐색과 동적 클래스 이름 | 생성한 CSS에 컴포넌트가 실제 렌더링하는 상태가 포함되어야 합니다. |
+| 컴포넌트 라이브러리 동작 | 클래스를 바꿔도 위젯의 포커스 관리, 이벤트, 접근성 동작을 대신하지는 않습니다. |
+
+</DocumentComparison>
+
+변환 경계는 CSS 격리 경계가 아닙니다. Account, Billing, Reports가 같은 CSS 진입점을 읽는 앱에서는 Master CSS를 추가하거나 공유 규칙을 변경한 뒤 세 화면 모두 확인해야 합니다.
+
+<MigrationIllustration />
+
+<GuideStudy id="migration-local-scope" />
+
+## 기존 스타일과 함께 Master CSS 연결 \{#connect-master-css-beside-the-existing-styles\}
+
+앱의 프레임워크나 빌드 도구에 맞는 [설치](/guide/installation) 가이드를 따르세요. `@import '@master/css';`를 포함한 CSS 진입점을 앱이 읽는지 확인하고, 클래스 이름이 제공되는 방식에 맞는 [렌더링 모드](/guide/rendering-modes)를 선택합니다.
+
+첫 작업을 변환하는 동안 기존 스타일도 계속 불러오세요. 두 시스템이 각자의 지시문을 컴파일한다면 한 시스템의 소스를 다른 컴파일러에 넘기지 말고 입력을 따로 제공합니다. 위의 시스템별 가이드는 이러한 빌드 경계를 설명합니다.
+
+폼을 변환하기 전에 설정 자체의 영향을 살펴보세요. Master 프리셋에는 제목, 목록, 폼 컨트롤 등의 기본 스타일이 포함됩니다. 이 시점에 기존 화면을 기준 상태와 비교하세요. 리셋 차이, 토큰 이름 충돌, 유틸리티 이름 중복을 해결한 뒤 시각적 변화가 컴포넌트 변환 때문인지 판단합니다.
+
+Master import를 나중에 추가해도 유틸리티가 우선한다고 보장되지는 않습니다. [CSS 캐스케이드 규칙](https://www.w3.org/TR/css-cascade-5/#layer-order)에 따르면 같은 작성자 출처와 문맥에서 일반 비레이어 선언이 일반 레이어 선언보다 우선합니다. 따라서 요소에 남은 이전 클래스가 새 유틸리티의 작동 여부를 가릴 수 있습니다. 개발자 도구에서 적용된 선언을 살펴보고 [호환성](/guide/compatibility#third-party-styles)과 [캐스케이드 레이어](/guide/cascade-layers)를 통해 순서를 명확히 정하세요.
+
+## 컴포넌트 계약을 유지하며 변환 \{#convert-the-component-without-changing-its-contract\}
+
+기존 시스템의 가이드에 따라 코드를 변환하세요. 이름이 비슷한 클래스나 토큰이 같은 결과를 만든다고 가정하지 말고 실제 선언과 계산값을 비교합니다.
+
+- 기존 프로젝트 토큰 값이 설계 의도와 맞으면 재사용합니다. 제품의 결정을 나타내는 공유 값은 [`@theme`](/guide/theme)에 정의하고, 변경 시 다른 사용처도 확인합니다.
+- 컴포넌트를 더 읽기 쉽게 만들 수 있다면 로컬 시각 스타일을 마크업으로 옮깁니다. 선택자나 컴포넌트 계약을 더 명확히 표현한다면 네이티브 CSS나 CSS Modules를 유지합니다.
+- 런타임 값, 컴포넌트 props, 이벤트 핸들러, 시맨틱 요소, 키보드 동작을 보존합니다. 앱이 외부 위젯에 의존하는 동안 해당 위젯과 필수 CSS를 유지합니다.
+- 스캔 출력에서는 클래스 이름을 완전한 문자열로 제공하세요. [클래스 이름 스캔](/guide/scanning-and-pruning)에 따라 조건부 변형과 생성 콘텐츠를 확인합니다.
+
+계정 폼에서는 값 입력, 제출, 오류 표시, 작업 비활성화가 계속 작동해야 완료입니다. 대기 상태의 스크린샷 일치는 결과의 일부일 뿐입니다.
+
+## 검증 후 사용하지 않는 스타일 제거 \{#checklist\}
+
+다른 컴포넌트로 확대하기 전에 기준 상태로 변경을 검토하세요.
+
+1. 관련 포매터, lint, 타입 검사, 테스트를 실행한 다음 프로덕션 빌드를 실행합니다. 개발 미리보기와 빌드한 앱을 모두 확인합니다.
+2. 주요 너비, 테마, 상태에서 변환된 화면을 비교합니다. 키보드 탐색, 포커스, 유효성 검사, 비활성 컨트롤을 시험합니다.
+3. 변경한 리셋, 토큰, 전역 규칙을 공유하는 화면은 작업 범위 밖이라도 확인합니다. 이 예에서는 Account뿐 아니라 Billing과 Reports도 검토합니다.
+4. 이전 스타일의 남은 사용처를 확인한 뒤 변환한 컴포넌트의 옛 스타일을 제거합니다. 제거 후 다시 확인하세요. 남아 있던 옛 규칙이 새 선언의 누락을 가렸을 수 있습니다.
+5. 어떤 화면, 위젯, 빌드 입력도 필요로 하지 않을 때만 스타일 의존성을 제거합니다. 유용한 네이티브 및 외부 CSS는 유지하세요. 모두 없애야 작업이 완료되는 것은 아닙니다.
+
+의도한 시각적 차이와 남은 의존성을 변경과 함께 기록하세요. 검토 가능하고 검증된 결과가 나오면 다음 컴포넌트나 라우트에서 반복합니다.
+
+## 에이전트에 작업 계획 요청 \{#ask-an-agent-to-plan-the-work\}
+
+공식 [`master-css` 스킬](/guide/ai-coding#use-the-master-css-skill)에는 CSS 또는 Tailwind 컴포넌트 하나를 Master CSS로 가져오는 **Import external styles** 워크플로가 있습니다. 재설계를 요청하지 않으면 컴포넌트의 값과 동작을 유지합니다. 이 가이드의 비교 항목으로 결과를 검증하세요.
+
+### MCP 사용 \{#plan-an-external-system-conversion-with-mcp\}
+
+[Master CSS MCP 서버](/guide/ai-coding#connect-the-mcp-server)는 외부 스타일 시스템의 변환을 계획하는 `migrate-to-mastercss` 프롬프트를 제공합니다. 에이전트에 프로젝트를 조사하고 렌더링 모드, 첫 작업 범위, CSS 출력 위험, 검증 명령을 제시하도록 합니다. 이 프롬프트는 지침을 제공하며 자동 코드 변환기는 아닙니다.
+
+<DocumentPrompt title="MCP로 변환 계획" text={`Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+
+Inspect the external styling system, framework, stylesheet entries,
+source discovery, shared tokens and available checks. Do not edit yet.
+
+Return a plan for one component or route: setup changes, conversion
+files, screens affected by shared CSS, validation commands and the
+conditions for removing old styles. Identify uncertainties to inspect.`} />
+
+### MCP 없이 진행 \{#migration-prompt\}
+
+로컬 코딩 에이전트에도 같은 한정된 작업을 맡길 수 있습니다. 선택한 컴포넌트나 라우트를 포함하고 다음 계획 요청을 사용하세요.
+
+<DocumentPrompt title="MCP 없이 변환 계획" text={`Plan the first batch of this project's migration to Master CSS.
+Use the documentation matching the installed packages to verify
+current syntax, APIs and setup. Do not invent classes or package names.
+
+Inspect the framework, styling systems, CSS entry, shared definitions,
+source discovery and available checks. Do not edit yet.
+
+Propose the smallest working batch around the selected component or
+route. Explain how the old and new CSS will coexist, which screens
+need comparison, and which component behaviors must be preserved.
+
+List the files to change, validation commands, unresolved questions
+and evidence needed before deleting old styles or dependencies.`} />
+
+실제 프로젝트와 비교해 계획을 검토한 뒤 해당 작업의 구현을 요청하세요. 에이전트 편집과 직접 편집에 동일한 검사를 적용합니다.
+
+<a id="custom-engine-and-binding-migration"></a>
+사용자 정의 엔진 호스트는 [현재 실행 계약](/reference/packages#css)을 참고하세요. 이 가이드는 외부 스타일 시스템의 변환을 다룹니다.

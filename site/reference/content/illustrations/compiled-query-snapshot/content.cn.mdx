@@ -1,0 +1,31 @@
+# Reference prose: illustrations/compiled-query-snapshot
+
+## title \{#copy-title\}
+
+
+编译后的互补条件已包含展开查询
+
+## alt \{#copy-alt\}
+
+
+原始 max-md 对 md 的引用在编译 manifest 中成为具体的 64rem 互补条件。只将 md 改为 60rem，已有互补条件仍保持 64rem。
+
+## caption \{#copy-caption\}
+
+
+这里比较两个定义加载阶段，并非说明两份原始定义一起编译时的行为。
+
+## description-0 \{#copy-description-0\}
+
+
+--md 和 --max-md 一起编译时，not (--md) 使用对应最小值定义展开。
+
+## description-1 \{#copy-description-1\}
+
+
+已编译 manifest 内已包含展开查询。新增 --md: 60rem 定义，不会重新展开已有 64rem 的 --max-md 互补条件。
+
+## description-2 \{#copy-description-2\}
+
+
+如果两个范围必须一起变动，请在后续配置片段中重新声明两个名称。

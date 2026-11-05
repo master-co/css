@@ -58,7 +58,10 @@ export const homeSections = {
   getStarted: 'get-started'
 } as const
 
-export const installCommand = 'npm create @master/css@rc'
+export function installCommand(version: string) {
+  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error('The install command requires an exact public version')
+  return `npm create @master/css@${version}`
+}
 
 /** Real classes, linted by the tests, that the MCP floor is written in. */
 export const ctaClassRows = [

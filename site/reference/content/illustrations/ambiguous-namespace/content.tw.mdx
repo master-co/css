@@ -1,0 +1,31 @@
+# Reference prose: illustrations/ambiguous-namespace
+
+## title \{#copy-title\}
+
+
+兩個符合的命名空間不會產生兩個宣告
+
+## alt \{#copy-alt\}
+
+
+font-brand 遇到兩個符合的 brand 鍵，分別位於 font-family 與 font-size。分支在歧義障礙處匯合，不輸出規則。
+
+## caption \{#copy-caption\}
+
+
+此自訂主題中兩個 token 鍵都存在。Master CSS 必須先選出唯一命名空間，才會生成 class。
+
+## description-0 \{#copy-description-0\}
+
+
+有 --font-family-brand: monospace 與 --font-size-brand: 2rem 時，font-brand 符合兩個預設 font- 家族。
+
+## description-1 \{#copy-description-1\}
+
+
+結果為 AMBIGUOUS_TOKEN，且該 class 不產生 CSS；分支不會合併。
+
+## description-2 \{#copy-description-2\}
+
+
+請用不同鍵，或 (font-size:var(--font-size-brand)) 這類明確的原生宣告。

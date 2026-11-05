@@ -1,0 +1,31 @@
+# Reference prose: illustrations/independent-registrations
+
+## title \{#copy-title\}
+
+
+静的な名前と関数は別々の登録
+
+## alt \{#copy-alt\}
+
+
+独立した 2 経路で badge は display 定義、badge(8px) は padding 関数につながる。静的側の置換は関数側に及ばない。
+
+## caption \{#copy-caption\}
+
+
+経路は登録の同一性を示します。同名でもオーバーロードや結合された本体にはなりません。
+
+## description-0 \{#copy-description-0\}
+
+
+@utility badge \{ display: inline-block; \} は静的 badge クラスを、@utility badge(--inset) \{ padding: var(--inset); \} は別の関数を登録します。
+
+## description-1 \{#copy-description-1\}
+
+
+静的定義を display: block に置換すると badge は変わりますが、badge(8px) は引き続き padding: 8px を書き込みます。
+
+## description-2 \{#copy-description-2\}
+
+
+置換は同形式・同名の本体全体に作用します。関数は静的クラスの代替ではありません。

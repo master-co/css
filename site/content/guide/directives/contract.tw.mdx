@@ -1,0 +1,635 @@
+import StylesheetExample from '@master/internal-site/css/StylesheetExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+## 入口標記 \{#entry-markers\}
+使用 `@import` 交付樣式表，並讓其中的定義可用。若本地編譯需要那些定義，但原生樣式表由其他輸出負責交付，請用 `@reference`。應用程式設定請依照[安裝](/guide/installation)；路由個別擁有的樣式請見[路由層級樣式](/guide/route-level-styles)。
+
+<ReferenceIllustration id="import-reference-output" />
+
+### `@import "@master/css"` \{#import-mastercss\}
+套件匯入是唯一的專案入口標記。它載入預設集的原生 CSS，包含穩定的串接層順序與基礎樣式，並識別接收生成 utility CSS 的樣式表。
+
+```css
+@import "@master/css";
+```
+
+仍可明確使用獨立編譯器與 manifest API。manifest 本身不會載入原生 CSS；使用執行階段或伺服器渲染的應用程式，也必須交付相關原生樣式表。
+
+### 本地檔案 URL \{#local-file-urls\}
+
+Node 檔案編譯依 CSS 跳脫與大小寫規則讀取 CSS 匯入名稱。相對 `@import` 與 `@reference` URL 的路徑以來源檔案為基準解析：百分比跳脫代表檔名字元，查詢字串與片段則不納入檔案系統路徑。例如，`"./tokens%20%23.css?v=1#theme"` 讀取同目錄中名為 `tokens #.css` 的檔案。既有的裸相對 CSS 路徑如 `"tokens.css"` 也會展開。沒有對應本地檔案的裸套件匯入，仍交由宿主解析器處理。參照檔案仍只提供編譯階段情境，不會輸出其原生 CSS。對已備妥的虛擬樣式表，宿主明確指定為來源歸屬的檔案，也提供相對 CSS 參照的基準。參照主題 token 中的資源在其他地方使用時，仍以參照檔案為相對基準。
+
+### 樣式表邊界與資源 URL \{#stylesheet-boundaries-and-resource-urls\}
+
+匯入的 media、supports 與 layer 限定會套用到被匯入的樣式表。發布 CSS 時請保留這些邊界，並以原始來源檔案解析影像與字型 URL。透過 `@reference` 使用的 token，也保留其定義檔案作為資源所屬來源。
+
+全域 Master 定義應置於不帶限定的匯入或參照。帶有限定的匯入可以包含原生 CSS，包括套用先前已可用 mixin 的原生規則；但不能註冊 `@theme`、`@utility`、`@mixin`、`@custom-media` 或 `@custom-container` 定義。
+
+```css
+@import "./tokens.css";
+@import "./print.css" print;
+@import "./components.css" layer(components);
+```
+
+每個 `@import` 都會再次內嵌其樣式表，因此同一檔案從多處匯入時會重複。單一匯入圖最多內嵌 10,000 份樣式表與 64 MiB CSS；共用檔案請匯入一次，不要從每個使用它的檔案匯入。
+
+載入定義與掃描中繼資料不會發布檔案。CLI 檔案匯出與 Vite 正式建置會發布所需樣式表及資源。自訂編譯器宿主必須發布交付 API 回傳的每個資源；manifest 本身不會交付原生規則。請見[渲染與樣式表交付](/guide/rendering-modes#native-css-entries)及[編譯器入口](/reference/packages#css-compiler)。
+
+
+### 發布完整資源集合 \{#publish-stylesheet-assets\}
+
+編譯後的 CSS 入口仍可能匯入其他 CSS 檔案，或參照影像與字型。只發布入口文字，會讓這些相依資源無法取得。請保留每個回傳的 URL 與匯入限定；若子樣式表含有外部匯入，將它攤平可能改變載入順序或條件範圍。
+
+<ReferenceIllustration id="stylesheet-asset-graph" />
+
+| 交付方式 | 發布負責端 |
+| --- | --- |
+| CLI `generate --output dist/app.css` | CLI 將本地匯入攤平到入口，並寫入資源檔案與保留邊界所需的同層 CSS。部署時須包含整組檔案。 |
+| Vite 正式建置 | 整合將受管理匯入攤平到 Vite 的 CSS 資源，並將其餘資源輸出到建置結果。依設定的公開基底路徑部署完整輸出。 |
+| 含 `delivery` 的 `compileManifestFileSync()` | API 回傳樣式表內容與資源目的地，由自訂宿主寫入或提供服務。 |
+| manifest 或 CSS 字串 | 兩者都不發布檔案。呼叫端仍負責原生 CSS 交付與參照資源。 |
+
+正式環境的攤平會保留階層串接：串接層陳述式留在原位，`layer()`、`supports()` 與 media 限定轉成對等的 `@layer`、`@supports` 與 `@media` 區塊，空樣式表則移除。樣式表頂端的外部匯入，若前方只有其他外部匯入，會隨樣式表一起上移。若樣式表在限定範圍下保留 namespace 或匯入，或其外部匯入會落在內嵌規則之後，就會保留為獨立檔案；同檔案中位於它之前的匯入也會如此，因為 `@import` 不能放在規則之後。
+
+影像與字型保留定義樣式表作為來源所屬檔案，包括透過 `@reference` 使用的資源。發布時會改寫 URL，並保留查詢字串與片段。只供參照的樣式表，不會僅因定義被讀取就發布。
+
+CLI 的 `--no-export` 路徑只列印 CSS，不複製資源。檔案匯出的監看模式在匯入樣式表或資源遺失時，會保留上次成功輸出、回報錯誤，並在恢復後重建。不要將舊輸出視為最新建置成功。
+
+自訂宿主請用[編譯器交付契約](/reference/packages#css-compiler)。Vite 的已處理文字、原始來源與 URL 匯入請見[樣式表載入](/guide/installation/vite#stylesheet-loading)。[路由層級樣式](/guide/route-level-styles)說明哪個頁面負責本地樣式表。
+
+## 參照情境 \{#reference-context\}
+### `@reference` \{#reference\}
+編譯需要另一份樣式表的定義，但不需要匯入其原生規則時，請使用參照。此範例從應用程式入口載入間距 token 與選擇器 mixin：
+
+```css name=app.css
+@import "@master/css";
+
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+  padding: var(--spacing-md);
+  @apply --manual-dark { color: white; }
+}
+```
+
+參照提供 token、utility、mixin、自訂 media、自訂 container 與原生關鍵影格定義供解析使用。它不會交付被參照檔案的原生 CSS、不會生成該檔案的 class，也不會加入掃描來源。已使用的受管理 token 與關鍵影格，仍可能讓本地輸出包含其相依資源。被參照的原生規則絕不作為使用根節點。原生覆寫需要真正的 `@import` 或另一份已交付樣式表。被參照的關鍵影格只會在本地使用時輸出。
+
+<ReferenceIllustration id="reference-no-roots" />
+
+參照必須是頂層陳述式，且只包含一個加上引號的資源。相對路徑以宣告樣式表的目錄為基準。套件參照會解析已匯出的 CSS 入口。參照不是入口標記。
+
+Vite、Next.js 與 Webpack 為本地樣式表、CSS Modules 與 SFC 樣式提供專案定義情境。對該情境外的相依資源或獨立編譯，可明確加入參照。本地樣式表不會成為掃描或修剪根節點。CSS Modules 與限定作用範圍的宿主，必須將生成的主題選擇器全域交付。
+
+定義情境會在本地定義之前載入，因此本地定義可取代匯入或參照的定義。拆分 CSS 輸出的編譯器宿主，也必須追蹤哪份輸出交付共用變數與關鍵影格；請見[編譯器資源所有權](/reference/packages#css-compiler)。
+
+## 主題宣告 \{#theme-declarations\}
+`@theme` 為 utility 定義註冊 token。其修飾詞分別控制哪些 token 宣告會交付，以及生成值使用 `var()` 或代入原始宣告值。[主題 token](/guide/theme)說明專案設定；[變數與模式](/reference/rules/modes)說明作用範圍、繼承與解析。
+
+### `@theme` \{#theme\}
+以自訂屬性宣告 utility token。主題區塊必須位於頂層，且只接受自訂屬性 token 宣告。關鍵影格請在區塊外的原生 CSS 中宣告。
+
+```css
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+```
+
+未知或重複的修飾詞會產生錯誤。`static` 與 `inline` 的順序不限。
+
+| 宣告 | token 交付 | 生成值 |
+| --- | --- | --- |
+| `@theme` | 依需求 | `var(--token)` |
+| `@theme static` | 一律交付 | `var(--token)` |
+| `@theme inline` | 僅在其他參照或相依關係保留時 | 宣告值 |
+| `@theme static inline` | 一律交付 | 宣告值 |
+
+token 會輸出於 `@layer theme` 中的 `:root, :host`。編譯器保留宣告順序與重複值。已使用的 token 會保留遞移變數相依關係。選擇器與條件規則應置於區塊外的原生 CSS。
+
+只有 `@theme` 會為 utility 模式註冊具名 token。`:root { --app-brand: red; }` 這類原生宣告仍是一般 CSS；可直接以 `(color:var(--app-brand))` 使用，或透過 inline 主題 token 橋接。
+
+<ReferenceIllustration id="theme-modifier-axes" />
+
+### `@theme inline` \{#theme-inline\}
+使用 `inline`，將 token 的宣告值代入 Master 生成的宣告：
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+`bg-brand` 輸出 `background-color:var(--app-brand)`，在使用該 class 的元素上解析原生變數。直接宣告 class、utility class 與原生 `@apply` 展開，都會套用相同代入方式。手寫的原生宣告保留原本的 `var()` 參照。
+
+代入只執行一次。替換值中的變數、函式與備援值保留原生 CSS 語意。相依關係從代入後的宣告收集；僅使用 inline utility，不會強制輸出被替換的 token。直接以原生方式參照該 token，仍可保留它的宣告。
+
+重複的主題定義會先依重要性、再依來源順序選擇 inline 值與模式。自訂屬性的 `!important` 不會讓生成的 utility 也變成重要。一般別名在宣告的作用範圍解析；橋接值需要在使用處讀取其他變數時，請用 inline。
+
+### `@theme static` \{#theme-static\}
+即使沒有 class 或原生參照也必須輸出 token 時，請用 `static`：
+
+```css
+@theme static { --color-integration: #4f46e5; }
+@theme static inline { --color-brand: var(--app-brand); }
+```
+
+`static` 控制 token 交付，`inline` 控制生成值，兩者可依任意順序組合。只要 token 有任何 static 宣告，就會與其相依資源一起保留，直到定義移除。被參照樣式表不會只因 token 是 static 就成為輸出根節點。
+
+### 原生主題覆寫 \{#theme-mode\}
+在 `@theme` 註冊預設值，再使用原生選擇器或查詢覆寫變數：
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+@media (prefers-color-scheme: dark) {
+  :root { --color-panel: #111827; }
+}
+```
+
+原生覆寫保留原本的作用範圍、串接層與樣式表交付方式。同一元素上，不在串接層中的一般覆寫優先於 theme 層的一般宣告。`defaults` 這類較後的串接層，也能讓覆寫優先，同時仍讓 `components` 與 `utilities` 層取得更高優先順序。需要覆寫的地方都要匯入原生樣式表；`@reference` 只提供定義，不交付這些規則。
+
+預設集使用原生 `light-dark()` 提供自適應色彩與陰影。兩個變數分支都保留為相依關係。其原生基礎 CSS 在根元素設定 `color-scheme: light dark`，並提供適用元素與 shadow host 的明暗 `data-theme` 選擇器。請見[色彩](/guide/colors#native-color-scheme-and-manual-themes)。
+
+<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
+
+## 查詢定義 \{#query-definitions\}
+替可重複使用的條件命名一次，便可用於原生 CSS 或 class 後綴。media 名稱描述檢視區或裝置條件；container 名稱描述在使用處選定的容器上檢查的條件。定義必須位於頂層且不帶條件。
+
+[條件](/reference/rules/conditions)定義 class 後綴語法，[具名條件](/reference/rules/named-conditions)列出所有預設條件，[響應式設計](/guide/responsive-design)說明如何選擇排版邊界。
+
+<ReferenceIllustration id="container-condition-expansion" />
+
+### `@custom-media` \{#custom-media\}
+依照 [CSS Media Queries 規範](https://drafts.csswg.org/mediaqueries-5/#custom-mq)定義具名媒體查詢：
+
+```css
+@custom-media --wide (width >= 60rem);
+@custom-media --reading (--wide), print;
+@custom-media --outside not (--reading);
+@custom-media --enabled true;
+@custom-media --disabled false;
+
+@media (--reading) { .article { max-width: 70ch; } }
+```
+
+名稱以 `--` 開頭。CSS 參照使用 `(--name)`，標記使用 `@name`，本地具名區塊則用 `@media (--name)`。原生 CSS、utility 與 mixin 定義，以及標記查詢共用同一註冊表。
+
+定義支援查詢清單、向前參照、`true`、`false`、巢狀布林運算式、否定與媒體型別。展開遵循邏輯：清單保留其或關係，否定套用到完整的被參照運算式。清單內每個查詢形成獨立分支，class 上各條件的分支數會相乘；展開超過 4,096 個分支的 class 不會生成規則，例如重複十二次 `@reading` 的 class。編譯器輸出一般媒體查詢；單一查詢無法表達混合媒體型別時，會使用巢狀區塊。不需要瀏覽器 custom-media API 或 JavaScript 執行階段註冊。
+
+未定義、循環或無效的參照會造成編譯錯誤。同名定義以較後者為準。media 與 mixin 名稱彼此獨立：`@name` 選取 media，`@apply(--name)` 則呼叫 mixin。`--starting-style` 是保留名稱，因為 `@starting-style` 已內建。預設集沒有 `--breakpoint-*` token。專案中具有此前綴的自訂屬性仍是一般 CSS，絕不會隱含宣告 media 條件。寬度上限請用原生長度或個別命名的排版 token。保留外部 URL 的匯入不能包含未解析的 custom-media 查詢；降低語法前先解析這些樣式表匯入，或在匯入上使用一般原生查詢。
+
+<StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
+
+### `@custom-container` \{#custom-container\}
+Master CSS 在編譯時展開 `@custom-container` 定義；瀏覽器接收一般 `@container` 規則。定義只保存條件，要測量哪個容器則在使用條件的位置決定。
+
+```css
+@custom-container --md (width >= 28rem);
+@custom-container --max-md not (--md);
+@custom-container --compact style(--density: compact);
+@custom-container --dense (--md) and (--compact);
+
+@container card (--md) { .title { font-size: 1.25rem; } }
+```
+
+名稱以 `--` 開頭。CSS 參照在選填容器名稱後使用 `(--name)`，例如 `@container card not (--md)`。標記在容器查詢內使用相同參照：`@container(--md)` 測量最近的容器，`@container(card|--md)` 則測量具名容器。原生 CSS、utility 與 mixin 定義，以及標記共用同一註冊表。
+
+定義可以是任何容器條件：尺寸與樣式查詢、`not`、`and`、`or`，以及其他自訂容器的參照，包含向前參照。展開時代入被參照條件；除非原本已是一個群組或完整條件，否則會加上括號，因此 `@container card (--dense)` 輸出 `@container card (width >= 28rem) and style(--density: compact)`。容器條件始終可放在單一規則前置部分，展開絕不增加分支。編譯器輸出一般容器查詢，並將各展開條件存入 manifest 的 `customContainers`。
+
+未定義、循環與空參照都會造成編譯錯誤，以容器名稱開頭的定義也是如此。同名定義以較後者為準，參照該名稱的定義會使用最終版本。容器名稱與自訂 media、mixin 彼此獨立：裸 `@md` 一律選取自訂 media，絕不選取容器條件。`--container-*` token 用於設定元素尺寸，絕不提供容器斷點。
+
+<StylesheetExample title="A named container condition" source={"@custom-container --roomy (width >= 40rem); .card { @container (--roomy) { display: grid; } }"} />
+
+## utility 與原生樣式 \{#managed-definitions\}
+`@utility` 註冊按需生成的 class。`@mixin` 為可重複使用的 CSS 本體命名；`@apply` 在呼叫處展開它。原生選擇器仍是一般 CSS。[重複使用樣式](/guide/reusing-styles)說明如何選擇形式；本頁定義其語法與取代規則。
+
+### `@utility` \{#utilities\}
+在頂層明確宣告 class 形式：
+
+```css
+@utility card-layout {
+  display: grid;
+  gap: var(--spacing-md);
+  &:hover { outline: 1px solid currentColor; }
+}
+
+@utility col-gap-(--spacing) {
+  column-gap: var(--spacing);
+}
+
+@utility grid-cols(--cols <integer>) {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+```
+
+在標記中使用 `card-layout`、`col-gap-sm` 與 `grid-cols(3)@sm`。標頭決定定義註冊的是固定 class、token 模式或函式。每種形式只註冊該形式，token 模式不會同時建立函式呼叫。增加宣告或受支援的巢狀規則，不會改變註冊形式。
+
+utility 名稱與 token 前綴不能包含 `_`，因為 `_` 在 class 中開始後代選擇器；這類定義會在來源處回報錯誤。token 鍵可以含 `_`：它仍是可供 `var()` 使用的合法變數，但不會產生裸 token class 或補全。mixin 名稱、自訂屬性與原生樣式表 class 仍可使用 `_`。
+
+### 註冊與預設集 \{#named-and-enumerated-classes\}
+主題提供 token，utility 定義決定這些 token 能產生哪些 class。匯入 `"@master/css"` 取得完整預設集；明確組合樣式表時，也可搭配自己的 token 載入 `"@master/css/utilities.css"`。
+
+[家族索引](/reference/tokens/families)提供完整 token 與屬性對應。[固定 utility](/reference/rules/declarations#fixed-utilities)與[直接數值](/reference/direct-values)列出各自的註冊。它們都使用本頁所述的相同定義形式。
+
+### token 模式 \{#named-token-patterns\}
+模式有一個尾端佔位符。參數指定 token 命名空間，固定部分指定 class 前綴。未標示型別的佔位符綁定 token 值：
+
+```css
+@utility p-(--spacing) { padding: var(--spacing); }
+@utility m-(--spacing) { margin: var(--spacing); }
+@utility fg-(--color) { color: var(--color); }
+@utility size-(--spacing) {
+  width: var(--spacing);
+  height: var(--spacing);
+}
+```
+
+`p-md` 綁定 `var(--spacing-md)`；`size-md` 在兩個宣告中使用該參照。一般 token 保留由瀏覽器求值的參照，inline token 則將宣告值代入一次。未知 token 不會建立 class。值模式接受數字與 Unicode 鍵，包含內含 `--` 的鍵。
+
+`<string>` 佔位符綁定 token 鍵，可用來明確參照伴隨值：
+
+```css
+@theme {
+  --text-hero: var(--font-size-5xl);
+  --text-hero--line-height: 1.15;
+  --text-hero--letter-spacing: -.03em;
+}
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
+}
+```
+
+`text-hero` 綁定字串 `"hero"`，且必須存在對應的主要 token。含 `--` 的伴隨鍵不會建立 class；缺少伴隨值時使用原本撰寫的備援值。`ident()` 會靜態摺疊為一般 CSS 識別名稱。命名空間來自參數，因此 `@utility type-(--text <string>)` 使用相同 token，搭配不同 class 前綴。token 佔位符不接受預設值或其他型別。
+
+共用前綴可以明確提供數個命名空間：
+
+```css
+@utility font-(--font-family) { font-family: var(--font-family); }
+@utility font-(--font-size) { font-size: var(--font-size); }
+@utility font-(--font-weight) { font-weight: var(--font-weight); }
+```
+
+`font-sans`、`font-sm` 與 `font-bold` 各自選取唯一含有該鍵的命名空間。鍵若存在於多個分支，使用時會回報 `AMBIGUOUS_TOKEN`，且不產生 CSS。請改用不同鍵，或 `(font-size:var(--font-size-brand))` 這類原生宣告。這項規則同樣適用字串鍵組合樣式與多宣告本體。否定與不透明度只在選定唯一分支後才檢查。
+
+固定 class 優先於模式：保留的是完整 class 拼法，不是 token 鍵。因此即使存在 `--text-center`，`text-center` 仍設定 `text-align`；`fg-solid`、`b-solid/.5` 與 `-mx-auto` 則仍可使用名為 `solid` 或 `auto` 的 token。模式採用最長前綴；所選家族內若沒有 token，就回報錯誤，不再嘗試較短前綴。參數命名空間不同的 token 模式可共用前綴。較後模式會完整取代解碼後前綴與命名空間皆相同的定義，包含參數模式、本體、來源與相依關係。靜態與函式註冊則各自獨立取代同形式、同名稱的定義。
+
+負值與不透明度適用於直接值子集：一個未標示型別的佔位符，以及一個完整值恰為 `var(--parameter)` 的原生宣告。`-m-md` 將數值間距 token 轉為負值；`-p-md` 無效，因為 padding 不支援負值。`fg-red/.5` 為色彩 token 套用不透明度，範圍為零到一。這些能力不延伸到一般多宣告或字串鍵組合樣式。
+
+<ReferenceIllustration id="ambiguous-namespace" />
+
+### 靜態引數 \{#dynamic-values\}
+函式 utility 與 mixin 接受位置參數：未標示型別、`<integer>`、`<number>`、`<string>` 或 `<custom-ident>`。靜態預設值用冒號指定，例如 `--cols <integer>: 2`。數字必須是數值字面值；格線數量與跨度必須為正整數。字串引數必須加引號。
+
+```css
+@utility pair(--size) {
+  width: var(--size);
+  height: var(--size);
+}
+```
+
+使用 `pair(2rem)`。一般函式引數必須能在靜態階段確定。若函式或 mixin 恰有一個未標示型別、無預設值的參數，且只有一個完整值恰為 `var(--parameter)` 的原生宣告，也接受符號式 `var()` 運算式。呼叫端的參照會原樣保留，交由瀏覽器求值。其他函式會拒絕外部 `var()`、`attr()` 與相依瀏覽器的引數。已知的外層參數可透過 `var(--parameter)` 轉送。
+
+<StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
+
+<ReferenceIllustration id="parameter-known-vs-live" />
+
+### `@mixin` 與 `@apply` \{#reusing-a-matched-value\}
+Master 編譯實驗性 [CSS Mixins 規範](https://drafts.csswg.org/css-mixins-1/#mixin-rule)的靜態子集。定義採用雙連字號名稱，且必須是不帶條件、位於樣式表層級的規則。mixin 提供 CSS 重複使用，不會註冊 Master class。
+
+```css
+@mixin --caption {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+.caption {
+  color: currentColor;
+  @apply --caption;
+  font-weight: 600;
+}
+@utility caption {
+  @apply --caption;
+}
+```
+
+`@apply` 在原生規則、utility 或另一個 mixin 內接受一個 mixin 呼叫，不接受 utility 名稱或 class 清單。展開發生在原本的宣告位置，並保留重複宣告、重要性、選擇器、條件與 URL 所有權。
+
+參數可用於套用的元素上，包含 `&:hover` 與條件包裝。跨元素使用參數、重新賦值、選擇器或條件插值、遞迴定義、多載、`@private` 與不支援的型別，都會回報編譯錯誤。此靜態子集未實作依賴瀏覽器的參數求值、私有屬性或通用函式。
+
+<ReferenceIllustration id="mixin-splice" />
+
+### 內容與 class 包裝 \{#contents\}
+使用 `@contents` 標示呼叫端的宣告或巢狀規則插入可重複使用包裝的位置。
+
+```css
+@mixin --card-wide() {
+  @container card (width >= 40rem) { @contents { display: grid; } }
+}
+.card { @apply --card-wide { gap: 1rem; } }
+```
+
+`@contents;` 插入提供的內容。`@contents { … }` 只在呼叫省略區塊時提供備援內容。明確的空 `@apply --card-wide {}` 會抑制備援。每個 contents 位置插入一次區塊，保留宣告、重複值與巢狀規則。沒有 `@contents` 的 mixin 會忽略提供的區塊。
+
+<ReferenceIllustration id="contents-default-vs-empty" />
+
+提供的內容保留呼叫端參數綁定，即使經由巢狀套用轉送也是如此。備援內容使用定義 mixin 的綁定。一般自訂屬性保留原生 CSS 階層串接行為。允許有限的巢狀呼叫；遞迴定義與超出展開深度或節點上限都屬於錯誤。
+
+```css
+@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+@utility emphasis { color: red; display: block; }
+```
+
+```html
+<button class="(color:red)@apply(--hocus)">Save</button>
+<div class="grid-cols(3)@apply(--card-wide)"></div>
+<div class="emphasis@apply(--hocus)!"></div>
+```
+
+`@apply(--name(...))` 接受靜態引數。多個 `@` 包裝由左向右巢狀套用：`(color:red)@apply(--a)@apply(--b)` 將 `--a` 放在 `--b` 外層。utility 將所有宣告作為一個區塊提供，因此包裝自身的宣告每個 class 只輸出一次。選擇器後綴保留原本位置；結尾 `!` 將每個展開宣告標為重要。class 頭部與除 `@apply` 外的條件後綴決定 class 排序：每個外層條件分支都是獨立排序的一條規則；mixin 內部選擇器與條件留在輸出文字中，不會讓 class 移到較後排序層級，展開也保留原始順序。若展開未新增宣告、選擇器或條件，便與單一宣告 utility 一起排序；若頭部是 `(property:value)`，則與原生宣告一起排序。其餘展開以組合樣式排序。檢查與衝突分析使用展開後的規則。
+
+未使用的定義、捨棄的 contents 與未使用的備援區塊，不會保留 token 或關鍵影格。已交付原生 `@apply` 仍透過 emitted-globals 契約作為資源根節點。宣告位置與相對 URL 保留其定義或呼叫檔案。
+
+<ReferenceIllustration id="contents-insertion" />
+
+### 完整定義取代 \{#whole-definition-replacement\}
+較後的定義會取代同一註冊的完整本體，不會合併宣告。同名靜態 utility 與函式 utility 是獨立註冊。token 模式只取代解碼後前綴與命名空間皆相同的分支。
+
+```css
+@utility badge { color: red; padding: 1rem; }
+@utility badge { color: blue; }
+```
+
+`badge` 現在只輸出 `color: blue`。先前的 padding 與其相依關係已移除。
+
+<ReferenceIllustration id="definition-replacement" />
+
+mixin 名稱只有一個最終定義，包含參數清單、本體與相依關係。空定義仍維持註冊。向前的巢狀呼叫依最終註冊表解析；不提供參數多載。
+
+<ReferenceIllustration id="independent-registrations" />
+
+### 定義作用範圍與匯入 \{#definition-scope-and-imports\}
+`@theme`、`@utility`、`@mixin`、`@custom-media` 與 `@custom-container` 是頂層定義，在串接層或條件包裝內註冊會產生錯誤。mixin 本體可包含宣告、巢狀選擇器、受支援的原生條件、巢狀 `@apply` 與 `@contents`。串接層位置由呼叫端決定。
+
+來源掃描、安全清單、引擎 API 與執行階段 DOM 變更中的 class，都是使用根節點。已交付原生 CSS 中的 `@apply` 也是根節點；未使用 utility 或 mixin 內，或未交付 `@reference` 樣式表內的 `@apply` 則不是。相依收集在參數綁定與 `ident()` 摺疊後進行。已使用 token 保留有序宣告與遞移相依關係。靜態 token 即使沒有使用端，也維持根節點。移除最後一個根節點會釋放資源；原生 CSS 資源則透過 `emittedGlobals` 保持固定。
+
+執行階段 manifest 保留未使用定義，供未來 DOM class 使用。按需生成處理的是 CSS 與資源輸出。原生 CSS 修剪仍須明確啟用；關鍵影格與其宣告檔案共用原生保留和修剪政策。帶限定的匯入只能包含原生 CSS。定義請透過不帶限定的匯入或參照載入。
+
+### 原生屬性優先順序 \{#literal-and-raw-values\}
+原生 `(property:value)` class 的 CSS 屬性意義獨立於 utility 註冊。在相同條件下，單一宣告 utility 與原生宣告 class 可以覆寫組合樣式的一部分。完整排序與覆寫規則請見[宣告與值](/reference/rules/declarations#combining-declarations)。
+
+### 原生預設樣式 \{#defaults\}
+將原生預設樣式寫在 `@layer defaults` 中。
+
+### 原生元件 \{#components\}
+將原生元件選擇器寫在 `@layer components` 中。
+
+```css
+@layer components {
+  .button {
+    display: inline-flex;
+    padding: var(--spacing-md);
+    &:focus-visible { outline: 2px solid currentColor; }
+  }
+}
+```
+
+原生規則依樣式表匯入圖交付。utility 定義註冊 class 名稱；mixin 定義透過 `@apply` 提供 CSS 重複使用。兩者都在編譯期間使用，只有被使用時才輸出 CSS。
+
+### Sass 互通 \{#sass-interoperability\}
+
+使用 Sass 時，請將 CSS mixin 定義放在 `.css` 檔案。目前 Dart Sass 為未來 CSS 支援保留 `@mixin --name`，並拒絕將它視為 Sass mixin；請見 [Sass 相容性公告](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/)。SCSS 檔案可在 Master CSS 編譯前，透過插值輸出原生 at-rule：
+
+```scss
+@#{'mixin'} --card {
+  padding: 1rem;
+}
+
+.card { @apply --card; }
+```
+
+這是 Sass 插值，不是額外的 Master CSS 語法。Sass `@include` 與 CSS `@apply` 仍是獨立結構。
+
+### 主題選擇器包裝 \{#theme-wrappers\}
+原生選擇器與查詢啟用主題覆寫。mixin 可以提供對應的 class 條件：
+
+```css
+@mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
+}
+```
+
+使用 `(color:white)@apply(--ocean)`。要指向 shadow host 時，請明確加入 `:host(...)` 選擇器。
+
+## 來源邊界 \{#source-boundaries\}
+檔案政策決定從哪裡讀取候選項；候選政策決定哪些完整 class 字串仍可使用。這些指令不會改變剖析器，也不會將任意來源文字轉成有效 utility。設定與疑難排解請見[掃描 class 名稱](/guide/scanning-and-pruning)，支援的來源語法與生命週期請見[擷取](/reference/rules/extraction)。
+
+<ReferenceIllustration id="scanning-two-filters" />
+
+### `@source` \{#source\}
+一般應用程式來源使用整合與 CLI 的預設探索方式。需要時再加入明確例外：
+
+```css
+@source "../content/**/*.mdx";
+```
+
+### `@source not` \{#source-not\}
+從來源集合排除符合的檔案：
+
+```css
+@source not "../content/drafts/**";
+```
+
+`{a,b}` 這類大括號群組會展開為各別模式；單一模式最多包含 64 組大括號，且最多展開為 1,024 個模式。
+
+所有納入項先取聯集，再扣除所有排除項。每個相對模式都以宣告它的樣式表為基準解析，包含裸 `src/**`、`./src/**`、匯入檔案與 `@source not`。參照不會提供掃描來源。
+
+解析檔案的 API 必須提供宣告檔案或明確的基準檔案。僅檢查來源指令的操作可回傳未解析中繼資料，但不得自行虛構檔案系統基準。掃描器程式 API 的 `cwd` 選項，對直接透過該 API 傳入的掃描選項維持既有意義。
+
+## 候選政策 \{#candidate-policy\}
+### `@safelist` \{#safelist\}
+加入無法以字面形式出現在掃描來源中的完整 class 候選項：
+
+```css
+@safelist "(opacity:1)";
+@safelist "bg-blue-60@dark";
+```
+
+候選項採用與探索到的 class 相同的比對與診斷政策。請讓動態選項保持有限且明確。
+
+若要保留具名動畫定義，又不生成 class 或動畫宣告，請使用明確的 keyframes 目標：
+
+```css
+@safelist keyframes "fade" "pop";
+```
+
+每個引號字串是一個完整 CSS 動畫名稱。名稱區分大小寫並支援 CSS 跳脫；字串內的空白是名稱的一部分。不會展開萬用字元或分割 class。缺少名稱、未加引號的名稱、逗號與巢狀安全清單指令都會造成錯誤。名稱若不存在於完整匯入／參照圖，會產生警告。安全清單在各入口圖內合併，並在來源或指令移除時撤回。`@reference` 不會匯入安全清單根節點。沒有關鍵影格封鎖清單，也沒有獨立的關鍵影格修剪／保留目標。
+
+### `@blocklist` \{#blocklist\}
+使用完整字串，或 `*`、`?` 萬用字元模式，移除不需要的完整候選項：
+
+```css
+@blocklist "debug-*";
+@blocklist "example-token";
+```
+
+樣式表語法不會將斜線包住的模式解讀為正規表示式。萬用字元政策屬於封鎖清單；安全清單提供的是完整 class。
+
+## 原生 CSS 保留 \{#native-css-preservation\}
+原生 CSS 修剪會移除未使用的 class 選擇器分支，並讓關鍵影格按需可用。這是樣式表政策，與 utility class 生成分開。[最佳化 CSS 交付](/guide/optimizing-css-delivery#native-pruning)說明何時啟用；[掃描指令](/reference/directives/scanning)定義來源與候選篩選。
+
+<ReferenceIllustration id="pruning-file-boundary" />
+
+原生 CSS 預設會保留，即使提供 class 清單也一樣。在整合或樣式表 API 設定 `pruneNativeCSS: true`，可修剪專案擁有的來源。套件 CSS 仍保留，除非其來源明確啟用修剪。
+
+### `@prune native` \{#prune-native\}
+
+```css
+@prune native;
+.used { color: red; }
+.unused { color: blue; }
+```
+
+此指令只對宣告它的檔案啟用修剪，不會傳遞到匯入樣式表。同檔案中的 `@preserve native;` 優先，即使整合啟用全專案修剪也是如此。原生輸出開關 `preserveNativeCSS: false` 是獨立選項，不論兩個指令如何設定，都會抑制原生輸出。
+
+### `@preserve native` \{#preserve-native\}
+Master 管理的樣式表若含有不可被原生 CSS 修剪移除的原生 class 規則，請用 `@preserve native;`。
+
+```css
+@import "@master/css";
+@preserve native;
+
+.injected-by-payment-widget {
+  color: blue;
+}
+```
+
+樣式表仍由 Master CSS 處理。即使掃描來源未使用那些 class，原生 class 規則仍保留；一般編譯器正規化仍會套用。此政策不會強制將未使用的受管理 class 加入生成輸出，也不代表原始 CSS 位元組會保持不變。
+
+<ReferenceIllustration id="preserve-wins" />
+
+### 匯入圖 \{#import-graph\}
+已解析的 CSS 匯入保留各自的來源邊界，因此每個檔案的政策只適用自己。匯入端不能替相依檔案啟用修剪。`pruneNativeCSS: true` 下，專案擁有的相依檔案會參與，除非宣告 `@preserve native;`；套件與遠端樣式不會因為專案匯入它們就變成專案擁有。帶限定匯入保留 media、supports 與 layer 包裝。
+
+```css name=src/style.css
+@prune native;
+@import "@master/css";
+@import "./cards.css";
+```
+
+```css name=src/cards.css
+@prune native;
+.card { border: 1px solid rgb(0 0 0 / 12%); }
+.unused-card { color: red; }
+```
+
+掃描來源含有 `card` 時，輸出保留 `.card` 並移除 `.unused-card`。若 `cards.css` 沒有該指令，兩條規則都會留下。
+
+### 根節點作用範圍 \{#root-scope\}
+啟用設定屬於各來源檔案；篩選則使用匯入該檔案的根節點之使用範圍。因此，同一份已啟用的共用檔案在不同根節點下可保留不同 class。由 JavaScript 或框架路由直接匯入的檔案，只有在該匯入進入 Master CSS 管線時，才成為自己的根節點。
+
+根節點預設使用全域掃描器範圍。根節點匯入圖內任何位置的 `@source`、`@source not`、`@safelist` 與 `@blocklist` 都可縮小或擴大範圍；匯入檔案中的指令會合併到每個匯入它的根節點，相對模式則以宣告檔案為基準解析。
+
+```css name=app/a/a.css
+@prune native;
+@import "@master/css";
+@source "./page.html";
+@import "../shared.css";
+```
+
+```css name=app/shared.css
+@prune native;
+@blocklist "debug-*";
+.shared-card { border: 1px solid rgb(0 0 0 / 12%); }
+.only-used-in-b { color: blue; }
+.debug-outline { outline: 1px solid red; }
+```
+
+若 `app/a/page.html` 只使用 `shared-card`，`a.css` 輸出保留 `.shared-card`，並移除 `.only-used-in-b` 與 `.debug-outline`。另一個根節點 `b.css` 的頁面若使用 `only-used-in-b`，則會從同一共用檔案保留該規則。
+
+### 規則篩選 \{#rule-filtering\}
+class 選擇器規則只要有一個選擇器分支中的任一 class 被使用，就會保留；選擇器清單中未使用的分支則移除。檢查依據 class 名稱，不是 DOM 關係：對 `.card .title` 而言，找到 `card` 或 `title` 任一個就會保留分支，因此保留規則仍可能沒有符合的元素。
+
+```css
+@prune native;
+body { margin: 0; }
+.card, .unused:hover { border: 1px solid rgb(0 0 0 / 12%); }
+@media (width >= 48rem) {
+  .card .title { font-weight: 700; }
+  .debug-card { outline: 1px solid red; }
+}
+```
+
+使用 `card` 與 `title` 時，輸出保留 `body`、`.card` 與 `.card .title`，並移除 `.unused:hover` 與 `.debug-card`。`body`、`html`、`:root` 這類沒有 class 選擇器的規則一律保留。修剪後變空的 at-rule 區塊則移除。
+
+<ReferenceIllustration id="pruning-selector-branches" />
+
+### manifest 參照 \{#manifest-references\}
+保留的原生規則若讀取 `var(--*)` 或指定 manifest 動畫名稱，會保留專案入口圖中相符的主題變數與關鍵影格。被移除的規則不會保留任何資源。
+
+```css
+@prune native;
+@import "@master/css";
+@theme { --color-primary: #175cff; }
+
+.notice { color: var(--color-primary); }
+.unused-notice { color: var(--color-primary); }
+```
+
+若只使用 `notice`，因 `.notice` 保留，會輸出 `--color-primary`；`.unused-notice` 則移除。
+
+### 納入的 class \{#included-classes\}
+來自有限外部來源的原生 class，可用 `@safelist` 標為已使用，讓修剪保留其規則。它不取代應用程式在掃描來源中撰寫的 class。
+
+```css
+@prune native;
+@safelist "dialog-open dialog-closing";
+.dialog-open { overflow: hidden; }
+.dialog-closing { pointer-events: none; }
+```
+
+### 原生關鍵影格 \{#native-keyframes\}
+在原生 CSS 宣告關鍵影格，並在其所屬檔案啟用依使用情況輸出：
+
+```css
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@safelist keyframes "external-enter" "external-exit";
+@keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes external-exit { from { opacity: 1; } to { opacity: 0; } }
+```
+
+關鍵影格與原生 class 規則遵循相同檔案政策。預設是原生 CSS：原位、原樣保留於輸出，Master CSS 絕不再次輸出。`@prune native;` 讓該檔案的關鍵影格像 token 一樣成為按需定義：它們離開原生輸出，改由使用它們的輸出與生成 CSS 一起輸出。兩個指令同時出現時，`@preserve native;` 優先。政策只適用宣告檔案，不會透過匯入傳遞。`pruneNativeCSS` 選項保留專案擁有檔案的範圍。套件 CSS 仍保留，除非明確啟用修剪。`preserveNativeCSS: false` 抑制原生交付；按需定義仍會在使用處輸出。
+
+### 關鍵影格使用根節點 \{#keyframe-usage-roots\}
+
+動畫 utility、原生動畫宣告、靜態動畫 token 與關鍵影格安全清單會使用對應定義。分析追蹤簡寫值、animation-name 清單、巢狀變數、備援值、具作用範圍的覆寫與遞移 token 相依關係。已使用定義也會使用影格讀取的 token；原生定義只提供這些 token，因為樣式表本身會交付影格。未解析的動態名稱會保守使用編譯圖中所有候選定義，並產生資訊診斷。
+
+<ReferenceIllustration id="keyframe-reachability" />
+
+### 關鍵影格條件與限制 \{#keyframe-conditions-and-restrictions\}
+
+輸出的按需定義會包在原本宣告所處的條件與串接層規則內，包含帶限定匯入的串接層，並排列在生成串接層之後。同一容器內的定義共用一個包裝。同名定義維持獨立並依宣告順序排列，由瀏覽器決定哪個勝出。名稱會解碼且區分大小寫。匿名串接層無法重新進入，因此在匿名層內，或匯入匿名層的按需關鍵影格會造成編譯錯誤；請替串接層命名或保留檔案。影格在原樣式表之外輸出，因此內含相對 `url()` 會造成編譯錯誤；請使用絕對 URL 或保留檔案。定義 ID 由宣告檔案最近且具有名稱的 `package.json`，以及套件相對路徑產生，因此同專案從任何檢出或安裝目錄都輸出相同 CSS。重新命名該套件會改變 ID；不在具名套件內的檔案則以絕對路徑作為備援。
+
+### 關鍵影格資源所有權 \{#keyframe-resource-ownership\}
+
+影格包含原生宣告；不支援影格內的巢狀指令與 `@apply`。未使用 utility 與 mixin、已修剪原生規則，以及未交付參照樣式，都不建立使用根節點。`@reference` 讓定義按需可用，但不匯入其保留政策或安全清單；含相對 URL 的原生關鍵影格仍與樣式表一同交付。專案或基底 manifest 的原生關鍵影格，在不交付它們的樣式表中同樣按需可用。emitted globals 列出輸出以原生或按需方式交付的關鍵影格，讓其他輸出不會重複輸出。只由 JavaScript 引入的動畫名稱，請用 `@safelist keyframes "reveal";`。
+
+### 執行階段關鍵影格生命週期 \{#runtime-keyframe-lifetime\}
+
+執行階段分別追蹤定義 ID 與名稱，並將按需定義插入自己的樣式表。DOM 移除只有在沒有原生使用、靜態 token 或安全清單繼續使用定義時，才會釋放它。HMR 一起取代定義與 emitted globals；SSR hydration 使用相同 ID 與資源順序。連結樣式表維持一般 CSS，不加入伴隨檔案或標記。
+
+<StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />

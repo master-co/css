@@ -1,0 +1,71 @@
+# Reference prose: tokens/radius
+
+## title \{#copy-title\}
+
+
+角丸
+
+## summary \{#copy-summary\}
+
+
+要素全体または個別の角に使う、プリセットの角丸スケール。
+
+## note \{#copy-note\}
+
+
+完全に丸めるには、角丸トークンではなく固定の `pill` ユーティリティを使います。設定するのは `border-radius: calc(infinity * 1px)` だけです。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+8 個のプリセット値は rem 単位の長さです。ピクセル換算はルートのフォントサイズを 16px と仮定しています。角丸は角の形状を変えるもので、ボックスの寸法は設定しません。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+角丸と切り取りは別の指定
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`r-4xl` は親要素の背景とボーダーを丸めます。子要素に同じ角丸を設定したり、その描画を自動で切り取ったりはしません。親の丸い縁に沿って内容を切り取るには、`overflow-hidden` を追加します。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`rtl-` のような物理ファミリーは、常に左上の角を指定します。`rss-` のような論理ファミリーは block-start と inline-start に従うため、対応する物理的な角は書字モードと方向で変わります。対応関係は上にすべて載っています。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+隣り合う曲線が重なる場合、ブラウザーは大きすぎる半径を縮小します。このため `pill` は横長のボックスではカプセル形に、正方形では円になります。要素を正方形にする指定ではありません。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+角を直角にするには、値を直接受け取る `r(0)`、または `rtl(0)` のように個別の角に対応する関数を使います。プリセットには `--radius-none` トークンはありません。`-r-md` のような負のトークン形式も拒否されます。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+ネイティブの角丸による切り取り
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+値の直接指定
+
+## usage-lead \{#copy-usage-lead\}
+
+
+外側のシートから内側のサムネイルへ、角丸を段階的に小さくします。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+プリセット値を変更したり、トークンを追加したりできます。`--radius-card` を定義すると、`r-card` と各角のクラスが使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+色

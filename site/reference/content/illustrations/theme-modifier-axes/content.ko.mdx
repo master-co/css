@@ -1,0 +1,36 @@
+# Reference prose: illustrations/theme-modifier-axes
+
+## title \{#copy-title\}
+
+
+static은 유지, inline은 생성 값을 제어
+
+## alt \{#copy-alt\}
+
+
+2×2 표가 일반, inline, static, static inline 테마 블록을 비교한다. static은 선언한 두 토큰을 유지하고 inline은 생성 background 값을 var(--color-brand)에서 리터럴 색상으로 바꾼다.
+
+## caption \{#copy-caption\}
+
+
+각 경우는 brand와 spare를 선언하고 bg-brand만 사용합니다. inline만 있으면 두 토큰 모두 선언이 필요하지 않습니다. static을 추가하면 치환된 클래스 값을 바꾸지 않고 둘 다 유지합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+네 경우 모두 --color-brand: #4f46e5와 --color-spare: #0d9488을 선언합니다. bg-brand가 유일한 사용처이며 네이티브 토큰 참조는 없습니다.
+
+## description-1 \{#copy-description-1\}
+
+
+일반 @theme는 사용하는 brand 토큰과 background-color: var(--color-brand)를 출력하고 사용하지 않는 spare 토큰은 생략합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+@theme inline은 생성 선언에 #4f46e5를 치환합니다. 유틸리티가 두 토큰을 모두 읽지 않으므로 이 경우 두 토큰 선언은 출력되지 않습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+@theme static은 두 토큰을 유지합니다. @theme static inline도 둘 다 유지하면서 생성 background-color는 #4f46e5로 남습니다. 유지와 치환은 독립적입니다.

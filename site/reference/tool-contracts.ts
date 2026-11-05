@@ -1,3 +1,5 @@
+import { languageOf } from '@master/internal-site/common/locales.js'
+import { referenceText as text, referenceEditorial } from './copy'
 import { spawn, execFileSync } from 'node:child_process'
 import { readFile, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -5,8 +7,8 @@ import path from 'node:path'
 import { createHash } from 'node:crypto'
 import type { ReferenceDocument } from './types'
 import { documentHeadings } from './headings'
-import { mcpEditorial, mcpPrompts, mcpResultContract } from './mcp-editorial'
-import { cliEditorial } from './cli-editorial'
+import { mcpEditorial as sourceMcpEditorial, mcpPrompts as sourceMcpPrompts, mcpResultContract as sourceMcpResultContract } from './mcp-editorial'
+import { cliEditorial as sourceCliEditorial } from './cli-editorial'
 import { referenceIllustrationMarkdown } from './illustrations'
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
@@ -57,79 +59,83 @@ export async function listMCPTools(binary: string) {
   } finally { await rm(root, { recursive: true, force: true }) }
 }
 
-export async function buildToolContracts(repo: string): Promise<ReferenceDocument[]> {
+export async function buildToolContracts(repo: string, locale = 'en'): Promise<ReferenceDocument[]> {
+  const mcpEditorial = referenceEditorial(sourceMcpEditorial, 'tools/mcp', locale, 'editorial')
+  const mcpPrompts = referenceEditorial(sourceMcpPrompts, 'tools/mcp', locale, 'prompts')
+  const mcpResultContract = referenceEditorial(sourceMcpResultContract, 'tools/mcp', locale, 'results')
+  const cliEditorial = referenceEditorial(sourceCliEditorial, 'tools/cli', locale, 'editorial')
   const mcpBin = await publicBin(repo, 'mcp', 'master-css-mcp')
   const tools = await listMCPTools(mcpBin)
   const mcp = [
-    'Use the [MCP setup guide](/guide/ai-coding#connect-the-mcp-server) to connect a client to your project. Ask the connected server for `tools/list` to read its current input and output schemas. This catalog helps you choose a tool; complete registrations and schemas live in the [server source](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts).',
-    'The server uses the workspace passed to `--root`. Start with `mastercss_workspace_info` to verify the root and stylesheet entries. A connected server does not by itself establish that the intended project manifest is loaded.'
+    text('tools/mcp', 'body-1', locale),
+    text('tools/mcp', 'body-2', locale)
   ]
-  mcp.push('## Choose a tool {#choose-a-tool}',
-    ['| Question | Tools |', '| --- | --- |',
-    '| Is this the intended project and setup? | [`workspace_info`](#mastercss_workspace_info), [`setup_audit`](#mastercss_setup_audit) |',
-    '| Which definitions are available? | [`manifest_query`](#mastercss_manifest_query), [`inspect_directives`](#mastercss_inspect_directives) |',
-    '| What does a class mean, and was it found? | [`inspect_class`](#mastercss_inspect_class), [`extract_classes`](#mastercss_extract_classes), [`trace_class`](#mastercss_trace_class), [`scan_project`](#mastercss_scan_project) |',
-    '| What CSS or class syntax should I use? | [`render_css`](#mastercss_render_css), [`suggest_classes`](#mastercss_suggest_classes), [`suggest_syntax`](#mastercss_suggest_syntax) |',
-    '| What changed or needs repair? | [`css_compare`](#mastercss_css_compare), [`lint_project`](#mastercss_lint_project), [`lint_content`](#mastercss_lint_content) |',
-    '| How do I review and apply edits? | [`preview_fixes`](#mastercss_preview_fixes), [`preview_directive_format`](#mastercss_preview_directive_format), [`apply_preview`](#mastercss_apply_preview) |'].join('\n'),
-    'The table abbreviates tool names; every protocol name below starts with `mastercss_`. Request examples show the arguments object passed to `tools/call`, not a complete JSON-RPC envelope.',
-    '## Preview lifetime {#preview-lifetime}',
-    referenceIllustrationMarkdown('preview-file-identity'),
-    'A preview records the original file identities and proposed contents in one server process. It does not reserve a file or follow subsequent edits. A nonempty file preview returns `confirmToken` and `expiresAt`; unchanged results and in-memory formatting do not. Apply validates token lifetime, workspace containment and every original file before writing. Successful application consumes the token. Writes are sequential, so this is not a transactional rollback guarantee.',
-    'Use the [AI coding workflow](/guide/ai-coding#safe-write-previews) to review a concrete change and verify the rendered result. The contract here defines what the tool accepts and writes.')
+  mcp.push(text('tools/mcp', 'body-3', locale),
+    [text('tools/mcp', 'body-4', locale), '| --- | --- |',
+    text('tools/mcp', 'body-5', locale),
+    text('tools/mcp', 'body-6', locale),
+    text('tools/mcp', 'body-7', locale),
+    text('tools/mcp', 'body-8', locale),
+    text('tools/mcp', 'body-9', locale),
+    text('tools/mcp', 'body-10', locale)].join('\n'),
+    text('tools/mcp', 'body-11', locale),
+    text('tools/mcp', 'body-12', locale),
+    referenceIllustrationMarkdown('preview-file-identity', locale),
+    text('tools/mcp', 'body-13', locale),
+    text('tools/mcp', 'body-14', locale))
   for (const tool of tools) {
     const editorial = mcpEditorial[tool.name]
     if (!editorial) throw new Error(`Missing MCP guidance: ${tool.name}`)
     mcp.push(`## ${tool.name} {#${tool.name}}`, editorial.purpose, fence('json', JSON.stringify(editorial.example, null, 2)), editorial.lifecycle)
   }
-  mcp.push('## Prompts {#prompts}',
-    'Request a prompt through `prompts/get` in a connected client.',
-    ['| Prompt | Use |', '| --- | --- |', ...mcpPrompts.map(prompt => `| \`${prompt.name}\` | ${prompt.use} |`)].join('\n'),
-    '## Results {#results}', ...mcpResultContract)
-  mcp.push('## Read the full contract',
-    'Use `tools/list` in the same connected server session for accepted arguments. On GitHub, read the [tool registrations](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts), [output schemas](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts), and [result envelope](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts). The [workflow guide](/guide/ai-coding#safe-write-previews) shows a complete preview and apply sequence. Source links follow the `rc` branch; the connected server describes your installed version.')
+  mcp.push(text('tools/mcp', 'body-15', locale),
+    text('tools/mcp', 'body-16', locale),
+    [text('tools/mcp', 'body-17', locale), '| --- | --- |', ...mcpPrompts.map(prompt => `| \`${prompt.name}\` | ${prompt.use} |`)].join('\n'),
+    text('tools/mcp', 'body-18', locale), ...mcpResultContract)
+  mcp.push(text('tools/mcp', 'body-19', locale),
+    text('tools/mcp', 'body-20', locale))
   const cliBin = await publicBin(repo, 'cli', 'master-css')
   const rootHelp = execFileSync(process.execPath, [cliBin, '--help'], { encoding: 'utf8', timeout: 15000 })
   const commandNames = [...(rootHelp.split('Commands:\n')[1] ?? '').matchAll(/^ {2}([a-z][a-z-]*)(?:\s|$)/gm)].map(match => match[1]).filter(name => name !== 'help')
   if (!commandNames.length) throw new Error('No public CLI commands discovered')
   for (const name of Object.keys(cliEditorial)) if (!commandNames.includes(name)) throw new Error(`Stale CLI guidance: ${name}`)
   const cli = [
-    'Install the CLI through the [setup guide](/guide/installation#cli), then run it from the project root. Generate, lint and inspect discover ordinary app sources without source arguments; explicit path arguments replace that selection. Suggest accepts a CSS declaration block.',
-    'Quote source globs so the CLI, rather than the shell, expands them. These commands operate on the current working directory; only `suggest` exposes `--cwd`. [Extraction](/reference/rules/extraction) owns source parsing and [Scanning](/reference/directives/scanning) owns stylesheet source policy.',
-    'Run `master-css --help` to list commands and `master-css <command> --help` to read all options for your installed version. Current command definitions live in the [CLI source](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts).'
+    text('tools/cli', 'body-23', locale),
+    text('tools/cli', 'body-24', locale),
+    text('tools/cli', 'body-25', locale)
   ]
   const effects: Record<string, string> = {
-    suggest: 'Suggests classes and validates their generated declarations without editing files. Uses the active project manifest and preserves uncertain blocks as CSS. Review the cascade and browser behavior before applying a proposal.',
-    generate: 'Publishes CSS and associated stylesheet resources. Use `--no-export --verbose 0` to print only CSS without publishing files. `--watch` runs until interrupted; check rebuild errors even while the process remains active.',
-    lint: 'Reports class diagnostics without writing source by default. `--fix` applies supported fixes; `--fix-dry-run` returns proposals without applying them. Stdin content is never written back to its virtual path.',
-    inspect: 'Reports source discovery, stylesheet entries and missing CSS without publishing CSS or rewriting source files. `--classes` checks the scan result; it does not safelist those classes. Read diagnostics and coverage before interpreting an empty result.'
+    suggest: text('tools/cli', 'body-26', locale),
+    generate: text('tools/cli', 'body-27', locale),
+    lint: text('tools/cli', 'body-28', locale),
+    inspect: text('tools/cli', 'body-29', locale)
   }
-  cli.push('## Command effects {#command-effects}',
-    ['| Command | Default output | File effects |', '| --- | --- | --- |',
-    '| [`generate`](#generate) | CSS entry and required assets | Publishes output; `--no-export` prints CSS instead. |',
-    '| [`lint`](#lint) | JSON diagnostics | Reads source; `--fix` writes supported fixes. |',
-    '| [`inspect`](#inspect) | JSON inspection report | Reads source; shell redirection can save the report. |',
-    '| [`suggest`](#suggest) | JSON declaration proposal | Reads declarations; does not apply the proposal. |'].join('\n'))
+  cli.push(text('tools/cli', 'body-30', locale),
+    [text('tools/cli', 'body-31', locale), '| --- | --- | --- |',
+    text('tools/cli', 'body-32', locale),
+    text('tools/cli', 'body-33', locale),
+    text('tools/cli', 'body-34', locale),
+    text('tools/cli', 'body-35', locale)].join('\n'))
   for (const command of commandNames) {
     const editorial = cliEditorial[command]
     if (!editorial || !effects[command]) throw new Error(`Missing CLI guidance: ${command}`)
     const help = execFileSync(process.execPath, [cliBin, command, '--help'], { encoding: 'utf8', timeout: 15000 }).trim()
     const usage = help.split('\n')[0].replace(/^Usage: /, '')
     cli.push(`## master-css ${command} {#${command}}`, fence('text', usage), effects[command],
-      ...(command === 'generate' ? [referenceIllustrationMarkdown('cli-output-destinations')] : []),
+      ...(command === 'generate' ? [referenceIllustrationMarkdown('cli-output-destinations', locale)] : []),
       ...editorial.examples.flatMap(example => [example.description, fence('sh', example.command)]),
-      `Run \`master-css ${command} --help\` for every option. [Implementation](https://github.com/master-co/css/blob/rc/packages/cli/src/${command}.ts).`,
+      text('tools/cli', 'command-help', locale).replaceAll('%%command%%', command),
       ...editorial.notes ?? [])
   }
-  cli.push('## Check results',
-    'For lint and inspect, the default JSON report is written to stdout; `--format stylish` writes readable diagnostics to stderr. Diagnostic errors normally produce a nonzero exit status. `--exit-code never` suppresses diagnostic-based failure, so read the report before treating the run as successful. See [Code linting](/guide/code-linting) and [Scanning class names](/guide/scanning-and-pruning) for troubleshooting. Source links follow the `rc` branch.')
+  cli.push(text('tools/cli', 'body-36', locale),
+    text('tools/cli', 'body-37', locale))
   return [
-    document('tools/mcp', 'MCP tools', 'Choose a tool, understand its file effects, and find the current protocol contract.', mcp, tools.map(tool => tool.name), Object.fromEntries(tools.map(tool => [tool.name, tool.name])), 'packages/mcp/src/server.ts'),
-    document('tools/cli', 'CLI commands', 'Choose a command, check its file effects, and find complete options in CLI help and source.', cli, commandNames.map(name => `master-css ${name}`), Object.fromEntries(commandNames.map(name => [`master-css ${name}`, name])), 'packages/cli/src/core.ts')
+    document('tools/mcp', text('tools/mcp', 'title', locale), text('tools/mcp', 'description', locale), mcp, tools.map(tool => tool.name), Object.fromEntries(tools.map(tool => [tool.name, tool.name])), 'packages/mcp/src/server.ts', locale),
+    document('tools/cli', text('tools/cli', 'title', locale), text('tools/cli', 'description', locale), cli, commandNames.map(name => `master-css ${name}`), Object.fromEntries(commandNames.map(name => [`master-css ${name}`, name])), 'packages/cli/src/core.ts', locale)
   ]
 }
 
-function document(id: string, title: string, description: string, sections: string[], aliases: string[], identifierAnchors: Record<string, string>, source: string): ReferenceDocument {
+function document(id: string, title: string, description: string, sections: string[], aliases: string[], identifierAnchors: Record<string, string>, source: string, locale = 'en'): ReferenceDocument {
   const markdown = sections.join('\n\n')
-  return { id, kind: 'tool', title, description, category: 'Tools', url: `/reference/${id}`, source, sourceDigest: hash(markdown), language: 'en', aliases, identifierAnchors, terms: [], rows: [], examples: [], related: ['packages', 'rules/extraction'], guide: id.endsWith('mcp') ? '/guide/ai-coding#connect-the-mcp-server' : '/guide/installation#cli', markdown, headings: documentHeadings(markdown), extractionNotes: [] }
+  return { id, kind: 'tool', title, description, category: 'Tools', url: `/reference/${id}`, source, sourceDigest: hash(markdown), language: languageOf(locale), locale, aliases, identifierAnchors, terms: [], rows: [], examples: [], related: ['packages', 'rules/extraction'], guide: id.endsWith('mcp') ? '/guide/ai-coding#connect-the-mcp-server' : '/guide/installation#cli', markdown, headings: documentHeadings(markdown), extractionNotes: [] }
 }

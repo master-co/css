@@ -1,0 +1,144 @@
+---
+{
+  "title": "모노레포",
+  "description": "각 애플리케이션에 자체 프로젝트 컨텍스트를 두고 워크스페이스 패키지 간에 CSS 어휘를 공유합니다.",
+  "category": "기본 개념",
+  "figures": {
+    "MonorepoIllustration": {
+      "title": "소스를 공유하고 두 프로젝트 컨텍스트 유지하기",
+      "alt": "admin과 shop 프로젝트가 모두 styles/shared.css를 가져오고 각 index.css에서 color-primary를 재정의합니다. 같은 bg-primary 클래스가 admin에서는 보라색, shop에서는 청록색으로 해석되며 한쪽 재정의가 다른 쪽에 영향을 주지 않습니다.",
+      "caption": "가져오기로 정의를 공유합니다. 각 앱은 여전히 자체 진입점, 재정의, 소스 선택, 생성 출력을 소유합니다.",
+      "description": [
+        {
+          "title": "정의 공유",
+          "text": "두 애플리케이션 진입점이 모두 styles/shared.css를 가져옵니다."
+        },
+        {
+          "title": "Admin 컨텍스트",
+          "text": "projects/admin/index.css는 color-primary를 #4f46e5로 재정의합니다. 해당 bg-primary 클래스는 이 보라색 값을 사용합니다."
+        },
+        {
+          "title": "Shop 컨텍스트",
+          "text": "projects/shop/index.css는 color-primary를 #0f766e로 재정의합니다. 해당 bg-primary 클래스는 이 청록색 값을 독립적으로 사용합니다."
+        }
+      ]
+    },
+    "GuideStudy:shared-source-inputs": {
+      "title": "공유 CSS와 공유 마크업은 별개 입력",
+      "alt": "CSS 정의 파일과 컴포넌트 소스 파일이 각각 가져오기와 소스 선택이라는 별도 경로로 사용 앱에 들어갑니다.",
+      "caption": "공유 CSS를 가져온다고 모든 형제 컴포넌트 파일이 자동으로 스캔 대상에 포함되지는 않습니다."
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MonorepoIllustration from './components/MonorepoIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 개요 [sr-only] \{#overview\}
+각 앱에 독립적인 프로젝트 경계를 두고 가져오기로 CSS 어휘를 공유하세요. [언어 서비스](/guide/language-service), [코드 린트](/guide/code-linting), 빌드 통합은 같은 앱별 프로젝트 컨텍스트를 사용할 수 있습니다.
+
+`@master/css`를 가져오는 프로젝트 CSS 진입점이나 Master CSS 의존성을 선언한 패키지가 워크스페이스를 식별합니다. 이 경계는 패키지 관리자의 워크스페이스 목록과 독립적입니다. 각 앱의 프로젝트 디렉터리에서 빌드를 시작하고 CSS 진입점도 그곳에 유지하세요. 패키지 관리자 워크스페이스에 속한다는 사실만으로 공유 Master CSS 설정이 생성되지는 않습니다.
+
+<MonorepoIllustration />
+
+---
+
+## 프로젝트마다 하나의 워크스페이스 \{#one-project-one-workspace\}
+각 `package.json` 프로젝트에는 하나의 Master CSS 워크스페이스가 있습니다. 하나의 프로젝트 매니페스트 그래프, 소스 스캔 컨텍스트, 도구 통합 묶음으로 구성됩니다.
+
+독립된 앱에는 `projects/admin`, `projects/shop`처럼 별도 패키지 프로젝트를 사용하세요. 각 앱은 자체 CSS 진입점과 애플리케이션 설정을 갖습니다:
+
+<ExplorerView items={[
+  { name: 'projects', children: [
+    { name: 'admin', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]},
+    { name: 'shop', children: [
+      { name: 'package.json' },
+      { name: 'eslint.config.js' },
+      { name: 'index.css' }
+    ]}
+  ]},
+  { name: 'package.json' },
+  { name: 'styles', children: [{ name: 'shared.css' }] }
+]} />
+
+각 앱에서 해당 [프레임워크 설정](/guide/installation#integrations)을 완료하세요. 앱 디렉터리에서 개발 서버와 프로덕션 빌드를 시작하면 생성 CSS, 소스 스캔, 진단, 편집기 상태가 프로젝트 루트와 일치합니다.
+
+공유 정의는 전용 소스 파일에 두세요. 이 예제에서는 공유 파일이 토큰을 제공하고 각 앱은 전체 Master CSS 진입점을 직접 가져옵니다:
+
+```css name=styles/shared.css
+@theme {
+  --color-primary: #123456;
+}
+```
+
+### CSS 정의 공유하기 \{#share-css-definitions\}
+각 워크스페이스에서 공유 프로젝트 CSS 파일을 가져오고 그 뒤에 워크스페이스별 정의를 추가하세요.
+```css name=projects/admin/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #4f46e5;
+}
+
+@layer components {
+  .app-shell {
+    background-color: var(--color-surface-base);
+    min-height: 100vh;
+  }
+}
+```
+공유 가져오기 뒤의 정의는 공유 토큰과 유틸리티를 덮어쓸 수 있습니다. 같은 레이어의 네이티브 컴포넌트 규칙은 CSS 소스 순서를 따릅니다.
+
+shop은 같은 공유 소스를 가져오고 자체 색상을 선택합니다:
+
+```css name=projects/shop/index.css
+@import '@master/css';
+@import '../../styles/shared.css';
+
+@theme {
+  --color-primary: #0f766e;
+}
+```
+
+두 앱은 같은 클래스를 사용할 수 있습니다:
+
+```html
+<p class="flex items-center gap-xs text-sm">
+  <span aria-hidden="true" class="h(8) w(8) pill bg-primary"></span>
+  Workspace
+</p>
+```
+
+admin 빌드는 자체 기본색 `#4f46e5`를, shop 빌드는 `#0f766e`를 출력합니다. admin의 재정의를 바꾸어도 shop 출력은 바뀌지 않아야 합니다. 두 앱을 빌드하고 각 생성 스타일시트의 `--color-primary`를 검사해 경계가 동작하는지 확인하세요.
+
+공유 파일은 어휘를 정의하고 각 앱의 진입점이 가져올 내용을 결정합니다. 앱별 스캔 지시문과 전달 방식은 공유 스타일시트가 아닌 해당 앱에 유지하세요.
+
+---
+
+## 공유 컴포넌트 소스 포함하기 \{#include-shared-component-sources\}
+
+공유 CSS 가져오기는 정의를 제공합니다. 공유 컴포넌트 안의 클래스 문자열은 여전히 사용하는 앱의 스캐너에 전달되어야 합니다. Vite는 가져온 워크스페이스 모듈을 스캔할 수 있지만 앱 안에서 시작한 CLI 빌드는 JavaScript 가져오기를 따라 형제 패키지로 들어가지 않습니다.
+
+컴포넌트가 `packages/ui`에 있다면 각 사용 앱의 CSS 진입점에 `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";`를 추가하세요. 이 명시적 경로가 공유 소스를 앱 빌드에 포함합니다. 선언한 CSS 파일 기준의 상대 경로이므로 진입점을 옮기면 경로도 조정해야 합니다.
+
+<ReferenceIllustration id="source-relative-base" />
+
+설치된 의존성 디렉터리는 자동 스캔에서 제외됩니다. 패키지로 배포된 컴포넌트 라이브러리는 배포 소스 파일을 가리키는 좁은 `@source` 패턴이 필요할 수 있습니다. 해당 패키지에만 나타나는 클래스를 골라 앱 프로덕션 출력에서 확인하세요. 제외 규칙과 다른 소스 유형은 [소스 경계](/reference/rules/extraction#source-boundaries)를 참고하세요.
+
+<GuideStudy id="shared-source-inputs" />
+
+## 공유 범위를 넓히기 전에 경계 확인하기 \{#verify-the-boundary-before-sharing-more\}
+
+각 앱 디렉터리에서 프로덕션 빌드를 실행하세요. 로컬 재정의 하나를 바꾼 뒤 두 출력을 확인합니다. admin 값은 admin에서만 바뀌어야 합니다. 이어서 공유 컴포넌트만 사용하는 완전한 클래스를 추가하고 사용 앱이 해당 규칙을 출력하는지 확인하세요.
+
+토큰이 없다면 CSS 가져오기 그래프를 확인하세요. 정의는 있지만 공유 컴포넌트의 유틸리티가 없다면 소스 선택을 확인합니다. 두 입력은 별개이므로 공유 CSS를 가져온다고 모든 형제 컴포넌트 파일이 자동으로 포함되지는 않습니다.
+
+이 어휘에 버전이 관리되는 패키지 계약이 필요하다면 [패키지 작성](/guide/authoring-packages)을 참고하세요. [클래스 이름 스캔](/guide/scanning-and-pruning)으로 앱별 스캔 파일을 정의하고 [CSS 전달 최적화](/guide/optimizing-css-delivery#native-pruning)로 제거할 네이티브 규칙을 결정합니다.

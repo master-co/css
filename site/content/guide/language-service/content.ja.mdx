@@ -1,0 +1,256 @@
+---
+title: "Master CSS の言語サービス"
+description: "VS Code を設定し、プロジェクトを反映したトークン補完と生成 CSS を確認し、クラスソースとワークスペースを設定します。"
+figures: {"LanguageIllustration":{"title":"プロジェクトの定義がエディターの語彙になる","alt":"app.css の spacing-card トークンから、HTML の class 属性で p-card の補完が出ます。候補を選択して p-card をホバーすると、padding: var(--spacing-card) が表示されます。","caption":"1つのプロジェクトトークンを、クラス名の補完と宣言の検査で確認します。エディターのプレビューでは、ブラウザーで何が優先するかは分かりません。","description":[{"title":"定義する","text":"アプリのスタイルシートで @master/css を読み、@theme に --spacing-card: 1.5rem を宣言します。"},{"title":"補完する","text":"HTML の class 属性内で、p-ca にプロジェクトを反映した p-card の補完が出ます。"},{"title":"調べる","text":"p-card のホバーで、生成した padding: var(--spacing-card) 宣言を表示します。ページへの CSS 配信はフレームワーク連携が担うので、描画結果は別途検証します。"}]},"GuideStudy:editor-build-boundary":{"title":"エディターのプレビューはスタイルシートを配信しない","alt":"1つのソースクラスから2つに分岐します。言語サービスは作者に生成 CSS を示し、連携ツールはブラウザーに CSS を配信します。","caption":"補完とホバーで記述時の文脈を確認します。実際のページはビルドとブラウザーでも検証してください。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentOptionList from '@master/internal-site/components/DocumentOptionList.astro'
+import DocumentOptionEntry from '@master/internal-site/components/DocumentOptionEntry.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LanguageIllustration from './components/LanguageIllustration.astro'
+
+## 概要 [sr-only] \{#overview\}
+Master CSS 言語サービスで、プロジェクトが実際に対応するクラスを探し、編集しながら CSS を調べられます。提案はプロジェクトのトークンと定義を読み、独自のユーティリティ、mixin、セレクター、条件も反映します。
+
+[Master CSS をインストール済み](/guide/installation)のプロジェクトから始めます。拡張機能はソースの記述を助け、ブラウザーへのスタイルシート配信は引き続きフレームワーク連携が担います。
+
+---
+
+## VS Code を設定する \{#set-up-vs-code\}
+公式の [Master CSS 拡張機能](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode)をインストールし、VS Code でプロジェクトフォルダーを開いて、文字列内の補完を有効にします。
+
+```json name=.vscode/settings.json
+{
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}
+```
+
+拡張機能は `@master/css` を読み込む CSS エントリー、または Master CSS パッケージを宣言する `package.json` から文脈を見つけます。複数アプリのあるリポジトリでは、使いたいテーマを持つアプリのソースを開いてください。
+
+## プロジェクトのトークンを確認する \{#check-a-project-token\}
+
+アプリの CSS エントリーで、既存のインポートの後に間隔トークンを追加します。
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --spacing-card: 1.5rem;
+}
+```
+
+HTML ファイルの class 属性内に `p-ca` と入力します。候補から `p-card` を選び、補完したクラスをホバーします。
+
+```html
+<article class="p-card">Field notes</article>
+```
+
+<LanguageIllustration />
+
+ホバーの生成ルールに `padding: var(--spacing-card)` が含まれるはずです。クラス名はプロジェクトのトークンから来て、宣言は変数参照を保ちます。ブラウザーで実際のパディングを確認してください。`p-card` がなければ、設定を増やす前に[ワークスペースの文脈](#workspace-aware-manifests)を解決します。
+
+---
+
+<GuideStudy id="editor-build-boundary" />
+
+## 保存時のクラス並べ替えを追加する \{#add-class-sorting-on-save\}
+
+クラスのポリシー診断と保存時の並べ替えには、[コードの lint](/guide/code-linting)を設定し、[ESLint 拡張機能](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)を入れます。`editor.quickSuggestions` と併せて次を追加します。
+
+```json name=.vscode/settings.json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ]
+}
+```
+
+これで明示的な保存時に、プロジェクトの ESLint 設定で並べ替えられます。ルール一覧だけでは保存時アクションは有効になりません。`eslint.codeActionsOnSave.mode` は既定の `all` にします。拡張機能の `problems` モードはこのルールフィルターを無視します。[ESLint の設定](https://github.com/microsoft/vscode-eslint#settings-options)を参照してください。
+
+---
+
+## 編集しながらスタイルを調べる \{#inspect-styles-as-you-edit\}
+### クラスと条件を補完する \{#complete-classes-and-conditions\}
+補完は設定したクラスソース内で動きます。マークアップ属性、フレームワークのバインド属性、JavaScript ヘルパー呼び出し、タグ付きテンプレート、独自のクラス宣言が対象です。ユーティリティ、プロパティ値、色トークン、セレクター、クエリー、指令構文を提案し、マニフェストの読み込み後はプロジェクトのトークンも出ます。
+
+### 生成ルールを読む \{#read-the-generated-rule\}
+`fg-blue-60:hover@sm` などをホバーして、宣言、セレクターの状態、クエリーを調べます。この例は `sm` 以上でのホバー時にだけプリセットの青色トークンを適用します。
+
+```html
+<a class="fg-text-body fg-blue-60:hover@sm" href="/notes">
+  Field notes
+</a>
+```
+
+### 構文の強調表示 \{#syntax-highlighting\}
+拡張機能は CSS 系文書の指令構文を強調し、クラスリストの宣言、値、セレクター、クエリー、単位、important、引用区間、構成要素の境界にセマンティックトークンを使います。既定ではカーソル下の文字列だけを強調し、長いマークアップを落ち着かせます。色が出なければ、使用中の VS Code テーマでセマンティック強調表示を有効にしてください。
+
+Shiki のコード例も、カーソルの代わりにポインターのホバーを使う同じ控えめな既定表示です。`transformerMasterCSS` と併せて公開スタイルシートを読み込みます。
+
+```ts
+import '@master/css-language-service/shiki.css'
+import { transformerMasterCSS } from '@master/css-language-service/shiki'
+```
+
+### 色のツール \{#color-tools\}
+Master CSS の色ユーティリティとマニフェストの色は、VS Code の色デコレーターとカラーピッカーを使います。`masterCSS.renderSyntaxColors` と [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css) の両方を有効にします。
+
+### 指令の整形 \{#directive-formatting\}
+文書全体と範囲の整形は、CSS、SCSS、LESS、および Vue、Svelte、Astro の CSS 系 `<style>` ブロックの指令ソースを整え、生成 CSS は変えません。クラスリスト指令では important をクラスに接続し、`@safelist "(background-color:transparent) !";` を `@safelist "(background-color:transparent)!";` にします。
+
+### 診断 \{#diagnostics\}
+言語サーバーは同じ文書内の指令エラーと、プロジェクトのマニフェスト読み込みエラーを報告します。クラス文字列の構文、ポリシー、並べ替えの診断は[コードの lint](/guide/code-linting)に任せ、重複しません。クライアントは `designSystem` で、開いた管理対象 CSS のトークン参照検査も選択できます。`master-css inspect` と同じ[デザインシステムオプション](/reference/tools/cli#design-system-options)を受け取ります。
+
+---
+
+## クラスソースを認識させる \{#supported-class-sources\}
+
+組み込みのソースには `class`、`className`、フレームワークのバインディング、一般的なヘルパー呼び出し、タグ付きテンプレートがあります。別のヘルパーや属性を使う場合は名前を追加します。
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.classAttributes": ["ui"],
+  "masterCSS.classDeclarations": ["classes", "styles"],
+  "masterCSS.classFunctions": ["cn"]
+}
+```
+
+たとえば `cn("p-card")` でも補完が使えます。言語サービスの配列は組み込みソースを**拡張**するので、`clsx` も使えます。一方、ESLint の設定は既定値を**置き換え**ます。独自の規約を加えたら両方を設定してください。
+
+<DocumentDisclosure title="利用できる VS Code 設定">
+
+オプションは `.vscode/settings.json` または VS Code のユーザー設定に置きます。既定では HTML、PHP、JavaScript、TypeScript、JSX、TSX、CSS、SCSS、LESS、Vue、Svelte、Rust、Astro、Markdown、MDX に対応します。
+
+<DocumentOptionList label="VS Code 設定">
+
+<DocumentOptionEntry name="masterCSS.includedLanguages">
+
+既定値：一般的な Web とテンプレートの言語 ID。
+
+言語サービス機能を提供する言語。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributes">
+
+既定値：`class`, `className`.
+
+値がクラス文字列であるマークアップ属性。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributeBindings">
+
+既定値：フレームワークのバインディングの既定値。
+
+`:class`、`v-bind:class`、`[ngClass]`、`class:list` などのバインド属性。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classFunctions">
+
+既定値：`clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+
+文字列引数がクラス文字列である呼び出し先。`styled` は `styled.button` などのメンバー形式にも対応します。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classDeclarations">
+
+既定値：`[]`.
+
+文字列がクラス宣言である変数やオブジェクトプロパティ。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.exclude">
+
+既定値：`.git`, `node_modules`, `.hg`.
+
+すべての機能から除外するファイル。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.suggestSyntax">
+
+既定値：`true`.
+
+補完候補。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.inspectSyntax">
+
+既定値：`true`.
+
+ホバー検査と生成 CSS のプレビュー。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.renderSyntaxColors">
+
+既定値：`true`.
+
+Master CSS の色構文の色デコレーター。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.formatDirectives">
+
+既定値：`true`.
+
+指令の整形。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.embeddedSyntaxHighlighting">
+
+既定値：`active`.
+
+`active` はカーソル下、`always` はすべての埋め込みクラスを強調し、`off` は強調しません。指令構文の強調は保たれます。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.workspaces">
+
+既定値：`auto`.
+
+プロジェクトマニフェスト用のワークスペース検出。
+
+</DocumentOptionEntry>
+
+</DocumentOptionList>
+
+</DocumentDisclosure>
+
+---
+
+## ワークスペースごとのマニフェスト \{#workspace-aware-manifests\}
+`auto` では、`@master/css` を読み込む各 CSS ファイルと Master CSS パッケージを宣言する各 `package.json` にワークスペースを検出し、それぞれにマニフェストを与えます。モノレポでは補完、ホバー、色、診断が最も近い Master CSS プロジェクトに従います。検出が配置と合わなければディレクトリを列挙します。境界は[モノレポ](/guide/monorepo)を参照してください。
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.workspaces": ["apps/admin", "apps/shop", "packages/design-system"]
+}
+```
+
+依存やワークスペース配置の変更後、または VS Code がマニフェスト編集を拾っていない場合は、`Master CSS: Restart Language Server` を実行します。
+
+## トラブルシューティング \{#troubleshooting\}
+<DocumentComparison>
+
+| 症状 | 対処 |
+| --- | --- |
+| 文字列内に補完が出ない。 | `editor.quickSuggestions.strings` を有効にする。 |
+| プロジェクトのトークンやユーティリティがない。 | 検出した CSS エントリーかそのインポートにトークンがあるか確認し、マニフェストエラーを修正して必要ならサーバーを再起動する。 |
+| モノレポの別パッケージを使っている。 | `masterCSS.workspaces` にディレクトリを明示する。 |
+| 色デコレーターが出ない。 | `masterCSS.renderSyntaxColors` と `editor.colorDecorators` を有効にし、言語固有の上書きも確認する。 |
+
+</DocumentComparison>

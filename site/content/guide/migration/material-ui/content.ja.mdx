@@ -1,0 +1,217 @@
+---
+title: "Material UI からの移行"
+description: "アプリ管理のレイアウト、sx スタイル、テーマトークン、上書きを Master CSS に移し、Material UI のコンポーネント動作を保ちます。"
+figures: {"MaterialUIIllustration": {"title": "トークンを選ぶ前にテーマを解決する", "alt": "テーマで sx の gap 2 は 16px、padding 3 は 24px に解決されます。基準の角丸を 8px に設定した例なので borderRadius 2 は 16px です。対応するクラスは gap-md、p-lg、独自の r-panel です。", "caption": "既定の 8px 間隔、明示的な 8px の基準角丸、ルート文字サイズ 16px を使います。sx の同じ数値が同じ CSS 長さを表すとは限りません。", "description": [{"title": "余白を解決する", "text": "既定の余白関数で gap: 2 は 16px、p: 3 は 24px です。"}, {"title": "形状を解決する", "text": "theme.shape.borderRadius を 8px にしたため、borderRadius: 2 は 16px になります。"}, {"title": "一致するトークンを選ぶ", "text": "ルート 16px で gap-md と p-lg が一致し、独自の --radius-panel: 1rem が r-panel を供給します。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import MaterialUIIllustration from './components/MaterialUIIllustration.astro'
+
+Material UI と Master CSS は併用できます。多くのプロジェクトでは、アプリ管理のレイアウト、製品のサーフェス、繰り返す `sx` スタイルから移します。アクセシビリティ、状態管理、スロット、JavaScript の動作が役立つ Material UI コンポーネントは残します。
+
+コンポーネントを一対一で書き直す作業と考えないでください。適切な移行では、明確な代替を用意するまで `Button`、`Dialog`、`Menu`、`Select`、`DataGrid`、テーマによるコンポーネントの上書きを残すこともよくあります。
+
+---
+
+## 移行方針 \{#migration-strategy\}
+アプリ管理のサーフェスごとに[共通の移行手順](/guide/migration#migration-strategy)を使います。Material UI が必要とする間は、`ThemeProvider`、`CssBaseline`、Emotion キャッシュ、SSR 設定を維持します。
+
+`sx` を変換する前に境界を選びます。
+
+<DocumentComparison>
+
+| スタイルの管理対象 | 移行または維持 |
+| --- | --- |
+| アプリのレイアウトラッパー | 実際のテーマ尺度を解決してから静的な `sx` 値を変換します。 |
+| 繰り返す製品のサーフェス | 共通トークンと、役立つならネイティブのコンポーネントクラスを定義します。 |
+| MUI のスロットや owner-state の派生形 | `slotProps`、`classes`、`styleOverrides`、既存ラッパーをコンポーネントと共に残します。 |
+| ダイアログ、メニュー、セレクト、データグリッド | 動作を維持し、置き換えを考える前にフォーカス、キーボード、状態をテストします。 |
+
+</DocumentComparison>
+
+併用で目的を達成するプロジェクトも多くあります。Master CSS がアプリのレイアウトや独自サーフェスを管理し、Material UI がインタラクティブなウィジェットを管理し続けます。
+
+<MaterialUIIllustration />
+
+---
+
+## Material UI と並べて Master CSS を追加する \{#add-master-css-beside-material-ui\}
+アプリのスタイルシートから Master CSS をインポートし、現在の Material UI プロバイダーを残します。
+
+```css name=app.css
+@import "@master/css";
+```
+
+多くの場合は既定のソース探索で十分です。独自の対象追加、除外、safelist、blocklist が必要な場合だけ明示的なソースディレクティブを追加します。
+
+大規模な移行前に[レンダリングモード](/guide/rendering-modes)を確認します。既定の静的レンダリングから始め、完全なクラス文字列を書き、既知のクラスを状態で切り替え、変わる値を CSS 変数で渡します。ブラウザーで新しいクラス名を作るアプリだけ、ランタイムやプログレッシブを選びます。
+
+---
+
+## テーマの値を `@theme` に移す \{#move-theme-values-into--theme\}
+Material UI コンポーネントの外でも共有すべき、製品が管理する値から始めます。
+
+```ts name=theme.ts
+import { createTheme } from '@mui/material/styles'
+
+export const theme = createTheme({
+  palette: {
+    primary: { main: '#2563eb' },
+    background: { paper: '#ffffff' },
+    text: { primary: '#172033' }
+  },
+  shape: {
+    borderRadius: 8
+  }
+})
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-surface: #ffffff;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --radius-panel: 1rem;
+}
+
+```
+
+```html
+<section class="b(1) b-solid b-line-divider fg-body bg-surface r-control">
+  ...
+</section>
+```
+
+Material UI の余白、ブレークポイント、角丸、パレットの尺度が Master CSS のプリセットと一致するとは考えないでください。製品のトークンを意図的に移し、既定トークンへの置換を確認します。
+
+---
+
+## アプリ管理の `sx` を変換する \{#convert-app-owned--sx\}
+レイアウトラッパー、カード、セクション、単純な製品 UI の `sx` から始めます。
+
+```tsx name=DashboardPanel.tsx
+import Box from '@mui/material/Box'
+
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <Box component="section" sx={{
+      display: 'grid',
+      gap: 2,
+      p: 3,
+      borderRadius: 2,
+      bgcolor: 'background.paper',
+      color: 'text.primary'
+    }}>
+      {children}
+    </Box>
+  )
+}
+```
+
+```tsx name=DashboardPanel.tsx
+export function DashboardPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md p-lg bg-surface fg-body r-panel">
+      {children}
+    </section>
+  )
+}
+```
+
+既定の余白関数では、`gap: 2` は 16px、`p: 3` は 24px です。変換後のプリセット値はルートの文字サイズが 16px なら一致します。上のテーマでは、[MUI の `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders) は基準の 8px を二倍にして 16px にします。`r-panel` はパネルの役割を 1rem で表すので、アプリのルート文字サイズで比較してください。独自の余白関数には個別の対応付けが必要です。尺度の比較を妨げないよう、同じ `section` 要素と明示的なサーフェス／文字色の組を維持しています。
+
+動作のために Material UI コンポーネントを残し、アプリ管理のラッパーからスタイルを変えます。
+
+```tsx
+<div className="flex justify-flex-end">
+  <Button variant="contained">Save</Button>
+</div>
+```
+
+通常の非レイヤー Material UI／Emotion ルールは、インポート順に関係なくレイヤー内の Master CSS ユーティリティより優先されます。`className` の転送だけでは上書きを保証できません。カスケードレイヤーを意図的に設定して検証するまで、内部には `sx`、`slotProps`、`classes` を残します。
+
+---
+
+## 繰り返すパターンをコンポーネントクラスに変換する \{#convert-repeated-patterns-to-component-classes\}
+多くの `sx` が同じ製品上の役割を表すなら、Master CSS のコンポーネントクラスに移します。上の製品トークンも同じ CSS エントリーに残します。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .panel {
+    border-radius: var(--radius-panel);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-height: 3rem;
+  }
+}
+```
+
+```tsx
+<section className="panel">
+  <div className="toolbar">
+    ...
+  </div>
+</section>
+```
+
+プロジェクトが管理する役割にはコンポーネントクラスを優先します。デザインシステムに残る Material UI コンポーネントには、Material UI のテーマの派生形を維持します。
+
+---
+
+## レスポンシブと状態のスタイルを扱う \{#handle-responsive-and-state-styles\}
+静的でレスポンシブな `sx` を同じ境界の条件に変えます。既定の [Material UI `md`](https://mui.com/material-ui/customization/breakpoints/) は 900px、Master CSS のプリセットの `md` は 64rem からです。名前をコピーせず、元の境界を条件として定義します。
+
+```tsx
+<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }} />
+```
+
+```css name=app.css
+@custom-media --mui-md (width >= 900px);
+```
+
+```html
+<section class="grid (grid-template-columns:1fr) gap-md (grid-template-columns:repeat(3,1fr))@mui-md">
+  ...
+</section>
+```
+
+状態が自分のマークアップのものなら、ネイティブな状態や属性を優先します。
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+selected、expanded、focused、error などがアプリ管理外の内部スロットや動作を対象にする場合は、MUI の上書きとして残します。
+
+---
+
+## 移行を検証する \{#validate-the-migration\}
+- 各作業後にフォーマッター、lint、型チェック、テスト、本番ビルドを実行します。
+- 主要画面をライト／ダークテーマ、レスポンシブ境界、ホバー、focus-visible、無効、選択、読み込み状態で比較します。
+- Material UI コンポーネントを削除する前に、ダイアログ、メニュー、セレクト、ポップオーバー、ポータル、トランジション、フォーカストラップをテストします。
+- 残る Material UI や Emotion の経路で不要になるまで、Emotion キャッシュと SSR 設定を維持します。
+- 視覚スタイルと動作の両方を置き換えてから、Material UI パッケージを削除します。
+
+---
+
+## 関連資料 \{#useful-references\}
+- [インストール](/guide/installation)：Master CSS の追加。
+- [レンダリングモード](/guide/rendering-modes)：CSS の配信方法の選択。
+- [スタイル宣言](/reference/rules/declarations)：クラス構文。
+- [テーマトークン](/guide/theme)：共通値、[レスポンシブデザイン](/guide/responsive-design)：ブレークポイント、[変数とモード](/reference/rules/modes)：モード。
+- [グローバルスタイル](/guide/global-styles#shared-vocabulary)：マークアップのユーティリティ、コンポーネントクラス、独自ユーティリティ。

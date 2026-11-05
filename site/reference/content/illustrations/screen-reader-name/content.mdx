@@ -1,0 +1,29 @@
+# Reference prose: illustrations/screen-reader-name
+
+## title \{#copy-title\}
+
+Clipped text can still name a visible control
+
+## alt \{#copy-alt\}
+
+One link contains a visible arrow and sr-only text. Its visual representation shows only the arrow; its accessible representation is a link named Read the utility definition.
+
+## caption \{#copy-caption\}
+
+The arrow has aria-hidden="true". The label text is visually clipped by sr-only and supplies the link’s accessible name. The link itself stays visible and focusable.
+
+## description-0 \{#copy-description-0\}
+
+The link contains an arrow excluded from accessible-name calculation and a span containing Read the utility definition.
+
+## description-1 \{#copy-description-1\}
+
+The span uses the actual sr-only preset: absolute positioning, a 1px box, hidden overflow and clipping. It remains in the DOM without aria-hidden.
+
+## description-2 \{#copy-description-2\}
+
+The visible link still occupies a 40px square and shows the arrow. Its accessible role is link and its name is Read the utility definition.
+
+## description-3 \{#copy-description-3\}
+
+The two branches are representations of the same control, not sequential operations. Hiding an ancestor from the accessibility tree would also hide its descendants.

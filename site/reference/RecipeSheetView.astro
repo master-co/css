@@ -1,5 +1,9 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel } from './ui'
+import { referenceText } from './copy'
 import { keyWidth } from './sheet-blocks'
+import InlineText from './InlineText.astro'
 import Code from '@master/internal-site/components/Code.astro'
 import Link from '@master/internal-site/components/Link.svelte'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
@@ -15,23 +19,26 @@ interface Props {
 
 const { sheet } = Astro.props
 const definitions = sheet.definitions.split('\n\n')
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, string | number>) => referenceLabel(locale, key, values)
+
 ---
 
-<h2 id="overview">Classes</h2>
-<SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={`${sheet.more.length} more functions`} width={keyWidth(sheet.syntax.map(row => row.syntax))} />
+<h2 id="overview">{l('classes')}</h2>
+<SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={l('moreFunctions', { count: sheet.more.length })} width={keyWidth(sheet.syntax.map(row => row.syntax))} />
 {sheet.note && <SheetNote text={sheet.note} />}
 
 <SheetExplanation explanation={sheet.explanation} />
 
-<h2 id="examples">Usage</h2>
+<h2 id="examples">{l('usage')}</h2>
 <SheetExampleBlock example={sheet.usage} caption={sheet.caption} />
 
-<h2 id="customize">Customize</h2>
-<p>The preset defines {sheet.syntax.length + sheet.more.length > 1 ? 'these classes' : 'this class'} with <code>@utility</code>. Define the same name in your stylesheet to replace it.</p>
+<h2 id="customize">{l('customize')}</h2>
+<p><InlineText text={referenceText('recipes', 'definition-note', locale)} /></p>
 {definitions.length > 4
   ? <Fragment>
     <Code lang="css" code={definitions[0]} />
-    <DocumentDisclosure title={`All ${definitions.length} definitions`}><Code lang="css" code={sheet.definitions} /></DocumentDisclosure>
+    <DocumentDisclosure title={l('allDefinitions', { count: definitions.length })}><Code lang="css" code={sheet.definitions} /></DocumentDisclosure>
   </Fragment>
   : <Code lang="css" code={sheet.definitions} />}
-<p class="ref-links">See <Link href="/reference/directives/definitions">utility definitions</Link>{sheet.guide && <Fragment> and <Link href={sheet.guide.href}>{sheet.guide.label}</Link></Fragment>}.</p>
+<p class="ref-links">{l('see')} <Link href="/reference/directives/definitions">{l('utilityDefinitions')}</Link>{sheet.guide && <Fragment> {l('and')} <Link href={sheet.guide.href}>{sheet.guide.label}</Link></Fragment>}.</p>

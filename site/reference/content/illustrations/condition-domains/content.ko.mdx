@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-domains
+
+## title \{#copy-title\}
+
+
+같은 이름으로 서로 다른 경계를 측정합니다
+
+## alt \{#copy-alt\}
+
+
+그림의 64rem 뷰포트 안에 더 작은 28rem 쿼리 컨테이너가 있습니다. md 미디어 조건은 뷰포트를 참조하고 md 컨테이너 조건은 안쪽 컨테이너를 참조합니다.
+
+## caption \{#copy-caption\}
+
+
+프리셋 @md 임계값은 64rem이고 @container(--md)는 28rem입니다. 둘 다 md라는 이름을 쓰지만 이 독립적인 정의들은 서로 다른 경계를 쿼리합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+바깥 경계는 프리셋 @md 최소 너비인 64rem의 뷰포트를 나타냅니다.
+
+## description-1 \{#copy-description-1\}
+
+
+안쪽 경계는 독립적인 @container(--md) 최소 너비인 28rem의 쿼리 컨테이너를 나타냅니다. 쿼리 대상 요소는 이 컨테이너 안에 있습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+두 너비는 같은 척도로 그렸으며 초기 글꼴 크기와 루트 글꼴 크기는 모두 16px입니다. 컨테이너 크기 토큰을 바꿔도 두 조건 정의는 바뀌지 않습니다.

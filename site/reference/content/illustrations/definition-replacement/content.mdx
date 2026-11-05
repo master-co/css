@@ -1,0 +1,29 @@
+# Reference prose: illustrations/definition-replacement
+
+## title \{#copy-title\}
+
+A later definition replaces the whole registration
+
+## alt \{#copy-alt\}
+
+Two ordered badge utility definitions lead to one final rule. The first contains red color and padding; the second contains only blue color. The output contains only blue color.
+
+## caption \{#copy-caption\}
+
+Both definitions register the same static utility. The second replaces the first, including its padding. This is definition replacement before generation, not two CSS rules competing in the cascade.
+
+## description-0 \{#copy-description-0\}
+
+The first static badge definition contains color: red and padding: 1rem.
+
+## description-1 \{#copy-description-1\}
+
+The later static badge definition contains only color: blue and replaces the first definition completely.
+
+## description-2 \{#copy-description-2\}
+
+Using badge generates one rule containing color: blue. The earlier padding and its dependencies do not survive.
+
+## description-3 \{#copy-description-3\}
+
+Static and functional registrations remain independent. Token patterns replace only the branch with the same prefix and namespace; mixins replace their complete named definition.

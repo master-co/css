@@ -1,0 +1,36 @@
+# Reference prose: illustrations/radius-clipping
+
+## title \{#copy-title\}
+
+
+父元素的圓角不會讓子元素也變圓
+
+## alt \{#copy-alt\}
+
+
+兩個相同的圓角父元素都包含相同的藍色子表面。只有圓角時，子元素頂端仍是直角；加入 overflow-hidden 後，則沿著父元素的曲線邊緣裁切。
+
+## caption \{#copy-caption\}
+
+
+兩個父元素都使用 r-4xl 與相同內容，只有右側父元素加入 overflow-hidden。藍色用來識別子表面，虛線輪廓則標示父元素的圓角邊緣。
+
+## description-0 \{#copy-description-0\}
+
+
+兩個父盒子都使用 r-4xl，其預設值為 2rem。兩者包含相同的子元素與父元素內容區域，尺寸由相同內容決定。
+
+## description-1 \{#copy-description-1\}
+
+
+左側父元素保留預設的可見溢位。它自己的背景有圓角，但藍色子元素仍在頂端繪製長方形。
+
+## description-2 \{#copy-description-2\}
+
+
+右側父元素加入 overflow-hidden，將同一個子長方形沿父元素的圓角邊緣裁切；子元素並沒有繼承圓角值。
+
+## description-3 \{#copy-description-3\}
+
+
+虛線輪廓是檢查用標註，不是 r-4xl 輸出的邊框。色彩只用來在兩個範例中識別同一個子元素。

@@ -1,0 +1,183 @@
+---
+{
+  "title": "撰寫套件",
+  "description": "發布共用 CSS 原始碼、在各應用程式覆寫公開 token，並透過正式環境使用端驗證打包後的套件。",
+  "category": "撰寫",
+  "figures": {
+    "PackageIllustration": {
+      "title": "共用定義，各應用程式自行編譯",
+      "alt": "共用 master.css 定義原生 btn 元件與隨需 content-auto utility。應用程式 A 使用 btn，輸出元件；應用程式 B 使用 btn content-auto，也輸出請求的 utility。",
+      "caption": "兩個應用程式匯入相同 CSS 原始碼。原生元件預設包含；各應用程式只產生自己標記所請求的 utility。",
+      "description": [
+        {
+          "title": "共用原始碼",
+          "text": "套件定義原生 .btn 元件，以及隨需產生的 content-auto utility。"
+        },
+        {
+          "title": "應用程式 A",
+          "text": "標記使用 btn，原生元件會包含在輸出，但未使用的 content-auto utility 不會輸出。"
+        },
+        {
+          "title": "應用程式 B",
+          "text": "標記使用 btn 與 content-auto。輸出包含原生元件與請求的 utility。"
+        }
+      ]
+    },
+    "GuideStudy:consumer-override": {
+      "title": "覆寫值，保留元件",
+      "alt": "套件與應用程式共用同一份 .btn 定義。應用程式修改 --spacing-action-x，加大水平內距，同時保留按鈕本身的角色。",
+      "caption": "使用端覆寫位於套件匯入之後。內縮輔助線以 16px 根字型比較 1rem 與 1.5rem；.btn 規則仍然共用。"
+    }
+  },
+  "demos": {
+    "PackageAuthoringExample": {
+      "title": "共用套件詞彙",
+      "caption": "將滑鼠移到按鈕上、按下或聚焦，檢查套件的共用狀態；它不會執行儲存動作。應用程式使用套件的 theme-motion 條件，尊重減少動態效果偏好。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import PackageIllustration from './components/PackageIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample.astro'
+
+## 概覽 [sr-only] \{#overview\}
+發布 CSS 原始碼，以共用穩定的樣式詞彙。各使用端應用程式將來源匯入自己的 Master CSS 進入點，並編譯所需 token、utility 與原生元件。詞彙在單一應用程式正常運作後，再從這裡開始；[重用樣式](/guide/reusing-styles)說明了前一步。
+
+這種套件形式應發布原始定義，不是應用程式產生的樣式表或 manifest。應用程式便能自行選擇類別用法、token 覆寫與傳遞模式。若套件也提供執行階段整合，則有另一份產物契約。
+
+<PackageIllustration />
+
+---
+
+## 建立套件 \{#create-a-package\}
+本範例使用 `@acme/ui-theme`；發布前請將 scope 替換成你擁有的名稱。使用端以套件名稱匯入，匯出的 CSS 檔案為 `master.css`。
+
+<ExplorerView items={[
+  { name: 'my-master-theme', children: [
+    { name: 'package.json' },
+    { name: 'master.css' },
+    { name: 'README.md' }
+  ]}
+]} />
+
+將套件根匯出指向 `master.css`：
+
+```json name=package.json
+{
+  "name": "@acme/ui-theme",
+  "version": "0.1.0",
+  "files": ["master.css"],
+  "style": "./master.css",
+  "exports": {
+    ".": {
+      "style": "./master.css",
+      "default": "./master.css"
+    }
+  },
+  "sideEffects": ["./master.css"]
+}
+```
+
+這種套件形式不需要打包工具、TypeScript 建置、manifest 產生或編譯後的 CSS 輸出。套件發布的是 CSS 原始碼，支援 Master CSS 的專案可將它納入自己的樣式表圖編譯。
+
+---
+
+## 撰寫 master.css \{#write-mastercss\}
+將使用端專案應可取得的共用詞彙，放進 `master.css`。
+
+<PackageAuthoringExample part="source" />
+
+此範例提供顏色標記、原生 `.btn` 元件、隨需產生的 `content-auto` utility，以及具名 `theme-motion` 條件。元件擁有共用狀態；應用程式選擇是否需要轉場。原生元件 CSS 預設會包含，utility 則只在使用時產生規則。
+
+選擇使用端需要的最小公開詞彙：
+
+- 使用 `@theme` 共用顏色、間距、圓角、文字排版、陰影、動態效果與容器 token 等值。
+- 媒體名稱使用 `@custom-media`；其他可重用包裝則使用帶 `@contents` 的 `@mixin`。
+- 隨需產生的類別使用 `@utility`；原生 CSS 內部重用使用 `@mixin`。
+- 只有套件刻意擁有 `btn`、`field`、`card`、`toolbar` 這類語意 UI 詞彙時，才使用原生 `@layer components`。
+
+token 命名請參閱[主題 token](/guide/theme)，指令語法請參閱 [CSS 指令](/reference#directives)，選擇抽象方式請參閱[全域樣式](/guide/global-styles#shared-vocabulary)。
+
+---
+
+## 使用套件 \{#use-the-package\}
+安裝套件後，在預設 Master CSS 進入點之後匯入：
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+```
+
+匯入的原始碼會成為專案 CSS 進入點圖的一部分。專案標記可將共用詞彙作為 utility 與原生 CSS 類別使用：
+
+<PackageAuthoringExample part="preview" />
+
+專案進入點已匯入的套件，本就可供區域樣式表使用。若只要將套件加入單一樣式表的編譯脈絡，請使用 `@reference`：
+
+```css name=components/Button.module.css
+@reference '@acme/ui-theme';
+
+.button {
+  padding-inline: var(--spacing-action-x);
+  border-radius: var(--radius-action);
+  background-color: var(--color-brand);
+}
+```
+
+區域 `.button` 使用套件的間距、圓角與品牌 token。編譯此樣式表時，`@reference` 提供定義，輸出也包含必要的主題資源。它不會複製套件原生 `.btn` 規則或產生的 utility 類別。需要這些規則時，請另行載入套件 CSS。區域樣式表模式請參閱[路由層級樣式](/guide/route-level-styles)。
+
+---
+
+## 在使用端覆寫公開值 \{#override-a-public-value-in-the-consumer\}
+
+將應用程式專用選擇放在套件匯入之後。例如，此應用程式加寬共用操作按鈕，無須複製元件 CSS：
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+
+@theme {
+  --spacing-action-x: 1.5rem;
+}
+```
+
+`.btn` 仍讀取 `var(--spacing-action-x)`。應用程式將水平內距從 1rem 改為 1.5rem；其他應用程式保留各自的值。請記錄使用端可依賴的 token 名稱、元件選擇器與 utility 名稱。即使套件不含 JavaScript，重新命名任何公開名稱，仍會影響使用端標記或樣式表。
+
+<GuideStudy id="consumer-override" />
+
+## 應用程式政策留在應用程式內 \{#keep-app-policy-in-the-app\}
+可重用的樣式撰寫套件，不應決定某個應用程式如何掃描、篩選或發布原始檔。
+
+下列內容保留在使用端應用程式：
+
+- 應用程式專用的 `@source` 與 `@source not` 規則。
+- 應用程式專用的 `@safelist` 與 `@blocklist` 政策。
+- 路由、頁面或元件的一次性類別。
+- 產生的 manifest JSON 與編譯後的 CSS 輸出。
+
+以套件提供共用詞彙；以應用程式 CSS 進入點管理區域原始碼邊界、傳遞選擇與應用程式專屬政策。
+
+---
+
+## 使用範例驗證 \{#validate-with-an-example\}
+從套件目錄打包原始碼。`npm pack` 會建立本地封存檔，不會發布到套件註冊表：
+
+```bash
+npm pack
+```
+
+依範例名稱與版本，封存檔為 `acme-ui-theme-0.1.0.tgz`。確認包含 `master.css` 與預期的 `package.json` 匯出。`files` 清單排除無關原始碼與建置產物；npm 也會包含標準中繼資料檔案。
+
+將封存檔安裝到已整合 Master CSS 的小型使用端應用程式：
+
+```bash
+npm install ../my-master-theme/acme-ui-theme-0.1.0.tgz
+npm run build
+```
+
+將上方標記放進會掃描的原始檔。在正式環境輸出檢查原生 `.btn` 規則、請求的 `content-auto` utility 與必要主題資源。再開啟應用程式，檢查按鈕的計算後內距，並加入區域覆寫後重複檢查。除了靜止狀態，也要驗證懸停、鍵盤焦點與減少動態效果。
+
+使用框架整合的建置來驗證套件解析。目前的獨立 CLI 檢查可能載入應用程式進入點，卻將第三方裸套件匯入留在樣式表圖之外。請檢查列出的樣式表相依性：若未包含套件的 `master.css`，該檢查就尚未驗證這份詞彙。正式環境使用端也能驗證本地僅原始碼預覽無法檢查的檔案與匯出路徑。

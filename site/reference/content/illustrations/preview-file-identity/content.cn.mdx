@@ -1,0 +1,36 @@
+# Reference prose: illustrations/preview-file-identity
+
+## title \{#copy-title\}
+
+
+预览仅适用于记录时的文件版本
+
+## alt \{#copy-alt\}
+
+
+一份预览记录 p-md flex。未变动文件接受建议的 flex p-md 顺序；已添加 gap-sm 的文件被拒绝并保留新内容。
+
+## caption \{#copy-caption\}
+
+
+两种情况从相同类排序预览开始。应用需要同一服务器内未过期 token 及匹配原文件。文件变更会在写入任何建议文件前被拒绝。
+
+## description-0 \{#copy-description-0\}
+
+
+类排序预览记录原有 p-md flex，并建议 flex p-md。预览不改动源文件。
+
+## description-1 \{#copy-description-1\}
+
+
+若每个受影响文件仍匹配记录哈希，应用有效 token 会写入建议内容并消耗该 token。
+
+## description-2 \{#copy-description-2\}
+
+
+若文件现含 p-md flex gap-sm，哈希已不匹配。应用在写入任何建议文件前拒绝预览，保留较新内容。
+
+## description-3 \{#copy-description-3\}
+
+
+此比较仅聚焦文件身份。token 过期、服务器重启及无效工作区路径也可能阻止应用。顺序写入不是事务回滚机制。

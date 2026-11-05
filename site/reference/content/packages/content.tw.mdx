@@ -1,0 +1,702 @@
+# Reference prose: packages
+
+## editorial--master-css-introduction \{#copy-editorial--master-css-introduction\}
+
+
+執行編譯後的 manifest 或執行階段程式、為 class 名稱生成規則，並檢查引擎狀態。CSS 入口提供預設樣式表的串接層。
+
+## editorial--master-css-entries- \{#copy-editorial--master-css-entries-\}
+
+
+非同步建立引擎與單次 class 渲染。
+
+## editorial--master-css-entries--node \{#copy-editorial--master-css-entries--node\}
+
+
+Node.js 中的同步原生引擎、執行階段程式編譯與可重複使用的渲染工作階段。
+
+## editorial--master-css-entries--client \{#copy-editorial--master-css-entries--client\}
+
+
+生成虛擬模組的 TypeScript 環境宣告。
+
+## editorial--master-css-entries--index-css \{#copy-editorial--master-css-entries--index-css\}
+
+
+完整預設樣式表入口。
+
+## editorial--master-css-entries--base-css \{#copy-editorial--master-css-entries--base-css\}
+
+
+基礎樣式與穩定的串接層順序。
+
+## editorial--master-css-entries--theme-css \{#copy-editorial--master-css-entries--theme-css\}
+
+
+預設主題定義。
+
+## editorial--master-css-entries--media-css \{#copy-editorial--master-css-entries--media-css\}
+
+
+預設檢視區與偏好設定條件。
+
+## editorial--master-css-entries--container-css \{#copy-editorial--master-css-entries--container-css\}
+
+
+預設容器寬度條件。
+
+## editorial--master-css-entries--utilities-css \{#copy-editorial--master-css-entries--utilities-css\}
+
+
+預設 utility 註冊。
+
+## editorial--master-css-compiler-introduction \{#copy-editorial--master-css-compiler-introduction\}
+
+
+編譯樣式表指令、載入專案 manifest，並將生成 CSS 與撰寫的樣式組合。請依工作內容與執行環境選擇入口。
+
+## editorial--master-css-compiler-entries- \{#copy-editorial--master-css-compiler-entries-\}
+
+
+非同步編譯器工作階段與記憶體內指令編譯。
+
+## editorial--master-css-compiler-entries--node \{#copy-editorial--master-css-compiler-entries--node\}
+
+
+同步原生編譯與檔案系統解析。
+
+## editorial--master-css-compiler-entries--project \{#copy-editorial--master-css-compiler-entries--project\}
+
+
+非同步專案入口探索與 manifest 載入。
+
+## editorial--master-css-compiler-entries--project-sync \{#copy-editorial--master-css-compiler-entries--project-sync\}
+
+
+同步專案入口探索與 manifest 載入。
+
+## editorial--master-css-compiler-entries--stylesheet \{#copy-editorial--master-css-compiler-entries--stylesheet\}
+
+
+Node.js 樣式表解析、組合與交付資源。
+
+## editorial--master-css-compiler-entries--stylesheet-browser \{#copy-editorial--master-css-compiler-entries--stylesheet-browser\}
+
+
+使用提供的來源與基底 manifest 在瀏覽器中編譯。
+
+## editorial--master-css-compiler-entries--diagnostics \{#copy-editorial--master-css-compiler-entries--diagnostics\}
+
+
+包含 class、檔案與診斷的專案檢查報告。
+
+## editorial--master-create-css-introduction \{#copy-editorial--master-create-css-introduction\}
+
+
+為既有專案規劃並套用 Master CSS 設定。計畫會在套用前說明相依套件變更、檔案編輯、指令與警告。
+
+## editorial--master-create-css-usage \{#copy-editorial--master-create-css-usage\}
+
+
+呼叫 `planMasterCSSSetup()` 檢查建議變更。`applyMasterCSSSetupPlan()` 寫入前會檢查記錄的檔案前置條件；若檔案已變更，請建立新計畫。設定可能修改專案檔案並安裝相依套件。互動流程請見[安裝](/guide/installation)。
+
+## editorial--master-create-css-entries- \{#copy-editorial--master-create-css-entries-\}
+
+
+設定計畫、套用，以及對應選項與結果型別。
+
+## editorial--master-css-svelte-addon-introduction \{#copy-editorial--master-css-svelte-addon-introduction\}
+
+
+官方 Svelte CLI 附加元件為 SvelteKit 專案設定 Master CSS，包含相依套件、Vite 整合、樣式表匯入與伺服器掛鉤。
+
+## editorial--master-css-svelte-addon-usage \{#copy-editorial--master-css-svelte-addon-usage\}
+
+
+透過 Svelte CLI 執行此附加元件。設定會拒絕非 SvelteKit 專案，執行步驟則要求 Svelte 相依套件。完整設定請見 [Svelte 安裝](/guide/installation/svelte)。
+
+## editorial--master-css-svelte-addon-entries- \{#copy-editorial--master-css-svelte-addon-entries-\}
+
+
+由 Svelte CLI 使用的預設附加元件。
+
+## editorial--master-eslint-config-css-introduction \{#copy-editorial--master-eslint-config-css-introduction\}
+
+
+使用官方 flat config 預設組態，在 ESLint 啟用 Master CSS lint 規則。預設匯出與 `recommended` 指向相同設定。
+
+## editorial--master-eslint-config-css-entries- \{#copy-editorial--master-eslint-config-css-entries-\}
+
+
+建議的 ESLint flat config。
+
+## editorial--master-eslint-plugin-css-introduction \{#copy-editorial--master-eslint-plugin-css-introduction\}
+
+
+ESLint 外掛將 JavaScript 與範本語法接到 Master CSS 驗證、class 排序與修正。預設匯出與 `masterCSS` 提供相同外掛。
+
+## editorial--master-eslint-plugin-css-entries- \{#copy-editorial--master-eslint-plugin-css-entries-\}
+
+
+外掛規則與建議設定。
+
+## editorial--master-css-language-server-introduction \{#copy-editorial--master-css-language-server-introduction\}
+
+
+透過 Language Server Protocol 提供 Master CSS 補全、懸停資訊、色彩、格式化與語意 token。程式庫入口支援由宿主管理生命週期；server 入口直接啟動程序。
+
+## editorial--master-css-language-server-usage \{#copy-editorial--master-css-language-server-usage\}
+
+
+嵌入宿主時，請建立並啟動 `MasterCSSLanguageServer`，關閉時再釋放。載入 `/server` 入口會立即建立並啟動伺服器。編輯器使用流程請見[語言服務](/guide/language-service)。
+
+## editorial--master-css-language-server-entries- \{#copy-editorial--master-css-language-server-entries-\}
+
+
+語言伺服器、工作區設定與語意 token 請求名稱。
+
+## editorial--master-css-language-server-entries--server \{#copy-editorial--master-css-language-server-entries--server\}
+
+
+可執行的伺服器啟動入口；沒有具名或預設匯出。
+
+## editorial--master-css-language-service-introduction \{#copy-editorial--master-css-language-service-introduction\}
+
+
+將 Master CSS 工具結果對應到編輯器文件、語言功能與語法醒目標示。伺服器渲染的程式碼展示請使用 Shiki 入口。
+
+## editorial--master-css-language-service-usage \{#copy-editorial--master-css-language-service-usage\}
+
+
+建立 `MasterCSSLanguageService` 時提供工具工作階段。Shiki 輔助函式的選項接受可重複使用的語言工作階段或 manifest。匯入 `@master/css-language-service/shiki.css`，可啟用懸停時的標記醒目效果。設定與範例請見[語言服務](/guide/language-service)。
+
+## editorial--master-css-language-service-entries- \{#copy-editorial--master-css-language-service-entries-\}
+
+
+編輯器文件服務、設定與觸發字元。
+
+## editorial--master-css-language-service-entries--common \{#copy-editorial--master-css-language-service-entries--common\}
+
+
+共用的補全觸發字元。
+
+## editorial--master-css-language-service-entries--shiki \{#copy-editorial--master-css-language-service-entries--shiki\}
+
+
+Shiki 轉換器、語意裝飾與語言註冊。
+
+## editorial--master-css-language-service-entries--shiki-css \{#copy-editorial--master-css-language-service-entries--shiki-css\}
+
+
+Shiki 輸出中，懸停時啟用的標記 class 色彩。
+
+## editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json \{#copy-editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json\}
+
+
+指令醒目標示的 TextMate 文法資源。
+
+## editorial--master-css-mcp-introduction \{#copy-editorial--master-css-mcp-introduction\}
+
+
+建立 Master CSS Model Context Protocol 伺服器，或啟動其 stdio 傳輸。工具目錄列出操作與檔案影響。
+
+## editorial--master-css-mcp-usage \{#copy-editorial--master-css-mcp-usage\}
+
+
+由宿主負責傳輸設定時使用 `createMasterCSSMCPServer()`；stdio 則使用 `startMasterCSSMCPStdioServer()`。用戶端註冊請見 [MCP 伺服器](/guide/ai-coding#connect-the-mcp-server)，用法請見[工具目錄](/reference/tools/mcp)；完整契約透過 `tools/list` 閱讀。
+
+## editorial--master-css-mcp-entries- \{#copy-editorial--master-css-mcp-entries-\}
+
+
+伺服器工廠函式與 stdio 啟動。
+
+## editorial--master-css-next-introduction \{#copy-editorial--master-css-next-introduction\}
+
+
+將 Master CSS 接到 Next.js 設定與建置輸出。根匯出包裝 Next 設定；adapter 入口支援建置整合與配接器組合。
+
+## editorial--master-css-next-usage \{#copy-editorial--master-css-next-usage\}
+
+
+在 Next 設定使用根入口的預設匯出。使用會處理建置輸出的渲染模式時，請 await 包裝結果。設定與支援的渲染模式請見 [Next.js 安裝](/guide/installation/nextjs)。
+
+## editorial--master-css-next-entries- \{#copy-editorial--master-css-next-entries-\}
+
+
+Next 設定包裝與整合選項。
+
+## editorial--master-css-next-entries--adapter \{#copy-editorial--master-css-next-entries--adapter\}
+
+
+建置配接器、組合輔助函式與渲染輸出報告。
+
+## editorial--master-css-nuxt-introduction \{#copy-editorial--master-css-nuxt-introduction\}
+
+
+將 Master CSS 註冊為 Nuxt 模組。預設匯出與 `masterCSSNuxtModule` 指向相同模組。
+
+## editorial--master-css-nuxt-usage \{#copy-editorial--master-css-nuxt-usage\}
+
+
+透過 Nuxt 設定註冊模組，讓框架管理設定與生命週期。設定方式請見 [Nuxt 安裝](/guide/installation/nuxtjs)。
+
+## editorial--master-css-nuxt-entries- \{#copy-editorial--master-css-nuxt-entries-\}
+
+
+Nuxt 模組。
+
+## editorial--master-css-preset-introduction \{#copy-editorial--master-css-preset-introduction\}
+
+
+預設集提供主題 token、條件、utility 與編譯後的預設 manifest。CSS 匯入與 JSON manifest 服務不同使用端。
+
+## editorial--master-css-preset-usage \{#copy-editorial--master-css-preset-usage\}
+
+
+撰寫樣式表時匯入 CSS；執行或依基底 manifest 編譯的 API，則傳入 JSON manifest。[主題 token](/guide/theme)說明撰寫與覆寫方式。
+
+## editorial--master-css-preset-entries- \{#copy-editorial--master-css-preset-entries-\}
+
+
+完整預設樣式表入口。
+
+## editorial--master-css-preset-entries--default-manifest-json \{#copy-editorial--master-css-preset-entries--default-manifest-json\}
+
+
+引擎、編譯器與工具 API 使用的編譯後預設 manifest。
+
+## editorial--master-css-preset-entries--index-css \{#copy-editorial--master-css-preset-entries--index-css\}
+
+
+完整預設樣式表入口。
+
+## editorial--master-css-preset-entries--base-css \{#copy-editorial--master-css-preset-entries--base-css\}
+
+
+基礎樣式與穩定的串接層順序。
+
+## editorial--master-css-preset-entries--theme-css \{#copy-editorial--master-css-preset-entries--theme-css\}
+
+
+預設主題定義。
+
+## editorial--master-css-preset-entries--media-css \{#copy-editorial--master-css-preset-entries--media-css\}
+
+
+預設檢視區與偏好設定條件。
+
+## editorial--master-css-preset-entries--container-css \{#copy-editorial--master-css-preset-entries--container-css\}
+
+
+預設容器寬度條件。
+
+## editorial--master-css-preset-entries--utilities-css \{#copy-editorial--master-css-preset-entries--utilities-css\}
+
+
+預設 utility 註冊。
+
+## editorial--master-css-runtime-introduction \{#copy-editorial--master-css-runtime-introduction\}
+
+
+觀察文件或 shadow root 中的 class，並維護生成 CSS。執行階段啟動需要執行階段程式，也就是為瀏覽器引擎編譯的專案 manifest，並回傳由呼叫端管理的工作階段。
+
+## editorial--master-css-runtime-entries- \{#copy-editorial--master-css-runtime-entries-\}
+
+
+執行階段啟動、觀察、快照與自訂元素整合。
+
+## editorial--master-css-runtime-entries--default-program \{#copy-editorial--master-css-runtime-entries--default-program\}
+
+
+為未使用 Master CSS 建置整合的應用程式，提供已編譯成執行階段程式的預設集。
+
+## editorial--master-css-schema-introduction \{#copy-editorial--master-css-schema-introduction\}
+
+
+共用型別與編解碼器描述 manifest、診斷、hydration 與整合選項，讓宿主交換結構化 Master CSS 資料。
+
+## editorial--master-css-schema-entries- \{#copy-editorial--master-css-schema-entries-\}
+
+
+共用 manifest、診斷與渲染模式匯出。
+
+## editorial--master-css-schema-entries--manifest \{#copy-editorial--master-css-schema-entries--manifest\}
+
+
+Manifest v6 型別、變數輔助函式與序列化。
+
+## editorial--master-css-schema-entries--hydration-manifest \{#copy-editorial--master-css-schema-entries--hydration-manifest\}
+
+
+Hydration 規則、資源順序與序列化輔助函式。
+
+## editorial--master-css-schema-entries--css-directives \{#copy-editorial--master-css-schema-entries--css-directives\}
+
+
+指令結果、來源範圍與輸出對應。
+
+## editorial--master-css-schema-entries--css-syntax \{#copy-editorial--master-css-schema-entries--css-syntax\}
+
+
+utility、選擇器與值的表示型別。
+
+## editorial--master-css-schema-entries--utility-type \{#copy-editorial--master-css-schema-entries--utility-type\}
+
+
+utility 分類常數及其型別。
+
+## editorial--master-css-schema-entries--runtime-style \{#copy-editorial--master-css-schema-entries--runtime-style\}
+
+
+執行階段樣式元素識別碼。
+
+## editorial--master-css-schema-entries--emitted-globals \{#copy-editorial--master-css-schema-entries--emitted-globals\}
+
+
+工作階段外已輸出的資源計數。
+
+## editorial--master-css-schema-entries--css-common \{#copy-editorial--master-css-schema-entries--css-common\}
+
+
+共用 CSS 廠商識別碼。
+
+## editorial--master-css-schema-entries--diagnostics \{#copy-editorial--master-css-schema-entries--diagnostics\}
+
+
+診斷版本、來源範圍與錯誤酬載。
+
+## editorial--master-css-schema-entries--integration \{#copy-editorial--master-css-schema-entries--integration\}
+
+
+渲染模式與共用整合選項。
+
+## editorial--master-css-server-introduction \{#copy-editorial--master-css-server-introduction\}
+
+
+將生成 CSS 渲染到 HTML，並產生瀏覽器 hydration 資料。依宿主生命週期選擇單次輔助函式、可重複使用渲染器或串流 HTML 工作階段。
+
+## editorial--master-css-server-entries- \{#copy-editorial--master-css-server-entries-\}
+
+
+HTML 渲染、串流工作階段與 hydration 選項。
+
+## editorial--master-css-svelte-introduction \{#copy-editorial--master-css-svelte-introduction\}
+
+
+將 Master CSS 整合到 Svelte 建置與 SvelteKit 伺服器回應。建置與請求處理使用不同入口。
+
+## editorial--master-css-svelte-usage \{#copy-editorial--master-css-svelte-usage\}
+
+
+在建置設定註冊 Vite 外掛，並在 SvelteKit 伺服器掛鉤註冊具名 `handle` 匯出。完整接線請見 [Svelte 安裝](/guide/installation/svelte)。
+
+## editorial--master-css-svelte-entries--vite \{#copy-editorial--master-css-svelte-entries--vite\}
+
+
+支援 Svelte 的 Vite 外掛與選項。
+
+## editorial--master-css-svelte-entries--hooks-server \{#copy-editorial--master-css-svelte-entries--hooks-server\}
+
+
+具名 SvelteKit 請求處理器。
+
+## editorial--master-css-tooling-introduction \{#copy-editorial--master-css-tooling-introduction\}
+
+
+分析 class 語法、擷取候選項、驗證規則，並提供 lint 或語言結果。選擇專用入口，或在多個操作間重複使用工具工作階段。
+
+## editorial--master-css-tooling-usage \{#copy-editorial--master-css-tooling-usage\}
+
+
+建立工作階段或呼叫語意輔助函式時，請提供專案 manifest。重複分析時沿用工作階段，完成後再釋放。Node 子路徑提供同步原生操作；檔案系統掃描另有自己的非同步生命週期。
+
+## editorial--master-css-tooling-entries- \{#copy-editorial--master-css-tooling-entries-\}
+
+
+涵蓋多項分析能力、可重複使用的非同步工具工作階段。
+
+## editorial--master-css-tooling-entries--node \{#copy-editorial--master-css-tooling-entries--node\}
+
+
+同步原生工作階段與原生宣告支援。
+
+## editorial--master-css-tooling-entries--lexer \{#copy-editorial--master-css-tooling-entries--lexer\}
+
+
+class 清單與 CSS 來源分析。
+
+## editorial--master-css-tooling-entries--lexer-node \{#copy-editorial--master-css-tooling-entries--lexer-node\}
+
+
+同步原生 class 清單分析。
+
+## editorial--master-css-tooling-entries--source \{#copy-editorial--master-css-tooling-entries--source\}
+
+
+來源候選項擷取與來源範圍型別。
+
+## editorial--master-css-tooling-entries--source-node \{#copy-editorial--master-css-tooling-entries--source-node\}
+
+
+同步原生來源擷取。
+
+## editorial--master-css-tooling-entries--scanner-node \{#copy-editorial--master-css-tooling-entries--scanner-node\}
+
+
+檔案系統掃描器、保留候選項與掃描器生命週期。
+
+## editorial--master-css-tooling-entries--validator \{#copy-editorial--master-css-tooling-entries--validator\}
+
+
+依提供的 manifest 驗證 class。
+
+## editorial--master-css-tooling-entries--validator-node \{#copy-editorial--master-css-tooling-entries--validator-node\}
+
+
+同步原生 class 驗證。
+
+## editorial--master-css-tooling-entries--lint \{#copy-editorial--master-css-tooling-entries--lint\}
+
+
+Lint 診斷、編輯、標準形式建議與內容輔助函式。
+
+## editorial--master-css-tooling-entries--lint-node \{#copy-editorial--master-css-tooling-entries--lint-node\}
+
+
+同步原生 class lint。
+
+## editorial--master-css-tooling-entries--language \{#copy-editorial--master-css-tooling-entries--language\}
+
+
+不依賴編輯器的分析、補全、色彩與語意 token。
+
+## editorial--master-css-tooling-entries--language-node \{#copy-editorial--master-css-tooling-entries--language-node\}
+
+
+同步原生語言工作階段與分析。
+
+## editorial--master-css-vite-introduction \{#copy-editorial--master-css-vite-introduction\}
+
+
+在 Vite 註冊 Master CSS，編譯專案樣式並協調所選渲染模式。預設匯出與 `createMasterCSSVitePlugin` 是相同工廠函式。
+
+## editorial--master-css-vite-usage \{#copy-editorial--master-css-vite-usage\}
+
+
+在 Vite 設定呼叫工廠函式，讓 Vite 管理回傳外掛的生命週期。樣式表入口與渲染模式設定請見 [Vite 安裝](/guide/installation/vite)。
+
+## editorial--master-css-vite-entries- \{#copy-editorial--master-css-vite-entries-\}
+
+
+Vite 外掛工廠函式與選項。
+
+## editorial--master-css-webpack-introduction \{#copy-editorial--master-css-webpack-introduction\}
+
+
+向 Webpack 註冊 Master CSS。預設匯出與 `MasterCSSWebpackPlugin` 提供外掛類別；選項決定渲染與掃描器行為。
+
+## editorial--master-css-webpack-usage \{#copy-editorial--master-css-webpack-usage\}
+
+
+在 Webpack 設定建構外掛，讓 Webpack 控制編譯掛鉤。樣式表與 loader 設定請見 [Webpack 安裝](/guide/installation/webpack)。
+
+## editorial--master-css-webpack-entries- \{#copy-editorial--master-css-webpack-entries-\}
+
+
+Webpack 外掛類別與選項。
+
+## editorial--master-css-astro-introduction \{#copy-editorial--master-css-astro-introduction\}
+
+
+將 Master CSS 接到 Astro 設定與請求處理。整合設定建置行為；middleware 入口提供 Astro 請求掛鉤。
+
+## editorial--master-css-astro-usage \{#copy-editorial--master-css-astro-usage\}
+
+
+在 Astro 設定使用預設整合工廠函式。建置與 middleware 設定請見 [Astro 安裝](/guide/installation/astro)。
+
+## editorial--master-css-astro-entries- \{#copy-editorial--master-css-astro-entries-\}
+
+
+Astro 整合工廠函式與選項。
+
+## editorial--master-css-astro-entries--middleware \{#copy-editorial--master-css-astro-entries--middleware\}
+
+
+Astro 請求 middleware。
+
+## editorial--master-css-usage \{#copy-editorial--master-css-usage\}
+
+
+在 Node.js 向引擎與渲染 API 傳入明確 manifest，或在任何環境傳入 `compileRuntimeProgram()` 產生的執行階段程式；瀏覽器只執行程式。重複作業請沿用工作階段，完成後釋放。樣式表撰寫與專案載入請用[編譯器](/reference/packages#css-compiler)；DOM 觀察請用[執行階段](/reference/packages#css-runtime)。
+
+建置整合以 `./client` 宣告的虛擬模組提供交付產物：`virtual:master-css-manifest` 是供 Node 引擎、伺服器渲染器與工具使用的編譯後 `MasterCSSManifest`；`virtual:master-css-program` 是瀏覽器引擎程式，在正式建置中為含雜湊的 `.bin` 資源；`virtual:master-css-emitted-globals` 列出 CSS 入口已輸出的變數與關鍵影格，避免執行階段重複生成。頁面 hydration manifest 是獨立資料，描述單一回應。
+
+建置階段與伺服器生成使用 Rust 語意；瀏覽器引擎執行編譯後程式，在相同定義與 class 下產生相同 CSS。編譯器、伺服器與執行階段版本必須相符：不支援的執行或語言版本會被拒絕。
+
+`executionState(names)` 依請求順序讀取儲存的規則參照，包含重複項，不生成規則；未知或從未確保可用的 class 參照為空。完整規則與 CSS 請用 `snapshot()`。瀏覽器引擎沒有檢查或渲染工作階段。即使轉換沒有 CSS 變更，宿主仍必須同步資源狀態；包裝也必須轉送每個 `MasterCSSEngine` 成員，包含 `executionState`、`registerEmittedGlobals`、`replaceEmittedGlobals`、`refresh`、`dispose` 與 `Symbol.dispose`。
+
+## editorial--master-css-compiler-usage \{#copy-editorial--master-css-compiler-usage\}
+
+
+API 要求基底 manifest 時，請明確提供。使用結果前先檢查回傳診斷。交付結果是一組資源：每份樣式表與資源都要發布到分配的 URL。解析與交付邊界請見[匯入](/reference/directives/imports)。
+
+**發布檔案編譯結果**
+
+`compileManifestFileSync(file, { baseManifest, delivery })` 讀取檔案圖並回傳資源，不寫入檔案。`delivery` 提供 `entryURL`、`stylesheetURL(file)` 與 `resourceURL(file)`；不同樣式表請分配不同最終 URL。每個回傳 `stylesheets` 項目都須發布到其 `href`，各 `resources` 項目則從 `file` 複製到 `href`。最上層 `css`、`nativeCSS` 與 `generatedCSS` 只描述入口。相對資源 URL 保留原始來源所屬檔案、查詢與片段；只供參照的樣式表不會成為發布資源。缺少資源或樣式表 URL 衝突會在發布前失敗。省略 `delivery` 會回傳單一字串結果，不適用此資源發布契約。
+
+`preserveNativeCSS` 預設為 `true`；明確 `false` 會抑制原始原生 CSS，但在納入的輸出保留已編譯原生 mixin 套用。它不會啟用修剪。樣式表集合透過 `includeNativeCSS`、`includeMasterBaseCSS` 與 `includeGeneratedCSS` 分別選擇原生 CSS、Master 基礎 CSS 與生成 utility。排除原生輸出不會移除生成 utility 使用的定義。檔案政策請見[原生修剪](/reference/directives/pruning)。
+
+`validation: 'report'` 是預設：保留結果並檢查診斷。`validation: 'error'` 在回傳資源前拒絕完整結果中已知無效的 CSS；僅未知能力不會造成失敗。有可用來源對應時，範圍診斷會標示原始樣式表來源。宿主轉換若無法對應某生成片段，不得虛構原始位置。
+
+**為其他轉換器準備原生 CSS**
+
+其他轉換器需要樣式表中未改動的原生部分時，編譯器宿主可啟用 `preserveNativeSource: true`。Master 定義仍會被消耗，原生 `@apply` 規則仍會展開，但無關的註解、空規則、值拼法與規則邊界會保留。預設為 `false`，維持編譯器一般原生 CSS 正規化。
+
+來源保留不可與啟用的原生修剪組合。單純傳入 class 清單不會啟用修剪。`preserveNativeCSS: false` 仍抑制原生輸出。此選項不會阻止宿主後續轉換最佳化結果或重寫來源對應，也不會探索後續轉換新增的 Master 定義或生成全域參照。
+
+**宿主轉換後繼續渲染資源**
+
+若另一份輸出已提供生成主題變數或關鍵影格定義，`compileRenderedStylesheet()` 與 `compileBrowserStylesheet()` 接受選填 `emittedGlobals` 資源計數快照。正計數抑制重複輸出，零不會。新參照仍輸出其遞移資源閉包。回傳快照包含外部情境與此次渲染所需資源，不改變輸入快照。省略選項則維持一般獨立渲染。
+
+此情境防止後續渲染將已處理變數替換回原始 manifest 值，但不會對新生成 CSS 執行宿主外掛。宿主仍負責處理新 CSS 與發布資源，同時保留外掛順序與來源所有權。
+
+## editorial--master-eslint-config-css-usage \{#copy-editorial--master-eslint-config-css-usage\}
+
+
+將預設組態加入 ESLint flat config。專案特定行為透過[外掛設定](/reference/packages#eslint-plugin-css)調整；[程式碼檢查](/guide/code-linting)說明每項規則。
+
+| 規則 | 預設 | 可修正 | 回報內容 |
+| --- | --- | --- | --- |
+| `@master/css/sort-classes` | `warn` | 是 | class 未依生成規則排序，以及重複 class。 |
+| `@master/css/no-invalid-classes` | `error` | 否 | 無效 Master CSS 語法與無效生成 CSS；未比對 class 只在 `disallowUnknownClass` 啟用時回報。 |
+| `@master/css/no-conflicting-classes` | `warn` | 是 | 同變體範圍的完整與部分宣告衝突；只修正完整覆寫。 |
+| `@master/css/prefer-canonical-classes` | `warn` | 是 | 非標準形式，僅在保留 token 身分與生成規則行為時回報。 |
+
+`@master/css/no-unapproved-raw-values` 與 `@master/css/prefer-component-classes` 不在預設組態內。
+
+## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
+
+
+使用[官方預設組態](/reference/packages#eslint-config-css)取得標準規則，或在自己的 flat config 註冊外掛。規則行為請見[程式碼檢查](/guide/code-linting)。
+
+設定位於 `@master/css` 設定鍵下。陣列會取代預設值。
+
+| 設定 | 預設 | 用途 |
+| --- | --- | --- |
+| `classAttributes` | `['class', 'className']` | 含有 class 字串的標記屬性。 |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | 引數可含 class 字串的被呼叫函式與標記範本；`styled` 也接受 `styled.button` 這類成員形式。 |
+| `classDeclarations` | `[]` | 視為 class 宣告的專案變數或物件屬性。 |
+| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | 走訪變體設定物件時略過的物件鍵。 |
+
+`@master/css/no-unapproved-raw-values` 回報有 token 支援的 utility 中使用的原始值。`requireProperties` 將範圍限於所列原生屬性（空或省略時檢查所有有 token 支援的屬性）；`allowProperties` 與 `allowedPatterns` 加入例外，`allowRawValues` 則停用規則。原生自訂屬性參照仍有效。診斷 `data` 指定屬性範圍與標準 token 家族；沒有自動修正。
+
+`@master/css/prefer-component-classes` 回報 class 清單中，超過 `max` 個 class（預設 `3`）透過頂層 `_`、`>`、`+` 或 `~` 組合器替其他元素設定樣式的情況。診斷 `data` 列出 `classNames` 與其 `targets`；沒有自動修正。
+
+## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
+
+
+使用工作階段前先 await `MasterCSSRuntime.start()`，所屬端完成後呼叫 `dispose()`。`withMasterCSSRuntime()` 將啟動與釋放整合到自訂元素的連接回呼，且需要 shadow root。瀏覽器流程請見[渲染模式](/guide/rendering-modes)。
+
+官方整合會注入啟動流程。自訂入口將 `program` 以載入器傳入，例如 `() => import('virtual:master-css-program').then(module => module.default)`，再加上 `emittedGlobals`，然後呼叫 `observe()`。僅執行階段頁面在啟動時載入程式；漸進式頁面若有有效 `hydrationManifest`，會延後引擎直到出現 manifest 外的 class，除非設定 `engine: 'eager'` 或 `enginePrefetch: 'idle'`。`emittedGlobals` 適用使用此 bundle 的每個頁面。執行階段將生成規則與按需關鍵影格插入自己的樣式表，絕不寫入連結樣式表。
+
+`snapshot()` 將 `usageCounts`（已連接的 DOM 使用情況）與 `classRules` 分開；後者也可能包含預先準備、hydration 或保留的規則。`engine` 為 `'deferred'`、`'loading'`、`'ready'` 或 `'failed'`；延後引擎啟動前，class 快照沒有規則項目，`layers` 也為空。`ensureClassRules()` 與 `deleteClassRules()` 不依 DOM 使用情況操作；刪除是同步的，並略過保留機制。引擎尚未就緒時會拋出 `RUNTIME_ENGINE_NOT_READY` 並啟動它，因此請先 await `ready()`。
+
+## editorial--master-css-schema-usage \{#copy-editorial--master-css-schema-usage\}
+
+
+從擁有型別的專用子路徑匯入。型別宣告描述資料形狀，不驗證任意輸入，也不編譯樣式表指令。在 API 間傳遞 manifest 與診斷時，請保留版本欄位；手動編輯版本不會讓 manifest 相容。
+
+使用 `serializeMasterCSSManifest()` 儲存 manifest。序列化會正規化衍生欄位，不取代引擎驗證，也不保留註解或可編輯的 CSS 格式。未知欄位不是擴充機制：外層封套保留它們，不代表巢狀欄位會被接受或能執行。
+
+## editorial--master-css-server-usage \{#copy-editorial--master-css-server-usage\}
+
+
+渲染前提供編譯後 manifest。讓 emitted-global 與 hydration 中繼資料和交付用戶端的 CSS 一致，可重複使用工作階段完成後要釋放。完整 HTML 範例請見[渲染模式](/guide/rendering-modes)。
+
+`createServerRenderer()` 跨渲染快取規則：manifest 變更時要重新建立，長時間運作的伺服器則要限制 `maxCachedClasses`。自訂宿主可將頁面可能連結的最終 `stylesheets`，以 `@master/css-compiler/stylesheet` 的 `describeLinkedStylesheet()` 所回傳 `{ href, css, imports }` 形式，搭配供解析使用的 `documentURL` 傳入；樣式表已交付的主題變數與原生關鍵影格不會在 `style#master-css` 重複輸出。渲染會獨立追蹤每個關鍵影格定義，包含不同串接層或條件中的同名定義。
+
+## body-0 \{#copy-body-0\}
+
+
+依各套件負責的工作選擇。每節列出公開匯入路徑，並連到 GitHub 目前原始碼。簽章、多載與型別請在原始碼閱讀，本頁不複製宣告。
+
+## body-1 \{#copy-body-1\}
+
+
+來源連結指向儲存庫 `rc` 分支。使用已安裝版本時，也請查閱套件隨附宣告。
+
+## body-2 \{#copy-body-2\}
+
+
+## 選擇入口 \{#choose-an-entrypoint\}
+
+## body-3 \{#copy-body-3\}
+
+
+| 工作 | 從此開始 |
+
+## body-4 \{#copy-body-4\}
+
+
+| 接入框架或建置工具 | [安裝 →](/guide/installation)與下方對應的整合套件。 |
+
+## body-5 \{#copy-body-5\}
+
+
+| 編譯 CSS 定義或解析樣式表檔案 | [`@master/css-compiler`](#css-compiler) |
+
+## body-6 \{#copy-body-6\}
+
+
+| 從編譯後定義生成 class 規則 | [`@master/css`](#css) |
+
+## body-7 \{#copy-body-7\}
+
+
+| 觀察瀏覽器 DOM 中的 class | [`@master/css-runtime`](#css-runtime) |
+
+## body-8 \{#copy-body-8\}
+
+
+| 渲染伺服器回應並進行 hydration | [`@master/css-server`](#css-server) |
+
+## body-9 \{#copy-body-9\}
+
+
+| 擷取或驗證來源 | [`@master/css-tooling`](#css-tooling) |
+
+## body-10 \{#copy-body-10\}
+
+
+| 實作編輯器功能 | [`@master/css-language-service`](#css-language-service) |
+
+## body-11 \{#copy-body-11\}
+
+
+| 從終端機或代理程式自動化 | [CLI 指令](/reference/tools/cli)或 [MCP 工具](/reference/tools/mcp) |
+
+## body-12 \{#copy-body-12\}
+
+
+manifest 描述定義，不是原生樣式表。除了渲染模式產生的 utility 輸出，也要交付編譯器的原生 CSS。Node 引擎使用 manifest，瀏覽器引擎使用編譯後執行階段程式。[渲染模式](/guide/rendering-modes)說明如何選擇交付方式。
+
+## body-13 \{#copy-body-13\}
+
+
+| 匯入路徑 | 用途 |
+
+## description \{#copy-description\}
+
+
+選擇公開套件、查找匯入路徑，並開啟 GitHub API 原始碼。
+
+## title \{#copy-title\}
+
+
+套件
+
+## source-links \{#copy-source-links\}
+
+
+[原始碼與 README](%%source%%) · [公開匯出對應](%%exports%%)

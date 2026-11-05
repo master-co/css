@@ -56,7 +56,7 @@ Use the preset's names for common decisions. When you need an exact local value,
 
 Fixed utilities such as `items-center` and `text-center` cover common declarations. Direct-value functions such as `m(4)`, `b(1)` and `grow(1)` take a number; length functions use pixels, while `grow(1)` supplies a unitless flex factor. Native declarations keep the full property name inside parentheses. A recipe such as `text-sm` or `grid-cols(2)` can coordinate several declarations. All these forms accept selector and condition suffixes.
 
-### Keep spaces inside one class
+### Keep spaces inside one class \{#keep-spaces-inside-one-class\}
 
 HTML separates classes at whitespace. Outside quoted strings, write `|` where a CSS value needs a space, keeping commas, slashes and parentheses in place:
 
@@ -182,7 +182,7 @@ Several conditions nest from left to right, so every wrapper must match. See [Co
 
 <GuideStudy id="conditions-intersection" />
 
-### Follow a component's available space
+### Follow a component's available space \{#follow-a-components-available-space\}
 
 A card in a sidebar has less room than a card in the main content area, even at the same viewport width. Give its parent `container-inline`, then put a container condition on the card's layout class. The final example uses `(container-name:card)` to name that parent and `@container(card|width>=28rem)` to query it.
 

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/inline-resolution
+
+## title \{#copy-title\}
+
+
+Inline 置換は残る参照を変える
+
+## alt \{#copy-alt\}
+
+
+通常と inline のテーマ定義は、異なる変数参照を生成します。同じプラム色の section 内で、通常のトークンは青のまま、inline のクラスはローカルなプラム色の変数を参照します。
+
+## caption \{#copy-caption\}
+
+
+どちらの例も同じマークアップで bg-brand を使います。通常のトークンはルートで解決した値を継承し、inline は生成宣言に、スタイルを適用する要素で --app-brand を参照させます。
+
+## description-0 \{#copy-description-0\}
+
+
+両方の設定は --color-brand: var(--app-brand) を定義します。ルートは --app-brand を #1d4ed8 とし、入れ子の section が #86198f に上書きします。
+
+## description-1 \{#copy-description-1\}
+
+
+通常の @theme では、bg-brand は background-color: var(--color-brand) を出力します。ルートは --color-brand を青と計算し、入れ子の参照元はその計算値を継承します。
+
+## description-2 \{#copy-description-2\}
+
+
+@theme inline では、bg-brand は background-color: var(--app-brand) を出力します。参照する要素は、section から継承したプラム色の値を読み取ります。
+
+## description-3 \{#copy-description-3\}
+
+
+スウォッチは結果の背景を示します。図のルートの値は計算値であり、コンパイラーが色を評価するという意味ではありません。

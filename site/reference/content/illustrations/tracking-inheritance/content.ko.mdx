@@ -1,0 +1,36 @@
+# Reference prose: illustrations/tracking-inheritance
+
+## title \{#copy-title\}
+
+
+em 자간을 다시 적용하면 길이를 다시 계산합니다
+
+## alt \{#copy-alt\}
+
+
+16px 부모에 tracking-widest를 사용합니다. 두 32px 자식은 같은 단어를 보여 줍니다. 하나는 1.92px 자간을 상속하고 다른 하나는 tracking-widest를 다시 적용해 3.84px를 사용하므로 텍스트 상자가 더 넓습니다.
+
+## caption \{#copy-caption\}
+
+
+두 자식은 같은 글꼴과 크기를 사용합니다. 상속한 letter-spacing 길이는 1.92px로 유지되며, 클래스를 다시 적용하면 자식의 32px 글꼴 크기를 기준으로 .12em을 계산합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+부모는 font-md와 tracking-widest를 사용합니다. 루트 글꼴 크기가 16px이면 .12em 자간은 1.92px 길이로 계산됩니다.
+
+## description-1 \{#copy-description-1\}
+
+
+두 자식 견본은 font-3xl, 즉 32px를 사용하며 단어와 글꼴도 같습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+첫 번째 자식은 계산된 1.92px 자간을 상속합니다. 두 번째는 tracking-widest를 다시 적용하므로 .12em을 32px 기준으로 계산해 3.84px가 됩니다.
+
+## description-3 \{#copy-description-3\}
+
+
+글리프 크기는 같아도 두 번째 텍스트 상자는 더 넓습니다. 색이 있는 안내선은 레이아웃 너비를 보여 주며 글리프의 실제 그리기 경계나 tracking이 출력한 테두리가 아닙니다.

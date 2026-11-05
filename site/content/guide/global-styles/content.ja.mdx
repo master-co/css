@@ -1,0 +1,173 @@
+---
+{
+  "title": "グローバルスタイル",
+  "description": "一つのアプリエントリーを読み込み、担当ごとに共通 CSS を分け、ドキュメントの既定値、コンポーネントルール、ルートのスタイルを適切な範囲に置きます。",
+  "category": "記述",
+  "figures": {
+    "GlobalIllustration": {
+      "title": "複数のソースファイル、一つのアプリエントリー",
+      "alt": "アプリが app.css を読み込み、そのインポートが theme.css、defaults.css、components.css を同じ Master CSS のエントリーグラフに集める。各ファイルは自身のスタイルの役割を保つ。",
+      "caption": "アプリのルートからエントリーを読み込みます。担当ごとにソースを分け、各インポート先で @master/css を再び @import する必要はありません。",
+      "description": [
+        {
+          "title": "一度読み込む",
+          "text": "アプリのルートは、既定の @master/css インポートで始まる app.css を読み込みます。"
+        },
+        {
+          "title": "担当ごとに分ける",
+          "text": "app.css は共通値の theme.css、ネイティブなドキュメント既定値の defaults.css、共通コンポーネントルールの components.css をインポートします。"
+        },
+        {
+          "title": "一つのグラフを保つ",
+          "text": "これらのインポートが一つのエントリーグラフを組み立てます。三つのソースファイルそれぞれに完全な Master CSS エントリーのインポートは不要です。"
+        }
+      ]
+    },
+    "GuideStudy:defaults-inheritance": {
+      "title": "ドキュメントの既定値は DOM を下る",
+      "alt": "body の既定値が二つの子孫へテキスト設定を供給し、ローカルな code フォントは code 要素内だけでファミリーを上書きする。",
+      "caption": "継承はドキュメントツリーに従います。ローカル宣言は設定するプロパティだけを置き換えます。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import GlobalIllustration from './components/GlobalIllustration.astro'
+
+## 概要 [sr-only] \{#overview\}
+すべてのページで必要なスタイルを、アプリの一か所から読み込むようにします。そのエントリーで複数のソースファイルをインポートできます。共通値、ドキュメントの既定値、コンポーネントルールを各担当のソースに置き、同じアプリスタイルシートから組み立てます。
+
+先に[フレームワークへのインストール](/guide/installation#integrations)を完了してください。以下の例は既存の CSS エントリーを拡張するもので、二つ目の Master CSS のインストールは不要です。
+
+## 一つのアプリエントリーから始める \{#entry-stylesheet\}
+
+アプリがすでに読み込むスタイルシートの先頭に、既定のインポートを保持します：
+
+```css name=styles/app.css
+@import '@master/css';
+```
+
+このインポートは、`theme, base, defaults, components, utilities` の順序を含むプリセット定義とベーススタイルを取り込みます。インテグレーションはこのエントリーでプロジェクトの生成 CSS を配信します。各インストールガイドに従い、アプリのルート、ルートレイアウト、ビルドエントリーからインポートしてください。
+
+ソースファイルを分けても、別の完全なエントリーは不要です。自身のファイルを `app.css` からインポートします：
+
+```css name=styles/app.css
+@import '@master/css';
+@import './theme.css';
+@import './defaults.css';
+@import './components.css';
+```
+
+<GlobalIllustration />
+
+これらのファイルは一つのエントリーグラフを作ります。共通の定義は `app.css` に直接書いても、インポート先に書いても利用できます。各ルートスタイルシートで完全な Master CSS エントリーを再度インポートしないでください。各ファイルがエントリーになり、グローバルなネイティブ CSS が重複する場合があります。
+
+---
+
+## ドキュメントの既定値を設定する \{#base-layer\}
+
+プリセットのリセットは `base` に残します。製品のドキュメント既定値は `defaults` に置き、通常のコンポーネントとユーティリティの宣言で上書きできるようにします：
+
+```css name=styles/defaults.css
+@layer defaults {
+  body {
+    background-color: var(--color-surface-base);
+    color: var(--color-text-body);
+  }
+}
+```
+
+追加のクラスなしで既定値を受け取る要素には、ネイティブのセレクターを使います。範囲を意識してください。グローバルな `button` ルールは、すべての機能内のボタンにも届きます。一つの製品上の役割に属するルールには、コンポーネントクラスを使います。
+
+プリセットのベーススタイルは、すでにフォントトークンをドキュメントに適用しています。書体を選ぶには、[タイポグラフィ](/guide/typography#site-typeface)に従って変更してください。宣言が競合する場合は[カスケードレイヤー](/guide/cascade-layers)を参照します。後から読み込んでも、より強いレイヤーへ移るわけではありません。
+
+---
+
+<GuideStudy id="defaults-inheritance" />
+
+## 共通グラフに含めるものを決める \{#shared-vocabulary\}
+
+| 共通の判断 | 定義する場所 | 次に読む内容 |
+| --- | --- | --- |
+| 利用箇所を一緒に変える値 | `theme.css` の `@theme` | [テーマトークン](/guide/theme) |
+| すべてのページに必要な既定値 | `@layer defaults` のネイティブセレクター | 上の例 |
+| 繰り返し使う製品要素 | `@layer components` のネイティブクラス | [スタイルの再利用](/guide/reusing-styles#keep-a-components-shared-appearance-together) |
+| 使用時に生成するクラスの機能 | インポートしたスタイルシートの `@utility` | 下のヘルパー例 |
+| 繰り返す CSS 宣言や入れ子のスタイル | `@mixin` を `@apply` で展開 | [CSS の再利用](/guide/reusing-styles) |
+| 名前付きのビューポート・コンテナー条件 | `@custom-media` または `@custom-container` | [レスポンシブデザイン](/guide/responsive-design) |
+
+インポートする `theme.css` は、プロジェクトに必要な値から始めます：
+
+```css name=styles/theme.css
+@theme {
+  --spacing-card: 1.5rem;
+}
+```
+
+このトークンは `p-card`、`gap-card` と、そのキーに対応するほかの間隔ファミリーを登録します。宣言はプロジェクトが必要とするときに出力されます。エントリーグラフに置いても通常のトークンが静的になるわけではありません。
+
+意味が共通だから定義を共有します。今同じ数値を使う二つの機能にも、別々のトークンが必要な場合があります。一つの要素が複数のクラスを使うだけでは、コンポーネント抽象が必要とは限りません。
+
+### コンポーネントの担当を明確にする \{#component-classes\}
+
+たとえば共通の通知は `components.css` に置けます：
+
+```css name=styles/components.css
+@layer components {
+  .notice {
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+}
+```
+
+```html
+<aside class="notice">Your changes are saved locally.</aside>
+```
+
+このネイティブセレクターは `.notice` にスタイルを付けますが、`notice` というユーティリティは登録しません。共通の状態と条件はコンポーネントルール内に書きます。Master CSS の修飾子を受け取るクラスレシピには `@utility` を使ってください。[スタイルの再利用](/guide/reusing-styles)で動く例を比較しています。
+
+エントリーグラフのネイティブ CSS は、未使用のコンポーネントルールも含め既定で出力されます。ネイティブの枝刈りは明示的に選びます。[ネイティブの枝刈り](/guide/optimizing-css-delivery#native-pruning)を参照してください。定義を参照可能にするだけのために、大きなルート専用スタイルシートをグローバルグラフへ移さないでください。
+
+---
+
+## 共通のヘルパーを追加する \{#custom-utilities\}
+
+グローバル定義は、可能なすべてのクラスにルールを生成せず、複数の機能に必要な動作を表せます。以下のヘルパーは関連リンクを配置し、画面外の内容のレンダリングを省き、印刷ではグループを除外します：
+
+<DemoConfiguredExample name="global-related-guides" title="共通ヘルパーで一組のリンクを作る" source={`@utility flow {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+
+@utility print-hidden {
+  @media print {
+    display: none;
+  }
+}`} html={`<section class="content-auto flow print-hidden p-md b-solid b(1) b-line-divider r-md bg-surface-raised">
+  <h2 class="m(0) text-lg font-regular">Related guides</h2>
+  <a class="text-sm fg-text-body underline" href="/guide/theme" target="_top">Choose shared theme values</a>
+  <a class="text-sm fg-text-body underline" href="/guide/responsive-design" target="_top">Adapt a layout to its available space</a>
+</section>`} caption="flow がグリッドと間隔を供給し、print-hidden は印刷時にグループを除きます。content-auto は画面外のレンダリングを省けます。32rem の内在サイズはフォールバックの見積もりで、固定のセクション高さではありません。" />
+
+定義を既存の Master CSS インポートの後に置くか、アプリのエントリーから `utilities.css` をインポートします。クラスはマークアップで検出されると CSS を生成します。アプリの印刷プレビューで `print-hidden` を確認し、リンクを印刷にも出すならクラスを削除してください。自身のレイアウトの内容に合う[内在サイズの見積もり](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain-intrinsic-size)を選びます。
+
+---
+
+ページ横断の確認と出力に基づく最適化手順は、[CSS 配信の最適化](/guide/optimizing-css-delivery)を参照してください。
+
+## ローカルの配信をローカルに保つ \{#organize-global-files\}
+
+アプリのエントリーはページ間で共通のスタイルに集中させます。インテグレーションがルートのスタイルシートへプロジェクト定義を供給するため、完全な Master CSS インポートの追加は不要です。グラフ外の追加定義には `@reference` を使いますが、参照したネイティブ CSS は配信しません。ローカルルールの配信は引き続きルートのローダーが担います。
+
+この設定は[ルートレベルのスタイル](/guide/route-level-styles)、別々のアプリに独立したエントリーグラフが必要な場合は[モノレポ](/guide/monorepo)を参照してください。グローバルファイルを分けたら、定義を使うページと使わないページを確認します。共通スタイルは引き続きアプリのエントリーから届き、ルート専用ルールはローカルの担当に残る必要があります。

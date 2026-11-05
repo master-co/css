@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { test } from 'node:test'
 
-const verify = (redirects, link = '/old#section') => {
+const verify = (redirects, link = '/old#section', extraDocuments = {}) => {
   const directory = mkdtempSync(path.join(tmpdir(), 'master-site-release-'))
   try {
     writeFileSync(path.join(directory, 'index.html'), `<html><head><link rel="canonical" href="https://css.master.co/"></head><body><a href="${link}">Read</a><h1 id="section">Ready</h1></body></html>`)
+    for (const [name, html] of Object.entries(extraDocuments)) {
+      mkdirSync(path.dirname(path.join(directory, name)), { recursive: true })
+      writeFileSync(path.join(directory, name), html)
+    }
     writeFileSync(path.join(directory, '_redirects'), redirects)
     writeFileSync(path.join(directory, 'sitemap.xml'), '<urlset><url><loc>https://css.master.co/</loc></url></urlset>')
     for (const name of ['llms.txt', 'llms-full.txt']) writeFileSync(path.join(directory, name), 'https://css.master.co/reference/')
@@ -44,4 +48,16 @@ test('external redirects require HTTPS and remain explicitly unverified live', (
 test('wildcard destinations resolve against the built route inventory', () => {
   assert.equal(verify('/en/* /:splat 301', '/en/#section').status, 0)
   assert.notEqual(verify('/en/* /:splat 301', '/en/missing').status, 0)
+})
+
+test('root and all localized 404 pages require noindex and omit canonical URLs', () => {
+  const notFound = '<html><head><meta name="robots" content="noindex"></head><body><h1>Not found</h1></body></html>'
+  const localized = Object.fromEntries(['404', 'ja/404', 'tw/404', 'ko/404', 'cn/404'].map(route => [`${route}.html`, notFound]))
+  assert.equal(verify('', '/', localized).status, 0)
+  for (const route of Object.keys(localized)) {
+    const missingNoindex = verify('', '/', { ...localized, [route]: notFound.replace('<meta name="robots" content="noindex">', '') })
+    assert.notEqual(missingNoindex.status, 0)
+    const withCanonical = verify('', '/', { ...localized, [route]: notFound.replace('</head>', '<link rel="canonical" href="https://css.master.co/404"></head>') })
+    assert.notEqual(withCanonical.status, 0)
+  }
 })

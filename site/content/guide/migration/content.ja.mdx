@@ -1,0 +1,120 @@
+---
+title: "Master CSS への移行"
+description: "一つのコンポーネントやルートを変換し、スタイルを共有する画面を検証して、不要になった依存関係を削除します。"
+figures: {"MigrationIllustration": {"title": "一画面を変換し、共有 CSS の影響範囲を確認する", "alt": "同じ CSS エントリーが Account、Billing、Reports につながります。変換対象は Account だけですが、三画面とも検証対象です。", "caption": "三画面が同じスタイルシートを読み込みます。Account の変換は、共通リセット、トークン、セレクターが Billing や Reports に与える影響を分離しません。", "description": [{"title": "一つの共通エントリー", "text": "Account、Billing、Reports 共通の CSS エントリーで、既存スタイルと Master CSS を読み込みます。"}, {"title": "一つの変換範囲", "text": "変換するのは Account だけで、Billing と Reports は既存スタイルに依存します。"}, {"title": "より広い検証範囲", "text": "設定や共通定義を変えたら三画面を確認します。コンポーネント単位の変更でも CSS の範囲は限定されず、ほかの画面には旧依存が必要です。"}]}, "GuideStudy:migration-local-scope": {"title": "一度に一つのコンポーネント境界を移す", "alt": "隣り合う三要素の中央だけがスタイル管理を変え、ほかも表示されたままです。", "caption": "限定した一コンポーネントを移行し、利用者の操作を維持します。共通のリセットとトークンは別途検証します。"}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MigrationGuides from '~/site/components/MigrationGuides.astro'
+import MigrationIllustration from './components/MigrationIllustration.astro'
+
+変更前後の見た目と動作を比較できる、一つのコンポーネントまたはルートから始めます。既存のアプリに Master CSS を接続し、その部分を変換して検証します。製品のほかの部分は、現在のスタイルを引き続き使えます。
+
+最初の作業では UI の維持に集中してください。デザイン変更、コンポーネントライブラリーの置き換え、スタイルの移行には、それぞれ異なる確認事項があります。可能なら別々に進めます。
+
+## 移行元のスタイルシステムを選ぶ \{#choose-the-source-styling-system\}
+
+<a id="frameworks"></a>
+
+現在使っているシステムのガイドを選んでください。複数のシステムを併用している場合は、最初のコンポーネントのスタイルを管理するものを選びます。ほかは残して構いません。
+
+<MigrationGuides />
+
+## 最初の作業範囲を決める \{#migration-strategy\}
+
+動作する基準状態をバージョン管理に記録し、既存のチェックを実行します。編集前に失敗を記録すれば、既存の問題とリグレッションを区別できます。対象画面を、重要な幅と操作状態で撮影してください。
+
+アカウント設定フォームは最初の対象に適しています。境界が明確で、フィールドやボタンが見え、動作を確認できます。ラベル、検証メッセージ、フォーカス状態、無効化されたコントロールを含めてください。請求やレポートは変換対象から外し、同じアプリのスタイルシートを使う場合は見た目の確認に含めます。
+
+変更するファイルを決める前に、次の関係を調べます。
+
+<DocumentComparison>
+
+| 関係 | 作業範囲への影響 |
+| --- | --- |
+| CSS エントリー、リセット、レイヤー順序 | マークアップを変更しない画面にも設定が影響する可能性があります。 |
+| 共通トークンとコンポーネントクラス | 対象外のコンポーネントも同じ定義を使っている場合があります。 |
+| ソース探索と動的なクラス名 | コンポーネントが実際に描画する状態を生成 CSS が含む必要があります。 |
+| コンポーネントライブラリーの動作 | クラスの置き換えでは、ウィジェットのフォーカス管理、イベント、アクセシビリティの動作は置き換わりません。 |
+
+</DocumentComparison>
+
+変換範囲は CSS の分離境界ではありません。Account、Billing、Reports が同じ CSS エントリーを読み込むアプリでは、Master CSS の追加や共通ルールの変更後に三つとも確認する必要があります。
+
+<MigrationIllustration />
+
+<GuideStudy id="migration-local-scope" />
+
+## 既存のスタイルと並べて Master CSS を接続する \{#connect-master-css-beside-the-existing-styles\}
+
+アプリのフレームワークやビルドツールに対応する[インストール](/guide/installation)手順に従います。`@import '@master/css';` を含む CSS エントリーを読み込むことを確認し、クラス名の供給方法に合う[レンダリングモード](/guide/rendering-modes)を選びます。
+
+最初の範囲を変換する間も既存のスタイルを読み込んでください。両システムが独自のディレクティブをコンパイルする場合は、片方のソースをもう片方に渡さず、それぞれに専用の入力を用意します。上の移行元別ガイドで、このビルド境界を説明しています。
+
+フォームを変換する前に、設定だけで生じる影響を調べます。Master のプリセットには見出し、リスト、フォームコントロールなどの基本スタイルが含まれます。この時点で既存画面を基準と比較してください。リセットの差、トークン名の衝突、ユーティリティ名の重複を解決してから、見た目の変化がコンポーネント変換によるものか判断します。
+
+Master のインポートを後に追加しても、そのユーティリティが勝つとは限りません。[CSS のカスケード規則](https://www.w3.org/TR/css-cascade-5/#layer-order)では、同じ作成者オリジンとコンテキストにおいて、通常の非レイヤー宣言は通常のレイヤー内宣言より優先されます。要素に残した古いクラスが、新しいユーティリティの有効性を隠すことがあります。開発者ツールで勝っている宣言を調べ、[互換性](/guide/compatibility#third-party-styles)と[カスケードレイヤー](/guide/cascade-layers)に従って順序を明示的に整えてください。
+
+## コンポーネントの契約を維持して変換する \{#convert-the-component-without-changing-its-contract\}
+
+移行元のガイドに従ってコードを変換します。似た名前のクラスやトークンが同じ結果を生むと考えず、実際の宣言と計算値を比較してください。
+
+- 既存のプロジェクトトークンの値が設計意図に合う場合は再利用します。製品の判断を表す共通値は [`@theme`](/guide/theme) に定義し、変更時にはほかの使用箇所も確認します。
+- 読みやすくなる場合は、局所的な視覚スタイルをマークアップに移します。セレクターやコンポーネントの契約を明確に表せるなら、ネイティブ CSS や CSS Modules を残します。
+- 実行時の値、コンポーネントの props、イベントハンドラー、意味を持つ要素、キーボード動作を維持します。アプリがベンダーのウィジェットに依存する間は、そのウィジェットと必須の CSS を残します。
+- スキャンによる出力では、クラス名を完全な文字列として用意します。[クラス名のスキャン](/guide/scanning-and-pruning)に従って条件付きの派生形や生成コンテンツを確認します。
+
+アカウントフォームなら、値の入力、送信、エラー表示、操作の無効化が引き続き動くことが完了条件です。待機中のスクリーンショットの一致は、その一部にすぎません。
+
+## 検証してから不要なスタイルを削除する \{#checklist\}
+
+次のコンポーネントに広げる前に、基準状態を使って変更を確認します。
+
+1. 関連するフォーマッター、lint、型チェック、テストを実行し、続いて本番ビルドを実行します。開発プレビューとビルド後のアプリを両方確認します。
+2. 重要な幅、テーマ、状態で変換後の画面を比較します。キーボード操作、フォーカス、検証、無効化されたコントロールを試します。
+3. 変更したリセット、トークン、グローバルルールを共有する画面を、対象外も含めて確認します。この例では Account に加えて Billing と Reports も確認します。
+4. 古いスタイルの残る使用箇所を確認してから、変換済みコンポーネントの旧スタイルを削除します。削除後も確認してください。残っていた旧ルールが新しい宣言の不足を隠していた可能性があります。
+5. 画面、ウィジェット、ビルド入力のどれにも不要になってから、スタイルの依存パッケージを削除します。有用なネイティブ CSS やベンダー CSS は残します。すべてを削除しなくても、この作業は完了できます。
+
+意図した見た目の差と残る依存関係を、変更と一緒に記録します。確認できる成果になり検証を終えたら、次のコンポーネントやルートで繰り返します。
+
+## エージェントに計画を依頼する \{#ask-an-agent-to-plan-the-work\}
+
+公式の [`master-css` スキル](/guide/ai-coding#use-the-master-css-skill)には、一つの CSS または Tailwind コンポーネントを Master CSS に取り込む **Import external styles** ワークフローがあります。再設計を依頼しない限り、コンポーネントの値と動作を維持します。このガイドの比較項目で結果を検証してください。
+
+### MCP を使う場合 \{#plan-an-external-system-conversion-with-mcp\}
+
+[Master CSS MCP サーバー](/guide/ai-coding#connect-the-mcp-server)は、外部のスタイルシステムからの変換を計画する `migrate-to-mastercss` プロンプトを提供します。エージェントにプロジェクトを調査させ、レンダリングモード、最初の範囲、CSS 出力のリスク、検証コマンドを提示させます。これは手順を与えるプロンプトであり、自動コード変換器ではありません。
+
+<DocumentPrompt title="MCP で変換を計画する" text={`Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+
+Inspect the external styling system, framework, stylesheet entries,
+source discovery, shared tokens and available checks. Do not edit yet.
+
+Return a plan for one component or route: setup changes, conversion
+files, screens affected by shared CSS, validation commands and the
+conditions for removing old styles. Identify uncertainties to inspect.`} />
+
+### MCP を使わない場合 \{#migration-prompt\}
+
+ローカルのコーディングエージェントにも、同じ限定された作業を依頼できます。選んだコンポーネントやルートを伝え、次の計画依頼を使ってください。
+
+<DocumentPrompt title="MCP なしで変換を計画する" text={`Plan the first batch of this project's migration to Master CSS.
+Use the documentation matching the installed packages to verify
+current syntax, APIs and setup. Do not invent classes or package names.
+
+Inspect the framework, styling systems, CSS entry, shared definitions,
+source discovery and available checks. Do not edit yet.
+
+Propose the smallest working batch around the selected component or
+route. Explain how the old and new CSS will coexist, which screens
+need comparison, and which component behaviors must be preserved.
+
+List the files to change, validation commands, unresolved questions
+and evidence needed before deleting old styles or dependencies.`} />
+
+実際のプロジェクトに照らして計画を確認してから、その範囲の実装を依頼します。エージェントが編集しても手作業でも、同じチェックを維持してください。
+
+<a id="custom-engine-and-binding-migration"></a>
+独自のエンジンホストは[現在の実行契約](/reference/packages#css)を参照してください。このガイドは外部スタイルシステムからの変換を扱います。

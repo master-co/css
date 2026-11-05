@@ -46,8 +46,8 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
         : "import './my-element'\n")
     write('index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Installation fixture</title></head><body>${framework === 'lit' ? '<my-element></my-element>' : '<div id="app"></div>'}<script type="module" src="/${main}"></script></body></html>`)
     if (framework === 'lit') {
-      const command = deliveryFences(source).find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
-      assert.equal(command, `npm create @master/css@rc -- --framework ${framework}${staticMode ? '' : ' --mode runtime'} --yes`)
+      const command = deliveryFences(source).find(fence => fence.text.includes('npm create @master/css@VERSION'))!.text.trim()
+      assert.equal(command, `npm create @master/css@VERSION -- --framework ${framework}${staticMode ? '' : ' --mode runtime'} --yes`)
     } else {
       assert.ok(installationSection('/vite', 'frameworks').includes(`| \`${framework}\` |`), `${route}: framework table`)
       if (!staticMode) assert.match(installationDisclosure('/vite', 'Generate new classes in the browser'), /--mode runtime/)

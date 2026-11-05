@@ -1,0 +1,31 @@
+# Reference prose: illustrations/native-value-boundary
+
+## title \{#copy-title\}
+
+
+引號內的括號仍屬於值
+
+## alt \{#copy-alt\}
+
+
+在一個完整 class 內，標示 content 屬性、引號內的右括號與 before 偽元素。
+
+## caption \{#copy-caption\}
+
+
+第一個右括號是引號內的值文字。下一個才結束宣告；::before 從宣告外開始。
+
+## description-0 \{#copy-description-0\}
+
+
+在 (content:')')::before 中，content 是屬性，')' 是引號包住的值。
+
+## description-1 \{#copy-description-1\}
+
+
+字串內的 ) 會保留。下一個 ) 才結束原生宣告頭部。
+
+## description-2 \{#copy-description-2\}
+
+
+::before 後綴指向偽元素，生成的宣告為 content: ')';。

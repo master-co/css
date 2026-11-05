@@ -1,0 +1,65 @@
+---
+title: "串接層"
+description: "以 utility 覆寫共用元件，並找出規則衝突、未分層 CSS 與重要性造成的影響。"
+figures: {"CascadeIllustration": {"title": "較後的層決定局部內距", "alt": "具名層依序為 theme、base、defaults、components 與 utilities。元件宣告 1.5rem 內距，但較後的 utilities 層透過 p-sm，將同一元素的內距設為 0.75rem。", "caption": "在這些一般宣告之間，utilities 的優先順序高於 components。HTML 中的 class 順序不會改變結果。", "description": [{"title": "建立順序", "text": "預設樣式集依序宣告 theme、base、defaults、components、utilities。"}, {"title": "比較宣告", "text": "原生 collection-card 元件提供 1.5rem 內距。同一元素上的 p-sm 則在較後的 utilities 層提供 0.75rem 內距。"}, {"title": "觀察結果", "text": "在這些一般宣告之間，utility 會生效。根字級為 16px 時，計算後的內距是 12px。"}]}, "GuideStudy:unlayered-obstacle": {"title": "未分層規則的優先順序高於一般分層規則", "alt": "圖中先將 components 排在 utilities 之前，再將未分層的規則獨立放在兩者上方。最後生效的內距來自該未分層規則。", "caption": "此處比較的是作者樣式中的一般宣告。帶有 !important 的宣告使用不同的層優先順序。"}}
+---
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import CascadeIllustration from './components/CascadeIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概述 [sr-only] \{#overview\}
+局部調整不必提高選擇器權重。將共用元件規則放在 `components` 層，再由個別實例的 utility 覆寫需要改變的屬性。
+
+<CascadeIllustration />
+
+## 局部覆寫元件樣式 \{#override-a-component-locally\}
+
+CSS 串接層會先決定各組宣告的順序，再比較選擇器權重。將可重用的元件樣式放在 components 層；當某個實例需要不同的值時，再加上 utility：
+
+<DemoConfiguredExample name="layer-local-override" title="共用元件，局部調整" source={`@layer components {
+  .collection-card {
+    padding: 1.5rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-raised);
+  }
+}`} html={'<div class="grid-cols(1) gap-lg wrap-anywhere"><article class="collection-card"><h2 class="m(0) text-lg font-regular">Release notes</h2><p class="mt-xs mb(0) text-sm fg-text-muted">Updates for your workspace.</p></article><article class="collection-card p-sm"><h2 class="m(0) text-lg font-regular">Release notes</h2><p class="mt-xs mb(0) text-sm fg-text-muted">Updates for your workspace.</p></article></div>'} caption="兩張卡片的內容與元件 class 相同。第一張的內距為 24px；第二張加上 p-sm，在預覽的根字級為 16px 時，內距變成 12px。圓角、邊框與表面樣式都不變。" />
+
+預設樣式集為一般宣告建立以下順序：
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+`p-sm` utility 的優先順序高於元件的內距宣告，與這個 class 在 HTML 屬性中的位置無關。[串接規則](/reference/rules/layers#how-layers-control-the-cascade)說明了這個順序及其適用範圍。
+
+這個 utility 只會改變內距，不會取代元件或移除其他宣告。因此，小幅的局部調整不需要新增元件變體，也不需要使用 `!important`。
+
+## 將原生規則放在正確的層 \{#keep-native-rules-in-the-intended-layer\}
+
+未放在任何層中的一般規則，優先順序高於具名層內的一般規則。如果 utility 已經編譯卻看不出效果，請檢查是否有未分層的元件規則：
+
+```css
+/* This normal rule wins over a layered padding utility. */
+.collection-card {
+  padding: 1.5rem;
+}
+```
+
+如果這個共用規則應該允許 utility 覆寫，就將它移到 `@layer components`。不要只為了彌補非預期的分層方式而加上 `!important`。
+
+<GuideStudy id="unlayered-obstacle" />
+
+分層不會取代串接的其他規則。是否帶有 `!important` 會先於一般層的優先順序決定結果，而且 `!important` 會反轉層與層之間的順序。行內宣告、動畫與轉場也各有其優先順序。這些規則請參閱 [CSS 串接規範](https://www.w3.org/TR/css-cascade-5/#layer-order)；預設樣式集的層順序則見 [Master CSS 分層規則](/reference/rules/layers#how-layers-control-the-cascade)。
+
+## 找出互相競爭的宣告 \{#diagnose-a-competing-declaration\}
+
+1. 在瀏覽器開發者工具中選取元素，到計算後的樣式中找到該屬性，再追查實際生效的宣告。
+2. 確認兩個規則都選中該元素，而且各自的條件都成立。
+3. 檢查每個宣告所屬的層，也要留意分層之外的原生 CSS。
+4. 加入局部覆寫之前，先將廣泛適用的預設樣式放回原本規劃的層。
+5. 如果只看層順序仍無法解釋結果，就繼續檢查 `!important` 與原生串接規則。
+
+透過正常的 Master CSS 入口載入基礎樣式表。生成的規則會包含所屬的 layer 區塊，但不會自行加入基礎層順序的宣告。
+
+將 `collection-card p-sm` 對調成 `p-sm collection-card` 無法解決問題：HTML 中的 class 順序不會控制串接結果。如果同一條件下的兩個 utility 互相重疊，可用[程式碼檢查](/guide/code-linting#no-conflicting-classes)找出衝突，再決定要保留哪個宣告。

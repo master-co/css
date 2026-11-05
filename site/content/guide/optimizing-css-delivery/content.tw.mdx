@@ -1,0 +1,368 @@
+---
+{
+  "title": "最佳化 CSS 傳遞",
+  "description": "透過路由歸屬與選擇性修剪減少無關 CSS，再驗證正式輸出、執行階段行為與導覽成本。",
+  "category": "建置與傳遞",
+  "figures": {
+    "DeliveryIllustration:ownership": {
+      "title": "移動匯入，改變傳遞路徑",
+      "alt": "Overview 與 Reports 的匯入相依圖前後比較。",
+      "caption": "報表進入點負責功能匯入。共用導覽仍抵達兩頁，報表規則只抵達 Reports。方塊表示規則群組，不是實測位元組。",
+      "description": [
+        {
+          "title": "共用匯入",
+          "text": "main.js 同時匯入導覽與報表樣式時，即使 Overview 沒有報表標記，兩頁仍都會收到兩組樣式。"
+        },
+        {
+          "title": "區域匯入",
+          "text": "將 reports.css 移至 reports.js。兩頁保留共用進入點，只有 Reports 載入 reports.js 並收到報表規則。"
+        }
+      ]
+    },
+    "DeliveryIllustration:evidence": {
+      "title": "已知類別保留稍後才出現的選擇器狀態",
+      "alt": "完整報表類別名稱供修剪使用，未知的外部名稱則應保留。",
+      "caption": "證據是可能使用的類別集合，不是初始 DOM 截圖。有限外部集合可由安全清單補齊，未知集合則需要保留。",
+      "description": [
+        {
+          "title": "已知使用情況",
+          "text": "報表標記與完整 idle／ready 對照表提供 report、report-idle 與 report-ready。具備掃描器的建置會保留其規則，包含 report[data-state=\"ready\"] 與 report:focus-visible。"
+        },
+        {
+          "title": "未知使用情況",
+          "text": "來源掃描無法證明未限定範圍的 CMS 類別不存在。請保留所屬原生樣式表，並在 CMS 內容可能出現的位置載入。"
+        }
+      ]
+    },
+    "DeliveryIllustration:dimensions": {
+      "title": "渲染與原生修剪是獨立選擇",
+      "alt": "矩陣比較靜態與漸進式渲染，以及保留與修剪原生 CSS 的組合。",
+      "caption": "兩欄都可提供初始 CSS。漸進式列另外支援後續 utility；修剪改變符合資格的原生輸出，不改變渲染模式。",
+      "description": [
+        {
+          "title": "原生政策",
+          "text": "保留政策讓原生規則維持存在。支援修剪的流程會依已知使用集合篩選符合資格的原生規則。矩陣說明政策，不保證每個整合流程都會提供該集合。"
+        },
+        {
+          "title": "渲染模式",
+          "text": "靜態渲染不會在瀏覽器生成新規則。漸進式渲染在兩種原生政策中，都能提供初始 CSS 並生成稍後出現的有效 utility。"
+        },
+        {
+          "title": "邊界",
+          "text": "執行階段生成不會還原任意被移除的原生選擇器。受管理關鍵影格遵循獨立的定義與相依契約。"
+        }
+      ]
+    },
+    "DeliveryIllustration:verification": {
+      "title": "輸出變小，仍需檢查行為",
+      "alt": "儲存專案預算前，先結合資產比較與互動檢查。",
+      "caption": "兩項檢查證明不同事實。功能缺漏也可能讓檔案變小，因此只有位元組節省不能讓變更通過。",
+      "description": [
+        {
+          "title": "輸出證據",
+          "text": "以相同建置與壓縮方法比較 Overview、Reports，追蹤外部匯入與行內 CSS，記錄檔案、深度、位元組與快取重用。"
+        },
+        {
+          "title": "行為證據",
+          "text": "直接開啟兩個路由、在兩者間導覽，並操作就緒、焦點、主題與響應式狀態。漸進式頁面應分別驗證初始 CSS 與新的執行階段 utility。"
+        },
+        {
+          "title": "預算",
+          "text": "只有預期傳遞變更與保留行為都經驗證後，才儲存專案專用上限。時間樣本與可確定的位元組限制仍須分開。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import DeliveryIllustration from './components/DeliveryIllustration.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 概覽 [sr-only] \{#overview\}
+讓每個頁面取得需要的 CSS，包含互動後才出現的狀態。先追蹤傳遞路徑，將功能樣式移至負責的進入點，只有在建置掌握可能用途時才修剪原生規則。比較輸出資產與行為後，再設定回歸檢查預算。
+
+本指南以共用相同導覽的 Overview 與 Reports 頁面為例，只有 Reports 會渲染報表面板。目標是讓 Overview 完全不下載面板規則，而 Reports 保留就緒與鍵盤焦點狀態。
+
+請先完成框架的[安裝](/guide/installation)。[路由層級樣式](/guide/route-level-styles)說明區域樣式歸屬與定義；[掃描類別名稱](/guide/scanning-and-pruning)則說明可被探索的類別字串與來源例外。日常元件工作請使用這些撰寫指南，調查傳遞成本或資產缺漏時再使用此流程。
+
+記錄已安裝的 Master CSS 版本、CSS 進入點、渲染模式與修剪政策。重構傳遞方式時，保留既有模式。下方可重現的範例使用 Vite 與漸進式渲染，說明初始 CSS、後續 utility 與原生修剪是不同議題，並且只使用公開套件與預設集 token。
+
+## 確認各頁收到的內容 \{#baseline\}
+
+建置目前原始碼，將輸出連同 lockfile 與工具版本一起保留。同時選擇會使用功能的頁面與不會使用的頁面，包含直接載入及兩者間的導覽；共用資產若已在快取中，可能改變第二頁的成本。
+
+沿著各 HTML 樣式表連結追蹤 CSS 匯入，每頁的每個解析後資產只計一次，行內 style 區塊則另外記錄。也要檢查模組匯入：透過共用登錄表匯入的元件，即使沒有標記，仍可能載入 CSS。執行階段指令碼、程式與 hydration 資料應與樣式表分開記錄。
+
+使用三種不同證據：
+
+| 證據 | 記錄項目 | 能證明的事 |
+| --- | --- | --- |
+| 建置輸出 | 不重複的外部檔案、匯入深度、原始與 gzip／Brotli 位元組、行內 CSS | 建置傳遞哪些資產，以及在記錄的壓縮設定下可確定的大小 |
+| 瀏覽器請求 | 回應、編碼、傳輸位元組、快取重用與發起者 | 本次導覽實際擷取的內容 |
+| 瀏覽器行為 | 繪製與互動時序、計算樣式及相關狀態 | 頁面是否正常，以及在測試條件下的效能 |
+
+[Network 面板](https://developer.chrome.com/docs/devtools/network/reference)可顯示請求與相依關係。冷啟動載入與暖快取導覽應分開測量，前後使用相同瀏覽器、檢視區、內容與節流設定。重複測量時間，保留各次樣本與中位數。單看壓縮檔案大小，不能證明繪製更快。
+
+[Coverage](https://developer.chrome.com/docs/devtools/coverage) 可協助找出值得調查的功能。某次記錄中未使用的規則，仍可能用於尚未開啟的對話框、焦點狀態、其他檢視區或外部提供的內容。移除前，先確立歸屬與可能狀態。
+
+## 讓功能規則歸屬區域進入點 \{#ownership\}
+
+假設共用 JavaScript 進入點同時匯入導覽與報表樣式：
+
+```js name=src/main.js
+import './style.css'
+import './reports.css'
+```
+
+現在兩頁都會收到報表規則，Overview DOM 沒有報表並不會改變匯入。請將第二個匯入移到只有 Reports 載入的報表進入點，共用導覽則保留在共用樣式表中。
+
+<DeliveryIllustration id="ownership" />
+
+### 重現雙頁範例 \{#reproduce-the-two-page-example\}
+
+在空目錄中建立以下檔案。使用 `npm install` 安裝公開套件，執行 `npm run build`，再透過 `npm run preview` 提供結果。Master CSS 各套件應使用相符版本，並保留產生的 lockfile 以供比較。
+
+<ExplorerView items={[
+  { name: 'package.json' }, { name: 'vite.config.js' }, { name: 'index.html' },
+  { name: 'reports', children: [{ name: 'index.html' }] },
+  { name: 'src', children: [{ name: 'style.css' }, { name: 'main.js' }, { name: 'reports.css' }, { name: 'reports.js' }] }
+]} />
+
+[Vite 多頁建置](https://vite.dev/guide/build.html#multi-page-app)使用兩個 HTML 進入點，兩者都含有初始標記，因此 Vite HTML 流程可預先渲染。自訂請求時 SSR 的應用程式需要框架伺服器整合，此範例不會為 Vite 加入請求時渲染器。
+
+<DocumentDisclosure title="完整雙頁專案">
+
+```json name=package.json
+{
+  "name": "css-delivery-example",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "@master/css": "VERSION" },
+  "devDependencies": { "@master/css-vite": "VERSION", "vite": "^8" }
+}
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [masterCSS({ mode: 'progressive' })],
+  build: { rolldownOptions: { input: ['index.html', 'reports/index.html'] } }
+})
+```
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="p-lg">
+  <nav class="site-nav" aria-label="Main"><a href="/">Overview</a><a href="/reports/">Reports</a></nav>
+  <main><h1>Overview</h1><p>The overview does not render a report.</p></main>
+</body>
+</html>
+```
+
+```html name=reports/index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports</title>
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/reports.js"></script>
+</head>
+<body class="p-lg">
+  <nav class="site-nav" aria-label="Main"><a href="/">Overview</a><a href="/reports/">Reports</a></nav>
+  <main>
+    <h1>Reports</h1>
+    <button id="refresh" type="button">Refresh report</button>
+    <section id="report" class="report report-idle" data-state="idle" tabindex="0">Report waiting</section>
+  </main>
+</body>
+</html>
+```
+
+共用進入點匯入唯一的完整 Master CSS 進入點，導覽規則使用公開間距 token：
+
+```js name=src/main.js
+import './style.css'
+```
+
+```css name=src/style.css
+@import '@master/css';
+
+@layer components {
+  .site-nav { display: flex; gap: var(--spacing-md); }
+}
+```
+
+報表模組匯入自己的樣式表。完整類別字串描述有限的狀態候選，屬性選擇器與焦點規則也和面板放在一起：
+
+```js name=src/reports.js
+import './reports.css'
+
+const states = { idle: 'report-idle', ready: 'report-ready' }
+const report = document.querySelector('#report')
+document.querySelector('#refresh').addEventListener('click', () => {
+  report.classList.replace(states.idle, states.ready)
+  report.dataset.state = 'ready'
+  report.textContent = 'Report ready'
+})
+```
+
+```css name=src/reports.css
+@prune native;
+
+@layer components {
+  .report { padding: var(--spacing-lg); border: 1px solid currentColor; }
+  .report[data-state="ready"] { border-width: 3px; }
+  .report:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .report-idle { opacity: .65; }
+  .report-ready { opacity: 1; }
+  .report-debug { outline: 8px solid red; }
+}
+```
+
+</DocumentDisclosure>
+
+直接開啟 `/` 與 `/reports/`，追蹤輸出的 CSS 匯入，應該只有 Reports 收到 `.report`。更新報表，再用鍵盤聚焦面板：邊框變成 3px、不透明度變成 1，鍵盤焦點則有外框。
+
+`@prune native` 標記明確讓此檔案參與修剪，但移除仍需要會提供類別使用情況的建置流程。目前 Vite 的區域樣式表轉換只用專案定義編譯報表規則，未提供修剪用的使用集合，因此 `.report-debug` 仍留在區域輸出中。歸屬範圍的改善仍有效。下一節透過公開 CLI 獨立驗證修剪，不把原始碼中的指令當作正式檔案縮小的證明。
+
+### 共用定義，不匯入功能樣式 \{#share-definitions-without-importing-the-feature\}
+
+區域樣式表能使用專案 token 與 mixin，不必再次匯入完整進入點，整合會提供定義脈絡。定義位於進入點相依圖之外時，請使用 [`@reference`](/guide/route-level-styles#reference-definitions-without-loading-their-native-rules)，只取得定義，不載入被參照檔案的原生規則。
+
+原生選擇器載入後，仍保有一般文件作用範圍。路由歸屬控制傳遞，不控制選擇器是否符合，也不決定框架在導覽後是否保留 CSS。共用值放在 token、共用角色放在原生類別、重複宣告放在 mixin，獨立區域選擇則使用 utility。[重用樣式](/guide/reusing-styles)說明這些設計決策。
+
+## 只修剪已知的使用集合 \{#native-pruning\}
+
+原生 CSS 預設保留。先移除不必要的匯入，再考慮能掌握類別與狀態的檔案。確立這些邊界時，請保持專案全域 `pruneNativeCSS` 關閉，並以 `@prune native;` 逐一啟用來源。
+
+修剪套用在宣告它的檔案，並使用其根進入點的類別使用範圍，不會自動擴散至匯入檔案。套件 CSS 需要自行明確啟用，使用端的專案全域設定不會讓所有套件樣式都可被修剪。只有確定要修剪所有專案自有樣式表，且已涵蓋其可能用途時，才考慮 `pruneNativeCSS: true`。完整作用範圍規則請參閱[修剪參考文件](/reference/directives/pruning#import-graph)。
+
+此範例的標記包含 `report`、`report-idle`，JavaScript 對照表也包含 `report-ready`。這些完整名稱讓具備掃描器的建置可保留兩種狀態規則。找到 `report` 就會保留它的屬性與焦點選擇器分支，即使就緒或焦點狀態尚未啟用。類別掃描不能證明選擇器會符合可達到的 DOM 關係，保留的規則也可能始終不符合。
+
+<DeliveryIllustration id="evidence" />
+
+沒有類別選擇器的規則仍可使用。修剪依據類別使用情況，不是初始 DOM 的快照。
+
+<ReferenceIllustration id="pruning-global-selectors" />
+
+### 獨立驗證修剪步驟 \{#verify-the-pruning-step-independently\}
+
+<DocumentDisclosure title="透過 CLI 重現原生修剪">
+
+若要使用會提供掃描使用集合的建置流程檢查此檔案，請透過 `npm install -D @master/css-cli@VERSION` 安裝相符的公開 CLI，再將報表來源複製到可丟棄的檢查目錄：
+
+```sh
+mkdir pruning-check
+cp src/reports.css src/reports.js reports/index.html pruning-check/
+```
+
+在該目錄加入這個進入點：
+
+```css name=pruning-check/style.css
+@import '@master/css';
+@import './reports.css';
+```
+
+從專案根目錄執行：
+
+```sh
+cd pruning-check
+npx master-css generate 'index.html' 'reports.js' --strict -o output.css
+```
+
+</DocumentDisclosure>
+
+從 `output.css` 追蹤匯入。報表規則與其間距相依資源會保留，`.report-debug` 則不存在。這項檢查能證明 CLI 對這些輸入的輸出，不會改變應用程式的 Vite 流程。不要為了強制修剪，把第二個完整進入點匯入應用程式，否則無關的共用傳遞會再次出現。只有正式整合的實際輸出證明已達到預期篩選，才應在該整合使用修剪。
+
+### 保護外部與不確定的來源 \{#keep-external-and-uncertain-sources-safe\}
+
+小工具加入的類別若可明確列舉，請在修剪的檔案中列出完整名稱：
+
+```css
+@prune native;
+@safelist "report-exported";
+
+@layer components {
+  .report-exported { border-style: double; }
+}
+```
+
+安全清單提供候選，不會將類別加入 DOM。無法限制範圍的 CMS 或廠商來源，應在所屬檔案保留原生規則，不要猜測完整清單：
+
+```css name=src/cms.css
+@preserve native;
+
+@layer components {
+  .cms-callout { border-inline-start: 3px solid currentColor; }
+}
+```
+
+CMS 內容可能出現的位置，都應載入該檔案。`@preserve native` 會覆寫其檔案的原生修剪，保留的是原生規則傳遞，不是逐位元組不變的原始碼格式，也不會強制把每個未使用 utility 放進輸出。
+
+檢查選擇器時，也要檢查動畫與變數。明確啟用修剪的檔案中，受管理關鍵影格會成為隨需定義；保留的動畫宣告與變數相依關係，可讓必要定義持續存在。只有外部 JavaScript 提供的名稱，可能需要精確的 `@safelist keyframes "report-enter";` 項目。請遵循 [關鍵影格契約](/reference/directives/pruning#native-keyframes)，包含條件／串接層包裝，以及匿名串接層與相對 URL 的限制。任意手寫原生選擇器不是執行階段定義。
+
+## 分開考慮渲染模式與修剪 \{#rendering-and-pruning\}
+
+渲染模式回答類別何時成為 CSS，以及瀏覽器是否能生成新規則；原生修剪回答樣式表建置後，哪些符合資格的原生規則會保留。漸進式渲染可使用修剪過的原生樣式表，同時傳遞初始頁面 CSS 並支援後續 utility 類別。
+
+<DeliveryIllustration id="dimensions" />
+
+靜態擷取需要來源集合中的完整類別名稱；原生修剪需要可能使用的原生類別名稱。完整字面值對照表，能讓兩者的有限候選都可供檢視。執行階段與漸進式模式也可處理啟動後才組合出的新有效 utility 名稱，但其有效性與生成成本仍須考慮。持續變動的值若只需一條穩定規則，請使用 CSS 變數。
+
+執行階段生成無法重建被修剪移除的任意原生選擇器。稍後加入 `report-ready`，只有在原生規則已保留且載入時才有效。受管理關鍵影格有自己的定義與相依契約，不應從一般選擇器的處理方式推斷其行為。
+
+在此範例中，請分別驗證：
+
+1. 在 JavaScript 執行前查看回應原始碼：`style#master-css` 包含初始 `p-lg` utility；報表原生樣式表則只在 Reports 連結。
+2. 更新 Reports 報表：保留的原生狀態規則會套用，不需要新生成的 utility。
+3. 重新載入 Reports，獨立檢查執行階段。更新報表前，先在開發者工具加入頁面 hydration manifest 沒有的新有效 utility：
+
+```js
+const report = document.querySelector('#report')
+report.classList.add('(letter-spacing:0.123em)')
+```
+
+檢查計算後字距與 `document.querySelector('style#master-css').sheet.cssRules`。使用預設漸進式啟動政策且 hydration 資料有效時，未涵蓋類別會觸發延後啟動的引擎／程式流程。加入頁面 manifest 已涵蓋的類別，不能證明此流程正常。不要把 style 元素的文字內容當作即時 CSSOM 快照。
+
+HTML、CSS、hydration 資料與執行階段資源應來自同一次建置。開發與正式環境都要測試，整合在開發時可能採不同行為。啟動選項、hydration 失敗與框架支援請參閱[渲染模式](/guide/rendering-modes)。
+
+## 比較成本與行為，再設定預算 \{#verify-and-budget\}
+
+一次只檢視一項變更：先調整傳遞歸屬，再於支援的流程修剪，最後才在測量結果支持時調整資產分組。此範例應比較 `main.js` 匯入 `reports.css` 的版本與上方版本。Overview 應不再收到報表規則，Reports 則保留外觀與互動狀態。
+
+<DeliveryIllustration id="verification" />
+
+<DocumentComparison>
+
+| 檢查 | Overview | Reports |
+| --- | --- | --- |
+| 正式環境直接載入 | 導覽與頁面排版保留，沒有報表規則 | 面板與所有必要原生狀態抵達 |
+| 互動 | 導覽仍正常 | 更新與鍵盤焦點保留預期樣式 |
+| 導覽與快取 | 分別計算新擷取與重用的 CSS 資產 | 測試從 Overview 到達與全新直接載入 |
+| 漸進式輸出 | 執行階段前已有初始 utility CSS | 初始 CSS 與真正新增的 utility 都正常 |
+
+</DocumentComparison>
+
+依基準相同方法記錄不重複外部 CSS 位元組、gzip／Brotli 位元組、行內 CSS、檔案數與匯入深度。除了選擇器，也要檢查主題變數、條件規則、偽元素與動畫相依關係。逐項說明輸出差異：移動傳遞位置、移除未使用規則、去除重複，或必要的相依修復。
+
+單一區域檔案可能產生多個輸出片段，原始檔數不等於請求數。此小型範例移動匯入後，在測試建置中減少了 Overview 收到的 CSS，卻增加 Reports 的片段。這證明負責範圍更精準，不代表每個路由都更快；視為最佳化前，先比較取捨。較小路由套件可能減少冷啟動載入，卻讓下一頁需要擷取更多新位元組。共用穩定資產可改善重用，過度切割則增加請求與匯入鏈。應同時比較各頁與完整導覽序列。由適用的 bundler 或整合以正確 URL、條件、串接層與快取識別組裝資產，不要為了減少數量而任意串接 CSS 檔案。
+
+行為通過驗證後，才將實測每頁上限存入專案既有檢查。功能頁與不應收到該功能的頁面都要納入，沒有一個固定 KB 限制適合所有應用程式。新功能可能合理提高預算，但檢視時應明確指出新增行為與實測成本。時間樣本與可確定的位元組上限應分開，不要把小幅時間波動說成速度改善。
+
+由代理協助時，請提供本指南、目標路由、既有模式與允許範圍，並要求交付基準、原始碼變更、正式輸出與實際操作過的狀態。manifest 檢查或乾淨的 lint 結果是有用的原始碼證據，但都不能取代建置或瀏覽器驗證。

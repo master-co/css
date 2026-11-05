@@ -1,0 +1,71 @@
+# Reference prose: tokens/spacing
+
+## title \{#copy-title\}
+
+
+간격
+
+## summary \{#copy-summary\}
+
+
+padding, margin, gap, inset, 오프셋에 사용하는 하나의 간격 척도입니다.
+
+## note \{#copy-note\}
+
+
+계열은 속성을 선택하고 토큰은 거리를 제공합니다. `px-`와 `mx-`는 인라인 축을 사용하고, `pl-`와 `ml-`는 물리적 왼쪽을 사용합니다. 전체 계열 표에서 각각의 네이티브 속성을 확인할 수 있습니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+프리셋 척도는 rem 길이를 사용합니다. 픽셀 환산값은 루트 글꼴 크기가 16px라고 가정하지만 브라우저는 실제 루트 글꼴 크기를 사용합니다. 0이나 1 CSS 픽셀을 지정하려면 `p(0)`, `p(1)`처럼 값을 직접 받는 함수를 사용하세요.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+같은 거리, 다른 경계
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p-md`와 `gap-md`는 모두 `--spacing-md`를 참조하지만, padding은 콘텐츠와 상자 가장자리를 분리하고 gap은 레이아웃 안의 항목들을 분리합니다. gap은 바깥쪽 padding을 만들지 않습니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`gap-md`는 간격 값만 설정하며 Grid나 Flexbox를 활성화하지 않습니다. 마찬가지로 inset 토큰은 오프셋만 설정하고 위치 지정 방식을 선택하지 않습니다. 실제 효과는 네이티브 속성과 레이아웃에 따라 달라집니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+음수 토큰 형식의 허용 여부는 사용하는 속성에 따라 다릅니다. `-mt-md`는 허용되지만 `-p-md`는 거부됩니다. 프리셋에는 zero 또는 auto 간격 토큰이 없습니다. 0에는 `m(0)`을, 인라인 축의 자동 마진에는 `mx-auto` 같은 고정 유틸리티를 사용하세요.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+음수 값
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+직접 지정하는 값
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+네이티브 gap 동작
+
+## usage-lead \{#copy-usage-lead\}
+
+
+폼에 안쪽 여백을 주고, 필드 사이와 각 레이블 및 컨트롤 사이의 간격을 지정합니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+프리셋 값을 변경하거나 토큰을 추가하세요. `--spacing-card`를 정의하면 `p-card`, `m-card`, `gap-card` 및 다른 간격 클래스가 생성됩니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+레이아웃

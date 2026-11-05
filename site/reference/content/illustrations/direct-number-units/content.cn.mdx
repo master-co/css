@@ -1,0 +1,36 @@
+# Reference prose: illustrations/direct-number-units
+
+## title \{#copy-title\}
+
+
+直接数字会转为像素长度或无单位系数
+
+## alt \{#copy-alt\}
+
+
+p(12) 在内容盒子周围产生 12 像素内边距。grow(1) 和 grow(2) 则以一比二的比例，分配同一个零基准 flex 行中的剩余空间。
+
+## caption \{#copy-caption\}
+
+
+左侧数字转为像素长度。右侧数字是 flex 系数：零基准且没有内容最小尺寸限制的设置，使 1:2 分配得以单独呈现。其他基准大小或最小尺寸可能改变最终宽度。
+
+## description-0 \{#copy-description-0\}
+
+
+内边距示例应用实际的 p(12)，使内容到各个外缘之间恰好为 12px。蓝色标注用于显示这段内边距。
+
+## description-1 \{#copy-description-1\}
+
+
+flex 示例在宽 252px、间隙 12px 的行中，为两个 flex 基准大小与最小宽度都为零的项目分别应用 grow(1) 和 grow(2)。
+
+## description-2 \{#copy-description-2\}
+
+
+剩余的 240px 分配为 80px 和 160px。系数仍然无单位，不是像素宽度。
+
+## description-3 \{#copy-description-3\}
+
+
+这些比较有意控制其他条件。如果基准大小不为零，或存在内容最小尺寸，最终宽度就不一定符合扩张比例。各个函数的声明都列在文章中。

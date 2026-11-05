@@ -1,0 +1,31 @@
+# Reference prose: illustrations/manual-wrapper-reach
+
+## title \{#copy-title\}
+
+
+조상 선택자는 밝은 영역 안에도 도달
+
+## alt \{#copy-alt\}
+
+
+어두운 data-theme 조상이 밝은 영역과 차트를 포함한다. 차트는 밝은 색 구성표를 사용하지만 manual-dark 조상 래퍼에도 일치한다.
+
+## caption \{#copy-caption\}
+
+
+점선 경로는 명시적인 dark 속성을 따릅니다. 중첩된 밝은 경계는 color-scheme을 바꾸며 선택자가 검사하는 조상 관계는 바꾸지 않습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+이 글의 --manual-dark 믹스인은 [data-theme="dark"] 자체나 그 하위 요소에 일치합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+중첩된 data-theme="light" 영역 안의 차트도 바깥 dark 영역의 하위 요소입니다. 따라서 light-dark() 값이 로컬 밝은 구성표를 사용해도 불투명도 래퍼는 일치합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+사용하는 색 구성표를 따라야 하는 값에는 적응형 토큰을 사용하세요. 속성 선택자는 자신이 지정한 관계를 그대로 검사합니다.

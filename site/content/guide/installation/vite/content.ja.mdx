@@ -1,0 +1,248 @@
+---
+{
+  "title": "Vite で Master CSS を設定する",
+  "description": "Vite、React、Vue、React Router、TanStack Start に Master CSS を接続し、静的 CSS と任意のブラウザー生成を確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/vite/cover-light.webp'
+import dark from '~/site/assets/images/integrations/vite/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Vite" />
+
+React、Vue、React Router のフレームワークモード、TanStack Start など、Vite でビルドするアプリに Master CSS を追加します。インテグレーションはソース内の完全なクラス名から CSS を生成します。フレームワークの既存の Vite プラグインとマウントコードを保持してください。Master CSS は共通のスタイルシートを通してビルドに加わります。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      既存の [Vite プロジェクト](https://vite.dev/guide/)のルートで、[フレームワーク表](#frameworks)の `--framework` 値を指定してインストーラーを実行します。既定は静的モードで、ソース内の完全なクラス名が通常の CSS になります。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework vite --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### CSS エントリーを確認する \{#check-the-css-entry\}
+    インストーラーは Vite プラグインに `masterCSS()` を追加し、[フレームワークごとのエントリー](#frameworks)に示すスタイルシートを更新します。プレーン JavaScript のスターターでは次のファイルです：
+
+    ```css name=src/style.css
+    @import '@master/css';
+    ```
+
+    アプリからこのエントリーをインポートしたままにしてください。異なるファイル名を使うプロジェクトでは、インストーラーの出力を確認し、そのファイルをインポートします。インストーラーはフレームワークのアプリを作成せず、マウントコードも置き換えません。
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    `#app` 要素があるプレーン JavaScript のスターターでは、次のエントリーを使い `npm run dev` を実行します。フレームワークのアプリでは、以下の対応する[コンポーネント例](#frameworks)を使ってください。
+  </Step>
+  <InstallationPreview>
+
+```js name=src/main.js
+import './style.css'
+
+document.querySelector('#app').innerHTML = `
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+`
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## フレームワークごとのエントリー \{#frameworks\}
+アプリに対応するインストーラーの値を選びます。以下は一般的なスターターのパスです。React と Vue では、対応する別の既存 CSS エントリーも再利用できます。このフラグを省くと、インストーラーがプロジェクトからフレームワークを検出します。
+
+| フレームワーク | `--framework` | CSS エントリー |
+| --- | --- | --- |
+| Vite とプレーン JavaScript | `vite` | `src/style.css` |
+| [React](#react) | `react` | `src/index.css` |
+| [Vue](#vue) | `vue` | `src/assets/main.css` |
+| [React Router](#react-router) のフレームワークモード | `react-router` | `app/app.css` |
+| [TanStack Start](#tanstack-start) | `tanstack-start` | `src/styles/app.css` |
+
+### React \{#react\}
+[Vite でビルドする React プロジェクト](https://vite.dev/guide/#scaffolding-your-first-vite-project)で、`src/App.tsx` を置き換えます。`src/main.tsx` の `src/index.css` インポートは保持してください。
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+### Vue \{#vue\}
+[Vue プロジェクト](https://vuejs.org/guide/quick-start)で `src/App.vue` を置き換えます。アプリのエントリーの `src/assets/main.css` インポートは保持してください。
+
+```vue name=src/App.vue
+<template>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+</template>
+```
+
+### React Router \{#react-router\}
+[React Router のフレームワークモード](https://reactrouter.com/start/framework/installation)のプロジェクトでは、インストーラーが `app/root.tsx` から `app/app.css` をインポートします。ホームのルートを置き換え、`app/routes.ts` の登録は保持します。`app/root.tsx` の `Links`、`Scripts`、`Outlet`、ドキュメント構造は残してください。ページとスタイルシートを配信するために必要です。
+
+```tsx name=app/routes/home.tsx
+export default function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+### TanStack Start \{#tanstack-start\}
+Vite でビルドする [TanStack Start](https://tanstack.com/start/latest) プロジェクトで、インデックスルートを置き換えます。インストーラーは `src/routes/__root.tsx` から `src/styles/app.css` をインポートするため、すべてのルートで同じ CSS エントリーが読み込まれます。
+
+```tsx name=src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+  component: Home
+})
+
+function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 設定を確認する \{#check-the-setup\}
+開発サーバーの実行中に、ソースの `p-md` を `p-lg` に変えます。パディングが `1rem` から `1.5rem` に増えるはずです。`p-md` に戻してからアプリをビルドします：
+
+```bash
+npm run build
+```
+
+プロジェクトのプレビューまたは起動コマンドで本番出力を配信します。プレーン Vite、React、Vue のスターターは通常 `npm run preview` を使います。React Router と TanStack Start は設定されたサーバーやデプロイアダプターを使います。段落に `1rem` のパディングが残り、静的モードでは Master CSS のブラウザーランタイムが配信されないことを確認してください。
+
+クライアントレンダリングのアプリが段落を作るには JavaScript が必要です。サーバーレンダリングが有効な React Router または TanStack Start のルートでは、JavaScript を無効にして再読み込みし、サーバーの HTML に同じスタイルシートが適用されるか確認してください。
+
+ファイルは読み込まれるのに一つのクラスがない場合は、ソースに完全な名前を記述してください。[クラス名の走査](/guide/scanning-and-pruning)も参照できます。すべてのユーティリティが動かない場合は、CSS エントリーのインポートと、Vite 設定でフレームワークのプラグインとともに `masterCSS()` が登録されているか確認します。スターターのスタイルが結果を覆う場合は、`@import '@master/css';` を残して見た目のルールを削除してください。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定の静的モードでは、Master CSS の起動コードは不要です。モードを変えても CSS エントリーを保持してください：
+
+| フレームワーク | インストーラーのオプション | ランタイムの起動 |
+| --- | --- | --- |
+| Vite、React、Vue | `--mode runtime` | Vite プラグインが `index.html` に挿入 |
+| React Router、TanStack Start | `--mode runtime` | ルートに置くブラウザー専用のインポート |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+`--mode runtime` と対象の `--framework` 値を指定してインストーラーを実行します：
+
+```bash
+npm create @master/css@VERSION -- --framework vite --mode runtime --yes
+```
+
+Vite、React、Vue では、プラグインが `index.html` にランタイムを挿入し、コンパイル済みプログラムを出力します。二つ目のランタイムインポートを追加しないでください。
+
+React Router と TanStack Start は自身で HTML を生成するため、Vite の `index.html` への挿入処理を通りません。既存のルートのスタイルシートインポートの隣にブラウザー専用のランタイムインポートを加え、ルート定義とコンポーネントのエクスポートは保持してください：
+
+```tsx name=app/root.tsx
+import './app.css'
+
+if (!import.meta.env.SSR) {
+  void import('virtual:master-css-runtime')
+}
+```
+
+```tsx name=src/routes/__root.tsx
+import '../styles/app.css'
+
+if (!import.meta.env.SSR) {
+  void import('virtual:master-css-runtime')
+}
+```
+
+このガードは仮想ランタイムをサーバー実行から除外します。ドキュメントごとに一度だけ読み込んでください。`app/master-css.d.ts` や `src/master-css.d.ts` などの宣言ファイルにクライアント型を追加します：
+
+```ts
+/// <reference types="@master/css/client" />
+```
+
+アプリをビルドしてプレビューし、ブラウザーのコンソールで次を実行します。再ビルドせずに段落に下線が付くはずです：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+JavaScript の実行前には、サーバーレンダリングした HTML にランタイム生成 CSS は含まれません。クラスが効かない場合は、コンソールと出力プログラムのリクエストを確認してください。
+
+</DocumentDisclosure>
+
+
+## スタイルシートの読み込み方を選ぶ \{#stylesheet-loading\}
+
+ドキュメントのスタイルシートには[通常の CSS インポート](https://vite.dev/guide/features#css)を使います。別の利用側が CSS テキストや URL を必要とする場合だけ、異なるリクエストを使ってください。これらはアプリの Master CSS エントリーを置き換えず、レンダリングモードも変えません。
+
+<DocumentComparison>
+
+| リクエスト | 結果と利用側の役割 |
+| --- | --- |
+| `import './app.css'` | Vite がドキュメントに処理済みスタイルシートを読み込みます。 |
+| `import styles from './Card.module.css'` | Vite がスコープ付き CSS を読み込み、ローカルクラス名の対応表を返します。 |
+| `import css from './app.css?inline'` | 処理済み CSS テキストを挿入せずに返します。利用側で取り付ける必要があります。 |
+| `import source from './app.css?raw'` | Master のディレクティブも含む記述どおりのソースを返します。ブラウザー用に処理した CSS ではありません。 |
+| `import href from './local.css?url'` | URL を返します。ドキュメントに必要なら、スタイルシートのリンクとして追加します。 |
+
+</DocumentComparison>
+
+たとえば、自分が管理するドキュメントに信頼できるビルド出力を挿入します：
+
+```js
+import css from './app.css?inline'
+
+const style = document.createElement('style')
+style.textContent = css
+document.head.append(style)
+```
+
+処理済みテキストにもインポートが残る場合があります。`CSSStyleSheet.replaceSync()` はインポートのない出力にだけ使ってください。インポートされたスタイルシートを読み込む機能はありません。シャドウルートでは、スタイルシートの順序とアセットのベースパス要件も含め、[Lit の設定](/guide/installation/lit)に従ってください。
+
+### Sass と CSS Modules \{#sass-and-css-modules\}
+
+プロジェクトの Sass 依存関係と Vite の前処理オプションを保持します。Sass が Master CSS に処理を残すよう、エントリーのインポートを CSS の URL インポートとして記述してください：
+
+```scss name=src/app.scss
+@import url("@master/css");
+```
+
+解決済みの Sass パーシャルは、それぞれのリソースディレクトリーを保持します。ソースマップは可能な限り診断を元のファイルに結び付けますが、生成された内容や対応付けのない内容では、前処理後の位置しか示せません。Master のミックスイン定義は `.css` に置くか、[Sass 相互運用パターン](/reference/directives/definitions#sass-interoperability)を使ってください。
+
+CSS Modules はスコープ付きのエクスポートと `composes` の関係を保持します。ネイティブの宣言は、グローバル出力を再度インポートせずにプロジェクトの定義を使えます。ページ再読み込みなしにクラス名のエクスポートを更新するには、フレームワークの HMR または利用側モジュールが変更を受け入れる必要があります。`?inline` はスコープ付き CSS テキスト、`?raw` は元のソースを返します。Vite 8.3.5 は `.module.css` と `.module.scss` の `?url` リクエストを拒否するため、モジュールスタイルシートにこの経路を使わないでください。
+
+### デプロイしたアセットを確認する \{#check-the-deployed-assets\}
+
+保持された子スタイルシート、画像、フォント、ランタイムプログラムも含め、本番出力をすべてデプロイします。Master CSS はインポートの media、supports、layer の条件を保持し、元の所有ファイルを基準にリソース URL を書き換えます。そのためインライン文字列にも別のアセットが必要な場合があります。この境界は[インポートの仕様](/reference/directives/imports#publish-stylesheet-assets)で説明しています。
+
+SSR の `?inline` 利用側では、URL に設定済みの公開 `base` を使います。Vite は既定で SSR アセットを出力しません。対応するクライアントビルドのアセットをデプロイするか、サーバービルドで公開する必要がある場合は [`build.ssrEmitAssets`](https://vite.dev/config/build-options#build-ssremitassets) を有効にしてください。ビルドをデプロイ先へ移動した後で、配信レスポンスと Network パネルを確認します。その場でのビルドだけでは、URL の移植性は確認できません。
+
+開発中に参照先リソースを削除するとコンパイルエラーが報告されますが、そのサーバーコンテキストが終了するまでは、公開済みのリソース版が利用できる場合があります。依存リソースを復元し、利用側が更新されてエラーが消えるか確認してください。ページのスタイルが残るだけでは、最新のコンパイル成功を確認できません。

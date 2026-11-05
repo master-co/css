@@ -1,0 +1,36 @@
+# Reference prose: illustrations/pruning-file-boundary
+
+## title \{#copy-title\}
+
+
+プルーニングの指示はファイル境界まで
+
+## alt \{#copy-alt\}
+
+
+app.css はプルーニングを有効にし cards.css を読み込む。使用クラスは local だけで、未使用のローカル規則は消えるが、有効化していない cards.css の両規則は残る。
+
+## caption \{#copy-caption\}
+
+
+このコンパイルで使うのは local だけです。app.css は有効、cards.css は無効で、インポートしても指示は伝わりません。
+
+## description-0 \{#copy-description-0\}
+
+
+app.css は @prune native、cards.css のインポート、.local と .unused-local の定義を持ちます。使用クラスは local だけです。
+
+## description-1 \{#copy-description-1\}
+
+
+出力は .local を保持し .unused-local を除きます。
+
+## description-2 \{#copy-description-2\}
+
+
+cards.css はプルーニングも保持も宣言しません。両クラスとも未使用ですが、既定方針で .card と .unused-card を保持します。
+
+## description-3 \{#copy-description-3\}
+
+
+プロジェクト全体の pruneNativeCSS オプションはプロジェクトファイルを別途対象にできます。@preserve native は自身のファイルで優先します。この例は明示的なファイル別方針だけを示します。

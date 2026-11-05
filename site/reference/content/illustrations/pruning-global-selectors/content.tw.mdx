@@ -1,0 +1,31 @@
+# Reference prose: illustrations/pruning-global-selectors
+
+## title \{#copy-title\}
+
+
+原生修剪仍保留不含 class 的規則
+
+## alt \{#copy-alt\}
+
+
+card 已使用時，body 與 root 規則會和 card 一起保留；未使用的 class 規則則被劃除。
+
+## caption \{#copy-caption\}
+
+
+來源已啟用 @prune native。保留的不含 class 選擇器，仍遵循一般 CSS 比對與階層串接規則。
+
+## description-0 \{#copy-description-0\}
+
+
+body 與 :root 沒有 class 選擇器，因此原生修剪會保留其規則。
+
+## description-1 \{#copy-description-1\}
+
+
+此範例保留已使用的 .card 規則，並移除未使用的 .unused class 規則。
+
+## description-2 \{#copy-description-2\}
+
+
+原生修剪依據 class 使用情況，不會以瀏覽器分析每個選擇器，也不保證所有保留規則目前都有符合的元素。

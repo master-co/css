@@ -1,0 +1,31 @@
+# Reference prose: illustrations/native-value-boundary
+
+## title \{#copy-title\}
+
+
+引用符内の括弧は値の一部
+
+## alt \{#copy-alt\}
+
+
+1 つの完全なクラス内で、content プロパティ、引用符付きの閉じ括弧、before 疑似要素を示す。
+
+## caption \{#copy-caption\}
+
+
+最初の閉じ括弧は引用符内の値です。次の括弧が宣言を閉じ、::before はその外側から始まります。
+
+## description-0 \{#copy-description-0\}
+
+
+(content:')')::before では、content がプロパティ、')' が引用符付きの値です。
+
+## description-1 \{#copy-description-1\}
+
+
+文字列内の ) は保持され、次の ) がネイティブ宣言の先頭部分を閉じます。
+
+## description-2 \{#copy-description-2\}
+
+
+::before の接尾辞は疑似要素を対象にし、content: ')'; という宣言を生成します。

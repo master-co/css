@@ -1,0 +1,267 @@
+---
+{
+  "title": "重用樣式",
+  "description": "依哪些內容應一起改變，選擇 token、元件類別、utility 與 mixin，同時保留容易表達的區域變化。",
+  "category": "撰寫",
+  "figures": {
+    "ReuseIllustration": {
+      "title": "一份定義，兩處使用",
+      "alt": "一份 action 定義提供兩個 Save changes 按鈕。第二個另用 px-lg，因此水平內距較寬，圖中以藍色檢視輔助線標示。",
+      "caption": "兩個按鈕共用 .action。輔助線標示水平內距：元件每邊 1rem，使用 px-lg 則為 1.5rem。藍線是註解，不是按鈕樣式。",
+      "description": [
+        {
+          "title": "共用定義",
+          "text": "components 層中的原生 .action 規則，為兩個按鈕提供外觀、互動狀態與預設內距。"
+        },
+        {
+          "title": "第一個實例",
+          "text": "class=\"action\" 使用元件左右各 1rem 的水平內距。"
+        },
+        {
+          "title": "第二個實例",
+          "text": "class=\"action px-lg\" 要求左右各 1.5rem 的水平內距。utilities 層排在 components 之後，因此 px-lg 只覆寫此實例的水平內距，其他元件樣式仍然適用。圖中的藍色帶與尺標只標出內距，是檢視註解，不是 utility 新增的樣式。"
+        }
+      ]
+    },
+    "GuideStudy:reuse-ownership": {
+      "title": "utility 擁有類別；mixin 填入選擇器",
+      "alt": "請求 stack utility 會輸出帶 display:grid 的 .stack。在 .card 內套用 --stack mixin，會在 .card 下輸出相同宣告；選擇器由呼叫端擁有。",
+      "caption": "方框代表 CSS 產物。@apply 展開不會註冊另一個標記類別。"
+    },
+    "GuideStudy:independent-parameters": {
+      "title": "一份定義，各自傳入值",
+      "alt": "相同 action-size utility 分別以預設 2.5rem 與 3rem 呼叫。第二個控制項具有較大最小高度與水平內距，兩者仍保有自己的引數。",
+      "caption": "根字型為 16px 時，最小高度為 40px 與 48px；padding-inline 為所選高度的一半。醒目的內縮區域是量測輔助線。"
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReuseIllustration from './components/ReuseIllustration.astro'
+
+兩個畫面可以共用儲存按鈕，又讓其中一個實例保有較大間距。將按鈕的共用外觀放進元件類別，區域調整則留在標記中。更小尺度也適用相同方法：多個使用端應一起改變時，為值命名；多條規則需要同一段 CSS 時，就共用那段 CSS。
+
+請先完成[安裝](/guide/installation)與[語法教學](/guide/syntax-tutorial)。下方每個範例都提供自己的 CSS 與標記。將 CSS 加在應用程式樣式表既有的預設集匯入之後，並將標記放進整合會掃描的原始檔：
+
+```css name=app.css
+@import '@master/css';
+```
+
+## 將元件共用外觀放在一起 \{#keep-a-components-shared-appearance-together\}
+
+操作按鈕這類產品角色，無論在哪裡使用，都需要可辨識的外觀。請在 `@layer components` 中以原生類別定義該角色，包含每個實例都應有的狀態。
+
+<DemoConfiguredExample
+  name="reuse-component"
+  title="同一種按鈕，區域間距調整"
+  source={`@theme {
+  --spacing-action-x: 1rem;
+  --color-action: var(--color-surface-raised);
+}
+
+@layer components {
+  .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.375rem;
+    padding: .5rem var(--spacing-action-x);
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-action);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    line-height: 1.2;
+
+    &:is(:hover, :focus-visible) {
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      background-color: var(--color-surface-inset);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-text-strong);
+      outline-offset: 3px;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap items-start gap-lg">
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Shared component</p>
+    <button type="button" class="action">Save changes</button>
+  </div>
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Local adjustment</p>
+    <button type="button" class="action px-lg">Save changes</button>
+  </div>
+</div>`}
+  caption="比較水平內距，再將滑鼠移到各按鈕上，或以 Tab 聚焦。兩者共用操作狀態，只有第二個使用 px-lg。這些按鈕只示範樣式，不會儲存資料。"
+/>
+
+`px-lg` 的一般 utility 宣告會優先於元件內距，因為預設集將 `utilities` 層排在 `components` 之後。HTML 類別順序不決定勝負。請將區域調整留在第二個按鈕上；只有所有實例都需要時，才放進 `.action`。競爭宣告請參閱[串接層](/guide/cascade-layers)。
+
+<ReuseIllustration />
+
+原生元件規則預設隨樣式表輸出；[原生修剪](/guide/optimizing-css-delivery#native-pruning)需要明確啟用。將元件狀態寫在 CSS 規則內。原生 `.action` 定義不會註冊 `action:hover` utility。
+
+共用外觀與共用傳遞是兩個不同決策。可重用元件導致無關頁面也載入其規則時，請參閱[最佳化 CSS 傳遞](/guide/optimizing-css-delivery#ownership)。
+
+## 選擇哪些內容應一起改變 \{#choose-what-should-change-together\}
+
+抽出重複的類別清單前，先確認共用的是哪個決策。外觀相似的元素，不一定應一起改變。
+
+<DocumentComparison>
+
+| 共用內容 | 使用方式 |
+| --- | --- |
+| 跨樣式共用值 | 主題 token |
+| 產品角色與狀態 | 原生元件類別 |
+| 在標記中組合的能力 | utility |
+| CSS 內的宣告或包裝 | mixin |
+
+</DocumentComparison>
+
+第一個範例為操作顏色與內距分別提供 token。其他元件能在 CSS 以 `var()`、或在標記以 `px-action-x` 讀取 `--spacing-action-x`，不必一併採用按鈕背景、形狀與狀態。兩個使用端都應改變時才修改 token；數值只是碰巧相同、用途不同時，請分開定義。[主題 token](/guide/theme)說明命名、別名與區域覆寫。
+
+重複使用的元件，也能將類別清單保留在框架元件內。需要有用的共用樣式契約時，再引入 CSS 名稱；不要只因 class 屬性很長，就將它抽出。
+
+## 為樣式能力註冊 utility \{#register-a-utility-for-a-styling-capability\}
+
+假設多個控制項都需要內容置中、帶小間隔的行內排列，但各自保有外觀與間距。只將共用版面配置註冊為 `@utility`：
+
+<DemoConfiguredExample
+  name="reuse-utility"
+  title="相同版面配置，不同控制項"
+  source={`@utility action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-row px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm shadow-md:hover bg-surface-inset:active">
+    <span aria-hidden="true">＋</span> Add note
+  </button>
+  <a href="/guide/theme" target="_top" class="action-row px-sm py-xs text-sm fg-text-body fg-text-strong:hover underline">
+    Choose tokens <span aria-hidden="true">→</span>
+  </a>
+</div>`}
+  caption="action-row 讓兩個控制項具有相同對齊與間隔；其他類別提供外觀。Add note 是樣式範例；Choose tokens 會開啟主題指南。"
+/>
+
+完整類別提出請求時，utility 才會產生規則。它也接受與預設集 utility 相同的選擇器和條件後綴，例如 `action-row@sm`。名稱描述版面配置能力，不會規定整個按鈕的樣式。
+
+預設集既有 utility 已能表達共用決策時，直接使用即可。例如，只改間隔需要的是 `gap-sm` 或 `gap(8)`，無須另一個自訂 utility。多個宣告形成呼叫端應一起重用的能力時，再定義組合樣式。[Utility 契約](/reference/directives/definitions#utilities)定義了註冊與替換方式。
+
+## 以 mixin 重用 CSS \{#reuse-css-with-a-mixin\}
+
+原生 CSS 規則若需要相同的橫列配置，請定義 mixin 並以 `@apply` 展開。此範例讓操作按鈕與工具列連結保留不同元件角色，同時共用對齊方式：
+
+<ConfiguredExample source={`@mixin --action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+@layer components {
+  .action {
+    @apply --action-row;
+    padding: .5rem 1rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+  }
+
+  .toolbar-link {
+    @apply --action-row;
+    color: var(--color-text-body);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    text-decoration-line: underline;
+  }
+}`} html={`<button type="button" class="action">
+  <span aria-hidden="true">＋</span> Add note
+</button>
+<a href="/guide/theme" class="toolbar-link">
+  Choose tokens <span aria-hidden="true">→</span>
+</a>`} />
+
+開啟**產生的 CSS**：橫列宣告會出現在兩條原生規則中，而各規則保有其餘獨立宣告。定義 `--action-row` 不會建立標記類別。`@apply` 指定的是 mixin，不接受 utility 類別清單。
+
+CSS 與標記都需要相同能力時，將 mixin 保留為宣告來源，再加入呼叫它的 utility：
+
+```css
+@utility action-row {
+  @apply --action-row;
+}
+```
+
+將此定義加入 mixin 範例的樣式表。它取代先前獨立的 utility 主體：修改 `--action-row`，現在就會同時影響原生元件與 utility。請依[全域樣式](/guide/global-styles#organize-global-files)將這些定義整理到應用程式進入點圖。
+
+<GuideStudy id="reuse-ownership" />
+
+## 透過 contents 共用包裝 \{#share-a-wrapper-with-contents\}
+
+有時重複的是包住不同宣告的條件。懸停與鍵盤焦點 mixin 可以提供選擇器，再由各呼叫端透過 `@contents` 提供樣式：
+
+<DemoConfiguredExample
+  name="reuse-wrapper"
+  title="一個互動包裝，兩處呼叫"
+  source={`@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+
+@layer components {
+  .action {
+    @apply --hocus {
+      text-decoration-line: underline;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap gap-md">
+  <button type="button" class="action px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">CSS call site</button>
+  <button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm underline@apply(--hocus) outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">Class call site</button>
+</div>`}
+  caption="懸停或以 Tab 聚焦任一按鈕，標籤就會出現底線。第一個在原生 CSS 內提供宣告，第二個包裝 underline utility。焦點外框另行指定。"
+/>
+
+CSS 中，`@apply --hocus` 後的區塊填入 `@contents`。標記中，`@apply(--hocus)` 包住該類別產生的宣告。包裝不會註冊 token，也不會將相鄰類別收進主體。要重用一組宣告，使用 utility 或 mixin；呼叫端需自行選擇共用選擇器或條件內的內容時，才使用 contents。轉送與備援行為請參閱 [mixin contents](/reference/directives/definitions#contents)。
+
+## 呼叫端需要時才開放參數 \{#expose-a-parameter-when-callers-need-one\}
+
+共用控制項尺寸可能牽動多個屬性。若分開的預設集 utility 會讓呼叫端重複計算，請以參數表達這個關係：
+
+<DemoConfiguredExample
+  name="reuse-parameter"
+  title="一個尺寸控制高度與內距"
+  source={`@utility action-size(--height: 2.5rem) {
+  min-height: var(--height);
+  padding-inline: calc(var(--height) / 2);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-size() text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Default size</button>
+  <button type="button" class="action-size(3rem) text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Larger size</button>
+</div>`}
+  caption="action-size() 使用 2.5rem；action-size(3rem) 使用 3rem。最小高度與水平內距都跟隨引數。這些按鈕只示範尺寸。"
+/>
+
+<GuideStudy id="independent-parameters" />
+
+空呼叫使用宣告的預設值。引數必須在編譯時已知；選擇尺寸時，請使用完整類別字串。會隨 JavaScript 連續變動的值，則應放進原生 CSS 自訂屬性。[參數契約](/reference/directives/definitions#dynamic-values)說明接受的型別與限制。
+
+變更共用定義前，至少比較兩處呼叫，包含一個有區域覆寫的實例。檢查懸停、鍵盤狀態與產生的 CSS。若呼叫端不再需要相同行為，請拆開定義，不要在每個實例追加例外。跨專案共用穩定詞彙時，請接著閱讀[撰寫套件](/guide/authoring-packages)。

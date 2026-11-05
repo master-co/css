@@ -1,0 +1,66 @@
+# Reference prose: direct-values
+
+## title \{#copy-title\}
+
+
+値の直接指定
+
+## summary \{#copy-summary\}
+
+
+長さまたは数値のプロパティに、静的な数値を 1 つ渡します。
+
+## note \{#copy-note\}
+
+
+長さの関数は数値に `1px` を掛けます。`grow()`、`shrink()`、`order()` は数値をそのまま渡します。ほかの単位や動的な値には、`(margin:1rem)` のようなネイティブ宣言を使います。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+数値の意味はプロパティが決める
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p(12)` は `padding: calc(12 * 1px)` を出力するため、数値はピクセル数を表します。間隔スケールのキーでも、テーマの間隔トークンの倍率でもありません。`p(1.5)` のような小数も使えます。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`grow(1)` と `shrink(1)` は単位のない flex 係数です。拡張では残りの空間を分配します。図では基準サイズをゼロにし、内容による最小サイズの制約をなくして、1:2 の比率だけを示しています。基準サイズや最小サイズが異なる場合、係数だけでは最終的な幅は決まりません。縮小時の分配には、各項目の flex 基準サイズも関わります。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`order()` は数値をそのまま出力しますが、CSS プロパティには整数が必要です。負の値には各プロパティの規則が適用されます。`m(-4)` は有効な負のマージンですが、負の padding や負の flex 係数で負の使用値を指定することはできません。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+渡せるのは静的な数値 1 つだけです。単位、`var()`、算術式は、`(padding:var(--panel-space))` のようなネイティブ宣言に記述します。名前を付けて共有する長さには、`p-card` のようなテーマトークンを使います。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+これらの関数が設定するのは、一覧にある宣言だけです。`b(1)` にはボーダースタイルが、`top(4)` には inset が作用する配置方式が、`gap(12)` には gap が作用するレイアウトが必要です。表では論理プロパティと物理プロパティを区別しています。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+間隔のトークン
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+ネイティブ宣言
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+flex 係数
+
+## usage-lead \{#copy-usage-lead\}
+
+
+正確なピクセル長を指定し、1 つのボックスに残りの空間を割り当てます。

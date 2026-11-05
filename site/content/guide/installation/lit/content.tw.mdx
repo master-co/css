@@ -1,0 +1,166 @@
+---
+{
+  "title": "在 Lit 設定 Master CSS",
+  "description": "透過靜態 CSS，或隨元件生命週期運作的瀏覽器執行階段，為 Lit shadow root 套用樣式。",
+  "category": "整合"
+}
+---
+
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/lit/cover-light.webp'
+import dark from '~/site/assets/images/integrations/lit/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Lit" />
+
+Lit 元件通常會渲染到 shadow root 中。文件層級的樣式無法作用於這些元素，因此必須將產生的 CSS 傳遞到每個元件的 shadow tree 內。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 加入 Master CSS \{#add-master-css\}
+      在以 Vite 建置的既有 [Lit 專案](https://lit.dev/docs/getting-started/)中，從專案根目錄執行安裝程式。Lit 預設使用 Vite 靜態模式。請在原始碼中保留完整類別名稱；若需要在瀏覽器依首次出現的名稱產生類別，請明確選擇執行階段模式。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework lit --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 保留 CSS 原始碼進入點 \{#keep-a-css-source-entry\}
+    安裝程式會建立 `src/index.css`，並註冊 Vite 整合。請將定義保留在這個原始檔中：
+
+    ```css name=src/index.css
+    @import '@master/css';
+    ```
+
+    下方元件使用 Vite 的 `?inline` 匯入取得處理後的 CSS 文字。一般的文件層級樣式表匯入，無法為 shadow root 內部套用樣式。
+
+    目前的行內 CSS 傳遞方式，需要使用相對的 Vite `base`。相對於網站根目錄的資產網址，可能在正式環境元件載入時造成 `Invalid base URL`。請將以下內容合併到既有 Vite 設定，保留其他外掛，並只註冊一次 Master CSS：
+
+    ```ts name=vite.config.ts
+    import { defineConfig } from 'vite'
+    import masterCSS from '@master/css-vite'
+
+    export default defineConfig({
+      base: './',
+      plugins: [masterCSS()]
+    })
+    ```
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 在 shadow root 中加入樣式 \{#include-styles-in-the-shadow-root\}
+      將產生的樣式表以文字匯入，並透過 Lit 的 [`unsafeCSS`](https://lit.dev/docs/components/styles/#static-styles) 加入。CSS 來自你的建置輸入；不要將不受信任的使用者文字傳給 `unsafeCSS`。安裝程式加入這份樣式表時，會保留標準元件既有的樣式。
+    </StepL>
+    <StepR>
+      ```ts name=src/my-element.ts
+      import { LitElement, html, unsafeCSS } from 'lit'
+      import { customElement } from 'lit/decorators.js'
+      import masterCSSStyles from './index.css?inline'
+
+      @customElement('my-element')
+      export class MyElement extends LitElement {
+        static styles = [unsafeCSS(masterCSSStyles)]
+
+        render() {
+          return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+    保留應用程式進入點對元件模組的匯入，再將它註冊的元素放入頁面：
+
+    ```ts name=src/main.ts
+    import './my-element'
+    ```
+
+    ```html
+    <my-element></my-element>
+    ```
+
+    既有的 `index.html` 必須以模組載入 `src/main.ts`。執行 `npm run dev` 後，Lit 會在元素的 shadow root 內建立段落。
+  </Step>
+  <DemoConfiguredExample
+    name="lit-shadow-check"
+    title="檢查 shadow root 內的樣式"
+    source=""
+    html={'<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>'}
+    caption="預覽會將產生的樣式表載入真正的 shadow root，與段落放在一起。"
+    shadow
+    code={false}
+  />
+</StepSection>
+
+## 檢查 shadow 樣式表 \{#check-the-shadow-stylesheet\}
+將 Lit 範本中的 `p-md` 改成 `p-lg`。內距應從 `1rem` 增加為 `1.5rem`；改回原值後，再檢查正式環境建置：
+
+```bash
+npm run build
+npm run preview
+```
+
+在瀏覽器開發者工具中，檢查 `<my-element>` 內的段落。它應有 `1rem` 內距、浮起的表面與圓角。若只有文件層級的元素有樣式，請檢查元件內的 `?inline` 匯入與 `static styles`。
+
+靜態模式不需要 Master CSS 瀏覽器執行階段。Lit 仍需要 JavaScript，才能建立這個在用戶端渲染的元件。
+
+<DocumentDisclosure title="在 shadow root 內產生新類別">
+
+若類別名稱首次出現於瀏覽器中，請以執行階段模式執行安裝程式：
+
+```bash
+npm create @master/css@VERSION -- --framework lit --mode runtime --yes
+```
+
+安裝程式會為標準的 `src/my-element.ts` 元件加入執行階段 decorator，並在 Vite 設定 `masterCSS({ mode: 'runtime' })`。保留上方的相對 `base`。其他元件也需要相同設定。請先載入 CSS 文字，再載入執行階段樣式表，確保產生規則前已建立串接層順序：
+
+```ts name=src/my-element.ts
+/// <reference types="@master/css/client" />
+
+import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+import { withMasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import masterCSSStyles from './index.css?inline'
+
+@customElement('my-element')
+@withMasterCSSRuntime({ program, emittedGlobals })
+export class MyElement extends LitElement {
+  protected createRenderRoot() {
+    const root = super.createRenderRoot()
+    const styles = document.createElement('style')
+    styles.textContent = masterCSSStyles
+    root.append(styles)
+    return root
+  }
+
+  render() {
+    return html`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">Hello Lit</p>`
+  }
+}
+```
+
+這個範例會在執行階段啟動前，以 `<style>` 元素插入基礎樣式表。Lit 的 `static styles` 使用 adopted stylesheets；依 [CSSOM 樣式表順序](https://drafts.csswg.org/cssom/#css-style-sheet-collections)，它們排在一般 `<style>` 元素之後。若將串接層順序宣告放在其中，基礎層可能會被排在執行階段的 utility 之後。
+
+每個套用 decorator 的元件都會為自己的 shadow root 啟動執行階段，並在元件與文件斷開連接時釋放它。文件層級的執行階段無法觀察該 shadow root 內的類別。
+
+元件出現後，在瀏覽器主控台執行以下程式碼。無須重新建置，段落就應出現底線：
+
+```js
+document.querySelector('my-element').shadowRoot
+  .querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

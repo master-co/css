@@ -5,7 +5,7 @@ import DocumentOptionEntry from '@master/internal-site/components/DocumentOption
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LanguageIllustration from './components/LanguageIllustration.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Use the Master CSS Language Service to discover the classes your project actually supports and inspect their CSS while you edit. Its suggestions read the project's tokens and definitions, including your own utilities, mixins, selectors and conditions.
 
 Start with a project that has [Master CSS installed](/guide/installation). The extension helps author source; your framework integration still delivers the stylesheet to the browser.
@@ -25,7 +25,7 @@ Install the official [Master CSS extension](https://marketplace.visualstudio.com
 
 The extension discovers project context from a CSS entry importing `@master/css` or a `package.json` declaring a Master CSS package. In a repository with several apps, open a source file in the app whose theme you want to use.
 
-## Check a project token
+## Check a project token \{#check-a-project-token\}
 
 Add a spacing token after the existing import in your app's CSS entry:
 
@@ -51,7 +51,7 @@ The hover's generated rule should contain `padding: var(--spacing-card)`. The cl
 
 <GuideStudy id="editor-build-boundary" />
 
-## Add class sorting on save
+## Add class sorting on save \{#add-class-sorting-on-save\}
 
 For class policy diagnostics and sort-on-save, first set up [Code linting](/guide/code-linting) and install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). Add these options alongside `editor.quickSuggestions`:
 
@@ -70,11 +70,11 @@ Now an explicit save can sort classes using the project's ESLint configuration. 
 
 ---
 
-## Inspect styles as you edit
-### Complete classes and conditions
+## Inspect styles as you edit \{#inspect-styles-as-you-edit\}
+### Complete classes and conditions \{#complete-classes-and-conditions\}
 Completion works inside configured class sources: markup attributes, bound framework attributes, JavaScript helper calls, tagged templates and project-specific class declarations. Suggestions include utilities, property values, color tokens, selectors, queries and directive syntax, and project tokens appear once the workspace manifest loads.
 
-### Read the generated rule
+### Read the generated rule \{#read-the-generated-rule\}
 Hover a class such as `fg-blue-60:hover@sm` to inspect its declaration, selector state and query. This example applies the preset blue token only for the hover state at `sm` and above:
 
 ```html
@@ -83,7 +83,7 @@ Hover a class such as `fg-blue-60:hover@sm` to inspect its declaration, selector
 </a>
 ```
 
-### Syntax highlighting
+### Syntax highlighting \{#syntax-highlighting\}
 The extension highlights directive syntax in CSS-family documents and uses semantic tokens for class-list spans: declaration, value, selector, query, unit, important marker, quoted segment and component boundaries. By default it highlights only the class string under the cursor, keeping long markup calm. If semantic colors do not appear, enable semantic highlighting in the active VS Code theme.
 
 Shiki code examples use the same quiet default for markup class attributes, with pointer hover in place of the cursor. Import the public stylesheet alongside `transformerMasterCSS`:
@@ -93,13 +93,13 @@ import '@master/css-language-service/shiki.css'
 import { transformerMasterCSS } from '@master/css-language-service/shiki'
 ```
 
-### Color tools
+### Color tools \{#color-tools\}
 Master CSS color utilities and manifest colors use VS Code color decorators and the color picker. Keep both `masterCSS.renderSyntaxColors` and VS Code's [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css) enabled.
 
-### Directive formatting
+### Directive formatting \{#directive-formatting\}
 Document and range formatting repairs directive source in CSS, SCSS and LESS documents and in CSS-family `<style>` blocks in Vue, Svelte and Astro, without changing generated CSS. For class-list directives it keeps important markers attached to their class: `@safelist "(background-color:transparent) !";` becomes `@safelist "(background-color:transparent)!";`.
 
-### Diagnostics
+### Diagnostics \{#diagnostics\}
 The language server reports directive errors in the same documents and project manifest loading errors. Class-string syntax, policy and sorting diagnostics belong to [Code linting](/guide/code-linting) and are not duplicated. Language-server clients can also opt into token-reference checks for open managed CSS files with the `designSystem` setting, which takes the same [design-system options](/reference/tools/cli#design-system-options) as `master-css inspect`.
 
 ---
@@ -226,7 +226,7 @@ Workspace detection for project manifests.
 
 ---
 
-## Workspace-aware manifests
+## Workspace-aware manifests \{#workspace-aware-manifests\}
 In `auto` mode the language server detects a workspace for each CSS file importing `@master/css` and each `package.json` declaring a Master CSS package, and gives each its own manifest. In a monorepo, completions, hover previews, colors and diagnostics follow the nearest Master CSS project. List workspace directories when detection does not match the repository layout, and see [Monorepo](/guide/monorepo) for project boundaries:
 
 ```json name=.vscode/settings.json
@@ -237,7 +237,7 @@ In `auto` mode the language server detects a workspace for each CSS file importi
 
 Run `Master CSS: Restart Language Server` after dependency changes, workspace-layout changes or manifest edits that VS Code has not picked up.
 
-## Troubleshooting
+## Troubleshooting \{#troubleshooting\}
 <DocumentComparison>
 
 | Symptom | Fix |

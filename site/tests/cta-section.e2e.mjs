@@ -6,6 +6,9 @@ import { chromium, webkit } from '@playwright/test'
 const browserName = process.env.MASTER_CTA_BROWSER ?? 'chromium'
 const url = process.env.MASTER_CTA_URL ?? 'http://localhost:3000'
 const full = process.env.MASTER_CTA_MATRIX === 'full'
+const expectedVersion = process.env.MASTER_CTA_VERSION ?? '2.0.0'
+assert.match(expectedVersion, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/)
+const expectedInstallCommand = `npm create @master/css@${expectedVersion}`
 let browser
 before(async () => { browser = await ({ chromium, webkit })[browserName].launch() })
 after(async () => { await browser?.close() })
@@ -66,7 +69,7 @@ for (const width of full ? [320, 390, 768, 1024, 1440, 1920] : [390, 1440]) {
         const link = section.getByRole('link')
         assert.equal(await link.getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/introduction`)
         const code = section.locator('code')
-        assert.equal(await code.textContent(), 'npm create @master/css@rc')
+        assert.equal(await code.textContent(), expectedInstallCommand)
         const geometry = await section.evaluate(element => {
           const elements = [...element.querySelectorAll('h2, a, code, button')]
           return {
@@ -160,7 +163,7 @@ test(`${browserName}: no JavaScript still exposes the invitation and localized g
     const section = page.locator('.home-cta')
     assert.equal(await section.getByRole('heading', { level: 2 }).isVisible(), true)
     assert.equal(await section.getByRole('link').getAttribute('href'), '/tw/guide/introduction')
-    assert.equal(await section.locator('code').textContent(), 'npm create @master/css@rc')
+    assert.equal(await section.locator('code').textContent(), expectedInstallCommand)
     assert.equal(await section.evaluate(el => el.querySelector('code').scrollWidth > el.querySelector('code').clientWidth), false)
   } finally { await context.close() }
 })
@@ -181,7 +184,7 @@ test(`${browserName}: keyboard focus and clipboard feedback preserve the action 
     assert.equal(await copy.evaluate(el => getComputedStyle(el).outlineStyle), 'solid')
     const width = (await section.locator('.home-command').boundingBox()).width
     await page.keyboard.press('Enter')
-    await page.waitForFunction(() => window.copiedCommand === 'npm create @master/css@rc')
+    await page.waitForFunction(expected => window.copiedCommand === expected, expectedInstallCommand)
     assert.equal(await copy.getAttribute('aria-label'), 'Copied')
     assert.equal((await section.locator('.home-command').boundingBox()).width, width)
     await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error('Clipboard unavailable') } })
@@ -207,7 +210,7 @@ test(`${browserName}: enlarged text wraps the complete command on a phone`, { ti
         copyVisible: section.querySelector('button').getBoundingClientRect().right <= innerWidth
       }
     })
-    assert.equal(result.text, 'npm create @master/css@rc')
+    assert.equal(result.text, expectedInstallCommand)
     assert.equal(result.clipped, false)
     assert.equal(result.outside, false)
     assert.equal(result.copyVisible, true)
@@ -284,7 +287,7 @@ test(`${browserName}: unavailable Canvas preserves the content and working clipb
     assert.equal(await section.getByRole('heading', { level: 2 }).isVisible(), true)
     assert.equal(await section.getByRole('link').getAttribute('href'), '/guide/introduction')
     await section.getByRole('button').click()
-    await page.waitForFunction(() => window.copiedCommand === 'npm create @master/css@rc')
+    await page.waitForFunction(expected => window.copiedCommand === expected, expectedInstallCommand)
     assert.equal(await paints(page), 0)
     assert.deepEqual(errors, [])
   } finally { await context.close() }

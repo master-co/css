@@ -1,0 +1,86 @@
+# Reference prose: tokens/color-roles
+
+## title \{#copy-title\}
+
+
+색상 역할
+
+## summary \{#copy-summary\}
+
+
+텍스트, 표면, 선의 역할이며 각각 라이트와 다크 값을 갖습니다.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+텍스트
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+표면
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+선
+
+## note \{#copy-note\}
+
+
+역할은 색상 키의 일부입니다. `fg-text-muted`는 color 네임스페이스를 통해 `--color-text-muted`를 참조합니다. `bg-text-link`와 `outline-line-control`을 포함한 모든 색상 계열이 역할 키를 허용하며, 역할 이름이 속성을 제한하지는 않습니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+라이트와 다크는 각 프리셋 light-dark() 값의 두 인수에 해당합니다. 실제 선택은 요소가 사용하는 색 구성표에 따라 결정되며 클래스 접두사나 운영체제만으로 정해지지 않습니다.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+로컬 색 구성표가 값을 선택합니다
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`fg-text-muted`는 `color: var(--color-text-muted)`를 출력합니다. 프리셋 값은 `light-dark(var(--color-zinc-60), var(--color-zinc-40))`를 사용하며 라이트는 첫 번째 색상을, 다크는 두 번째 색상을 선택합니다. 클래스와 생성 규칙은 바뀌지 않습니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+프리셋은 루트에서 `color-scheme: light dark`를 활성화합니다. `data-theme="light"`와 `data-theme="dark"` 선택자로 루트, 중첩 영역, 섀도 호스트의 색 구성표를 선택할 수 있습니다. 선택은 네이티브 CSS가 수행하므로 색 구성표를 전환해도 이 유틸리티를 다시 생성할 필요가 없습니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`@dark`와 `@light` 클래스 접미사는 시스템 환경설정을 확인합니다. `data-theme`를 수동으로 선택해도 이 미디어 쿼리가 활성화되지는 않습니다. 선택자 기반 조건은 모드 계약에 정의된 형식을 사용하세요.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+역할은 색상을 제공할 뿐 컴포넌트나 모든 배경에 대한 대비를 보장하지 않습니다. 반전 표면에는 짝이 되는 반전 텍스트 역할이 있습니다. 구분선과 은은한 선은 장식용이며 컨트롤 선은 경계를 식별합니다. 표면, 불투명도, 토큰 값을 변경하면 실제 색상 쌍을 다시 확인하세요.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+변수와 모드
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+네이티브 light-dark() 선택
+
+## usage-lead \{#copy-usage-lead\}
+
+
+역할을 조합해 카드를 만듭니다. 올라온 표면, 구분선, 강조 텍스트, 본문 텍스트, 보조 텍스트를 사용합니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+각 색 구성표에 하나의 값을 갖는 역할을 추가하세요. `--color-text-brand`를 정의하면 `fg-text-brand`가 생성됩니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+색상

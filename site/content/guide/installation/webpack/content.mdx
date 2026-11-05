@@ -13,23 +13,23 @@ import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
 
 Build Master CSS into a Webpack, Rspack or Rsbuild application. All three use `@master/css-webpack`: the CSS entry supplies definitions, the plugin generates utility rules, and the HTML plugin links the output to the page. Start from a working application with an entry and an HTML template.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [Webpack](https://webpack.js.org/guides/getting-started/), [Rspack](https://rspack.dev/guide/start/quick-start) or [Rsbuild](https://rsbuild.rs/guide/start/quick-start) project, run the installer from the project root with `--framework webpack`, `rspack` or `rsbuild`. Static is the default: it registers the plugin and creates `src/index.css`.
     </StepL>
     <StepR>
       ```bash
-      npm create @master/css@rc -- --framework webpack --yes
+      npm create @master/css@VERSION -- --framework webpack --yes
       ```
     </StepR>
   </Step>
   <Step $row>
     <StepL>
-      ### Import the CSS entry
+      ### Import the CSS entry \{#import-the-css-entry\}
       The installer creates `src/index.css` with `@import '@master/css';`. Import it from the application's JavaScript or TypeScript entry, keeping the existing mount code. Use a global entry so every page that needs these utilities loads it.
     </StepL>
     <StepR>
@@ -39,7 +39,7 @@ Build Master CSS into a Webpack, Rspack or Rsbuild application. All three use `@
     </StepR>
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     Start the dev server and place the paragraph in the HTML template processed by the HTML plugin, or in a framework component.
   </Step>
   <InstallationPreview>
@@ -174,7 +174,7 @@ Static mode is the default. The plugin's `mode` option selects another delivery,
 Run the installer with `--mode runtime` and your `--framework` value. It sets the plugin option to `mode: 'runtime'`:
 
 ```bash
-npm create @master/css@rc -- --framework webpack --mode runtime --yes
+npm create @master/css@VERSION -- --framework webpack --mode runtime --yes
 ```
 
 Build and serve the production output. The emitted HTML should load the Master CSS runtime script. After startup, run this in the browser console; the paragraph should gain an underline without rebuilding:

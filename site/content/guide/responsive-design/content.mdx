@@ -6,7 +6,7 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 import FoundationContainerGrid from '@master/internal-site/demo/foundations/FoundationContainerGrid.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 A page layout and a reusable card can need different responsive rules. Let the page follow the viewport; let the card follow the space its parent gives it. In Master CSS, append a condition to the class whose style should change.
 
 Complete [Installation](/guide/installation) first. These examples use the default preset and an app stylesheet that loads `@import '@master/css';`. Each preview includes the controls needed to observe its boundary; **Generated CSS** shows what the accompanying classes produce.
@@ -106,7 +106,7 @@ Move the **Container** slider while keeping your browser window unchanged. It re
 
 The ancestor establishes the query boundary; the descendant changes layout. An element cannot use its own size as the ancestor for its container query. Keep the card's height content-driven so wrapping text can grow naturally.
 
-### Keep the two scales separate
+### Keep the two scales separate \{#keep-the-two-scales-separate\}
 
 `@md` and `@container(--md)` use different definitions:
 
@@ -148,7 +148,7 @@ Keep shared styles unconditional. Add a condition only for the property and rang
 
 <GuideStudy id="responsive-local-change" />
 
-## Verify the boundary, not just the screenshot
+## Verify the boundary, not just the screenshot \{#verify-the-boundary-not-just-the-screenshot\}
 
 Test immediately below and at each threshold. In the page example, check the actual iframe viewport at 599/600px and 1023/1024px. In the component example, hold the page viewport steady and check its ancestor at 447/448px with a 16px font size.
 

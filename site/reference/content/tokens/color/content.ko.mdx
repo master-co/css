@@ -1,0 +1,81 @@
+# Reference prose: tokens/color
+
+## title \{#copy-title\}
+
+
+색상 팔레트
+
+## summary \{#copy-summary\}
+
+
+번호가 붙은 모든 색상 단계, 고정 색조 별칭, 그 밖의 프리셋 색상 토큰입니다.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+팔레트
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+색조 별칭
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+기타 색상
+
+## note \{#copy-note\}
+
+
+색상 클래스는 지정한 속성만 설정합니다. 테두리를 표시하려면 `b(1)` 같은 너비, `b-solid` 같은 스타일, `b-blue-60` 같은 색상을 함께 지정하세요. 색상 역할도 같은 계열을 사용하며 값은 별도 표에 나와 있습니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+팔레트 번호는 토큰 키이며 불투명도나 명도의 백분율이 아닙니다. 번호가 클수록 OKLCH 명도가 낮습니다. 각 색상 견본에서 CSS 값 또는 변수 참조를 복사할 수 있으며, 아래 색조 별칭은 원래 정의된 토큰 참조를 유지합니다.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+색조 별칭은 고정된 단계를 선택합니다
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`bg-blue`는 `--color-blue`를 참조하며 프리셋 값은 `var(--color-blue-60)`입니다. 반면 `bg-yellow`는 `--color-yellow-40`을 참조합니다. 별칭이 있다고 해서 모든 색조에서 같은 단계 번호를 사용하는 것은 아닙니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+번호가 붙은 단계와 색조 별칭은 색 구성표에 따라 바뀌지 않습니다. `fg-text-blue`처럼 상황에 맞게 바뀌는 텍스트 별칭은 색상 역할에 속합니다. 토큰을 다시 정의하면 어느 쪽의 동작이든 변경할 수 있습니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`bg-current`는 `currentColor`를 참조하므로 결과는 요소의 텍스트 색상을 따릅니다. 프리셋에는 `--color-transparent` 토큰이 없습니다. 투명색이나 다른 색상 리터럴이 필요하면 `(background-color:transparent)` 또는 `(background-color:#175fe9)` 같은 네이티브 선언을 사용하세요.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+색상 역할
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+네이티브 값과 불투명도
+
+## usage-lead \{#copy-usage-lead\}
+
+
+이 상태 레이블은 전경과 배경의 색상 단계를 명시합니다. 색상 없이도 단어만으로 의미를 알 수 있으며, 선택한 색상은 두 색 구성표에서 동일하게 유지됩니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+`@theme`에 색상을 등록하면 색상 계열에서 해당 키를 사용할 수 있습니다. 여기서 `brand`는 `bg-brand`, `fg-brand`, `b-brand` 등의 클래스에 사용할 수 있습니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+색상

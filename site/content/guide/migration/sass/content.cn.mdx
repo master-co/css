@@ -1,0 +1,245 @@
+---
+title: "从 Sass 迁移"
+description: "将 Sass 变量、映射、混入、占位符和嵌套组件样式逐步迁移到 Master CSS，同时保留有用的 CSS 结构。"
+figures: {"SassIllustration": {"title": "让各编译器读取自己的语言", "alt": "Sass 将 legacy.scss 编译为普通 legacy.css。独立 app.css 导入结果并包含 Master CSS 定义。Sass 输出存在后，Master CSS 再编译应用入口。", "caption": "Master CSS 定义留在 .css 入口。导入 Sass 编译结果，开发与生产保持相同构建顺序。", "description": [{"title": "预处理 Sass", "text": "Sass 编译器将 @mixin stack 和 @include stack 展开为普通 CSS。"}, {"title": "导入输出", "text": "生成文件存在后，app.css 才导入 legacy.css。"}, {"title": "编译应用入口", "text": "Master CSS 读取 app.css 中自己的定义，保留导入的原生规则。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import SassIllustration from './components/SassIllustration.astro'
+
+Sass 与 Master CSS 可以共存。第三方导入、生成选择器、复杂嵌套和用 CSS 更易读的样式可以继续使用 Sass。重复的视觉值与标记自行管理的组件样式，在移到 Master CSS 后更易维护时再进行转换。
+
+本指南涵盖使用变量、映射、混入、函数、占位符、局部文件和嵌套选择器的 `.scss`、`.sass` 项目。
+
+---
+
+CSS `@mixin` 与 Sass `@mixin` 使用相同关键字。将 Master CSS 定义放在 `.css` 中，或从 Sass 输出时采用 [SCSS 插值模式](/reference/directives/definitions#sass-interoperability)。[Sass 混入语法](https://sass-lang.com/documentation/at-rules/mixin/)不接受以 `--` 开头的名称；Master CSS 定义必须在未被解释为 Sass 混入的状态下到达 Master 编译器。
+
+## 迁移策略 \{#migration-strategy\}
+从应用已经构建的 Sass 入口开始。遵循[共用迁移流程](/guide/migration#migration-strategy)，区分编译阶段的工作和浏览器应接收的值。
+
+<DocumentComparison>
+
+| 现有 Sass 职责 | 保留或移动 |
+| --- | --- |
+| 产品颜色、间距和圆角 | 使用方准备好后，将共享值移入 `@theme`。 |
+| 循环、生成选择器、第三方导入和函数 | 有明确替代方案前，继续用 Sass 编译。 |
+| 重复声明组 | 根据使用位置，选择原生组件 CSS 或 Master CSS 混入。 |
+| 局部视觉规则 | 标记类更易读时才转换。 |
+| 结构性嵌套、打印规则和复杂动画 | 保留有用的原生 CSS。 |
+
+</DocumentComparison>
+
+Sass 变量在预处理阶段解析；CSS 自定义属性参与浏览器层叠。将值在两者之间移动，会改变其可变化的时间和位置，替换前请检查所有使用处。
+
+<SassIllustration />
+
+---
+
+## 在 Sass 旁加入 Master CSS \{#add-master-css-beside-sass\}
+从应用已经加载的样式表导入 Master CSS，并保留 Sass 编译流程。
+
+```css name=app.css
+@import "@master/css";
+@import "./legacy.css";
+```
+
+在 Master CSS 解析导入图之前，先将现有 Sass 入口编译成 `legacy.css`。Sass 语法放在独立输入中，导入结果必须是普通 CSS。监听模式也保持顺序：Sass 改动先更新 `legacy.css`，然后再重建应用 CSS。不要手工修改生成文件。
+
+普通应用文件使用默认源文件发现即可。只有需要自定义包含、排除、safelist 或 blocklist 时，才添加显式源指令。
+
+Sass 若正在输出全局重置、第三方 CSS 或生成选择器，迁移期间继续保留导入。编译期 Sass 变量与运行时 CSS 自定义属性行为不同：用于循环、选择器构造或计算的 Sass 值，要等相应用途有替代方案后再移除。
+
+---
+
+## 将变量和映射移入 `@theme` \{#move-variables-and-maps-into--theme\}
+定义产品值的 Sass 变量与映射，通常可转为 Master CSS 主题令牌。
+
+```scss name=_tokens.scss
+$color-primary: #2563eb;
+$color-body: #172033;
+$space-card: 1.5rem;
+$radius-card: .75rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
+}
+
+```
+
+```html
+<article class="b(1) b-solid b-line-divider r-card bg-white fg-body p-card">
+  ...
+</article>
+```
+
+使用描述产品角色的令牌名。如果 Sass 变量名只是实现细节，无须保留。
+
+---
+
+## 转换局部组件样式 \{#convert-local-component-styles\}
+样式属于单个元素或组件实例时，可以将局部视觉规则移到标记。
+
+```scss name=Card.module.scss
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .75rem;
+  background: #fff;
+  color: #172033;
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md r-card bg-white fg-body p-card">
+      {children}
+    </section>
+  )
+}
+```
+
+选择器描述文档结构、生成内容、打印规则、复杂动画时间线或第三方标记时，保留 Sass 或普通 CSS。
+
+---
+
+## 有计划地替换占位符与混入 \{#replace-placeholders-and-mixins-intentionally\}
+Sass 占位符和混入常表示产品角色或底层基础功能。根据归属选择 Master CSS 的对应形式。
+
+产品角色使用 `@layer components`。前例的 `@theme` 值保留在同一项目入口：
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .card {
+    display: grid;
+    border-radius: var(--radius-card);
+    gap: var(--spacing-md);
+    padding: var(--spacing-card);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    color: var(--color-body);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+  }
+}
+```
+
+```html
+<article class="card">...</article>
+<button type="button" class="btn">Save</button>
+```
+
+可复用类配方使用 `@utility`；需要在 CSS 规则内复用声明时，使用 `@mixin`：
+
+```css name=app.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">...</section>
+```
+
+重复声明组若应继续放在 CSS 中，就用 Master CSS 混入应用替换 `@include`：
+
+```scss name=_stack.scss
+@mixin stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.article-summary {
+  @include stack;
+}
+```
+
+```css name=app.css
+@mixin --stack {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.article-summary {
+  @apply --stack;
+}
+```
+
+此定义放在 Master CSS `.css` 入口。它不会创建 `stack` 工具类；那是 `@utility` 的另一项职责。
+
+Sass 混入若生成很多选择器、包含浏览器兼容处理，或改为类后更难理解，就应保留。
+
+---
+
+## 将有用的嵌套保留为 CSS \{#keep-useful-nesting-as-css\}
+目标是单个元素时，嵌套 Sass 可以清晰对应到 Master CSS 状态。
+
+```html
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
+  Save
+</button>
+```
+
+嵌套选择器表达内部结构时，保留在 CSS 中：
+
+```css name=app.css
+.article-content {
+  h2 {
+    margin-top: 2rem;
+  }
+
+  pre code {
+    white-space: pre;
+  }
+}
+```
+
+Vite、Next.js 和 Webpack 集成会在 Sass 预处理后自动提供项目主题变量。
+
+```css name=Article.module.css
+.article {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+```
+
+---
+
+## 验证迁移 \{#validate-the-migration\}
+- 每批工作后运行 Sass 编译器、格式化工具、lint、类型检查、测试和生产构建。
+- 比较转换页面在响应式断点、深色模式、悬停、focus-visible、禁用和打印状态下的表现。
+- 第三方导入、生成 CSS、复杂嵌套、含浏览器兼容处理的混入，以及用 CSS 更清楚的一次性规则，继续使用 Sass。
+- 确认所有导入样式表、组件和包都不再依赖 Sass 后，才删除 Sass 包和构建配置。
+
+---
+
+## 相关参考 \{#useful-references\}
+- [安装](/guide/installation)：添加 Master CSS。
+- [渲染模式](/guide/rendering-modes)：选择静态、运行时或渐进式渲染。
+- [样式声明](/reference/rules/declarations)：类语法。
+- [主题令牌](/guide/theme)：令牌；[变量与模式](/reference/rules/modes)：模式；[条件](/reference/rules/conditions)：查询语法。
+- [CSS 指令](/reference#directives)：`@theme`、`@mixin` 和 `@reference`；[层叠层](/guide/cascade-layers)：原生组件层。
+- [路由级样式](/guide/route-level-styles)：使用项目定义和原生声明的局部 CSS 文件。
+- [全局样式](/guide/global-styles#shared-vocabulary)：选择标记类、主题令牌、自定义工具类和组件类。

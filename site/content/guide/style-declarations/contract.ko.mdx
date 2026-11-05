@@ -1,0 +1,210 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import FixedUtilities from '~/site/reference/FixedUtilities.astro'
+
+<a id="overview"></a>
+
+클래스는 등록된 유틸리티나 네이티브 선언으로 시작하며 선택적으로 선택자, 조건, 중요도 표시가 뒤따릅니다. 이 페이지는 선언 형식, 값 파싱, 거부 규칙을 정의합니다. 단계별 예시는 [구문 튜토리얼](/guide/syntax-tutorial)을, 네이티브 속성의 의미는 [CSS 참조](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference)를 참고하세요.
+
+아래 이름 기반 형식은 `@import '@master/css'`로 기본 프리셋을 불러왔다고 가정합니다. 프로젝트 정의로 유틸리티를 추가하거나 바꿀 수 있습니다. 네이티브 선언에는 등록된 유틸리티가 필요하지 않습니다.
+
+## 허용 형식 \{#basic-syntax\}
+
+<a id="utilities"></a>
+
+| 형식 | 예제 | 의미 |
+| --- | --- | --- |
+| 정적 유틸리티 | `flex` | 등록된 이름. 여기서는 `display: flex` |
+| 토큰 유틸리티 | `p-md` | 등록된 접두사와 토큰 키. 여기서는 `padding: var(--spacing-md)` |
+| 함수 유틸리티 | `p(12)` | 인수를 받는 등록된 함수. 여기서는 `padding: calc(12 * 1px)` |
+| 네이티브 선언 | `(padding:1rem)` | 완전한 CSS 속성과 값 하나 |
+
+이들은 서로 바꿔 쓸 수 있는 표기가 아니라 구문 형태입니다. 정적, 토큰, 함수 유틸리티는 모두 여러 선언을 포함할 수 있으며 `truncate`, `text-sm`, `grid-cols(2)`는 조합 스타일입니다. 네이티브 선두 부분은 정확히 선언 하나를 포함하며 CSS 단축 속성을 사용할 수 있습니다.
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(padding:1rem)']} />
+
+<a id="combine-with-states-and-queries"></a>
+
+모든 형식은 접미사를 허용합니다. `p(12):hover@sm!`에서 선두는 `p(12)`, 선택자는 `:hover`, 조건은 `@sm`이며 `!`는 중요도 표시입니다. 접미사는 자신의 클래스에만 영향을 줍니다. 전체 계약은 [선택자](/reference/rules/selectors)와 [조건](/reference/rules/conditions)을 참고하세요.
+
+## 네이티브 선언 \{#declaration-heads\}
+
+<a id="native-properties"></a>
+<a id="native-declaration-fallback"></a>
+
+완전한 속성 이름으로 `(property:value)`를 작성하세요. Master CSS는 괄호가 균형을 이루는 선두 부분을 읽은 뒤 접미사를 파싱합니다. 단독 이름 뒤의 콜론은 선택자를 시작합니다. `flex:hover`는 등록된 `flex` 유틸리티를 선택하며 `display:block`은 `(display:block)`의 대안이 아닙니다.
+
+### 닫는 경계 \{#the-closing-boundary\}
+
+문자열, 주석, 이스케이프, 중첩 괄호와 대괄호, 따옴표 없는 `url()` 토큰은 CSS 구성 값 경계를 따릅니다. 따옴표 문자열 안의 `)`는 선두 부분을 닫지 않습니다.
+
+```html
+<span class="(content:')')::before"></span>
+```
+
+<ReferenceIllustration id="native-value-boundary" />
+
+선두 부분 안의 다른 CSS 구조도 각자의 경계를 유지합니다.
+
+| 클래스 | 값 경계 |
+| --- | --- |
+| `(width:calc(1px+(2px*3)))` | 중첩 괄호는 계산식에 속함 |
+| `(grid-template-columns:[start]\|1fr\|[end])` | 대괄호가 Grid 선 이름을 감쌈 |
+| `(background-image:url(/a{b.svg))` | 중괄호는 따옴표 없는 URL 토큰에 속함 |
+
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+
+값 안에서도 CSS 이스케이프가 적용됩니다. 따옴표 없는 URL에 괄호가 있다면 따옴표로 감싸거나 CSS 이스케이프를 사용해 토큰이 유효하게 유지되도록 하세요.
+
+### 잘못된 선두 부분 \{#invalid-heads\}
+
+형식이 잘못된 선두 부분은 규칙을 생성하지 않으며 유틸리티나 다른 클래스 형식으로 다시 시도하지 않습니다.
+
+| 거부되는 클래스 | 이유 |
+| --- | --- |
+| `(display:block` | 닫는 괄호가 없음 |
+| `(color:red)(display:block)` | 한 클래스에 선두 부분이 두 개 있음 |
+| `(color:red;display:block)` | 선언이 둘 이상임 |
+| `(display:block;)` | 끝에 있어도 최상위 세미콜론은 허용하지 않음 |
+| `(width:calc(1px])` | 구분자가 일치하지 않음 |
+| `(width:)` | 일반 속성의 값이 비어 있음 |
+| `(color:{red})` | 중괄호 블록을 일반 속성 값으로 사용 |
+| `(width:calc(((…1px…))))` 65단계 중첩 | 괄호 중첩 깊이가 64단계를 초과함 |
+
+사용자 지정 속성에는 빈 값이나 균형 잡힌 중괄호 블록을 사용할 수 있으므로 `(--slot:)`와 `(--state:{open})`는 허용됩니다. `(--slot:!important)`는 값이 빈 중요 사용자 지정 속성이지만 `(width:!important)`는 유효하지 않습니다.
+
+### 출력과 브라우저 유효성 \{#vendor-prefixes\}
+
+구문이 유효한 속성 이름은 도구 목록에 없어도 선언을 출력할 수 있습니다. 네이티브 값은 프리셋에 제한되지 않지만 대상 브라우저에서 해당 속성에 유효해야 합니다. 예를 들어 `(font-size:48)`은 `font-size: 48`을 출력하며 `px`가 추가되지 않습니다. 이 0이 아닌 단위 없는 길이는 유효하지 않은 CSS입니다. 해당 길이는 `(font-size:48px)`를 사용하세요. `(field-sizing:content)` 같은 네이티브 속성은 유틸리티 등록이 필요하지 않습니다.
+
+<Class2CSS classes={['(font-size:48px)', '(field-sizing:content)']} />
+
+Master CSS는 `backdrop-filter` 옆에 `-webkit-backdrop-filter`를 추가하는 등 일부 호환 선언을 출력합니다. 하지만 공급업체별 선택자를 추가하거나 브라우저 기능을 폴리필하지는 않습니다. 생성 CSS를 확인하고 브라우저 요구사항과 폴백 설계는 [호환성](/guide/compatibility)을 참고하세요.
+
+<Class2CSS classes={['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']} />
+
+## 값 인코딩 \{#values\}
+
+### 공백, 문자열, 밑줄 \{#value-encoding\}
+
+값에 CSS 따옴표가 있어도 HTML 공백은 클래스를 구분합니다. 클래스 값의 따옴표 밖에 있는 `|`는 공백을 인코딩하며 따옴표 문자열 안의 파이프는 문자 그대로 유지됩니다. 쉼표와 슬래시 같은 CSS 구두점은 그대로 두세요.
+
+```html
+<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+```
+
+<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+
+색상 값은 `rgb(30 60 90 / 80%)`가 되고 content 문자열은 `'a|b'`로 유지됩니다. CSS 문자열 안에 실제 공백이 필요하면 `\000020` 같은 CSS 이스케이프를 사용하세요. `(content:'New\000020collection')::before`는 “New collection”을 만듭니다. 여섯 자리 이스케이프는 HTML 클래스에 종료 공백을 넣지 않아도 됩니다.
+
+네이티브 선두 부분 안의 밑줄은 `slide_in`처럼 문자 그대로입니다. 선두 부분이 닫힌 뒤의 `_`는 하위 선택자를 시작하며 `(color:red)_a`는 하위 링크를 대상으로 합니다. 등록된 유틸리티 이름에는 `_`를 넣을 수 없지만 밑줄이 있는 토큰 키는 `var(--name)`으로 참조할 수 있습니다.
+
+### 함수와 명시적 변수 \{#functions\}
+
+CSS 함수는 네이티브 속성의 값으로 남습니다. Master CSS는 `calc(100%-2rem)`의 산술 공백을 최대 64단계의 중첩 괄호와 `1px-2px-3px` 같은 연속 뺄셈까지 정규화하고 더 깊은 내용은 그대로 둡니다. 계산은 브라우저가 수행합니다. 단독 단어에서 토큰을 추론하거나 CSS 함수를 유틸리티 호출로 평가하지 않습니다.
+
+<Class2CSS classes={['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']} />
+
+<a id="rgb-hsl-oklch-"></a>
+<a id="hexadecimal-color"></a>
+
+네이티브 색상 값은 의미를 유지합니다. `(color:red)`, `(color:#175fe9)`, `(color:rgb(23,95,233))`는 CSS 값을 제공하며 `fg-red`는 테마 토큰을 선택합니다. `var()` 참조는 명시적입니다. `(font-family:mono)`는 CSS 글꼴 계열 `mono`를 뜻하며 `--font-mono`가 아닙니다. 토큰 해석, 모드, 파생 값은 [변수와 모드](/reference/rules/modes)를 참고하세요.
+
+### 숫자와 단위 \{#units\}
+
+<a id="decimal"></a>
+<a id="unit-conversion"></a>
+<a id="unit-sensing"></a>
+<a id="multiplier-units"></a>
+
+네이티브 선언은 단위를 유지합니다. `rem`을 픽셀로 변환하거나 속성에서 단위를 추론하지 않습니다. 소수 앞의 0은 생략할 수 있으며 `(opacity:.5)`와 `(opacity:0.5)`는 같은 숫자 값을 지정합니다.
+
+| 네이티브 값 | 해석 |
+| --- | --- |
+| `(margin:1rem)` | 루트 글꼴 크기에 상대적인 길이 |
+| `(width:50%)` | 속성의 맥락에서 해석하는 백분율 |
+| `(rotate:30deg)` | 명시적인 각도 |
+| `(animation-duration:200ms)` | 명시적인 시간. `.2s`도 같은 지속 시간을 표현 |
+| `(opacity:.5)` | 단위 없는 숫자 |
+| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | CSS 픽셀당 도트 수로 지정하는 네이티브 이미지 해상도 |
+
+속성이 숫자, 길이, 백분율 또는 다른 타입을 허용하는지는 [CSS 값과 단위](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units) 규칙이 결정합니다. `p(12)`는 다릅니다. 프리셋 함수가 인수에 `1px`을 명시적으로 곱합니다.
+
+### 음수 값 \{#negative\}
+
+네이티브 음수는 `(margin-top:-2rem)`처럼 값 안에 씁니다. 직접 숫자 인수는 `mt(-8)`을 사용합니다. 음수 토큰 클래스는 전체 클래스 앞에 `-`를 붙여 `-mt-sm`으로 씁니다. 이 형식에는 숫자 토큰과 음수를 지원하는 유틸리티가 필요합니다. padding은 음수를 지원하지 않으므로 `-p-sm`은 거부됩니다.
+
+<Class2CSS classes={['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']} />
+
+인수 검증이 CSS 속성의 값 제약을 재정의하지는 않습니다.
+
+## 등록된 유틸리티 \{#registered-utilities\}
+
+### 토큰 이름 \{#variable-alias\}
+
+<a id="property-abbreviations"></a>
+
+토큰 접두사는 유틸리티 정의가 등록하며 속성 약어에서 추론하지 않습니다. `p-md`는 `--spacing-md`를 읽습니다. `fg-red`와 `bg-red`는 모두 `--color-red`를 읽지만 서로 다른 속성을 설정합니다. `padding-md` 같은 전체 속성 이름 형식이나 `p-4` 같은 암묵적 숫자 척도는 없습니다. 선택한 네임스페이스에 해당 키가 있어야 합니다.
+
+같은 철자의 토큰 클래스보다 정적 이름이 우선합니다. 예를 들어 프로젝트에 `--container-full`이 있어도 `w-full`은 `width: 100%`를 유지합니다. `--radius-pill`이 있어도 `pill`은 완전히 둥근 모서리 반지름을 유지합니다. 이름이 같은 정적 유틸리티와 함수는 독립적으로 등록됩니다.
+
+전체 접두사와 네임스페이스 매핑은 [토큰 계열 색인](/reference/tokens/families)을, 등록과 교체 규칙은 [유틸리티 정의](/reference/directives/definitions#utilities)를 참고하세요. 프로젝트 값의 정의와 범위 지정 방법은 [테마 토큰](/guide/theme)에서 설명합니다.
+
+<ReferenceIllustration id="fixed-name-reservation" />
+
+### 직접 숫자 값 \{#direct-values\}
+
+`m(4)`, `b(1)`, `grow(1)` 같은 프리셋 함수는 정적 숫자 하나를 받습니다. 길이 함수는 `1px`을 곱하는 식을 출력합니다. `grow()`, `shrink()`, `order()`는 숫자를 그대로 전달하며 `order()`는 정수가 필요합니다. 0, 소수, 음수 인수는 각 매개변수에 선언된 타입을 따릅니다.
+
+단위와 동적 식은 숫자 인수가 아니므로 `m(1px)`와 `b(var(--x))`는 규칙을 생성하지 않습니다. 이런 값은 `(margin:1rem)`이나 `(border-width:var(--x))`를 사용하세요. 전체 함수 목록, 매개변수 타입, 생성 선언은 [직접 숫자 값](/reference/direct-values)에 있습니다.
+
+<a id="motion-properties"></a>
+
+레시피는 여러 속성이나 보조 값을 함께 조정할 수 있습니다. `text-sm`은 크기, 줄 높이, 자간을 포함하고 `animate-fade`는 애니메이션 단축 속성을 제공합니다. 조회와 재정의 규칙은 [텍스트 토큰](/reference/tokens/text#primary-and-companions)과 [모션 토큰](/reference/tokens/motion#duration-overrides)을 참고하세요.
+
+## 사용자 지정 속성 \{#variable-properties\}
+
+`(--name:value)` 선두 부분은 일치하는 요소에 CSS 사용자 지정 속성을 선언합니다. 다른 선언과 같은 선택자와 조건을 사용할 수 있으며 유틸리티나 테마 토큰을 등록하지는 않습니다.
+
+```html
+<div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
+  Progress
+</div>
+```
+
+<Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+`var(--progress)`는 일반 CSS 해석과 상속을 사용합니다. 해석되지 않은 변수나 호환되지 않는 치환 값은 이를 참조하는 선언을 무효화할 수 있으므로 필요하면 [CSS 변수 대체 값](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var)을 사용하세요. 클래스를 고정하고 동적 값을 별도로 전달하는 방법은 [구문 튜토리얼](/guide/syntax-tutorial#complete-card)에서 설명합니다.
+
+## 조합과 중요도 \{#combining-declarations\}
+
+<a id="group"></a>
+<a id="independent-properties"></a>
+
+`b(1) b-solid b-line-control`처럼 클래스를 나누어 독립적인 결정을 표현합니다. 네이티브 단축 속성도 지원되며 이 작성 권장 방식이 CSS 문법을 바꾸지는 않습니다. 선택자와 조건이 필요한 각 클래스에 접미사를 반복해서 붙이세요.
+
+```html
+<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
+```
+
+같은 레이어, 조건, 선택자 안에서는 레시피, 단일 선언 유틸리티, 네이티브 선언 순으로 정렬됩니다. 단일 선언 유틸리티는 값의 출처보다 속성 계열과 적용 범위를 먼저 따릅니다. 같은 속성에서는 토큰이 고정 값이나 직접 숫자 값보다 앞에 옵니다. HTML 클래스 순서는 결과를 결정하지 않습니다.
+
+<Class2CSS classes={['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']} />
+
+여기서는 네이티브 padding이 두 유틸리티 뒤에 오고 `mt(0)`과 `mx-auto`가 `m-md`의 해당 부분을 재정의합니다. 전체 정렬 규칙은 [캐스케이드 레이어](/reference/rules/layers)를 참고하세요. 컴포넌트 클래스, `@utility` 레시피, CSS 믹스인을 선택하는 방법은 [스타일 재사용](/guide/reusing-styles)에 있습니다.
+
+### 중요도 \{#important\}
+
+마지막 `!`는 클래스의 선언을 중요 선언으로 표시합니다. 괄호 값 안의 끝에 쓰는 네이티브 `!important`도 같은 효과가 있으며 둘 다 써도 한 번만 출력됩니다. 문자열 안의 `'!important'`는 콘텐츠로 유지됩니다.
+
+<Class2CSS classes={['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]} />
+
+<ReferenceIllustration id="important-recipe" />
+
+## 고정 유틸리티 조회표 \{#fixed-utilities\}
+
+프리셋은 고정된 단일 선언 유틸리티 292개를 제공합니다. 각 유틸리티는 표에 나오는 속성만 설정합니다. `flex-col`은 flex 레이아웃을 활성화하지 않고 `b-none`은 테두리 너비를 초기화하지 않으며 `pill`은 크기를 설정하지 않습니다. 다중 선언인 `truncate` 레시피는 [잘라내기](/reference/truncation)에 별도로 나옵니다.
+
+<FixedUtilities />
+
+`start`와 `end`는 `flex-start`, `flex-end`와 구분되는 네이티브 의미를 유지합니다. 논리 축에서 `x`는 인라인 축, `y`는 블록 축이며 `t`, `r`, `b`, `l`은 물리적인 면입니다. 고정 유틸리티는 선택자, 조건, `!`를 허용하며 사용될 때 CSS를 출력합니다.

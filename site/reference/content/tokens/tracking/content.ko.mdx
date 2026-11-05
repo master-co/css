@@ -1,0 +1,76 @@
+# Reference prose: tokens/tracking
+
+## title \{#copy-title\}
+
+
+자간
+
+## summary \{#copy-summary\}
+
+
+프리셋 letter-spacing 척도입니다.
+
+## note \{#copy-note\}
+
+
+좁은 자간 키에는 이미 음수 길이가 포함되어 있으므로 `tracking-tight`를 그대로 사용하세요. `-tracking-tight`처럼 부호를 붙인 토큰 형식은 지원하지 않습니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+0이 아닌 프리셋 값은 letter-spacing을 선언한 요소의 글꼴 크기를 기준으로 하는 em을 사용합니다. `tracking-normal`은 0을 지정합니다. 네이티브 키워드가 필요하면 `(letter-spacing:normal)`을 사용하세요.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+상속한 자간은 계산된 길이를 유지합니다
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`tracking-widest`는 `.12em`을 지정하며 글꼴 크기가 16px이면 1.92px로 계산됩니다. 32px 글꼴을 사용하는 자식은 이 길이를 상속하며 자간이 자동으로 두 배가 되지는 않습니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+자식에 `tracking-widest`를 적용하면 자신의 32px 글꼴 크기를 기준으로 `.12em`을 계산해 3.84px가 됩니다. 이는 줄 높이에서 사용하는 단위 없는 비율과 다릅니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+자간은 텍스트 사이의 간격을 조정하며 글리프 모양을 늘리지 않습니다. 줄바꿈이 달라질 수 있으므로 컨테이너가 커질 수 있게 하고 실제 글꼴과 언어로 확인하세요.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` 텍스트 스타일에는 letter-spacing 선언이 포함됩니다. 같은 요소와 같은 조건에서는 `tracking-*` 유틸리티가 이 조합 스타일 뒤에 와 자간을 덮어쓸 수 있습니다. 길이 리터럴이 필요하면 `(letter-spacing:-.03em)` 같은 네이티브 선언을 사용하세요.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+줄 높이
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+텍스트 스타일의 보조 토큰
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+네이티브 자간 동작
+
+## usage-lead \{#copy-usage-lead\}
+
+
+같은 문구와 글꼴 크기에서 자간 값 두 개를 비교합니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+프리셋 값을 변경하거나 토큰을 추가하세요. `--tracking-display`를 정의하면 `tracking-display`가 생성됩니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+타이포그래피

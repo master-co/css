@@ -1,0 +1,222 @@
+---
+title: "Bootstrap에서 마이그레이션"
+description: "외부 CSS, JavaScript 기반 컴포넌트, 캐스케이드에 의존하는 재정의를 보존하며 Bootstrap 화면을 Master CSS로 옮깁니다."
+figures: {"BootstrapIllustration": {"title": "이름 대신 임계값 보존", "alt": "같은 너비 축에서 Bootstrap md는 768px부터, Master CSS 프리셋 md는 초기 글꼴 16px일 때 1024px부터입니다. 사용자 정의 bootstrap-md가 원래 768px 임계값을 유지합니다.", "caption": "Bootstrap 5.3 기본값과 초기 글꼴 크기 16px를 사용합니다. 중단점 이름을 변환하기 전에 설치된 테마를 확인하세요.", "description": [{"title": "원래 임계값", "text": "Sass 설정을 바꾸지 않았다면 Bootstrap 5.3 md는 768px부터입니다."}, {"title": "다른 프리셋", "text": "Master CSS md는 64rem부터이며 여기서는 1024px입니다. 이름 재사용은 레이아웃 경계를 바꿉니다."}, {"title": "명시적 이동 조건", "text": "--bootstrap-md를 768px로 정의하고 grid-cols(3)@bootstrap-md로 원래 임계값을 유지합니다."}]}}
+---
+import BootstrapIllustration from './components/BootstrapIllustration.astro'
+
+Bootstrap과 Master CSS는 함께 사용할 수 있습니다. 기존 마크업이 Bootstrap의 그리드, 유틸리티, 컴포넌트, JavaScript 동작, Sass 변수, 선택자 재정의에 의존하는 동안 Bootstrap을 계속 읽으세요. 화면이나 컴포넌트 그룹을 하나씩 변환하고 제품이 더 이상 의존하지 않을 때 제거합니다.
+
+이 가이드는 앱이 소유한 Bootstrap 사용 부분에 집중합니다. 외부 마크업, 서드파티 플러그인, 생성 HTML, Bootstrap JavaScript 컴포넌트는 명확한 대안이 생길 때까지 유지할 수 있습니다.
+
+---
+
+## 마이그레이션 전략 \{#migration-strategy\}
+[공통 마이그레이션 절차](/guide/migration#migration-strategy)에 따라 기존 위젯 주변의 앱 소유 레이아웃부터 시작합니다. 남은 컴포넌트가 의존하는 동안 Bootstrap CSS, JavaScript, Sass 출력을 유지하세요.
+
+화면을 변환하기 전에 세 경계를 구분합니다.
+
+- **값:** 사용자 정의 `$spacers`, `$grid-breakpoints`, 컨테이너 너비를 확인합니다. 스케일 이름이 같아도 값이 같지는 않습니다.
+- **선택자:** 컴포넌트를 교체할 때까지 외부 마크업과 Bootstrap 내부에 연결된 재정의를 함께 유지합니다.
+- **동작:** 포커스 처리, ARIA 상태, 이벤트에 명시적 대안이 생길 때까지 모달, 드롭다운, 접기 영역은 Bootstrap에 둡니다.
+
+첫 유용한 결과는 작동하는 컴포넌트 주변의 레이아웃 변환입니다. 해당 컴포넌트의 대안을 마련한 뒤 의존성을 제거합니다.
+
+<BootstrapIllustration />
+
+---
+
+## Bootstrap과 함께 Master CSS 추가 \{#add-master-css-beside-bootstrap\}
+앱이 이미 읽는 스타일시트에서 Master CSS를 가져옵니다. 아직 Bootstrap import는 제거하지 마세요.
+
+```css name=app.css
+@import "bootstrap/dist/css/bootstrap.css";
+@import "@master/css";
+```
+
+일반 앱 파일에는 기본 소스 탐색으로 충분합니다. 사용자 정의 포함, 제외, safelist, blocklist가 필요할 때만 명시적 소스 지시문을 추가합니다.
+
+가져오기 순서만으로 비레이어 Bootstrap 규칙을 일반 레이어 유틸리티 아래에 둘 수는 없습니다. Master CSS 컴포넌트와 유틸리티에 우선순위를 주려면 레이어 순서를 선언한 뒤 Bootstrap을 `defaults`로 가져옵니다.
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import "bootstrap/dist/css/bootstrap.css" layer(defaults);
+@import "@master/css";
+```
+
+이는 캐스케이드 동작을 바꿉니다. 앱 전체에 적용하기 전에 브라우저에서 기존 재정의를 비교하세요. Bootstrap 유틸리티가 `!important`를 쓸 수도 있습니다. 일반 Master CSS 선언은 단지 뒤 레이어에 있다는 이유로 이를 덮어쓰지 못합니다.
+
+---
+
+## Bootstrap Sass 값을 `@theme`으로 이동 \{#move-bootstrap-sass-values-into--theme\}
+Bootstrap Sass 변수에는 제품의 설계 결정이 담기는 경우가 많습니다. Bootstrap 컴포넌트 밖의 마크업에서도 필요하면 Master CSS 토큰으로 옮깁니다.
+
+```scss name=bootstrap-theme.scss
+$primary: #2563eb;
+$body-color: #172033;
+$border-radius: .5rem;
+$spacer: 1rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --spacing-page: 1rem;
+}
+
+```
+
+```html
+<section class="bg-white fg-body p-page r-control">
+  ...
+</section>
+```
+
+Bootstrap 스케일 이름이 Master CSS 프리셋과 같다고 가정하지 마세요. 제품에 중요한 값을 옮긴 뒤 역할을 설명하는 Master CSS 토큰 이름을 선택합니다.
+
+---
+
+## 그리드와 유틸리티 클래스 변환 \{#convert-grid-and-utility-classes\}
+레이아웃 래퍼와 유틸리티만 쓰는 단순 마크업부터 시작합니다.
+
+Bootstrap 클래스 철자 대신 레이아웃 의도를 보존하세요.
+
+```html
+<!-- Before: container py-5 -->
+<!-- Before: row g-4 -->
+<!-- Before: col-md-4 -->
+```
+
+Bootstrap 기본 [`md` 중단점](https://getbootstrap.com/docs/5.3/layout/breakpoints/#available-breakpoints)은 768px부터, Master CSS 프리셋의 `md`는 64rem부터입니다. 앱 CSS 진입점에 명명된 조건을 정의해 원래 열 전환 임계값을 유지하세요.
+
+```css name=app.css
+@custom-media --bootstrap-md (width >= 768px);
+```
+
+```html
+<section class="w-full max-w-6xl mx-auto px-md py-2xl">
+  <div class="grid gap-lg grid-cols(3)@bootstrap-md">
+    <article class="p-lg b(1) b-solid b-line-divider r-lg bg-white fg-body">
+      ...
+    </article>
+  </div>
+</section>
+```
+
+이 예는 세 열 임계값을 유지하면서 새 컨테이너 너비와 그리드 간격을 선택합니다. 실제 항목 세 개로 767px와 768px를 확인하세요. `@md`를 그대로 복사하면 프리셋에서는 64rem까지 세로로 쌓입니다. Bootstrap 컨테이너와 거터 규칙을 바꾸기 전에 치수를 비교하세요. 명시적 `fg-body`는 고정 흰색 카드에 제품의 어두운 텍스트 색을 짝지어 줍니다.
+
+유틸리티 별칭보다 명확하다면 네이티브 선언 구문을 사용합니다.
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) contents@md">
+  ...
+</div>
+```
+{ }
+
+Bootstrap 컨테이너 너비, 거터 가정, 컴포넌트 내부 구조가 필요한 템플릿에는 Bootstrap 레이아웃 클래스를 유지합니다.
+
+---
+
+## 단순 컴포넌트 변환 \{#convert-simple-components\}
+버튼, 카드, 알림, 배지는 앱 소유 시각 패턴인 경우가 많습니다. 프로젝트가 동작을 소유한다면 마크업 클래스나 Master CSS 컴포넌트 클래스로 변환합니다. 공존 중에는 새 클래스 이름을 사용해 아직 변환하지 않은 Bootstrap 버튼에 영향을 주지 마세요. 위에서 정의한 테마 토큰을 유지합니다.
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+
+  .panel {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+}
+```
+
+```html
+<button type="button" class="action-button">Save</button>
+<article class="panel">...</article>
+```
+
+드롭다운, 모달, 탭, 캐러셀, 접기 영역처럼 Bootstrap이 동작, 접근성, 내부 구조를 제공한다면 컴포넌트를 유지하세요. 클래스가 전달되고 캐스케이드가 명확하면 Bootstrap 루트 요소에 작은 Master CSS 클래스를 추가할 수 있습니다.
+
+---
+
+## JavaScript 기반 컴포넌트 보존 \{#preserve-javascript-driven-components\}
+Bootstrap JavaScript 컴포넌트는 CSS만으로 이루어지지 않습니다. 종류에 따라 포커스, ARIA 속성, 전환, body 스크롤 잠금, Popper 위치, 이벤트를 관리합니다. [JavaScript API](https://getbootstrap.com/docs/5.3/getting-started/javascript/)로 보존할 동작을 목록화하세요.
+
+대체 동작을 구현하고 테스트할 때까지 `data-bs-*` 속성이 있는 마크업은 Bootstrap에 둡니다. 주변 레이아웃이나 제품 소유 래퍼만 먼저 변환하세요.
+
+```html
+<section class="grid gap-md">
+  <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
+</section>
+```
+
+컴포넌트를 교체하면 같은 검토 가능한 작업에서 Bootstrap JavaScript import와 관련 데이터 속성도 제거합니다.
+
+---
+
+## 재정의와 외부 CSS 처리 \{#handle-overrides-and-vendor-css\}
+많은 Bootstrap 프로젝트는 상태 클래스, 중첩 마크업 선택자, 명시도 수정 같은 재정의에 의존합니다. 무작정 변환하지 마세요.
+
+Bootstrap 내부를 대상으로 하면 재정의를 CSS로 유지합니다.
+
+```css name=bootstrap-overrides.css
+.navbar .dropdown-menu {
+  min-width: 16rem;
+}
+```
+
+마크업을 앱이 소유하게 된 뒤에만 재정의를 Master CSS로 옮깁니다.
+
+```html
+<nav class="flex items-center gap-md">
+  <div class="min-w-3xs">...</div>
+</nav>
+```
+
+외부 CSS와 서드파티 Bootstrap 테마는 프로젝트가 외부 계약을 교체할 때까지 일반 CSS로 유지합니다.
+
+---
+
+## 마이그레이션 검증 \{#validate-the-migration\}
+- 각 작업 후 프로젝트 포매터, 린터, 타입 검사, 테스트, 프로덕션 빌드를 실행합니다.
+- Bootstrap 그리드, 컨테이너, 폼, 모달, 드롭다운, 접기, 툴팁, 팝오버, 반응형 유틸리티를 쓰던 페이지를 비교합니다.
+- 프로젝트에서 지원한다면 호버, focus-visible, 비활성, 펼침, 선택, 유효성 검사, 다크 모드 상태를 테스트합니다.
+- 남은 템플릿, 컴포넌트, 플러그인, 재정의가 전혀 의존하지 않을 때까지 Bootstrap을 읽습니다.
+- 전체 검증이 통과한 뒤 Bootstrap Sass, CSS, JavaScript import와 패키지를 제거합니다.
+
+---
+
+## 관련 참고 자료 \{#useful-references\}
+- [설치](/guide/installation): Master CSS 추가.
+- [렌더링 모드](/guide/rendering-modes): 정적, 런타임, 점진적 렌더링 선택.
+- [스타일 선언](/reference/rules/declarations): 클래스 구문.
+- [테마 토큰](/guide/theme): 토큰, [변수와 모드](/reference/rules/modes): 모드, [조건](/reference/rules/conditions): 쿼리 구문.
+- [전역 스타일](/guide/global-styles#shared-vocabulary): 마크업 클래스, 테마 토큰, 사용자 정의 유틸리티, 컴포넌트 클래스 선택.
+- [코드 린트](/guide/code-linting): 마이그레이션 중 클래스 문자열 검증.

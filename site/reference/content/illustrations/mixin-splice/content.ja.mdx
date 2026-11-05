@@ -1,0 +1,31 @@
+# Reference prose: illustrations/mixin-splice
+
+## title \{#copy-title\}
+
+
+ミックスインは呼び出し位置で展開
+
+## alt \{#copy-alt\}
+
+
+ネイティブ caption 規則の強調した apply 行を、前後の color と font-weight を変えずに 2 つの強調宣言へ置き換える。
+
+## caption \{#copy-caption\}
+
+
+挿入箇所の前後で対応する行を揃えています。セレクター、宣言順、外側のレイヤーは呼び出し元のままです。
+
+## description-0 \{#copy-description-0\}
+
+
+--caption ミックスインは font-size: 14px と line-height: 1.5 を供給します。
+
+## description-1 \{#copy-description-1\}
+
+
+.caption 内の @apply --caption は color: currentColor と font-weight: 600 の間で展開します。
+
+## description-2 \{#copy-description-2\}
+
+
+展開はクラスを登録せず、ネイティブ規則を生成レイヤーに移しません。重複宣言と記述順を保持します。

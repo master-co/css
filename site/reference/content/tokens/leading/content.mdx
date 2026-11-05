@@ -1,0 +1,57 @@
+# Reference prose: tokens/leading
+
+## title \{#copy-title\}
+
+Leading
+
+## summary \{#copy-summary\}
+
+Unitless line heights that scale with the font size.
+
+## note \{#copy-note\}
+
+`leading-<name>` sets only `line-height`. It does not change font size, add a gap between paragraphs or constrain their height.
+
+## valuesLead \{#copy-valuesLead\}
+
+All five preset values are unitless ratios, not rem lengths or pixel counts. The used line height depends on the element’s font size.
+
+## explanation-title \{#copy-explanation-title\}
+
+An inherited ratio follows each font size
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`leading-md` supplies the number `1.6`. A child that inherits it uses its own font size: 16px gives 25.6px, while 24px gives 38.4px. The inherited value is still the ratio.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+An explicit length or percentage has different inheritance behavior: it resolves to a length on the element where it is declared. Use a native declaration such as `(line-height:1.5)` or add a theme token for a custom ratio; there is no preset `leading(1.5)` function.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+Line height controls the line’s vertical metrics, not the empty gap between visible glyphs. Other inline content can make a line box taller. It does not crop glyphs or guarantee a fixed paragraph height.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+A `text-*` treatment sets its own line height, so it replaces an inherited ratio. Apply `leading-*` on that same element when intentionally overriding the treatment; under the same conditions, the single-property utility follows the recipe.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Text treatment companions
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native line-height inheritance
+
+## usage-lead \{#copy-usage-lead\}
+
+Set a ratio on the parent and let its children scale it with their own font sizes.
+
+## customize-lead \{#copy-customize-lead\}
+
+Change a preset value or add a token: `--leading-prose` creates `leading-prose`.
+
+## guide-label \{#copy-guide-label\}
+
+Typography

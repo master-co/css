@@ -1,0 +1,71 @@
+# Reference prose: tokens/container
+
+## title \{#copy-title\}
+
+
+コンテナーサイズ
+
+## summary \{#copy-summary\}
+
+
+幅、高さ、最小サイズ、最大サイズに使うプリセットの長さ。
+
+## note \{#copy-note\}
+
+
+コンテナートークンが設定するのは長さであり、ビューポートクエリーやコンテナークエリーの定義ではありません。`w-full`、`max-w-fit`、`basis-min` のような全幅や内在サイズの指定は固定ユーティリティで、これらのトークンとは独立しています。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+各値はサイズ関連のプロパティが参照する長さです。ピクセル換算はルートのフォントサイズを 16px と仮定しています。これらはビューポートのブレークポイントでも、コンテナークエリーの定義でもありません。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+最大サイズは上限を定める
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`max-w-3xs` は `max-width: var(--container-3xs)` を設定し、プリセット値は `16rem` です。幅が auto の通常のブロックは、包含ブロックの空間が足りなければ、それより狭くなることがあります。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+一方、`w-3xs` は幅そのものを設定します。どちらのクラスも中央揃え、padding、クエリー用のコンテインメントを追加しません。`--container-md` を変更しても、`@container(--md)` や明示的なクエリーのしきい値は再定義されません。クエリーコンテナーを作るには、ネイティブの `container-type` と `container-name` を使います。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+実際のサイズには、ネイティブレイアウトも影響します。最小サイズ、box-sizing、Flexbox、Grid によって使用サイズが変わることがあります。最大サイズを指定しても、テキストの折り返しやオーバーフローの規則は変わりません。ページのラッパーやレスポンシブな配置の判断については、レイアウトガイドを参照してください。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+名前付きクエリー条件
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+コンテナークエリーの構文
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+ネイティブのサイズ規則
+
+## usage-lead \{#copy-usage-lead\}
+
+
+ダイアログの幅とテキストの行長に上限を設けます。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+プリセット値を変更したり、サイズを追加したりできます。`--container-prose` を定義すると、`max-w-prose`、`w-prose` などのサイズクラスが使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+レイアウト

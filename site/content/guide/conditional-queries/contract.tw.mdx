@@ -1,0 +1,197 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+條件後綴限制 class 規則可套用的時機。Master CSS 解析具名定義並輸出原生 CSS 查詢，由瀏覽器評估。編譯不會測試目前的檢視區、輸入裝置或瀏覽器支援。
+
+本頁定義支援的後綴、查詢編碼與組合方式。選擇檢視區或元件邊界的方法，請見[響應式設計](/guide/responsive-design)；漸進增強則請見[相容性](/guide/compatibility)。
+
+<ReferenceIllustration id="condition-eligibility" />
+
+## 查詢形式 \{#arbitrary-conditions-and-queries\}
+
+將條件加在 utility 與任何[選擇器後綴](/reference/rules/selectors)之後。class 中的括號用來界定查詢，不要再於媒體功能、範圍或 supports 宣告外加一層括號。
+
+| 查詢 | Class 後綴 | 原生條件 |
+| --- | --- | --- |
+| 具名媒體 | `@sm` | 解析 `@custom-media --sm` |
+| 媒體類型 | `@media(print)` | `@media print` |
+| 布林媒體功能 | `@media(hover)` | `@media (hover)` |
+| 媒體功能 | `@media(pointer:coarse)` | `@media (pointer:coarse)` |
+| 媒體範圍 | `@media(width>=40rem)` | `@media (width>=40rem)` |
+| Supports 宣告 | `@supports(display:grid)` | `@supports (display:grid)` |
+| 容器尺寸 | `@container(width>=40rem)` | `@container (width>=40rem)` |
+| 具名容器 | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
+| 自訂容器條件 | `@container(card\|--md)` | 為 `card` 解析 `@custom-container --md` |
+| 容器樣式 | `@container(style(--density:compact))` | `@container style(--density:compact)` |
+
+<Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
+
+`|` 會編碼字串、註解與 CSS 跳脫之外的空白。在 `@container(card|width>=40rem)` 中，它分隔容器名稱與條件。引號字串與跳脫會保留字面內容。這種編碼用於 class，CSS 定義中應寫一般空白。
+
+<a id="simple-queries-in-classes"></a>
+
+每個後綴接受一個簡單查詢，單一值中配對完整的函式會保留。Master CSS 不會依瀏覽器支援資料庫限制功能名稱；成功生成不代表瀏覽器支援該條件，或目前符合該條件。複合運算式與查詢清單請見[應寫在 CSS 中的查詢](#queries-in-css)。
+
+## 組合條件 \{#grouping-conditions\}
+
+疊加簡單查詢後綴，要求所有條件同時成立。第一個後綴成為外層查詢，後續後綴依序巢狀包在其中。同種類的重複包覆也會保留順序。
+
+<ReferenceIllustration id="nested-conditions" />
+
+```html
+<div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
+```
+
+<Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+這些是巢狀 CSS 條件，不是依序執行的步驟。兩個查詢都必須相符，`display: grid` 宣告才會參與階層串接。哪些元素取得宣告，仍由選擇器決定。
+
+### 選擇器與 token 相依項目 \{#composition\}
+
+`fg-red:hover@sm` 結合以 token 提供值的 utility、選擇器與具名媒體條件：
+
+```html
+<div class="fg-red:hover@sm">Hover at sm and above</div>
+```
+
+使用預設集時，`fg-red` 讀取 `--color-red`，`:hover` 檢查帶有 class 的元素，`@sm` 要求檢視區寬度至少為 `52.125rem`。預設的 red 別名具有固定色彩，專案可覆寫其值。沒有 token 值與競爭的 CSS，單靠 class 無法確定最終色彩。
+
+<a id="complete-generated-css"></a>
+
+<Class2CSS classes={['fg-red:hover@sm']} />
+
+生成 CSS 會包含必要的 token 相依項目，不會插入基底串接層順序宣告。請載入[基底樣式表](/reference/rules/layers)，通常透過 `@import '@master/css'`。
+
+## 具名媒體條件 \{#common-condition-variants\}
+
+`@sm` 這類單獨後綴會解析 `@custom-media` 定義。未定義名稱會報錯。Mixin 名稱使用獨立的 `@apply(--name)` 語法，容器條件使用 `@container(--name)`，兩者都不會由單獨後綴選取。
+
+| 預設後綴 | 意義 |
+| --- | --- |
+| `@sm`, `@md`, … | 檢視區至少達到該斷點 |
+| `@max-sm`, `@max-md`, … | 對應斷點的互補條件 |
+| `@landscape`, `@portrait` | 檢視區方向 |
+| `@motion-safe`, `@motion-reduce` | 減少動態效果偏好 |
+| `@light`, `@dark` | 系統色彩偏好 |
+
+### 斷點 \{#sm--md--lg--and-more\}
+
+預設集的 `media.css` 註冊十一個檢視區斷點。只匯入 `theme.css` 不會註冊它們，主題變數也不會定義媒體條件。各個值請見[斷點參考](/reference/rules/named-conditions#viewport-widths)。
+
+專案可以替換查詢，同時保留原生單位。預設 `--max-*` 定義會否定對應名稱：`--max-md` 是 `not (--md)`。定義一起編譯時，替換 `--md` 會更新兩個範圍，且在邊界處不重疊。
+
+<a id="compiled-condition-definitions"></a>
+
+已編譯的 manifest 內已包含展開後的查詢。向該 manifest 新增定義，不會重新展開既有的相依條件。若設定片段必須替換兩個範圍，應明確宣告兩個名稱：
+
+<ConfiguredExample source={'@custom-media --md (width >= 60rem);\n@custom-media --max-md not (--md);'} classes={['hidden@md', 'hidden@max-md']} />
+
+<ReferenceIllustration id="compiled-query-snapshot" />
+
+### 系統色彩偏好 \{#light--dark--and-custom-modes\}
+
+預設的 `@light` 與 `@dark` 查詢 `prefers-color-scheme`，不會插入祖先選擇器，也不會跟隨手動選取的網站主題。手動啟用使用 `@apply(--manual-dark)` 這類明確的選擇器 mixin；請見[變數與模式](/reference/rules/modes#mode-triggers)。
+
+## 原生查詢 \{#native-queries\}
+
+### 媒體功能與範圍 \{#mediafeature\}
+
+使用完整的原生功能名稱與單位。`print`、`screen` 與 `all` 這類媒體類型輸出時不加群組括號。不是媒體類型的單一名稱會作為布林功能：`@media(hover)` 會輸出 `@media (hover)`。
+
+<a id="comparison-operators"></a>
+
+範圍接受 `<`、`<=`、`>`、`>=` 與 `=`，也支援連鎖比較。小數值與原生單位會保留，CSS 解析度單位 `x` 也保有原生意義。
+
+<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)', 'hidden@media(resolution>=2x)']} />
+
+同單位且可比較的範圍會保留範圍優先順序。具名媒體條件與等價的原生查詢使用相同的排序依據。不同單位與運算式採穩定的語法排序，Master CSS 不會假設瀏覽器根元素字型大小，也不會為排序換算單位。容器查詢領域仍與媒體查詢分開。等價條件與相同屬性範圍內，直接值排在具名 token 之後。
+
+瀏覽器如何解讀功能與範圍，請見[媒體查詢](https://www.w3.org/TR/mediaqueries-5/)。
+
+### Supports 宣告 \{#supportsfeature\}
+
+`@supports(property:value)` 接受一個 CSS 宣告，例如 `@supports(display:grid)`，由瀏覽器測試是否支援該屬性與值的配對。`selector()` 檢查、否定與複合支援條件應放在 [CSS mixin](#queries-in-css) 中。
+
+<Class2CSS classes={['grid@supports(display:grid)']} />
+
+### 容器 \{#containersize\}
+
+尺寸查詢量測符合資格的祖先查詢容器。請用一般 CSS 建立該容器；若查詢應選取特定容器，而不是最近符合資格的容器，再加入名稱。此例中，被查詢的元素是後代元素：
+
+```html
+<aside class="(container-name:card) container-inline">
+  <div class="grid-cols(2)@container(card|width>=40rem)">
+    <div>First item</div>
+    <div>Second item</div>
+  </div>
+</aside>
+```
+
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+
+條件相符時，組合樣式同時設定 `display: grid` 與兩個等寬欄。低於門檻時，兩個宣告都不會提供，因此這兩個區塊子元素仍以一般流向垂直堆疊。容器自身寬度由周圍版面配置決定。
+
+自訂屬性樣式查詢會檢查祖先容器上的值，不需要 `container-inline`：
+
+```html
+<div style="--density:compact">
+  <div class="p(8)@container(style(--density:compact))">Compact content</div>
+</div>
+```
+
+<Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+原生[容器查詢](https://www.w3.org/TR/css-conditional-5/#container-queries)定義容器資格與比對方式。修改 `--container-md` 這類尺寸 token，不會改變明確查詢門檻或具名容器條件。它們獨立的尺寸用途請見[容器 token](/reference/tokens/container)。
+
+### 具名容器條件 \{#named-container-conditions\}
+
+`@container(--md)` 解析 `@custom-container --md`；`@container(card|--md)` 則將同一條件套用到名為 `card` 的合格容器。定義提供的是條件，不是容器名稱。
+
+預設的 `container.css` 註冊十三個元件寬度，以及各自的 `max-` 互補條件。它們與檢視區斷點各自獨立：`@container(--md)` 是 `28rem`，`@md` 則是 `64rem`。
+
+完整的預設容器尺度與互補條件，請見[具名條件](/reference/rules/named-conditions#container-widths)。
+
+每個 `--max-*` 名稱都是對應最小寬度條件的否定，例如 `--max-md` 是 `not (--md)`。與媒體條件相同，一起編譯的定義會跟隨被參照名稱的覆寫；[已展開的 manifest 定義](#compiled-condition-definitions)則不會在片段只替換該名稱時重新展開。
+
+<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+
+用 [`@custom-container`](/reference/directives/queries#custom-container) 定義或替換名稱。未定義名稱會報錯。
+
+## 應寫在 CSS 中的查詢 \{#queries-in-css\}
+
+<a id="upgrading-rc-conditions"></a>
+
+class 查詢刻意只接受比原生 CSS 更小的文法。媒體查詢清單、複合條件與否定應以 `@custom-media` 定義。其他查詢請使用 `@mixin`，透過其中的 `@contents` 標示 class 宣告的插入位置。
+
+| 拒絕的 class 形式 | 原因 | 可用替代形式 |
+| --- | --- | --- |
+| `@media((width>=50rem))` | 多餘的群組括號 | `@media(width>=50rem)` |
+| `@media(screen\|and\|(width>=50rem))` | 複合查詢 | 具名 `@custom-media` |
+| `@media(not\|print)` | 否定查詢 | 具名 `@custom-media` |
+| `@media(screen,print)` | 查詢清單 | 具名 `@custom-media` |
+| `@supports(selector([lang\|=en]))` | 選擇器支援測試 | 包含原生 `@supports` 的 `@mixin` |
+
+多餘的群組括號會回報 `CLASS_SYNTAX_ERROR`，並提示應使用的 class 形式。複雜形式會回報 `MASTER_QUERY_REQUIRES_CSS`，且不產生規則。替查詢加上引號不會擴充支援文法。`|=` 屬性運算子這類字面管線符號，請留在原生 CSS，不要放進 class 查詢編碼。
+
+<ConfiguredExample source={'@custom-media --wide-screen screen and (width >= 50rem);\n@mixin --language-selector {\n  @supports selector([lang|=en]) { @contents; }\n}'} classes={['p-md@wide-screen', 'block@apply(--language-selector)']} />
+
+可重用的包覆與參數請見 [Utilities 與 mixins](/reference/directives/definitions#reusing-a-matched-value)。
+
+## 其他後綴 \{#other-suffixes\}
+
+以下後綴也使用 `@` 記號，但不會測試媒體、支援或容器條件。
+
+### 串接層選擇 \{#base--default--component--utility\}
+
+`@layer(base)`、`@layer(defaults)`、`@layer(components)` 與 `@layer(utilities)` 為整個 class 選取串接層，不會建立子層。可以重複相同串接層，但同一個 class 選取不同層會報錯。順序與限制請見[串接層](/reference/rules/layers)。
+
+### 起始樣式 \{#starting-style\}
+
+`@starting-style` 以原生 at-rule 包覆規則。元素沒有先前渲染樣式時，它會提供變更前樣式，讓進場轉場得以運作。它不會自行建立轉場，也不是通用的「首次渲染」選擇器。原生行為請見 [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@starting-style)。
+
+<Class2CSS classes={['(opacity:0)@starting-style']} />
+
+`@starting-style` 與 `@layer(...)` 是內建後綴，不需要預設定義。可重用的 CSS 包覆則使用 [`@apply(--name)`](/reference/directives/definitions#reusing-a-matched-value)。

@@ -1,0 +1,71 @@
+# Reference prose: tokens/radius
+
+## title \{#copy-title\}
+
+
+圆角
+
+## summary \{#copy-summary\}
+
+
+可应用于整个元素或单个角的预设圆角尺度。
+
+## note \{#copy-note\}
+
+
+完全圆角使用固定的 `pill` 工具类，而不是圆角令牌；它只设置 `border-radius: calc(infinity * 1px)`。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+八个预设圆角值都是 rem 长度。像素换算假设根元素字号为 16px。圆角只改变角的形状，不会设置盒子的尺寸。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+圆角与裁剪相互独立
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`r-4xl` 让父元素的背景与边框呈现圆角，不会为子元素设置相同圆角，也不会自动裁剪子元素的绘制区域。如果父元素应沿圆角边缘裁剪内容，请添加 `overflow-hidden`。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`rtl-` 这类物理族始终指向左上角。`rss-` 这类逻辑族遵循块起始侧与行内起始侧，因此对应的物理角取决于书写模式和方向。上方列出全部映射关系。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+相邻曲线可能重叠时，浏览器会缩小过大的圆角值。因此 `pill` 应用于宽盒子时形成胶囊形，应用于正方形时形成圆形；它不会让元素变成正方形。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+需要直角时，请使用直接值函数 `r(0)`，或对应单个角的形式，例如 `rtl(0)`。预设没有 `--radius-none` 令牌，也不接受 `-r-md` 这类负值令牌形式。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+原生圆角裁剪
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+直接值
+
+## usage-lead \{#copy-usage-lead\}
+
+
+从底板到其中的缩略图，逐步缩小圆角。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改预设值或添加令牌：`--radius-card` 会创建 `r-card` 和各个单角类。
+
+## guide-label \{#copy-guide-label\}
+
+
+颜色

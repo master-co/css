@@ -1,0 +1,29 @@
+# Reference prose: illustrations/text-companions
+
+## title \{#copy-title\}
+
+A text treatment always writes three properties
+
+## alt \{#copy-alt\}
+
+A custom text-card class branches to font-size, line-height and letter-spacing. The size reads the primary token; the two absent companions each fall back to normal.
+
+## caption \{#copy-caption\}
+
+Only the primary --text-card token is defined here. Both companion declarations still exist and use normal, replacing any inherited line height or letter spacing.
+
+## description-0 \{#copy-description-0\}
+
+The custom theme defines --text-card as 1.5rem and defines neither companion.
+
+## description-1 \{#copy-description-1\}
+
+text-card emits font-size: var(--text-card), line-height: var(--text-card--line-height, normal) and letter-spacing: var(--text-card--letter-spacing, normal).
+
+## description-2 \{#copy-description-2\}
+
+All three solid branches represent emitted declarations. The absent companions use their normal fallback rather than inheriting another line height or letter spacing.
+
+## description-3 \{#copy-description-3\}
+
+A companion on its own does not register text-card. Family, weight and color are outside this recipe.

@@ -1,0 +1,29 @@
+# Reference prose: illustrations/direct-number-units
+
+## title \{#copy-title\}
+
+Direct numbers become pixel lengths or unitless factors
+
+## alt \{#copy-alt\}
+
+p(12) produces a 12-pixel inset around a content box. grow(1) and grow(2) divide an equal zero-basis flex row’s free space in a one-to-two ratio.
+
+## caption \{#copy-caption\}
+
+The left number becomes a pixel length. The right numbers are flex factors: zero bases and no content minimum isolate their 1:2 distribution. Other bases and minimum sizes can change final widths.
+
+## description-0 \{#copy-description-0\}
+
+The padding example applies real p(12), giving exactly 12px between its content and each outer edge. A blue annotation makes that inset visible.
+
+## description-1 \{#copy-description-1\}
+
+The flex example applies grow(1) and grow(2) to two items with zero flex bases and zero minimum widths, in a 252px row with a 12px gap.
+
+## description-2 \{#copy-description-2\}
+
+The remaining 240px is distributed as 80px and 160px. The factors remain unitless; they are not pixel widths.
+
+## description-3 \{#copy-description-3\}
+
+These are controlled comparisons. With nonzero bases or content minimums, the final widths need not match the growth ratio. Each function’s declaration is listed in the article.

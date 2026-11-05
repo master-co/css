@@ -1,0 +1,71 @@
+# Reference prose: tokens/leading
+
+## title \{#copy-title\}
+
+
+줄 높이
+
+## summary \{#copy-summary\}
+
+
+글꼴 크기에 따라 달라지는 단위 없는 줄 높이입니다.
+
+## note \{#copy-note\}
+
+
+`leading-<name>`은 `line-height`만 설정합니다. 글꼴 크기를 바꾸거나 문단 사이에 간격을 추가하거나 문단 높이를 제한하지 않습니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+프리셋 값 다섯 개는 모두 단위 없는 비율이며 rem 길이나 픽셀 수가 아닙니다. 실제 줄 높이는 요소의 글꼴 크기에 따라 결정됩니다.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+상속한 비율은 각 글꼴 크기를 따릅니다
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`leading-md`는 숫자 `1.6`을 제공합니다. 이를 상속한 자식은 자신의 글꼴 크기를 사용하므로 16px에서는 25.6px, 24px에서는 38.4px가 됩니다. 상속되는 값은 여전히 비율입니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+명시적인 길이나 백분율은 상속 방식이 다릅니다. 선언된 요소에서 길이로 계산됩니다. 사용자 지정 비율에는 `(line-height:1.5)` 같은 네이티브 선언을 사용하거나 테마 토큰을 추가하세요. 프리셋에는 `leading(1.5)` 함수가 없습니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+줄 높이는 보이는 글리프 사이의 빈 공간이 아니라 줄의 세로 치수를 제어합니다. 다른 인라인 콘텐츠 때문에 줄 상자가 더 높아질 수 있습니다. 글리프를 잘라 내거나 문단 높이를 고정하지는 않습니다.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` 텍스트 스타일은 자체 줄 높이를 설정하므로 상속한 비율을 대체합니다. 이 스타일을 의도적으로 덮어쓰려면 같은 요소에 `leading-*`를 적용하세요. 조건이 같으면 단일 속성 유틸리티가 조합 스타일 뒤에 옵니다.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+텍스트 스타일의 보조 토큰
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+네이티브 line-height 상속
+
+## usage-lead \{#copy-usage-lead\}
+
+
+부모에 비율을 설정하고 자식이 각자의 글꼴 크기로 줄 높이를 계산하게 합니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+프리셋 값을 변경하거나 토큰을 추가하세요. `--leading-prose`를 정의하면 `leading-prose`가 생성됩니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+타이포그래피

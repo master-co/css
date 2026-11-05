@@ -1,0 +1,222 @@
+---
+title: "从 Bootstrap 迁移"
+description: "将 Bootstrap 页面逐步迁移到 Master CSS，同时保留第三方 CSS、JavaScript 驱动组件和依赖层叠的覆盖。"
+figures: {"BootstrapIllustration": {"title": "保留阈值，而不是名称", "alt": "同一宽度轴上，Bootstrap md 从 768px 开始；初始字号 16px 时，Master CSS 预设 md 从 1024px 开始。自定义 bootstrap-md 让转换布局保留原 768px 阈值。", "caption": "比较使用 Bootstrap 5.3 默认值与 16px 初始字号。转换断点名称前先查看已安装主题。", "description": [{"title": "原始阈值", "text": "Sass 配置未修改时，Bootstrap 5.3 md 从 768px 开始。"}, {"title": "不同预设", "text": "Master CSS md 从 64rem 开始，此处为 1024px。沿用名字会改变布局边界。"}, {"title": "明确迁移条件", "text": "在 768px 定义 --bootstrap-md，用 grid-cols(3)@bootstrap-md 保留原阈值。"}]}}
+---
+import BootstrapIllustration from './components/BootstrapIllustration.astro'
+
+Bootstrap 与 Master CSS 可以共存。现有标记仍依赖 Bootstrap 网格、工具类、组件、JavaScript 行为、Sass 变量或选择器覆盖时，请继续加载 Bootstrap。每次转换一个页面或一组组件，等产品不再依赖它后再移除。
+
+本指南关注应用自行管理的 Bootstrap 用法。第三方标记、插件、生成 HTML 和 Bootstrap JavaScript 组件，可以继续使用 Bootstrap，直到项目有明确的替代方案。
+
+---
+
+## 迁移策略 \{#migration-strategy\}
+遵循[共用迁移流程](/guide/migration#migration-strategy)，从现有控件外围、应用自行管理的布局开始。只要剩余组件仍依赖 Bootstrap CSS、JavaScript 或 Sass 输出，就继续保留。
+
+转换页面前，先明确三个边界：
+
+- **值：**检查自定义 `$spacers`、`$grid-breakpoints` 和容器宽度。刻度名一致不代表值一致。
+- **选择器：**第三方标记与依赖 Bootstrap 内部结构的覆盖应一起保留，直到该组件被替换。
+- **行为：**焦点处理、ARIA 状态和事件有明确替代实现前，模态框、下拉菜单和折叠区域继续由 Bootstrap 管理。
+
+首个有用的成果，是在正常工作的组件周围完成布局转换。组件有替代方案后，才处理删除依赖。
+
+<BootstrapIllustration />
+
+---
+
+## 在 Bootstrap 旁加入 Master CSS \{#add-master-css-beside-bootstrap\}
+从应用已经加载的样式表导入 Master CSS。暂时不要删除 Bootstrap 导入。
+
+```css name=app.css
+@import "bootstrap/dist/css/bootstrap.css";
+@import "@master/css";
+```
+
+普通应用文件使用默认源文件发现即可。只有需要自定义包含、排除、safelist 或 blocklist 行为时，才添加显式源指令。
+
+仅靠导入顺序，不能让未分层 Bootstrap 规则低于普通分层工具类。要让 Master CSS 组件和工具类优先，先声明层顺序，再将 Bootstrap 导入 `defaults`：
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import "bootstrap/dist/css/bootstrap.css" layer(defaults);
+@import "@master/css";
+```
+
+这会改变层叠行为。在全应用采用前，先在浏览器比较已有覆盖。Bootstrap 工具类也可能使用 `!important`；普通 Master CSS 声明不会仅因处于后面的层就覆盖它们。
+
+---
+
+## 将 Bootstrap Sass 值移入 `@theme` \{#move-bootstrap-sass-values-into--theme\}
+Bootstrap Sass 变量常包含产品决策。如果 Bootstrap 组件之外的标记也要使用这些值，请将其移为 Master CSS 令牌。
+
+```scss name=bootstrap-theme.scss
+$primary: #2563eb;
+$body-color: #172033;
+$border-radius: .5rem;
+$spacer: 1rem;
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-body: #172033;
+  --radius-control: .5rem;
+  --spacing-page: 1rem;
+}
+
+```
+
+```html
+<section class="bg-white fg-body p-page r-control">
+  ...
+</section>
+```
+
+不要假定 Bootstrap 的刻度名称与 Master CSS 预设相同。先移动产品需要的值，再选择描述其角色的令牌名称。
+
+---
+
+## 转换网格和工具类 \{#convert-grid-and-utility-classes\}
+从布局包装层和只使用工具类的简单标记开始。
+
+保留布局意图，而不是 Bootstrap 类名的拼写：
+
+```html
+<!-- Before: container py-5 -->
+<!-- Before: row g-4 -->
+<!-- Before: col-md-4 -->
+```
+
+Bootstrap 默认 [`md` 断点](https://getbootstrap.com/docs/5.3/layout/breakpoints/#available-breakpoints)从 768px 开始；Master CSS 预设 `md` 从 64rem 开始。在应用 CSS 入口定义具名条件，保留原本的列切换阈值：
+
+```css name=app.css
+@custom-media --bootstrap-md (width >= 768px);
+```
+
+```html
+<section class="w-full max-w-6xl mx-auto px-md py-2xl">
+  <div class="grid gap-lg grid-cols(3)@bootstrap-md">
+    <article class="p-lg b(1) b-solid b-line-divider r-lg bg-white fg-body">
+      ...
+    </article>
+  </div>
+</section>
+```
+
+这保留三列阈值，同时选择新的容器宽度和网格间距。用三个真实项目检查 767px 与 768px；照搬 `@md` 会在预设下保持纵向堆叠直到 64rem。替换 Bootstrap 容器和沟槽规则前，先比较这些尺寸。显式 `fg-body` 让固定白底卡片搭配产品的深色文本。
+
+原生声明语法比工具类别名更清楚时，请直接使用：
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) contents@md">
+  ...
+</div>
+```
+{ }
+
+模板仍需要 Bootstrap 容器宽度、沟槽假设或组件内部结构时，保留其布局类。
+
+---
+
+## 转换简单组件 \{#convert-simple-components\}
+按钮、卡片、警告和徽章常是应用自行管理的视觉模式。项目拥有其行为时，可转为标记类或 Master CSS 组件类。共存期间使用新类名，避免改变未转换的 Bootstrap 按钮。保留上面定义的主题令牌。
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+
+  .panel {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: oklch(100% 0 none);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-body);
+  }
+}
+```
+
+```html
+<button type="button" class="action-button">Save</button>
+<article class="panel">...</article>
+```
+
+下拉菜单、模态框、标签页、轮播和折叠区域等，若仍由 Bootstrap 提供行为、无障碍支持或内部结构，就保留组件。只要组件转发类名且层叠清楚，仍可在 Bootstrap 根元素加少量 Master CSS 类。
+
+---
+
+## 保留 JavaScript 驱动的组件 \{#preserve-javascript-driven-components\}
+Bootstrap JavaScript 组件不只是 CSS。根据组件不同，它们管理焦点、ARIA 属性、过渡、body 滚动锁定、Popper 定位和事件。通过[组件 JavaScript API](https://getbootstrap.com/docs/5.3/getting-started/javascript/)盘点必须保留的行为。
+
+替代行为完成实现和测试前，带有 `data-bs-*` 的标记继续使用 Bootstrap。先转换外围布局或产品自行管理的包装层。
+
+```html
+<section class="grid gap-md">
+  <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
+</section>
+```
+
+替换组件时，在同一批可审查改动中删除对应 Bootstrap JavaScript 导入和相关数据属性。
+
+---
+
+## 处理覆盖与第三方 CSS \{#handle-overrides-and-vendor-css\}
+许多 Bootstrap 项目依赖状态类、嵌套标记选择器或优先级修复等覆盖。不要盲目转换。
+
+覆盖针对 Bootstrap 内部结构时，保留为 CSS：
+
+```css name=bootstrap-overrides.css
+.navbar .dropdown-menu {
+  min-width: 16rem;
+}
+```
+
+只有标记归应用自行管理后，才把覆盖移到 Master CSS：
+
+```html
+<nav class="flex items-center gap-md">
+  <div class="min-w-3xs">...</div>
+</nav>
+```
+
+第三方 CSS 和 Bootstrap 主题应继续保留为普通 CSS，直到项目替换了第三方契约。
+
+---
+
+## 验证迁移 \{#validate-the-migration\}
+- 每批工作后运行项目格式化工具、lint、类型检查、测试和生产构建。
+- 比较使用 Bootstrap 网格、容器、表单、模态框、下拉菜单、折叠、工具提示、弹出提示和响应式工具类的页面。
+- 若项目支持，测试悬停、focus-visible、禁用、展开、选中、校验和深色模式状态。
+- 在剩余模板、组件、插件和覆盖都不再依赖 Bootstrap 前，继续加载它。
+- 全部验证通过后，才移除 Bootstrap Sass、CSS、JavaScript 导入及包。
+
+---
+
+## 相关参考 \{#useful-references\}
+- [安装](/guide/installation)：添加 Master CSS。
+- [渲染模式](/guide/rendering-modes)：选择静态、运行时或渐进式渲染。
+- [样式声明](/reference/rules/declarations)：类语法。
+- [主题令牌](/guide/theme)：令牌；[变量与模式](/reference/rules/modes)：模式；[条件](/reference/rules/conditions)：查询语法。
+- [全局样式](/guide/global-styles#shared-vocabulary)：选择标记类、主题令牌、自定义工具类和组件类。
+- [代码检查](/guide/code-linting)：迁移时验证类字符串。

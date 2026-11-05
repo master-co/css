@@ -1,0 +1,29 @@
+# Reference prose: illustrations/truncation-lines
+
+## title \{#copy-title\}
+
+The same text can paint all lines, one line or two lines
+
+## alt \{#copy-alt\}
+
+Three equal-width copies of a paragraph show the full text, a one-line ellipsis using truncate, and a two-line ellipsis using clamp-lines(2). The clipped examples keep the same complete text in the DOM.
+
+## caption \{#copy-caption\}
+
+The font, width and text are identical. Only the truncation class changes. The native browser paints the ellipsis; the full string remains available in each element.
+
+## description-0 \{#copy-description-0\}
+
+Each copy has a 192px width, a 14px font and a 24px line height.
+
+## description-1 \{#copy-description-1\}
+
+The first copy wraps freely and grows to contain every line. truncate keeps the second on one line and hides the overflow with an ellipsis.
+
+## description-2 \{#copy-description-2\}
+
+clamp-lines(2) lets the third copy wrap, then limits its visible content to two lines using the prefixed line-clamp combination.
+
+## description-3 \{#copy-description-3\}
+
+All three elements contain the same full string. A separate disclosure or link is needed when readers must access the complete visible text.

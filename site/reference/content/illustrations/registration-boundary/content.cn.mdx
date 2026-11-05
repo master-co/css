@@ -1,0 +1,31 @@
+# Reference prose: illustrations/registration-boundary
+
+## title \{#copy-title\}
+
+
+原生变量不会注册令牌类
+
+## alt \{#copy-alt\}
+
+
+相同的 spacing-card 声明分别放在 theme 和 root 内。只有 theme 定义会连接到 p-card；两者都能供显式原生 var 引用使用。
+
+## caption \{#copy-caption\}
+
+
+两个示例都加载预设工具类族。注册与浏览器变量可用性是两种独立能力。
+
+## description-0 \{#copy-description-0\}
+
+
+@theme \{ --spacing-card: 1.5rem; \} 在 spacing 命名空间注册 card 键，使 p-card 可用。
+
+## description-1 \{#copy-description-1\}
+
+
+:root \{ --spacing-card: 1.5rem; \} 提供原生 CSS 变量，但不会注册 p-card。
+
+## description-2 \{#copy-description-2\}
+
+
+显式原生类 (padding:var(--spacing-card)) 可以使用任一配置提供的变量。

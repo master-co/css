@@ -1,0 +1,36 @@
+# Reference prose: illustrations/selector-targets
+
+## title \{#copy-title\}
+
+
+同樣的 hover，不同的目標
+
+## alt \{#copy-alt\}
+
+
+兩個相同 article 的第一個連結都處於 hover。在 article 上檢查 hover 會為兩個連結加底線；分別在連結上檢查則只有第一個有底線。
+
+## caption \{#copy-caption\}
+
+
+兩個範例的第一個連結都處於 hover。藍色虛線輪廓標示符合後綴 :hover 檢查的元素，並非生成的邊框。
+
+## description-0 \{#copy-description-0\}
+
+
+兩個 article 都帶有 utility class，並包含相同的兩個直接子連結。第一個連結處於 hover，因此兩個祖先 article 也都符合 :hover。
+
+## description-1 \{#copy-description-1\}
+
+
+underline:hover>a 先檢查 article，再選取直接子連結。兩個連結都套用 text-decoration-line: underline。
+
+## description-2 \{#copy-description-2\}
+
+
+underline>a:hover 先選取直接子連結，再逐一檢查。只有處於 hover 的第一個連結會套用宣告。
+
+## description-3 \{#copy-description-3\}
+
+
+藍色虛線輪廓標示符合 hover 檢查的元素。它們不代表生成的邊框，也不表示第二個 article 未處於 hover。

@@ -3,7 +3,7 @@ import ThemeIllustration from './components/ThemeIllustration.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 import DemoDialogEntrance from './components/DemoDialogEntrance.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Define a token when several elements should change together: card spacing, an action color or the width of a reading column. Put it in `@theme` after the existing `@import '@master/css'` in your app stylesheet, then use the matching class in markup.
 
 <DemoConfiguredExample name="theme-first-card" title="Three shared values, one card" source={`@theme {
@@ -14,7 +14,7 @@ Define a token when several elements should change together: card spacing, an ac
 
 `p-card` generates `padding: var(--spacing-card)`; the browser resolves the custom property on the card. Change the token when every consumer should change together, and use a local value when the change belongs to one element.
 
-## Change one value across its consumers
+## Change one value across its consumers \{#change-one-value-across-its-consumers\}
 
 `--spacing-card` can supply both a card's padding and a list's gap. Change its value from `1.5rem` to `2rem`, and both uses change without editing their markup:
 
@@ -48,7 +48,7 @@ Only `@theme` declarations register class tokens; a native custom property elsew
 
 ---
 
-## Alias and override tokens
+## Alias and override tokens \{#alias-and-override-tokens\}
 
 Use `var()` when one token should follow another. [Aliases resolve before inheritance](https://www.w3.org/TR/css-variables-1/#cycles): if `--color-text-action` is declared at the root, overriding `--color-brand` in a descendant does not rebind the inherited alias. Redeclare the alias in that scope.
 
@@ -74,7 +74,7 @@ For a color that follows light and dark modes, give the token a `light-dark()` v
 
 <a id="use-inline-and-static-tokens" />
 
-## Choose token delivery and value substitution
+## Choose token delivery and value substitution \{#choose-token-delivery-and-value-substitution\}
 The two modifiers answer different questions:
 
 | Need | Choose | Result |
@@ -111,7 +111,7 @@ Combine the modifiers with `@theme static inline` when you need both behaviors. 
 
 <GuideStudy id="delivery-substitution" />
 
-## Define motion tokens
+## Define motion tokens \{#define-motion-tokens\}
 
 <a id="animation-tokens-and-definitions"></a>
 

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/font-loading-boundary
+
+## title \{#copy-title\}
+
+
+ファミリー指定にも利用可能なフォントが必要
+
+## alt \{#copy-alt\}
+
+
+1 つの font-family 指定から、指定書体が利用可能な場合と、利用できず serif に代替する場合へ分岐する。
+
+## caption \{#copy-caption\}
+
+
+例は利用可能性の 2 ケースで、測定したダウンロード時間軸ではありません。指定書体は読み込み済みの Geist、代替はブラウザーの serif 書体です。
+
+## description-0 \{#copy-description-0\}
+
+
+font-family 宣言は優先順を指定するもので、それだけでフォントをダウンロードしません。
+
+## description-1 \{#copy-description-1\}
+
+
+一致する利用可能な書体があればそれで描画し、なければ次のファミリーを試します。グリフの収録範囲も関わり、同じ行でも文字ごとに別のフォントを使う場合があります。
+
+## description-2 \{#copy-description-2\}
+
+
+Web フォントは @font-face または提供元のスタイルシートで読み込み、計算済みの font-family 文字列だけでなく実際の描画フォントを調べます。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/scanning-two-filters
+
+## title \{#copy-title\}
+
+
+文件选择与候选选择是不同筛选
+
+## alt \{#copy-alt\}
+
+
+main.html 提供 grid 与 hidden；draft.html 在提取前已被排除。安全列表加入 block，阻止列表移除 hidden。最终候选集为 grid 和 block。
+
+## caption \{#copy-caption\}
+
+
+排除 draft.html 会阻止其 flex 候选进入此源范围。阻止 hidden 是在收集后移除候选；安全列表的 block 则加入显式候选。
+
+## description-0 \{#copy-description-0\}
+
+
+@source 包含 HTML 文件，@source not 排除 draft.html。仅 main.html 提供 grid 和 hidden 类字符串。
+
+## description-1 \{#copy-description-1\}
+
+
+@safelist "block" 不依赖源文件，直接加入完整候选项。
+
+## description-2 \{#copy-description-2\}
+
+
+@blocklist "hidden" 移除该候选项。最终可用集为 grid 和 block；flex 从未进入此范围。
+
+## description-3 \{#copy-description-3\}
+
+
+文件与候选策略相互独立。具备候选资格不代表任意类字符串均有效；常规匹配与诊断仍会应用。

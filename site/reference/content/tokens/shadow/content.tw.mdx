@@ -1,0 +1,71 @@
+# Reference prose: tokens/shadow
+
+## title \{#copy-title\}
+
+
+陰影
+
+## summary \{#copy-summary\}
+
+
+針對淺色與深色調整的多層浮起陰影。
+
+## note \{#copy-note\}
+
+
+`shadow-<name>` 會設定完整的 `box-shadow` 值。兩個陰影 class 不會接合各自的清單，勝出的宣告會提供整個陰影。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+每個 token 儲存一份以逗號分隔的原生陰影清單。展開值即可檢查每一層。淺色與深色使用相同的偏移、模糊與擴張長度，差別在 light-dark() 的色彩。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+陰影改變繪製，不改變版面配置
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`shadow-xs` 與 `shadow-xl` 會在同一個盒子周圍產生不同的繪製範圍，但都不會為陰影預留空間；後方元素的位置與間隙仍維持不變。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+token 清單中的第一個陰影會繪製在後續陰影上方。`shadow-inset` 使用內陰影，六個尺寸等級則使用外陰影。這些 token 不會設定表面色彩、圓角、堆疊順序或裁切規則。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+元素使用的配色方案會選取各個 `light-dark()` 色彩，因此可以在不改變陰影長度、也不需要另一個 utility class 的情況下改變繪製結果。區域配色方案的選取方式請見色彩角色。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+若要移除陰影，請使用原生宣告 `(box-shadow:none)`。若要結合內陰影與外陰影，請定義一個同時包含兩份清單的 token；分開的 class 不會合併它們。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+色彩角色
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生陰影繪製與版面配置
+
+## usage-lead \{#copy-usage-lead\}
+
+
+讓靜置表面維持低浮起程度，只抬高懸浮於其上的物件。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改預設值或新增 token：`--shadow-card` 會建立 `shadow-card`。
+
+## guide-label \{#copy-guide-label\}
+
+
+色彩

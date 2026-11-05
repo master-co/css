@@ -1,0 +1,31 @@
+# Reference prose: illustrations/pruning-selector-branches
+
+## title \{#copy-title\}
+
+
+修剪依 class 使用情況保留分支
+
+## alt \{#copy-alt\}
+
+
+選擇器清單移除 unused:hover，但保留 card。獨立的 card title 後代選擇器，在 card 已使用時也完整保留，即使沒有符合 DOM 關係的證據。
+
+## caption \{#copy-caption\}
+
+
+保留標示依循選擇器分支。修剪檢查已使用 class 名稱，不檢查完整選擇器目前是否符合元素。
+
+## description-0 \{#copy-description-0\}
+
+
+啟用 @prune native 且使用 card 時，.card, .unused:hover 只保留 .card 分支。
+
+## description-1 \{#copy-description-1\}
+
+
+另一條 .card .title 分支因 card 位於已使用集合而保留，不需要同時找到 title。
+
+## description-2 \{#copy-description-2\}
+
+
+保留不代表 DOM 含有 title 後代。沒有 class 選擇器的規則仍會保留。

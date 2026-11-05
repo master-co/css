@@ -1,0 +1,36 @@
+# Reference prose: illustrations/stylesheet-asset-graph
+
+## title \{#copy-title\}
+
+
+入口只是交付資源圖中的一個檔案
+
+## alt \{#copy-alt\}
+
+
+app.css 在 print 條件下匯入 print.css，print.css 再參照 mark.svg。三個檔案都必須發布到參照的 URL。
+
+## caption \{#copy-caption\}
+
+
+從入口沿參照追蹤到子樣式表，再到影像。它們是各別交付的檔案；print 限定留在匯入上。名稱只是示例，不是生成檔名慣例。
+
+## description-0 \{#copy-description-0\}
+
+
+交付的 app.css 以 print 限定匯入 print.css。子檔案仍是獨立樣式表，限定也留在其匯入上。
+
+## description-1 \{#copy-description-1\}
+
+
+print.css 內的宣告，以子樣式表交付 URL 為基準相對參照 mark.svg。
+
+## description-2 \{#copy-description-2\}
+
+
+入口、子樣式表與影像都要發布到各參照解析出的 URL。只複製 app.css，會讓兩個相依資源無法取得。
+
+## description-3 \{#copy-description-3\}
+
+
+此圖是相依圖，不是請求瀑布圖。實際生成名稱與資源是否維持獨立，取決於編譯與宿主。

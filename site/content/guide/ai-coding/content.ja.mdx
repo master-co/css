@@ -1,0 +1,238 @@
+---
+title: "Master CSS による AI コーディング"
+description: "エージェントを Master CSS プロジェクトに接続し、範囲を絞った変更を依頼し、描画結果を検証して共有スタイルの変更をレビューします。"
+figures: {"AIIllustration":{"title":"出力に存在してもブラウザーで優先するとは限らない","alt":"レイヤー内の p-md ユーティリティは --spacing-md でパディングを宣言し、レイヤー外の notice ルールは 8px を宣言します。通常のレイヤー外ルールが優先し、通知のパディングは 8px になります。","caption":"両方のルールが有効で存在します。通常のレイヤー外 CSS はレイヤー内 CSS に優先するので、生成出力だけを調べても意図した間隔かは証明できません。","description":[{"title":"生成ルール","text":"プリセットの p-md は utilities レイヤー内で padding: var(--spacing-md) を提供し、既定値は 1rem です。"},{"title":"競合ルール","text":"通常の宣言では、レイヤー外のネイティブルール .notice { padding: 8px; } がレイヤー内のユーティリティに優先します。"},{"title":"観測結果","text":"notice と p-md を持つ要素は4辺が 8px になります。間隔を直すには同じユーティリティを再生成するのでなく、優先するネイティブルールを見直します。"}]},"GuideStudy:inspection-coverage":{"title":"検査した集合はプロジェクト全体より小さい","alt":"プロジェクトの境界には3つのソースがあり、括弧は検査した2つだけを囲み、3つ目を外に残しています。","caption":"検査したファイルと文脈を明示します。部分集合で問題がないことは、全ソースの根拠にはなりません。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import AIIllustration from './components/AIIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概要 [sr-only] \{#overview\}
+コーディングエージェントにも、CSS エントリー、テーマトークン、コンポーネントクラス、プロジェクトの検証手順を共有します。Master CSS MCP サーバーに接続し、範囲を絞った UI 変更を依頼して、最終ソースと描画結果による根拠を求めます。このガイドでは、設定から最初の修復、さらに共有定義の変更までを扱います。
+
+---
+
+## まずプロジェクトを設定する \{#set-up-the-project-first\}
+[インストーラー](/guide/installation)は既定でエージェント向けの準備も行います。`npm create @master/css@VERSION` はフレームワーク連携に加え、次を追加します。
+
+- `@master/eslint-config-css` と、それを展開する `eslint.config.js`。エージェントの出力を[コードの lint](/guide/code-linting)で検証します。
+- 開発依存の `@master/css-mcp` と、MCP クライアントへ登録する stdio コマンドの表示。
+- `AGENTS.md` の `## Master CSS` ルール。文書、プロジェクトの語彙、MCP、ESLint へエージェントを案内します。
+
+`--no-eslint`、`--no-mcp`、`--no-ai` で各項目を省き、`--minimal` ではフレームワーク設定だけを行います。生成された `AGENTS.md` ブロックの下に実際の検証コマンドを追記し、エージェントが推測せずに済むようにします。
+
+次に、エージェントが再利用できる語彙を用意します。テーマトークンは繰り返す値を明確にし、コンポーネントクラスは共通の製品パターンに安定した名前を与えます。
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+```
+
+---
+
+## MCP サーバーに接続する \{#connect-the-mcp-server\}
+MCP サーバーはローカルで stdio を使って動き、`--root` で渡したワークスペースを読みます。`mcpServers` の JSON に対応するクライアントでは、MCP 設定ファイルに次を追加します。
+
+```json name=mcp-client-config.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@VERSION", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+独自の登録コマンドを持つクライアントでも、同じ stdio コマンドを使います。
+
+```bash
+# Claude Code (add --scope project for a shared .mcp.json)
+claude mcp add --transport stdio master-css -- npx -y @master/css-mcp@VERSION --root /absolute/path/to/project
+
+# Codex
+codex mcp add master-css -- npx -y @master/css-mcp@VERSION --root /absolute/path/to/project
+```
+
+`--root` には絶対パスを使います。このパスはマシン固有なので、プロジェクト設定をコミットする際は確認してください。クライアントを再起動するか新しいセッションを開き、`mastercss_workspace_info` を呼び出して、返されたルートとスタイルシートエントリーが対象プロジェクトのものか確かめます。マニフェストの読み込み失敗は設定の修正が必要な状態です。サーバーが黙ってプリセットで回答することはありません。
+
+[MCP ツール一覧](/reference/tools/mcp)には全ツール、`debug-missing-css` などの組み込みプロンプト、機械可読な結果形式を示しています。MCP を使えないクライアントでは、プロジェクトルートから [CLI](/reference/tools/cli) を実行します。たとえば `master-css lint --format json --exit-code never` や `master-css inspect --format json --exit-code never` です。
+
+---
+
+## Master CSS スキルを使う \{#use-the-master-css-skill\}
+
+公式の `master-css` スキルは、タスクに必要な指針を読みます。Master CSS プロジェクトでは、次のワークフローに使います。
+
+| ワークフロー | 用途 |
+| --- | --- |
+| UI の作成と編集 | プロジェクトのトークン、ユーティリティ、ネイティブ CSS でコンポーネントを作成、調整する。 |
+| スタイルのレビューとデバッグ | 変更をレビューし、ソース抽出からブラウザーの動作まで、欠けたスタイルや想定外のスタイルを調べる。 |
+| CSS 配信の最適化 | 本番 CSS を評価し、ルートとコンポーネントの読み込み境界を改善し、選択的な刈り込みを検証する。 |
+
+プロジェクトディレクトリからインストールし、使うコーディングエージェントを選びます。
+
+```sh
+npx skills add master-co/css --skill master-css
+```
+
+[Skills CLI](https://github.com/vercel-labs/skills) では Codex、Claude Code、Cursor などを選べます。スキルの互換性メタデータとインストール済みの Master CSS バージョンを照合してください。スキルは必要な参照資料を読みますが、Master CSS のインストールや MCP サーバーの登録は行いません。インストーラーの `--ai` はこのコマンドを表示するだけで実行しません。
+
+## 観察できる変更を1つ依頼する \{#ask-for-one-observable-change\}
+
+編集前にプロジェクトを調べ、その後1つの変更に集中するよう依頼します。たとえば既存のカードを整えてもらう際に、期待する結果を伝えます。
+
+<DocumentPrompt title="1つのコンポーネントを整える" text={`Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
+
+You are working in a Master CSS project.
+
+Read the installed package/language/binding versions and project manifest first. Use documentation that matches those versions.
+Consult the Guide and Reference for the installed Master CSS version.
+
+Before editing, inspect the framework, package manager, CSS entry, theme tokens, component classes, nearby UI patterns, and available validation commands.
+
+When styling markup:
+- use valid Master CSS syntax
+- prefer existing theme tokens and component classes
+- prefer fixed utilities and numeric functions, such as flex and p(16), over equivalent native declarations
+- use canonical token families for project values and full native property names when a native declaration is needed
+- do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
+- keep semantic HTML and accessibility behavior unchanged
+- explain any value that should become a shared token
+
+After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.`} />
+
+
+---
+
+## 修復を検証する \{#verify-a-repair\}
+現在の正常な動作を保ち、修復を裏付ける根拠を示すよう依頼します。編集前にソースのスナップショットを残し、最終ファイルを調べて再ビルドします。lint の自動修正後も同様です。却下された案は有用な根拠ですが、次の修復を始めるソースではありません。
+
+検証ごとに分かることは異なります。
+
+<DocumentComparison>
+
+| 根拠 | 確認すること |
+| --- | --- |
+| lint レポート | `coverage.checkedFiles` と有効なルールを読みます。`summary.checkedFiles` は検証した入力数、`summary.filesWithDiagnostics` は診断のあるファイル数です。診断の `files` が空でも、何も実行していないとは限りません。 |
+| クラスの検査 | 最終マークアップと読み込んだプロジェクトスタイルシートを照合します。生成ユーティリティ、ネイティブ CSS のセレクターフック、未解決の表記を区別します。 |
+| ブラウザー検証 | 以前正常だった状態も含め、影響を受ける状態の計算値と一致ルールを比較します。生成ルールがあっても、どの宣言が優先するかは分かりません。 |
+
+</DocumentComparison>
+
+### 生成ルールでも負けることがある \{#a-generated-rule-can-still-lose\}
+
+この例では両方のクラスに有効な CSS があります。プリセットの `p-md` は 1rem のパディングを生成しますが、`.notice` は**レイヤー外**のネイティブルールで 8px を設定します。通常の宣言では、このルールがレイヤー内のユーティリティに優先します。
+
+<AIIllustration />
+
+<DemoConfiguredExample name="agent-cascade-check" title="優先されるパディングを調べる" source={`.notice {
+  padding: 8px;
+}`} html={'<p class="w-fit m(0) p-md r-md text-sm bg-surface-raised fg-text-strong notice">Saved locally</p>'} caption="通知の4辺のパディングは 8px です。ブラウザーで調べてから、生成 CSS の p-md とネイティブルールを比較します。両ルールは存在しますが、計算後のパディングを決めるのは片方だけです。" />
+
+`p-md` をもう1つ生成しても直りません。通知を共有の間隔に合わせるなら、競合するパディング宣言を取り除くか、意図して `@layer components` に置きます。共有ルールを変える前にほかの通知も確認してください。[CSS レイヤー順](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description)を参照してください。
+
+### 検査のカバレッジを読む \{#read-inspection-coverage\}
+
+既定の lint は未知の記述済み CSS 名を許可するため、問題なしでも全クラスが登録ユーティリティだとは限りません。CLI 検査では、ネイティブセレクターが `discovered.invalid` と `discovered.usedNative` の両方に出る場合があります。ユーティリティを生成しなくても、スタイルシートのルールは存在し得ます。明示的な `inspect --classes` では、マークアップやネイティブルールとともに `missingCSS` の存在理由を読みます。`missingCSS.checked` が空なら、クラス検査完了とは言えません。詳細は [CLI 一覧](/reference/tools/cli#inspect)を参照してください。
+
+ネイティブルールとユーティリティが同じプロパティに影響する場合は、実際のレイヤー順で[カスケードの診断](/guide/cascade-layers#diagnose-a-competing-declaration)を行います。修復レポートには検査結果と、ブラウザーで優先された宣言を一緒に残します。
+
+両クラスが認識されても、競合警告のレビューは必要です。登録ユーティリティをネイティブのホバー用セレクターフックにしても、その別個の生成ルールはホバーに限定されません。通常時、ホバー条件、キーボードフォーカス、無効状態、対応するタッチ動作を確認します。最後の編集後に関連検証を再実行し、以前通った検証を保って、別の場所の新しい失敗を受け入れないようにします。
+
+<GuideStudy id="inspection-coverage" />
+
+### 結果と限界を報告する \{#verification-limits\}
+変更した動作、残したネイティブ CSS と依存、実際に確認したファイルと状態、未解決の診断を示す短い最終報告を求めます。lint が3ファイルで失敗し、狭い選択範囲では通ったなら両方を報告します。情報目的の未知値診断は、無効値と呼ばずに残します。静的な予測とブラウザーでの観測を区別し、ブラウザー検証が未完了なら明示します。
+
+スキルは指示を提供しますが、ブラウザーの自動実行や修復のロールバックを強制しません。これらはエージェントとプロジェクトの検証で行います。動的なクラス構築、実行時の変更、未検証環境は静的検査の対象外になり得ます。ビルド成功、診断なし、1つの表示状態の合格だけでは完全な修復を保証しません。未完了を明示し、合意した範囲と検証予算で止めます。
+
+---
+
+## ツールが提案した修正をレビューする \{#safe-write-previews\}
+読み取り専用ツールはファイルを書きません。修正は2回の呼び出しで行い、先に差分を提示できます。
+
+1. `mastercss_preview_fixes` または `mastercss_preview_directive_format` は、ワークスペースを変えずに差分と確認トークンを返します。
+2. プロジェクトのレビュー手順で差分を承認した後、`mastercss_apply_preview` が書き込みます。ただしトークンが有効で、全パスがワークスペース内にあり、各ファイルのハッシュがプレビュー時と一致する場合に限ります。
+
+たとえば、1ファイルのクラス順の修正をプレビューします。
+
+```json name=mastercss_preview_fixes
+{
+  "mode": "lint-fixes",
+  "patterns": ["src/button.html"],
+  "rules": "sort-classes"
+}
+```
+
+プレビュー後にファイルが変わると、適用は失敗し、新しい作業を上書きしません。ファイルやサーバーセッションが変わったら新しいプレビューを作成します。トークンの有効性と書き込み保証は[プレビューの有効期間](/reference/tools/mcp#preview-lifetime)を参照してください。
+
+---
+
+## クラスが不明なときに宣言を変換する \{#translate-a-declaration-when-the-class-is-unclear\}
+
+MCP のクラス検査では、`matchStatus`、`cssSyntaxStatus`、`cssValueStatus`、`browserSupport` を別々に読みます。未知の値は一致失敗ではなく、ブラウザー対応が `not-checked` なら検証済みではありません。
+
+クラスの表記が不確かな場合、[CLI](/guide/installation#cli) は独立した CSS 宣言ブロックからクラスを提案できます。MCP 接続は不要です。アプリのルートで、プロジェクトにインストールされた版を実行します。
+
+```bash
+master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
+```
+
+JSON 応答の `result.classes`、`result.remainingCss`、`validation`、`diagnostics` を読みます。`manifest.entries` に想定の CSS エントリーがあるか確認してください。空ならプリセットを使っています。別のルートには `--cwd`、標準入力からの宣言には `--stdin` を使います。終了状態と保全ブロックは[コマンド契約](/reference/tools/cli#suggest)を参照してください。インストール済みの CLI に `suggest` がなければ、異なる版を混ぜず、利用できる検証を使い続けます。
+
+MCP に接続していれば、同じ宣言ブロックを `mastercss_suggest_classes` に渡せます。
+
+```json
+{
+  "declarations": "display:flex; align-items:center; padding:16px; gap:1rem;"
+}
+```
+
+標準プリセットでは `flex items-center p(16) (gap:1rem)` を提案します。プロジェクト定義により提案は変わり得ます。結果には生成 CSS、個別の値の検証状態、ネイティブ CSS に残すブロックの `remainingCss` が含まれます。不確かなブロックは、重複宣言や重なる可能性のあるプロパティも含めて全体を保全します。ファイル編集やスタイルシートのセレクター変換は行いません。
+
+提案を適用する前にカスケードを確認します。セレクターやインラインスタイルからユーティリティへ移すと、優先するルールが変わり得ます。この宣言検査は、周囲のスタイルやブラウザー描画を検証しません。
+
+---
+
+## 共有定義の変更が及ぶ範囲を確認する \{#review-the-second-change\}
+最初の案が正しく見えても、次の編集の影響は分かりません。`--color-brand` などの共有定義を変える前にスナップショットを保存し、マークアップが同じでも編集後と比較します。
+
+```bash
+master-css inspect --snapshot > before.json
+master-css inspect --compare before.json > impact.json
+```
+
+`impact.json` は変更した定義、既知のクラス利用先とファイル、変更前後の生成ルール、ネイティブスタイルシートの参照、出力配信を示します。変化がなくても `coverage` を読んでください。動的なソース、リモートの内容、最終的なブラウザー動作は網羅していません。MCP では前後に `includeSnapshot: true` で `mastercss_scan_project` を呼び、2つのスナップショットを `mastercss_css_compare` に渡します。
+
+ネイティブのコンポーネント CSS では、管理対象のスタイルシートグラフ全体でトークン参照を調べます。JavaScript から読み込むルートやコンポーネントのスタイルシートはグラフ外なので、ソースパスを指定します。
+
+```bash
+master-css inspect --design-system --design-system-options design-system.options.json "app/**/*.css"
+```
+
+レポートには各 `var()` 参照のソース範囲、セレクター、祖先の at-rule、インポート元、共有接頭辞の衝突が載ります。`components` は `.button[data-variant="primary"]` などから各クラスの属性語彙を読み、CSS が実際に扱うバリアントを書けるようにします。任意の[オプションファイル](/reference/tools/cli#design-system-options)で、トークン説明、非推奨と代替案、指定プロパティの生値ポリシーを追加できます。同じオブジェクトは `mastercss_scan_project.designSystem` と[言語サービス](/guide/language-service)の `designSystem` でも使え、ルートのスタイルシートは `routeStylesheets` に渡します。これらは記述構文の根拠なので、影響する表示と状態はブラウザーでも確認します。
+
+
+## エージェントと配信を最適化する \{#optimize-delivery-with-an-agent\}
+
+読み込みのリファクタリングや性能評価では、[CSS 配信の最適化](/guide/optimizing-css-delivery)、対象ルート、現在のレンダリングモード、検証手順を渡します。本番資産の基準を記録し、機能のスタイルを所有元に移し、機能ページと無関係なページの出力と操作を検証するよう依頼します。タスクで必要でなければモードは保ちます。
+
+公開の Master CSS スキルは、配信の参照資料へこの作業を案内します。ソースとマニフェストの検査も有用ですが、ブラウザーの転送コストや後の状態の正しさを証明しません。通常のコンポーネント変更では局所的な検証を行い、自動的な全サイト監査は不要です。

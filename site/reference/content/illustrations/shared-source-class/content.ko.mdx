@@ -1,0 +1,36 @@
+# Reference prose: illustrations/shared-source-class
+
+## title \{#copy-title\}
+
+
+소스 하나를 제거해도 공유 규칙은 제거되지 않습니다
+
+## alt \{#copy-alt\}
+
+
+페이지 A는 제거되었지만 페이지 B에는 p-md가 남아 있습니다. 유지된 padding 규칙에 대한 유효한 연결은 페이지 B에만 있습니다.
+
+## caption \{#copy-caption\}
+
+
+정의와 정책이 같으면 페이지 A를 제거해도 페이지 B의 p-md 참조는 남습니다. 생성 CSS가 같게 유지되더라도 소스 소유 관계는 바뀝니다.
+
+## description-0 \{#copy-description-0\}
+
+
+처음에는 page-a.tsx와 page-b.tsx 모두 완전한 p-md 클래스를 포함합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+page-a.tsx를 제거하면 해당 소스가 제공한 결과만 제거됩니다. page-b.tsx의 유효한 연결이 공유 유틸리티와 --spacing-md 의존 항목을 유지합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+현재 소스나 safelist가 더 이상 유지하지 않으면 유틸리티를 제거할 수 있습니다. 소스 업데이트는 이전 결과를 대체하며 과거 클래스를 누적하지 않습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+그림은 유지된 유틸리티 선언을 보여 줍니다. 테마 의존 항목은 별도로 설명하며 전체 스타일시트로 다시 표시하지 않습니다.

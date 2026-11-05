@@ -1,0 +1,26 @@
+# Reference prose: illustrations/pseudo-element-origin
+
+## title \{#copy-title\}
+
+
+生成內容屬於偽元素
+
+## alt \{#copy-alt\}
+
+
+單一 span 的渲染文字行，在 before 顯示左引號、中間顯示文字、after 顯示右引號。
+
+## caption \{#copy-caption\}
+
+
+引號由真正的 ::before 與 ::after content 宣告生成。三個括弧標示同一個渲染元素的各部分，不代表三個 DOM 子元素。
+
+## description-0 \{#copy-description-0\}
+
+
+span 內含文字 Keep the interface clear。其 (content:open-quote)::before 與 (content:close-quote)::after class 提供可見的引號。
+
+## description-1 \{#copy-description-1\}
+
+
+每個宣告都指向自己的偽元素。Master CSS 不會建立獨立子元素，也不會只因存在偽元素後綴就加入 content 宣告。

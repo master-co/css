@@ -1,5 +1,10 @@
 import { configuredExampleCSS, configuredMarkupClasses } from '@master/internal-site/css/configured-example.ts'
 
+export const authoringExampleCopy = {
+  title: 'Shared package vocabulary',
+  caption: 'Hover, press or focus the button to inspect the package’s shared states; it performs no save action. The app uses the package’s theme-motion condition to respect reduced motion.'
+}
+
 export const authoringSource = `@theme {
   --color-brand: #4f46e5;
   --color-text-action: var(--color-text-strong);
@@ -60,8 +65,8 @@ export function authoringCSS() {
   return configuredExampleCSS(authoringSource, configuredMarkupClasses(authoringHTML))
 }
 
-export function authoringExampleMarkdown(part: string) {
+export function authoringExampleMarkdown(part: string, copy = authoringExampleCopy) {
   if (part === 'source') return `\`\`\`css name=master.css\n${authoringSource}\n\`\`\``
   if (part !== 'preview') throw new Error(`Unknown package example: ${part}`)
-  return `\`\`\`html\n${authoringHTML}\n\`\`\`\n\nGenerated CSS:\n\n\`\`\`css disclosure=generated-css\n${authoringCSS()}\n\`\`\``
+  return `**${copy.title}**\n\n\`\`\`html\n${authoringHTML}\n\`\`\`\n\nGenerated CSS:\n\n\`\`\`css disclosure=generated-css\n${authoringCSS()}\n\`\`\`\n\n${copy.caption}`
 }

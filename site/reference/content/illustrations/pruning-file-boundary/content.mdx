@@ -1,0 +1,29 @@
+# Reference prose: illustrations/pruning-file-boundary
+
+## title \{#copy-title\}
+
+A pruning directive stops at its file boundary
+
+## alt \{#copy-alt\}
+
+app.css opts into pruning and imports cards.css. Only local is used. The unused local rule is removed; both rules from cards.css remain because that file did not opt in.
+
+## caption \{#copy-caption\}
+
+Only local is used in this compilation. app.css opts in; cards.css does not. Importing cards.css does not pass the pruning directive into it.
+
+## description-0 \{#copy-description-0\}
+
+app.css contains @prune native, imports cards.css, and defines .local and .unused-local. The only used class is local.
+
+## description-1 \{#copy-description-1\}
+
+Its output keeps .local and removes .unused-local.
+
+## description-2 \{#copy-description-2\}
+
+cards.css declares neither pruning nor preservation directives. Its default policy keeps both .card and .unused-card, although neither class is used.
+
+## description-3 \{#copy-description-3\}
+
+A project-wide pruneNativeCSS option can opt project files in separately. @preserve native wins within its own file. This example isolates explicit per-file policy.

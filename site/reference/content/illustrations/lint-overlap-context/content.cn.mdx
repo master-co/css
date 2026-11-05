@@ -1,0 +1,31 @@
+# Reference prose: illustrations/lint-overlap-context
+
+## title \{#copy-title\}
+
+
+冲突分析比较相同变体范围内的声明
+
+## alt \{#copy-alt\}
+
+
+相同范围的两个 margin 类位于同一共享单元格；sm 与 md 的 margin 类则位于不同范围列。
+
+## caption \{#copy-caption\}
+
+
+查询范围不同不代表浏览器条件区间不相交。在 md 时两个最小宽度查询均可能匹配，仍由层叠决定。
+
+## description-0 \{#copy-description-0\}
+
+
+相同选择器与条件范围内的两条 margin 声明可被 no-conflicting-classes 诊断为冲突。
+
+## description-1 \{#copy-description-1\}
+
+
+此处 sm 与 md 变体范围不同，不会被报告为上述同范围冲突。
+
+## description-2 \{#copy-description-2\}
+
+
+这是诊断分组，并不表示两段媒体范围永不重叠，也不表示原有值自动就是良好设计选择。

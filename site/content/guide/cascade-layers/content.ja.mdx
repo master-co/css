@@ -1,0 +1,65 @@
+---
+title: "カスケードレイヤー"
+description: "ユーティリティで共通コンポーネントを上書きし、ルールの競合、レイヤー外の CSS、重要度の影響を調べます。"
+figures: {"CascadeIllustration": {"title": "後のレイヤーが局所的なパディングを決める", "alt": "名前付きレイヤーは theme、base、defaults、components、utilities の順に並びます。コンポーネントは 1.5rem のパディングを宣言しますが、後の utilities レイヤーにある p-sm が同じ要素に 0.75rem を適用します。", "caption": "これらの通常の宣言では、utilities が components より優先されます。HTML のクラス順序を変えても結果は変わりません。", "description": [{"title": "順序を定める", "text": "プリセットは theme、base、defaults、components、utilities の順にレイヤーを宣言します。"}, {"title": "宣言を比較する", "text": "ネイティブの collection-card コンポーネントは 1.5rem のパディングを指定します。同じ要素に対し、p-sm は後の utilities レイヤーで 0.75rem を指定します。"}, {"title": "結果を確認する", "text": "これらの通常の宣言ではユーティリティが優先されます。ルートのフォントサイズが 16px なら、計算済みのパディングは 12px です。"}]}, "GuideStudy:unlayered-obstacle": {"title": "レイヤー外のルールは、レイヤー内の通常ルールより優先される", "alt": "図では components の後に utilities が並び、その両方より上にレイヤー外のルールが分けて配置されています。適用されるパディングは、そのレイヤー外のルールによるものです。", "caption": "ここでは作成者による通常の宣言を比較しています。重要な宣言には別のレイヤー優先順位が適用されます。"}}
+---
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import CascadeIllustration from './components/CascadeIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概要 [sr-only] \{#overview\}
+セレクターの詳細度を上げずに、一か所だけスタイルを調整できます。共通のコンポーネントルールを `components` レイヤーに置き、各インスタンスのユーティリティで変更が必要なプロパティを上書きします。
+
+<CascadeIllustration />
+
+## コンポーネントを局所的に上書きする \{#override-a-component-locally\}
+
+CSS のカスケードレイヤーは、セレクターの詳細度を比較する前に、宣言のグループに優先順位を与えます。再利用するコンポーネントのスタイルを components レイヤーに置き、特定のインスタンスで別の値が必要なときにユーティリティを追加します。
+
+<DemoConfiguredExample name="layer-local-override" title="共通コンポーネントを局所的に調整" source={`@layer components {
+  .collection-card {
+    padding: 1.5rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-raised);
+  }
+}`} html={'<div class="grid-cols(1) gap-lg wrap-anywhere"><article class="collection-card"><h2 class="m(0) text-lg font-regular">Release notes</h2><p class="mt-xs mb(0) text-sm fg-text-muted">Updates for your workspace.</p></article><article class="collection-card p-sm"><h2 class="m(0) text-lg font-regular">Release notes</h2><p class="mt-xs mb(0) text-sm fg-text-muted">Updates for your workspace.</p></article></div>'} caption="どちらのカードも内容とコンポーネントクラスは同じです。1 枚目のパディングは 24px です。2 枚目には p-sm を追加しているため、ルートのフォントサイズが 16px のこのプレビューでは 12px になります。角丸、ボーダー、サーフェスは変わりません。" />
+
+プリセットでは、通常の宣言に対して次の順序を定めています。
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+`p-sm` ユーティリティは、HTML 属性内でのクラスの位置にかかわらず、コンポーネントのパディング宣言より優先されます。この順序と適用範囲は[カスケードの仕様](/reference/rules/layers#how-layers-control-the-cascade)を参照してください。
+
+このユーティリティが変更するのはパディングだけです。コンポーネントを置き換えたり、ほかの宣言を削除したりはしません。小さな局所調整のために、別のコンポーネントバリアントや `!important` 宣言を追加する必要はありません。
+
+## ネイティブルールを意図したレイヤーに置く \{#keep-native-rules-in-the-intended-layer\}
+
+どのレイヤーにも属さない通常のルールは、名前付きレイヤー内の通常のルールより優先されます。ユーティリティがコンパイルされているのに効かない場合は、レイヤーに属さないコンポーネントルールがないか確認してください。
+
+```css
+/* This normal rule wins over a layered padding utility. */
+.collection-card {
+  padding: 1.5rem;
+}
+```
+
+その共通ルールをユーティリティで上書きできるようにしたい場合は、`@layer components` に移します。意図しないレイヤー境界を補うためだけに `!important` を追加しないでください。
+
+<GuideStudy id="unlayered-obstacle" />
+
+レイヤーは、カスケードのほかの規則を置き換えるものではありません。重要度は通常のレイヤー優先順位より先に評価され、`!important` はレイヤー間の順序を逆転させます。インライン宣言、アニメーション、トランジションにもそれぞれの優先順位があります。これらの規則は [CSS カスケード仕様](https://www.w3.org/TR/css-cascade-5/#layer-order)、プリセットの順序は [Master CSS のレイヤー仕様](/reference/rules/layers#how-layers-control-the-cascade)を参照してください。
+
+## 競合する宣言を調べる \{#diagnose-a-competing-declaration\}
+
+1. ブラウザーの開発者ツールで要素を選び、計算済みスタイルでプロパティを探します。そこから実際に適用されている宣言を確認します。
+2. 両方のルールがその要素を対象とし、それぞれの条件も一致していることを確かめます。
+3. 各宣言がどのレイヤーに属するかを調べます。レイヤー外のネイティブ CSS も確認してください。
+4. 局所的な上書きを追加する前に、広く適用する既定スタイルを意図したレイヤーに置きます。
+5. レイヤー順序だけでは結果を説明できない場合は、重要度とネイティブのカスケード規則を確認します。
+
+通常の Master CSS エントリーからベーススタイルシートを読み込んでください。生成されたルールにはレイヤーブロックが含まれますが、ベースとなるレイヤー順序の宣言は追加されません。
+
+`collection-card p-sm` を `p-sm collection-card` に入れ替えても解決しません。HTML のクラス順序はカスケードを制御しないためです。同じ条件のユーティリティ同士が重なる場合は、[コードのリント](/guide/code-linting#no-conflicting-classes)で競合を見つけ、どちらの宣言を残すべきか確認してください。

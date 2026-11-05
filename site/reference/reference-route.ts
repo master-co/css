@@ -1,14 +1,15 @@
-import { routeIndex } from './route-index'
+import { routeIndexForLocale } from './route-index'
 import { loadReferenceDocument } from './load-document'
 import type { ReferenceDocument } from './types'
 
+const pathname = (url: string, locale: string) => locale === 'en' ? url : `/${locale}${url}`
 export function referenceMetadata(id: string, locale: string) {
-  const doc = routeIndex.find(doc => doc.id === id)
-  if (!doc) return {}
-  return { title: doc.title, description: doc.description, alternates: { canonical: `${locale === 'tw' ? '/tw' : ''}${doc.url}` } }
+  const doc = routeIndexForLocale(locale).find(doc => doc.id === id)
+  if (!doc) throw new Error(`Unknown Reference route: ${id} (${locale})`)
+  return { title: doc.title, description: doc.description, alternates: { canonical: pathname(doc.url, locale) } }
 }
 
-export async function loadReferenceRoute(id: string, kind?: ReferenceDocument['kind']) {
-  if (!routeIndex.some(doc => doc.id === id && (!kind || doc.kind === kind))) throw new Error(`Unknown reference route ${id}`)
-  return loadReferenceDocument(id)
+export async function loadReferenceRoute(id: string, locale = 'en', kind?: ReferenceDocument['kind']) {
+  if (!routeIndexForLocale(locale).some(doc => doc.id === id && (!kind || doc.kind === kind))) throw new Error(`Unknown Reference route: ${id} (${locale})`)
+  return loadReferenceDocument(id, locale)
 }

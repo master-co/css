@@ -1,0 +1,184 @@
+---
+{
+  "title": "テーマトークン",
+  "description": "共通のデザイン値を定義し、トークン変更の影響を確認して、ローカルな上書き、静的配信、インライン置換を選びます。",
+  "category": "記述",
+  "figures": {
+    "ThemeIllustration": {
+      "title": "一つの共通値でパディングと間隔を一緒に変える",
+      "alt": "--spacing-card を 1.5rem から 2rem に変える前後。p-card のパディングが 24 から 32 ピクセルへ増え、二つのリスト項目の gap-card の間隔も同じだけ増える。",
+      "caption": "両列のマークアップは同じです。計測はルートフォント 16px を前提とし、強調領域はパディングと間隔の実際の相対サイズを示します。",
+      "description": [
+        {
+          "title": "変更前",
+          "text": "ルートフォントが 16px のとき、--spacing-card: 1.5rem は p-card で 24px のパディング、gap-card で 24px の間隔を供給します。"
+        },
+        {
+          "title": "変更後",
+          "text": "トークンを 2rem に変えると、クラスを編集せず両方の寸法が 32px に増えます。"
+        },
+        {
+          "title": "連動を選ぶ",
+          "text": "これらの間隔を一緒に変える場合だけ、一つのトークンを使います。現在の値が同じでも、別々のデザイン判断には別々のトークンが必要です。"
+        }
+      ]
+    },
+    "GuideStudy:inherited-alias": {
+      "title": "継承した別名は計算済みの値を保つ",
+      "alt": "ルートが action の別名を青に解決する。子が brand をプラム色に変えても、継承した別名はその子で再宣言するまで青のまま。",
+      "caption": "青と紫の印が二つの値の経路を示します。これはスコープの図で、追加のテーマ切り替えではありません。"
+    },
+    "GuideStudy:delivery-substitution": {
+      "title": "保持と置換を独立に選ぶ",
+      "alt": "利用箇所がなくてもトークンを保持することと、生成宣言へ値を置換することを、直交する二軸で分ける。",
+      "caption": "static は保持、inline は置換を制御します。一方を使っても他方が有効になるわけではありません。"
+    }
+  },
+  "demos": {
+    "FoundationDialog": {
+      "title": "実際の操作に続くモーション",
+      "caption": "ダイアログは開くときに一度だけ登場します。Escape または Close details でトリガーにフォーカスが戻ります。動きを抑える設定ではすぐに開き、モーダルの境界はこのプレビュー内にとどまります。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ThemeIllustration from './components/ThemeIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DemoDialogEntrance from './components/DemoDialogEntrance.astro'
+
+## 概要 [sr-only] \{#overview\}
+カードの間隔、操作の色、本文カラムの幅など、複数の要素をまとめて変えたいときにトークンを定義します。アプリのスタイルシートの既存の `@import '@master/css'` の後の `@theme` に置き、マークアップで対応するクラスを使います。
+
+<DemoConfiguredExample name="theme-first-card" title="三つの共通値、一枚のカード" source={`@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+  --radius-card: 0.5rem;
+}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><p class="flex items-center gap-xs m(0) text-xs fg-text-muted"><span aria-hidden="true" class="h(8) w(8) pill bg-brand"></span>Brand color</p><h2 class="mt-sm mb-xs text-lg font-regular">Field notes</h2><p class="m(0) text-sm fg-text-muted">Keep the details that matter.</p></article>'} caption="p-card と r-card が共通のパディングと角丸を設定します。小さなマーカーの bg-brand が、カードの中立色の面を変えずにカラートークンを示します。" />
+
+`p-card` は `padding: var(--spacing-card)` を生成し、ブラウザーがカード上でカスタムプロパティを解決します。すべての利用箇所を一緒に変えるならトークンを、一つの要素だけを変えるならローカル値を使ってください。
+
+## 一つの値ですべての利用箇所を変える \{#change-one-value-across-its-consumers\}
+
+`--spacing-card` はカードのパディングとリストの間隔の両方に使えます。値を `1.5rem` から `2rem` に変えると、マークアップを編集せず両方が変わります：
+
+```html
+<article class="p-card">Field notes</article>
+<ul class="flex gap-card">
+  <li>Draft</li>
+  <li>Ready</li>
+</ul>
+```
+
+<ThemeIllustration />
+
+この連動自体がデザイン上の判断です。カードを広くしてもリストの間隔は保ちたいなら、別々のトークンにしてください。今同じ数値であることは、二つの部分を常に一緒に変える理由にはなりません。
+
+---
+
+## 名前空間でトークンを命名する \{#define-tokens\}
+
+トークンの接頭辞が名前空間を選び、各クラスファミリーは対応する名前空間を読みます。`--spacing-card` は `p-card`、`m-card`、`gap-card`、`--radius-card` は `r-card`、`--container-panel` は `max-w-panel` に使われます。同じキーでもファミリーによって値が異なり、`p-lg` は間隔、`r-lg` は半径を読みます。
+
+```css name=index.css
+@theme {
+  --color-text-action: var(--color-brand);
+  --font-family-sans: Geist, ui-sans-serif, system-ui, sans-serif;
+  --container-panel: 28rem;
+}
+```
+
+クラス用トークンを登録するのは `@theme` の宣言だけで、ほかの場所のネイティブなカスタムプロパティは登録しません。最初に使ったコンポーネントではなく、`brand` や `card` のような共通の判断で命名してください。`--spacing-lg` などプリセットのキーを再定義すると、プロジェクト全体で変えられます。各クラスが読む名前空間は[ファミリー索引](/reference/tokens/families)、解決方法は[変数とモード](/reference/rules/modes#namespace-resolution)を参照してください。
+
+---
+
+## トークンの別名と上書き \{#alias-and-override-tokens\}
+
+一つのトークンを別のトークンに追従させるには `var()` を使います。[別名は継承前に解決されます](https://www.w3.org/TR/css-variables-1/#cycles)。ルートで `--color-text-action` を宣言した場合、子孫の `--color-brand` を上書きしても、継承済みの別名は再結合されません。そのスコープで別名を再宣言してください。
+
+<DemoConfiguredExample name="theme-local-alias" title="ローカルのブランド色と継承した別名" source={`@theme {
+  --color-brand: light-dark(#1d4ed8, #93c5fd);
+  --color-text-action: var(--color-brand);
+}
+
+@layer components {
+  [data-brand="plum"] {
+    --color-brand: light-dark(#86198f, #f0abfc);
+  }
+  [data-rebind-action] {
+    --color-text-action: var(--color-brand);
+  }
+}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-regular fg-brand">Plum brand scope</h2><p class="mt-md mb(0) text-sm font-regular fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) text-sm font-regular fg-text-action">Rebound action: plum</p></section>'} caption="二つの操作ラベルはどちらも fg-text-action を使います。一方はルートで計算した別名を継承し、もう一方は --color-brand がプラム色の場所で再宣言します。" />
+
+<GuideStudy id="inherited-alias" />
+
+ライト・ダークのモードに追従する色には、トークンの値を `light-dark()` にし、`--color-surface-card` のようにモードに依存しない名前を付けます。モードの有効化は[色](/guide/colors#native-color-scheme-and-manual-themes)を参照してください。
+
+---
+
+<a id="use-inline-and-static-tokens" />
+
+## トークンの配信と値の置換を選ぶ \{#choose-token-delivery-and-value-substitution\}
+二つの修飾子は別々の問いに答えます：
+
+| 必要なこと | 選択 | 結果 |
+| --- | --- | --- |
+| プロジェクトが使うときに値を出力 | 通常の `@theme` | 必要時に宣言し、クラスはトークン参照を保持。 |
+| 利用箇所が見つからなくても値を保持 | `@theme static` | 外部インテグレーションなどにトークン宣言を残す。 |
+| スタイルを付ける各要素上で参照変数を解決 | `@theme inline` | 生成宣言にトークンの値を一度置換。 |
+
+静的な検出では見つからないインテグレーションが読む値には、`static` を使います：
+
+```css
+@theme static { --color-integration-brand: #4f46e5; }
+```
+
+クラスを使う要素上で解決すべきネイティブ変数との橋渡しには、`inline` を使います：
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-brand">Ocean background</div>
+</section>
+```
+
+ここで `bg-brand` は `background-color: var(--app-brand)` を出力するため、内側の要素は section から継承する ocean の値を読みます。置換は中間の `--color-brand` 参照を取り除くもので、各要素へ固定の色をコピーするものではありません。
+
+両方が必要なら `@theme static inline` で修飾子を組み合わせます。インライン置換はクラスと `@apply` に適用され、手書きのネイティブ CSS は記述した参照を保持します。[テーマの仕様](/reference/directives/theme#theme-static)を参照してください。
+
+---
+
+<GuideStudy id="delivery-substitution" />
+
+## モーションのトークンを定義する \{#define-motion-tokens\}
+
+<a id="animation-tokens-and-definitions"></a>
+
+`--animate-*` トークンは完全な `animation` ショートハンドなので、キーフレーム名、時間、イージングのトークンを組み合わせられます。キーフレームはその隣にネイティブ CSS として書きます：
+
+<DemoDialogEntrance />
+
+```css name=index.css
+@theme {
+  --duration-enter: 180ms;
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+}
+
+@keyframes dialog-in {
+  from { translate: 0 0.5rem; opacity: 0; }
+}
+```
+
+```html
+<!-- @MARK animate-dialog-in@motion-safe -->
+<dialog class="animate-dialog-in@motion-safe">…</dialog>
+```
+
+このトークンは反復回数を指定しないため、登場は一回です。プリセットの `animate-*` トークンは繰り返します。動きを抑える設定では、`@motion-safe` がダイアログを静止させます。キーフレームは既定でスタイルシート内に残り、`@prune native` でも参照されたアニメーショントークンは自身のキーフレームを保持します。JavaScript だけが適用する名前には `@safelist keyframes "dialog-in";` を加えてください。[モーション](/reference/tokens/motion)と[キーフレームの仕様](/reference/directives/pruning#native-keyframes)を参照します。

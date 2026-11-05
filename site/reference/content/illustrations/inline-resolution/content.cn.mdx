@@ -1,0 +1,36 @@
+# Reference prose: illustrations/inline-resolution
+
+## title \{#copy-title\}
+
+
+Inline 替换改变剩余引用
+
+## alt \{#copy-alt\}
+
+
+普通与 inline 主题定义生成不同的变量引用。在相同的紫红色 section 中，普通令牌仍是蓝色，inline 类则读取局部紫红色变量。
+
+## caption \{#copy-caption\}
+
+
+两个示例在相同标记中使用 bg-brand。普通令牌继承根元素解析后的值；inline 则让生成声明在应用样式的元素上读取 --app-brand。
+
+## description-0 \{#copy-description-0\}
+
+
+两份配置都定义 --color-brand: var(--app-brand)。根元素将 --app-brand 设为 #1d4ed8，嵌套 section 则覆盖为 #86198f。
+
+## description-1 \{#copy-description-1\}
+
+
+使用普通 @theme 时，bg-brand 输出 background-color: var(--color-brand)。根元素将 --color-brand 计算为蓝色，嵌套引用方继承该计算值。
+
+## description-2 \{#copy-description-2\}
+
+
+使用 @theme inline 时，bg-brand 输出 background-color: var(--app-brand)。使用它的元素读取从 section 继承的紫红色值。
+
+## description-3 \{#copy-description-3\}
+
+
+色样显示最终背景结果。图中的根元素值是计算值，并不表示编译器会计算颜色。

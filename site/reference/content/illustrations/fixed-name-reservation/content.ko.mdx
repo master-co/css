@@ -1,0 +1,31 @@
+# Reference prose: illustrations/fixed-name-reservation
+
+## title \{#copy-title\}
+
+
+고정 표기는 자신의 정의를 유지
+
+## alt \{#copy-alt\}
+
+
+w-full은 부모를 채우고 동일한 다른 자식은 명시적인 네이티브 width 선언으로 사용자 정의 12rem container-full 토큰을 읽어 너비를 정한다.
+
+## caption \{#copy-caption\}
+
+
+두 부모의 너비는 240px입니다. 사용자 정의 --container-full은 12rem이며 루트 글꼴 크기 16px에서는 192px입니다. w-full은 고정된 100% 유틸리티를 유지합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+설정은 @theme \{ --container-full: 12rem; \}을 정의합니다. 프리셋은 이미 완전한 고정 이름 w-full을 width: 100%로 등록합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+따라서 w-full은 240px 부모를 채웁니다. 명시적인 (width:var(--container-full)) 클래스는 --container-full을 읽어 두 번째 블록의 너비를 192px로 만듭니다.
+
+## description-2 \{#copy-description-2\}
+
+
+토큰은 명시적인 var() 참조로 계속 사용할 수 있습니다. 토큰 정의는 고정된 w-full 등록을 교체하지 않습니다.

@@ -1,0 +1,25 @@
+# Reference prose: illustrations/attribute-word-match
+
+## title \{#copy-title\}
+
+An exact attribute value differs from a word match
+
+## alt \{#copy-alt\}
+
+A comparison matrix tests title values css, master css and css-in-js against exact equals and whitespace-word matching.
+
+## caption \{#copy-caption\}
+
+Each row tests the same DOM attribute value against two suffixes. A hyphen does not make a whitespace word boundary.
+
+## description-0 \{#copy-description-0\}
+
+[title=css] matches only the exact value css. [title~=css] matches a whitespace-separated word equal to css.
+
+## description-1 \{#copy-description-1\}
+
+Both selectors match css. Only the word selector matches master css. Neither matches css-in-js.
+
+## description-2 \{#copy-description-2\}
+
+The selectors test attributes; they neither split a class string nor edit the attribute value.

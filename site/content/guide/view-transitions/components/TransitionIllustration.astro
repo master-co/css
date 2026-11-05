@@ -1,4 +1,6 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import light from '../../../../assets/images/view-transitions/named-captures-light.png'
 import dark from '../../../../assets/images/view-transitions/named-captures-dark.png'
@@ -24,7 +26,7 @@ const images = {
 }
 
 const { name } = Astro.props
-const figure = name ? transitionStudies[name] : transitionIllustration
+const figure = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, name ? `TransitionIllustration:${name}` : 'TransitionIllustration', name ? transitionStudies[name] : transitionIllustration)
 ---
 
 <DocumentIllustration title={figure.title} alt={figure.alt} images={name ? images[name] : { light, dark }} caption={figure.caption}>

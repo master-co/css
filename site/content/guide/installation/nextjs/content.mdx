@@ -12,24 +12,24 @@ import dark from '~/site/assets/images/integrations/nextjs/cover-dark.webp'
 
 Add Master CSS to a Next.js App Router project with a top-level `app` directory. Master CSS controls how styles are delivered; Next.js still controls how the page HTML is rendered.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [Next.js project](https://nextjs.org/docs/app/getting-started/installation), run the installer from the project root. Static is the default: the adapter prepares the generated stylesheet for the Next.js build.
 
       (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. The adapter processes that entry and supplies generated styles from source scanning.
     </StepL>
     <StepR>
       ```bash
-      npm create @master/css@rc -- --framework nextjs --yes
+      npm create @master/css@VERSION -- --framework nextjs --yes
       ```
     </StepR>
   </Step>
   <Step>
-    ### Verify the loaded configuration
+    ### Verify the loaded configuration \{#verify-the-loaded-configuration\}
 
     Keep your global stylesheet imported by the [root layout](https://nextjs.org/docs/app/getting-started/css#global-css), preserving its providers, metadata and document structure. The layout below is a minimal example. When using a TypeScript configuration, return the integration from an async configuration function so an asynchronous build mode does not require top-level await in the config loader:
 
@@ -57,7 +57,7 @@ Add Master CSS to a Next.js App Router project with a top-level `app` directory.
     ```
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     Start the dev server and style your first page.
   </Step>
   <InstallationPreview>
@@ -83,7 +83,7 @@ On the Webpack path, generated theme resources are delivered through an ordinary
 
 </DocumentDisclosure>
 
-## Check the setup
+## Check the setup \{#check-the-setup\}
 
 Run `npm run dev` and change `p-md` to `p-lg` in the page. Padding should grow from `1rem` to `1.5rem`. Restore it, then verify production delivery:
 
@@ -112,7 +112,7 @@ Static mode is the default. The installer option sets the matching `withMasterCS
 Runtime mode injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS:
 
 ```bash
-npm create @master/css@rc -- --framework nextjs --mode runtime --yes
+npm create @master/css@VERSION -- --framework nextjs --mode runtime --yes
 ```
 
 The installer sets `withMasterCSS(nextConfig, { mode: 'runtime' })`. Run `npm run build` and `npm run start`, then add a class that was absent from the initial DOM:
@@ -130,7 +130,7 @@ The paragraph should gain an underline without a rebuild. Runtime mode does not 
 Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages:
 
 ```bash
-npm create @master/css@rc -- --framework nextjs --mode progressive --yes
+npm create @master/css@VERSION -- --framework nextjs --mode progressive --yes
 ```
 
 The runtime initially tracks covered classes. A class outside the page manifest starts its engine, which validates and adopts matching rules before generating additional CSS. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output, so their generated utility styles depend on the browser runtime. Use static mode if those routes must have utility styles without JavaScript.

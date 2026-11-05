@@ -1,0 +1,31 @@
+# Reference prose: illustrations/manual-wrapper-reach
+
+## title \{#copy-title\}
+
+
+祖先选择器可以进入浅色区域
+
+## alt \{#copy-alt\}
+
+
+带有深色 data-theme 的祖先包含浅色区域和图表。图表使用浅色配色，但仍匹配 manual-dark 祖先包装。
+
+## caption \{#copy-caption\}
+
+
+虚线路径追踪显式 dark 属性。内层浅色边界改变 color-scheme，不改变选择器检查的祖先关系。
+
+## description-0 \{#copy-description-0\}
+
+
+本文的 --manual-dark 混入匹配 [data-theme="dark"] 本身或其后代元素。
+
+## description-1 \{#copy-description-1\}
+
+
+嵌套 data-theme="light" 区域中的图表仍是外层 dark 区域的后代。因此即使 light-dark() 值使用本地浅色配色，其不透明度包装仍然匹配。
+
+## description-2 \{#copy-description-2\}
+
+
+需要跟随实际采用配色的值请使用自适应令牌；属性选择器仅检查其显式指定的关系。

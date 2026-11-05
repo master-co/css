@@ -1,4 +1,6 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel, referenceHeader } from './ui'
 import Link from '@master/internal-site/components/Link.svelte'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import SheetTable from './SheetTable.astro'
@@ -18,9 +20,12 @@ const declarationsOf = (row: SheetSyntax) => row.declarations.split('\n').map(li
   const separator = line.indexOf(':')
   return { property: line.slice(0, separator), value: line.slice(separator + 1).trim().replace(/;$/, '') }
 })
+const { locale } = siteOf(Astro)
+const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, string | number>) => referenceLabel(locale, key, values)
+
 ---
 
-<SheetTable class="ref-class-table" head={['Class', 'Declarations']} keyWidth={width}>
+<SheetTable class="ref-class-table" head={['Class', 'Declarations'].map(header => referenceHeader(locale, header))} keyWidth={width}>
   {rows.map(row => <tr>
     <th scope="row">
       {row.prefix
@@ -31,4 +36,4 @@ const declarationsOf = (row: SheetSyntax) => row.declarations.split('\n').map(li
   </tr>)}
 </SheetTable>
 {/* The disclosed rows size their own column; they never join the page's alignment. */}
-{!!more?.length && <DocumentDisclosure title={moreLabel ?? `${more.length} more classes`}><Astro.self rows={more} width={keyWidth(more.map(row => row.syntax))} /></DocumentDisclosure>}
+{!!more?.length && <DocumentDisclosure title={moreLabel ?? l('moreClasses', { count: more.length })}><Astro.self rows={more} width={keyWidth(more.map(row => row.syntax))} /></DocumentDisclosure>}

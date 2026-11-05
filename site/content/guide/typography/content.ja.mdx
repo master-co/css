@@ -1,0 +1,84 @@
+---
+title: "タイポグラフィ"
+description: "組版設定全体または個別のフォントトークンを選び、サイトの書体を一度設定します。"
+figures: {"TypeIllustration":{"title":"同じ文字サイズでもリズムは変わる","alt":"2つの Make room for details はどちらも文字サイズ 32px です。font-3xl は行高 1.6 と通常の字間を継承し、text-3xl は行高 1.25 と字間 -0.02em を設定して、よりコンパクトな2行のブロックになります。","caption":"ルート文字サイズ 16px で、プリセットの実際の組版を表示しています。各段は行ボックスを示します。font-size だけでは行間の余白を説明できません。","description":[{"title":"文字サイズのみ","text":"font-3xl はサイズを 2rem にします。この親では line-height 1.6 と通常の字間を継承します。"},{"title":"組版設定全体","text":"text-3xl は同じ 2rem に加え、line-height 1.25 と letter-spacing -0.02em を設定します。"},{"title":"行ボックスを比べる","text":"ルートが 16px なら、文字は 32px、行高はそれぞれ 51.2px と 40px です。同じ2行でも占める高さが異なります。"}]},"GuideStudy:type-content-height":{"title":"文字の行幅を保ち、高さは内容に任せる","alt":"同じ幅の2つの文字見本に短い文章と長い文章を入れています。長い見出しは行数が増え、後続の内容を下に押し出します。","caption":"比較のために幅を揃えています。どちらの文字ボックスも高さは固定せず、内容が縦の長さを決めます。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import TypeIllustration from './components/TypeIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import FoundationTypography from '@master/internal-site/demo/foundations/FoundationTypography.astro'
+import FoundationTypeComparison from '@master/internal-site/demo/foundations/FoundationTypeComparison.astro'
+
+## 概要 [sr-only] \{#overview\}
+
+`text-<token>` を使うと、文字サイズ、行の高さ、字間を1つのクラスでまとめて設定できます。ウェイト、フォントファミリー、色は別のクラスで追加します。
+
+<FoundationTypography />
+
+```html
+<!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-regular -->
+<p class="text-xs font-regular fg-text-muted">Field notes / 024</p>
+<h2 class="text-2xl font-regular fg-text-strong">Make room for the details.</h2>
+<p class="text-sm">A consistent type scale helps readers move from the main idea to the supporting detail.</p>
+```
+
+<Class2CSS classes={['text-2xl', 'font-regular']} />
+
+この階層は標準のウェイトを保ち、文字サイズ、余白、文字の役割で構成しています。強調は内容が必要とする箇所だけに加えます。見出しだからといって太くする必要はありません。各設定と追加方法は[文字](/reference/tokens/text)を参照してください。
+
+---
+
+## 組版設定と文字サイズ \{#without-vs-with-text-token\}
+
+`font-<size>` は文字サイズだけを変え、継承した行の高さと字間は保ちます。`text-<token>` は3つすべてを設定します。同じ文字サイズで両者を比べてください。
+
+<TypeIllustration />
+
+<FoundationTypeComparison />
+
+```html
+<!-- @MARK font-3xl --><!-- @MARK text-3xl -->
+<div class="leading-md tracking-normal">
+  <p class="font-3xl">Designing for a clearer reading experience.</p>
+  <p class="text-3xl">Designing for a clearer reading experience.</p>
+</div>
+```
+
+<Class2CSS classes={['font-3xl', 'text-3xl']} />
+
+本文、見出し、ディスプレイ用のスタイルには `text-<token>` を使います。`font-<size>`、`leading-<token>`、`tracking-<token>` は、意図的に組版設定から外す場合に使います。
+
+接頭辞の `font-` はファミリーとウェイトのキーも受け付けます。`font-sans` はファミリーを選び、`font-bold` はウェイトを指定します。これらの名前空間で独自の名前が重ならないようにしてください。値と解決規則は[フォント](/reference/tokens/font)に一覧があります。
+
+---
+
+## サイトの書体 \{#site-typeface\}
+
+アプリの書体は `@theme` で一度設定します。プリセットの base レイヤーが文書に適用するので、マークアップにフォントのクラスは不要です。
+
+```css name=globals.css
+@import "@master/css";
+
+@theme {
+  --font-sans: "Geist", "Noto Sans TC";
+  --font-mono: "IBM Plex Mono";
+  --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
+  --font-feature-mono: "cv01", "cv02", "cv29";
+}
+```
+
+base レイヤーは `--font-sans` を `--font-family-sans` 経由で解決し、`body` とシャドーホストに適用します。`--font-mono` は `--font-family-mono` 経由で解決し、`code`、`kbd`、`samp`、`pre` に適用します。`--font-feature-*` トークンは省略でき、`normal` にフォールバックします。フォームコントロールは周囲のフォントを継承します。フォントファイルは `@font-face` または配信元のスタイルシートで読み込みます。単一の要素には `font-mono` などのクラスを使います。
+
+<ReferenceIllustration id="font-loading-boundary" />
+
+## 実際の文章で検証する \{#verify-with-real-text\}
+
+実際のコンテンツ幅で、短い見出し、長い見出し、段落全体を確認します。狭い画面と拡大した文字でも繰り返してください。計算後の文字サイズだけでなく、改行位置やアクセント記号、ディセンダーの欠けも確認します。
+
+<ReferenceIllustration id="reading-measure" />
+
+<GuideStudy id="type-content-height" />
+
+フォントファミリーの宣言は要求であり、ファイルの読み込みや全字形の収録を証明するものではありません。特にラテン文字と CJK 文字が同じ行にある場合は、実際に使われたフォントを確認します。コンテナーは文字に合わせて伸びられるようにし、英語の見本の行数を保つためだけにカードの高さを固定しないでください。

@@ -1,0 +1,29 @@
+# Reference prose: illustrations/preview-file-identity
+
+## title \{#copy-title\}
+
+A preview applies only to the file version it recorded
+
+## alt \{#copy-alt\}
+
+One preview records p-md flex. An unchanged file accepts the proposed flex p-md order; a file edited to add gap-sm is rejected and retains that new content.
+
+## caption \{#copy-caption\}
+
+Both cases start from the same class-order preview. Applying it requires an unexpired token in the same server and matching original files. A changed file is rejected before any proposed file is written.
+
+## description-0 \{#copy-description-0\}
+
+A class-order preview records the original p-md flex and proposes flex p-md. Previewing leaves the source file unchanged.
+
+## description-1 \{#copy-description-1\}
+
+If every affected file still matches its recorded hash, applying the valid token writes the proposed contents and consumes the token.
+
+## description-2 \{#copy-description-2\}
+
+If a file now contains p-md flex gap-sm, its hash no longer matches. Apply rejects the preview before writing any proposed file, preserving the newer content.
+
+## description-3 \{#copy-description-3\}
+
+This comparison isolates file identity. Token expiry, server restarts and invalid workspace paths can also prevent application. Sequential writes are not a transactional rollback mechanism.

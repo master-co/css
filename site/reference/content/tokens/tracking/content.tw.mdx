@@ -1,0 +1,76 @@
+# Reference prose: tokens/tracking
+
+## title \{#copy-title\}
+
+
+字距
+
+## summary \{#copy-summary\}
+
+
+預設的 letter-spacing 尺度。
+
+## note \{#copy-note\}
+
+
+緊密字距的鍵已包含負長度，請直接使用 `tracking-tight`。不支援 `-tracking-tight` 這類加上負號的 token 形式。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+非零的預設值使用 em，以宣告 letter-spacing 的元素字型大小為基準。`tracking-normal` 提供零；需要原生關鍵字時，請使用 `(letter-spacing:normal)`。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+繼承的字距會保留已計算的長度
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`tracking-widest` 提供 `.12em`，在 16px 的字型大小下會計算為 1.92px。字型大小為 32px 的子元素繼承的是這個長度，不會自動將字距加倍。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+在子元素套用 `tracking-widest`，就會依它自己的 32px 字型大小計算 `.12em`，得到 3.84px。這與行高使用的無單位比例不同。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+字距調整的是文字間隔，不會拉伸字形。它可能改變換行位置；請讓容器可以增長，並檢查實際使用的字型與語言。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` 文字樣式包含 letter-spacing 宣告。在同一元素且條件相同時，`tracking-*` utility 會排在這個組合樣式之後，可覆寫其字距。需要字面長度時，請使用 `(letter-spacing:-.03em)` 這類原生宣告。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+行高
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+文字樣式的配套 token
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生字距行為
+
+## usage-lead \{#copy-usage-lead\}
+
+
+以相同字型大小，比較同一句文字使用兩種字距值的差異。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改預設值或新增 token：`--tracking-display` 會建立 `tracking-display`。
+
+## guide-label \{#copy-guide-label\}
+
+
+文字排版

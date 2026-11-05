@@ -1,0 +1,36 @@
+# Reference prose: illustrations/truncation-lines
+
+## title \{#copy-title\}
+
+
+같은 텍스트를 전체, 한 줄, 두 줄로 표시할 수 있습니다
+
+## alt \{#copy-alt\}
+
+
+같은 너비의 문단 세 개가 전체 텍스트, truncate를 사용한 한 줄 말줄임표, clamp-lines(2)를 사용한 두 줄 말줄임표를 보여 줍니다. 잘린 예제도 DOM에 같은 전체 텍스트를 유지합니다.
+
+## caption \{#copy-caption\}
+
+
+글꼴, 너비, 텍스트는 같고 생략 클래스만 달라집니다. 말줄임표는 브라우저가 네이티브로 그리며 각 요소에는 전체 문자열이 남아 있습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+각 텍스트는 너비 192px, 글꼴 크기 14px, 줄 높이 24px입니다.
+
+## description-1 \{#copy-description-1\}
+
+
+첫 번째 텍스트는 자유롭게 줄바꿈하며 모든 줄을 담도록 높아집니다. truncate는 두 번째를 한 줄로 유지하고 넘친 부분을 말줄임표로 숨깁니다.
+
+## description-2 \{#copy-description-2\}
+
+
+clamp-lines(2)는 세 번째 텍스트의 줄바꿈을 허용한 다음 접두사가 있는 line-clamp 조합으로 보이는 내용을 두 줄로 제한합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+세 요소 모두 같은 전체 문자열을 포함합니다. 독자가 전체 텍스트를 눈으로 읽어야 한다면 별도의 펼치기 기능이나 링크가 필요합니다.

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/direct-number-units
+
+## title \{#copy-title\}
+
+
+직접 지정한 숫자는 픽셀 길이나 단위 없는 계수가 됩니다
+
+## alt \{#copy-alt\}
+
+
+p(12)는 콘텐츠 상자 주위에 12픽셀 안쪽 여백을 만듭니다. grow(1)과 grow(2)는 기준 크기가 모두 0인 같은 flex 행의 여유 공간을 1:2 비율로 나눕니다.
+
+## caption \{#copy-caption\}
+
+
+왼쪽 숫자는 픽셀 길이가 됩니다. 오른쪽 숫자는 flex 계수입니다. 기준 크기가 0이고 콘텐츠 최소 크기 제약이 없어 1:2 분배만 보여 줍니다. 다른 기준 크기나 최소 크기는 최종 너비를 바꿀 수 있습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+padding 예제는 실제 p(12)를 적용해 콘텐츠와 각 바깥 가장자리 사이에 정확히 12px를 둡니다. 파란색 주석이 이 안쪽 여백을 보여 줍니다.
+
+## description-1 \{#copy-description-1\}
+
+
+flex 예제는 너비 252px, gap 12px의 행에서 flex 기준 크기와 최소 너비가 모두 0인 두 항목에 grow(1)과 grow(2)를 적용합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+남은 240px는 80px와 160px로 분배됩니다. 계수는 여전히 단위가 없으며 픽셀 너비가 아닙니다.
+
+## description-3 \{#copy-description-3\}
+
+
+이 비교는 다른 조건을 통제합니다. 기준 크기가 0이 아니거나 콘텐츠 최소 크기가 있으면 최종 너비가 확장 비율과 일치하지 않을 수 있습니다. 각 함수의 선언은 문서에 나와 있습니다.

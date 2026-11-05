@@ -1,0 +1,120 @@
+---
+title: "迁移到 Master CSS"
+description: "转换一个组件或路由，验证共享样式的页面，在没有使用方后删除旧依赖。"
+figures: {"MigrationIllustration": {"title": "转换一个页面，检查共享 CSS 的影响范围", "alt": "同一 CSS 入口连接 Account、Billing 和 Reports。只有 Account 被标为转换范围，但三个页面都需验证。", "caption": "三个页面加载相同样式入口。转换 Account 不会隔离共享重置、令牌或选择器对 Billing 和 Reports 的影响。", "description": [{"title": "同一共享入口", "text": "示例通过 Account、Billing、Reports 共用的 CSS 入口加载原有样式与 Master CSS。"}, {"title": "单次转换范围", "text": "只转换 Account；Billing 和 Reports 仍依赖原有样式。"}, {"title": "更广的验证范围", "text": "配置或共享定义变化时检查三个页面。组件规模的编辑不会自动限定样式表作用域，其他页面仍需要旧依赖。"}]}, "GuideStudy:migration-local-scope": {"title": "一次迁移一个组件边界", "alt": "三个相邻组件保持可见，仅中间组件改变样式归属。", "caption": "迁移有明确边界的单个组件时，保持用户行为一致。共享重置和令牌单独验证。"}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import MigrationGuides from '~/site/components/MigrationGuides.astro'
+import MigrationIllustration from './components/MigrationIllustration.astro'
+
+先选一个能比较改动前后外观和行为的组件或路由。将 Master CSS 接入现有应用，转换这部分并验证结果，产品的其余界面继续使用原有样式。
+
+第一批工作应以保留现有 UI 为目标。重新设计、更换组件库和迁移样式各有不同的改动需要审查；条件允许时，请分开进行。
+
+## 选择原有样式系统 \{#choose-the-source-styling-system\}
+
+<a id="frameworks"></a>
+
+根据当前使用的系统选择指南。应用混用多种系统时，先选择负责第一个组件样式的系统，其他系统可以保留。
+
+<MigrationGuides />
+
+## 确定第一批工作范围 \{#migration-strategy\}
+
+在版本控制中记录可正常运行的基线，并运行应用现有的检查。编辑前记下失败项，以便区分已有问题与回归。截取所选页面在关键宽度和交互状态下的画面。
+
+账户设置表单适合作为第一批工作：边界清楚，有可见的字段、按钮和可观察的行为。请涵盖标签、校验消息、焦点状态和禁用控件。账单和报表不参与转换，但如果共用应用样式表，仍应纳入视觉检查。
+
+决定修改哪些文件前，先检查这些关联：
+
+<DocumentComparison>
+
+| 关联 | 对本批工作的影响 |
+| --- | --- |
+| CSS 入口、重置样式和层顺序 | 配置可能影响标记未改动的页面。 |
+| 共享令牌与组件类 | 所选组件之外也可能使用同一定义。 |
+| 源文件发现与动态类名 | 生成的 CSS 必须覆盖组件实际渲染的状态。 |
+| 组件库行为 | 替换类名不会替代控件的焦点管理、事件或无障碍行为。 |
+
+</DocumentComparison>
+
+转换边界并不等于 CSS 隔离边界。若 Account、Billing 和 Reports 加载相同的 CSS 入口，添加 Master CSS 或修改共享规则后，就必须检查三个页面。
+
+<MigrationIllustration />
+
+<GuideStudy id="migration-local-scope" />
+
+## 与既有样式并存接入 Master CSS \{#connect-master-css-beside-the-existing-styles\}
+
+按照应用框架或构建工具的[安装](/guide/installation)指南操作。确认应用加载包含 `@import '@master/css';` 的 CSS 入口，并选择能覆盖类名来源的[渲染模式](/guide/rendering-modes)。
+
+转换第一批内容时继续加载原有样式。如果两个系统各自编译指令，请分别提供输入，不要将一个系统的源码交给另一个编译器。上面的系统专属指南会说明这些构建边界。
+
+转换表单前先检查配置本身的影响：Master 预设包含标题、列表和表单控件等元素的基础样式。此时就应将现有页面与基线比较。先解决重置差异、令牌名冲突和工具类名称重叠，再判断视觉变化是否来自组件转换。
+
+较晚添加 Master 导入，并不保证其工具类优先。根据 [CSS 层叠规则](https://www.w3.org/TR/css-cascade-5/#layer-order)，在相同作者来源和上下文中，普通未分层声明优先于普通分层声明。因此，元素上保留的旧类可能掩盖新工具类是否生效。请在浏览器开发者工具中检查胜出的声明，按照[兼容性](/guide/compatibility#third-party-styles)和[层叠层](/guide/cascade-layers)明确安排顺序。
+
+## 保留组件契约进行转换 \{#convert-the-component-without-changing-its-contract\}
+
+根据原有系统的指南转换代码。比较生成的声明和计算值，不要假定名称相似的类或令牌会产生相同结果。
+
+- 现有项目令牌的值符合设计意图时就继续使用。共享值代表产品决策时，在 [`@theme`](/guide/theme) 中定义；修改时检查其他使用方。
+- 如果能让组件更易读，就将局部视觉样式移到标记中。原生 CSS 或 CSS Modules 能更清晰地表达选择器或组件契约时，应保留它们。
+- 保留运行时值、组件 props、事件处理函数、语义元素和键盘行为。应用仍依赖第三方控件时，保留该控件和必需的 CSS。
+- 使用扫描输出时，类名必须作为完整字符串提供。参照[扫描类名](/guide/scanning-and-pruning)检查条件变体和生成内容。
+
+对账户表单来说，完成意味着输入、提交、显示错误和禁用操作依然正常。静止状态的截图一致只是成果的一部分。
+
+## 验证后再删除未使用的样式 \{#checklist\}
+
+扩展到另一个组件之前，先使用基线审查本批改动：
+
+1. 运行相关格式化检查、lint、类型检查和测试，然后执行生产构建。开发预览和构建后的应用都要检查。
+2. 比较转换后的页面在关键宽度、主题和状态下的表现。操作键盘导航、焦点、校验和禁用控件。
+3. 检查共享已改动的重置、令牌或全局规则的页面，包括本批范围之外的页面。本例除 Account 外，还需检查 Billing 和 Reports。
+4. 确认旧样式的剩余使用方后，才删除已转换组件的旧样式。删除后再次检查：遗留规则可能曾掩盖新声明的缺失。
+5. 仅当所有页面、控件和构建输入都不再需要某个样式依赖时才删除它。保留有用的原生和第三方 CSS，无须全部删除才能完成本批工作。
+
+随本批改动记录有意保留的视觉差异和剩余依赖。结果可供审查且验证完成后，再对下一个组件或路由重复此流程。
+
+## 请代理规划工作 \{#ask-an-agent-to-plan-the-work\}
+
+官方 [`master-css` 技能](/guide/ai-coding#use-the-master-css-skill)包含 **Import external styles** 工作流，可将单个 CSS 或 Tailwind 组件导入 Master CSS。除非要求重新设计，否则保留组件的值与行为。请用本指南的比较检查验证结果。
+
+### 使用 MCP \{#plan-an-external-system-conversion-with-mcp\}
+
+[Master CSS MCP 服务器](/guide/ai-coding#connect-the-mcp-server)提供 `migrate-to-mastercss` 提示词，用于规划从外部样式系统转换。它会要求代理检查项目，并给出渲染模式、第一批工作、CSS 输出风险和验证命令。提示词提供操作指引，并不是自动代码转换器。
+
+<DocumentPrompt title="使用 MCP 规划转换" text={`Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+
+Inspect the external styling system, framework, stylesheet entries,
+source discovery, shared tokens and available checks. Do not edit yet.
+
+Return a plan for one component or route: setup changes, conversion
+files, screens affected by shared CSS, validation commands and the
+conditions for removing old styles. Identify uncertainties to inspect.`} />
+
+### 不使用 MCP \{#migration-prompt\}
+
+给本地编码代理同样有明确边界的任务。指出所选组件或路由，再使用以下规划请求：
+
+<DocumentPrompt title="不使用 MCP 规划转换" text={`Plan the first batch of this project's migration to Master CSS.
+Use the documentation matching the installed packages to verify
+current syntax, APIs and setup. Do not invent classes or package names.
+
+Inspect the framework, styling systems, CSS entry, shared definitions,
+source discovery and available checks. Do not edit yet.
+
+Propose the smallest working batch around the selected component or
+route. Explain how the old and new CSS will coexist, which screens
+need comparison, and which component behaviors must be preserved.
+
+List the files to change, validation commands, unresolved questions
+and evidence needed before deleting old styles or dependencies.`} />
+
+结合实际项目审查计划，再要求实施这批工作。无论由代理还是手工编辑，都应保留相同检查。
+
+<a id="custom-engine-and-binding-migration"></a>
+自定义引擎宿主请参阅[当前执行契约](/reference/packages#css)。本指南讨论从外部样式系统转换。

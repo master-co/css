@@ -1,5 +1,6 @@
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import FixedUtilities from '~/site/reference/FixedUtilities.astro'
 
 <a id="overview"></a>
 
@@ -33,7 +34,7 @@ Every form accepts suffixes. In `p(12):hover@sm!`, the head is `p(12)`, `:hover`
 
 Write `(property:value)` using the full property name. Master CSS reads the balanced head before parsing suffixes. A colon after a bare name starts a selector: `flex:hover` selects the registered `flex` utility; `display:block` is not an alternative to `(display:block)`.
 
-### The closing boundary
+### The closing boundary \{#the-closing-boundary\}
 
 Strings, comments, escapes, nested parentheses and brackets, and unquoted `url()` tokens follow CSS component-value boundaries. A `)` inside a quoted string does not close the head:
 
@@ -204,52 +205,6 @@ A final `!` marks the class's declarations important. A trailing native `!import
 
 The preset provides 292 fixed, single-declaration utilities. Each sets only its listed property: `flex-col` does not enable flex layout, `b-none` does not reset border width, and `pill` does not set a size. The multi-declaration `truncate` recipe is listed separately in [Truncation](/reference/truncation).
 
-| Property | Classes |
-| --- | --- |
-| `display` | `block`, `inline`, `inline-block`, `flow-root`, `flex`, `inline-flex`, `grid`, `inline-grid`, `contents`, `list-item`, `table`, `inline-table`, `table-caption`, `table-cell`, `table-column`, `table-column-group`, `table-header-group`, `table-footer-group`, `table-row`, `table-row-group` (value equals the name); `hidden` (`none`) |
-| `position` | `static`, `relative`, `absolute`, `fixed`, `sticky` |
-| `visibility` | `visible`, `invisible` (`hidden`) |
-| `isolation` | `isolate` |
-| `box-sizing` | `box-border` (`border-box`), `box-content` (`content-box`) |
-| `font-style` | `italic`, `oblique` |
-| `text-transform` | `uppercase`, `lowercase`, `capitalize` |
-| `text-decoration-line` | `underline`, `overline`, `line-through` |
-| `flex-direction` | `flex-row`, `flex-row-reverse`, `flex-col` (`column`), `flex-col-reverse` (`column-reverse`) |
-| `flex-wrap` | `flex-wrap`, `flex-nowrap`, `flex-wrap-reverse` |
-| `align-items` | `items-normal`, `items-start`, `items-end`, `items-flex-start`, `items-flex-end`, `items-center`, `items-baseline`, `items-stretch` |
-| `align-content` | `content-normal`, `content-start`, `content-end`, `content-flex-start`, `content-flex-end`, `content-center`, `content-baseline`, `content-stretch`, `content-between`, `content-around`, `content-evenly` (`space-*`) |
-| `align-self` | `self-auto`, `self-normal`, `self-start`, `self-end`, `self-flex-start`, `self-flex-end`, `self-center`, `self-baseline`, `self-stretch` |
-| `justify-content` | `justify-normal`, `justify-start`, `justify-end`, `justify-flex-start`, `justify-flex-end`, `justify-center`, `justify-between`, `justify-around`, `justify-evenly` (`space-*`), `justify-stretch` |
-| `object-fit` | `object-cover`, `object-contain`, `object-fill`, `object-none`, `object-scale-down` |
-| `object-position` | `object-center`, `object-top`, `object-bottom`, `object-left`, `object-right` |
-| margins | `m-auto`, `mt-auto`, `mr-auto`, `mb-auto`, `ml-auto`, `mx-auto`, `mxs-auto`, `mxe-auto`, `my-auto`, `mys-auto`, `mye-auto` |
-| insets | `top-auto`, `right-auto`, `bottom-auto`, `left-auto`, `inset-auto`, `ix-auto`, `ixs-auto`, `ixe-auto`, `iy-auto`, `iys-auto`, `iye-auto` |
-| sizes | `w-auto`, `h-auto`, `size-x-auto`, `size-y-auto`, `min-w-auto`, `min-h-auto`, `min-size-x-auto`, `min-size-y-auto`, `basis-auto`; `max-w-none`, `max-h-none`, `max-size-x-none`, `max-size-y-none` |
-| full and intrinsic sizes | `w-full`, `w-fit`, `w-max`, `w-min`, `h-full`, `h-fit`, `h-max`, `h-min`, `size-x-full`, `size-x-fit`, `size-x-max`, `size-x-min`, `size-y-full`, `size-y-fit`, `size-y-max`, `size-y-min`, `min-w-full`, `min-w-fit`, `min-w-max`, `min-w-min`, `min-h-full`, `min-h-fit`, `min-h-max`, `min-h-min`, `min-size-x-full`, `min-size-x-fit`, `min-size-x-max`, `min-size-x-min`, `min-size-y-full`, `min-size-y-fit`, `min-size-y-max`, `min-size-y-min`, `max-w-full`, `max-w-fit`, `max-w-max`, `max-w-min`, `max-h-full`, `max-h-fit`, `max-h-max`, `max-h-min`, `max-size-x-full`, `max-size-x-fit`, `max-size-x-max`, `max-size-x-min`, `max-size-y-full`, `max-size-y-fit`, `max-size-y-max`, `max-size-y-min`, `basis-full`, `basis-fit`, `basis-max`, `basis-min` (`-full` is `100%`; `-fit`, `-max` and `-min` are `fit-content`, `max-content` and `min-content`) |
-| `order` | `order-first` (`-999999`), `order-last` (`999999`) |
-| `border-radius` | `pill` (`calc(infinity * 1px)`) |
-| `border-style` | `b-solid`, `b-dashed`, `b-dotted`, `b-double`, `b-none` |
-| `border-top-style` | `bt-solid`, `bt-dashed`, `bt-dotted`, `bt-double`, `bt-none` |
-| `border-right-style` | `br-solid`, `br-dashed`, `br-dotted`, `br-double`, `br-none` |
-| `border-bottom-style` | `bb-solid`, `bb-dashed`, `bb-dotted`, `bb-double`, `bb-none` |
-| `border-left-style` | `bl-solid`, `bl-dashed`, `bl-dotted`, `bl-double`, `bl-none` |
-| `border-inline-style` | `bx-solid`, `bx-dashed`, `bx-dotted`, `bx-double`, `bx-none` |
-| `border-inline-start-style` | `bxs-solid`, `bxs-dashed`, `bxs-dotted`, `bxs-double`, `bxs-none` |
-| `border-inline-end-style` | `bxe-solid`, `bxe-dashed`, `bxe-dotted`, `bxe-double`, `bxe-none` |
-| `border-block-style` | `by-solid`, `by-dashed`, `by-dotted`, `by-double`, `by-none` |
-| `border-block-start-style` | `bys-solid`, `bys-dashed`, `bys-dotted`, `bys-double`, `bys-none` |
-| `border-block-end-style` | `bye-solid`, `bye-dashed`, `bye-dotted`, `bye-double`, `bye-none` |
-| `outline-style` | `outline-solid`, `outline-dashed`, `outline-dotted`, `outline-double`, `outline-none` |
-| `text-align` | `text-left`, `text-center`, `text-right`, `text-start`, `text-end`, `text-justify` |
-| `overflow` | `overflow-auto`, `overflow-hidden`, `overflow-clip`, `overflow-visible`, `overflow-scroll` |
-| `overflow-x` | `overflow-x-auto`, `overflow-x-hidden`, `overflow-x-clip`, `overflow-x-visible`, `overflow-x-scroll` |
-| `overflow-y` | `overflow-y-auto`, `overflow-y-hidden`, `overflow-y-clip`, `overflow-y-visible`, `overflow-y-scroll` |
-| `white-space` | `whitespace-normal`, `whitespace-nowrap`, `whitespace-pre`, `whitespace-pre-wrap`, `whitespace-pre-line`, `whitespace-break-spaces` |
-| `user-select` | `select-none`, `select-text`, `select-all`, `select-auto` |
-| `pointer-events` | `pointer-none`, `pointer-auto` |
-| `vertical-align` | `vertical-baseline`, `vertical-top`, `vertical-middle`, `vertical-bottom`, `vertical-text-top`, `vertical-text-bottom`, `vertical-sub`, `vertical-super` |
-| `container-type` | `container-inline` (`inline-size`), `container-size`, `container-normal` |
-| `overflow-wrap` | `wrap-anywhere`, `wrap-break-word`, `wrap-normal` |
-| `text-overflow` | `ellipsis` |
+<FixedUtilities />
 
 `start` and `end` retain their native meaning, distinct from `flex-start` and `flex-end`. For logical axes, `x` means inline and `y` means block; `t`, `r`, `b` and `l` are physical sides. Fixed utilities accept selectors, conditions and `!`, and emit CSS when used.

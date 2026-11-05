@@ -1,0 +1,36 @@
+# Reference prose: illustrations/layer-precedence
+
+## title \{#copy-title\}
+
+
+重要性会反转层优先级
+
+## alt \{#copy-alt\}
+
+
+五个层从 theme 排到 utilities，后面接着无层的 CSS。普通声明越往下优先级越高，重要声明则越往上越高。
+
+## caption \{#copy-caption\}
+
+
+比较作者样式表中重要性相同的声明。无层的普通规则优先于具名层；具名层的重要规则优先于无层的重要规则。
+
+## description-0 \{#copy-description-0\}
+
+
+基础样式表依次声明 theme、base、defaults、components 和 utilities。
+
+## description-1 \{#copy-description-1\}
+
+
+作者样式表的普通声明从 theme 到 utilities 优先级逐步提高，无层声明则高于所有具名层。
+
+## description-2 \{#copy-description-2\}
+
+
+作者样式表的重要声明则朝相反方向提高优先级：theme 是这些层中最强的，无层的重要声明最弱。
+
+## description-3 \{#copy-description-3\}
+
+
+层优先级先于选择器优先级比较。图中分别比较重要性相同的两组声明，并非将普通声明与重要声明或其他层叠来源相互比较。

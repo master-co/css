@@ -7,7 +7,7 @@ Do not treat this as a component-for-component rewrite. A good migration often k
 
 ---
 
-## Migration strategy
+## Migration strategy \{#migration-strategy\}
 Use the [shared migration workflow](/guide/migration#migration-strategy) for each app-owned surface. Keep `ThemeProvider`, `CssBaseline`, Emotion cache and SSR setup while Material UI still needs them.
 
 Choose the boundary before translating `sx`:
@@ -29,7 +29,7 @@ Many projects stop at coexistence: Master CSS owns app layout and custom surface
 
 ---
 
-## Add Master CSS beside Material UI
+## Add Master CSS beside Material UI \{#add-master-css-beside-material-ui\}
 Import Master CSS from the app stylesheet and keep the current Material UI providers in place.
 
 ```css name=app.css
@@ -42,7 +42,7 @@ Use [Rendering modes](/guide/rendering-modes) before a large migration. Start wi
 
 ---
 
-## Move theme values into `@theme`
+## Move theme values into `@theme` \{#move-theme-values-into--theme\}
 Start with product-owned values that should be shared outside Material UI components.
 
 ```ts name=theme.ts
@@ -83,7 +83,7 @@ Do not assume Material UI spacing, breakpoint, radius, or palette scales match t
 
 ---
 
-## Convert app-owned `sx`
+## Convert app-owned `sx` \{#convert-app-owned--sx\}
 Start with `sx` blocks that style layout wrappers, cards, sections, and simple product UI.
 
 ```tsx name=DashboardPanel.tsx
@@ -129,7 +129,7 @@ Normal unlayered Material UI/Emotion rules outrank layered Master CSS utilities,
 
 ---
 
-## Convert repeated patterns to component classes
+## Convert repeated patterns to component classes \{#convert-repeated-patterns-to-component-classes\}
 When many `sx` blocks encode the same product role, move that role into a Master CSS component class. Keep the product tokens defined above in the same CSS entry.
 
 ```css name=app.css
@@ -166,7 +166,7 @@ Prefer component classes for project-owned roles. Keep Material UI theme variant
 
 ---
 
-## Handle responsive and state styles
+## Handle responsive and state styles \{#handle-responsive-and-state-styles\}
 Translate static responsive `sx` into conditions with the same threshold. The default [Material UI `md`](https://mui.com/material-ui/customization/breakpoints/) starts at 900px; Master CSS’s preset `md` starts at 64rem. Define a condition for the original threshold rather than copying the name.
 
 ```tsx
@@ -195,7 +195,7 @@ Keep MUI state classes such as selected, expanded, focused, or error styling in 
 
 ---
 
-## Validate the migration
+## Validate the migration \{#validate-the-migration\}
 - Run formatter, lint, type check, tests, and production build after each batch.
 - Compare important screens in light mode, dark mode, responsive breakpoints, hover, focus-visible, disabled, selected, and loading states.
 - Test dialogs, menus, selects, popovers, portals, transitions, and focus traps before removing any Material UI component.
@@ -204,7 +204,7 @@ Keep MUI state classes such as selected, expanded, focused, or error styling in 
 
 ---
 
-## Useful references
+## Useful references \{#useful-references\}
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing CSS delivery.
 - [Style declarations](/reference/rules/declarations) for class syntax.

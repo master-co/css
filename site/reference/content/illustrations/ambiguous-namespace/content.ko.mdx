@@ -1,0 +1,31 @@
+# Reference prose: illustrations/ambiguous-namespace
+
+## title \{#copy-title\}
+
+
+네임스페이스 두 개가 일치해도 선언 두 개를 만들지 않음
+
+## alt \{#copy-alt\}
+
+
+font-brand가 font-family와 font-size의 두 brand 키에 닿는다. 분기는 모호성 경계에서 만나며 규칙을 출력하지 않는다.
+
+## caption \{#copy-caption\}
+
+
+이 사용자 정의 테마에는 두 토큰 키가 모두 있습니다. Master CSS는 클래스를 생성하기 전에 유일한 네임스페이스를 선택해야 합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+--font-family-brand: monospace와 --font-size-brand: 2rem이 있으면 font-brand는 두 프리셋 font- 계열에 일치합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+결과는 AMBIGUOUS_TOKEN이며 해당 클래스의 CSS는 생성되지 않습니다. 분기는 결합되지 않습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+키를 구분하거나 (font-size:var(--font-size-brand)) 같은 명시적인 네이티브 선언을 사용하세요.

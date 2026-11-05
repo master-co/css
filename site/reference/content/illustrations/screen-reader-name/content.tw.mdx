@@ -1,0 +1,36 @@
+# Reference prose: illustrations/screen-reader-name
+
+## title \{#copy-title\}
+
+
+被裁切的文字仍可為可見控制項命名
+
+## alt \{#copy-alt\}
+
+
+一個連結包含可見箭頭與 sr-only 文字。視覺呈現只看得到箭頭，無障礙表示則是一個名稱為 Read the utility definition 的連結。
+
+## caption \{#copy-caption\}
+
+
+箭頭具有 aria-hidden="true"。標籤文字由 sr-only 在視覺上裁切，並提供連結的無障礙名稱。連結本身仍然可見且可聚焦。
+
+## description-0 \{#copy-description-0\}
+
+
+連結包含一個不參與無障礙名稱計算的箭頭，以及一個包含 Read the utility definition 的 span。
+
+## description-1 \{#copy-description-1\}
+
+
+span 使用實際的 sr-only 預設樣式：絕對定位、1px 盒子、隱藏溢位與裁切。它仍留在 DOM 中，沒有設定 aria-hidden。
+
+## description-2 \{#copy-description-2\}
+
+
+可見連結仍占用 40px 正方形區域，並顯示箭頭。它的無障礙角色是 link，名稱為 Read the utility definition。
+
+## description-3 \{#copy-description-3\}
+
+
+兩個分支是同一個控制項的不同表示，不是依序執行的操作。若祖先元素從無障礙樹中隱藏，其後代元素也會一併隱藏。

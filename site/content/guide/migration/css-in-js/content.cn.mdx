@@ -1,0 +1,219 @@
+---
+title: "从 CSS-in-JS 迁移"
+description: "将 styled-components 和 Emotion 的静态样式转换为 Master CSS，保留动态值，并让可复用组件的契约保持明确。"
+figures: {"CSSInJSIllustration": {"title": "一个类，不同数值", "alt": "两个进度条实例使用同一个 width 类读取局部自定义属性。25% 填充四分之一，75% 填充四分之三；类保持一致。", "caption": "通过自定义属性传递变化数据。让扫描器看到完整类字符串，状态校验留在组件内。", "description": [{"title": "稳定的类", "text": "两个实例都请求 (width:var(--value))，不将百分比插入类名。"}, {"title": "局部数据", "text": "每个实例在自身元素设置 --value，同一声明就产生不同宽度。"}, {"title": "保留行为", "text": "组件仍限制数值范围，并提供对应 aria-valuenow。"}]}}
+---
+import CSSInJSIllustration from './components/CSSInJSIllustration.astro'
+
+迁移 CSS-in-JS 时，先移动静态视觉样式，最后处理运行时行为，通常更容易成功。Styled Components 和 Emotion 可以保留在项目中，让 Master CSS 每次接管一组组件的类样式。
+
+本指南涵盖 `styled-components`、`@emotion/react` 和 `@emotion/styled`。仍需在运行时生成选择器或值的组件，不必删除 CSS-in-JS。
+
+---
+
+## 迁移策略 \{#migration-strategy\}
+按照[共用迁移流程](/guide/migration#migration-strategy)建立基线，再拆分各样式包装组件中混合的职责：
+
+| 输入 | 移往何处 | 组件保留的部分 |
+| --- | --- | --- |
+| 静态声明 | 完整标记类或 `@layer components` | DOM 结构与事件处理函数 |
+| 有限的视觉变体 | 完整类字符串映射 | 公开变体 prop 及其默认值 |
+| 连续变化的值 | 通过 `style` 传入 CSS 自定义属性 | 测量、校验与状态 |
+| 生成的选择器或关键帧 | 有明确替代方式前保留原有 CSS-in-JS | 创建它们的运行时逻辑 |
+
+替换包装组件前，先检查 `as`、ref、prop 过滤和 SSR 配置。样式块很小的组件，也可能拥有很大的公开契约。
+
+<CSSInJSIllustration />
+
+---
+
+## 转换静态样式组件 \{#convert-static-styled-components\}
+先处理只应用稳定视觉样式的包装组件。
+
+```tsx name=Button.tsx
+import styled from 'styled-components'
+
+const Button = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: .5rem;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+`
+```
+
+将可复用的值移到 `@theme`，再在渲染按钮的地方使用类字符串。
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-primary: #2563eb;
+}
+
+```
+
+```tsx name=Button.tsx
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { className, type = 'button', ...buttonProps } = props
+  return (
+    <button
+      className={['inline-flex items-center gap-xs (min-height:2.5rem) py(0) px-md r-lg bg-primary fg-white', className].filter(Boolean).join(' ')}
+      type={type}
+      {...buttonProps}
+    />
+  )
+}
+```
+
+原来的 `.5rem` 圆角对应预设的 `r-lg`，并非 `r-md`。用具名令牌替换固定值时请比较计算值。此包装组件默认为 `type="button"`；提交表单时传入 `type="submit"`。请检查已有表单调用处，因为未设置 type 的原生按钮默认会提交表单。
+
+此例替换的是视觉包装组件。替换契约更广的组件之前，请单独保留原有 ref 转发、多态 `as` prop 和事件行为。
+
+如果项目需要具名组件类，保留上面的 `@theme` 块，并在下方添加组件层：
+
+```css name=app.css
+@import "@master/css";
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    gap: var(--spacing-xs);
+    padding-block: 0;
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: oklch(100% 0 none);
+    min-height: 2.5rem;
+    &:hover {
+      background-color: var(--color-blue-70);
+    }
+    &:disabled { opacity: 0.5; }
+  }
+}
+```
+
+```html
+<button type="button" class="btn">Save</button>
+```
+
+---
+
+## 将变体转为类映射 \{#convert-variants-to-class-maps\}
+避免用字符串片段拼接 Master CSS 类名。完整类字符串最适合静态渲染和 lint。
+
+```tsx
+const toneClasses = {
+  neutral: 'bg-surface-base fg-text-body b-line-divider b-solid b(1)',
+  primary: 'bg-blue-60 fg-white bg-blue-70:hover',
+  danger: 'bg-red-70 fg-white bg-red-80:hover'
+}
+
+const sizeClasses = {
+  sm: '(min-height:2rem) px-sm font-sm',
+  md: '(min-height:2.5rem) px-md font-sm',
+  lg: '(min-height:3rem) px-lg font-md'
+}
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  tone?: keyof typeof toneClasses
+  size?: keyof typeof sizeClasses
+}
+
+export function Button({ tone = 'neutral', size = 'md', className, type = 'button', ...props }: ButtonProps) {
+  return (
+    <button
+      className={['inline-flex items-center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
+      type={type}
+      {...props}
+    />
+  )
+}
+```
+
+包装组件先取出 `tone` 和 `size`，再展开剩余原生 props。替换 styled-components 的[临时 props 或 `shouldForwardProp`](https://styled-components.com/docs/api) 时保留过滤：样式专用 props 不应泄露到原生元素。如果旧公开 API 使用 `$tone`，在有计划地迁移调用处之前，请保留该名称。
+
+变体还控制其他行为时，请保留 prop，只迁移视觉声明。最小高度能让标签换行或放大，而不受固定高度框限制。
+
+追加 `className` 会保留调用方的类，但不保证它们优先于冲突的工具类。HTML 类顺序不决定[层叠](/guide/cascade-layers)。使用变体 props 选定一个值，或将可覆盖的默认值放入 `@layer components`，允许调用方工具类覆盖。
+
+---
+
+## 使用 CSS 变量处理动态值 \{#use-css-variables-for-dynamic-values\}
+运行时值不应成为生成的类名。保持类名固定，通过 CSS 变量传递变化的值。这与 [Emotion 的动态样式建议](https://emotion.sh/docs/best-practices#use-the-style-prop-for-dynamic-styles)一致：变化值属于元素，可复用声明保持稳定。
+
+```tsx
+export function Meter({ value }: { value: number }) {
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
+  return (
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow-hidden (height:0.5rem) pill bg-surface-inset">
+      <div
+        className="h-full (width:var(--value)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        style={{ '--value': `${percent}%` } as React.CSSProperties}
+      />
+    </div>
+  )
+}
+```
+
+在 25% 和 75% 时，内部元素都使用 `(width:var(--value))`，仅 `--value` 变化。限制范围后的数字也用于 `aria-valuenow`，使视觉值与无障碍值一致。
+
+组件必须根据运行时数据创建选择器、关键帧或样式块，且无法用 CSS 变量清楚表达时，请保留 CSS-in-JS。
+
+---
+
+## 谨慎移动全局样式 \{#move-global-styles-carefully\}
+全局样式经常包含应用基础设施，请分小批移动。
+
+```tsx name=GlobalStyles.tsx
+import { Global, css } from '@emotion/react'
+
+export function GlobalStyles() {
+  return <Global styles={css`
+    body {
+      margin: 0;
+      background: var(--color-surface-base);
+    }
+  `} />
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@layer base {
+  body {
+    margin: 0;
+  }
+}
+
+@layer defaults {
+  body { background: var(--color-surface-base); }
+}
+```
+
+在原先使用这些样式的每个路由、外壳和服务端渲染路径都加载替代 CSS 入口之前，保留 CSS-in-JS 全局样式。
+
+---
+
+## 验证迁移 \{#validate-the-migration\}
+- 每批工作后运行格式检查、lint、类型检查、测试和生产构建。
+- 如果 CSS-in-JS 配置包含 SSR 提取或 hydration 逻辑，比较服务端渲染输出。
+- 检查深色模式、响应式断点、悬停、focus-visible、禁用、选中和多态 `as` 状态。
+- 确认剩余组件都不再需要后，才删除 Babel 插件、Emotion 缓存配置、styled-components SSR 集成配置和包依赖。
+
+---
+
+## 相关参考 \{#useful-references\}
+- [安装](/guide/installation)：将 Master CSS 加入项目。
+- [渲染模式](/guide/rendering-modes)：静态、运行时和渐进式渲染。
+- [样式声明](/reference/rules/declarations)：类语法。
+- [主题令牌](/guide/theme)：设计令牌；[变量与模式](/reference/rules/modes)：模式。
+- [扫描类名](/guide/scanning-and-pruning)：类映射和静态提取。
+- [全局样式](/guide/global-styles#shared-vocabulary)：选择标记类、主题令牌、自定义工具类和组件。

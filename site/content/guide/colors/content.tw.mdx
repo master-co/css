@@ -1,0 +1,130 @@
+---
+title: "色彩"
+description: "以自適應角色建立介面色彩，結合圓角與陰影凸顯表面，並選擇明暗模式。"
+figures: {"ColorIllustration":{"title":"模式改變，角色不變","alt":"明暗區域中呈現相同的表面、邊框、標題與次要文字。兩者都使用 bg-surface-raised、b-line-divider、fg-text-strong 與 fg-text-muted；解析後的顏色則隨區域配色方案改變。","caption":"只需選擇一次角色。它的 light-dark() 值會跟隨元素配色方案，包括嵌在另一配色中的區域。","description":[{"title":"保留角色","text":"兩個區域使用相同的表面、分隔線、強調文字與次要文字 class。"},{"title":"依區域解析","text":"角色值使用 light-dark()。每個區域的 color-scheme 會選擇明色或暗色，不需改變 class。"}]},"GuideStudy:palette-or-role":{"title":"區分固定色階與語意角色","alt":"兩條路徑分別呈現固定色階，以及選擇明暗值的角色。","caption":"特定色彩使用色階；需要隨情境調整的決策則使用角色。"},"GuideStudy:local-color-scheme":{"title":"最近的配色方案決定顏色","alt":"亮色文件包住一個暗色區域。同一個語意 token 在外側繪製亮色表面，在區域內繪製暗色表面。","caption":"巢狀邊界代表 color-scheme。Token 名稱與標記維持不變。"}}
+demos: {"DemoRaisedSurface":{"title":"凸起表面","caption":"兩份文件使用相同 class。表面、文字與陰影顏色由作用中的模式提供；陰影幾何形狀保持不變。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ColorIllustration from './components/ColorIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationColorRoles from '@master/internal-site/demo/foundations/FoundationColorRoles.astro'
+import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
+
+## 概覽 [sr-only] \{#overview\}
+
+以角色建立介面色彩：表面、線條與文字的 class 在明暗模式中維持不變。當顏色本身就是重點，例如插圖或品牌點綴時，再選用色階。色彩變化應對應到角色、狀態，或讀者需要辨識的差異。
+
+<ColorIllustration />
+
+---
+
+## 選擇角色或色階 \{#choose-a-color-token\}
+
+| 需求 | 使用 | 範例 |
+| --- | --- | --- |
+| 頁面結構與文字層級 | 色彩角色 | `bg-surface-raised`, `b-line-divider`, `fg-text-muted` |
+| 特定色彩 | 色階 | `bg-blue-5`, `fg-blue-60` |
+
+<FoundationColorRoles />
+
+```html
+<!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
+  <h2 class="m(0) text-lg font-regular fg-text-strong">Project updates</h2>
+  <p class="mt-xs mb-md text-sm fg-text-muted">Three milestones changed this week.</p>
+  <a class="fg-text-link underline" href="/updates">Continue</a>
+</section>
+```
+
+<Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+角色是色彩鍵名的一部分：`bg-surface-raised` 讀取 `--color-surface-raised`，`b-line-divider` 讀取 `--color-line-divider`。線條角色只設定顏色，因此邊框寬度與樣式須另外指定。[色彩角色](/reference/tokens/color-roles)列出所有角色，[調色盤](/reference/tokens/color)則列出完整色階。
+
+<ReferenceIllustration id="border-ingredients" />
+
+---
+
+<GuideStudy id="palette-or-role" />
+
+## 固定與自適應色相別名 \{#mode-aware-hue-aliases\}
+
+`fg-yellow` 這類色相別名是固定色彩，在每個模式中都使用相同的值。`fg-text-yellow` 這類文字色相別名則會依模式選擇適合文字的前景色階。請在實際背景上檢查對比；自適應別名無法保證每種搭配都合適。
+
+```html
+<!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
+<svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
+<p class="fg-text-yellow">Pending review</p>
+```
+
+<Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+彩色標籤使用文字色相別名；內文、強調文字與連結則使用文字角色。
+
+---
+
+## 凸起表面 \{#raised-surfaces\}
+
+凸起表面結合表面角色、圓角 token 與陰影 token。可互動的表面在滑鼠移入或取得焦點時，將陰影提高一級。一般卡片與控制項使用小圓角；`pill` 留給刻意完全圓潤的形狀，例如下方徽章。
+
+<DemoRaisedSurface />
+
+```html
+<!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
+<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover shadow-md:focus-visible" href="/notes">
+  <span class="flex items-center justify-between gap-sm">
+    <span class="fg-text-strong">Field notes</span>
+    <span class="px-xs py-3xs pill bg-line-subtle text-xs fg-text-muted">12 new</span>
+  </span>
+</a>
+```
+
+<Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+預設集的陰影以 `light-dark()` 設定顏色，因此 `shadow-sm` 保留幾何形狀，並跟隨元素的配色方案。`pill` 是固定 utility，不是圓角 token；寬高相等時會形成圓形。使用 `rtl-lg`、`rtr-lg`、`rbl-lg` 與 `rbr-lg` 可分別設定單一角落。各種尺度與自訂方式請見[圓角](/reference/tokens/radius)與[陰影](/reference/tokens/shadow)。
+
+<ReferenceIllustration id="pill-aspect" />
+
+---
+
+## 明暗模式 \{#native-color-scheme-and-manual-themes\}
+
+預設集在根元素設定 `color-scheme: light dark`，角色與陰影則使用 `light-dark()`，因此頁面不需額外 class 就會跟隨系統偏好。若要指定模式，在根元素、巢狀區域或 Shadow Host 上設定 `data-theme="light"` 或 `data-theme="dark"`：
+
+<DemoConfiguredExample name="nested-color-schemes" title="一個 token，兩種區域配色" source={`@theme {
+  --color-surface-notes: light-dark(#f4f4f5, #27272a);
+}
+
+@layer base {
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}`} html={'<section data-theme="dark" class="p-md r-lg bg-surface-notes fg-text-body wrap-anywhere"><h2 class="m(0) text-lg font-regular">Dark notes</h2><p class="mt-xs mb-md text-sm">This region chooses dark.</p><article data-theme="light" class="p-md r-md bg-surface-notes fg-text-body"><h3 class="m(0) text-md font-regular">A light region inside</h3><p class="mt-xs mb(0) text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} caption="兩個區域都使用 bg-surface-notes。data-theme 屬性選擇不同配色，因此 light-dark() 提供暗色外層表面與亮色內層表面。" />
+
+預設集已內建這兩個 `data-theme` 選擇器；範例 CSS 再次列出它們，以說明啟用方式。以 `light-dark()` 定義的自訂顏色也會以相同方式調整，切換模式不必重新編譯。巢狀區域會繼承父層 token，除非自行重新宣告；品牌主題應使用自己的選擇器，例如 `[data-brand="ocean"]`，並在其中重新宣告角色 token。
+
+`@light` 與 `@dark` 後綴是 `prefers-color-scheme` 媒體查詢。手動設定 `data-theme` 會改變 token，但不會啟用這些查詢。若 class 必須回應手動選擇，請宣告選擇器 mixin 並套用：
+
+```css name=index.css
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```html
+<!-- @MARK @apply(--manual-dark) -->
+<img class="(opacity:.85)@apply(--manual-dark)" src="/chart.png" alt="Weekly usage" />
+```
+
+這個 mixin 檢查的是屬性，而不是實際使用的配色方案，因此巢狀的亮色區域內也會相符。優先使用自適應 token；作用範圍與解析方式請見[變數與模式](/reference/rules/modes)。
+
+<ReferenceIllustration id="manual-wrapper-reach" />
+
+<GuideStudy id="local-color-scheme" />
+
+## 在實際情境中檢查角色 \{#check-the-roles-in-context\}
+
+在兩種配色中檢查相同內容。確認強調與次要文字和實際表面的對比、連結的一般與焦點狀態，以及用來辨識控制項的邊界。色彩 token 提供一個值，本身不會建立對比、確保焦點可見，或賦予狀態意義。
+
+選取項目或狀態應搭配標籤、圖示或其他可見提示，避免只靠顏色。巢狀區域須個別驗證：深色頁面中的手動亮色區域，仍需有適當且易讀的表面與前景搭配。

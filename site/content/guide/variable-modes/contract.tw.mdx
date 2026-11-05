@@ -1,0 +1,155 @@
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+主題 token 有兩個角色：名稱讓已註冊的 utility 家族可以使用某個值，輸出的自訂屬性則參與原生 CSS。Master CSS 負責解析 class 並保留相依項目，瀏覽器則透過階層串接與繼承解析自訂屬性的值。
+
+本頁定義 token 查找、相依項目傳遞、代入與模式啟用。[主題](/guide/theme)說明何時應共用 token，以及如何建立專案主題；[token 索引](/reference#tokens)則列出預設值。
+
+## 註冊與查找 \{#namespace-resolution\}
+
+在頂層 `@theme` 區塊宣告 token。宣告在 `@theme` 外的原生自訂屬性可以用於 CSS，但本身不會註冊以 token 提供值的 class。原生選擇器與查詢應放在區塊外。樣式表文法請見 [`@theme`](/reference/directives/theme#theme)。
+
+<a id="contextual-token-lookup"></a>
+
+token 家族決定要查找哪個命名空間。鍵是 token 名稱剩下的部分，鍵內的連字號會保留。
+
+| Token | Class | 生成宣告 |
+| --- | --- | --- |
+| `--spacing-card` | `p-card` | `padding: var(--spacing-card)` |
+| `--radius-card` | `r-card` | `border-radius: var(--radius-card)` |
+| `--color-brand` | `bg-brand` | `background-color: var(--color-brand)` |
+| `--color-text-action` | `fg-text-action` | `color: var(--color-text-action)` |
+| `--color-line-divider` | `b-line-divider` | `border-color: var(--color-line-divider)` |
+
+`text-action` 與 `line-divider` 都是 `color` 命名空間中的鍵。`outline-line-divider` 可以使用 `--color-line-divider`，但 `outline-divider` 不會自動插入 `line-`。兩個命名空間中的同一個鍵可以提供不同值：`p-card` 與 `r-card` 會各自解析。
+
+<ConfiguredExample source={'@theme {\n  --spacing-card: 1.5rem;\n  --radius-card: .5rem;\n  --color-brand: #1d4ed8;\n  --color-text-action: var(--color-brand);\n  --color-line-divider: rgb(0 0 0 / 12%);\n}'} html={'<article class="p-card r-card b(1) b-solid b-line-divider">\n  <a class="fg-text-action" href="/settings">Settings</a>\n</article>'} />
+
+<a id="default-namespace-sources"></a>
+
+[家族索引](/reference/tokens/families)提供完整的前綴與命名空間對應。完整 CSS 屬性名稱不會自動建立 token 家族。專案需要新對應時，請以 [`@utility`](/reference/directives/definitions#utilities) 註冊自訂模式。即使有同鍵的 token，`w-full` 這類固定拼寫仍保留固定定義；請見 [class 解析](/reference/rules/declarations)。
+
+<ReferenceIllustration id="registration-boundary" />
+
+## 相依項目傳遞 \{#variable-lifecycle\}
+
+生成宣告通常保留 `var()` 參照。被使用的受管理 token 會與其遞移相依的受管理 token 一起，輸出到 `theme` 串接層的 `:root, :host` 下。
+
+<a id="custom-spacing-example"></a>
+
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
+
+token 被保留時，其重複宣告仍依來源順序保留，這些值參照的相依項目也會保留。原生樣式表的參照可以保留受管理 token；原生自訂屬性宣告與區域覆寫仍屬於原本的樣式表，並遵循該檔案的保留政策。
+
+Master CSS 在生成 class 時，不會選取淺色、深色或特定檢視區的值。檢查功能可以回報原始宣告與相依項目；沒有元素、祖先與瀏覽器環境，就無法確定計算值。
+
+<ReferenceIllustration id="token-dependency-chain" />
+
+### 缺少名稱與無效值 \{#missing-names-and-invalid-values\}
+
+未知的 token 鍵無法產生相符的 token 家族 class。這與合法 class 輸出的 `var()` 後來在瀏覽器解析成無效值不同。繼承、循環參照、備援值與屬性值合法性，都遵循[原生自訂屬性規則](https://www.w3.org/TR/css-variables-1/)；保留宣告不代表最終計算值一定合法。
+
+## 繼承與限定範圍的別名 \{#mode-buckets\}
+
+用原生選擇器宣告區域覆寫，相同 class 就能在不同作用範圍取得不同值：
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+```
+
+```html
+<section data-theme="ocean">
+  <div class="bg-panel">Ocean panel</div>
+</section>
+```
+
+### 衍生值 \{#derived-mode-aware-values\}
+
+`--color-link: var(--color-brand)` 這類別名，會先在宣告該別名的元素上解析，再繼承計算值。只在後代元素覆寫 `--color-brand`，不會重新綁定已繼承的別名。如果別名應由區域 brand 衍生，請在後代作用範圍重新宣告它。
+
+相同的作用範圍規則也適用於 `color-mix()` 這類衍生運算式：
+
+```css
+@theme {
+  --color-brand: #1d4ed8;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+[data-theme="plum"] {
+  --color-brand: #86198f;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
+```
+
+這些函式仍是 CSS 運算式。Master CSS 不會為每個撰寫的作用範圍分別計算色彩。[互動別名範例](/guide/theme#alias-and-override-tokens)會並列顯示繼承與重新綁定的結果。
+
+## Inline 代入與 static 傳遞 \{#inline-and-static-variables\}
+
+`inline` 改變生成宣告參照的內容。`static` 改變 token 的自訂屬性宣告是否需要被探索到的使用端。這兩種行為互相獨立。
+
+| 定義 | 生成的 class 宣告 | 自訂屬性傳遞 |
+| --- | --- | --- |
+| `@theme` | 保留 token 參照 | 有需要時保留 |
+| `@theme inline` | 將 token 值代入一次 | 代入後的 class 本身不再需要該 token 宣告 |
+| `@theme static` | 保留 token 參照 | 即使未探索到使用端也保留 |
+| `@theme static inline` | 將 token 值代入一次 | 即使未探索到使用端也保留 |
+
+Inline 代入會移除一層間接參照。代入值內的參照仍由瀏覽器解析，`inline` 不會遞迴地將它們替換成常數。它適用於 Master 生成的宣告，包括 `@apply` 展開；手寫原生 CSS 會保留原有的 `var()` 參照。
+
+### 剩餘變數在哪裡解析 \{#where-the-remaining-variable-resolves\}
+
+以下兩份設定都定義 `--color-brand: var(--app-brand)`，並使用 `bg-brand`，只有 `inline` 修飾詞不同。兩種情況中，文件根元素都是藍色，巢狀 section 則將 `--app-brand` 覆寫為紫紅色。
+
+<ReferenceIllustration id="inline-resolution" />
+
+使用一般 `@theme` 時，生成宣告讀取 `--color-brand`。該 token 的 `var(--app-brand)` 在根元素解析，巢狀元素會繼承最後得到的藍色值。
+
+<ConfiguredExample source={'@theme { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Inherited blue</div>\n</section>'} />
+
+使用 `@theme inline` 時，生成宣告直接在套用樣式的元素上讀取 `--app-brand`，取得其 section 提供的紫紅色值。
+
+<ConfiguredExample source={'@theme inline { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Local plum</div>\n</section>'} />
+
+外部使用端需要探索無法看見的 token 時，可獨立使用 `static`。支援形式與定義範圍請見[主題修飾詞](/reference/directives/theme#theme-static)。
+
+## 模式啟用 \{#mode-triggers\}
+
+模式是撰寫的 CSS 作用範圍或條件，不是第二個 token 命名空間。變更 token 值與將規則限制於某個模式，是分開的操作。
+
+| 機制 | 改變的內容 | 啟用條件 |
+| --- | --- | --- |
+| 原生自訂屬性覆寫 | 該作用範圍中繼承的值 | 撰寫的選擇器或原生查詢 |
+| `light-dark()` token | 選取的色彩值 | 元素實際使用的配色方案 |
+| 預設 `@dark` 或 `@light` 後綴 | 規則是否可套用 | 系統 `prefers-color-scheme` 媒體查詢 |
+| 透過 `@apply(--name)` 使用的選擇器 mixin | 生成規則在哪裡比對 | 與 mixin 中撰寫的選擇器完全相同 |
+
+### 手動作用範圍與規則包覆 \{#manual-scopes-and-rule-wrappers\}
+
+`bg-surface` 這類 token class 會跟隨其繼承的變數。若只想在 ocean 範圍套用另一個宣告，請在 mixin 中明確撰寫該範圍。`&` 代表生成的選擇器，下方後代分支是刻意撰寫的，不是 Master CSS 插入的。
+
+<ConfiguredExample source={'@theme { --color-surface: white; }\n[data-theme="ocean"] { --color-surface: #082f49; }\n@mixin --ocean {\n  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }\n}'} html={'<section data-theme="ocean">\n  <div class="bg-surface p(16)@apply(--ocean)">Ocean panel</div>\n</section>'} />
+
+token 覆寫改變背景值，mixin 改變內距套用的位置，兩種機制都不會定義另一種。包覆參數與放置方式請見 [Utilities 與 mixins](/reference/directives/definitions#reusing-a-matched-value)。
+
+### 系統偏好與手動配色方案 \{#system-preference-and-manual-color-schemes\}
+
+完整預設集提供原生 `color-scheme` 規則：根元素允許 `light dark`，`data-theme="light"` 或 `data-theme="dark"` 則將區域固定為指定配色方案。token 可以用 `light-dark(white, #111827)` 跟隨該方案。由瀏覽器選取值，不需要第二個 class。原生行為請見 [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark)。
+
+即使位於手動主題區域中，預設的 `@dark` 與 `@light` 後綴仍是系統媒體查詢。變更 `data-theme` 不會啟用它們。[色彩](/guide/colors#native-color-scheme-and-manual-themes)會示範手動啟用與巢狀區域。
+
+### 區域重疊與 Shadow DOM \{#local-overlap-and-shadow-dom\}
+
+重疊作用範圍遵循一般階層串接，包括串接層順序與選擇器權重。選擇器描述了主題，不代表區域值就自動具有較高優先順序。請見[串接層](/reference/rules/layers)。
+
+預設主題宣告包含 `:host`。請明確撰寫限定範圍的 host 覆寫，並在 shadow tree 載入所需樣式表：
+
+```css
+@theme { --color-panel: white; }
+:host([data-theme="dark"]) { --color-panel: #111827; }
+```
+
+token 不會取代資源傳遞。原生關鍵影格及其相依保留方式，請見[關鍵影格契約](/reference/directives/pruning#native-keyframes)；樣式表保留方式則見[原生 CSS 修剪](/reference/directives/pruning)。

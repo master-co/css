@@ -1,0 +1,31 @@
+# Reference prose: illustrations/ambiguous-namespace
+
+## title \{#copy-title\}
+
+
+两个匹配的命名空间不会产生两条声明
+
+## alt \{#copy-alt\}
+
+
+font-brand 遇到两个匹配的 brand 键，分别位于 font-family 和 font-size。分支在歧义屏障处汇合，不输出规则。
+
+## caption \{#copy-caption\}
+
+
+此自定义主题中两个令牌键均存在。Master CSS 必须先选出唯一命名空间，才会生成类。
+
+## description-0 \{#copy-description-0\}
+
+
+存在 --font-family-brand: monospace 和 --font-size-brand: 2rem 时，font-brand 匹配两个预设 font- 家族。
+
+## description-1 \{#copy-description-1\}
+
+
+结果为 AMBIGUOUS_TOKEN，且该类不产生 CSS；分支不会合并。
+
+## description-2 \{#copy-description-2\}
+
+
+请用不同键，或 (font-size:var(--font-size-brand)) 这类显式原生声明。

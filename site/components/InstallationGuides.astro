@@ -4,13 +4,15 @@ import '~/site/styles/installation.css'
 import Link from '@master/internal-site/components/Link.svelte'
 import brands from '@master/internal-site/data/brands'
 import { installationGuideGroups } from '../utils/installation-guides'
+import { siteOf } from '@master/internal-site/astro/site-context'
 
 /** A grouped directory; framework aliases keep their existing guide anchors. */
+const { t } = siteOf(Astro)
 ---
 
-<nav aria-label="Installation guides" class="installation-guides">
+<nav aria-label={t('Installation guides')} class="installation-guides">
   {installationGuideGroups.map(group => <div class="installation-guides-group">
-    <p class="installation-guides-label">{group.title}</p>
+    <p class="installation-guides-label">{t(group.title)}</p>
     <div class="ui-logos">
       {group.entries.map(([slug, title, href]) => {
         const brand = brands[slug]

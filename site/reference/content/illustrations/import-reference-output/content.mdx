@@ -1,0 +1,29 @@
+# Reference prose: illustrations/import-reference-output
+
+## title \{#copy-title\}
+
+Import delivers native rules; reference supplies their definitions
+
+## alt \{#copy-alt\}
+
+The same tokens.css file feeds two local compilations using bg-brand. The import output includes its native .card rule; the reference output omits .card but still supplies the token used by bg-brand.
+
+## caption \{#copy-caption\}
+
+Both local outputs use bg-brand. An import delivers the native .card rule; a reference only makes definitions available. A locally used token can still emit with either output.
+
+## description-0 \{#copy-description-0\}
+
+tokens.css declares --color-brand in @theme and a native .card rule that reads it. The two local compilations differ only in @import versus @reference.
+
+## description-1 \{#copy-description-1\}
+
+Both local outputs generate bg-brand and retain its --color-brand dependency.
+
+## description-2 \{#copy-description-2\}
+
+Only the import output contains .card. The reference does not make that rule a local usage root or publish the referenced stylesheet.
+
+## description-3 \{#copy-description-3\}
+
+The branches compare compiled outputs, not runtime loading steps. Native overrides also need actual stylesheet delivery.

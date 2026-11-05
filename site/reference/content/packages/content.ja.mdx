@@ -1,0 +1,702 @@
+# Reference prose: packages
+
+## editorial--master-css-introduction \{#copy-editorial--master-css-introduction\}
+
+
+コンパイル済み manifest またはランタイムプログラムを実行し、クラス名の規則を生成してエンジン状態を調べます。CSS エントリーはプリセットのスタイルシートレイヤーを提供します。
+
+## editorial--master-css-entries- \{#copy-editorial--master-css-entries-\}
+
+
+非同期のエンジン作成と単発のクラス描画。
+
+## editorial--master-css-entries--node \{#copy-editorial--master-css-entries--node\}
+
+
+Node.js 用の同期ネイティブエンジン、ランタイムプログラムのコンパイル、再利用するレンダーセッション。
+
+## editorial--master-css-entries--client \{#copy-editorial--master-css-entries--client\}
+
+
+生成した仮想モジュールの TypeScript アンビエント宣言。
+
+## editorial--master-css-entries--index-css \{#copy-editorial--master-css-entries--index-css\}
+
+
+プリセット全体のスタイルシートエントリー。
+
+## editorial--master-css-entries--base-css \{#copy-editorial--master-css-entries--base-css\}
+
+
+ベーススタイルと安定したカスケードレイヤーの順序。
+
+## editorial--master-css-entries--theme-css \{#copy-editorial--master-css-entries--theme-css\}
+
+
+プリセットのテーマ定義。
+
+## editorial--master-css-entries--media-css \{#copy-editorial--master-css-entries--media-css\}
+
+
+プリセットのビューポートとユーザー設定の条件。
+
+## editorial--master-css-entries--container-css \{#copy-editorial--master-css-entries--container-css\}
+
+
+プリセットのコンテナー幅条件。
+
+## editorial--master-css-entries--utilities-css \{#copy-editorial--master-css-entries--utilities-css\}
+
+
+プリセットのユーティリティ登録。
+
+## editorial--master-css-compiler-introduction \{#copy-editorial--master-css-compiler-introduction\}
+
+
+スタイルシートのディレクティブをコンパイルし、プロジェクト manifest を読み、生成 CSS と記述したスタイルを合成します。作業と実行環境に合うエントリーを選びます。
+
+## editorial--master-css-compiler-entries- \{#copy-editorial--master-css-compiler-entries-\}
+
+
+非同期のコンパイラーセッションとメモリー内のディレクティブコンパイル。
+
+## editorial--master-css-compiler-entries--node \{#copy-editorial--master-css-compiler-entries--node\}
+
+
+同期のネイティブコンパイルとファイルシステムの解決。
+
+## editorial--master-css-compiler-entries--project \{#copy-editorial--master-css-compiler-entries--project\}
+
+
+非同期のプロジェクトエントリー検出と manifest 読み込み。
+
+## editorial--master-css-compiler-entries--project-sync \{#copy-editorial--master-css-compiler-entries--project-sync\}
+
+
+同期のプロジェクトエントリー検出と manifest 読み込み。
+
+## editorial--master-css-compiler-entries--stylesheet \{#copy-editorial--master-css-compiler-entries--stylesheet\}
+
+
+Node.js のスタイルシート解決、合成、配信アセット。
+
+## editorial--master-css-compiler-entries--stylesheet-browser \{#copy-editorial--master-css-compiler-entries--stylesheet-browser\}
+
+
+渡したソースとベース manifest によるブラウザー内コンパイル。
+
+## editorial--master-css-compiler-entries--diagnostics \{#copy-editorial--master-css-compiler-entries--diagnostics\}
+
+
+クラス、ファイル、診断を含むプロジェクト検査レポート。
+
+## editorial--master-create-css-introduction \{#copy-editorial--master-create-css-introduction\}
+
+
+既存プロジェクトへの Master CSS 導入を計画・適用します。計画は適用前に依存変更、ファイル編集、コマンド、警告を示します。
+
+## editorial--master-create-css-usage \{#copy-editorial--master-create-css-usage\}
+
+
+`planMasterCSSSetup()` で提案を調べます。`applyMasterCSSSetupPlan()` は書き込み前に記録したファイル前提条件を検査するため、変わったら新しい計画を作ります。設定はファイル変更や依存インストールを行い得ます。対話的な手順は[インストール](/guide/installation)を参照してください。
+
+## editorial--master-create-css-entries- \{#copy-editorial--master-create-css-entries-\}
+
+
+設定の計画・適用と、そのオプション・結果型。
+
+## editorial--master-css-svelte-addon-introduction \{#copy-editorial--master-css-svelte-addon-introduction\}
+
+
+公式 Svelte CLI アドオンは SvelteKit に Master CSS を設定し、依存、Vite 統合、スタイルシートのインポート、サーバーフックを含みます。
+
+## editorial--master-css-svelte-addon-usage \{#copy-editorial--master-css-svelte-addon-usage\}
+
+
+Svelte CLI から実行します。設定は SvelteKit のないプロジェクトを拒否し、実行段階には Svelte の依存が必要です。全手順は [Svelte のインストール](/guide/installation/svelte)を参照してください。
+
+## editorial--master-css-svelte-addon-entries- \{#copy-editorial--master-css-svelte-addon-entries-\}
+
+
+Svelte CLI が使う既定アドオン。
+
+## editorial--master-eslint-config-css-introduction \{#copy-editorial--master-eslint-config-css-introduction\}
+
+
+公式の flat config プリセットで ESLint の Master CSS lint 規則を有効にします。既定エクスポートと `recommended` は同じ設定です。
+
+## editorial--master-eslint-config-css-entries- \{#copy-editorial--master-eslint-config-css-entries-\}
+
+
+推奨の ESLint flat config。
+
+## editorial--master-eslint-plugin-css-introduction \{#copy-editorial--master-eslint-plugin-css-introduction\}
+
+
+ESLint プラグインは JavaScript とテンプレート構文を Master CSS の検証、クラス順、修正に接続します。既定エクスポートと `masterCSS` は同じプラグインです。
+
+## editorial--master-eslint-plugin-css-entries- \{#copy-editorial--master-eslint-plugin-css-entries-\}
+
+
+プラグインの規則と推奨設定。
+
+## editorial--master-css-language-server-introduction \{#copy-editorial--master-css-language-server-introduction\}
+
+
+Language Server Protocol で Master CSS の補完、ホバー、色、整形、セマンティックトークンを提供します。ライブラリーのエントリーはホスト管理のライフサイクル、server エントリーはプロセスの起動用です。
+
+## editorial--master-css-language-server-usage \{#copy-editorial--master-css-language-server-usage\}
+
+
+ホストに組み込む際は `MasterCSSLanguageServer` を作成・起動し、終了時に破棄します。`/server` の読み込みは直ちにサーバーを作成・起動します。エディター向けの手順は[言語サービス](/guide/language-service)を参照してください。
+
+## editorial--master-css-language-server-entries- \{#copy-editorial--master-css-language-server-entries-\}
+
+
+言語サーバー、ワークスペース設定、セマンティックトークンの要求名。
+
+## editorial--master-css-language-server-entries--server \{#copy-editorial--master-css-language-server-entries--server\}
+
+
+実行可能なサーバー起動エントリー。名前付き・既定エクスポートはありません。
+
+## editorial--master-css-language-service-introduction \{#copy-editorial--master-css-language-service-introduction\}
+
+
+Master CSS のツール結果をエディター文書、言語機能、構文強調に対応付けます。サーバー描画のコード表示には Shiki エントリーを使います。
+
+## editorial--master-css-language-service-usage \{#copy-editorial--master-css-language-service-usage\}
+
+
+`MasterCSSLanguageService` の作成時にツールセッションを渡します。Shiki ヘルパーはオプションで再利用する言語セッションまたは manifest を受け付けます。`@master/css-language-service/shiki.css` のインポートでホバー時のマークアップ強調を有効にします。設定例は[言語サービス](/guide/language-service)を参照してください。
+
+## editorial--master-css-language-service-entries- \{#copy-editorial--master-css-language-service-entries-\}
+
+
+エディター文書サービス、設定、トリガー文字。
+
+## editorial--master-css-language-service-entries--common \{#copy-editorial--master-css-language-service-entries--common\}
+
+
+共有の補完トリガー文字。
+
+## editorial--master-css-language-service-entries--shiki \{#copy-editorial--master-css-language-service-entries--shiki\}
+
+
+Shiki トランスフォーマー、セマンティック装飾、言語登録。
+
+## editorial--master-css-language-service-entries--shiki-css \{#copy-editorial--master-css-language-service-entries--shiki-css\}
+
+
+Shiki 出力のホバーで有効になるマークアップクラスの色。
+
+## editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json \{#copy-editorial--master-css-language-service-entries--syntaxes-master-css-tmLanguage-json\}
+
+
+ディレクティブ強調用の TextMate 文法アセット。
+
+## editorial--master-css-mcp-introduction \{#copy-editorial--master-css-mcp-introduction\}
+
+
+Master CSS の Model Context Protocol サーバーを作成するか stdio トランスポートを起動します。ツール一覧が操作とファイルへの作用を示します。
+
+## editorial--master-css-mcp-usage \{#copy-editorial--master-css-mcp-usage\}
+
+
+ホストがトランスポート設定を担う場合は `createMasterCSSMCPServer()`、stdio には `startMasterCSSMCPStdioServer()` を使います。クライアント登録は [MCP サーバー](/guide/ai-coding#connect-the-mcp-server)、使用法は[ツール一覧](/reference/tools/mcp)、完全な契約は `tools/list` を参照してください。
+
+## editorial--master-css-mcp-entries- \{#copy-editorial--master-css-mcp-entries-\}
+
+
+サーバーファクトリーと stdio 起動。
+
+## editorial--master-css-next-introduction \{#copy-editorial--master-css-next-introduction\}
+
+
+Master CSS を Next.js の設定とビルド出力に接続します。ルートのエクスポートは Next 設定を包み、adapter エントリーはビルド統合とアダプター合成に対応します。
+
+## editorial--master-css-next-usage \{#copy-editorial--master-css-next-usage\}
+
+
+Next 設定ではルートの既定エクスポートを使います。ビルド出力を処理するレンダリングモードではラッパーを await してください。設定と対応モードは [Next.js のインストール](/guide/installation/nextjs)を参照してください。
+
+## editorial--master-css-next-entries- \{#copy-editorial--master-css-next-entries-\}
+
+
+Next 設定のラッパーと統合オプション。
+
+## editorial--master-css-next-entries--adapter \{#copy-editorial--master-css-next-entries--adapter\}
+
+
+ビルドアダプター、合成ヘルパー、描画出力レポート。
+
+## editorial--master-css-nuxt-introduction \{#copy-editorial--master-css-nuxt-introduction\}
+
+
+Master CSS を Nuxt モジュールとして登録します。既定エクスポートと `masterCSSNuxtModule` は同じモジュールです。
+
+## editorial--master-css-nuxt-usage \{#copy-editorial--master-css-nuxt-usage\}
+
+
+Nuxt 設定でモジュールを登録し、フレームワークに設定とライフサイクルを管理させます。[Nuxt のインストール](/guide/installation/nuxtjs)を参照してください。
+
+## editorial--master-css-nuxt-entries- \{#copy-editorial--master-css-nuxt-entries-\}
+
+
+Nuxt モジュール。
+
+## editorial--master-css-preset-introduction \{#copy-editorial--master-css-preset-introduction\}
+
+
+プリセットはテーマトークン、条件、ユーティリティ、コンパイル済み既定 manifest を供給します。CSS インポートと JSON manifest は別の利用先向けです。
+
+## editorial--master-css-preset-usage \{#copy-editorial--master-css-preset-usage\}
+
+
+スタイルシートの記述には CSS をインポートし、ベース manifest を実行・コンパイルする API には JSON manifest を渡します。記述と上書きは[テーマトークン](/guide/theme)を参照してください。
+
+## editorial--master-css-preset-entries- \{#copy-editorial--master-css-preset-entries-\}
+
+
+プリセット全体のスタイルシートエントリー。
+
+## editorial--master-css-preset-entries--default-manifest-json \{#copy-editorial--master-css-preset-entries--default-manifest-json\}
+
+
+エンジン、コンパイラー、ツール API 用のコンパイル済み既定 manifest。
+
+## editorial--master-css-preset-entries--index-css \{#copy-editorial--master-css-preset-entries--index-css\}
+
+
+プリセット全体のスタイルシートエントリー。
+
+## editorial--master-css-preset-entries--base-css \{#copy-editorial--master-css-preset-entries--base-css\}
+
+
+ベーススタイルと安定したカスケードレイヤーの順序。
+
+## editorial--master-css-preset-entries--theme-css \{#copy-editorial--master-css-preset-entries--theme-css\}
+
+
+プリセットのテーマ定義。
+
+## editorial--master-css-preset-entries--media-css \{#copy-editorial--master-css-preset-entries--media-css\}
+
+
+プリセットのビューポートとユーザー設定の条件。
+
+## editorial--master-css-preset-entries--container-css \{#copy-editorial--master-css-preset-entries--container-css\}
+
+
+プリセットのコンテナー幅条件。
+
+## editorial--master-css-preset-entries--utilities-css \{#copy-editorial--master-css-preset-entries--utilities-css\}
+
+
+プリセットのユーティリティ登録。
+
+## editorial--master-css-runtime-introduction \{#copy-editorial--master-css-runtime-introduction\}
+
+
+文書またはシャドウルートのクラスを監視し生成 CSS を維持します。起動にはブラウザーエンジン向けにプロジェクト manifest をコンパイルしたランタイムプログラムが必要で、所有するセッションを返します。
+
+## editorial--master-css-runtime-entries- \{#copy-editorial--master-css-runtime-entries-\}
+
+
+ランタイムの起動、監視、スナップショット、カスタム要素統合。
+
+## editorial--master-css-runtime-entries--default-program \{#copy-editorial--master-css-runtime-entries--default-program\}
+
+
+Master CSS のビルド統合がないアプリ向けに、ランタイムプログラムへコンパイルした既定プリセット。
+
+## editorial--master-css-schema-introduction \{#copy-editorial--master-css-schema-introduction\}
+
+
+共有の型とコーデックが manifest、診断、ハイドレーション、統合オプションを記述し、ホスト間で構造化した Master CSS データを交換できます。
+
+## editorial--master-css-schema-entries- \{#copy-editorial--master-css-schema-entries-\}
+
+
+共通の manifest、診断、レンダリングモードのエクスポート。
+
+## editorial--master-css-schema-entries--manifest \{#copy-editorial--master-css-schema-entries--manifest\}
+
+
+Manifest v6 の型、変数ヘルパー、シリアライズ。
+
+## editorial--master-css-schema-entries--hydration-manifest \{#copy-editorial--master-css-schema-entries--hydration-manifest\}
+
+
+ハイドレーション規則、リソース順、シリアライズのヘルパー。
+
+## editorial--master-css-schema-entries--css-directives \{#copy-editorial--master-css-schema-entries--css-directives\}
+
+
+ディレクティブ結果、ソース範囲、出力マッピング。
+
+## editorial--master-css-schema-entries--css-syntax \{#copy-editorial--master-css-schema-entries--css-syntax\}
+
+
+ユーティリティ、セレクター、値の表現型。
+
+## editorial--master-css-schema-entries--utility-type \{#copy-editorial--master-css-schema-entries--utility-type\}
+
+
+ユーティリティの分類定数とその型。
+
+## editorial--master-css-schema-entries--runtime-style \{#copy-editorial--master-css-schema-entries--runtime-style\}
+
+
+ランタイムのスタイル要素識別子。
+
+## editorial--master-css-schema-entries--emitted-globals \{#copy-editorial--master-css-schema-entries--emitted-globals\}
+
+
+セッション外ですでに出力したリソースの件数。
+
+## editorial--master-css-schema-entries--css-common \{#copy-editorial--master-css-schema-entries--css-common\}
+
+
+共有の CSS ベンダー識別子。
+
+## editorial--master-css-schema-entries--diagnostics \{#copy-editorial--master-css-schema-entries--diagnostics\}
+
+
+診断バージョン、ソース範囲、エラーペイロード。
+
+## editorial--master-css-schema-entries--integration \{#copy-editorial--master-css-schema-entries--integration\}
+
+
+レンダリングモードと共有の統合オプション。
+
+## editorial--master-css-server-introduction \{#copy-editorial--master-css-server-introduction\}
+
+
+生成 CSS を HTML に描画し、ブラウザー用のハイドレーションデータを作ります。ホストのライフサイクルに合わせて単発ヘルパー、再利用するレンダラー、ストリーミング HTML セッションを選びます。
+
+## editorial--master-css-server-entries- \{#copy-editorial--master-css-server-entries-\}
+
+
+HTML 描画、ストリーミングセッション、ハイドレーションのオプション。
+
+## editorial--master-css-svelte-introduction \{#copy-editorial--master-css-svelte-introduction\}
+
+
+Master CSS を Svelte のビルドと SvelteKit のサーバー応答に統合します。ビルドとリクエスト処理は別エントリーを使います。
+
+## editorial--master-css-svelte-usage \{#copy-editorial--master-css-svelte-usage\}
+
+
+ビルド設定に Vite プラグイン、SvelteKit のサーバーフックに名前付きの `handle` エクスポートを登録します。全体の接続は [Svelte のインストール](/guide/installation/svelte)を参照してください。
+
+## editorial--master-css-svelte-entries--vite \{#copy-editorial--master-css-svelte-entries--vite\}
+
+
+Svelte 対応の Vite プラグインとオプション。
+
+## editorial--master-css-svelte-entries--hooks-server \{#copy-editorial--master-css-svelte-entries--hooks-server\}
+
+
+名前付きの SvelteKit リクエストハンドラー。
+
+## editorial--master-css-tooling-introduction \{#copy-editorial--master-css-tooling-introduction\}
+
+
+クラス構文の解析、候補抽出、規則検証、lint や言語の結果を提供します。用途に絞ったエントリーか、複数操作で共有するツールセッションを選びます。
+
+## editorial--master-css-tooling-usage \{#copy-editorial--master-css-tooling-usage\}
+
+
+セッション作成や意味処理ヘルパーの呼び出し時にプロジェクト manifest を渡します。繰り返し解析にはセッションを再利用し、終了後に破棄します。Node のサブパスは同期ネイティブ操作を提供し、ファイルシステムのスキャンは独自の非同期ライフサイクルを持ちます。
+
+## editorial--master-css-tooling-entries- \{#copy-editorial--master-css-tooling-entries-\}
+
+
+解析機能を横断する再利用可能な非同期ツールセッション。
+
+## editorial--master-css-tooling-entries--node \{#copy-editorial--master-css-tooling-entries--node\}
+
+
+同期ネイティブセッションとネイティブ宣言対応。
+
+## editorial--master-css-tooling-entries--lexer \{#copy-editorial--master-css-tooling-entries--lexer\}
+
+
+クラスリストと CSS ソースの解析。
+
+## editorial--master-css-tooling-entries--lexer-node \{#copy-editorial--master-css-tooling-entries--lexer-node\}
+
+
+同期ネイティブのクラスリスト解析。
+
+## editorial--master-css-tooling-entries--source \{#copy-editorial--master-css-tooling-entries--source\}
+
+
+ソース候補の抽出とソース範囲の型。
+
+## editorial--master-css-tooling-entries--source-node \{#copy-editorial--master-css-tooling-entries--source-node\}
+
+
+同期ネイティブのソース抽出。
+
+## editorial--master-css-tooling-entries--scanner-node \{#copy-editorial--master-css-tooling-entries--scanner-node\}
+
+
+ファイルシステムスキャナー、保持する候補、スキャナーのライフサイクル。
+
+## editorial--master-css-tooling-entries--validator \{#copy-editorial--master-css-tooling-entries--validator\}
+
+
+渡した manifest に対するクラス検証。
+
+## editorial--master-css-tooling-entries--validator-node \{#copy-editorial--master-css-tooling-entries--validator-node\}
+
+
+同期ネイティブのクラス検証。
+
+## editorial--master-css-tooling-entries--lint \{#copy-editorial--master-css-tooling-entries--lint\}
+
+
+Lint 診断、編集、正規形の提案、内容ヘルパー。
+
+## editorial--master-css-tooling-entries--lint-node \{#copy-editorial--master-css-tooling-entries--lint-node\}
+
+
+同期ネイティブのクラス lint。
+
+## editorial--master-css-tooling-entries--language \{#copy-editorial--master-css-tooling-entries--language\}
+
+
+エディターに依存しない解析、補完、色、セマンティックトークン。
+
+## editorial--master-css-tooling-entries--language-node \{#copy-editorial--master-css-tooling-entries--language-node\}
+
+
+同期ネイティブの言語セッションと解析。
+
+## editorial--master-css-vite-introduction \{#copy-editorial--master-css-vite-introduction\}
+
+
+Vite に Master CSS を登録してスタイルをコンパイルし、選んだレンダリングモードを調整します。既定エクスポートと `createMasterCSSVitePlugin` は同じファクトリーです。
+
+## editorial--master-css-vite-usage \{#copy-editorial--master-css-vite-usage\}
+
+
+Vite 設定でファクトリーを呼び、返されたプラグインのライフサイクルは Vite に任せます。エントリーとモードの設定は [Vite のインストール](/guide/installation/vite)を参照してください。
+
+## editorial--master-css-vite-entries- \{#copy-editorial--master-css-vite-entries-\}
+
+
+Vite プラグインのファクトリーとオプション。
+
+## editorial--master-css-webpack-introduction \{#copy-editorial--master-css-webpack-introduction\}
+
+
+Webpack に Master CSS を登録します。既定エクスポートと `MasterCSSWebpackPlugin` はプラグインクラスを公開し、オプションで描画とスキャナーの動作を選びます。
+
+## editorial--master-css-webpack-usage \{#copy-editorial--master-css-webpack-usage\}
+
+
+Webpack 設定でプラグインを構築し、コンパイルフックは Webpack に任せます。スタイルシートと loader の設定は [Webpack のインストール](/guide/installation/webpack)を参照してください。
+
+## editorial--master-css-webpack-entries- \{#copy-editorial--master-css-webpack-entries-\}
+
+
+Webpack プラグインクラスとオプション。
+
+## editorial--master-css-astro-introduction \{#copy-editorial--master-css-astro-introduction\}
+
+
+Master CSS を Astro の設定とリクエスト処理に接続します。統合はビルド動作を設定し、middleware エントリーは Astro のリクエストフックを公開します。
+
+## editorial--master-css-astro-usage \{#copy-editorial--master-css-astro-usage\}
+
+
+Astro 設定に既定の統合ファクトリーを使います。ビルドと middleware の設定は [Astro のインストール](/guide/installation/astro)を参照してください。
+
+## editorial--master-css-astro-entries- \{#copy-editorial--master-css-astro-entries-\}
+
+
+Astro 統合のファクトリーとオプション。
+
+## editorial--master-css-astro-entries--middleware \{#copy-editorial--master-css-astro-entries--middleware\}
+
+
+Astro のリクエスト middleware。
+
+## editorial--master-css-usage \{#copy-editorial--master-css-usage\}
+
+
+Node.js のエンジン・描画 API には明示的な manifest を渡すか、全環境で `compileRuntimeProgram()` のランタイムプログラムを渡します。ブラウザーはプログラムだけを実行します。反復作業にはセッションを再利用し、終了後に破棄します。記述と読み込みには[コンパイラー](/reference/packages#css-compiler)、DOM 監視には[ランタイム](/reference/packages#css-runtime)を使います。
+
+ビルド統合は `./client` で宣言する仮想モジュールとして配信成果物を公開します。`virtual:master-css-manifest` は Node エンジン、サーバーレンダラー、ツール用のコンパイル済み `MasterCSSManifest`、`virtual:master-css-program` は本番ビルドでハッシュ付き `.bin` アセットになるブラウザー用プログラム、`virtual:master-css-emitted-globals` は CSS エントリーが出力済みの変数とキーフレームの一覧で、ランタイムの重複生成を防ぎます。ページのハイドレーション manifest は 1 応答を記述する別データです。
+
+ビルド時とサーバーの生成は Rust の意味処理を使い、ブラウザーエンジンはコンパイル済みプログラムから同じ定義とクラスに同じ CSS を生成します。コンパイラー、サーバー、ランタイムは対応するリリースを使ってください。未対応の実行・言語バージョンは拒否します。
+
+`executionState(names)` は規則を生成せず、重複を含め要求順で保存済み規則参照を読みます。未知または未確保のクラスは参照が空です。全規則と CSS には `snapshot()` を使います。ブラウザーエンジンには検査・描画セッションがありません。CSS 変更のない遷移でもホストはリソース状態を同期し、ラッパーは `executionState`、`registerEmittedGlobals`、`replaceEmittedGlobals`、`refresh`、`dispose`、`Symbol.dispose` を含む全 `MasterCSSEngine` メンバーを転送する必要があります。
+
+## editorial--master-css-compiler-usage \{#copy-editorial--master-css-compiler-usage\}
+
+
+API がベース manifest を要求する場合は明示的に渡します。結果を使う前に診断を確認してください。配信結果はアセット一式で、各スタイルシートとリソースを割り当てた URL に公開します。境界は[インポート](/reference/directives/imports)を参照してください。
+
+**ファイルコンパイルの公開**
+
+`compileManifestFileSync(file, { baseManifest, delivery })` はファイルグラフを読み、書き込みせずアセットを返します。`delivery` は `entryURL`、`stylesheetURL(file)`、`resourceURL(file)` を供給し、別スタイルシートには別の最終 URL を割り当てます。全 `stylesheets` 項目を `href` に公開し、各 `resources` を `file` から `href` にコピーします。最上位の `css`、`nativeCSS`、`generatedCSS` はエントリーだけを記述します。相対リソース URL は元の所有ソース、クエリ、フラグメントを保ち、参照専用 CSS は公開アセットになりません。リソース欠落や URL 衝突は公開前に失敗します。`delivery` の省略は単一文字列の結果となり、この公開契約は適用しません。
+
+`preserveNativeCSS` の既定は `true` です。明示的な `false` は生のネイティブ CSS を抑え、含める出力にはコンパイル済みネイティブミックスイン適用を保持します。プルーニングは有効にしません。スタイルシート集合は `includeNativeCSS`、`includeMasterBaseCSS`、`includeGeneratedCSS` でネイティブ CSS、Master ベース CSS、生成ユーティリティを別々に選びます。ネイティブ出力の除外は、生成側が使う定義を除去しません。方針は[ネイティブのプルーニング](/reference/directives/pruning)を参照してください。
+
+既定の `validation: 'report'` は結果を保持しながら診断を確認します。`validation: 'error'` は全結果の既知の無効 CSS をアセット返却前に拒否し、未知機能だけでは失敗しません。使えるソースマップがあれば範囲診断は元ソースを指します。生成部分を対応付けられないホスト変換は元位置を捏造してはいけません。
+
+**別の変換器用にネイティブ CSS を準備する**
+
+別の変換器が未変更のネイティブ部分を必要とする場合、ホストは `preserveNativeSource: true` を有効にできます。Master 定義は消費し、ネイティブ `@apply` は変換しますが、無関係のコメント、空規則、値の綴り、規則境界を保持します。既定の `false` は通常のネイティブ CSS 正規化を保ちます。
+
+ソース保持と有効なネイティブプルーニングは併用できません。クラスリストだけではプルーニングは有効にならず、`preserveNativeCSS: false` は引き続きネイティブ出力を抑えます。このオプションは後続ホスト変換の最適化やソースマップ書換えを妨げず、後の変換が加える Master 定義や生成グローバル参照を検出しません。
+
+**ホスト変換後のリソース描画を続ける**
+
+別出力が生成テーマ変数やキーフレームを供給済みなら、`compileRenderedStylesheet()` と `compileBrowserStylesheet()` に任意の `emittedGlobals` リソース件数スナップショットを渡せます。正の件数は重複出力を抑え、ゼロは抑えません。新参照は推移的なリソース閉包を引き続き出力します。返すスナップショットは入力を変えず、外部文脈と今回必要なリソースを含みます。省略時は通常の単独描画です。
+
+この文脈は、後の描画が処理済み変数を元の manifest 値に戻すのを防ぎますが、新生成 CSS にホストプラグインは実行しません。ホストはプラグイン順とソース所有権を保ちながら、新 CSS の処理とリソース公開を担います。
+
+## editorial--master-eslint-config-css-usage \{#copy-editorial--master-eslint-config-css-usage\}
+
+
+ESLint の flat config にプリセットを加えます。プロジェクト固有の動作は[プラグイン設定](/reference/packages#eslint-plugin-css)、各規則は[コード lint](/guide/code-linting)を参照してください。
+
+| 規則 | 既定 | 修正可能 | 報告内容 |
+| --- | --- | --- | --- |
+| `@master/css/sort-classes` | `warn` | はい | 生成規則の順序と異なるクラス、および重複。 |
+| `@master/css/no-invalid-classes` | `error` | いいえ | 無効な Master CSS 構文と生成 CSS。未一致クラスは `disallowUnknownClass` の場合のみ。 |
+| `@master/css/no-conflicting-classes` | `warn` | はい | 同じバリアントスコープ内の宣言の完全・部分競合。完全な上書きだけを修正。 |
+| `@master/css/prefer-canonical-classes` | `warn` | はい | トークンの同一性と生成規則の動作を保てる場合だけ非正規形を報告。 |
+
+`@master/css/no-unapproved-raw-values` と `@master/css/prefer-component-classes` はプリセットに含みません。
+
+## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
+
+
+標準規則には[公式プリセット](/reference/packages#eslint-config-css)を使うか、独自の flat config にプラグインを登録します。規則の動作は[コード lint](/guide/code-linting)を参照してください。
+
+設定は `@master/css` キーの下に置き、配列は既定値を置き換えます。
+
+| 設定 | 既定 | 用途 |
+| --- | --- | --- |
+| `classAttributes` | `['class', 'className']` | クラス文字列を含むマークアップ属性。 |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | 引数にクラス文字列を含められる呼び出し先とタグ付きテンプレート。`styled` は `styled.button` などのメンバー形式も受け付ける。 |
+| `classDeclarations` | `[]` | クラス宣言として扱うプロジェクト変数やオブジェクトプロパティ。 |
+| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | バリアント設定オブジェクトの走査で飛ばすキー。 |
+
+`@master/css/no-unapproved-raw-values` はトークン対応ユーティリティの生の値を報告します。`requireProperties` は列挙したネイティブプロパティに絞り、空または省略なら全トークン対応プロパティを調べます。`allowProperties` と `allowedPatterns` は例外を加え、`allowRawValues` は無効化します。ネイティブカスタムプロパティ参照は有効です。診断の `data` はプロパティのスコープと標準トークンファミリーを示し、自動修正はありません。
+
+`@master/css/prefer-component-classes` は、最上位の `_`、`>`、`+`、`~` 結合子で別要素をスタイルするクラスが `max`（既定 `3`）を超えるクラスリストを報告します。診断の `data` は `classNames` と `targets` を列挙し、自動修正はありません。
+
+## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
+
+
+セッション利用前に `MasterCSSRuntime.start()` を await し、所有者の終了時に `dispose()` を呼びます。`withMasterCSSRuntime()` はカスタム要素の接続コールバックに起動・破棄を統合し、シャドウルートが必要です。ブラウザーの手順は[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+公式統合は起動処理を注入します。独自エントリーは `program` に `() => import('virtual:master-css-program').then(module => module.default)` などのローダーと `emittedGlobals` を渡し、`observe()` を呼びます。ランタイムのみのページは起動時にプログラムを読みます。有効な `hydrationManifest` を持つプログレッシブページは、`engine: 'eager'` または `enginePrefetch: 'idle'` がなければ、その範囲外のクラスが現れるまでエンジンを遅延します。`emittedGlobals` はバンドルを使う全ページに適用します。生成規則とオンデマンドキーフレームは自身のスタイルシートに挿入し、リンク済み CSS には書きません。
+
+`snapshot()` は接続 DOM の使用数 `usageCounts` と、事前準備・ハイドレーション・保持した規則も含み得る `classRules` を分けます。`engine` は `'deferred'`、`'loading'`、`'ready'`、`'failed'` です。遅延エンジンの起動前はクラススナップショットに規則がなく、`layers` も空です。`ensureClassRules()` と `deleteClassRules()` は DOM 使用と独立し、削除は同期で保持機構を迂回します。準備前は `RUNTIME_ENGINE_NOT_READY` を投げて起動するため、先に `ready()` を await してください。
+
+## editorial--master-css-schema-usage \{#copy-editorial--master-css-schema-usage\}
+
+
+型を所有する狭いサブパスからインポートします。型宣言はデータ形状を記述するもので、任意入力の検証やディレクティブのコンパイルはしません。API 間で manifest や診断を渡す際はバージョンを保ってください。手で変えても互換にはなりません。
+
+manifest の保存には `serializeMasterCSSManifest()` を使います。シリアライズは派生フィールドを正規化しますが、エンジン検証の代わりではなく、コメントや編集可能な CSS 書式は保ちません。未知フィールドは拡張機構ではありません。外側のエンベロープが保持しても、入れ子フィールドの受理や実行を意味しません。
+
+## editorial--master-css-server-usage \{#copy-editorial--master-css-server-usage\}
+
+
+描画前にコンパイル済み manifest を渡します。emitted-global とハイドレーションのメタデータは配信 CSS に合わせ、再利用セッションは使用後に破棄します。HTML の全例は[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+`createServerRenderer()` は描画間で規則をキャッシュします。manifest の変更時は再作成し、長寿命サーバーでは `maxCachedClasses` を制限します。独自ホストはページがリンクし得る最終 `stylesheets` を、`@master/css-compiler/stylesheet` の `describeLinkedStylesheet()` が返す `{ href, css, imports }` と、解決用の `documentURL` で渡せます。すでに配信するテーマ変数やネイティブキーフレームは `style#master-css` で重複しません。描画は異なるレイヤーや条件の同名定義も含め、各キーフレーム定義を別々に追跡します。
+
+## body-0 \{#copy-body-0\}
+
+
+担当する作業でパッケージを選びます。各節に公開インポートパスと現在の GitHub ソースへのリンクがあります。シグネチャー、オーバーロード、型はそちらを読み、このページでは宣言を再掲しません。
+
+## body-1 \{#copy-body-1\}
+
+
+ソースリンクはリポジトリの `rc` ブランチです。インストール済みリリースについては同梱の宣言も確認してください。
+
+## body-2 \{#copy-body-2\}
+
+
+## エントリーポイントの選択 \{#choose-an-entrypoint\}
+
+## body-3 \{#copy-body-3\}
+
+
+| 作業 | 最初の選択 |
+
+## body-4 \{#copy-body-4\}
+
+
+| フレームワークやビルドツールの接続 | [インストール →](/guide/installation)と下の統合パッケージ。 |
+
+## body-5 \{#copy-body-5\}
+
+
+| CSS 定義のコンパイルやファイル解決 | [`@master/css-compiler`](#css-compiler) |
+
+## body-6 \{#copy-body-6\}
+
+
+| コンパイル済み定義からクラス規則を生成 | [`@master/css`](#css) |
+
+## body-7 \{#copy-body-7\}
+
+
+| ブラウザー DOM のクラスを監視 | [`@master/css-runtime`](#css-runtime) |
+
+## body-8 \{#copy-body-8\}
+
+
+| サーバー応答の描画とハイドレーション | [`@master/css-server`](#css-server) |
+
+## body-9 \{#copy-body-9\}
+
+
+| ソースの抽出・検証 | [`@master/css-tooling`](#css-tooling) |
+
+## body-10 \{#copy-body-10\}
+
+
+| エディター機能の実装 | [`@master/css-language-service`](#css-language-service) |
+
+## body-11 \{#copy-body-11\}
+
+
+| ターミナルやエージェントによる自動化 | [CLI コマンド](/reference/tools/cli)または [MCP ツール](/reference/tools/mcp) |
+
+## body-12 \{#copy-body-12\}
+
+
+manifest は定義を記述し、ネイティブスタイルシートではありません。描画モードのユーティリティ出力とともにコンパイラーのネイティブ CSS も配信します。Node エンジンは manifest、ブラウザーはコンパイル済みランタイムプログラムを使います。選び方は[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+## body-13 \{#copy-body-13\}
+
+
+| インポートパス | 用途 |
+
+## description \{#copy-description\}
+
+
+公開パッケージを選び、インポートパスを探し、GitHub の API ソースを開きます。
+
+## title \{#copy-title\}
+
+
+パッケージ
+
+## source-links \{#copy-source-links\}
+
+
+[ソースと README](%%source%%) · [公開エクスポートの対応](%%exports%%)

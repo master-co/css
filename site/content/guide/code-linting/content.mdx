@@ -2,7 +2,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LintIllustration from './components/LintIllustration.astro'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 Catch invalid classes, conflicting declarations and inconsistent syntax as you edit. The ESLint integration uses your project's theme and custom definitions, so diagnostics reflect the classes your project can generate.
 
 Start with the recommended config below, or use the [installation integrations](/guide/installation#integrations) to add it with your framework setup. Linting checks class authoring; use the browser to verify layout, contrast and interaction. A clean lint result is not a design review.
@@ -11,11 +11,11 @@ Start with the recommended config below, or use the [installation integrations](
 
 ---
 
-## Install the recommended config
+## Install the recommended config \{#install-the-recommended-config\}
 Install ESLint and the recommended config in the project. Keep framework parser configuration when the project needs it.
 
 ```bash
-npm install -D eslint @master/eslint-config-css@rc
+npm install -D eslint @master/eslint-config-css@VERSION
 ```
 
 Add the recommended config to your flat config:
@@ -45,8 +45,8 @@ Sorting, duplicate removal and fully overridden classes can be fixed automatical
 
 ---
 
-## Linting rules
-### Sort classes
+## Linting rules \{#linting-rules\}
+### Sort classes \{#sort-classes\}
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
@@ -70,7 +70,7 @@ inline-flex px-md <!-- [!code ++] -->
 
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
 
-### No invalid classes
+### No invalid classes \{#no-invalid-classes\}
 `@master/css/no-invalid-classes` reports malformed Master CSS class syntax and recognized classes that generate invalid CSS. These are separate failures: a malformed class can be rejected before any rule is generated, while an accepted declaration can still contain an invalid value.
 
 ```html
@@ -85,7 +85,7 @@ An unknown CSS value is a different case: the class can match the language while
 
 To reject unmatched class names too, enable [`disallowUnknownClass`](#team-policy).
 
-### Prefer canonical classes
+### Prefer canonical classes \{#prefer-canonical-classes\}
 `@master/css/prefer-canonical-classes` checks for equivalent canonical forms while preserving token identity, value source, condition nesting and generated-rule ordering.
 
 These classes remain unchanged:
@@ -96,7 +96,7 @@ These classes remain unchanged:
 
 The rule does not replace a literal with a token that currently has the same value, convert units, or reorder the authored conditions. Choose semantic tokens deliberately, and use the raw-value policy below when the team requires them.
 
-### No conflicting classes
+### No conflicting classes \{#no-conflicting-classes\}
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 
 ```mcss
@@ -128,7 +128,7 @@ Compare the generated declarations and inspect the element in the browser before
 
 <GuideStudy id="lint-ownership" />
 
-## Supported sources
+## Supported sources \{#supported-sources\}
 The plugin checks class strings in `class` and `className` attributes, helpers such as `clsx` and `cva`, and `classList` methods. See the [settings and their defaults](/reference/packages#eslint-plugin-css).
 
 Customize settings under the `@master/css` settings key. Arrays replace their defaults, so include every helper or attribute you want ESLint to inspect:
@@ -153,7 +153,7 @@ export default defineConfig([
 
 ---
 
-## Team policy
+## Team policy \{#team-policy\}
 Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest. `disallowUnknownClass` rejects unmatched class names; it does not change unknown CSS-value diagnostics:
 
 ```js name=eslint.config.js
@@ -233,11 +233,11 @@ States of the element itself, relative selectors inside `:has()` or `:is()`, and
 
 ---
 
-## Native component CSS
+## Native component CSS \{#native-component-css\}
 To check token references in native CSS, run [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change) and pass route stylesheets imported from JavaScript as source paths; ESLint checks class lists only.
 
-## Editor feedback
+## Editor feedback \{#editor-feedback\}
 For class completion and hover information, follow [Language service](/guide/language-service). ESLint owns the lint rules and sort-on-save configuration; both tools can use the same project definitions.
 
-## Lint from scripts and AI tools
+## Lint from scripts and AI tools \{#lint-from-scripts-and-ai-tools\}
 Keep `eslint .` in development and CI scripts; for JSON diagnostics without an ESLint parser, use [`master-css lint`](/reference/tools/cli#lint), and for agents, [`mastercss_lint_project`](/reference/tools/mcp#mastercss_lint_project).

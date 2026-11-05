@@ -1,0 +1,26 @@
+# Reference prose: illustrations/has-owner-target
+
+## title \{#copy-title\}
+
+
+has() 检查子元素，为所属元素应用样式
+
+## alt \{#copy-alt\}
+
+
+两个 label 控件分别包含未选中与已选中的 input。只有已选中的子元素会让外层 label 边框变蓝。
+
+## caption \{#copy-caption\}
+
+
+类位于 label 上。检查的是 input 的选中状态，应用 border-color 的则是 label。
+
+## description-0 \{#copy-description-0\}
+
+
+b-blue-60:has(>input:checked) 检查带有类的元素是否具有已选中的直接子 input。
+
+## description-1 \{#copy-description-1\}
+
+
+匹配时，改变的是所属 label 的边框颜色，而非 input。input 画在同一边界内，以区分检查位置与样式目标。

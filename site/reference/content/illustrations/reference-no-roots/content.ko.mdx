@@ -1,0 +1,31 @@
+# Reference prose: illustrations/reference-no-roots
+
+## title \{#copy-title\}
+
+
+참조한 네이티브 규칙은 토큰을 유지하지 않음
+
+## alt \{#copy-alt\}
+
+
+참조 스타일시트가 토큰과 remote 규칙을 정의한다. 로컬 사용처가 없으면 둘 다 전달되지 않으며 로컬 토큰 사용처를 추가하면 토큰과 로컬 규칙만 전달한다.
+
+## caption \{#copy-caption\}
+
+
+두 경우는 같은 파일을 참조하며 로컬 사용만 달라집니다. 출력 발췌는 바깥 theme 레이어를 생략합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+참조 파일은 --color-accent와 .remote \{ color: var(--color-accent); \}를 정의합니다. 전달하지 않는 네이티브 규칙은 사용 루트가 아닙니다.
+
+## description-1 \{#copy-description-1\}
+
+
+참조만으로는 토큰을 사용할 수 있게 하지만 네이티브 규칙을 전달하거나 그 규칙만을 위해 토큰을 유지하지 않습니다.
+
+## description-2 \{#copy-description-2\}
+
+
+.local \{ color: var(--color-accent); \}을 추가하면 로컬 사용처가 토큰을 유지합니다. 출력은 여전히 .remote를 복사하지 않습니다.

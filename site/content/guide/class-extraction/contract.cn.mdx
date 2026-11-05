@@ -1,0 +1,144 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+提取会在不运行应用的情况下，从源文件中找出可能的类名。这些候选项也称为潜在类，是匹配和候选项策略的输入。找到字符串，不代表它一定生成规则、具有合法 CSS 值，或能在特定浏览器中工作。
+
+本页定义源文件边界、静态提取、候选项分类和源文件归属。[扫描类名](/guide/scanning-and-pruning)说明如何编写可被发现的类，并诊断样式缺失。[扫描指令](/reference/directives/scanning)则定义路径与类模式的语法。
+
+## 完整的静态字符串 \{#candidate-scanning\}
+
+提取器使用源语言的结构。JavaScript 和 TypeScript 字符串即使不在 `className` 中，也能提供候选项：作为显示文本传给组件的类仍可能被发现。扫描器不会推断哪个分支会执行，或函数在运行时会返回什么。
+
+<a id="complete-classes"></a>
+
+| 源文件形式 | 提取可见的内容 |
+| --- | --- |
+| HTML `class="p-md shadow-md"` | 两个完整类 |
+| JSX `className="p-md"` | 完整类 |
+| `error ? 'bg-red-60' : 'bg-green-60'` | 两个静态分支 |
+| `{ compact: 'p-sm', roomy: 'p-lg' }` | 对象中的完整值 |
+| 包含完整静态类片段的模板字面量 | 这些完整片段 |
+| `'bg-' + tone`，或类名内的模板插值 | 不会推断出 `bg-red-60` 或其他完整结果 |
+| 仅在运行时由 API 返回的类 | 没有可提取的源字符串 |
+
+例如，下列源文件包含两种颜色以及固定的内边距和圆角。无需对 `tone` 插值求值，就能发现对象中已完整写出的类：
+
+```js
+const tones = {
+  neutral: 'bg-surface-base fg-text-neutral',
+  destructive: 'bg-red-70 fg-white'
+}
+const className = `px-md r-md ${tones.destructive}`
+```
+
+提取出的类集合是 `bg-surface-base`、`fg-text-neutral`、`bg-red-70`、`fg-white`、`px-md` 和 `r-md`。扫描器不会因为此例选择了 destructive 分支，就只输出该分支。
+
+## 候选项分类 \{#validation\}
+
+提取后，当前 manifest 和样式表注册内容决定候选项的角色。未知的普通应用类不会自动被视为 Master CSS 错误。
+
+| 候选项 | 结果 |
+| --- | --- |
+| 已注册的预设工具类，例如 `p-md` | 生成匹配的工具类规则与依赖项 |
+| 项目定义的 `@utility` 类 | 生成项目已编译 manifest 注册的规则 |
+| 已注册的原生类，例如 `.card` | 记录原生使用情况，不生成新的工具类 |
+| 未匹配到定义的应用类 | 没有 Master 生成的规则 |
+| 格式错误的 Master 类 | 没有规则；检查功能可报告语法诊断 |
+| 已匹配但具有无效或未知 CSS 值的类 | 可能输出 CSS；匹配成功本身不代表值合法或浏览器支持 |
+
+```html
+<article class="card p-md shadow-md">Release notes</article>
+```
+
+这里的 `p-md` 和 `shadow-md` 由预设解析。只有项目确实提供原生规则，且裁剪策略会考虑使用情况时，`card` 才会保留该原生规则。原生样式表默认保留，扫描本身不会启用裁剪。
+
+<Class2CSS classes={['p-md', 'shadow-md']} />
+
+编译器匹配、CSS 语法验证、CSS 值验证和浏览器支持是不同的检查。请用[类检查](/reference/tools/mcp#mastercss_inspect_class)区分；匹配成功的类仍受浏览器层叠与计算值规则影响。
+
+## 源文件边界 \{#source-boundaries\}
+
+构建集成与 CLI 流程会发现常见的项目源文件，包括 HTML、JavaScript、TypeScript、JSX、TSX、受支持的框架源代码、Markdown、MDX 和 PHP。普通应用文件不需要宽泛的 `@source` 指令。
+
+自动发现遵循项目与祖先工作区的 `.gitignore`，不使用 Git 全局忽略设置。依赖包、声明文件、二进制文件、版本控制数据和生成输出会被排除。Master 输出与当前打包器输出都不是扫描输入；Next.js 使用其配置的 `distDir`。
+
+| 指令 | 对发现的影响 |
+| --- | --- |
+| `@source` | 显式包含额外路径，包括自动发现或 `.gitignore` 排除的文件 |
+| `@source not` | 排除路径，优先于包含规则 |
+
+这些例外适用于共享工作区源文件、外部内容或限定范围的裁剪根目录。相对路径规则与支持的形式见[扫描指令](/reference/directives/scanning)。
+
+框架集成优先使用原始 MDX、Vue 和 Svelte 源文件，而不是再次扫描已编译的显示字符串。提取器的语言类型很重要：有意提供纯文本输入时可以使用 `kind: 'raw'`，但它不是源文件解析失败时的回退方案。
+
+## Markdown 与 MDX \{#markdown-and-mdx\}
+
+Markdown 和 MDX 提取使用语法树。实际的 HTML/JSX、ESM 和表达式参与提取，正文、行内代码、普通代码围栏和 frontmatter 则不参与。因此，文档中展示类的代码围栏不会自动成为可执行示例。
+
+宿主可通过 `parentSource` 将可执行示例注册为虚拟源，或显式将有限范围的类加入安全列表。虚拟输入明确可执行内容的归属，由宿主提供实际示例源文件与语言类型。
+
+格式错误的源文件会报告 `SOURCE_PARSE_ERROR`。开发时保留上一次成功提供的结果，生产构建则失败。解析或读取失败不等于将源文件更新为空字符串。
+
+### 源位置 \{#source-locations\}
+
+提取不仅可报告字符串，也可报告候选项的出现位置，包括原始 UTF-16 范围、提取器、内容类型、owner 以及包含或排除原因。编码后的属性仍保有原始源范围。完整 URL 字面量会被排除；未知的原生声明则可能保留为候选项，供后续验证。
+
+## 源文件归属 \{#scanner-hosts\}
+
+扫描器会话跟踪的是当前各源提供的结果，不是曾经遇到的所有类。更新源会替换它原本提供的结果。移除一个源时，其他当前源或安全列表仍保留的类不会被移除。
+
+<ReferenceIllustration id="shared-source-class" />
+
+这些会话操作可通过 [`@master/css-tooling/scanner/node`](/reference/packages#css-tooling) 的 `MasterCSSScanner` 使用。它们描述源文件归属；使用框架集成时，通常由构建插件执行。
+
+| 操作 | 对归属的影响 |
+| --- | --- |
+| `collectCandidates` | 仅提取，不保留源提供的结果 |
+| `scanSource` | 替换一个源的内容，包括空字符串 |
+| `removeSource` | 移除该源及其虚拟后代源 |
+| `reconcileSources` | 提供一个 owner 下一次的完整源集合 |
+| `registerNativeClasses` | 为样式表源注册原生类标识 |
+| `removeOwner` | 移除该 owner 的源与原生注册内容 |
+
+```ts
+await scanner.scanSource('page.mdx', content, { owner: 'pages' })
+await scanner.scanSource('page.mdx#live', html, {
+  owner: 'pages', parentSource: 'page.mdx', kind: 'html'
+})
+scanner.removeSource('page.mdx', { owner: 'pages' })
+```
+
+移除 `page.mdx` 时，也会移除它的虚拟示例。其他 owner 的引用仍各自独立。协调源集合时，只保留为该 owner 提供的输入；即使父源由外部管理，显式保留的虚拟输入仍属于该集合。
+
+`changed` 表示生成输出或裁剪输入有变化。`sourceChanged` 也涵盖仅来源信息改变的更新：第二个源可以添加归属，而不改变 CSS。`sources` 视图呈现当前成功的源集合，包括空输入与虚拟关系。
+
+<ReferenceIllustration id="source-replacement" />
+
+## 运行时的值 \{#runtime-values\}
+
+值可以改变而不修改类名。完整的原生声明类可以引用由标记或脚本提供的自定义属性：
+
+```html
+<h1 class="(font-size:var(--headline-size))" style="--headline-size: 2rem">Launch notes</h1>
+```
+
+扫描器只会看到一个完整类。更新 `--headline-size` 会改变浏览器中的值，不需要新的工具类规则。见[可变值示例](/guide/scanning-and-pruning#keep-changing-values-out-of-class-names)。
+
+相同契约也适用于 `(width:var(--progress))`：脚本可以调用 `element.style.setProperty('--progress', '40%')`，而类保持不变。
+
+如果类名本身在启动后才首次出现，静态构建就无法发现它。请提供有限范围的安全列表，或使用[运行时或渐进式渲染](/guide/rendering-modes#comparisons)。
+
+## 候选项策略 \{#included-and-excluded-classes\}
+
+| 指令 | 用途 | 限制 |
+| --- | --- | --- |
+| `@safelist` | 保留有限范围的外部类，例如 CMS 状态或小部件类 | 不会绕过匹配，也不会定义缺失的工具类 |
+| `@blocklist` | 防止误判的候选项生成 CSS | 不会改写源文件，也不会移除任意原生 CSS |
+
+类模式、优先级和原生使用情况，见[扫描指令](/reference/directives/scanning)。移除原生规则与关键帧的方法，见[原生 CSS 裁剪](/reference/directives/pruning)。候选项发现与原生保留是独立策略。
+
+<a id="checklist"></a>
+
+样式缺失时，请先检查完整类、文件的发现边界和候选项策略，再修改编写语法。[指南诊断清单](/guide/scanning-and-pruning#find-why-a-style-is-missing)会结合实际场景带你完成这些检查。

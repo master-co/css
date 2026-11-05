@@ -1,0 +1,31 @@
+# Reference prose: illustrations/lint-overlap-context
+
+## title \{#copy-title\}
+
+
+競合解析は同じバリアントのスコープを比較
+
+## alt \{#copy-alt\}
+
+
+同じスコープの 2 つの margin クラスは同じセルにあり、sm と md の margin クラスは別のスコープ列にある。
+
+## caption \{#copy-caption\}
+
+
+クエリスコープが別でもブラウザーの範囲が排他的とは限りません。md では両方の最小幅クエリが一致し得るため、カスケードは適用されます。
+
+## description-0 \{#copy-description-0\}
+
+
+同じセレクターと条件スコープの 2 つの margin 宣言は、no-conflicting-classes が競合として診断できます。
+
+## description-1 \{#copy-description-1\}
+
+
+ここでの sm と md は別スコープのため、同一スコープの競合としては報告しません。
+
+## description-2 \{#copy-description-2\}
+
+
+これは診断上のグループ分けです。両メディア範囲が決して重ならない、または記述値が自動的に良い設計になるという意味ではありません。

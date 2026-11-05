@@ -1,0 +1,36 @@
+# Reference prose: illustrations/text-companions
+
+## title \{#copy-title\}
+
+
+文本样式始终设置三个属性
+
+## alt \{#copy-alt\}
+
+
+自定义 text-card 类分为 font-size、line-height 和 letter-spacing 三个分支。字号读取主要令牌，另外两个缺失的配套值各自使用 normal。
+
+## caption \{#copy-caption\}
+
+
+这里只定义主要的 --text-card 令牌。两个配套声明仍然存在并使用 normal，替换任何继承的行高或字距。
+
+## description-0 \{#copy-description-0\}
+
+
+自定义主题将 --text-card 定义为 1.5rem，未定义任何配套令牌。
+
+## description-1 \{#copy-description-1\}
+
+
+text-card 输出 font-size: var(--text-card)、line-height: var(--text-card--line-height, normal) 和 letter-spacing: var(--text-card--letter-spacing, normal)。
+
+## description-2 \{#copy-description-2\}
+
+
+三条实线分支都代表会输出的声明。缺失的配套值使用 normal 回退值，而不是继承其他行高或字距。
+
+## description-3 \{#copy-description-3\}
+
+
+单独的配套令牌不会注册 text-card。字体族、字重和颜色都不属于这个组合样式。

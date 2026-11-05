@@ -1,0 +1,31 @@
+# Reference prose: illustrations/manual-wrapper-reach
+
+## title \{#copy-title\}
+
+
+祖先選擇器可以進入淺色區域
+
+## alt \{#copy-alt\}
+
+
+帶有深色 data-theme 的祖先包含淺色區域與圖表。圖表使用淺色色彩配置，但仍符合 manual-dark 祖先包裝。
+
+## caption \{#copy-caption\}
+
+
+虛線路徑追蹤明確的 dark 屬性。內層淺色邊界改變 color-scheme，不會改變選擇器檢查的祖先關係。
+
+## description-0 \{#copy-description-0\}
+
+
+本文的 --manual-dark mixin 比對 [data-theme="dark"] 本身或其後代元素。
+
+## description-1 \{#copy-description-1\}
+
+
+巢狀 data-theme="light" 區域中的圖表，仍是外層 dark 區域的後代。因此即使 light-dark() 值使用本地淺色配置，它的不透明度包裝仍符合。
+
+## description-2 \{#copy-description-2\}
+
+
+應跟隨實際採用色彩配置的值，請使用自適應 token；屬性選擇器只檢查其明確指定的關係。

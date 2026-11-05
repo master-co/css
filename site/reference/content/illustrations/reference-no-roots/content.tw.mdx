@@ -1,0 +1,31 @@
+# Reference prose: illustrations/reference-no-roots
+
+## title \{#copy-title\}
+
+
+被參照的原生規則不會保留其 token
+
+## alt \{#copy-alt\}
+
+
+被參照樣式表定義 token 與 remote 規則。沒有本地使用端時兩者都不交付；加入本地 token 使用端後，只交付 token 與本地規則。
+
+## caption \{#copy-caption\}
+
+
+兩種情況參照相同檔案，只有本地使用情況改變。輸出節錄省略外層 theme 串接層。
+
+## description-0 \{#copy-description-0\}
+
+
+被參照檔案定義 --color-accent 與 .remote \{ color: var(--color-accent); \}。未交付的原生規則不是使用根節點。
+
+## description-1 \{#copy-description-1\}
+
+
+只有參照時，token 可供使用，但不交付該原生規則，也不會只為它保留 token。
+
+## description-2 \{#copy-description-2\}
+
+
+加入 .local \{ color: var(--color-accent); \} 後，本地使用端會保留 token。輸出仍不複製 .remote。

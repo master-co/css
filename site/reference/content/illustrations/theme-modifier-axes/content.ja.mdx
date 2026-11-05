@@ -1,0 +1,36 @@
+# Reference prose: illustrations/theme-modifier-axes
+
+## title \{#copy-title\}
+
+
+static は保持を、inline は生成値を制御
+
+## alt \{#copy-alt\}
+
+
+2 × 2 の表で通常、inline、static、static inline のテーマブロックを比較する。static は両トークンを保持し、inline は生成する background 値を var(--color-brand) から色のリテラルに変える。
+
+## caption \{#copy-caption\}
+
+
+各ケースで brand と spare を宣言し、bg-brand だけを使います。inline のみなら両トークンとも宣言が不要です。static を加えると両方を保持し、代入済みのクラス値は変えません。
+
+## description-0 \{#copy-description-0\}
+
+
+全ケースで --color-brand: #4f46e5 と --color-spare: #0d9488 を宣言します。参照元は bg-brand だけで、ネイティブのトークン参照はありません。
+
+## description-1 \{#copy-description-1\}
+
+
+通常の @theme は使用する brand トークンと background-color: var(--color-brand) を出力し、未使用の spare トークンは省きます。
+
+## description-2 \{#copy-description-2\}
+
+
+@theme inline は生成宣言に #4f46e5 を代入します。ユーティリティはどちらのトークンも読まなくなるため、この場合は両トークンの宣言を出力しません。
+
+## description-3 \{#copy-description-3\}
+
+
+@theme static は両トークンを保持します。@theme static inline も両方を保持しますが、生成する background-color は #4f46e5 のままです。保持と代入は独立しています。

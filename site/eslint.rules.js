@@ -3,7 +3,7 @@ import css from '@master/eslint-config-css'
 import astro from 'eslint-plugin-astro'
 import svelte from 'eslint-plugin-svelte'
 import tsParser from '@typescript-eslint/parser'
-import * as mdx from 'eslint-mdx'
+import * as mdx from './scripts/mdx-lint-parser.mjs'
 
 const typescriptConfig = {
   files: ['**/*.ts'],

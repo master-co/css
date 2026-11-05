@@ -1,0 +1,53 @@
+# Reference prose: truncation
+
+## title \{#copy-title\}
+
+Truncation
+
+## summary \{#copy-summary\}
+
+Clip text to one line or a number of lines and end it with an ellipsis.
+
+## note \{#copy-note\}
+
+Both need a constrained width. Inside a flex or grid item, give that item `min-w(0)` so it can shrink.
+
+## explanation-title \{#copy-explanation-title\}
+
+Limit the visible text, keep access to the full text
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`truncate` combines hidden overflow, an ellipsis and no wrapping. It needs a block container with a finite inline width to overflow; applying it to an unconstrained inline span does not make a one-line preview.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+`clamp-lines(2)` uses the prefixed line-clamp combination: `display: -webkit-box`, vertical box orientation, a two-line clamp and hidden overflow. Use a positive integer. It allows wrapping, so do not combine it with `truncate` and its `white-space: nowrap`.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+The text stays in the DOM. Clipping is a visual constraint, not a shorter string or a disclosure mechanism. Keep essential information available through a real link or an expandable full-text view; do not rely on a hover-only title.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+A flex or grid item’s automatic minimum can keep it wider than the space available. Set `min-w(0)` on the item that must shrink, then constrain the text within it. With line clamping, keep padding on a wrapper so padding does not expose clipped lines.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+The recipe owns its display and overflow declarations. Overriding those declarations with `flex`, `grid` or visible overflow can break the clamp. For custom truncation rules, use the native properties explicitly.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+native text overflow
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+legacy line clamping
+
+## usage-lead \{#copy-usage-lead\}
+
+Keep a file name on one line and its summary to two. Expand the details to read both in full.
+
+## guide-label \{#copy-guide-label\}
+
+Typography

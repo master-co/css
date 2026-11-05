@@ -1,0 +1,31 @@
+# Reference prose: illustrations/pruning-global-selectors
+
+## title \{#copy-title\}
+
+
+ネイティブのプルーニングはクラスなしの規則を保持
+
+## alt \{#copy-alt\}
+
+
+card を使用している例では、card とともに body と root の規則が残り、未使用のクラス規則には取り消し線が付く。
+
+## caption \{#copy-caption\}
+
+
+ソースは @prune native を有効にしています。保持されたクラスなしのセレクターも、通常の CSS の一致とカスケードの規則に従います。
+
+## description-0 \{#copy-description-0\}
+
+
+body と :root にはクラスセレクターがないため、ネイティブのプルーニングで規則を保持します。
+
+## description-1 \{#copy-description-1\}
+
+
+この例では使用する .card 規則は残り、未使用の .unused クラス規則は消えます。
+
+## description-2 \{#copy-description-2\}
+
+
+ネイティブのプルーニングはクラスの使用に基づきます。ブラウザーで全セレクターを解析するものでも、保持した全規則が現在一致する保証でもありません。

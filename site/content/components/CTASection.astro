@@ -21,7 +21,7 @@ const { t } = siteOf(Astro)
           {t('Get started')}
           <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
         </Link>
-        <CopyCommand client:idle={{ timeout: 500 }} command={installCommand} wrap />
+        <CopyCommand client:idle={{ timeout: 500 }} command={installCommand(import.meta.env.PUBLIC_VERSION)} wrap />
       </div>
       <div class="home-cta-field" aria-hidden="true">
         {/* Hydrates as early as the canvas's own observer would start the field. */}

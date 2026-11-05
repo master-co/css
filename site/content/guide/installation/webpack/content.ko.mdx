@@ -1,0 +1,194 @@
+---
+{
+  "title": "Webpack, Rspack, Rsbuild에서 Master CSS 설정하기",
+  "description": "Webpack, Rspack 또는 Rsbuild에서 CSS 진입점과 HTML 플러그인을 연결하고 프로덕션 스타일시트를 확인합니다.",
+  "category": "통합"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/webpack/cover-light.webp'
+import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × webpack" />
+
+Master CSS를 Webpack, Rspack 또는 Rsbuild 애플리케이션에 빌드합니다. 세 도구 모두 `@master/css-webpack`을 사용합니다. CSS 진입점은 정의를 제공하고 플러그인은 유틸리티 규칙을 생성하며 HTML 플러그인은 출력을 페이지에 연결합니다. 진입점과 HTML 템플릿을 갖춘 정상 작동하는 앱에서 시작하세요.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS 추가하기 \{#add-master-css\}
+      기존 [Webpack](https://webpack.js.org/guides/getting-started/), [Rspack](https://rspack.dev/guide/start/quick-start) 또는 [Rsbuild](https://rsbuild.rs/guide/start/quick-start) 프로젝트 루트에서 `--framework webpack`, `rspack` 또는 `rsbuild`를 지정해 설치 프로그램을 실행하세요. 기본값인 정적 모드는 플러그인을 등록하고 `src/index.css`를 만듭니다.
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework webpack --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### CSS 진입점 가져오기 \{#import-the-css-entry\}
+      설치 프로그램은 `@import '@master/css';`를 포함한 `src/index.css`를 만듭니다. 앱의 JavaScript 또는 TypeScript 진입점에서 이를 가져오고 기존 마운트 코드는 유지하세요. 유틸리티가 필요한 모든 페이지에서 불러올 수 있도록 전역 진입점을 사용합니다.
+    </StepL>
+    <StepR>
+      ```js name=src/index.js
+      import './index.css'
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+    개발 서버를 시작하고 HTML 플러그인이 처리하는 HTML 템플릿이나 프레임워크 컴포넌트에 문단을 배치하세요.
+  </Step>
+  <InstallationPreview>
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Master CSS with Webpack</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 번들러 설정 \{#configuration\}
+설치 프로그램은 설정 중 Master CSS 관련 부분을 작성합니다. 기존 설정에 병합하되 프레임워크 플러그인, 진입점, HTML 생성을 유지하고 플러그인은 한 번만 등록하세요.
+
+### Webpack \{#webpack\}
+생성된 스타일시트를 전달하려면 플러그인에 네이티브 CSS 처리와 `HtmlWebpackPlugin`이 필요합니다:
+
+```js name=webpack.config.mjs
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  experiments: { css: true },
+  module: {
+    rules: [{ test: /\.css$/i, type: 'css/auto' }]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rspack \{#rspack\}
+Rspack은 동일한 Webpack 호환 플러그인을 내장 CSS 지원 및 `HtmlRspackPlugin`과 함께 사용합니다:
+
+```js name=rspack.config.mjs
+import { HtmlRspackPlugin } from '@rspack/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  entry: './src/index.js',
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        type: 'css/auto'
+      }
+    ]
+  },
+  plugins: [
+    new HtmlRspackPlugin({ template: './index.html' }),
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
+```
+
+### Rsbuild \{#rsbuild\}
+Rsbuild는 `tools.rspack` 훅으로 플러그인을 등록합니다. 프레임워크 플러그인과 앱을 마운트하는 진입점은 유지하세요. 이 훅은 Master CSS 처리만 추가합니다.
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default defineConfig({
+  tools: {
+    rspack(config) {
+      config.plugins ||= []
+      config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+      return config
+    }
+  }
+})
+```
+
+React 시작 프로젝트에서는 `src/App.tsx`에 문단을 두세요:
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+## 설정 확인하기 \{#check-the-setup\}
+먼저 개발 서버가 실행 중일 때 소스의 `p-md`를 `p-lg`로 바꾸세요. 문단의 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나야 합니다. 확인한 뒤 원래대로 돌립니다.
+
+번들러에 맞는 명령으로 빌드하세요:
+
+<DocumentComparison>
+
+| 번들러 | 프로덕션 빌드 |
+| --- | --- |
+| Webpack | `npx webpack --mode production` |
+| Rspack | `npx rspack build --mode production` |
+| Rsbuild | `npx rsbuild build` |
+
+</DocumentComparison>
+
+출력 디렉터리를 HTTP 서버로 제공하세요. 문단에 `1rem` 안쪽 여백, 떠 있는 표면, 둥근 모서리가 있어야 합니다. 정적 모드의 유틸리티는 Master CSS 런타임 없이 연결된 CSS에서 제공됩니다. JavaScript를 꺼도 HTML 템플릿 내용의 스타일은 유지됩니다. 클라이언트 렌더링 프레임워크는 내용을 만들기 위해 여전히 JavaScript가 필요합니다.
+
+HTML 플러그인은 스타일시트 링크와 필요한 런타임 스크립트를 출력합니다. 개발 서버의 정적 디렉터리에서 직접 제공되는 파일에는 이들이 추가되지 않습니다. CSS 요청이 없다면 HTML 생성을 먼저 확인하세요. 파일이 로드되지만 유틸리티가 없다면 CSS 진입점, 네이티브 CSS 처리, 플러그인 등록을 확인합니다.
+
+---
+
+## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
+기본값은 정적 모드입니다. 플러그인의 `mode` 옵션으로 다른 전달 방식을 선택하며 HTML 플러그인이 해당 런타임 스크립트를 포함합니다:
+
+| 모드 | 플러그인 옵션 | 설치 프로그램 옵션 |
+| --- | --- | --- |
+| 정적 | `mode: 'static'` | 없음 |
+| 런타임 | `mode: 'runtime'` | `--mode runtime` |
+
+<DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
+
+`--mode runtime`과 프로젝트의 `--framework` 값을 지정해 설치 프로그램을 실행하세요. 플러그인 옵션이 `mode: 'runtime'`으로 설정됩니다:
+
+```bash
+npm create @master/css@VERSION -- --framework webpack --mode runtime --yes
+```
+
+프로덕션 출력을 빌드하고 제공하세요. 출력 HTML은 Master CSS 런타임 스크립트를 불러와야 합니다. 시작 후 브라우저 콘솔에서 다음 코드를 실행하면 다시 빌드하지 않아도 문단에 밑줄이 생겨야 합니다:
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>

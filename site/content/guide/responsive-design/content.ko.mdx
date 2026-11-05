@@ -1,0 +1,163 @@
+---
+title: "반응형 디자인"
+description: "적절한 반응형 경계를 선택하고 페이지 열과 재사용 요약을 조정하며 레이아웃이 바뀌는 너비를 검증하세요."
+figures: {"ResponsiveIllustration":{"title":"하나의 뷰포트, 두 컴포넌트 너비","alt":"한 페이지에서 같은 요약이 주 열에서는 448px 컨테이너를, 사이드바에서는 160px 컨테이너를 받습니다. 28rem 임계값에 도달한 주 열에서만 두 트랙이 나타납니다.","caption":"루트 크기가 16px일 때 28rem은 448px입니다. 이는 실제 컨테이너 너비입니다. 같은 뷰포트 안에서 넓은 요약은 두 트랙으로, 좁은 요약은 세로로 배치됩니다.","description":[{"title":"같은 뷰포트","text":"두 카드는 같은 페이지에 있습니다. 뷰포트 중단점은 두 카드에서 같은 너비를 봅니다."},{"title":"다른 컨테이너","text":"주 컨테이너는 448px, 사이드바 컨테이너는 160px 너비입니다."},{"title":"영역별 반응","text":"각 상위 요소는 container-inline을 사용합니다. 하위 카드는 grid-cols(1)과 grid-cols(2)@container(--md)를 사용하므로 주 카드만 프리셋의 28rem 쿼리에 도달합니다."}]},"GuideStudy:named-container-target":{"title":"이름 있는 쿼리는 더 가까운 컨테이너를 건너뜁니다","alt":"중첩된 article과 card 컨테이너 경계가 한 자식을 감쌉니다. 같은 파란색 표시는 자식의 article 쿼리를 바깥의 이름 있는 article 경계와 연결하며, 더 가까운 card 경계는 보라색으로 남습니다.","caption":"이름은 적격 상위 요소를 선택합니다. 쿼리 대상 요소는 그 상위 요소 안에 있어야 합니다. 컨테이너는 자기 자신을 조회하지 않습니다."},"GuideStudy:responsive-local-change":{"title":"표면을 다시 지정하지 않고 레이아웃 변경","alt":"두 카드는 표면, 반지름, 텍스트를 공유합니다. 부모가 임계값을 넘으면 레이아웃만 세로 배치에서 가로 배치로 바뀝니다.","caption":"조건부 레이아웃 클래스는 관련 없는 선언을 유지합니다. 이 도식은 핵심과 관계없는 카드 내용을 생략했습니다."}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ResponsiveIllustration from './components/ResponsiveIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationContainerGrid from '@master/internal-site/demo/foundations/FoundationContainerGrid.astro'
+
+## 개요 [sr-only] \{#overview\}
+페이지 레이아웃과 재사용 카드에는 서로 다른 반응형 규칙이 필요할 수 있습니다. 페이지는 뷰포트를 따르고 카드는 부모가 제공하는 공간을 따르게 하세요. Master CSS에서는 스타일을 바꿀 클래스 뒤에 조건을 붙입니다.
+
+먼저 [설치](/guide/installation)를 완료하세요. 예제는 기본 프리셋과 `@import '@master/css';`를 불러오는 앱 스타일시트를 사용합니다. 각 미리보기에는 경계를 관찰하는 데 필요한 컨트롤이 있으며, **생성된 CSS**에서 함께 제시된 클래스의 출력을 볼 수 있습니다.
+
+## 변화의 기준 선택 \{#choose-a-boundary\}
+
+작업 공간의 열 수처럼 페이지 전체에 관한 결정에는 뷰포트 조건을 사용하세요. 같은 컴포넌트가 주 열, 사이드바 또는 다른 제한된 영역에 배치될 수 있다면 컨테이너 쿼리를 사용하세요.
+
+| 결정 기준 | 작성 방법 | 측정 대상 |
+| --- | --- | --- |
+| 페이지 뷰포트 | `grid-cols(3)@md` | 뷰포트 너비 |
+| 컴포넌트의 가용 공간 | `grid-cols(2)@container(--md)` | 가장 가까운 적격 상위 컨테이너의 너비 |
+
+<ResponsiveIllustration />
+
+그림의 두 카드는 같은 뷰포트를 공유하지만 부모 너비는 다릅니다. 뷰포트 조건은 둘에 동시에 일치합니다. 컨테이너 쿼리는 좁은 인스턴스는 세로 배치를 유지하고 넓은 인스턴스만 열로 나누게 합니다.
+
+## 페이지를 뷰포트에 맞추기 \{#based-on-viewport-breakpoints\}
+
+한 열로 시작하고 콘텐츠 공간이 충분해지는 곳에서 열을 추가하세요. 이 워크플로는 프리셋의 `2xs` 임계값 37.5rem과 `md` 임계값 64rem을 사용합니다. 표준 초기 글자 크기 16px에서는 각각 600px와 1024px입니다.
+
+<DemoConfiguredExample
+  name="responsive-workflow"
+  title="뷰포트에 맞춰 변하는 페이지 열"
+  source=""
+  responsive
+  widthPresets={[{ label: '320px', width: 320 }, { label: '600px', width: 600 }, { label: '1024px', width: 1024 }]}
+  html={`<section aria-label="Publishing workflow" class="grid-cols(1) gap-md grid-cols(2)@2xs grid-cols(3)@md">
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Draft</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Collect the changes.</p>
+  </article>
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Review</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Check the examples.</p>
+  </article>
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Publish</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Share the release notes.</p>
+  </article>
+</section>`}
+  caption="너비를 선택하거나 슬라이더를 사용하세요. 실제 미리보기 뷰포트가 바뀌며 2xs 미만은 1열, 2xs부터 2열, md부터 3열입니다. 바깥 페이지는 자체 뷰포트를 유지합니다."
+/>
+
+`grid-cols(1)`이 기본 레이아웃입니다. 조건은 열 수만 바꾸며 콘텐츠 순서, 간격, 표면 스타일은 유지됩니다. 3열은 내용이 들어갈 때만 유용합니다. 앱에서 임계값을 채택하기 전에 긴 라벨로 시험해 보세요.
+
+`@md`는 프리셋의 `@custom-media --md` 정의를 읽으며 `--breakpoint-md` 테마 변수는 읽지 않습니다. `@md`를 사용하는 모든 클래스의 임계값을 바꾸려면 앱 CSS 진입점에서 사용자 지정 미디어를 다시 선언하세요.
+
+```css name=app.css
+@import '@master/css';
+
+@custom-media --md (width >= 48rem);
+```
+
+새 경계가 전체 프리셋이 아닌 한 레이아웃에만 해당하면 프로젝트 고유 이름을 사용하세요.
+
+```css name=app.css
+@custom-media --workspace-wide (width >= 72rem);
+```
+
+```html
+<section class="grid-cols(1) grid-cols(3)@workspace-wide">…</section>
+```
+
+[중단점 레퍼런스](/reference/rules/named-conditions#viewport-widths)에 프리셋 이름과 값이 나열되어 있습니다. 콘텐츠의 필요에 따라 임계값을 선택하세요. `md` 같은 이름이 특정 기기를 뜻하지는 않습니다.
+
+## 컴포넌트를 컨테이너에 맞추기 \{#based-on-container-sizes\}
+
+상위 요소에 `container-inline`을 추가한 뒤 하위 요소에 컨테이너 조건을 지정하세요. 여기서는 좁은 영역에서 요약과 상태가 세로로 쌓이며 상위 요소가 프리셋의 `--md` 컨테이너 임계값 28rem에 도달하면 2열이 됩니다.
+
+<FoundationContainerGrid />
+
+```html
+<section class="container-inline">
+  <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
+    <div class="min-w(0)">
+      <h3 class="m(0) text-md font-regular fg-text-strong">Release notes</h3>
+      <p class="mb(0) mt-xs text-sm fg-text-muted">Review the changes before publishing.</p>
+    </div>
+    <dl class="grid gap-xs m(0) text-sm">
+      <div>
+        <dt class="fg-text-muted">Status</dt>
+        <dd class="m(0) fg-text-strong">Draft ready</dd>
+      </div>
+      <div>
+        <dt class="fg-text-muted">Next step</dt>
+        <dd class="m(0) fg-text-strong">Editorial review</dd>
+      </div>
+    </dl>
+  </article>
+</section>
+```
+
+<Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+브라우저 창을 그대로 둔 채 **컨테이너** 슬라이더를 움직이세요. 뷰포트가 아닌 상위 요소의 크기를 바꿉니다. 글자 크기 16px에서 447px와 448px를 비교하면 448px에서 두 번째 열이 나타나야 합니다. 컨트롤은 기사의 가용 너비 안에 머무르므로 기사 자체가 임계값보다 좁다면 브라우저를 넓히세요.
+
+상위 요소가 쿼리 경계를 만들고 하위 요소가 레이아웃을 바꿉니다. 요소는 자신의 컨테이너 쿼리에서 자기 크기를 상위 요소로 사용할 수 없습니다. 카드 높이를 콘텐츠에 맡겨 줄바꿈에 따라 자연스럽게 늘어나게 하세요.
+
+### 두 크기 체계 구분 \{#keep-the-two-scales-separate\}
+
+`@md`와 `@container(--md)`는 서로 다른 정의를 사용합니다.
+
+<DocumentComparison>
+
+| 클래스 또는 값 | 프리셋에서의 의미 |
+| --- | --- |
+| `@md` | 사용자 지정 미디어의 64rem 뷰포트 임계값 |
+| `@container(--md)` | 사용자 지정 컨테이너 조건의 28rem 컨테이너 임계값 |
+| `max-w-md` | `--container-md` 크기 토큰을 사용하는 최대 너비 |
+
+</DocumentComparison>
+
+`--container-md`를 바꾸면 너비 상한만 바뀌며 두 쿼리 임계값은 변하지 않습니다. `@custom-container`로 재사용 가능한 컨테이너 조건을 정의하거나 `grid-cols(2)@container(width>=30rem)` 같은 로컬 쿼리를 작성하세요. 정의 구문과 전체 크기 체계는 [이름이 있는 컨테이너 조건](/reference/rules/conditions#named-container-conditions)을 참고하세요.
+
+### 바깥 컨테이너에 이름 지정 \{#creating-named-containers\}
+
+이름이 없는 크기 쿼리는 가장 가까운 적격 상위 요소를 측정합니다. 중첩 레이아웃에 다른 컨테이너가 생기면 안쪽 경계가 기준이 됩니다. 바깥 너비를 측정하려면 `(container-name:outer)`로 바깥 컨테이너에 이름을 붙이고 `@container(outer|--md)`를 사용하세요.
+
+<DemoConfiguredExample name="named-container" title="측정할 상위 요소 선택" source="" responsive container widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} html={'<section class="(container-name:outer) container-inline p-md r-lg b(1) b-solid b-line-divider">\n  <p class="mt(0) text-sm fg-text-muted">Outer container</p>\n  <div class="container-inline (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(--md)">\n      <h3 class="m(0) text-sm font-regular">Nearest container</h3>\n      <p class="mb(0) mt-xs text-sm">\n        <span class="hidden@container(--md)">Below 28rem</span>\n        <span class="hidden inline@container(--md)">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(outer|--md)">\n      <h3 class="m(0) text-sm font-regular">Named outer container</h3>\n      <p class="mb(0) mt-xs text-sm">\n        <span class="hidden@container(outer|--md)">Below 28rem</span>\n        <span class="hidden inline@container(outer|--md)">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Narrow outer와 Wide outer를 전환하세요. 내부 컨테이너는 28rem 미만으로 유지되므로 바깥 컨테이너가 커질 때 이름 있는 쿼리만 바뀝니다." />
+
+두 상태 표시는 같은 좁은 내부 컨테이너 안에 있습니다. 바깥 경계를 넓히면 이름이 있는 쿼리의 결과만 바뀝니다. 컨테이너 이름은 상위 요소를 선택할 뿐 요소가 자기 자신을 조회하게 만들지는 않습니다.
+
+<GuideStudy id="named-container-target" />
+
+## 바뀌는 스타일에만 조건 추가 \{#syntax-first\}
+
+공유 스타일은 조건 없이 유지하세요. 다른 값이 필요한 속성과 범위에만 조건을 추가하세요. 예를 들어 aside는 `md` 미만에서 돌출 표면을 사용하고 더 큰 레이아웃에는 해당 배경을 적용하지 않을 수 있습니다.
+
+```html
+<aside class="p-md bg-surface-raised@max-md">…</aside>
+```
+
+<Class2CSS classes={['bg-surface-raised@max-md']} />
+
+`@max-md`는 프리셋 `@md`의 여집합으로 두 조건은 겹치지 않습니다. `--md`를 다시 선언하면 두 경계가 함께 바뀝니다. `hidden@media(52.125rem<=width<=64rem)` 같은 로컬 범위 조건은 프로젝트의 명명된 임계값을 바꾸지 않고 특정 구간을 지정할 수 있습니다. 쿼리 구문은 [조건 레퍼런스](/reference/rules/conditions#mediafeature)를 참고하세요.
+
+<ReferenceIllustration id="breakpoint-partition" />
+
+<GuideStudy id="responsive-local-change" />
+
+## 스크린샷뿐 아니라 경계 검증 \{#verify-the-boundary-not-just-the-screenshot\}
+
+각 임계값 바로 아래와 정확히 도달한 지점을 테스트하세요. 페이지 예제에서는 실제 iframe 뷰포트를 599/600px와 1023/1024px에서 확인하세요. 컴포넌트 예제에서는 페이지 뷰포트를 고정하고 글자 크기 16px에서 상위 요소를 447/448px로 확인하세요.
+
+결과가 예상과 다르면 하위 요소의 계산된 `grid-template-columns`를 검사하세요. 조건이 일치하는지, 컨테이너 쿼리가 의도한 적격 상위 요소를 사용하는지, [캐스케이드](/guide/cascade-layers)에서 다른 규칙이 우선하지는 않는지 확인하세요.
+
+마지막으로 긴 텍스트, 확대된 텍스트, 좁은 레이아웃을 시험하세요. 모든 너비에서 읽기 순서를 유지하고 줄바꿈을 허용하며 카드 높이를 고정하지 마세요. [레이아웃](/guide/layout-system)은 쿼리 경계와 별개로 그리드와 간격 결정을 설명합니다.

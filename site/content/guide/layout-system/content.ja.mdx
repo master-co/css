@@ -1,0 +1,159 @@
+---
+title: "レイアウト"
+description: "幅を制限したラッパー、間隔トークン、列グリッド、明示的なトラックでページを組み立てます。"
+figures: {"LayoutIllustration":{"title":"項目のスパンをグリッドに合わせる","alt":"8列のグリッドで、ヘッダーは8列すべて、2つの指標は各4列を使います。最後の行は需要の5列とタスクの3列に分かれます。","caption":"広いレイアウトでは等幅の8トラックを使います。各行は 8、4 + 4、5 + 3 と全トラックを配分します。ガターはトラック間にあります。","description":[{"title":"1つのグリッド","text":"広い構成は grid-cols(8) を使い、各トラック間に同じ間隔を設けます。"},{"title":"全幅と共有の行","text":"ヘッダーは8トラック、各指標は4トラック、需要とタスクはそれぞれ5トラックと3トラックにまたがります。"},{"title":"同時に適応させる","text":"ブレークポイントで列数を変えたら、それに依存するスパンも同じ境界で更新します。"}]},"GuideStudy:width-cap-growth":{"title":"幅の上限は小さな親にも対応できる","alt":"2つの親に同じ幅制限のある内容ボックスが入っています。小さい親では親が幅を制限し、大きい親では最大幅のボックスの周囲に余白が残ります。","caption":"上限は最大値であり、固定幅ではありません。幅は共通の尺度で描き、ラベルはビューポートのピクセル数ではなく制約を説明します。"},"GuideStudy:grid-long-content":{"title":"縮められるトラックでも文字の折り返しは必要","alt":"等幅の2つのグリッドトラックで、短いラベルと折り返す長いラベルを比較します。2行目の高さが増えてもトラックの境界は揃ったままです。","caption":"minmax(0,1fr) はトラックを縮められるようにしますが、文字には適切な折り返しの指定も必要です。高さは内容に従います。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LayoutIllustration from './components/LayoutIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
+
+## 概要 [sr-only] \{#overview\}
+ページは3つの判断から組み立てます。幅を制限するラッパー、ガターやマージンの間隔トークン、領域を配置する列グリッドです。レイアウトはネイティブの [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) と [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout) が担い、Master CSS は値に名前を与えます。
+
+(resize) スライダーや矢印キーでビューポートを調整し、コンパクトな縦並びから8列の構成に変わる様子を確認してください。
+
+<DemoPageViewport src="/examples/layout-system" title="ワークスペースのレイアウト" height={540} />
+
+```html
+<!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
+<main class="w-full max-w-3xl mx-auto p-md">
+  <section class="grid-cols(4) gap-sm grid-cols(8)@2xs gap-md@2xs">
+    <header class="grid-col-span(4) grid-col-span(8)@2xs"><h1>Project overview</h1></header>
+    <article class="grid-col-span(4)"><h2>Revenue</h2><p>$128.4k</p></article>
+    <article class="grid-col-span(4)"><h2>Activation</h2><p>64.2%</p></article>
+    <article class="grid-col-span(4) grid-col-span(5)@2xs"><h2>Weekly demand</h2></article>
+    <aside class="grid-col-span(4) grid-col-span(3)@2xs"><h2>Launch tasks</h2></aside>
+  </section>
+</main>
+```
+
+<Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
+
+<LayoutIllustration />
+
+`2xs` 未満では各領域が4列すべてにまたがります。`2xs` になるとヘッダーは8列を使い、2つの指標が同じ行に並びます。次の行は需要とタスクの領域で5対3に分けます。
+
+---
+
+## 間隔の値を選ぶ \{#namespace-for-spacing\}
+
+`p-`、`m-`、`gap-` などの間隔クラスには3つの形式があります。
+
+| 形式 | クラス | 生成結果 |
+| --- | --- | --- |
+| 間隔トークン | `p-md` | `padding: var(--spacing-md)` |
+| 直接値 | `p(1)` | `padding: calc(1 * 1px)` |
+| ネイティブの長さ | `(padding:0.5rem)` | `padding: 0.5rem` |
+
+<Class2CSS classes={['p-md', 'p(1)', '(padding:0.5rem)']} />
+
+ガター、内側の余白、セクション間隔など、ページで共有するリズムにはトークンを使います。直接値の長さはピクセル単位なので、`p(1)` はスケールの1段階ではなく1ピクセルのパディングです。細い線や `m(0)` のようなリセットに使います。ほかの単位はネイティブ宣言で記述してください。スケールは[間隔](/reference/tokens/spacing)、各関数は[直接値](/reference/direct-values)を参照してください。
+
+<a id="do-not-use-numeric-keys-as-tokens"></a>
+同じ距離を繰り返し使うようになったら、役割で名前を付けます。`--spacing-1` のような数値のキーは、直接値の `p(1)` と紛らわしくなります。
+
+```css name=index.css
+@theme {
+  --spacing-section: 6rem;
+}
+```
+
+```html
+<!-- @MARK py-section -->
+<section class="py-section">…</section>
+```
+
+`px-*` と `py-*` は論理的なインライン方向とブロック方向のパディングを設定します。物理的な方向は要素の書字方向に従います。
+
+<ReferenceIllustration id="logical-inline-axis" />
+
+`p-*` は4辺を設定します。1辺だけ変える場合は、その辺のクラスを追加します。
+
+<ReferenceIllustration id="padding-coverage" />
+
+---
+
+## コンテナーサイズで幅を制限する \{#use-container-tokens\}
+
+`w-`、`max-w-`、`h-`、`min-w-`、`basis-` は `--container-*` トークンを読みます。たとえば `max-w-5xl` は `max-width: var(--container-5xl)` です。一方、全幅と内在サイズは固定ユーティリティです。`w-full`、`w-fit`、`w-max`、`w-min` は常に `100%`、`fit-content`、`max-content`、`min-content` を設定し、プロジェクトの `--container-full` トークンでは変わりません。
+
+<Class2CSS classes={['max-w-5xl', 'w-full', 'w-fit']} />
+
+コンテナートークンが設定するのは長さだけです。コンテナークエリーのしきい値は変わりません。スケールは[コンテナーサイズ](/reference/tokens/container)を参照してください。
+
+---
+
+<GuideStudy id="width-cap-growth" />
+
+## ページのラッパーから始める \{#start-with-a-page-container\}
+
+ラッパーを親いっぱいに広げ、コンテナーサイズで上限を設け、中央に配置します。内容の左右の余白は間隔スケールから選びます。
+
+```html
+<!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
+<main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
+```
+
+<Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
+
+ページ全体の位置合わせはラッパーが担い、内容同士の関係は内側のグリッドで決めます。
+
+---
+
+## 列グリッドを組む \{#build-column-grids\}
+
+`grid-cols(<count>)` は等幅の列グリッドを作り、`grid-col-span(<count>)` は項目を複数列にまたがって配置します。ブレークポイントで列数を変えたら、同じ境界でスパンも変えます。
+
+(x) グリッドは12列に増えますが、記事が4列のままなので4列が空きます。
+
+```html
+<section class="grid-cols(4) gap-lg grid-cols(12)@md">
+  <article class="grid-col-span(4)">…</article>
+  <aside class="grid-col-span(4)">…</aside>
+</section>
+```
+
+(o) 同じブレークポイントで記事を8列に広げます。
+
+```html
+<!-- @MARK grid-col-span(8)@md -->
+<section class="grid-cols(4) gap-lg grid-cols(12)@md">
+  <article class="grid-col-span(4) grid-col-span(8)@md">…</article>
+  <aside class="grid-col-span(4)">…</aside>
+</section>
+```
+
+<Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+<ReferenceIllustration id="span-includes-gaps" />
+
+2つの軸で異なる間隔トークンが必要なら、`col-gap-*` と `row-gap-*` を使います。[グリッドトラック](/reference/grid-tracks)を参照してください。
+
+---
+
+## トラックを明示する \{#add-explicit-tracks-only-when-needed\}
+
+固定幅や混在したトラックには、ネイティブの `grid-template-columns` 値を記述します。トラックを `|` で区切ると、生成 CSS では空白になります。
+
+```html
+<!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) -->
+<section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
+  <nav>…</nav>
+  <main class="min-w(0)">…</main>
+</section>
+```
+
+<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
+
+`min-w(0)` を使うとメイン領域を内容の幅より狭くできます。通常の内容には等幅の列とスパンを使い、アプリの外枠や分割ペインには明示的なトラックを使います。
+
+<GuideStudy id="grid-long-content" />
+
+## 長い内容でレイアウトを検証する \{#verify-the-layout-with-longer-content\}
+
+各ブレークポイントの前後でサイズを変え、列数と子要素のスパンを両方確認します。長い見出しやタスク名を使い、内容が縦に伸びられることを確かめてください。固定寸法は、寸法の決まった要素や意図的なビューポートに使います。ページのカードには通常、パディングと幅の制約だけで十分です。
+
+プレビューのタスクのチェックボックスをキーボードで操作し、セクションリンクもたどってください。内容が折り返しても使えるレイアウトにします。固定高さのカードに収めるために文字を小さくすると、根本の制約が見えなくなります。

@@ -1,0 +1,81 @@
+# Reference prose: tokens/text
+
+## title \{#copy-title\}
+
+
+텍스트
+
+## summary \{#copy-summary\}
+
+
+글꼴 크기, 줄 높이, 자간을 함께 설정하는 텍스트 스타일입니다.
+
+## note \{#copy-note\}
+
+
+주 `--text-<name>` 토큰이 클래스를 만듭니다. 보조 토큰인 `--line-height`와 `--letter-spacing`은 선택 사항이며 없으면 `normal`을 사용합니다. 글꼴 계열, 굵기, 색상은 별도 클래스로 지정합니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+각 행은 클래스 하나가 참조하는 세 값을 보여 줍니다. 프리셋 크기는 대응하는 font-size 토큰을 참조하며, 표에서는 읽기 쉽도록 참조를 해석해 표시합니다. 모든 프리셋 스타일은 두 보조 토큰을 모두 포함합니다.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+주 토큰 하나, 선언 세 개
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`--text-card`는 `text-card`를 등록합니다. 이 클래스는 항상 글꼴 크기, 줄 높이, 자간을 출력합니다. `--text-card--line-height` 또는 `--text-card--letter-spacing`이 없으면 해당 선언은 `normal`을 사용하며 상속한 값을 유지하지 않습니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+보조 토큰만으로는 텍스트 스타일이 등록되지 않습니다. 줄 높이나 자간만 바꾸고 싶어도 주 크기 토큰을 추가하세요.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+보조 토큰은 이 조합 스타일이 사용하는 값이며 별도 클래스 이름이 아닙니다. 독립적으로 조정하려면 `font-<size>`, `leading-<name>`, `tracking-<name>`을 사용하세요. 같은 조건에서는 이 단일 속성 유틸리티들이 텍스트 조합 스타일 뒤에 정렬되어 대응하는 선언을 덮어쓸 수 있습니다. class 속성 안의 순서는 결과를 정하지 않습니다.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+이 조합 스타일은 글꼴을 불러오거나 계열 및 굵기를 선택하거나 마진을 추가하거나 문단 너비를 정하지 않습니다. 스타일을 선택하고 조합해 위계를 만드는 방법은 타이포그래피 가이드에서 다룹니다.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+글꼴
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+줄 높이
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+자간
+
+## explanation-links-3-label \{#copy-explanation-links-3-label\}
+
+
+생성 규칙의 순서
+
+## usage-lead \{#copy-usage-lead\}
+
+
+문단에 텍스트 스타일 하나를 적용합니다. 글꼴 계열, 굵기, 색상은 여전히 독립적으로 지정합니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+보조 토큰과 함께 텍스트 스타일을 추가하세요. `--text-display`를 정의하면 `text-display`가 생성됩니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+타이포그래피

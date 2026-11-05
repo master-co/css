@@ -1,0 +1,36 @@
+# Reference prose: illustrations/inline-resolution
+
+## title \{#copy-title\}
+
+
+Inline 치환은 남는 참조를 바꿉니다
+
+## alt \{#copy-alt\}
+
+
+일반 테마와 inline 테마 정의는 서로 다른 변수 참조를 생성합니다. 같은 자두색 section 안에서 일반 토큰은 파란색으로 남고 inline 클래스는 로컬 자두색 변수를 참조합니다.
+
+## caption \{#copy-caption\}
+
+
+두 예제는 같은 마크업에서 bg-brand를 사용합니다. 일반 토큰은 루트에서 해석된 값을 상속하고 inline은 생성 선언이 스타일 대상 요소에서 --app-brand를 참조하게 합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+두 설정 모두 --color-brand: var(--app-brand)를 정의합니다. 루트는 --app-brand를 #1d4ed8로 지정하고 중첩 section은 #86198f로 덮어씁니다.
+
+## description-1 \{#copy-description-1\}
+
+
+일반 @theme에서는 bg-brand가 background-color: var(--color-brand)를 출력합니다. 루트에서 --color-brand가 파란색으로 계산되고 중첩 사용처는 이 계산값을 상속합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+@theme inline에서는 bg-brand가 background-color: var(--app-brand)를 출력합니다. 사용하는 요소는 section에서 상속한 자두색 값을 참조합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+색상 견본은 최종 배경을 보여 줍니다. 그림의 루트 값은 계산값이며 컴파일러가 색상을 계산한다는 뜻은 아닙니다.

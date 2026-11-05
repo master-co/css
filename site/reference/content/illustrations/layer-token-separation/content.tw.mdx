@@ -1,0 +1,26 @@
+# Reference prose: illustrations/layer-token-separation
+
+## title \{#copy-title\}
+
+
+選取樣式串接層不會移動其 token
+
+## alt \{#copy-alt\}
+
+
+p-md@layer(defaults) 對應到 defaults 中的 padding 規則，而其 spacing-md 相依項目仍在 theme。
+
+## caption \{#copy-caption\}
+
+
+兩條串接層帶顯示輸出的歸屬，並非以位置呈現完整的階層串接比較。
+
+## description-0 \{#copy-description-0\}
+
+
+p-md@layer(defaults) 將生成的 padding 宣告輸出到 defaults 串接層。
+
+## description-1 \{#copy-description-1\}
+
+
+其 --spacing-md 相依項目仍會輸出在 theme 層的 :root,:host 下。@layer(defaults) 選取的是 class 規則的串接層，不是相依項目的串接層。

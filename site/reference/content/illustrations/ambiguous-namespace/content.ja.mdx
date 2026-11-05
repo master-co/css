@@ -1,0 +1,31 @@
+# Reference prose: illustrations/ambiguous-namespace
+
+## title \{#copy-title\}
+
+
+2 つの名前空間の一致は 2 宣言を生成しない
+
+## alt \{#copy-alt\}
+
+
+font-brand が font-family と font-size の両方の brand キーに届く。分岐は曖昧さの障壁で止まり、規則を出力しない。
+
+## caption \{#copy-caption\}
+
+
+この独自テーマには両トークンキーが存在します。Master CSS はクラス生成前に名前空間を一意に選ぶ必要があります。
+
+## description-0 \{#copy-description-0\}
+
+
+--font-family-brand: monospace と --font-size-brand: 2rem があると、font-brand は 2 つのプリセットの font- ファミリーに一致します。
+
+## description-1 \{#copy-description-1\}
+
+
+結果は AMBIGUOUS_TOKEN で、そのクラスの CSS は生成しません。分岐は結合しません。
+
+## description-2 \{#copy-description-2\}
+
+
+キーを分けるか、(font-size:var(--font-size-brand)) のような明示的なネイティブ宣言を使います。

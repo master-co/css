@@ -1,0 +1,36 @@
+# Reference prose: illustrations/radius-clipping
+
+## title \{#copy-title\}
+
+
+父元素的圆角不会让子元素也变圆
+
+## alt \{#copy-alt\}
+
+
+两个相同的圆角父元素都包含相同的蓝色子表面。只有圆角时，子元素顶部仍是直角；添加 overflow-hidden 后，则沿父元素的曲线边缘裁剪。
+
+## caption \{#copy-caption\}
+
+
+两个父元素都使用 r-4xl 与相同内容，只有右侧父元素添加 overflow-hidden。蓝色用于识别子表面，虚线轮廓则标示父元素的圆角边缘。
+
+## description-0 \{#copy-description-0\}
+
+
+两个父盒子都使用 r-4xl，其预设值为 2rem。两者包含相同的子元素与父元素内容区域，尺寸由相同内容决定。
+
+## description-1 \{#copy-description-1\}
+
+
+左侧父元素保留默认的可见溢出。它自身的背景有圆角，但蓝色子元素仍在顶部绘制矩形。
+
+## description-2 \{#copy-description-2\}
+
+
+右侧父元素添加 overflow-hidden，将同一个子矩形沿父元素的圆角边缘裁剪；子元素并没有继承圆角值。
+
+## description-3 \{#copy-description-3\}
+
+
+虚线轮廓是检查用标注，不是 r-4xl 输出的边框。颜色只用于在两个示例中识别同一个子元素。

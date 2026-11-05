@@ -15,7 +15,7 @@ A recognized class is not a browser-compatibility guarantee. Master emits compat
 
 ## Add a feature without losing the fallback \{#new-css-features\}
 
-### Native declarations
+### Native declarations \{#native-declarations\}
 
 A note field should remain editable even when automatic sizing is unavailable. Give it an ordinary textarea size and allow vertical resizing, then add [`field-sizing: content`](https://drafts.csswg.org/css-forms/#field-sizing) as an enhancement. The native property can size the control from its contents; minimum and maximum heights keep it within a useful range.
 
@@ -41,7 +41,7 @@ Use **Generated CSS** to inspect the emitted condition. [Conditions](/reference/
 
 <GuideStudy id="fallback-addition" />
 
-### New selectors
+### New selectors \{#new-selectors\}
 
 The same approach applies to selector-based enhancements. Here, [`:has(:checked)`](https://www.w3.org/TR/selectors-4/#relational) gives the label a blue border when its checkbox is checked. The native checkbox still records the choice if that selector is unsupported:
 

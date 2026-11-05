@@ -1,17 +1,26 @@
 ---
 type Props = import('@master/internal-site/types/Props').Props
 import Page from '@master/internal-site/factories/Page.astro'
-import { createPageMetadata } from '@master/internal-site/factories/create-page'
 import Layout from '~/site/layouts/Doc.astro'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/reference.json'
-import { routeIndex } from '~/site/reference/route-index'
+import { routeIndexForLocale } from '~/site/reference/route-index'
+import { referenceSectionCopy } from '~/site/reference/navigation-data'
+import { referenceText } from '~/site/reference/copy'
 import ReferenceIndex from '~/site/reference/Index.svelte'
 
-export const generateMetadata = createPageMetadata(metadata, dictionaries)
+export function generateMetadata({ params }: Props) {
+  const locale = params.locale
+  return { ...metadata, title: referenceText('overview', 'title', locale), description: referenceText('overview', 'description', locale), alternates: { canonical: locale === 'en' ? '/reference' : `/${locale}/reference` } }
+}
+const locale = Astro.props.params.locale
+const pageMetadata = generateMetadata(Astro.props)
+const documents = routeIndexForLocale(locale)
+const sections = referenceSectionCopy(locale)
+const related = { href: '/guide', title: referenceText('overview', 'guide-title', locale), description: referenceText('overview', 'guide-description', locale) }
 ---
 
-<Page {...Astro.props} {metadata} {dictionaries} {categories} noTOC {Layout}>
-  <ReferenceIndex client:idle={{ timeout: 500 }} categoryOrder={categories.map(category => category.name)} documents={routeIndex} />
+<Page {...Astro.props} metadata={pageMetadata} {dictionaries} {categories} noTOC {Layout}>
+  <ReferenceIndex client:idle={{ timeout: 500 }} categoryOrder={categories.map(category => category.name)} documents={documents} {sections} {related} />
 </Page>

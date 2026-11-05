@@ -1,0 +1,238 @@
+---
+title: "使用 Master CSS 進行 AI 程式開發"
+description: "將代理連接到 Master CSS 專案，要求範圍明確的變更，驗證渲染結果，並檢閱共用樣式變更。"
+figures: {"AIIllustration":{"title":"輸出中存在，不代表在瀏覽器中勝出","alt":"分層的 p-md utility 以 --spacing-md 宣告內距，未分層的 notice 規則則宣告 8px。一般未分層規則勝出，渲染後提示區的內距為 8px。","caption":"兩個規則都有效且存在。一般未分層 CSS 優先於一般分層 CSS，因此只檢查產生的輸出，無法證明間距符合預期。","description":[{"title":"產生的規則","text":"預設集 p-md utility 在 utilities 層提供 padding: var(--spacing-md)，預設值為 1rem。"},{"title":"競爭規則","text":"對一般宣告而言，未分層原生規則 .notice { padding: 8px; } 優先於分層 utility。"},{"title":"觀察結果","text":"同時有 notice 與 p-md 的元素，四邊內距都是 8px。修正間距需檢閱勝出的原生規則，而非再次產生相同 utility。"}]},"GuideStudy:inspection-coverage":{"title":"已檢查範圍小於整個專案","alt":"專案邊界包含三個來源；括號只框住兩個已檢查來源，第三個留在外面。","caption":"明確回報已檢查檔案與脈絡。子集合沒有問題，不代表所有來源都已驗證。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import AIIllustration from './components/AIIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概覽 [sr-only] \{#overview\}
+讓程式開發代理取得與你相同的樣式脈絡：CSS 進入點、主題 token、元件 class，以及專案檢查。連接 Master CSS MCP 伺服器，要求範圍明確的 UI 變更，並要求以最終原始碼與渲染結果提供證據。本指南從專案設定開始，帶你完成第一次修復，再處理後續對共用定義的變更。
+
+---
+
+## 先設定專案 \{#set-up-the-project-first\}
+[安裝程式](/guide/installation)預設會替專案準備代理工作環境。除了框架整合，`npm create @master/css@VERSION` 也會加入：
+
+- `@master/eslint-config-css`，以及展開此設定的 `eslint.config.js`，讓代理輸出接受[程式碼檢查](/guide/code-linting)。
+- 開發相依套件 `@master/css-mcp`，並印出在 MCP 用戶端註冊的 stdio 指令。
+- `AGENTS.md` 中的 `## Master CSS` 規則區塊，指引代理使用文件、專案詞彙、MCP 與 ESLint。
+
+傳入 `--no-eslint`、`--no-mcp` 或 `--no-ai` 可略過其中一項；`--minimal` 則只設定框架。在產生的 `AGENTS.md` 區塊下方補上專案實際驗證指令，讓代理不必自行猜測。
+
+接著建立代理可重用的專案詞彙。主題 token 明確表達重複值，元件 class 則為共用產品模式提供穩定名稱：
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+```
+
+---
+
+## 連接 MCP 伺服器 \{#connect-the-mcp-server\}
+MCP 伺服器在本機透過 stdio 執行，並讀取 `--root` 指定的工作區。支援 `mcpServers` JSON 的用戶端，可將下列項目加到 MCP 設定檔：
+
+```json name=mcp-client-config.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@VERSION", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+使用專屬註冊指令的用戶端，也使用同一個 stdio 指令：
+
+```bash
+# Claude Code (add --scope project for a shared .mcp.json)
+claude mcp add --transport stdio master-css -- npx -y @master/css-mcp@VERSION --root /absolute/path/to/project
+
+# Codex
+codex mcp add master-css -- npx -y @master/css-mcp@VERSION --root /absolute/path/to/project
+```
+
+`--root` 使用絕對路徑；提交專案範圍設定前須檢閱，因為此路徑依機器而異。重新啟動用戶端或開啟新工作階段後，請代理呼叫 `mastercss_workspace_info`，確認回傳的根目錄與樣式表進入點屬於此專案。Manifest 載入失敗表示專案脈絡需要修正；伺服器不會默默改以預設集回答。
+
+[MCP 工具目錄](/reference/tools/mcp)列出所有工具、`debug-missing-css` 等內建提示，以及機器可讀的結果封裝。用戶端無法使用 MCP 時，改從專案根目錄執行 [CLI](/reference/tools/cli)，例如 `master-css lint --format json --exit-code never` 或 `master-css inspect --format json --exit-code never`。
+
+---
+
+## 使用 Master CSS skill \{#use-the-master-css-skill\}
+
+官方 `master-css` skill 會讀取任務相關指引。在 Master CSS 專案中，可用於以下工作流程：
+
+| 工作流程 | 使用時機 |
+| --- | --- |
+| 建立與編輯 UI | 使用專案 token、utility 與原生 CSS 建立或精修元件。 |
+| 檢閱與偵錯樣式 | 檢閱樣式變更，或從來源擷取到瀏覽器行為，追查缺失與非預期樣式。 |
+| 最佳化 CSS 傳遞 | 評估正式環境 CSS、改善路由與元件載入邊界，並驗證選擇性裁除。 |
+
+從專案目錄安裝，並選擇你的程式開發代理：
+
+```sh
+npx skills add master-co/css --skill master-css
+```
+
+[Skills CLI](https://github.com/vercel-labs/skills) 支援選擇 Codex、Claude Code 或 Cursor 等代理。請核對 skill 的相容性 metadata 與已安裝 Master CSS 版本。Skill 視需要讀取相關參考資料，不會替你安裝 Master CSS 或註冊 MCP 伺服器。安裝程式的 `--ai` 選項只會印出此指令，不會執行。
+
+## 要求一項可觀察的變更 \{#ask-for-one-observable-change\}
+
+要求代理先檢查專案再編輯，接著完成一項聚焦的變更。例如，請它精修既有卡片，並描述你期望的結果：
+
+<DocumentPrompt title="精修單一元件" text={`Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
+
+You are working in a Master CSS project.
+
+Read the installed package/language/binding versions and project manifest first. Use documentation that matches those versions.
+Consult the Guide and Reference for the installed Master CSS version.
+
+Before editing, inspect the framework, package manager, CSS entry, theme tokens, component classes, nearby UI patterns, and available validation commands.
+
+When styling markup:
+- use valid Master CSS syntax
+- prefer existing theme tokens and component classes
+- prefer fixed utilities and numeric functions, such as flex and p(16), over equivalent native declarations
+- use canonical token families for project values and full native property names when a native declaration is needed
+- do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
+- keep semantic HTML and accessibility behavior unchanged
+- explain any value that should become a shared token
+
+After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.`} />
+
+
+---
+
+## 驗證修復 \{#verify-a-repair\}
+要求代理保留目前正常運作的行為，並提出支持修復的證據。編輯前保留來源快照，接著檢查並重建最終檔案，lint 自動修正後也要再做一次。被否決的提案可作為證據，但不能當作下一次修復的起始來源。
+
+不同檢查回答不同問題：
+
+<DocumentComparison>
+
+| 證據 | 檢查內容 |
+| --- | --- |
+| Lint 報告 | 讀取 `coverage.checkedFiles` 與啟用的規則。`summary.checkedFiles` 計算已檢查輸入，`summary.filesWithDiagnostics` 計算有診斷的檔案。診斷 `files` 為空不代表未執行任何檢查。 |
+| Class 檢查 | 比對最終標記與載入的專案樣式表，區分產生的 utility、原生 CSS 選擇器掛鉤，以及未解析的拼寫。 |
+| 瀏覽器驗證 | 在受影響狀態中比較計算值與相符規則，包括先前正常的狀態。產生規則不代表該宣告會勝出。 |
+
+</DocumentComparison>
+
+### 產生的規則仍可能落敗 \{#a-generated-rule-can-still-lose\}
+
+此例兩個 class 都能產生有效 CSS。預設集 `p-md` 產生 1rem 內距，但 `.notice` 在**未分層**的原生規則中設定 8px。對一般宣告而言，該規則會勝過分層 utility：
+
+<AIIllustration />
+
+<DemoConfiguredExample name="agent-cascade-check" title="檢查實際勝出的內距" source={`.notice {
+  padding: 8px;
+}`} html={'<p class="w-fit m(0) p-md r-md text-sm bg-surface-raised fg-text-strong notice">Saved locally</p>'} caption="提示區四邊都有 8px 內距。先在瀏覽器中檢查，再於「產生的 CSS」比較原生規則與 p-md。兩個規則都存在，只有一個決定計算後的內距。" />
+
+再產生一個 `p-md` 規則也無法修正。若提示區應跟隨共用間距，移除競爭的內距宣告，或有意識地將元件規則放入 `@layer components`。修改共用規則前先檢查其他提示區。請見 [CSS 層順序](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description)。
+
+### 讀懂檢查涵蓋範圍 \{#read-inspection-coverage\}
+
+預設 lint 允許未知的手寫 CSS 名稱，因此沒有 lint 問題不代表每個 class 都是已註冊 utility。CLI 檢查可能同時在 `discovered.invalid` 與 `discovered.usedNative` 回報原生選擇器：它不會產生 utility，但樣式表規則仍可能存在。明確要求 `inspect --classes` 時，應搭配標記與原生規則讀取 `missingCSS` 的存在原因。`missingCSS.checked` 清單為空，不代表 class 檢查已完成。[CLI 目錄](/reference/tools/cli#inspect)記錄完整檢查行為。
+
+原生規則與 utility 影響同一屬性時，請依專案實際串接層順序進行[階層串接診斷](/guide/cascade-layers#diagnose-a-competing-declaration)。修復報告應同時保留檢查結果與瀏覽器中勝出的宣告。
+
+即使兩個 class 名稱都已識別，衝突警告也需要檢閱。把已註冊 utility 當作原生 hover 選擇器掛鉤，不會讓其獨立產生的規則只限 hover。檢查元件支援的一般狀態、hover、鍵盤焦點、停用與觸控行為。最後編輯後重跑相關專案檢查；先前通過的檢查也要保留，不應接受其他地方出現新失敗。
+
+<GuideStudy id="inspection-coverage" />
+
+### 回報結果與限制 \{#verification-limits\}
+要求簡短的最終報告，指出改變的行為、保留的原生 CSS 與相依項目、實際檢查的檔案與狀態，以及未解決診斷。若完整 lint 在三個檔案失敗，但縮小範圍後通過，兩者都應回報。資訊性未知值診斷應保持可見，不可描述為無效值。區分靜態預期與瀏覽器實測結果，並明確說明尚未完成的瀏覽器驗證。
+
+Skill 提供指引，不會自動執行瀏覽器或強制回復修復前的狀態。這些操作須由代理與專案檢查負責。動態 class 組合、執行階段變更與未測環境可能超出靜態檢查範圍。建置成功、診斷清單為空，或單一視覺狀態通過，都不保證修復完整。未完成的修復應明確保留，並遵守約定範圍與驗證預算。
+
+---
+
+## 檢閱工具產生的修正 \{#safe-write-previews\}
+唯讀工具不會寫入檔案。修正需要兩次呼叫，讓代理先向你展示差異：
+
+1. `mastercss_preview_fixes` 或 `mastercss_preview_directive_format` 回傳差異與確認權杖，不會碰觸工作區。
+2. 差異依專案檢閱流程獲准後，`mastercss_apply_preview` 才寫入；前提是權杖有效、所有路徑位於工作區內，且各檔案仍符合預覽時的雜湊。
+
+例如，預覽單一檔案的 class 排序修正：
+
+```json name=mastercss_preview_fixes
+{
+  "mode": "lint-fixes",
+  "patterns": ["src/button.html"],
+  "rules": "sort-classes"
+}
+```
+
+預覽後若檔案改變，套用會失敗，不會覆蓋較新的工作。檔案或伺服器工作階段變更時，請重新建立預覽。權杖有效期與寫入保證請見[預覽生命週期](/reference/tools/mcp#preview-lifetime)。
+
+---
+
+## Class 不明確時轉譯宣告 \{#translate-a-declaration-when-the-class-is-unclear\}
+
+閱讀 MCP class 檢查時，分別確認 `matchStatus`、`cssSyntaxStatus`、`cssValueStatus` 與 `browserSupport`：未知值不等於配對失敗，`not-checked` 的瀏覽器支援也不等於已驗證支援。
+
+不確定 class 拼寫時，[CLI](/guide/installation#cli) 可從獨立 CSS 宣告區塊建議 class，不需 MCP 連線。請從應用程式根目錄執行專案安裝的版本：
+
+```bash
+master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
+```
+
+讀取 JSON 回應中的 `result.classes`、`result.remainingCss`、`validation` 與 `diagnostics`。檢查 `manifest.entries` 是否包含預期 CSS 進入點；空清單代表使用預設集。使用 `--cwd` 選擇另一專案根目錄，或 `--stdin` 從標準輸入讀取宣告。結束狀態與保留區塊請見[指令契約](/reference/tools/cli#suggest)。已安裝 CLI 若沒有 `suggest`，請繼續使用現有檢查，不要混用套件版本。
+
+連接 MCP 後，`mastercss_suggest_classes` 接受相同宣告區塊：
+
+```json
+{
+  "declarations": "display:flex; align-items:center; padding:16px; gap:1rem;"
+}
+```
+
+使用預設集時，會建議 `flex items-center p(16) (gap:1rem)`。專案定義可能改變建議。結果包含產生的 CSS、個別值驗證狀態，以及必須留在原生 CSS 的 `remainingCss` 區塊。工具會完整保留不確定區塊，包括重複宣告與可能重疊的屬性；不會編輯檔案，也不會轉換樣式表選擇器。
+
+套用建議前先檢閱階層串接：把宣告從選擇器或行內樣式移到 utility，可能改變勝出規則。工具的宣告檢查不會驗證周圍樣式或瀏覽器渲染。
+
+---
+
+## 檢查共用變更的影響範圍 \{#review-the-second-change\}
+第一版看起來正確，不代表能看出下次編輯會影響什麼。修改 `--color-brand` 這類共用定義前，先儲存專案快照，編輯後再比較，即使標記沒有改變也一樣：
+
+```bash
+master-css inspect --snapshot > before.json
+master-css inspect --compare before.json > impact.json
+```
+
+`impact.json` 列出變更定義、已知 class 使用處與檔案、前後產生的規則、原生樣式表參照與輸出傳遞。即使沒有變更，也要讀取 `coverage`：動態來源、遠端內容與最終瀏覽器行為並未完整檢查。在 MCP 中，於前後各呼叫 `mastercss_scan_project` 並設定 `includeSnapshot: true`，再將兩份快照交給 `mastercss_css_compare`。
+
+原生元件 CSS 應沿受管理樣式表圖檢查 token 參照。從 JavaScript 匯入的路由與元件樣式表不在該圖內，請以來源路徑明確列出：
+
+```bash
+master-css inspect --design-system --design-system-options design-system.options.json "app/**/*.css"
+```
+
+報告列出每個 `var()` token 參照的來源範圍、選擇器、at-rule 祖先、匯入方與共用前綴衝突。`components` 清單從 `.button[data-variant="primary"]` 這類選擇器讀出元件 class 的屬性詞彙，讓代理可撰寫 CSS 實際支援的變體。選用的[選項檔](/reference/tools/cli#design-system-options)可加入 token 說明、棄用與建議替代項，以及特定屬性的原始值政策；同一物件也可交給 `mastercss_scan_project.designSystem`，路由樣式表放在 `routeStylesheets`，或用於[語言服務](/guide/language-service)的 `designSystem` 設定。這些報告是手寫語法的證據；受影響版面與狀態仍需在瀏覽器檢查。
+
+
+## 與代理一起最佳化傳遞 \{#optimize-delivery-with-an-agent\}
+
+進行載入重構或效能評估時，提供代理[最佳化 CSS 傳遞](/guide/optimizing-css-delivery)、目標路由、現有渲染模式與檢查。要求先量測正式環境資產基準，把功能樣式移到擁有它們的模組，再驗證功能頁與無關頁面的輸出與互動。除非任務要求，否則保留原有模式。
+
+公開 Master CSS skill 會透過傳遞參考資料引導這項工作。來源與 manifest 檢查仍有幫助，但兩者都不能證明瀏覽器傳輸成本或後續狀態正確。一般元件變更只需相關局部檢查，不需自動進行全站稽核。

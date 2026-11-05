@@ -1,0 +1,25 @@
+# Reference prose: illustrations/preload-is-data
+
+## title \{#copy-title\}
+
+Preloading fetches the program; runtime startup uses it
+
+## alt \{#copy-alt\}
+
+A preload link fetches program bytes into the browser. The runtime later consumes that response and produces rules for connected class usage.
+
+## caption \{#copy-caption\}
+
+The diagram shows a runtime-only page with a matching fetch preload. Connector lengths do not measure request duration or startup speed.
+
+## description-0 \{#copy-description-0\}
+
+A preload with as="fetch" and matching crossorigin starts the program request while the document is parsed.
+
+## description-1 \{#copy-description-1\}
+
+The hint does not execute the engine, inspect DOM classes or generate CSS. Runtime initialization consumes the matching response and performs that work.
+
+## description-2 \{#copy-description-2\}
+
+Do not add this program preload to a progressive page that intentionally defers the engine and program. The page hydration manifest is a different resource.

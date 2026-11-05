@@ -1,0 +1,25 @@
+# Reference prose: illustrations/nested-conditions
+
+## title \{#copy-title\}
+
+Both queries enclose the same declaration
+
+## alt \{#copy-alt\}
+
+A media query encloses a supports query, which encloses the grid rule. The two class suffixes map to these nested CSS boundaries.
+
+## caption \{#copy-caption\}
+
+The first query is outermost. The display declaration participates in the cascade only when both conditions match; nesting is not an execution timeline.
+
+## description-0 \{#copy-description-0\}
+
+grid@media(width>=40rem)@supports(display:grid) emits a grid rule inside @supports (display:grid), itself inside @media (width>=40rem).
+
+## description-1 \{#copy-description-1\}
+
+The media query tests viewport width; the supports query tests browser support for display: grid. Both must match for this declaration to participate in the cascade.
+
+## description-2 \{#copy-description-2\}
+
+The generated selector matches the element carrying the complete class. The surrounding utilities layer is omitted from the drawing and retained in the generated CSS example.

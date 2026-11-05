@@ -1,0 +1,91 @@
+# Reference prose: tokens/font
+
+## title \{#copy-title\}
+
+
+글꼴
+
+## summary \{#copy-summary\}
+
+
+글꼴 계열, 크기, 굵기를 모두 font-* 형식으로 지정합니다.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+글꼴 계열
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+크기
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+굵기
+
+## note \{#copy-note\}
+
+
+세 네임스페이스가 `font-` 접두사를 공유하므로 이름은 세 네임스페이스 사이에서 고유해야 합니다. 둘 이상에 같은 이름이 정의되면 `AMBIGUOUS_TOKEN`을 보고하고 CSS를 생성하지 않습니다.
+
+## valuesLead \{#copy-valuesLead\}
+
+
+글꼴 계열은 순서가 있는 대체 목록이고, 크기는 rem 길이이며, 굵기는 숫자로 요청합니다. 픽셀 환산값은 루트 글꼴 크기가 16px라고 가정합니다. 실제 표시되는 글꼴과 사용 가능한 굵기는 페이지가 불러온 글꼴에 따라 달라집니다.
+
+## explanation-title \{#copy-explanation-title\}
+
+
+하나의 접두사, 독립적인 속성
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`font-serif`, `font-4xl`, `font-semibold`는 각각 `font-family`, `font-size`, `font-weight`를 설정합니다. 서로 다른 속성을 지정하므로 함께 사용할 수 있지만 어느 하나도 완전한 텍스트 스타일은 아닙니다.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+크기 클래스는 줄 높이와 자간을 각각의 선언이나 상속에 맡깁니다. 세 치수를 하나의 스타일에서 가져오려면 `text-<name>`을 사용하세요. 어느 형식이든 글꼴 계열과 굵기는 별개입니다.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+글꼴 계열 토큰은 글꼴 이름을 지정할 뿐 다운로드하지 않습니다. 프리셋의 sans, mono, serif 스택은 선택적 연결 지점인 `--font-sans`, `--font-mono`, `--font-serif`로 각각 시작합니다. 글꼴을 불러오고 사이트 전체의 글꼴 스택을 선택하는 방법은 타이포그래피 가이드에서 다룹니다.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+사용자 지정 키는 세 네임스페이스에서 서로 달라야 합니다. `--font-family-brand`와 `--font-size-brand`가 모두 있으면 `font-brand`는 모호해집니다. `(font-size:var(--font-size-brand))` 같은 명시적 네이티브 선언으로 의도한 속성과 변수를 지정할 수 있습니다.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+텍스트 스타일
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+네임스페이스 해석
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+네이티브 글꼴 선택
+
+## usage-lead \{#copy-usage-lead\}
+
+
+제목에는 더 큰 크기와 중간 굵기를 지정하고 코드 예제에는 고정폭 글꼴 계열을 사용합니다.
+
+## customize-lead \{#copy-customize-lead\}
+
+
+각 네임스페이스는 고유한 토큰을 받습니다. `--font-family-display`는 `font-display`를, `--font-size-hero`는 `font-hero`를 생성합니다.
+
+## guide-label \{#copy-guide-label\}
+
+
+타이포그래피

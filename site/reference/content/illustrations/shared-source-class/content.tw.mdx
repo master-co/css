@@ -1,0 +1,36 @@
+# Reference prose: illustrations/shared-source-class
+
+## title \{#copy-title\}
+
+
+移除一個來源，不會移除仍共用的規則
+
+## alt \{#copy-alt\}
+
+
+頁面 A 已移除，頁面 B 仍包含 p-md。只有頁面 B 與保留的 padding 規則之間仍有有效連線。
+
+## caption \{#copy-caption\}
+
+
+定義與政策不變時，移除頁面 A 仍會留下頁面 B 對 p-md 的參照。即使生成 CSS 可維持相同，來源歸屬仍有變化。
+
+## description-0 \{#copy-description-0\}
+
+
+最初 page-a.tsx 與 page-b.tsx 都包含完整的 p-md class。
+
+## description-1 \{#copy-description-1\}
+
+
+移除 page-a.tsx 只會移除該來源提供的結果。page-b.tsx 的有效連線會保留共用 utility 與其 --spacing-md 相依項目。
+
+## description-2 \{#copy-description-2\}
+
+
+目前沒有任何來源或安全清單保留時，utility 才可能移除。更新來源會取代它原本提供的結果，不會累積歷史 class。
+
+## description-3 \{#copy-description-3\}
+
+
+圖中顯示保留的 utility 宣告，主題相依項目則另以文字說明，不會重現整份樣式表。

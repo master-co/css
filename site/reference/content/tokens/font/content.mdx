@@ -1,0 +1,73 @@
+# Reference prose: tokens/font
+
+## title \{#copy-title\}
+
+Font
+
+## summary \{#copy-summary\}
+
+Font families, sizes and weights, all written as font-*.
+
+## groups-0-title \{#copy-groups-0-title\}
+
+Family
+
+## groups-1-title \{#copy-groups-1-title\}
+
+Size
+
+## groups-2-title \{#copy-groups-2-title\}
+
+Weight
+
+## note \{#copy-note\}
+
+The three namespaces share the `font-` prefix, so a name must be unique among them. A name defined in more than one reports `AMBIGUOUS_TOKEN` and generates no CSS.
+
+## valuesLead \{#copy-valuesLead\}
+
+Families are ordered fallback lists, sizes are rem lengths and weights are numeric requests. Pixel equivalents assume a 16px root font size. The rendered face and available weights depend on the fonts loaded by the page.
+
+## explanation-title \{#copy-explanation-title\}
+
+One prefix, independent properties
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`font-serif`, `font-4xl` and `font-semibold` write `font-family`, `font-size` and `font-weight` respectively. They can be combined because they set different properties; none is a complete type treatment.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+A size class leaves line height and letter spacing to their own declarations or inheritance. Use `text-<name>` when all three metrics should come from one treatment. Family and weight remain separate in either form.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+A family token names fonts; it does not download them. The preset sans, mono and serif stacks begin with the optional `--font-sans`, `--font-mono` and `--font-serif` hooks. The Typography guide owns loading fonts and choosing a site-wide stack.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+Keep custom keys distinct across the three namespaces. If both `--font-family-brand` and `--font-size-brand` exist, `font-brand` is ambiguous. An explicit native declaration such as `(font-size:var(--font-size-brand))` names the intended property and variable.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Text treatments
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+namespace resolution
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+native font selection
+
+## usage-lead \{#copy-usage-lead\}
+
+Set a heading in a larger size and medium weight, and a code sample in the mono family.
+
+## customize-lead \{#copy-customize-lead\}
+
+Each namespace takes its own tokens: `--font-family-display` creates `font-display`, and `--font-size-hero` creates `font-hero`.
+
+## guide-label \{#copy-guide-label\}
+
+Typography

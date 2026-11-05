@@ -1,0 +1,31 @@
+# Reference prose: illustrations/manual-wrapper-reach
+
+## title \{#copy-title\}
+
+
+祖先セレクターは明るい領域内にも届く
+
+## alt \{#copy-alt\}
+
+
+暗い data-theme の祖先が明るい領域とチャートを含む。チャートは明るい配色を使うが manual-dark の祖先ラッパーにも一致する。
+
+## caption \{#copy-caption\}
+
+
+破線は明示的な dark 属性をたどります。内側の明るい境界は color-scheme を変え、セレクターが検査する祖先関係は変えません。
+
+## description-0 \{#copy-description-0\}
+
+
+この記事の --manual-dark ミックスインは [data-theme="dark"] 自身またはその子孫に一致します。
+
+## description-1 \{#copy-description-1\}
+
+
+入れ子の data-theme="light" 領域内のチャートも外側の dark 領域の子孫です。そのため light-dark() がローカルの明るい配色を使っていても、不透明度ラッパーは一致します。
+
+## description-2 \{#copy-description-2\}
+
+
+実際に使う配色に従う値には適応型トークンを使います。属性セレクターは記述した関係をそのまま検査します。

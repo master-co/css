@@ -54,14 +54,15 @@ export async function islandsInstallationFixture(route: typeof islandsInstallati
       write('package.json', JSON.stringify({ type: 'module', dependencies: { astro: '*' }, scripts: { build: 'astro build', preview: 'astro preview', dev: 'astro dev' } }))
       if (mode === 'static') {
         write('astro.config.mjs', "import { defineConfig } from 'astro/config'\nexport default defineConfig({})\n")
-        assert.match(source, /npm install -D @master\/css@rc @master\/css-cli@rc/)
+        assert.match(source, /npm create @master\/css@VERSION -- --framework astro --yes/)
+        assert.match(source, /npm install -D @master\/css-cli@VERSION/)
       } else {
         const plan = planMasterCSSSetup({ root, framework: 'astro', mode: mode === 'progressive' ? undefined : mode, install: false, yes: true })
         applyMasterCSSSetupPlan(plan, { install: false })
         assert.match(readFileSync(join(root, 'astro.config.mjs'), 'utf8'), /@master\/css-astro/)
         write('astro.config.mjs', file('astro.config.mjs'))
-        const command = fences.find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
-        assert.equal(command, `npm create @master/css@rc -- --framework astro${mode === 'progressive' ? '' : ' --mode ' + mode} --yes`)
+        const command = fences.find(fence => fence.text.includes('npm create @master/css@VERSION'))!.text.trim()
+        assert.equal(command, `npm create @master/css@VERSION -- --framework astro${mode === 'progressive' ? '' : ' --mode ' + mode} --yes`)
       }
       for (const name of ['src/styles/global.css', 'src/pages/index.astro']) write(name, file(name))
     }

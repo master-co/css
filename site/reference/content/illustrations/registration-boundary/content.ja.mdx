@@ -1,0 +1,31 @@
+# Reference prose: illustrations/registration-boundary
+
+## title \{#copy-title\}
+
+
+ネイティブ変数だけではトークンクラスは登録されない
+
+## alt \{#copy-alt\}
+
+
+同じ spacing-card 宣言を theme 内と root 内に置いています。p-card につながるのは theme の定義だけですが、どちらも明示的なネイティブの var 参照で使えます。
+
+## caption \{#copy-caption\}
+
+
+どちらの例もプリセットのユーティリティファミリーを読み込みます。登録と、ブラウザーで変数が使えることは別の機能です。
+
+## description-0 \{#copy-description-0\}
+
+
+@theme \{ --spacing-card: 1.5rem; \} は spacing 名前空間に card キーを登録し、p-card を利用可能にします。
+
+## description-1 \{#copy-description-1\}
+
+
+:root \{ --spacing-card: 1.5rem; \} はネイティブ CSS 変数を提供しますが、p-card は登録しません。
+
+## description-2 \{#copy-description-2\}
+
+
+明示的なネイティブクラス (padding:var(--spacing-card)) は、どちらの設定の変数も使えます。

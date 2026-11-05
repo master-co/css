@@ -1,0 +1,31 @@
+# Reference prose: illustrations/where-specificity
+
+## title \{#copy-title\}
+
+
+where() と is() は同じ状態でも詳細度が異なる
+
+## alt \{#copy-alt\}
+
+
+並べた 2 つのセレクター分解では、起点の 0-1-0 は共通。where はゼロ、is は最も詳細度の高い引数の 1-0-0 を加える。
+
+## caption \{#copy-caption\}
+
+
+図は詳細度だけの比較です。カスケードでは出所、重要度、レイヤーの優先順を先に評価します。
+
+## description-0 \{#copy-description-0\}
+
+
+両生成セレクターで、エスケープされた完全な起点のクラスは 0-1-0 を加えます。
+
+## description-1 \{#copy-description-1\}
+
+
+:where(:hover,#selected) の接尾辞は 0-0-0 なので、合計は 0-1-0 です。
+
+## description-2 \{#copy-description-2\}
+
+
+:is(:hover,#selected) では ID 引数が最大の詳細度 1-0-0 を持つため、実際に一致するのがホバーの選択肢でも合計は 1-1-0 です。

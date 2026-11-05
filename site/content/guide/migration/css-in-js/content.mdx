@@ -6,7 +6,7 @@ This guide covers `styled-components`, `@emotion/react`, and `@emotion/styled`. 
 
 ---
 
-## Migration strategy
+## Migration strategy \{#migration-strategy\}
 Use the [shared migration workflow](/guide/migration#migration-strategy) to establish a baseline, then separate the jobs currently mixed into each styled wrapper:
 
 | Input | Destination | What stays in the component |
@@ -22,7 +22,7 @@ Inspect `as`, refs, prop filtering and SSR setup before replacing a wrapper. A c
 
 ---
 
-## Convert static styled components
+## Convert static styled components \{#convert-static-styled-components\}
 Start with wrappers that only apply stable visual styles.
 
 ```tsx name=Button.tsx
@@ -99,7 +99,7 @@ If the project needs a named component class, keep the `@theme` block above and 
 
 ---
 
-## Convert variants to class maps
+## Convert variants to class maps \{#convert-variants-to-class-maps\}
 Avoid building Master CSS class names from string fragments. Static rendering and linting work best with complete class strings.
 
 ```tsx
@@ -139,7 +139,7 @@ Appending `className` preserves the caller's classes; it does not make them win 
 
 ---
 
-## Use CSS variables for dynamic values
+## Use CSS variables for dynamic values \{#use-css-variables-for-dynamic-values\}
 Runtime values should not become generated class names. Keep the class static and pass the changing value through a CSS variable. This follows the same separation described in [Emotion’s guidance for dynamic styles](https://emotion.sh/docs/best-practices#use-the-style-prop-for-dynamic-styles): the changing value belongs to the element, while the reusable declaration stays stable.
 
 ```tsx
@@ -163,7 +163,7 @@ Keep CSS-in-JS for cases where the component must create selectors, keyframes, o
 
 ---
 
-## Move global styles carefully
+## Move global styles carefully \{#move-global-styles-carefully\}
 Global styles often contain real app infrastructure. Move them in small groups.
 
 ```tsx name=GlobalStyles.tsx
@@ -197,7 +197,7 @@ Keep CSS-in-JS global styles until the replacement CSS entry is loaded in every 
 
 ---
 
-## Validate the migration
+## Validate the migration \{#validate-the-migration\}
 - Run formatter, lint, type check, tests, and production build after each batch.
 - Compare server-rendered output if the CSS-in-JS setup had SSR extraction or hydration logic.
 - Check dark mode, responsive breakpoints, hover, focus-visible, disabled, selected, and polymorphic `as` states.
@@ -205,7 +205,7 @@ Keep CSS-in-JS global styles until the replacement CSS entry is loaded in every 
 
 ---
 
-## Useful references
+## Useful references \{#useful-references\}
 - [Installation](/guide/installation) for adding Master CSS to a project.
 - [Rendering modes](/guide/rendering-modes) for static, runtime, and progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.

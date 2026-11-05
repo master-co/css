@@ -1,0 +1,31 @@
+# Reference prose: illustrations/source-relative-base
+
+## title \{#copy-title\}
+
+
+源路径以声明它的样式表为起点
+
+## alt \{#copy-alt\}
+
+
+导入的 styles/shared.css 声明 ./views/*.html，并指向 styles/views；应用程序的工作目录则单独标示。
+
+## caption \{#copy-caption\}
+
+
+树状图描绘同一个文件系统。从 apps/shop 导入样式表，不会让其中编写的 @source 模式改以该应用为基准。
+
+## description-0 \{#copy-description-0\}
+
+
+仓库包含 styles/shared.css 和 styles/views/card.html。shared.css 声明 @source "./views/*.html"。
+
+## description-1 \{#copy-description-1\}
+
+
+相对模式从 styles/shared.css 解析，因此即使使用它的应用在 apps/shop 运行，仍会包含 styles/views/card.html。
+
+## description-2 \{#copy-description-2\}
+
+
+扫描器通过程序单独传入的 cwd 选项有自己的契约；本图说明的是写在 CSS 中的指令。

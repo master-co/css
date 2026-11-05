@@ -1,0 +1,36 @@
+# Reference prose: illustrations/scanning-two-filters
+
+## title \{#copy-title\}
+
+
+파일 선택과 후보 선택은 별도 필터
+
+## alt \{#copy-alt\}
+
+
+main.html은 grid와 hidden을 제공하고 draft.html은 추출 전에 제외된다. 세이프리스트는 block을 추가하고 블록리스트는 hidden을 제거한다. 최종 후보 집합은 grid와 block이다.
+
+## caption \{#copy-caption\}
+
+
+draft.html 제외는 flex 후보가 이 소스 범위로 들어오는 것을 막습니다. hidden 차단은 수집 후 후보를 제거하고 block 세이프리스트는 명시적인 후보를 추가합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+@source는 HTML 파일을 포함하고 @source not은 draft.html을 제외합니다. main.html만 grid와 hidden 클래스 문자열을 제공합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+@safelist "block"은 소스 파일과 독립적으로 전체 후보를 추가합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+@blocklist "hidden"은 해당 후보를 제거합니다. 최종 유효 집합은 grid와 block이며 flex는 이 범위에 들어오지 않았습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+파일 정책과 후보 정책은 별개입니다. 후보 자격은 임의 클래스 문자열의 유효성을 증명하지 않으며 일반 일치와 진단이 계속 적용됩니다.

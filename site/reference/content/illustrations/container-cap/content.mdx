@@ -1,0 +1,29 @@
+# Reference prose: illustrations/container-cap
+
+## title \{#copy-title\}
+
+The same maximum can produce different widths
+
+## alt \{#copy-alt\}
+
+Two auto-width blocks share max-w-3xs, a 16rem maximum. In a 20rem parent the block is 16rem wide; in a 13rem parent it fits at 13rem.
+
+## caption \{#copy-caption\}
+
+A normal block with auto width fits the available space up to its maximum. The two parent widths are drawn at the same scale, with a 16px root font size.
+
+## description-0 \{#copy-description-0\}
+
+max-w-3xs reads the preset --container-3xs value of 16rem. Both examples have auto width in normal block layout, use border-box sizing and have no minimum-width constraint.
+
+## description-1 \{#copy-description-1\}
+
+The first parent provides 20rem. The child stops at its 16rem maximum, leaving unused space after it.
+
+## description-2 \{#copy-description-2\}
+
+The second parent provides 13rem. The child fits that smaller space instead of becoming 16rem wide.
+
+## description-3 \{#copy-description-3\}
+
+The dashed contour identifies the available width; it is not a generated border or query container. Both parents are drawn at the same scale with a 16px root font size. Heights follow the same content.

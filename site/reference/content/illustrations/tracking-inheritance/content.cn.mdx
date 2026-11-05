@@ -1,0 +1,36 @@
+# Reference prose: illustrations/tracking-inheritance
+
+## title \{#copy-title\}
+
+
+重新应用 em 字距会重新计算长度
+
+## alt \{#copy-alt\}
+
+
+16px 的父元素使用 tracking-widest。两个 32px 子元素显示相同单词：其中一个继承 1.92px 字距，另一个重新应用 tracking-widest，使用 3.84px 字距，因此文本盒更宽。
+
+## caption \{#copy-caption\}
+
+
+两个子元素的字体和字号相同。继承的 letter-spacing 长度仍是 1.92px；重新应用类则按子元素 32px 的字号计算 .12em。
+
+## description-0 \{#copy-description-0\}
+
+
+父元素使用 font-md 和 tracking-widest。根元素字号为 16px 时，.12em 字距计算为 1.92px 长度。
+
+## description-1 \{#copy-description-1\}
+
+
+两个子元素示例都使用 font-3xl，也就是 32px，并使用相同单词和字体。
+
+## description-2 \{#copy-description-2\}
+
+
+第一个子元素继承已计算的 1.92px 字距。第二个重新应用 tracking-widest，于是 .12em 以 32px 为基准计算，得到 3.84px。
+
+## description-3 \{#copy-description-3\}
+
+
+即使字形大小不变，第二个文本盒仍然更宽。彩色引导线显示布局宽度，不是字形的实际绘制范围，也不是 tracking 输出的边框。

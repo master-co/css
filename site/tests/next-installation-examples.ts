@@ -43,7 +43,7 @@ export function nextInstallationFixture(mode: NextInstallationMode) {
       if (name === 'next.config.ts') text = text.replace('const nextConfig: NextConfig = {}', 'const nextConfig: NextConfig = { experimental: { cpus: 2 } }').replace("mode: 'static'", `mode: '${mode}'`)
       write(name, text)
     }
-    assert.ok(source.includes(`npm create @master/css@rc -- --framework nextjs${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
+    assert.ok(source.includes(`npm create @master/css@VERSION -- --framework nextjs${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
     // Additional route verifies the documented request-time delivery boundary.
     write('app/dynamic/page.tsx', "import { connection } from 'next/server'\nexport default async function DynamicPage() {\n  await connection()\n  return <h1 className=\"m-md italic font-3xl font-heavy fg-text-strong\">Request-time heading</h1>\n}\n")
     for (const name of ['next', 'react', 'react-dom', 'typescript', '@types/react', '@types/react-dom', '@types/node', '@master/css', '@master/css-next', '@master/css-runtime']) {

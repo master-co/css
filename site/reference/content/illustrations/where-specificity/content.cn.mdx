@@ -1,0 +1,31 @@
+# Reference prose: illustrations/where-specificity
+
+## title \{#copy-title\}
+
+
+where() 与 is() 可匹配相同状态，但优先级不同
+
+## alt \{#copy-alt\}
+
+
+两个对齐的选择器拆解均保留所属元素的 0-1-0 权重。where 增加零，is 增加最高优先级参数的 1-0-0。
+
+## caption \{#copy-caption\}
+
+
+图示仅比较选择器优先级。层叠会先考虑来源、重要性与层优先顺序。
+
+## description-0 \{#copy-description-0\}
+
+
+两个生成选择器中，转义后的完整类所属元素均贡献 0-1-0。
+
+## description-1 \{#copy-description-1\}
+
+
+:where(:hover,#selected) 的后缀贡献 0-0-0，因此总计为 0-1-0。
+
+## description-2 \{#copy-description-2\}
+
+
+对于 :is(:hover,#selected)，ID 参数提供最高参数优先级 1-0-0，因此即使匹配的是悬停选项，总计仍为 1-1-0。

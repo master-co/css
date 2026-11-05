@@ -27,7 +27,8 @@ export interface ReferenceDocument {
   url: string
   source: string
   sourceDigest: string
-  language: 'en'
+  language: string
+  locale?: string
   aliases: string[]
   identifierAnchors?: Record<string, string>
   terms: string[]
@@ -44,6 +45,7 @@ export interface ReferenceDocument {
 
 export interface ReferenceCatalog {
   schemaVersion: 1
+  locale?: string
   version: string
   revision: string
   sourceState: 'revision' | 'working-tree' | 'archive'
@@ -51,10 +53,10 @@ export interface ReferenceCatalog {
   documents: ReferenceDocument[]
 }
 
-export const referenceSections: { id: string; title: string; titleTW: string; kinds: ReferenceKind[]; description: string; descriptionTW: string }[] = [
-  { id: 'rules', title: 'Syntax', titleTW: '語法', kinds: ['rule'], description: 'How a class names its declarations, selectors, conditions and layer.', descriptionTW: 'class 如何寫出宣告、選擇器、條件與 layer。' },
-  { id: 'tokens', title: 'Tokens', titleTW: 'Tokens', kinds: ['tokens'], description: 'Every preset value, the classes that read it and how to change it.', descriptionTW: '每個 preset 值、讀取它的 class，以及如何調整。' },
-  { id: 'utilities', title: 'Utilities', titleTW: 'Utilities', kinds: ['utility'], description: 'Preset recipes and numeric functions, with their declarations and constraints.', descriptionTW: '預設組合樣式與數值函式，以及它們的宣告和使用限制。' },
-  { id: 'directives', title: 'Directives', titleTW: '指令', kinds: ['directive'], description: 'Stylesheet at-rules for imports, tokens, query definitions, reuse, scanning and pruning.', descriptionTW: '用於匯入、tokens、查詢定義、重用、掃描與修剪的樣式表 at-rule。' },
-  { id: 'tools', title: 'Tools', titleTW: '工具', kinds: ['tool', 'package'], description: 'The CLI, the MCP server and the public packages.', descriptionTW: 'CLI、MCP server 與公開套件。' }
+export const referenceSections: { id: string; kinds: ReferenceKind[] }[] = [
+  { id: 'rules', kinds: ['rule'] },
+  { id: 'tokens', kinds: ['tokens'] },
+  { id: 'utilities', kinds: ['utility'] },
+  { id: 'directives', kinds: ['directive'] },
+  { id: 'tools', kinds: ['tool', 'package'] },
 ]

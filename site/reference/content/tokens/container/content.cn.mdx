@@ -1,0 +1,71 @@
+# Reference prose: tokens/container
+
+## title \{#copy-title\}
+
+
+容器尺寸
+
+## summary \{#copy-summary\}
+
+
+用于宽度、高度、最小和最大尺寸的预设长度。
+
+## note \{#copy-note\}
+
+
+容器令牌设置的是长度，不会定义视口或容器查询。`w-full`、`max-w-fit`、`basis-min` 这类填满或内在尺寸形式是固定工具类，与这些令牌无关。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+每个值都是供尺寸属性使用的长度。像素换算假设根元素字号为 16px。这些值不是视口断点，也不是容器查询定义。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+最大尺寸只设置上限
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`max-w-3xs` 设置 `max-width: var(--container-3xs)`，其预设值为 `16rem`。当包含块的可用空间较少时，宽度为 auto 的普通块仍可以更窄。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`w-3xs` 则直接设置宽度。这两个类都不会添加居中、内边距或查询容器隔离。修改 `--container-md` 不会重新定义 `@container(--md)`，也不会改变显式写出的查询阈值。创建查询容器时，请使用原生 `container-type` 和 `container-name`。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+实际尺寸仍受原生布局影响：最小尺寸、盒模型计算、Flexbox 和 Grid 都可能改变使用尺寸。最大尺寸不会改变文本换行或溢出规则。若要设计页面外层容器或决定响应式布局，请继续阅读布局指南。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+具名查询条件
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+容器查询语法
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+原生尺寸规则
+
+## usage-lead \{#copy-usage-lead\}
+
+
+限制对话框宽度与文本行长。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+修改预设值或添加尺寸：`--container-prose` 会创建 `max-w-prose`、`w-prose` 和其他尺寸类。
+
+## guide-label \{#copy-guide-label\}
+
+
+布局

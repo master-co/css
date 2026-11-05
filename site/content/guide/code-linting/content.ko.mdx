@@ -1,0 +1,249 @@
+---
+title: "Master CSS 코드 린팅"
+description: "ESLint로 Master CSS 클래스를 검증하고 충돌을 감지하며 클래스 목록을 정렬하고 프로젝트 정책을 적용하세요."
+figures: {"LintIllustration":{"title":"서식은 수정하고 의미는 선택","alt":"두 lint 결과를 보여 줍니다. p-md flex flex를 정렬하면 중복을 제거해 자동으로 flex p-md가 됩니다. 원시 font-size 값 15px는 그대로 유지되며 사람이 토큰을 선택하거나 값을 허용해야 합니다.","caption":"자동 수정은 클래스 순서를 정리하고 중복을 제거할 수 있습니다. 원시 값 경고가 대신 디자인 역할을 선택해 주지는 않습니다.","description":[{"title":"안전한 서식 수정","text":"sort-classes는 p-md flex flex를 flex p-md로 바꿉니다. 생성 선언을 바꾸지 않고 중복을 제거합니다."},{"title":"디자인 결정","text":"no-unapproved-raw-values가 활성화되면 (font-size:15px)에 경고가 나올 수 있습니다. 자동 수정은 없습니다. 의미적 토큰을 선택하거나 값을 명시적으로 허용하세요."}]},"GuideStudy:lint-ownership":{"title":"충돌에는 디자인 결정이 필요합니다","alt":"정렬 가능한 클래스 목록은 되돌릴 수 있는 재정렬 출력을 가집니다. 반면 충돌하는 두 패딩 클래스는 두 가지 가능한 의도 값으로 나뉩니다.","caption":"정렬은 디자인에 필요한 간격을 결정할 수 없습니다. 경쟁 선언은 의도적으로 해결하세요."}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LintIllustration from './components/LintIllustration.astro'
+
+## 개요 [sr-only] \{#overview\}
+편집하면서 유효하지 않은 클래스, 충돌 선언, 일관되지 않은 구문을 찾으세요. ESLint 통합은 프로젝트의 테마와 사용자 지정 정의를 사용하므로 실제 생성 가능한 클래스를 기준으로 진단합니다.
+
+아래 권장 설정으로 시작하거나 [설치 통합](/guide/installation#integrations)을 통해 프레임워크 설정과 함께 추가하세요. lint는 클래스 작성을 검사합니다. 레이아웃, 대비, 상호작용은 브라우저로 검증하세요. 오류가 없는 lint 결과는 디자인 검토가 아닙니다.
+
+<LintIllustration />
+
+---
+
+## 권장 설정 설치 \{#install-the-recommended-config\}
+프로젝트에 ESLint와 권장 설정을 설치하세요. 프레임워크 파서가 필요한 프로젝트에서는 해당 설정을 유지하세요.
+
+```bash
+npm install -D eslint @master/eslint-config-css@VERSION
+```
+
+flat config에 권장 설정을 추가하세요.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS
+])
+```
+
+아래 네 규칙을 활성화합니다. [규칙 기본값과 수정](/reference/packages#eslint-config-css)을 참고하세요. 프로젝트 CSS 진입점을 찾을 수 있도록 앱 루트에서 검사를 실행하세요.
+
+```bash
+npx eslint .
+```
+
+프로젝트 전체에 적용하기 전에 자동 편집을 로컬에서 검토하세요.
+
+```bash
+npx eslint . --fix
+```
+
+정렬, 중복 제거, 완전히 재정의된 클래스는 자동 수정할 수 있습니다. 명령이 끝나도 유효하지 않은 값이나 디자인 정책 경고는 판단이 필요할 수 있습니다. CI에는 수정하지 않는 명령을 유지해 실패가 드러나게 하세요.
+
+---
+
+## 린팅 규칙 \{#linting-rules\}
+### 클래스 정렬 \{#sort-classes\}
+`@master/css/sort-classes`는 클래스 문자열을 안정적이고 검토하기 쉽게 유지합니다. 알려진 Master CSS 클래스를 알 수 없는 클래스보다 앞에 놓고 생성 레이어와 조건 우선순위를 따릅니다. 기본 클래스는 생성 CSS 의도에 따라 위치와 레이아웃, 크기, 간격, 상자, 타이포그래피, 색칠, 효과로 묶습니다.
+
+```mcss
+bg-white font-md flex px-md relative w-full shadow-lg r-md (z-index:10) (gap:0.5rem) <!-- [!code --] -->
+relative (z-index:10) flex (gap:0.5rem) w-full px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+```
+
+`:hover`, `@dark`, `@sm` 같은 변형은 생성 조건 순서에 따라 기본 클래스 본문 뒤에 배치됩니다.
+
+```mcss
+bg-black:hover flex p-sm w-full block@dark text-center <!-- [!code --] -->
+flex w-full p-sm text-center bg-black:hover block@dark <!-- [!code ++] -->
+```
+
+정렬은 같은 클래스 문자열 안의 중복 값도 제거합니다.
+
+```mcss
+inline-flex px-md inline-flex <!-- [!code --] -->
+inline-flex px-md <!-- [!code ++] -->
+```
+
+정렬은 서식 정책입니다. 생성 CSS를 바꾸지는 않지만 클래스 문자열을 검토하기 쉽게 하고 프레임워크와 편집기 전반에서 자동 수정 결과가 항상 일정하도록 합니다.
+
+### 유효하지 않은 클래스 금지 \{#no-invalid-classes\}
+`@master/css/no-invalid-classes`는 잘못된 Master CSS 클래스 구문과 인식되지만 유효하지 않은 CSS를 생성하는 클래스를 보고합니다. 서로 다른 실패입니다. 잘못된 구문은 규칙 생성 전에 거부될 수 있고, 수락된 선언에도 유효하지 않은 값이 들어갈 수 있습니다.
+
+```html
+<button class="(font-size:16)">Save</button>
+```
+
+(x) `(font-size:16)`은 단위 없는 0이 아닌 길이입니다. `(font-size:16px)` 같은 네이티브 길이나 `font-md` 같은 정의된 크기 토큰을 사용하세요.
+
+기본적으로 일치하지 않는 클래스는 무시하여 Master CSS와 네이티브 전역 클래스를 함께 사용할 수 있습니다.
+
+알 수 없는 CSS 값은 별개입니다. 클래스가 언어와 일치해도 검증기가 값을 완전히 검사하지 못할 수 있습니다. 예를 들어 현재 검증기는 `(display:banana)`를 `unknown`으로 보고하며 이 규칙은 이를 표시하지 않습니다. 따라서 lint가 깨끗해도 브라우저 지원이나 의도한 외관을 입증하지는 않습니다.
+
+일치하지 않는 클래스 이름도 거부하려면 [`disallowUnknownClass`](#team-policy)를 활성화하세요.
+
+### 정규 클래스 형태 우선 \{#prefer-canonical-classes\}
+`@master/css/prefer-canonical-classes`는 토큰 정체성, 값 출처, 조건 중첩, 생성 규칙 순서를 유지하며 동등한 정규 형태를 검사합니다.
+
+다음 클래스는 그대로 유지됩니다.
+
+```mcss
+(margin:16px) block@dark@sm
+```
+
+이 규칙은 현재 값이 같다는 이유로 리터럴을 토큰으로 바꾸거나 단위를 변환하거나 작성된 조건 순서를 바꾸지 않습니다. 의미적 토큰은 의도적으로 선택하세요. 팀에서 토큰을 요구하면 아래 원시 값 정책을 사용하세요.
+
+### 충돌 클래스 금지 \{#no-conflicting-classes\}
+`@master/css/no-conflicting-classes`는 같은 변형 범위에서 같은 선언 속성을 출력하는 클래스를 보고합니다.
+
+```mcss
+(margin:0.625rem) (margin:1.25rem) <!-- [!code --] -->
+(margin:1.25rem) <!-- [!code ++] -->
+```
+
+(!) `"(margin:0.625rem)" is overridden by "(margin:1.25rem)".`
+
+변형 범위가 중요합니다. 선택자, 모드, 조건이 다른 클래스는 서로 충돌하지 않습니다.
+
+```mcss
+(margin:2.5rem)@sm (margin:3.125rem)@md
+```
+
+<ReferenceIllustration id="lint-overlap-context" />
+
+완전히 재정의된 클래스는 자동 제거할 수 있습니다. 우선하는 값은 HTML 클래스 이름 순서가 아닌 생성 CSS 순서로 결정됩니다. 위 두 margin 클래스를 뒤집어도 `(margin:1.25rem)`이 우선합니다.
+
+선언 일부가 겹치면 검토가 필요합니다. 예를 들어 아래 위쪽 테두리 재정의는 보고되지만 규칙이 단축 속성을 분해하거나 나머지 세 면의 테두리를 제거하지는 않습니다.
+
+```mcss
+b-solid bt-dashed
+```
+
+의도적인 재정의를 제거하기 전에 생성 선언을 비교하고 브라우저에서 요소를 검사하세요.
+
+---
+
+<GuideStudy id="lint-ownership" />
+
+## 지원 소스 \{#supported-sources\}
+플러그인은 `class`, `className` 속성, `clsx`, `cva` 같은 헬퍼, `classList` 메서드의 클래스 문자열을 검사합니다. [설정과 기본값](/reference/packages#eslint-plugin-css)을 참고하세요.
+
+`@master/css` 설정 키에서 사용자 지정하세요. 배열은 기본값을 대체하므로 ESLint가 검사할 모든 헬퍼나 속성을 포함하세요.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    settings: {
+      '@master/css': {
+        classAttributes: ['class', 'className', 'containerClass'],
+        classFunctions: ['clsx', 'cva'],
+        classDeclarations: ['classes']
+      }
+    }
+  }
+])
+```
+
+---
+
+## 팀 정책 \{#team-policy\}
+모든 클래스가 Master CSS 구문이나 프로젝트 매니페스트에서 와야 한다면 더 엄격한 검증을 사용하세요. `disallowUnknownClass`는 일치하지 않는 클래스 이름을 거부하지만 알 수 없는 CSS 값 진단은 바꾸지 않습니다.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
+    }
+  }
+])
+```
+
+```html
+<button class="btn">...</button>
+```
+
+(x) `"btn" is not a valid or known class.`
+
+의도적으로 사용하는 프로젝트 클래스는 CSS 진입점에 정의해 매니페스트에 포함하세요. 예를 들어 `@layer components` 안의 `.btn`입니다.
+
+팀에서 명시적으로 허용한 값 외에는 토큰 기반 유틸리티에 토큰을 사용하게 하려면 원시 값 정책을 활성화하세요.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-unapproved-raw-values': ['warn', {
+        allowProperties: ['width', 'height'],
+        allowedPatterns: ['^var\\(', '^calc\\(']
+      }]
+    }
+  }
+])
+```
+
+```mcss
+(font-size:15px) (margin:17px) (color:#123456)
+```
+
+(!) Unexpected raw value `"15px"` in `"(font-size:15px)"`. Use a token or allow it explicitly.
+
+이 규칙에는 자동 수정이 없습니다. 현재 값이 같은 토큰이 반드시 올바른 역할인 것은 아닙니다. [옵션](/reference/packages#eslint-plugin-css)으로 특정 속성에 정책 범위를 제한할 수 있습니다.
+
+한 요소가 결합자로 여러 다른 요소를 스타일링하면 클래스 목록이 컴포넌트가 된 것입니다. `prefer-component-classes`를 활성화하면 다른 요소에 적용되는 클래스가 `max`개(기본값 `3`)를 넘는 목록을 보고합니다.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/prefer-component-classes': 'warn'
+    }
+  }
+])
+```
+
+```mcss
+flex block_h4 hidden_h4 grid_svg flex>li
+```
+
+(!) `4 classes style other elements through combinators ("_h4", "_svg", ">li"); the limit is 3. Move them into a component class in @layer components.`
+
+요소 자체 상태, `:has()`나 `:is()` 안의 상대 선택자, `@sm` 같은 조건은 세지 않습니다. 규칙을 [컴포넌트 클래스](/guide/global-styles#component-classes)로 옮기세요.
+
+---
+
+## 네이티브 컴포넌트 CSS \{#native-component-css\}
+네이티브 CSS의 토큰 참조를 검사하려면 [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change)을 실행하고 JavaScript에서 가져온 라우트 스타일시트를 소스 경로로 전달하세요. ESLint는 클래스 목록만 검사합니다.
+
+## 편집기 피드백 \{#editor-feedback\}
+클래스 자동 완성과 호버 정보는 [언어 서비스](/guide/language-service)를 참고하세요. lint 규칙과 저장 시 정렬 설정은 ESLint가 담당하며 두 도구는 같은 프로젝트 정의를 사용할 수 있습니다.
+
+## 스크립트와 AI 도구에서 lint 실행 \{#lint-from-scripts-and-ai-tools\}
+개발 및 CI 스크립트에는 `eslint .`를 유지하세요. ESLint 파서 없이 JSON 진단을 얻으려면 [`master-css lint`](/reference/tools/cli#lint)를, 에이전트에는 [`mastercss_lint_project`](/reference/tools/mcp#mastercss_lint_project)를 사용하세요.

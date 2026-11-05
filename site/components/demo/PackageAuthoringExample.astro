@@ -4,17 +4,17 @@ import Demo from '@master/internal-site/demo/Demo.svelte'
 import DemoGeneratedCSS from '@master/internal-site/demo/DemoGeneratedCSS.svelte'
 import DemoViewport from '@master/internal-site/demo/DemoViewport.svelte'
 import { demoDocument } from '@master/internal-site/demo/reference/document.ts'
-import { authoringSource, authoringHTML, authoringCSS } from '../../utils/authoring-examples'
+import { authoringSource, authoringHTML, authoringCSS, authoringExampleCopy } from '../../utils/authoring-examples'
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 
 interface Props {
   part?: 'source' | 'preview'
   code?: boolean
 }
 
-const title = 'Shared package vocabulary'
-const caption = 'Hover, press or focus the button to inspect the package’s shared states; it performs no save action. The app uses the package’s theme-motion condition to respect reduced motion.'
-
 const { part = 'preview', code = true } = Astro.props
+const { title, caption } = part === 'source' ? authoringExampleCopy : demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'PackageAuthoringExample', authoringExampleCopy)
 const section = { page: 'project-styles', id: 'authoring-package', title, html: [authoringHTML], css: authoringSource, classes: [], classLists: [], highlighted: [] }
 ---
 

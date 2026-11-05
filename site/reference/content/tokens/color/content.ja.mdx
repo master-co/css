@@ -1,0 +1,81 @@
+# Reference prose: tokens/color
+
+## title \{#copy-title\}
+
+
+カラーパレット
+
+## summary \{#copy-summary\}
+
+
+番号付きの全カラーステップ、固定の色相エイリアス、その他のプリセットカラートークン。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+パレット
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+色相エイリアス
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+その他の色
+
+## note \{#copy-note\}
+
+
+カラークラスが設定するのは指定されたプロパティだけです。ボーダーを表示するには、`b(1)` などの幅、`b-solid` などのスタイル、`b-blue-60` などの色を組み合わせます。カラーロールも同じファミリーを使いますが、値の表は別に用意されています。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+パレットの番号はトークンのキーであり、不透明度や明度の百分率ではありません。番号が大きいほど OKLCH の明度は低くなります。各スウォッチから CSS 値または変数参照をコピーできます。下の色相エイリアスには、定義どおりのトークン参照が残ります。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+色相エイリアスは固定のステップを参照する
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`bg-blue` は `--color-blue` を参照し、そのプリセット値は `var(--color-blue-60)` です。一方、`bg-yellow` は `--color-yellow-40` にたどり着きます。エイリアスが異なる色相で同じステップ番号を指すとは限りません。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+番号付きのステップと色相エイリアスは、カラースキームの切り替えでは変わりません。`fg-text-blue` のように適応するテキストエイリアスは、カラーロールに属します。トークンを再定義すると、どちらの動作も変更できます。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`bg-current` は `currentColor` を参照するため、結果は要素の文字色に従います。プリセットには `--color-transparent` トークンはありません。透明色や別の色リテラルには、`(background-color:transparent)` や `(background-color:#175fe9)` のようなネイティブ宣言を使います。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+カラーロール
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+ネイティブ値と不透明度
+
+## usage-lead \{#copy-usage-lead\}
+
+
+これらのステータスラベルでは、前景と背景のステップを明示しています。色がなくても言葉の意味は伝わり、選んだ色はどちらのカラースキームでも変わりません。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+`@theme` に色を登録すると、そのキーをカラーファミリーから使えるようになります。この例の `brand` は、`bg-brand`、`fg-brand`、`b-brand` などで利用できます。
+
+## guide-label \{#copy-guide-label\}
+
+
+色

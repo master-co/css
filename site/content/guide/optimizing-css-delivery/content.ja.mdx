@@ -1,0 +1,368 @@
+---
+{
+  "title": "CSS 配信の最適化",
+  "description": "ルートごとの所有と選択的な削除で無関係な CSS を減らし、本番出力、ランタイムの動作、移動のコストを検証します。",
+  "category": "ビルドと配信",
+  "figures": {
+    "DeliveryIllustration:ownership": {
+      "title": "import を移し、配信経路を変える",
+      "alt": "Overview と Reports の変更前後の import グラフ。",
+      "caption": "機能の import はレポートのエントリーが所有します。共通ナビゲーションは両ページへ、レポートルールは Reports だけへ届きます。ブロックは実測バイトではなくルール群です。",
+      "description": [
+        {
+          "title": "共通の import",
+          "text": "main.js がナビゲーションとレポートのスタイルを import すると、Overview にレポートのマークアップがなくても、両ページに両方のスタイル群が届きます。"
+        },
+        {
+          "title": "ローカルの import",
+          "text": "reports.css を reports.js へ移します。両ページは共通エントリーを保ち、Reports だけが reports.js を読み込んでレポートルールを受け取ります。"
+        }
+      ]
+    },
+    "DeliveryIllustration:evidence": {
+      "title": "既知のクラスは後からの状態のルールも保持する",
+      "alt": "完全なレポートのクラス名を削除判断に使い、未知の外部名がある場合は保持する。",
+      "caption": "根拠は可能なクラス集合であり、初期 DOM の画像ではありません。有限の外部集合はセーフリストで補えますが、未知の集合は保持が必要です。",
+      "description": [
+        {
+          "title": "既知の使用状況",
+          "text": "レポートのマークアップと完全な idle／ready のマップが、report、report-idle、report-ready を提供します。スキャナーを使うビルドは report[data-state=\"ready\"] や report:focus-visible も含めてルールを残します。"
+        },
+        {
+          "title": "未知の使用状況",
+          "text": "範囲を限定できない CMS クラスが存在しないことは、ソーススキャンでは証明できません。所有するネイティブスタイルシートを保持し、CMS コンテンツが現れ得る場所で読み込みます。"
+        }
+      ]
+    },
+    "DeliveryIllustration:dimensions": {
+      "title": "レンダリングとネイティブ CSS の削除は別の選択",
+      "alt": "静的／プログレッシブレンダリングと、ネイティブ CSS の保持／削除の組み合わせを比較する行列。",
+      "caption": "両列とも初期 CSS を配信できます。プログレッシブの行は後のユーティリティにも対応します。削除は対象のネイティブ出力を変え、レンダリングモードは変えません。",
+      "description": [
+        {
+          "title": "ネイティブのポリシー",
+          "text": "保持ではネイティブルールを残します。削除に対応する経路では、既知の使用集合に基づいて対象ルールを絞ります。この行列はポリシーの説明であり、すべてのインテグレーション経路が使用集合を渡す保証ではありません。"
+        },
+        {
+          "title": "レンダリングモード",
+          "text": "静的レンダリングはブラウザーで新しいルールを生成しません。プログレッシブは、どちらのネイティブポリシーでも初期 CSS を届け、後の有効なユーティリティを生成できます。"
+        },
+        {
+          "title": "境界",
+          "text": "ランタイム生成は、削除された任意のネイティブセレクターを復元しません。管理対象キーフレームは独立した定義と依存関係の契約に従います。"
+        }
+      ]
+    },
+    "DeliveryIllustration:verification": {
+      "title": "出力が小さくても動作を確認する",
+      "alt": "プロジェクトの予算を保存する前に、アセット比較と操作検証を合わせる。",
+      "caption": "2つの確認は異なる事実を示します。機能の欠落でもファイルは小さくなるため、バイト削減だけで変更を承認できません。",
+      "description": [
+        {
+          "title": "出力の証拠",
+          "text": "同じビルドと圧縮方法で Overview と Reports を比べます。外部 import とインライン CSS を追い、ファイル、深さ、バイト、キャッシュ再利用を記録します。"
+        },
+        {
+          "title": "動作の証拠",
+          "text": "両ルートを直接開き、相互に移動し、ready、focus、配色、レスポンシブの状態を操作します。プログレッシブでは初期 CSS と新しいランタイムユーティリティを別々に検証します。"
+        },
+        {
+          "title": "予算",
+          "text": "意図した配信変更と動作の保持を両方確認してから、プロジェクト固有の上限を保存します。時間サンプルは確定的なバイト制限と分けます。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import DeliveryIllustration from './components/DeliveryIllustration.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 概要 [sr-only] \{#overview\}
+操作後の状態も含めて、各ページに必要な CSS を届けます。まず配信経路をたどり、機能のスタイルをその所有元へ移します。ネイティブルールの削除は、ビルドが可能な用途を把握できる場合だけ行います。出力アセットと動作を比較してから、回帰を防ぐ予算上限を設けます。
+
+同じナビゲーションを持つ Overview と Reports の2ページを例にします。レポートパネルを描画するのは Reports だけです。Overview はパネルのルールを一切ダウンロードせず、Reports は ready とキーボードフォーカスの状態を保つことを目指します。
+
+先にフレームワークの[インストール](/guide/installation)を完了します。[ルート単位のスタイル](/guide/route-level-styles)ではローカルスタイルの所有と定義、[クラス名のスキャン](/guide/scanning-and-pruning)では検出可能なクラス文字列とソースの例外を説明します。日常のコンポーネント作成にはそれらを使い、配信コストや不足アセットを調べるときにこの手順を使ってください。
+
+インストールした Master CSS のバージョン、CSS エントリー、レンダリングモード、削除ポリシーを記録します。配信のリファクタリング中は既存モードを保ちます。以下の再現可能な例は Vite とプログレッシブレンダリングを使い、初期 CSS、後続ユーティリティ、ネイティブ CSS の削除が別の問題であることを示します。公開パッケージとプリセットのトークンだけを使います。
+
+## 各ページに届くものを把握する \{#baseline\}
+
+現在のソースをビルドし、出力をロックファイルとツールのバージョンとともに保存します。機能を使うページと使わないページの両方を選び、直接読み込みと相互の移動を含めます。共有アセットがキャッシュにあれば、2ページ目のコストは変わることがあります。
+
+HTML の各スタイルシートリンクから CSS import をたどり、解決した各アセットをページごとに1回数えます。インライン style は別に記録します。モジュールの import も確認してください。共有レジストリ経由で import したコンポーネントは、マークアップがなくても CSS を読み込む場合があります。ランタイムスクリプト、プログラム、hydration データはスタイルシートと分けて記録します。
+
+3種類の証拠を使います。
+
+| 証拠 | 記録するもの | 確かめられること |
+| --- | --- | --- |
+| ビルド出力 | 重複を除いた外部ファイル、import の深さ、生と gzip／Brotli のバイト数、インライン CSS | ビルドが配信するアセットと、記録した圧縮設定で決まるサイズ |
+| ブラウザーのリクエスト | レスポンス、エンコーディング、転送バイト、キャッシュ再利用、開始元 | その移動で実際に取得したもの |
+| ブラウザーの動作 | 描画と操作の時間、算出スタイル、関連する状態 | ページが動作するかと、検証した条件下の性能 |
+
+[Network パネル](https://developer.chrome.com/docs/devtools/network/reference)でリクエストと依存関係を調べられます。変更前後で同じブラウザー、ビューポート、内容、スロットリングを使い、コールドロードとウォームな移動を個別に測定します。時間の測定は繰り返し、中央値だけでなくサンプルも残します。圧縮ファイルのサイズだけで描画の高速化は証明できません。
+
+[Coverage](https://developer.chrome.com/docs/devtools/coverage) は調査する機能の手掛かりになります。ある記録で未使用のルールも、閉じたダイアログ、フォーカス状態、別のビューポート、外部コンテンツに必要かもしれません。削除前に、所有範囲と可能な状態を確認します。
+
+## 機能ルールの所有元をローカルにする \{#ownership\}
+
+共通 JavaScript エントリーがナビゲーションとレポートの両スタイルを import しているとします。
+
+```js name=src/main.js
+import './style.css'
+import './reports.css'
+```
+
+この状態では両ページにレポートのルールが届きます。Overview の DOM にレポートがなくても import は変わりません。2つ目の import を、Reports だけが読み込むレポートのエントリーへ移します。共有のナビゲーションは共通スタイルシートに残します。
+
+<DeliveryIllustration id="ownership" />
+
+### 2ページの例を再現する \{#reproduce-the-two-page-example\}
+
+空のディレクトリに以下のファイルを用意します。`npm install` で公開パッケージをインストールし、`npm run build` を実行してから `npm run preview` で配信します。Master CSS のリリースはそろえ、比較用に生成されたロックファイルを残します。
+
+<ExplorerView items={[
+  { name: 'package.json' }, { name: 'vite.config.js' }, { name: 'index.html' },
+  { name: 'reports', children: [{ name: 'index.html' }] },
+  { name: 'src', children: [{ name: 'style.css' }, { name: 'main.js' }, { name: 'reports.css' }, { name: 'reports.js' }] }
+]} />
+
+[Vite のマルチページビルド](https://vite.dev/guide/build.html#multi-page-app)は2つの HTML エントリーを使います。両方に初期マークアップがあるので、Vite の HTML パイプラインで事前処理できます。リクエスト時のカスタム SSR にはフレームワークのサーバー統合が必要です。この例は Vite にリクエスト時レンダラーを追加しません。
+
+<DocumentDisclosure title="2ページのプロジェクト全体">
+
+```json name=package.json
+{
+  "name": "css-delivery-example",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "@master/css": "VERSION" },
+  "devDependencies": { "@master/css-vite": "VERSION", "vite": "^8" }
+}
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [masterCSS({ mode: 'progressive' })],
+  build: { rolldownOptions: { input: ['index.html', 'reports/index.html'] } }
+})
+```
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="p-lg">
+  <nav class="site-nav" aria-label="Main"><a href="/">Overview</a><a href="/reports/">Reports</a></nav>
+  <main><h1>Overview</h1><p>The overview does not render a report.</p></main>
+</body>
+</html>
+```
+
+```html name=reports/index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports</title>
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/reports.js"></script>
+</head>
+<body class="p-lg">
+  <nav class="site-nav" aria-label="Main"><a href="/">Overview</a><a href="/reports/">Reports</a></nav>
+  <main>
+    <h1>Reports</h1>
+    <button id="refresh" type="button">Refresh report</button>
+    <section id="report" class="report report-idle" data-state="idle" tabindex="0">Report waiting</section>
+  </main>
+</body>
+</html>
+```
+
+共通エントリーは、Master CSS 全体を読み込む唯一のエントリーを import します。ナビゲーションのルールは公開の間隔トークンを使います。
+
+```js name=src/main.js
+import './style.css'
+```
+
+```css name=src/style.css
+@import '@master/css';
+
+@layer components {
+  .site-nav { display: flex; gap: var(--spacing-md); }
+}
+```
+
+レポートのモジュールは専用スタイルシートを import します。有限の状態の選択肢を完全なクラス文字列で表し、属性セレクターとフォーカスのルールもパネルとともに置きます。
+
+```js name=src/reports.js
+import './reports.css'
+
+const states = { idle: 'report-idle', ready: 'report-ready' }
+const report = document.querySelector('#report')
+document.querySelector('#refresh').addEventListener('click', () => {
+  report.classList.replace(states.idle, states.ready)
+  report.dataset.state = 'ready'
+  report.textContent = 'Report ready'
+})
+```
+
+```css name=src/reports.css
+@prune native;
+
+@layer components {
+  .report { padding: var(--spacing-lg); border: 1px solid currentColor; }
+  .report[data-state="ready"] { border-width: 3px; }
+  .report:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .report-idle { opacity: .65; }
+  .report-ready { opacity: 1; }
+  .report-debug { outline: 8px solid red; }
+}
+```
+
+</DocumentDisclosure>
+
+`/` と `/reports/` を直接開き、出力 CSS の import をたどります。`.report` が届くのは Reports だけのはずです。レポートを更新し、キーボードでパネルにフォーカスします。ボーダーは3px、不透明度は1になり、キーボードフォーカスの輪郭が表示されます。
+
+`@prune native` でファイルを対象にしても、削除にはクラスの使用状況を渡すビルド経路が必要です。現在の Vite のローカルスタイルシート変換は、プロジェクト定義でレポートのルールをコンパイルしますが、削除用の使用集合を渡しません。そのため `.report-debug` はローカル出力に残ります。所有範囲の改善自体は有効です。次の節では、ソースの指示だけで本番ファイルの縮小を証明したとせず、公開 CLI で削除を個別に検証します。
+
+### 機能を import せず定義を共有する \{#share-definitions-without-importing-the-feature\}
+
+ローカルスタイルシートは全体エントリーを再 import せず、プロジェクトのトークンとミックスインを使えます。インテグレーションが定義のコンテキストを提供します。定義がエントリーグラフ外にある場合は [`@reference`](/guide/route-level-styles#reference-definitions-without-loading-their-native-rules) を使い、参照先のネイティブルールを読み込まず定義だけを得ます。
+
+読み込み後もネイティブセレクターは通常の文書スコープを保ちます。ルートの所有範囲が制御するのは配信で、セレクターの一致や、移動後にフレームワークが CSS を残すかではありません。共有値はトークン、共有する役割はネイティブクラス、繰り返す宣言はミックスイン、独立したローカルの選択はユーティリティに置きます。設計の判断は[スタイルの再利用](/guide/reusing-styles)で説明します。
+
+## 既知の使用集合だけを対象にする \{#native-pruning\}
+
+ネイティブ CSS は既定で保持されます。まず不要な import を除き、その後でクラスと状態を把握できるファイルを検討します。境界を定める間はプロジェクト全体の `pruneNativeCSS` を無効に保ち、個別のソースを `@prune native;` で対象にします。
+
+削除は宣言したファイルに適用され、そのルートが選んだクラス使用範囲を使います。import 先には自動で伝わりません。パッケージの CSS は独自に有効化する必要があり、利用側のプロジェクト設定だけですべてのパッケージスタイルが対象になるわけではありません。`pruneNativeCSS: true` は、プロジェクト所有の全スタイルシートで未使用ルールを削除する意図があり、可能な用途を網羅できる場合だけ検討します。全体の範囲は[削除のリファレンス](/reference/directives/pruning#import-graph)が定義します。
+
+この例のマークアップには `report` と `report-idle`、JavaScript のマップには `report-ready` もあります。完全な名前があるため、スキャナーを使うビルドは両状態のルールを保持できます。`report` が見つかれば、ready や focus が有効でなくても属性・フォーカスのセレクター分岐が残ります。クラスのスキャンは、到達可能な DOM の関係にセレクターが一致することの証明ではなく、残したルールが一度も一致しない場合もあります。
+
+<DeliveryIllustration id="evidence" />
+
+クラスセレクターのないルールは残ります。削除の根拠はクラスの使用状況であり、初期 DOM のスナップショットではありません。
+
+<ReferenceIllustration id="pruning-global-selectors" />
+
+### 削除処理を個別に検証する \{#verify-the-pruning-step-independently\}
+
+<DocumentDisclosure title="CLI でネイティブ CSS の削除を再現する">
+
+スキャンした使用集合を渡すビルド経路でこのファイルを調べるには、`npm install -D @master/css-cli@VERSION` で対応する公開 CLI をインストールします。レポートのソースを使い捨ての検証ディレクトリへコピーします。
+
+```sh
+mkdir pruning-check
+cp src/reports.css src/reports.js reports/index.html pruning-check/
+```
+
+そのディレクトリに次のエントリーを加えます。
+
+```css name=pruning-check/style.css
+@import '@master/css';
+@import './reports.css';
+```
+
+プロジェクトのルートから実行します。
+
+```sh
+cd pruning-check
+npx master-css generate 'index.html' 'reports.js' --strict -o output.css
+```
+
+</DocumentDisclosure>
+
+`output.css` の import をたどります。レポートのルールと必要な間隔リソースは残り、`.report-debug` はなくなります。この検証で確認できるのは、その入力に対する CLI 出力です。アプリの Vite パイプラインは変わりません。削除を強制するために、2つ目の全体エントリーをアプリへ import しないでください。無関係な共有配信を復活させてしまいます。本番インテグレーションの実際の出力で、意図したフィルタリングを確認できる場合だけ削除を使います。
+
+### 外部の不確かなソースを保護する \{#keep-external-and-uncertain-sources-safe\}
+
+ウィジェットが加えるクラスを有限に列挙できるなら、削除対象のファイルに完全な名前を書きます。
+
+```css
+@prune native;
+@safelist "report-exported";
+
+@layer components {
+  .report-exported { border-style: double; }
+}
+```
+
+セーフリストは候補を提供しますが、DOM にクラスを追加しません。範囲を限定できない CMS やベンダーのソースは、完全な一覧を推測せず、その所有ファイルでネイティブルールを保持します。
+
+```css name=src/cms.css
+@preserve native;
+
+@layer components {
+  .cms-callout { border-inline-start: 3px solid currentColor; }
+}
+```
+
+CMS コンテンツが現れ得る場所で、そのファイルを読み込みます。`@preserve native` はそのファイルのネイティブ CSS の削除を上書きします。保持するのはネイティブの配信であり、ソースのバイト単位の書式ではありません。すべての未使用ユーティリティを強制出力するものでもありません。
+
+セレクターとともにアニメーションや変数も確認します。有効化したファイルでは、管理対象キーフレームがオンデマンド定義になります。保持するアニメーション宣言と変数依存関係により、必要な定義を残せます。外部 JavaScript だけが提供する名前には、正確な `@safelist keyframes "report-enter";` が必要な場合があります。条件やレイヤーの包み方、匿名レイヤーと相対 URL の制約も含め、[キーフレームの契約](/reference/directives/pruning#native-keyframes)に従います。任意に手書きしたネイティブセレクターはランタイム定義ではありません。
+
+## レンダリングモードと削除を分ける \{#rendering-and-pruning\}
+
+レンダリングモードは、クラスがいつ CSS になるかと、ブラウザーが新しいルールを生成できるかを決めます。ネイティブ CSS の削除は、スタイルシートのビルドで対象ルールのどれを残すかを決めます。プログレッシブレンダリングは未使用ルールを除いたネイティブスタイルシートを使いながら、初期ページ CSS を届け、後のユーティリティクラスにも対応できます。
+
+<DeliveryIllustration id="dimensions" />
+
+静的抽出にはソース集合内の完全なクラス名が必要で、ネイティブ CSS の削除には使われ得るネイティブ名が必要です。完全なリテラルのマップなら、どちらでも有限の候補を監査できます。ランタイムやプログレッシブモードは、起動後に組み立てる新しい有効なユーティリティ名にも対応しますが、有効性と生成コストの確認は必要です。1つの安定したルールで足りる連続的な値には CSS 変数を使います。
+
+ランタイム生成では、削除した任意のネイティブセレクターは復元できません。後から `report-ready` を加えて機能するのは、そのネイティブルールを保持して読み込んだ場合だけです。管理対象キーフレームには独自の定義・依存関係の契約があり、通常のセレクターの扱いから推測してはいけません。
+
+この例では、それぞれを別々に検証します。
+
+1. JavaScript 実行前のレスポンスソースで、`style#master-css` に初期の `p-lg` ユーティリティがあることを確認します。ネイティブのレポートスタイルシートは Reports だけでリンクされます。
+2. Reports のレポートを更新し、新しいユーティリティ生成なしで、保持したネイティブ状態のルールが適用されることを確認します。
+3. ランタイムは独立して検証するため Reports を再読み込みします。レポート更新前に、ページ hydration マニフェストにない新しい有効なユーティリティを開発者ツールで追加します。
+
+```js
+const report = document.querySelector('#report')
+report.classList.add('(letter-spacing:0.123em)')
+```
+
+算出された字間と `document.querySelector('style#master-css').sheet.cssRules` を調べます。既定のプログレッシブ起動ポリシーと有効な hydration データがあれば、未対応クラスが遅延エンジン／プログラムの経路を起動します。ページマニフェストにすでにあるクラスでは、その経路の動作は証明できません。style 要素のテキスト内容を現在の CSSOM のスナップショットとして使わないでください。
+
+HTML、CSS、hydration データ、ランタイムリソースは同じビルドのものを使います。インテグレーションの開発時動作は異なる場合があるので、本番も開発も検証してください。起動オプション、hydration の失敗、フレームワークへの対応は[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+## コストと動作を比較してから予算を決める \{#verify-and-budget\}
+
+一度に1つの変更を検討します。まず配信の所有範囲、次に対応する経路での削除、最後に測定で必要と判断した場合のアセット分割・集約です。この例では、`main.js` から `reports.css` を import する版と上の版を比較します。Overview からレポートのルールがなくなり、Reports の見た目と操作状態は保たれるべきです。
+
+<DeliveryIllustration id="verification" />
+
+<DocumentComparison>
+
+| 確認 | Overview | Reports |
+| --- | --- | --- |
+| 本番への直接アクセス | ナビゲーションとページの文字組みを保ち、レポートルールはない | パネルと必要な全ネイティブ状態が届く |
+| 操作 | ナビゲーションが引き続き動く | 更新とキーボードフォーカスの意図したスタイルを保つ |
+| 移動とキャッシュ | 新規取得と再利用の CSS アセットを別々に数える | Overview からの移動と新しい直接読み込みを検証 |
+| プログレッシブ出力 | ランタイム前に初期ユーティリティ CSS がある | 初期 CSS と本当に新しいユーティリティの両方が動く |
+
+</DocumentComparison>
+
+ベースラインと同じ方法で、重複を除く外部 CSS バイト、gzip／Brotli バイト、インライン CSS、ファイル数、import の深さを記録します。セレクターだけでなく、テーマ変数、条件ルール、疑似要素、アニメーションの依存関係も確認します。配信の移動、未使用ルールの削除、重複排除、必要な依存関係の修復など、出力差をそれぞれ説明してください。
+
+1つのローカルファイルから複数の出力断片が生まれることがあり、ソースファイル数はリクエスト数ではありません。この小さな例では、検証したビルドで import の移動により Overview の配信 CSS が減る一方、Reports の断片が増えます。所有範囲の限定は証明しても、全ルートの性能向上は証明しません。最適化として採用する前にトレードオフを比べます。小さなルートバンドルはコールドロードを減らしても、次のページの新規取得量を増やすかもしれません。安定アセットの共有は再利用に役立ち、細分化しすぎるとリクエストや import 連鎖が増えます。各ページと移動全体を比較してください。適切なバンドラーやインテグレーションに、正しい URL、条件、レイヤー、キャッシュ識別での組み立てを任せ、数を減らすために任意の CSS ファイルを連結しないでください。
+
+動作が確認できてから、実測したページごとの上限を既存のプロジェクトチェックに保存します。機能のページと、その機能を受け取るべきでないページの両方を含めます。すべてのアプリに合う固定の KB 上限はありません。新機能で予算を変えるのは妥当でも、追加した動作と実測コストをレビューで示してください。時間サンプルは確定的なバイト上限と分け、小さな時間の揺れを高速化の主張にしないでください。
+
+エージェントに依頼する場合は、このガイド、対象ルート、既存モード、許可する範囲を渡し、ベースライン、ソース変更、本番出力、実際に操作した状態を求めます。マニフェストの検査や lint の成功はソースの根拠として有用ですが、ビルドやブラウザー検証の代わりにはなりません。

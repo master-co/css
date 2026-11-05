@@ -1,0 +1,485 @@
+---
+title: "Tailwind CSS からの移行"
+description: "元の値、状態、ビルド境界を維持しながら、Tailwind CSS v4 のテーマ、ユーティリティ、派生形を段階的に変換します。"
+figures: {"TailwindIllustration": {"title": "同じキーワードでも入力は異なる", "alt": "Tailwind は @apply px-4 py-2 でユーティリティリストを、Master CSS は @apply --control で名前付き mixin を適用します。強調した引数が各コンパイラーの期待する入力です。", "caption": "Tailwind のリストは Master CSS の mixin 名ではありません。適用構文を変える前にネイティブ宣言か mixin を定義します。", "description": [{"title": "Tailwind の入力", "text": "@apply px-4 py-2 は現在のルールに Tailwind の宣言を展開します。"}, {"title": "Master CSS の入力", "text": "@apply --control は定義済みの @mixin --control を一つ展開します。"}, {"title": "値を維持する", "text": "padding-inline: 1rem と padding-block: .5rem を明示的に定義してから適用します。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import TailwindIllustration from './components/TailwindIllustration.astro'
+
+Tailwind CSS v4 と Master CSS はどちらもクラス名や CSS ディレクティブから CSS を生成しますが、そのまま置き換えられるものではありません。スタイル実装の変更として扱い、Tailwind と並べて Master CSS を導入し、一度に一つのルートかコンポーネント群を変換します。ビルドと意図した見た目の一致を確認してから Tailwind を削除します。
+
+このガイドは Tailwind CSS v4 の CSS ファーストな手順、`@import "tailwindcss"`、`@theme`、`@utility`、`@variant`、`@custom-variant`、`@source`、`@apply` を扱います。Tailwind の動作は公式の[関数とディレクティブ](https://tailwindcss.com/docs/functions-and-directives)、[テーマ変数](https://tailwindcss.com/docs/theme)、[ソース内のクラス検出](https://tailwindcss.com/docs/detecting-classes-in-source-files)、[状態と派生形](https://tailwindcss.com/docs/hover-focus-and-other-states)を参照してください。
+
+---
+
+## 移行方針 \{#migration-strategy\}
+エージェントと作業する場合は、一つの静的 HTML または JSX コンポーネント、スタイルシートのエントリー、元の Tailwind のバージョンを公式の `master-css` スキルに渡します。見た目と操作を維持し、残す CSS と Tailwind 依存を報告するよう依頼します。このスキルはレビュー済みの手順であり、プロジェクト全体を自動変換するものではありません。
+
+クラス名の変換前に、移行元にインストールされた Tailwind ツールチェーンでビルドします。コンパイル済み CSS が実際の値、派生形、変数の依存関係を示します。テーマやプラグイン設定のない断片は、その文脈を確認してから忠実な変換と判断します。`mastercss_suggest_classes` は独立した宣言ブロックだけに使い、複雑なセレクターや未解決の動的式はネイティブ CSS に残します。Master のクラスを渡す前に、`tailwind-merge` など Tailwind 専用のクラス処理を調べてください。
+
+同じリセット、フォント、テーマ、ブラウザー状態で両者を比較します。Tailwind v4 の `hover:` は `(hover: hover)` のメディア条件も必要とするため、疑似クラスだけのコピーでは動作が変わります。`mastercss_css_compare` は Master の出力同士を比較します。元のコンポーネントとの比較にはブラウザーを使います。
+
+併用、基準画面の撮影、削除の確認には[共通の移行手順](/guide/migration#migration-strategy)を使います。最初の作業で次の Tailwind 固有の契約を調べます。
+
+<DocumentComparison>
+
+| 契約 | 維持または置換するもの |
+| --- | --- |
+| コンパイラーの入力 | Tailwind のディレクティブは Tailwind で処理し、生成した通常の CSS を Master のエントリーに読み込みます。 |
+| テーマと派生形 | Master のクラスを選ぶ前に実際のトークン値と条件を解決します。 |
+| Preflight、プラグイン、グローバル CSS | 未変更の画面が必要とするルールを残します。 |
+| クラス処理 | Tailwind 専用の結合や断片の組み立てを、明示的なクラスマップに置き換えます。 |
+| コンポーネント内部 | コンポーネントの移行までベンダー CSS と複雑なセレクターを残します。 |
+
+</DocumentComparison>
+
+全体の検索置換は避けてください。リセット、尺度、ring のモデル、ディレクティブの契約が異なり、同じキーワードでも操作が違う場合があります。
+
+<TailwindIllustration />
+
+---
+
+## Tailwind と並べて Master CSS を導入する \{#install-master-css-beside-tailwind\}
+Tailwind のエントリーは引き続き Tailwind のコンパイラーで処理します。通常の CSS にコンパイルしてから、Master CSS のエントリーと一緒に読み込みます。両者の `@theme`、`@utility`、`@apply` は契約が異なるため、未処理の Tailwind 定義を Master CSS に渡さないでください。
+
+```css name=app.css
+@import "./legacy-tailwind.generated.css";
+@import "@master/css";
+```
+
+このエントリーのコンパイル前に、既存の Tailwind ビルドで `legacy-tailwind.generated.css` を生成します。同名のクラスを定義できるため、併用中はカスケードレイヤー、リセット、名前の重複を比較します。
+
+多くの連携では、ここで Master CSS のソースディレクティブは不要です。連携や CLI が通常のアプリファイルを探索するため、既定範囲外の変換対象だけに `@source` を追加します。
+
+続いてフレームワークやビルドツールの[インストール](/guide/installation)に従います。React はバンドラーのガイド、Laravel と Blazor は[サーバー描画アプリ](/guide/installation/server-rendered)の専用節を使います。
+
+この時点で Tailwind を削除しません。最初の到達点は見た目を維持しながら、Master CSS が新規・変換済みマークアップのルールを生成できる状態です。
+
+---
+
+## レンダリングモードを選ぶ \{#choose-a-rendering-mode\}
+[静的レンダリング](/guide/rendering-modes)から始めます。多くの Tailwind プロジェクトは完全なクラス文字列をソースに持っています。その切り替えや要素ごとの CSS 変数の更新にブラウザーのランタイムは不要です。
+
+ビルド後に実際に新しいクラス名を作る場合だけ、ランタイムやプログレッシブを使います。選択前に断片の組み立てを完全なクラスマップに変え、既存ビルドが依存するソース範囲を調べます。
+
+---
+
+## CSS ファーストのテーマ値を変換する \{#translate-css-first-theme-values\}
+Tailwind v4 の `@theme` 変数はユーティリティクラスや派生形を作り、Master CSS の `@theme` は名前空間のデザイントークンを定義します。形は似ていますが、生成するクラス構文は異なります。
+
+```css name=tailwind.css
+@import "tailwindcss";
+
+@theme {
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+  --breakpoint-dashboard: 72rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-brand: oklch(0.62 0.2 265);
+  --spacing-card: 1.5rem;
+  --radius-card: 1rem;
+}
+
+@custom-media --dashboard (width >= 72rem);
+```
+
+```html
+<article class="grid r-card grid-cols(3)@dashboard bg-brand p-card">
+  ...
+</article>
+```
+
+Master CSS は名前空間でトークンを解決します。`--color-brand` は `bg-brand`、`fg-brand`、境界線色のユーティリティに、`--spacing-card` は `p-card`、`gap-card`、`m-card` などに使えます。
+
+| Tailwind v4 のテーマ概念 | Master CSS の対応 | 説明 |
+| --- | --- | --- |
+| `--color-*` | `--color-*` | 色トークンは `bg-*`、`fg-*`、境界線色、アウトライン色に使います。`text-*` は文字組みのレシピで、色の別名ではありません。 |
+| `--spacing-*` または基本の余白 | `--spacing-*` | 製品の余白には名前付きトークン、直接の値には明示的なネイティブ単位を使います。 |
+| `--radius-*` | `--radius-*` | `r-card` などの角丸ユーティリティか、完全な `border-radius` 宣言クラスを使います。 |
+| `--shadow-*` | `--shadow-*` | `shadow-card` などの影ユーティリティか、完全な `box-shadow` 宣言クラスを使います。 |
+| `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | フォント、文字、行高、字間の名前空間 | 文字組み全体を共有するなら `text-*` を優先します。 |
+| `--breakpoint-*` | `@custom-media --md (width >= 48rem);` | `@md` などのビューポート接尾辞を定義します。カスタムプロパティは条件を登録しません。 |
+
+`@theme inline` は生成宣言にトークン値を一度代入し、`@theme static` は使用側がなくてもトークンと依存を保持します。両修飾子は併用できます。テーマブロックに置けるのはカスタムプロパティ宣言だけです。キーフレームはネイティブ CSS に置き、使用に応じて出力する場合はそのファイルに `@prune native;` を指定します。
+
+手動切り替えの `.light`、`.dark` セレクターは `@theme` の外に置きます。マークアップが `@apply(--manual-light)` や `@apply(--manual-dark)` の接尾辞を使う場合は、別途セレクターの mixin を定義します。
+
+```css name=app.css
+@import "@master/css";
+
+@mixin --manual-light { &:where(.light, .light *) { @contents; } }
+@mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
+
+@theme {
+  --color-panel:#fff;
+  --color-text-body:#111827;
+}
+
+.light {
+  --color-panel: #fff;
+  --color-text-body: #111827;
+}
+
+.dark {
+  --color-panel: #111827;
+  --color-text-body: #f9fafb;
+}
+
+```
+
+```html
+<section class="fg-text-body bg-panel">
+  ...
+</section>
+```
+
+Tailwind と Master CSS の既定テーマは異なります。独自の製品トークンを先に変換し、既定のパレットや尺度の置換を意図的に確認します。
+
+---
+
+## ユーティリティを変換する \{#translate-utilities\}
+明示的な Master CSS 宣言から始め、ローカルな語彙が明らかな箇所を短くします。
+
+| Tailwind v4 のパターン | Master CSS のパターン | 説明 |
+| --- | --- | --- |
+| `p-6`, `px-4`, `mt-8` | `(padding:1.5rem)`, `(padding-inline:1rem)`, `(margin-top:2rem)` | Tailwind の既定の .25rem 尺度を想定しています。元の設定を確認し、製品の余白には `p-card` などの定義済みトークンを使います。 |
+| `-mt-4` | `(margin-top:-1rem)` | 負の生値か、定義済み数値トークンの `-mt-card` を使います。 |
+| `w-full`, `h-screen`, `min-w-0` | `w-full`, `(height:100vh)`, `min-w(0)` | ピクセルとゼロは直接値の関数、ほかの単位はネイティブ構文を使います。 |
+| `rounded-lg` | `r-lg` | 既定値は両方 .5rem です。名前を再利用する前にプロジェクトの上書きを確認します。 |
+| `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS の既定の色段階は Tailwind のパレットと異なります。 |
+| `bg-zinc-50`, `text-zinc-500` | `bg-zinc-5`, `fg-zinc-60` | 尺度が異なります。この暗い文字色は固定の明るい面での可読性を保ちます。十で割らず実際の値を比較します。 |
+| `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `(line-height:1.75rem)` | 文字組み全体を意図する場合だけ `text-*` を使います。 |
+| `flex`, `items-center`, `justify-between` | `flex`, `items-center`, `justify-between` | これらの固定ユーティリティは名前と宣言が同じです。`(property:value)` の前に[固定ユーティリティ一覧](/reference/rules/declarations#fixed-utilities)を確認します。 |
+| `grid-cols-3`, `gap-4` | `grid-cols(3)`, `(gap:1rem)` | 明示的なグリッドレシピとネイティブの `gap` を使います。 |
+| 任意値、例：`w-[min(100%,72rem)]` | `(width:min(100%,72rem))` | ネイティブ CSS 関数の値を直接書きます。 |
+| 任意プロパティ、例：`[scroll-margin-top:4rem]` | `(scroll-margin-top:4rem)` | Master CSS のネイティブ宣言はすべて丸括弧で囲みます。 |
+| 重要度修飾子、例：`mt-0!` | `mt(0)!` | 現在の Tailwind v4 と Master CSS は重要度マーカーをクラスの末尾に置きます。 |
+
+プリセットの値を使った Master CSS レイアウトの例です。未指定の Tailwind レイアウトをピクセル単位で再現した変換ではありません。
+
+```html
+<section class="grid gap-lg w-full max-w-5xl mx-auto px-md py-2xl grid-cols(3)@md">
+  <article class="p-lg r-lg bg-surface-base shadow-sm">
+    <h2 class="m(0) font-2xl font-regular fg-text-neutral">Account</h2>
+    <p class="mt-xs fg-text-muted">Review profile settings.</p>
+  </article>
+</section>
+```
+
+短い Master CSS の別名がない Tailwind クラスには、CSS プロパティを直接使います。
+
+{ }
+```html
+<div class="(scroll-margin-top:4rem) (text-wrap:balance)">
+  ...
+</div>
+```
+{ }
+
+---
+
+## 派生形と状態を変換する \{#translate-variants-and-states\}
+Tailwind はユーティリティの前に派生形を書き、Master CSS は宣言の後にセレクターや条件を付けます。
+
+| Tailwind v4 のパターン | Master CSS のパターン | 説明 |
+| --- | --- | --- |
+| `hover:bg-blue-700` | `bg-blue-70:hover@media(hover:hover)` | Tailwind v4 のホバー能力の条件を維持します。色は新しいプリセットの選択です。厳密な再現には元のトークンをコピーします。 |
+| `focus-visible:outline-2` | `outline(2):focus-visible` | 幅の対応だけです。アウトラインの種類と色も残します。幅だけでは同じフォーカス表示になりません。 |
+| `disabled:opacity-50` | `(opacity:.5):disabled` | 属性と疑似クラスのセレクターを使えます。 |
+| `md:grid-cols-3` | `grid-cols(3)@tailwind-md` | 明示的な条件で元の境界を維持します。両プリセットの `md` は異なります。 |
+| `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | 明示的な `--manual-dark` セレクター mixin に従って出力します。 |
+| `motion-safe:animate-spin` | `animate-rotate@motion-safe` | 既定の回転は 1s、線形、無限です。`@motion-safe` は動きを減らす設定を尊重します。 |
+| `supports-[display:grid]:grid` | `grid@supports(display:grid)` | 局所条件には直接 `@supports()` を使います。 |
+| `data-[state=open]:...` | `bg-blue-5[data-state=open]` | ネイティブな属性セレクターを直接追加します。 |
+| `has-[:checked]:...` | `bg-blue-5:has(:checked)` | ネイティブの `:has()` に対応しています。 |
+
+```html
+<button type="button" class="inline-flex items-center (min-height:2.5rem) px-md r-md bg-blue-60 fg-white bg-blue-70:hover@media(hover:hover) (opacity:.5):disabled">
+  Save
+</button>
+```
+
+Tailwind の既定の `md` は 48rem、Master CSS のプリセットは 64rem からです。上の例は名前付き条件で Tailwind の境界を維持します。
+
+```css name=app.css
+@custom-media --tailwind-md (width >= 48rem);
+```
+
+Tailwind の `max-md:` は `@custom-media --max-tailwind-md not (--tailwind-md);` と `@max-tailwind-md` で維持します。Master の既定の `@max-md` は自身の 64rem 境界の補集合です。再利用するメディアクエリーは `@custom-media`、ほかのラッパーは `@contents` を持つ mixin を使い、状態はセレクターの接尾辞や入れ子として残します。
+
+```css name=app.css
+@import "@master/css";
+
+@custom-media --compact (width < 48rem);
+
+```
+
+{ }
+```html
+<button type="button" class="bg-blue-70:hover@media(hover:hover) fg-white:hover@media(hover:hover) px-sm@compact">
+  Save
+</button>
+```
+{ }
+
+Tailwind の `group-*`、`peer-*` には、可能ならネイティブセレクターを使います。Master CSS は子孫、子、兄弟、属性、`:has()` を対象にできますが、Tailwind の group／peer の派生形名は実装していません。
+
+```html
+<article class="bg-blue-5:hover_h2@media(hover:hover) fg-blue-60:hover_h2@media(hover:hover)">
+  <h2 class="fg-text-neutral">Project</h2>
+</article>
+```
+
+---
+
+## ユーティリティの合成をネイティブ CSS に置き換える \{#replace-utility-composition-with-native-css\}
+Tailwind の合成をネイティブ宣言とセレクターに書き換え、トークン参照と状態を維持します。Master のユーティリティはマークアップで直接使います。Master CSS の `@apply` は名前付き `@mixin` 一つを展開し、クラスリストは受け付けません。`@compose` は未対応です。
+
+```css name=tailwind.css
+.btn {
+  @apply inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+.btn {
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  box-shadow: var(--shadow-sm);
+  color: oklch(100% 0 none);
+  align-items: center;
+}
+```
+
+この例は Master の既定パレットと影を採用しており、Tailwind の既定と厳密に同じ見た目ではありません。忠実な変換では、設計変更を明示的に行うまで、解決済みの元の色と影を維持します。
+
+CSS 内で宣言群を再利用する場合は mixin 名を付けます。これが Master CSS の `@apply` の意味です。
+
+```css name=app.css
+@mixin --control {
+  padding-inline: 1rem;
+  padding-block: .5rem;
+}
+
+.btn {
+  @apply --control;
+}
+```
+
+コンポーネント専用のスタイルは、ルール全体をネイティブ宣言で表せます。
+
+```css name=app.css
+.form-panel {
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background-color: oklch(100% 0 none);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+}
+```
+
+Vite、Next.js、Webpack 連携では、CSS Modules とフレームワークのスタイルブロックに、トークン、mixin、カスタムメディアが自動で供給されます。`@reference` は追加の定義ファイルや単独コンパイルにだけ使います。
+
+```css name=Button.module.css
+.button {
+  display: inline-flex;
+  border-radius: var(--radius-md);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  align-items: center;
+  height: 2.5rem;
+}
+```
+
+引用符付き文字列、複雑な content 値、特殊なセレクターは、通常の CSS 宣言や入れ子の CSS に残します。
+
+---
+
+## 独自ユーティリティとコンポーネントを移行する \{#migrate-custom-utilities-and-components\}
+Tailwind の `@utility` は派生形を使える独自ユーティリティを作ります。Master CSS ではクラスレシピに `@utility`、宣言の再利用に `@mixin`、製品の役割に `@layer components` を使います。
+
+```css name=tailwind.css
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```css name=app.css
+@import "@master/css";
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+```html
+<section class="content-auto">
+  ...
+</section>
+```
+
+名前が低水準の基本機能ではなく、製品 UI の役割を表すなら `@layer components` を使います。
+
+```css name=app.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    border-radius: var(--radius-md);
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-blue-60);
+    color: oklch(100% 0 none);
+
+    &:disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    @media (--md) {
+      padding-inline: var(--spacing-lg);
+    }
+  }
+}
+```
+
+```html
+<button class="btn">
+  Submit
+</button>
+```
+
+合成すると読みにくくなる複雑な外部上書きは、ネイティブ CSS に残します。
+
+---
+
+## 動的なクラスを扱う \{#handle-dynamic-classes\}
+Tailwind と Master CSS の静的レンダリングは、ページの実行前に見つかるクラス名に依存します。完全な文字列を移行先にするのが最も確実です。
+
+(x) 断片から組み立てないでください。
+
+```ts
+const className = '(background:' + tone + ')'
+```
+
+(o) 完全なクラスマップを使います。
+
+```ts
+const toneClasses = {
+  neutral: 'bg-surface-base fg-text-neutral',
+  success: 'bg-green-80 fg-white',
+  danger: 'bg-red-70 fg-white'
+}
+```
+
+値だけが動的な場合はクラスを固定し、実行時の値を CSS 変数で渡します。
+
+```tsx
+function Progress({ value }: { value: number }) {
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
+  return (
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow-hidden (height:1rem) pill bg-surface-inset">
+      <div
+        className="h-full (width:var(--progress)) bg-text-muted (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        style={{ '--progress': `${percent}%` } as React.CSSProperties}
+      />
+    </div>
+  )
+}
+```
+
+Master CSS への移行で、多くの Tailwind `@source` は削除できます。共有ワークスペースのパッケージや外部コンテンツなど、連携や CLI が通常スキャンしないソースにだけ Master CSS の `@source` を残すか追加します。
+
+```css name=app.css
+@import "@master/css";
+
+@source "../content/**/*.mdx";
+@source "../packages/ui/**/*.{ts,tsx}";
+@source not "../packages/ui/**/*.stories.tsx";
+```
+
+スキャン対象に存在しない有限のクラスには `@safelist`、誤検出には `@blocklist` を使います。
+
+```css name=app.css
+@import "@master/css";
+
+@safelist "bg-blue-60 bg-red-60@dark";
+@blocklist "debug-*";
+```
+
+Tailwind の `@source inline()` はインライン文字列や波括弧展開からクラスを作れます。Master CSS の `@safelist` では必要なクラスを明示的に列挙します。
+
+---
+
+## 移行を検証する \{#validate-the-migration\}
+各作業をコードと UI の両方で確認します。
+
+- プロジェクトのフォーマッター、lint、型チェック、テスト、本番ビルドを実行します。
+- [コードの lint](/guide/code-linting)で Master CSS のクラス文字列と競合を検証します。
+- ライト／ダーク、レスポンシブ境界、ホバー／フォーカス、必要なら印刷も含め、旧 Tailwind 版と比較します。
+- Preflight、既定のテーマ値、ring、`container`、公式プラグイン、group／peer に依存するルートを確認します。
+- 変換済み画面がクラスやプラグイン出力に依存しなくなるまで Tailwind を読み込みます。
+
+各作業の確認後は、使われなくなった Tailwind ユーティリティだけを削除します。製品が必要とする間、両者を併用し続けることができます。
+
+---
+
+## Tailwind を削除する \{#remove-tailwind\}
+変換済みの経路がビルドでき、意図した見た目に一致してから削除します。
+
+1. 生成 Tailwind CSS のインポートをアプリのエントリーから削除し、専用の Tailwind ビルド入力を廃止します。
+2. 置換済みの Tailwind 専用 `@theme`、`@utility`、`@custom-variant`、`@variant`、`@apply`、`@source inline()`、`@plugin` を削除します。
+3. どのスタイルシートも Tailwind をインポートしなくなってから、パッケージと PostCSS／Vite の連携コードを削除します。
+4. プロジェクトの検証一式を実行します。
+5. 主要画面をブラウザーで再確認します。
+
+外部プラグインやベンダーのスタイルシートが有用な CSS を提供する場合は、製品専用の代替ができるまで通常の CSS として残します。
+
+---
+
+## 関連資料 \{#useful-references\}
+- [インストール](/guide/installation)：プロジェクトへの導入。
+- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、プログレッシブの選択。
+- [スタイル宣言](/reference/rules/declarations)：クラス構文。
+- [テーマトークン](/guide/theme)：`@theme`、[変数とモード](/reference/rules/modes)：モード、[条件](/reference/rules/conditions)：クエリー構文。
+- [CSS ディレクティブ](/reference#directives)：`@source`、`@safelist`、`@blocklist`、`@apply`。
+- [クラス名のスキャン](/guide/scanning-and-pruning)：静的ソースのスキャン。
+- [グローバルスタイル](/guide/global-styles#shared-vocabulary)：マークアップのユーティリティ、テーマトークン、独自ユーティリティ、コンポーネントクラスの選択。
+- [コードの lint](/guide/code-linting)：移行中の Master CSS クラスの検証。
+
+---
+
+## Master CSS に直接対応しない Tailwind CSS の機能 \{#tailwind-css-capabilities-without-a-direct-master-css-equivalent\}
+| Tailwind の機能 | Master CSS の状態 | 移行方法 |
+| --- | --- | --- |
+| Tailwind のクラス構文とそのままの互換性 | Tailwind のクラス構文を読みません。 | Master CSS 構文に書き直すか、各領域の移行まで Tailwind を残します。 |
+| `@plugin` によるプラグイン読み込み | Tailwind プラグインを実行しません。 | ネイティブ CSS、`@theme`、`@mixin`、`@layer components` で必要な出力を再現し、必要に応じ一時的にプラグイン CSS を残します。 |
+| CSS ファーストのテーマ解決 | 独自のトークン名前空間とユーティリティ照合を使います。 | 共通値を Master CSS の `@theme` に移し、生成クラス名を確認します。 |
+| Tailwind `prefix(...)` | クラス接頭辞モードはありません。 | Master CSS 構文を直接使い、アプリのルートに範囲を絞る場合はネイティブセレクターを使います。 |
+| `@source inline()` の波括弧展開による safelist | 対応する波括弧展開ディレクティブはありません。 | 明示的な `@safelist` と完全なクラス文字列を使います。 |
+| Tailwind Preflight の厳密な再現 | 基本スタイルは Tailwind Preflight ではありません。 | UI を比較し、リセットの細部に依存する箇所にネイティブ CSS を追加します。 |
+| typography や forms など公式プラグインの出力 | Tailwind プラグイン CSS を自動再現しません。 | 一時的にプラグイン CSS を残すか、製品専用のコンポーネントやユーティリティを書きます。 |
+| Tailwind `container` の意味 | ネイティブの `container-type` でクエリー境界を作ります。 | ページのラッパーに `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`、祖先のクエリーコンテナーに `container-inline` を使います。 |
+| Tailwind の ring モデル | 同じ ring ユーティリティ群はありません。 | `(outline:*)`、`(outline-offset:*)`、`(box-shadow:*)`、独自ユーティリティを使います。 |
+| group と peer の派生形構文 | `group-*` と `peer-*` を実装していません。 | ネイティブセレクター、`:has()`、結合子を使います。 |

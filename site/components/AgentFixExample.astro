@@ -1,6 +1,10 @@
 ---
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 import DocumentCodeExample from '@master/internal-site/components/DocumentCodeExample.astro'
 import { agentFixExample } from '../utils/agent-guide-data'
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'AgentFixExample', agentFixExample)
+
 ---
 
-<div data-agent-fix-example><DocumentCodeExample {...agentFixExample} /></div>
+<div data-agent-fix-example><DocumentCodeExample {...copy} /></div>

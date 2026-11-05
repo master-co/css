@@ -1,0 +1,381 @@
+---
+{
+  "title": "ビュートランジション",
+  "description": "ブラウザーのビュートランジション、安定したスナップショット名、Master CSS のレイアウトユーティリティで記事の表示をつなぎます。",
+  "category": "基本",
+  "figures": {
+    "TransitionIllustration": {
+      "title": "レイアウトが変わっても画像をつなぐ",
+      "alt": "記事一覧の小さな画像と詳細の大きな画像が、view-transition-name article-aurora-image を共有する。DOM とレイアウトが変わっても、同じ名前が新旧のキャプチャをつなぐ。",
+      "caption": "ブラウザーは名前でキャプチャを組にします。新旧の要素は別の DOM ノードでも構いません。各レンダリング状態で名前を一度だけ使います。",
+      "description": [
+        {
+          "title": "一覧をキャプチャする",
+          "text": "旧状態で、選んだ記事画像に article-aurora-image という名前があります。"
+        },
+        {
+          "title": "DOM を更新する",
+          "text": "トランジションのコールバック内で一覧を詳細に置き換えます。詳細の画像は同じ名前を使います。"
+        },
+        {
+          "title": "キャプチャを対応付ける",
+          "text": "ブラウザーは新旧の画像の境界間をアニメーションにできます。名前は組を識別するもので、同じ DOM ノードを保つ必要はありません。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-lifecycle": {
+      "title": "アニメーション開始前に DOM は変わる",
+      "alt": "旧画像をキャプチャし、DOM を詳細表示へ更新してから、新旧の表示が更新済み DOM の上のオーバーレイで動く。",
+      "caption": "コールバックが新表示をコミットし、その後にブラウザーが一時オーバーレイを動かします。DOM を徐々に置き換えるのではありません。",
+      "description": [
+        {
+          "title": "更新前",
+          "text": "ブラウザーは個別に名付けた画像を含む旧一覧をキャプチャします。"
+        },
+        {
+          "title": "コールバック内",
+          "text": "アプリは一覧を詳細の DOM に置き換えます。updateCallbackDone がその更新の完了を示します。"
+        },
+        {
+          "title": "キャプチャ後",
+          "text": "擬似要素のオーバーレイが旧画像と新表示を混ぜます。ready はアニメーションの準備完了を示し、スキップした場合も finished は解決します。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-identity": {
+      "title": "名前で組を識別し、クラスでスタイルをまとめる",
+      "alt": "異なる二つの名前が新旧状態で組になり、共通の article トランジションクラスを持つ。別の状態では同じ名前が二つあり、無効と示す。",
+      "caption": "識別は状態ごとに一意である必要があります。機能内のすべての名前付きキャプチャで、一つのトランジションクラスを共有できます。",
+      "description": [
+        {
+          "title": "名前を対応付ける",
+          "text": "article-aurora-image は新状態の同名と組になり、タイトルは別の名前で独立して対応付けられます。"
+        },
+        {
+          "title": "スタイルを共有する",
+          "text": "両要素が view-transition-class: article を持ちます。::view-transition-group(.article) は HTML クラスと独立して両グループにスタイルを付けます。"
+        },
+        {
+          "title": "重複を拒否する",
+          "text": "同じキャプチャ状態の二つの要素が hero だと曖昧になります。アニメーションはスキップしますが、アプリの更新は完了できます。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-tree": {
+      "title": "一つのキャプチャからグループと画像ペアを作る",
+      "alt": "ドキュメントルートの擬似要素ツリーが、グループの形を移動する画像矩形へ結び、旧・新の子を内部で混ぜる二つの画像へ結ぶ。",
+      "caption": "グループが移動と拡縮を担い、旧・新の子がその境界内で表示をどう混ぜるか制御します。",
+      "description": [
+        {
+          "title": "ルートに付く",
+          "text": "ドキュメントのトランジションは、元のカード要素の下ではなくドキュメントルートに擬似要素を生成します。"
+        },
+        {
+          "title": "グループを動かす",
+          "text": "hero グループは新旧の境界間を動き、image-pair の子が退出・登場の画像を含みます。"
+        },
+        {
+          "title": "表示を混ぜる",
+          "text": "旧・新の子が画像内容を動かします。別の root グループはページの残りのキャプチャを持ち、旧か新の子がない場合は登場または退出を表します。"
+        }
+      ]
+    },
+    "TransitionIllustration:capture-navigation": {
+      "title": "二つの起点、同じ名前付きの視覚的な引き継ぎ",
+      "alt": "一つのドキュメントをコールバックで一覧から詳細へ変える。別の経路では通常のリンクが、同一オリジンで両方がオプトインする二つのドキュメントをつなぐ。",
+      "caption": "DOM 更新には startViewTransition() を使い、別ドキュメントへの移動には通常のナビゲーションと CSS のオプトインを使います。",
+      "description": [
+        {
+          "title": "その場で更新する",
+          "text": "startViewTransition(update) は現在のドキュメント変更を包みます。DOM を置き換えるクライアントルーターも同じ経路です。"
+        },
+        {
+          "title": "通常どおり移動する",
+          "text": "対象の同一オリジン移動が二つのドキュメントをつなぎます。両方で @view-transition { navigation: auto; } を読み込み、startViewTransition のコールバックは不要です。"
+        },
+        {
+          "title": "利用可能な移動先を保つ",
+          "text": "どちらの経路も、明示した同名で別ノードをつなげます。未対応でも DOM 更新や通常のリンク移動は使えます。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import TransitionIllustration from './components/TransitionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoViewTransition from '@master/internal-site/demo/DemoViewTransition.astro'
+
+## 概要 [sr-only] \{#overview\}
+記事一覧から詳細へ進むとき、画像と見出しのつながりを保ちます。レイアウトは Master CSS、トランジションはネイティブ CSS、状態変更は JavaScript を使います。まず動くインターフェースを用意してください。アニメーションが使えなくても記事に到達できる必要があります。
+
+## 記事一覧から詳細へ \{#article-list-to-detail\}
+
+(click) どちらかの記事を開き、カードに戻ってください。画像、タイトル、日付の位置の変化を追います。キーボードフォーカスは記事の見出しへ移り、選んだボタンに戻ります。
+
+<DemoViewTransition example="articles" />
+
+これは**同一ドキュメント**のトランジションです。JavaScript が別の URL へ移動せず一覧を置き換え、ブラウザーが視覚的な引き継ぎをアニメーションにします。ルーティング、データ読み込み、履歴、フォーカスはアプリの責任です。実際のページ遷移には、後述の[クロスドキュメントの例](#cross-document-transitions)を使ってください。
+
+<TransitionIllustration />
+
+## ブラウザーがアニメーションにするもの \{#what-the-browser-animates\}
+
+CSS の `transition` は、ページに残る同じ要素のプロパティ変化を補間します。ビュートランジションは異なる DOM ノードやレイアウトをつなげられます。ブラウザーが旧表示をキャプチャし、更新を実行してから、旧画像と新表示の一時的な擬似要素ツリーを作り、ドキュメント上で動かします。アニメーション開始時には、DOM はすでに変わっています。
+
+名前付き要素がなければ、通常はルート表示をクロスフェードします。一致する名前を付けると、選んだ部分を独立して移動・拡縮できます。既定のアニメーションはブラウザーが供給するため、両レイアウトの計測や移動キーフレームの記述は不要です。[View Transition のレンダリングモデル](https://www.w3.org/TR/css-view-transitions-1/#rendering-model)を参照してください。
+
+<TransitionIllustration name="capture-lifecycle" />
+
+## 記事のトランジションを作る \{#build-the-article-transition\}
+
+Master CSS を[インストール済み](/guide/installation)とします。以下を body に置き、head で `article-transitions.css` を読み込み、`article-transitions.js` をモジュールとして読み込みます。画像パスはプロジェクトのものに置き換えてください。簡略化した例は一記事で、ライブプレビューは同じ命名方式を二記事に使います。
+
+レイアウトユーティリティは要素に残します。ネイティブの `style` 属性が各キャプチャの識別を供給し、`.article-capture` が共通のトランジション用スタイルグループを割り当てます。
+
+```html name=article-list.html
+<section data-articles class="max-w-xl mx-auto p-md">
+  <article class="grid gap-md">
+    <img class="article-capture block w-full h-auto"
+      style="view-transition-name: article-aurora-image"
+      src="/images/article-aurora.jpg" width="1200" height="750"
+      alt="A mountain ridge under soft light" />
+    <time class="article-capture block text-sm"
+      style="view-transition-name: article-aurora-date"
+      datetime="2026-05-12">May 12, 2026</time>
+    <h2 class="article-capture text-xl m(0)"
+      style="view-transition-name: article-aurora-title">
+      Designing transitions that preserve context
+    </h2>
+    <button type="button" data-read-more>Read article</button>
+  </article>
+</section>
+
+<template id="article-detail">
+  <article class="grid gap-lg">
+    <img class="article-capture block w-full h-auto"
+      style="view-transition-name: article-aurora-image"
+      src="/images/article-aurora.jpg" width="1200" height="750"
+      alt="A mountain ridge under soft light" />
+    <time class="article-capture block text-sm"
+      style="view-transition-name: article-aurora-date"
+      datetime="2026-05-12">May 12, 2026</time>
+    <h1 tabindex="-1" class="article-capture text-3xl m(0)"
+      style="view-transition-name: article-aurora-title">
+      Designing transitions that preserve context
+    </h1>
+    <p>The image, title and date retain their identity in a new layout.</p>
+    <button type="button" data-back>Back to collection</button>
+  </article>
+</template>
+```
+
+template は挿入まで非アクティブなので、一覧と名前が衝突しません。この機能のスタイルシートは一度読み込みます。時間設定は記事のキャプチャに適用され、残りの表示はブラウザー既定のクロスフェードを保ちます。
+
+```css name=article-transitions.css
+@layer components {
+  .article-capture {
+    view-transition-class: article;
+  }
+
+  ::view-transition-group(.article) {
+    animation-duration: .5s;
+    animation-timing-function: ease-in-out;
+  }
+}
+```
+
+名前付きトランジションに対応し、`view-transition-class` には未対応のブラウザーも、名前を組にして既定の時間設定を保てます。固定名なら `::view-transition-group(article-aurora-image)` で直接指定することもできます。
+
+トランジションを始める前に内容を準備します。アニメーション経路ではキャプチャ前に画像をデコードし、画像の失敗でも移動を許して代替テキストを利用可能に保ちます。DOM の置換自体はコールバック内で行います：
+
+```js name=article-transitions.js
+const root = document.querySelector('[data-articles]')
+const detail = document.querySelector('#article-detail')
+const list = document.createElement('template')
+list.content.append(...root.cloneNode(true).childNodes)
+const motion = matchMedia('(prefers-reduced-motion: reduce)')
+let active
+let revision = 0
+
+motion.addEventListener('change', () => {
+  if (motion.matches) active?.skipTransition()
+})
+
+async function changeView(content, focusSelector) {
+  const request = ++revision
+  active?.skipTransition()
+  const update = () => {
+    if (request !== revision) return
+    root.replaceChildren(content)
+    const target = root.querySelector(focusSelector)
+    target.focus({ preventScroll: true })
+    target.scrollIntoView({ block: 'nearest', behavior: 'instant' })
+  }
+  if (!document.startViewTransition || motion.matches) {
+    update()
+    return
+  }
+
+  await Promise.all([...content.querySelectorAll('img')].map(image =>
+    image.decode().catch(() => {})
+  ))
+  if (request !== revision) return
+  if (motion.matches) { update(); return }
+  const transition = document.startViewTransition(update)
+  active = transition
+  // Skipping an animation does not mean the DOM update failed.
+  transition.ready.catch(() => {})
+  const clear = () => { if (active === transition) active = undefined }
+  transition.finished.then(clear, clear)
+  // Let the caller handle an actual update error. Do not run update twice.
+  await transition.updateCallbackDone
+}
+
+root.addEventListener('click', event => {
+  if (!(event.target instanceof Element)) return
+  if (event.target.closest('[data-read-more]')) {
+    changeView(document.importNode(detail.content, true), 'h1').catch(reportError)
+  } else if (event.target.closest('[data-back]')) {
+    changeView(document.importNode(list.content, true), '[data-read-more]').catch(reportError)
+  }
+})
+```
+
+複数の記事では記事 ID から各部分の安定名を作り、その記事のボタンにフォーカスを戻します。ネットワーク待ちの間レンダリングを止めず、開始前にデータを取得してください。React はコールバック内の `flushSync()` で状態更新をコミットします。setter の呼び出しだけでは、新しい DOM がキャプチャ可能とは保証できません。独自のトランジション統合を持つフレームワークに、そのコミット境界を任せます。
+
+## スナップショットの命名 \{#naming-snapshots\}
+
+各キャプチャ状態で、レンダリングされた要素の `view-transition-name` は一意である必要があります。新旧状態の**間**で同じ名前を使うと組になり、どちらかの状態の**中**で二回使うとトランジションがスキップされます。旧状態だけにある名前は退出し、新状態だけの名前は登場します。
+
+| 識別子 | 目的 | 一つの状態で共有可能？ |
+| --- | --- | --- |
+| HTML の `class="article-capture"` | 通常の CSS で実要素を選択 | はい |
+| `view-transition-name: article-aurora-image` | 旧と新のキャプチャを一つずつ組にする | いいえ |
+| `view-transition-class: article` | `::view-transition-group(.article)` で複数の名前付きグループを選択 | はい |
+
+`::view-transition-group(.article)` のドットは HTML クラスではなく、**トランジションクラス**を指します。トランジションクラスの指定だけでは名前付きキャプチャは作られません。[プラットフォームのグループ化の例](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/view-transition-class#examples)が違いを示しています。
+
+<TransitionIllustration name="capture-identity" />
+
+`article-aurora-image` のように安定した有効な CSS 識別子を使い、タイトルや任意のユーザーテキストを名前にしないでください。キー付き一覧の並べ替えなど、更新後も**同じ DOM 要素**が残る場合、`view-transition-name: match-element` でブラウザーに識別を割り当てさせられます。置換ノードや別ドキュメントは組にしません。この例はノードを置き換えるため明示名を使います。
+
+## トランジションの擬似要素にスタイルを付ける \{#styling-transition-pseudo-elements\}
+
+ドキュメントのトランジションでは、名前付き要素がコンポーネントの深い位置にあっても、擬似要素はドキュメントのルートから生じます。既定のツリーには `root` と各名前付きキャプチャのグループがあり、それぞれに旧・新の一方または両方の子を持つ画像ペアがあります。
+
+<TransitionIllustration name="capture-tree" />
+
+旧の子は静的スナップショットを持ち、新の子は更新要素のライブレンダリングを表示します。これらは視覚的表現で、マークアップの追加の操作可能なコピーではありません。
+
+`::view-transition-group(...)` の時間とイージングで移動と拡縮を調整します。既定の old/new アニメーションはグループの時間設定を継承します。退出・登場内容の混ぜ方を変えるなら、`::view-transition-old(...)` と `::view-transition-new(...)` を指定してください。グループの `animation` ショートハンドはブラウザー生成の移動を置き換える場合があるため、変更したいプロパティだけを上書きします。
+
+セレクターは機能が所有するグローバルスタイルシートに置きます。コンポーネントスコープの `.card::view-transition-old(...)` は、ドキュメントルートのツリーを対象にできません。ここで「グローバル」はセレクターの範囲を指し、すべての機能のルールを一つのアプリ全体ファイルに入れる必要はありません。
+
+## クラスとネイティブ CSS を選ぶ \{#choosing-classes-or-native-css\}
+
+Master CSS でもこれらのネイティブなプロパティとセレクターを表せます。小さな固定キャプチャなら、次はネイティブ宣言と同等です：
+
+```html
+<html class="(animation-duration:.5s)::view-transition-group(.article)">
+  <body>
+    <img class="(view-transition-name:article-aurora-image) (view-transition-class:article)"
+      src="/images/article-aurora.jpg" alt="A mountain ridge" />
+  </body>
+</html>
+```
+
+<Class2CSS classes={[
+  '(view-transition-name:article-aurora-image)',
+  '(view-transition-class:article)',
+  '(animation-duration:.5s)::view-transition-group(.article)'
+]} />
+
+擬似要素のユーティリティは画像ではなく `html` に置きます。マウント済みコンポーネントで追加する場合は、共通ルート上のクラスの寿命も管理します。アニメーションのセレクター、キーフレーム、モーション条件が増えるほど、ネイティブスタイルシートで判断をまとめると範囲を調べやすくなります。
+
+データによる識別には、新しいユーティリティクラスを組み立てず、ネイティブプロパティを設定します：
+
+```js
+// article.id is a stable slug controlled by the application, such as "aurora".
+image.style.viewTransitionName = `article-${article.id}-image`
+```
+
+静的走査は文字列補間を実行しません。`'(view-transition-name:article-' + id + '-image)'` のように構築するクラスは、ソース内で完全なクラスではありません。ネイティブの style 値には新しい生成ルールが不要です。CSS カスタムプロパティを参照する完全なユーティリティクラスも使えます。[クラスを変えず値を変える](/guide/scanning-and-pruning#keep-changing-values-out-of-class-names)を参照してください。
+
+ローカルな判断を読みやすくする場所でクラスを使います。この機能では、レイアウトはマークアップ、識別はデータやネイティブスタイル、トランジションセレクターは CSS に置くのを基本とします。AI アシスタントにも各関心事の変更場所が明確になります。これは記述上の推奨で、Master CSS の制限ではありません。
+
+## クロスドキュメントのトランジション \{#cross-document-transitions\}
+
+記事に自身の URL がある場合は、通常のリンクとブラウザーの移動を使います。両ページは同一オリジンで、両方のオプトインが必要です。**両方**のドキュメントが読むスタイルシートに次を置きます：
+
+```css name=page-transitions.css
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+```
+
+一覧ページでは実際の記事 URL にリンクします。共通の画像は両ページで同じ明示名を使います：
+
+```html name=collection.html
+<a href="/articles/aurora/">
+  <img src="/images/article-aurora.jpg" alt="Read the Aurora article"
+    style="view-transition-name: article-aurora-image" />
+</a>
+```
+
+```html name=article.html
+<article>
+  <img src="/images/article-aurora.jpg" alt="A mountain ridge"
+    style="view-transition-name: article-aurora-image" />
+  <h1>The Aurora article</h1>
+  <a href="/articles/">Back to collection</a>
+</article>
+```
+
+<TransitionIllustration name="capture-navigation" />
+
+`location.href` を `startViewTransition()` で包まないでください。コールバックは現在のドキュメントの更新用です。クロスドキュメントはアプリのコールバックではなく、条件を満たすブラウザーの移動を使います。ルーターがリンクを捕捉して DOM を入れ替えるなら、同一ドキュメントの統合を使ってください。未対応でもリンクは動きます。同一ドキュメント API の対応はクロスドキュメントの対応を示さないため、[要件とライフサイクル](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document)を確認します。
+
+## 動きを抑える設定 \{#reduced-motion\}
+
+同一ドキュメントの例は開始前に設定を確認し、設定が変われば再生中のアニメーションもスキップします。クロスドキュメントのスタイルシートは同じ設定でナビゲーションアニメーションを無効にします。どちらも移動先を変えず、操作を妨げません。
+
+`@motion-safe` の時間上書きだけでは、既定のトランジションを**無効にしません**。上書きが一致しなくなっても既定アニメーションは残ります。トランジション自体の起動を制御してください。ルーターが開始するなら、そのモーション処理を使うか、動きを抑えるルールで関連擬似要素のアニメーションを無効にします。
+
+## フォールバック \{#fallbacks\}
+
+トランジションオブジェクトは異なる三つの節目を公開します：
+
+<DocumentComparison>
+
+| Promise | 分かること |
+| --- | --- |
+| `updateCallbackDone` | DOM 更新コールバックが完了、または失敗した |
+| `ready` | アニメーションの準備完了、または開始前にスキップされた |
+| `finished` | スキップも含めトランジションが終了。更新失敗なら拒否される |
+
+</DocumentComparison>
+
+`finished` の解決は、アニメーションが最後まで再生された証明ではありません。主要な例は更新を繰り返さず `ready` の拒否を処理し、更新エラーを `reportError` に伝えます。アプリではエラー境界や回復 UI に置き換えてください。[更新コールバックの仕様](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/updateCallbackDone)を参照します。
+
+## 操作全体を確認する \{#verify-the-complete-interaction\}
+
+ポインターとキーボードで両方の記事を開いて戻り、狭い画面も含めてフォーカス、記事の識別、スクロールを確認します。動きを抑える設定と API が使えない状態でも繰り返し、同じ内容変更が動くことを確かめてください。
+
+内容が変わっても動かない場合は、以下を確認します：
+
+- 組にする各名前が、旧状態と新状態で一回ずつ現れる。
+- コールバックが完了する前に DOM 変更を実際にコミットしている。
+- 擬似要素のセレクターがドキュメントのルートを対象とし、CSS が読み込まれている。
+- 画像に寸法があり表示準備ができていて、使用できない画像が更新を妨げない。
+- キャプチャとアニメーション中、ビューポートが安定している。内容に合わせる iframe の高さが変わると、本来有効なトランジションも取り消される場合があります。固定ビューポートと内部スクロールで避けられます。
+
+最終 DOM や `finished` promise だけでなく、アニメーション中のフレームを観察してください。[ビュートランジションのフレームアルゴリズム](https://www.w3.org/TR/css-view-transitions-1/#handle-transition-frame)は、スナップショット包含ブロックのサイズが変わるとアニメーションをスキップすると明記しています。

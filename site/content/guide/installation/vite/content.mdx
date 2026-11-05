@@ -13,22 +13,22 @@ import dark from '~/site/assets/images/integrations/vite/cover-dark.webp'
 
 Add Master CSS to an application built with Vite, including React, Vue, React Router framework mode and TanStack Start. The integration generates CSS from complete class names in source. Keep the framework's existing Vite plugin and mount code; Master CSS joins that build through a shared stylesheet.
 
-## Installation
+## Installation \{#installation\}
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### Add Master CSS
+      ### Add Master CSS \{#add-master-css\}
       In an existing [Vite project](https://vite.dev/guide/), run the installer from the project root with the `--framework` value from the [framework table](#frameworks). Static is the default: complete class names in source become ordinary CSS.
     </StepL>
     <StepR>
       ```bash
-      npm create @master/css@rc -- --framework vite --yes
+      npm create @master/css@VERSION -- --framework vite --yes
       ```
     </StepR>
   </Step>
   <Step>
-    ### Check the CSS entry
+    ### Check the CSS entry \{#check-the-css-entry\}
     The installer adds `masterCSS()` to the Vite plugins and updates the stylesheet listed under [Framework entries](#frameworks). In a plain JavaScript starter, that is:
 
     ```css name=src/style.css
@@ -38,7 +38,7 @@ Add Master CSS to an application built with Vite, including React, Vue, React Ro
     Keep this entry imported by the application. If the project uses a different filename, check the installer's output and keep the import pointed at that file. The installer does not create a framework application or replace its mount code.
   </Step>
   <Step>
-    ### Start using Master CSS
+    ### Start using Master CSS \{#start-using-master-css\}
     For a plain JavaScript starter with an `#app` element, use this entry and run `npm run dev`. For a framework application, use its [component example](#frameworks) below instead.
   </Step>
   <InstallationPreview>
@@ -151,7 +151,7 @@ Static mode is the default and needs no Master CSS startup code. Keep the CSS en
 Run the installer with `--mode runtime` and your `--framework` value:
 
 ```bash
-npm create @master/css@rc -- --framework vite --mode runtime --yes
+npm create @master/css@VERSION -- --framework vite --mode runtime --yes
 ```
 
 For Vite, React and Vue, the plugin injects the runtime into `index.html` and emits its compiled program. Do not add a second runtime import.
@@ -219,7 +219,7 @@ document.head.append(style)
 
 Processed text can still contain imports. Use `CSSStyleSheet.replaceSync()` only with import-free output; it does not load imported stylesheets. For a shadow root, follow the [Lit setup](/guide/installation/lit), including its stylesheet order and asset-base requirements.
 
-### Sass and CSS Modules
+### Sass and CSS Modules \{#sass-and-css-modules\}
 
 Keep the project's Sass dependency and Vite preprocessing options. Write the Master CSS entry import as a CSS URL import so Sass leaves it for Master CSS:
 
@@ -231,7 +231,7 @@ Resolved Sass partials retain their resource directories. Source maps connect di
 
 CSS Modules retain their scoped exports and `composes` relationships. Native declarations can use the project's definitions without importing the global output again. Framework HMR or the consuming module must accept changed class-name exports to update them without a page reload. `?inline` returns scoped CSS text; `?raw` returns the original source. Vite 8.3.5 rejects `?url` requests for `.module.css` and `.module.scss`; do not use that path for a module stylesheet.
 
-### Check the deployed assets
+### Check the deployed assets \{#check-the-deployed-assets\}
 
 Deploy the whole production output, including retained child stylesheets, images, fonts and any runtime program. Master CSS preserves import media, supports and layer qualifiers, and rewrites resource URLs from their original source owner. An inline string can therefore require separate assets too; the [Imports contract](/reference/directives/imports#publish-stylesheet-assets) explains the boundary.
 

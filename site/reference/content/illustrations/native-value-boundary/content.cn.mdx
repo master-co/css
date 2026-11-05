@@ -1,0 +1,31 @@
+# Reference prose: illustrations/native-value-boundary
+
+## title \{#copy-title\}
+
+
+引号内的括号仍属于值
+
+## alt \{#copy-alt\}
+
+
+在一个完整类名内，标出 content 属性、引号内的右括号与 before 伪元素。
+
+## caption \{#copy-caption\}
+
+
+第一个右括号是引号内的值文本。下一个才结束声明；::before 从声明外开始。
+
+## description-0 \{#copy-description-0\}
+
+
+在 (content:')')::before 中，content 是属性，')' 是带引号的值。
+
+## description-1 \{#copy-description-1\}
+
+
+字符串内的 ) 会保留。下一个 ) 才结束原生声明头部。
+
+## description-2 \{#copy-description-2\}
+
+
+::before 后缀指向伪元素，生成的声明为 content: ')';。

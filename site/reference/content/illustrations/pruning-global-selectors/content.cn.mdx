@@ -1,0 +1,31 @@
+# Reference prose: illustrations/pruning-global-selectors
+
+## title \{#copy-title\}
+
+
+原生裁剪仍保留不含类的规则
+
+## alt \{#copy-alt\}
+
+
+使用 card 时，body 与 root 规则和 card 一起保留；未使用的类规则被划去。
+
+## caption \{#copy-caption\}
+
+
+源文件已启用 @prune native。保留的不含类的选择器仍遵循常规 CSS 匹配与层叠规则。
+
+## description-0 \{#copy-description-0\}
+
+
+body 与 :root 没有类选择器，因此原生裁剪保留其规则。
+
+## description-1 \{#copy-description-1\}
+
+
+此示例保留已使用的 .card 规则，并移除未使用的 .unused 类规则。
+
+## description-2 \{#copy-description-2\}
+
+
+原生裁剪依据类使用情况，不会用浏览器分析每个选择器，也不保证所有保留规则当前均有匹配元素。

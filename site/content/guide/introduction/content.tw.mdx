@@ -1,0 +1,68 @@
+---
+title: "Master CSS 入門"
+description: "以 class 建立介面，追查對應的 CSS，並定義專案共用的值。"
+figures: {"IntroductionIllustration": {"title": "class 選擇樣式，token 提供值", "alt": "HTML 中的 p-lg class 連到生成 CSS 的 .p-lg 選擇器。值為 1.5rem 的主題 token --spacing-lg，則連到 padding 宣告中的 var() 參照。", "caption": "名稱將各個部分連在一起：p-lg 選中規則，var(--spacing-lg) 讀取共用值。圖中只顯示相關宣告；下方的完整輸出也包含所屬的層。", "description": [{"title": "class 比對", "text": "HTML 中的 p-lg class 會符合生成的 .p-lg 選擇器。藍色括號與連線將這兩處對應起來。"}, {"title": "共用值", "text": "預設樣式集將 --spacing-lg 定義為 1.5rem。紫色括號與連線將這個定義連到 padding: var(--spacing-lg) 中的參照。"}, {"title": "瀏覽器結果", "text": "瀏覽器解析 CSS 變數後，在四邊套用 1.5rem 內距。生成的規則保留變數參照，不會將值複製進宣告。"}]}, "GuideStudy:language-and-delivery": {"title": "交付方式改變，class 詞彙不變", "alt": "同一個 class 與其宣告，在圖中分成兩條交付路徑：建置時生成的樣式表，以及瀏覽器生成的樣式表。", "caption": "語法表達要求的樣式；渲染模式則決定何時、在哪裡生成對應的 CSS。"}}
+---
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Overview from './components/Overview.mdx'
+import IntroductionIllustration from './components/IntroductionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+
+Master CSS 是 CSS 框架，讓你在標記中設定介面樣式，並以 CSS 定義共用樣式。建立元素時，直接在該處撰寫 class；整個專案共用的值與模式，則放在樣式表中。Master 會生成這些 class 所需的 CSS。
+
+可以先從內建的色彩、間距與排版設定開始。建立第一個元件之前，不必先設計完整的主題。
+
+## 以 CSS 與 utility 建立介面 \{#overview\}
+
+這張卡片結合了原生元件 class 與 utility。`.action` 在 CSS 中定義按鈕的基礎樣式；`w-full`、`mt-md` 與 `bg-blue-60` 則為這張卡片選擇按鈕的寬度、外距與顏色。其餘標記使用預設 utility 處理版面、間距與排版。
+
+完成[安裝](/guide/installation)後，將範例的 CSS 加到應用程式樣式表的預設樣式集匯入之後，並將 HTML 放進整合工具會掃描的原始檔：
+
+```css name=app.css
+@import '@master/css';
+```
+
+<Overview />
+
+預覽會一起使用畫面中顯示的 CSS 與 HTML。此範例在 `@layer components` 中定義 `.action`；Master 則依標記中的 class 生成 utility 規則。將按鈕共用的尺寸與焦點樣式留在 `.action`，這個實例所需的藍色與全寬設定則留在標記中。
+
+試著將 `p-lg` 改成 `p-md`：卡片內容的內距會縮小，但按鈕的基礎樣式不會改變。
+
+圖片網址假設應用程式會提供 `/building.jpg`。請替換成自己的圖片與替代文字，並將連結指向應用程式中的頁面。
+
+## 從 class 追到 CSS \{#write-your-first-class\}
+
+以卡片中的 `p-lg` 為例。預設樣式集將 `p-` 連到內距，將 `lg` 連到間距 token `--spacing-lg`。Master 會生成 class 選擇器，其宣告參照這個 CSS 變數。
+
+<IntroductionIllustration />
+
+<Class2CSS classes={['p-lg']} />
+
+瀏覽器會對符合的元素套用 `padding: var(--spacing-lg)`。依預設值，四邊的內距都是 `1.5rem`。即使在主題中修改共用值，class 也不必改名。
+
+其他 class 則表達不同的設定：`w-full` 是對應 `width: 100%` 的固定 utility，`bg-blue-70:hover` 則加上懸停狀態。[語法教學](/guide/syntax-tutorial)會透過可運作的範例，介紹值、選擇器與條件。
+
+## 定義哪些部分應該一起改變 \{#define-what-should-change-together\}
+
+當多個元素應該共用某個專案設定時，就新增主題 token。以主要操作的顏色為例，在應用程式樣式表的匯入之後定義 `--color-brand`，再於標記中使用 `bg-brand`：
+
+<ConfiguredExample source={`@theme {
+  --color-brand: #2563eb;
+}`} html={`<a class="inline-flex px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
+  Start building
+</a>`} />
+
+修改 `--color-brand`，使用它的元素就會一起更新。共用 token 的理由，應該是這些元素需要一起改變；兩個互不相關的顏色，即使目前數值相同，也不必使用同一個名稱。[主題 token](/guide/theme)會說明如何定義與覆寫共用值。
+
+多個元素需要共用樣式規則時，可使用 `.action` 這類元件 class；需要共用標記時，則使用 UI 元件。單純因為 class 清單很長，不代表就需要另取一個 CSS 名稱。[重用樣式](/guide/reusing-styles)會協助判斷何時適合共用 token、元件 class 或自訂 utility。
+
+<GuideStudy id="language-and-delivery" />
+
+## 從靜態 CSS 開始 \{#start-with-static-css\}
+
+使用框架建議的靜態整合方式。它會在建置階段從原始檔找出完整 class 名稱，交付一般 CSS，不需要在瀏覽器載入 Master 執行階段或引擎。
+
+互動介面仍可正常運作：切換已知的 class、使用 `:hover` 這類選擇器，或透過 CSS 自訂屬性更新進度、座標等數值。當演練場、視覺化編輯器或已部署的內容帶入先前未知的 class 名稱時，執行階段就能派上用場。[渲染模式](/guide/rendering-modes)會說明各種交付方式。
+
+依[安裝指南](/guide/installation)將 Master CSS 接入應用程式，再跟著[語法教學](/guide/syntax-tutorial)建立具有互動狀態與響應式條件的卡片。若需要撰寫時的補全與診斷，請設定[語言服務](/guide/language-service)。

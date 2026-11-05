@@ -1,0 +1,273 @@
+# Reference prose: tools/cli
+
+## editorial-suggest-examples-0-description \{#copy-editorial-suggest-examples-0-description\}
+
+
+有効なプロジェクト manifest で宣言からクラスを提案します。
+
+## editorial-suggest-examples-1-description \{#copy-editorial-suggest-examples-1-description\}
+
+
+stdin から宣言ブロックを読みます。
+
+## editorial-suggest-notes-0 \{#copy-editorial-suggest-notes-0\}
+
+
+引用符付きの宣言ブロック 1 つか `--stdin` のどちらか一方を渡します。プロジェクトルートは `--cwd` で選び、既定は現在のディレクトリです。`--` で始まる引数には stdin を使うか、引数の前に `--` を置きます。入力は宣言だけで、セレクターや外側の波括弧を含めないでください。
+
+## editorial-suggest-notes-1 \{#copy-editorial-suggest-notes-1\}
+
+
+バージョン 1 の JSON エンベロープは `cwd`、`manifest`、`result`、`validation`、`diagnostics` を含みます。`manifest.entries` は検出した Master CSS エントリーの一覧で、なければ既定のプリセットで提案します。検出済みエントリーの読み込み失敗はエラーで、プリセットには切り替えません。プロジェクトのトークンやユーティリティ上書きに頼る前にエントリーを確認してください。
+
+## editorial-suggest-notes-2 \{#copy-editorial-suggest-notes-2\}
+
+
+`result` はクラス、生成 CSS、`remainingCss`、注記、検証を含むバージョン付き宣言提案レポートです。`preserved` は元ブロック全体を保って正常終了するため、その CSS を残して注記を読んでください。`suggested` は宣言の対応を調べ、カスケードやブラウザー描画は検証しません。クラス別の診断は `className` で特定し、`validation` は一致、CSS 構文、CSS 値、ブラウザー対応を分けます。
+
+## editorial-suggest-notes-3 \{#copy-editorial-suggest-notes-3\}
+
+
+レポートは常に JSON で stdout に出力します。エラーは stderr にも書き、終了ステータスは 1 です。入力、manifest、実行の失敗は `result: null` を返し、既知の無効な提案 CSS は提案を保ちながらエラーにします。未知の値はエラーではなく、ブラウザー対応は `not-checked` のままです。未知のフラグなど引数解析エラーには通常の CLI ヘルプ診断を使います。
+
+## editorial-generate-notes-0 \{#copy-editorial-generate-notes-0\}
+
+
+`--output` は CSS エントリー名を指定し、既定は `master.css` です。同じ場所のスタイルシートとリソースも公開してください。順序、条件、URL の所有権を保つため、ローカルインポートやリソースは別ファイルの場合があります。入口のコピーだけでは不完全です。境界は[インポート](/reference/directives/imports)を参照してください。
+
+## editorial-generate-notes-1 \{#copy-editorial-generate-notes-1\}
+
+
+`--strict` はアセット公開前に既知の CSS 構文・値エラーを拒否します。未知のブラウザー機能は対応確認済みとは扱いません。`--prune-native-css` はプロジェクト所有ファイルを対象にし、パッケージは自身の方針を保ち、`@preserve native` がローカルで優先します。規則とキーフレームの動作は[ネイティブ CSS のプルーニング](/reference/directives/pruning)を参照してください。
+
+## editorial-generate-notes-2 \{#copy-editorial-generate-notes-2\}
+
+
+`--no-export` は CSS 結果を 1 つ表示し、参照リソースは公開しません。必要なスタイルシートとリソース URL の基準は自身で保ってください。`--verbose 0` は進捗ログを抑えます。監視は Ctrl+C で停止できます。監視が動いていても再ビルドが失敗し、最後の成功出力を保持している場合があります。
+
+## editorial-generate-examples-0-description \{#copy-editorial-generate-examples-0-description\}
+
+
+出力ファイルを書かず生成 CSS を調べます。
+
+## editorial-generate-examples-1-description \{#copy-editorial-generate-examples-1-description\}
+
+
+指定したファイルに CSS を公開します。
+
+## editorial-generate-examples-2-description \{#copy-editorial-generate-examples-2-description\}
+
+
+ソース変更時に再生成します。停止は Ctrl+C です。
+
+## editorial-lint-notes-0 \{#copy-editorial-lint-notes-0\}
+
+
+Lint レポート v5 は検査済み入力と診断ファイルを分けます。`coverage.checkedFiles` は問題のないファイルや stdin 仮想パスを含む全入力、`summary.checkedFiles` はその件数、`summary.filesWithDiagnostics` は診断のある検査済みファイル数です。`files` 配列は診断結果だけのままなので、空でも未実行とは限りません。
+
+## editorial-lint-notes-1 \{#copy-editorial-lint-notes-1\}
+
+
+診断ゼロを解釈する前に `coverage.status` を読みます。`complete` は選択入力の検査済み、`no-inputs` は一致する入力なし、`not-run` は manifest 読み込みがソース lint を妨げた状態です。manifest 診断は検査済みソースに数えません。`--fix` の診断数は再検査した内容を表します。問題のない stdin もディスクファイルを作らず 1 入力に数えます。stylish は stderr にカバレッジ概要を含めます。
+
+## editorial-lint-notes-2 \{#copy-editorial-lint-notes-2\}
+
+
+`coverage.description` は結果を説明し、manifest のスタイルシートエントリーと lint したソース入力を区別します。`manifest.entries` が空でもソース検査なしとは限りません。対象は選択入力と有効な lint 規則だけで、ブラウザー動作やプロジェクト全体の検査は保証しません。`no-inputs` で終了ステータスがゼロでも、ソース検査成功の証拠ではありません。
+
+## editorial-lint-examples-0-description \{#copy-editorial-lint-examples-0-description\}
+
+
+既存ソースのクラス順の提案を調べます。
+
+## editorial-lint-examples-1-description \{#copy-editorial-lint-examples-1-description\}
+
+
+提案を確認してクラス順の修正を適用します。
+
+## editorial-lint-examples-2-description \{#copy-editorial-lint-examples-2-description\}
+
+
+仮想ファイルを変えず stdin のソースバッファーを調べます。
+
+## editorial-inspect-examples-0-description \{#copy-editorial-inspect-examples-0-description\}
+
+
+既存ソースのクラスを生成 CSS 付きで調べます。
+
+## editorial-inspect-examples-1-description \{#copy-editorial-inspect-examples-1-description\}
+
+
+stderr に人が読みやすいレポートを表示します。
+
+## editorial-inspect-examples-2-description \{#copy-editorial-inspect-examples-2-description\}
+
+
+診断に応じた終了ステータスを保ち、自動処理用に JSON を保存します。
+
+## editorial-inspect-examples-3-description \{#copy-editorial-inspect-examples-3-description\}
+
+
+管理対象のプロジェクト CSS 全体でトークン参照と衝突を調べます。
+
+## editorial-inspect-examples-4-description \{#copy-editorial-inspect-examples-4-description\}
+
+
+既存のバージョン 1 オプションファイルからメタデータと生の値の方針を読みます。
+
+## editorial-inspect-examples-5-description \{#copy-editorial-inspect-examples-5-description\}
+
+
+CSS エントリーグラフが届かない、JavaScript から読み込むルートやコンポーネントのスタイルシートを加えます。
+
+## editorial-inspect-notes-0 \{#copy-editorial-inspect-notes-0\}
+
+
+### プロジェクトのスナップショット \{#project-snapshots\}
+
+## editorial-inspect-notes-1 \{#copy-editorial-inspect-notes-1\}
+
+
+`--snapshot` は解決済みプロジェクトのスナップショットを stdout に書きます。変更前に保存し、`--compare` で現在のプロジェクトと比較します。両モードは同時使用できず、常に JSON を返します。定義と既知の参照元を比較し、ブラウザーのピクセルは比較しません。
+
+## editorial-inspect-notes-2 \{#copy-editorial-inspect-notes-2\}
+
+
+```sh
+master-css inspect --snapshot > before.json
+# After the intended source change:
+master-css inspect --compare before.json > comparison.json
+```
+
+## editorial-inspect-notes-3 \{#copy-editorial-inspect-notes-3\}
+
+
+### デザインシステムのオプション \{#design-system-options\}
+
+## editorial-inspect-notes-4 \{#copy-editorial-inspect-notes-4\}
+
+
+`--design-system-options` は JSON ファイルを読み、`--design-system` が必要です。同じオブジェクトを MCP の `mastercss_scan_project` の `designSystem` 入力（プロジェクト文脈のみ）や言語サーバーの `designSystem` 設定にも渡せ、3 者は同じレポートを返します。
+
+## editorial-inspect-notes-5 \{#copy-editorial-inspect-notes-5\}
+
+
+```json name=design-system.json
+{
+  "version": 1,
+  "metadata": {
+    "--color-brand-old": {
+      "description": "Previous brand color",
+      "deprecated": true,
+      "replacement": "--color-brand"
+    }
+  },
+  "rawValuePolicy": {
+    "requireProperties": ["color", "background-color"]
+  }
+}
+```
+
+## editorial-inspect-notes-6 \{#copy-editorial-inspect-notes-6\}
+
+
+| フィールド | 契約 |
+| --- | --- |
+| `version` | 必須。`1`。 |
+| `metadata` | 有効なプロジェクトのトークン名から `description`、`deprecated`、`replacement` への任意のマップ。非推奨警告は記述した CSS の `var()` 参照を対象にし、置換はレビューの提案で自動適用しません。 |
+| `rawValuePolicy.requireProperties` | 任意。これらのトークン対応プロパティのネイティブ宣言はトークンを使う必要があります。代替値を含む完全な `var()` 成分は対象外です。方針を省略すると生の値を検査しません。 |
+
+## editorial-inspect-notes-7 \{#copy-editorial-inspect-notes-7\}
+
+
+未知のフィールドは拒否します。オプションは検査レポートだけに作用し、生成 CSS やブラウザープログラムには影響しません。`components` は `.button[data-variant="primary"]` のように同じ複合セレクター内の属性セレクターから各クラスの属性語彙を列挙します。正確な `values` と単独の `[name]` の有無（`presence`）を含み、`:where()` などの関数型疑似クラス内の属性は集めません。対象はプロジェクトのエントリーとローカル依存先、およびソースパスで指定したスタイルシートです（`project.routeStylesheets` にインポート元なしで記載）。`--design-system` ではソースパスが `.css` に一致する必要があります。パッケージ CSS とルート外のファイルは除外し、`@reference` 辺は配信せず定義文脈を供給し、`browser` は `not-checked` のままです。
+
+## body-23 \{#copy-body-23\}
+
+
+[セットアップガイド](/guide/installation#cli)で CLI をインストールし、プロジェクトルートから実行します。generate、lint、inspect はソース引数なしで通常のアプリソースを検出し、明示パスはその選択を置き換えます。suggest は CSS 宣言ブロックを受け取ります。
+
+## body-24 \{#copy-body-24\}
+
+
+ソースの glob は引用符で囲み、シェルではなく CLI に展開させます。これらのコマンドは現在の作業ディレクトリで動作し、`--cwd` は `suggest` だけにあります。ソース解析は[抽出](/reference/rules/extraction)、スタイルシートのソース方針は[スキャン](/reference/directives/scanning)を参照してください。
+
+## body-25 \{#copy-body-25\}
+
+
+`master-css --help` でコマンド一覧、`master-css <command> --help` でインストール済みバージョンの全オプションを読めます。現在の定義は [CLI ソース](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts)にあります。
+
+## body-26 \{#copy-body-26\}
+
+
+ファイルを編集せずクラスを提案し生成宣言を検証します。有効なプロジェクト manifest を使い、不確実なブロックは CSS として保持します。適用前にカスケードとブラウザー動作を確認してください。
+
+## body-27 \{#copy-body-27\}
+
+
+CSS と関連スタイルシートのリソースを公開します。`--no-export --verbose 0` はファイルを公開せず CSS だけ表示します。`--watch` は中断まで動き続けます。プロセスが動いていても再ビルドエラーを確認してください。
+
+## body-28 \{#copy-body-28\}
+
+
+既定ではソースに書かずクラスの診断を報告します。`--fix` は対応する修正を適用し、`--fix-dry-run` は提案だけを返します。stdin の内容は仮想パスに書き戻しません。
+
+## body-29 \{#copy-body-29\}
+
+
+CSS の公開やソースの書き換えなしに、ソース検出、スタイルシートエントリー、不足 CSS を報告します。`--classes` はスキャン結果を検査し、セーフリストには加えません。空の結果を解釈する前に診断とカバレッジを読んでください。
+
+## body-30 \{#copy-body-30\}
+
+
+## コマンドの作用 \{#command-effects\}
+
+## body-31 \{#copy-body-31\}
+
+
+| コマンド | 既定の出力 | ファイルへの作用 |
+
+## body-32 \{#copy-body-32\}
+
+
+| [`generate`](#generate) | CSS エントリーと必要なアセット | 出力を公開。`--no-export` は CSS を表示。 |
+
+## body-33 \{#copy-body-33\}
+
+
+| [`lint`](#lint) | JSON 診断 | ソースを読む。`--fix` は対応する修正を書き込む。 |
+
+## body-34 \{#copy-body-34\}
+
+
+| [`inspect`](#inspect) | JSON 検査レポート | ソースを読む。シェルのリダイレクトで保存可能。 |
+
+## body-35 \{#copy-body-35\}
+
+
+| [`suggest`](#suggest) | JSON 宣言提案 | 宣言を読む。提案は適用しない。 |
+
+## body-36 \{#copy-body-36\}
+
+
+## 結果の確認 \{#check-results\}
+
+## body-37 \{#copy-body-37\}
+
+
+lint と inspect は既定で JSON を stdout に、`--format stylish` は読みやすい診断を stderr に出します。診断エラーは通常ゼロ以外の終了ステータスになります。`--exit-code never` は診断による失敗を抑えるため、成功と扱う前にレポートを読んでください。問題解決は[コード lint](/guide/code-linting)と[クラス名のスキャン](/guide/scanning-and-pruning)を参照してください。ソースリンクは `rc` ブランチです。
+
+## title \{#copy-title\}
+
+
+CLI コマンド
+
+## description \{#copy-description\}
+
+
+コマンドを選び、ファイルへの作用を確認し、ヘルプとソースで全オプションを調べます。
+
+## command-help \{#copy-command-help\}
+
+
+全オプションは `master-css %%command%% --help` を実行してください。[実装](https://github.com/master-co/css/blob/rc/packages/cli/src/%%command%%.ts)。

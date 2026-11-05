@@ -7,6 +7,9 @@ import BenchmarkBars from '@master/internal-site/benchmarks/BenchmarkBars.astro'
 import type { BenchmarkBarItem } from '@master/internal-site/benchmarks/types.ts'
 
 import clsx from 'clsx'
+import { siteOf } from '@master/internal-site/astro/site-context'
+
+const { t } = siteOf(Astro)
 
 const pages = snapshot.pages
 const masterCSSPage = pages.find((page) => page.name === 'Master CSS') || pages[0]
@@ -47,8 +50,8 @@ function formatMasterCSSBreakdown(kind: 'rawBytes' | 'brotliBytes') {
 
   return [
     masterCSSBytes > 0 && `Master CSS ${formatKilobytes(masterCSSBytes)} kB`,
-    otherInlineBytes > 0 && `Other inline ${formatKilobytes(otherInlineBytes)} kB`,
-    externalCSSBytes > 0 && `External CSS ${formatKilobytes(externalCSSBytes)} kB`
+    otherInlineBytes > 0 && `${t('Other inline')} ${formatKilobytes(otherInlineBytes)} kB`,
+    externalCSSBytes > 0 && `${t('External CSS')} ${formatKilobytes(externalCSSBytes)} kB`
   ].filter(Boolean).join(' + ')
 }
 
@@ -70,10 +73,10 @@ function items(kind: 'rawBytes' | 'brotliBytes'): BenchmarkBarItem[] {
 ---
 
 <figure class="page-css-benchmark">
-  <Segments label="Recorded CSS body size" names={['Raw', 'Brotli']} client:idle={{ timeout: 500 }}>
+  <Segments label={t('Recorded CSS body size')} names={['Raw', 'Brotli']} client:idle={{ timeout: 500 }}>
     <BenchmarkBars slot="Raw" items={items('rawBytes')} max={maxTotalRawBytes / 1000} unit="kB" />
     <BenchmarkBars slot="Brotli" items={items('brotliBytes')} max={maxTotalRawBytes / 1000} unit="kB" />
   </Segments>
-  <p class="font-xs fg-text-muted">Both views use the same scale and the committed page snapshot.</p>
-  <figcaption>The <Link href="https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json">recorded CSS body sizes</Link> from documentation page snapshots. Brotli sums independently compressed bodies.</figcaption>
+  <p class="font-xs fg-text-muted">{t('Both views use the same scale and the committed page snapshot.')}</p>
+  <figcaption><Link href="https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json">{t('Recorded CSS body sizes from documentation page snapshots')}</Link>. {t('Brotli sums independently compressed bodies.')}</figcaption>
 </figure>

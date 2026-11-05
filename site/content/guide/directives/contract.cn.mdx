@@ -1,0 +1,635 @@
+import StylesheetExample from '@master/internal-site/css/StylesheetExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+## 入口标记 \{#entry-markers\}
+使用 `@import` 交付样式表并使其中的定义可用。如果本地编译需要这些定义，但原生样式表由其他输出负责交付，请使用 `@reference`。应用设置请遵循[安装](/guide/installation)；路由独立拥有的样式见[路由级样式](/guide/route-level-styles)。
+
+<ReferenceIllustration id="import-reference-output" />
+
+### `@import "@master/css"` \{#import-mastercss\}
+包导入是唯一的项目入口标记。它加载预设的原生 CSS，包括稳定的层顺序和基础样式，并标识接收生成工具类 CSS 的样式表。
+
+```css
+@import "@master/css";
+```
+
+仍可显式使用独立编译器与 manifest API。manifest 本身不会加载原生 CSS；使用运行时或服务端渲染的应用也必须交付相关原生样式表。
+
+### 本地文件 URL \{#local-file-urls\}
+
+Node 文件编译按 CSS 转义与大小写规则读取 CSS 导入名称。相对 `@import` 和 `@reference` URL 的路径以源文件为基准解析：百分号转义表示文件名字符，查询字符串和片段不计入文件系统路径。例如，`"./tokens%20%23.css?v=1#theme"` 读取同目录下名为 `tokens #.css` 的文件。现有的裸相对 CSS 路径如 `"tokens.css"` 也会展开。没有对应本地文件的裸包导入仍由宿主解析器处理。引用文件仍仅提供编译时上下文，不输出其原生 CSS。对于准备好的虚拟样式表，宿主显式指定的文件系统源所属文件也提供相对 CSS 引用的基准。引用主题令牌中的资源在其他地方使用时，仍相对于引用文件。
+
+### 样式表边界与资源 URL \{#stylesheet-boundaries-and-resource-urls\}
+
+导入的 media、supports 和 layer 限定应用于被导入的样式表。发布 CSS 时请保留这些边界，并从原始源文件解析图像和字体 URL。通过 `@reference` 使用的令牌也保留其定义文件作为资源所属来源。
+
+全局 Master 定义应放在不带限定的导入或引用中。带限定的导入可以包含原生 CSS，包括应用先前已可用混入的原生规则；但不能注册 `@theme`、`@utility`、`@mixin`、`@custom-media` 或 `@custom-container` 定义。
+
+```css
+@import "./tokens.css";
+@import "./print.css" print;
+@import "./components.css" layer(components);
+```
+
+每个 `@import` 都会再次内联其样式表，因此同一文件从多处导入时会重复。单个导入图最多内联 10,000 份样式表和 64 MiB CSS；共享文件请导入一次，不要从每个使用它的文件导入。
+
+加载定义和扫描元数据不会发布文件。CLI 文件导出和 Vite 生产构建会发布所需样式表及资源。自定义编译器宿主必须发布交付 API 返回的每个资源；manifest 本身不会交付原生规则。请见[渲染与样式表交付](/guide/rendering-modes#native-css-entries)及[编译器入口](/reference/packages#css-compiler)。
+
+
+### 发布完整资源集 \{#publish-stylesheet-assets\}
+
+编译后的 CSS 入口仍可能导入其他 CSS 文件，或引用图像与字体。仅发布入口文本会让这些依赖无法获取。请保留每个返回的 URL 和导入限定；展平含有外部导入的子样式表可能改变加载顺序或条件作用域。
+
+<ReferenceIllustration id="stylesheet-asset-graph" />
+
+| 交付方式 | 发布负责方 |
+| --- | --- |
+| CLI `generate --output dist/app.css` | CLI 将本地导入展平至入口，并写入资源文件及保留边界所需的同级 CSS。部署时须包含整组文件。 |
+| Vite 生产构建 | 集成将受管理导入展平至 Vite 的 CSS 资源，并将其余资源输出至构建结果。按配置的公共基础路径部署完整输出。 |
+| 带 `delivery` 的 `compileManifestFileSync()` | API 返回样式表内容与资源目标位置，由自定义宿主写入或提供服务。 |
+| manifest 或 CSS 字符串 | 两者均不发布文件。调用方仍负责原生 CSS 交付与引用资源。 |
+
+生产环境展平会保留层叠：层语句留在原位，`layer()`、`supports()` 和 media 限定转为等价的 `@layer`、`@supports`、`@media` 块，空样式表则被移除。样式表顶部的外部导入若前面仅有其他外部导入，会随样式表一同上移。若样式表在限定范围内保留 namespace 或导入，或其外部导入会落在内联规则之后，则保留为独立文件；同文件中位于它之前的导入也如此，因为 `@import` 不能放在规则之后。
+
+图像和字体保留定义样式表作为源所属文件，包括通过 `@reference` 使用的资源。发布时改写 URL，并保留查询字符串和片段。仅供引用的样式表不会仅因定义被读取就发布。
+
+CLI 的 `--no-export` 路径只打印 CSS，不复制资源。文件导出的监视模式在导入样式表或资源缺失时，会保留上次成功输出、报告错误，并在恢复后重新构建。不要把旧输出视为最新构建成功。
+
+自定义宿主请用[编译器交付契约](/reference/packages#css-compiler)。Vite 的已处理文本、原始源和 URL 导入见[样式表加载](/guide/installation/vite#stylesheet-loading)。[路由级样式](/guide/route-level-styles)说明哪个页面负责本地样式表。
+
+## 引用上下文 \{#reference-context\}
+### `@reference` \{#reference\}
+编译需要另一份样式表的定义，但不需要导入其原生规则时，请使用引用。此示例从应用入口加载间距令牌和选择器混入：
+
+```css name=app.css
+@import "@master/css";
+
+@mixin --manual-dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @contents; }
+}
+```
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+  padding: var(--spacing-md);
+  @apply --manual-dark { color: white; }
+}
+```
+
+引用提供令牌、工具类、混入、自定义媒体、自定义容器及原生关键帧定义供解析使用。它不会交付被引用文件的原生 CSS，不会生成其类，也不会添加扫描源。已使用的受管理令牌和关键帧仍可能使本地输出包含其依赖资源。被引用的原生规则绝不作为使用根节点。原生覆盖需要真正的 `@import` 或另一份已交付样式表。被引用的关键帧仅在本地使用时输出。
+
+<ReferenceIllustration id="reference-no-roots" />
+
+引用必须是顶层语句，且仅包含一个带引号的资源。相对路径以声明样式表的目录为基准。包引用解析已导出的 CSS 入口。引用不是入口标记。
+
+Vite、Next.js 和 Webpack 为本地样式表、CSS Modules 与 SFC 样式提供项目定义上下文。对于该上下文外的依赖或独立编译，显式引用很有用。本地样式表不会成为扫描或裁剪根节点。CSS Modules 与限定作用域的宿主必须全局交付生成的主题选择器。
+
+定义上下文在本地定义之前加载，因此本地定义可以替换导入或引用的定义。拆分 CSS 输出的编译器宿主也必须追踪哪份输出交付共享变量与关键帧；请见[编译器资源所有权](/reference/packages#css-compiler)。
+
+## 主题声明 \{#theme-declarations\}
+`@theme` 为工具类定义注册令牌。其修饰符分别控制交付哪些令牌声明，以及生成值使用 `var()` 还是代入原始声明值。[主题令牌](/guide/theme)说明项目设置；[变量与模式](/reference/rules/modes)说明作用域、继承与解析。
+
+### `@theme` \{#theme\}
+以自定义属性声明工具类令牌。主题块必须位于顶层，且仅接受自定义属性令牌声明。关键帧请在块外的原生 CSS 中声明。
+
+```css
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+```
+
+未知或重复的修饰符会产生错误。`static` 与 `inline` 的顺序不限。
+
+| 声明 | 令牌交付 | 生成值 |
+| --- | --- | --- |
+| `@theme` | 按需 | `var(--token)` |
+| `@theme static` | 始终交付 | `var(--token)` |
+| `@theme inline` | 仅在其他引用或依赖关系保留时 | 声明值 |
+| `@theme static inline` | 始终交付 | 声明值 |
+
+令牌输出于 `@layer theme` 中的 `:root, :host`。编译器保留声明顺序与重复值。已使用令牌保留传递变量依赖。选择器和条件规则应放在块外的原生 CSS 中。
+
+只有 `@theme` 为工具类模式注册命名令牌。`:root { --app-brand: red; }` 这类原生声明仍为常规 CSS；可直接用 `(color:var(--app-brand))` 使用，或通过 inline 主题令牌桥接。
+
+<ReferenceIllustration id="theme-modifier-axes" />
+
+### `@theme inline` \{#theme-inline\}
+使用 `inline`，将令牌的声明值代入 Master 生成的声明：
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+`bg-brand` 输出 `background-color:var(--app-brand)`，在使用该类的元素上解析原生变量。直接声明类、工具类及原生 `@apply` 展开均采用相同代入方式。手写原生声明保留原有 `var()` 引用。
+
+代入仅执行一次。替换值中的变量、函数和回退值保留原生 CSS 语义。依赖从代入后的声明收集；仅使用 inline 工具类不会强制输出被替换的令牌。直接以原生方式引用该令牌仍可保留其声明。
+
+重复主题定义先按重要性、再按源顺序选择 inline 值与模式。自定义属性的 `!important` 不会使生成工具类也变为重要。常规别名在声明作用域内解析；桥接值需要在使用处读取其他变量时，请用 inline。
+
+### `@theme static` \{#theme-static\}
+即使没有类或原生引用也必须输出令牌时，请用 `static`：
+
+```css
+@theme static { --color-integration: #4f46e5; }
+@theme static inline { --color-brand: var(--app-brand); }
+```
+
+`static` 控制令牌交付，`inline` 控制生成值，两者可按任意顺序组合。只要令牌具有任一 static 声明，就与其依赖一起保留，直至定义移除。被引用样式表不会仅因令牌为 static 就成为输出根节点。
+
+### 原生主题覆盖 \{#theme-mode\}
+在 `@theme` 注册默认值，再用原生选择器或查询覆盖变量：
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+@media (prefers-color-scheme: dark) {
+  :root { --color-panel: #111827; }
+}
+```
+
+原生覆盖保留原有作用域、层与样式表交付方式。同一元素上，无层的普通覆盖优先于 theme 层的普通声明。`defaults` 这类较后的层也能使覆盖优先，同时允许 `components` 与 `utilities` 层取得更高优先级。需要覆盖的地方都要导入原生样式表；`@reference` 仅提供定义，不交付这些规则。
+
+预设使用原生 `light-dark()` 提供自适应颜色与阴影。两个变量分支均保留为依赖。其原生基础 CSS 在根元素设置 `color-scheme: light dark`，并提供适用于元素和 shadow host 的明暗 `data-theme` 选择器。请见[颜色](/guide/colors#native-color-scheme-and-manual-themes)。
+
+<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
+
+## 查询定义 \{#query-definitions\}
+为可复用条件命名一次，即可用于原生 CSS 或类后缀。媒体名称描述视口或设备条件；容器名称描述在使用处选定容器上检查的条件。定义必须位于顶层且不带条件。
+
+[条件](/reference/rules/conditions)定义类后缀语法，[命名条件](/reference/rules/named-conditions)列出所有预设条件，[响应式设计](/guide/responsive-design)说明如何选择布局边界。
+
+<ReferenceIllustration id="container-condition-expansion" />
+
+### `@custom-media` \{#custom-media\}
+依照 [CSS Media Queries 规范](https://drafts.csswg.org/mediaqueries-5/#custom-mq)定义命名媒体查询：
+
+```css
+@custom-media --wide (width >= 60rem);
+@custom-media --reading (--wide), print;
+@custom-media --outside not (--reading);
+@custom-media --enabled true;
+@custom-media --disabled false;
+
+@media (--reading) { .article { max-width: 70ch; } }
+```
+
+名称以 `--` 开头。CSS 引用使用 `(--name)`，标记使用 `@name`，本地命名块则用 `@media (--name)`。原生 CSS、工具类和混入定义以及标记查询共用同一注册表。
+
+定义支持查询列表、前向引用、`true`、`false`、嵌套布尔表达式、否定和媒体类型。展开遵循逻辑：列表保留其或关系，否定应用于完整的被引用表达式。列表中每个查询形成独立分支，类上各条件的分支数相乘；展开超过 4,096 条分支的类不生成规则，例如重复十二次 `@reading` 的类。编译器输出常规媒体查询；单个查询无法表达混合媒体类型时使用嵌套块。不需要浏览器 custom-media API 或 JavaScript 运行时注册。
+
+未定义、循环或无效引用会导致编译错误。同名定义以较后者为准。媒体与混入名称相互独立：`@name` 选择媒体，`@apply(--name)` 调用混入。`--starting-style` 为保留名称，因为 `@starting-style` 已内置。预设没有 `--breakpoint-*` 令牌。项目中具有此前缀的自定义属性仍为常规 CSS，绝不会隐式声明媒体条件。宽度上限请用原生长度或独立命名的布局令牌。保留外部 URL 的导入不能包含未解析的 custom-media 查询；降低语法前先解析这些样式表导入，或在导入上使用常规原生查询。
+
+<StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
+
+### `@custom-container` \{#custom-container\}
+Master CSS 在编译时展开 `@custom-container` 定义；浏览器接收常规 `@container` 规则。定义仅保存条件，测量哪个容器则在使用条件的位置决定。
+
+```css
+@custom-container --md (width >= 28rem);
+@custom-container --max-md not (--md);
+@custom-container --compact style(--density: compact);
+@custom-container --dense (--md) and (--compact);
+
+@container card (--md) { .title { font-size: 1.25rem; } }
+```
+
+名称以 `--` 开头。CSS 引用在可选容器名称后使用 `(--name)`，例如 `@container card not (--md)`。标记在容器查询内使用相同引用：`@container(--md)` 测量最近的容器，`@container(card|--md)` 测量命名容器。原生 CSS、工具类和混入定义以及标记共用同一注册表。
+
+定义可以是任意容器条件：尺寸与样式查询、`not`、`and`、`or`，以及对其他自定义容器的引用，包括前向引用。展开时替换被引用条件；除非原本已是一个组或完整条件，否则添加括号，因此 `@container card (--dense)` 输出 `@container card (width >= 28rem) and style(--density: compact)`。容器条件始终适合单个规则前置部分，展开绝不增加分支。编译器输出常规容器查询，并将各展开条件存入 manifest 的 `customContainers`。
+
+未定义、循环和空引用都会导致编译错误，以容器名称开头的定义也一样。同名定义以较后者为准，引用该名称的定义使用最终版本。容器名称与自定义媒体、混入相互独立：裸 `@md` 始终选择自定义媒体，绝不选择容器条件。`--container-*` 令牌用于设置元素尺寸，绝不提供容器断点。
+
+<StylesheetExample title="A named container condition" source={"@custom-container --roomy (width >= 40rem); .card { @container (--roomy) { display: grid; } }"} />
+
+## 工具类与原生样式 \{#managed-definitions\}
+`@utility` 注册按需生成的类。`@mixin` 为可复用 CSS 主体命名；`@apply` 在调用处展开它。原生选择器仍为常规 CSS。[复用样式](/guide/reusing-styles)说明如何选择形式；本页定义其语法与替换规则。
+
+### `@utility` \{#utilities\}
+在顶层显式声明类形式：
+
+```css
+@utility card-layout {
+  display: grid;
+  gap: var(--spacing-md);
+  &:hover { outline: 1px solid currentColor; }
+}
+
+@utility col-gap-(--spacing) {
+  column-gap: var(--spacing);
+}
+
+@utility grid-cols(--cols <integer>) {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+```
+
+在标记中使用 `card-layout`、`col-gap-sm` 和 `grid-cols(3)@sm`。头部决定定义注册的是固定类、令牌模式还是函数。每种形式仅注册该形式，令牌模式不会同时创建函数调用。添加声明或支持的嵌套规则不会改变注册形式。
+
+工具类名称和令牌前缀不能包含 `_`，因为 `_` 在类中开始后代选择器；此类定义会在源位置报告错误。令牌键可以含 `_`：它仍是可供 `var()` 使用的有效变量，但不会生成裸令牌类或补全。混入名称、自定义属性及原生样式表类仍可使用 `_`。
+
+### 注册与预设 \{#named-and-enumerated-classes\}
+主题提供令牌，工具类定义决定这些令牌能产生哪些类。导入 `"@master/css"` 获取完整预设；显式组合样式表时，也可搭配自己的令牌加载 `"@master/css/utilities.css"`。
+
+[家族索引](/reference/tokens/families)提供完整令牌与属性映射。[固定工具类](/reference/rules/declarations#fixed-utilities)和[直接数值](/reference/direct-values)列出各自的注册。它们均使用本页所述的相同定义形式。
+
+### 令牌模式 \{#named-token-patterns\}
+模式有一个末尾占位符。参数指定令牌命名空间，固定部分指定类前缀。无类型占位符绑定令牌值：
+
+```css
+@utility p-(--spacing) { padding: var(--spacing); }
+@utility m-(--spacing) { margin: var(--spacing); }
+@utility fg-(--color) { color: var(--color); }
+@utility size-(--spacing) {
+  width: var(--spacing);
+  height: var(--spacing);
+}
+```
+
+`p-md` 绑定 `var(--spacing-md)`；`size-md` 在两条声明中使用该引用。常规令牌保留由浏览器求值的引用，inline 令牌则将声明值代入一次。未知令牌不会创建类。值模式接受数字和 Unicode 键，包括包含 `--` 的键。
+
+`<string>` 占位符绑定令牌键，可用于显式引用伴随值：
+
+```css
+@theme {
+  --text-hero: var(--font-size-5xl);
+  --text-hero--line-height: 1.15;
+  --text-hero--letter-spacing: -.03em;
+}
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
+}
+```
+
+`text-hero` 绑定字符串 `"hero"`，且必须存在对应的主要令牌。含 `--` 的伴随键不创建类；缺少伴随值时使用原有回退值。`ident()` 静态折叠为常规 CSS 标识符。命名空间来自参数，因此 `@utility type-(--text <string>)` 使用相同令牌，搭配不同类前缀。令牌占位符不接受默认值或其他类型。
+
+共享前缀可以显式提供多个命名空间：
+
+```css
+@utility font-(--font-family) { font-family: var(--font-family); }
+@utility font-(--font-size) { font-size: var(--font-size); }
+@utility font-(--font-weight) { font-weight: var(--font-weight); }
+```
+
+`font-sans`、`font-sm` 和 `font-bold` 各自选择唯一包含该键的命名空间。键若存在于多个分支，使用时报告 `AMBIGUOUS_TOKEN` 且不产生 CSS。请改用不同键，或 `(font-size:var(--font-size-brand))` 这类原生声明。此规则也适用于字符串键配方和多声明主体。负值与不透明度仅在选定唯一分支后才检查。
+
+固定类优先于模式：保留的是完整类名拼写，而非令牌键。因此即使存在 `--text-center`，`text-center` 仍设置 `text-align`；`fg-solid`、`b-solid/.5` 和 `-mx-auto` 则仍可使用名为 `solid` 或 `auto` 的令牌。模式采用最长前缀；所选家族内若没有令牌，就报告错误，不再尝试较短前缀。参数命名空间不同的令牌模式可共用前缀。较后模式完整替换解码后前缀与命名空间均相同的定义，包括参数模式、主体、来源与依赖。静态和函数注册则各自独立替换同形式、同名称的定义。
+
+负值与不透明度适用于直接值子集：一个无类型占位符，以及一条完整值恰为 `var(--parameter)` 的原生声明。`-m-md` 将数值间距令牌转为负值；`-p-md` 无效，因为 padding 不支持负值。`fg-red/.5` 为颜色令牌应用不透明度，范围为零到一。这些能力不扩展到常规多声明或字符串键配方。
+
+<ReferenceIllustration id="ambiguous-namespace" />
+
+### 静态参数 \{#dynamic-values\}
+函数工具类与混入接受位置参数：无类型、`<integer>`、`<number>`、`<string>` 或 `<custom-ident>`。静态默认值用冒号指定，例如 `--cols <integer>: 2`。数字必须是数值字面量；网格数量与跨度必须为正整数。字符串参数必须加引号。
+
+```css
+@utility pair(--size) {
+  width: var(--size);
+  height: var(--size);
+}
+```
+
+使用 `pair(2rem)`。常规函数参数必须能在静态阶段确定。若函数或混入恰有一个无类型、无默认值的参数，且仅有一条完整值恰为 `var(--parameter)` 的原生声明，也接受符号式 `var()` 表达式。调用方引用原样保留，交由浏览器求值。其他函数拒绝外部 `var()`、`attr()` 及依赖浏览器的参数。已知的外层参数可通过 `var(--parameter)` 转发。
+
+<StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
+
+<ReferenceIllustration id="parameter-known-vs-live" />
+
+### `@mixin` 与 `@apply` \{#reusing-a-matched-value\}
+Master 编译实验性 [CSS Mixins 规范](https://drafts.csswg.org/css-mixins-1/#mixin-rule)的静态子集。定义采用双连字符名称，且必须是不带条件的样式表级规则。混入提供 CSS 复用，不注册 Master 类。
+
+```css
+@mixin --caption {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+.caption {
+  color: currentColor;
+  @apply --caption;
+  font-weight: 600;
+}
+@utility caption {
+  @apply --caption;
+}
+```
+
+`@apply` 在原生规则、工具类或另一个混入内接受一个混入调用，不接受工具类名称或类列表。展开位于原有声明位置，并保留重复声明、重要性、选择器、条件与 URL 所有权。
+
+参数可用于应用元素上，包括 `&:hover` 与条件包装。跨元素使用参数、重新赋值、选择器或条件插值、递归定义、重载、`@private` 及不支持的类型均报告编译错误。该静态子集未实现依赖浏览器的参数求值、私有属性或通用函数。
+
+<ReferenceIllustration id="mixin-splice" />
+
+### 内容与类包装 \{#contents\}
+使用 `@contents` 标记调用方的声明或嵌套规则插入可复用包装的位置。
+
+```css
+@mixin --card-wide() {
+  @container card (width >= 40rem) { @contents { display: grid; } }
+}
+.card { @apply --card-wide { gap: 1rem; } }
+```
+
+`@contents;` 插入提供的内容。`@contents { … }` 仅在调用省略块时提供回退内容。显式空 `@apply --card-wide {}` 会抑制回退。每个 contents 位置插入一次块，保留声明、重复值与嵌套规则。没有 `@contents` 的混入忽略提供的块。
+
+<ReferenceIllustration id="contents-default-vs-empty" />
+
+提供的内容保留调用方参数绑定，即使经嵌套应用转发也一样。回退内容使用定义混入的绑定。常规自定义属性保留原生 CSS 层叠行为。允许有限的嵌套调用；递归定义及超过展开深度或节点上限均为错误。
+
+```css
+@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+@utility emphasis { color: red; display: block; }
+```
+
+```html
+<button class="(color:red)@apply(--hocus)">Save</button>
+<div class="grid-cols(3)@apply(--card-wide)"></div>
+<div class="emphasis@apply(--hocus)!"></div>
+```
+
+`@apply(--name(...))` 接受静态参数。多个 `@` 包装从左到右嵌套：`(color:red)@apply(--a)@apply(--b)` 将 `--a` 放在 `--b` 外层。工具类将所有声明作为一个块提供，因此包装自身的声明每个类仅输出一次。选择器后缀保留原有位置；末尾 `!` 将每条展开声明标为重要。类头部与除 `@apply` 外的条件后缀决定类排序：每个外层条件分支都是独立排序的一条规则；混入内部选择器和条件留在输出文本中，不会让类移到较后排序级别，展开也保留原始顺序。若展开未添加声明、选择器或条件，就与单声明工具类一起排序；若头部为 `(property:value)`，则与原生声明一起排序。其他展开按配方排序。检查与冲突分析使用展开后的规则。
+
+未使用定义、丢弃的 contents 和未使用回退块不会保留令牌或关键帧。已交付原生 `@apply` 仍通过 emitted-globals 契约作为资源根节点。声明位置与相对 URL 保留其定义或调用文件。
+
+<ReferenceIllustration id="contents-insertion" />
+
+### 完整定义替换 \{#whole-definition-replacement\}
+较后的定义替换同一注册的完整主体，不合并声明。同名静态工具类与函数工具类属于独立注册。令牌模式仅替换解码后前缀与命名空间均相同的分支。
+
+```css
+@utility badge { color: red; padding: 1rem; }
+@utility badge { color: blue; }
+```
+
+`badge` 现在仅输出 `color: blue`。之前的 padding 及其依赖已移除。
+
+<ReferenceIllustration id="definition-replacement" />
+
+混入名称仅有一个最终定义，包括参数列表、主体与依赖。空定义仍保持注册。前向嵌套调用依据最终注册表解析；不提供参数重载。
+
+<ReferenceIllustration id="independent-registrations" />
+
+### 定义作用域与导入 \{#definition-scope-and-imports\}
+`@theme`、`@utility`、`@mixin`、`@custom-media` 和 `@custom-container` 是顶层定义，在层或条件包装中注册会产生错误。混入主体可包含声明、嵌套选择器、支持的原生条件、嵌套 `@apply` 与 `@contents`。层位置由调用方决定。
+
+源扫描、安全列表、引擎 API 和运行时 DOM 变更中的类均为使用根节点。已交付原生 CSS 中的 `@apply` 也是根节点；未使用工具类或混入内、或未交付 `@reference` 样式表内的则不是。依赖收集在参数绑定与 `ident()` 折叠后进行。已使用令牌保留有序声明和传递依赖。静态令牌即使没有引用方也保持根节点。移除最后一个根节点会释放资源；原生 CSS 资源则通过 `emittedGlobals` 保持固定。
+
+运行时 manifest 保留未使用定义，供未来 DOM 类使用。按需生成针对 CSS 与资源输出。原生 CSS 裁剪仍须显式启用；关键帧与其声明文件共用原生保留和裁剪策略。带限定的导入只能包含原生 CSS。定义请通过不带限定的导入或引用加载。
+
+### 原生属性优先顺序 \{#literal-and-raw-values\}
+原生 `(property:value)` 类的 CSS 属性含义独立于工具类注册。在相同条件下，单声明工具类与原生声明类可以覆盖配方的一部分。完整排序和覆盖规则见[声明与值](/reference/rules/declarations#combining-declarations)。
+
+### 原生默认样式 \{#defaults\}
+将原生默认样式写在 `@layer defaults` 中。
+
+### 原生组件 \{#components\}
+将原生组件选择器写在 `@layer components` 中。
+
+```css
+@layer components {
+  .button {
+    display: inline-flex;
+    padding: var(--spacing-md);
+    &:focus-visible { outline: 2px solid currentColor; }
+  }
+}
+```
+
+原生规则按样式表导入图交付。工具类定义注册类名；混入定义通过 `@apply` 提供 CSS 复用。两者均在编译期间使用，仅被使用时才输出 CSS。
+
+### Sass 互操作 \{#sass-interoperability\}
+
+使用 Sass 时，请将 CSS 混入定义放在 `.css` 文件中。当前 Dart Sass 为未来 CSS 支持保留 `@mixin --name`，并拒绝将其视为 Sass 混入；请见 [Sass 兼容性公告](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/)。SCSS 文件可在 Master CSS 编译前，通过插值输出原生 at-rule：
+
+```scss
+@#{'mixin'} --card {
+  padding: 1rem;
+}
+
+.card { @apply --card; }
+```
+
+这是 Sass 插值，并非额外的 Master CSS 语法。Sass `@include` 与 CSS `@apply` 仍是独立结构。
+
+### 主题选择器包装 \{#theme-wrappers\}
+原生选择器和查询激活主题覆盖。混入可以提供对应的类条件：
+
+```css
+@mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
+}
+```
+
+使用 `(color:white)@apply(--ocean)`。指向 shadow host 时，请显式添加 `:host(...)` 选择器。
+
+## 源边界 \{#source-boundaries\}
+文件策略决定从哪里读取候选项；候选策略决定哪些完整类字符串仍可使用。这些指令不会改变解析器，也不会将任意源文本转为有效工具类。配置与排错见[扫描类名](/guide/scanning-and-pruning)，支持的源语法与生命周期见[提取](/reference/rules/extraction)。
+
+<ReferenceIllustration id="scanning-two-filters" />
+
+### `@source` \{#source\}
+常规应用源使用集成与 CLI 的默认发现方式。需要时再添加显式例外：
+
+```css
+@source "../content/**/*.mdx";
+```
+
+### `@source not` \{#source-not\}
+从源集合中排除匹配文件：
+
+```css
+@source not "../content/drafts/**";
+```
+
+`{a,b}` 这类花括号组展开为独立模式；单个模式最多包含 64 组花括号，且最多展开为 1,024 个模式。
+
+所有包含项先取并集，再减去全部排除项。每个相对模式均以声明它的样式表为基准解析，包括裸 `src/**`、`./src/**`、导入文件及 `@source not`。引用不会提供扫描源。
+
+解析文件的 API 必须提供声明文件或显式基准文件。仅检查源指令的操作可返回未解析元数据，但不得自行虚构文件系统基准。扫描器编程 API 的 `cwd` 选项对直接通过该 API 传入的扫描选项保持现有含义。
+
+## 候选策略 \{#candidate-policy\}
+### `@safelist` \{#safelist\}
+添加无法以字面形式出现在扫描源中的完整类候选项：
+
+```css
+@safelist "(opacity:1)";
+@safelist "bg-blue-60@dark";
+```
+
+候选项采用与发现的类相同的匹配和诊断策略。请让动态选项保持有限且明确。
+
+要保留命名动画定义而不生成类或动画声明，请使用显式 关键帧目标：
+
+```css
+@safelist keyframes "fade" "pop";
+```
+
+每个带引号字符串是一个完整 CSS 动画名称。名称区分大小写并支持 CSS 转义；字符串内空格是名称的一部分。不展开通配符或分割类。缺少名称、未加引号名称、逗号和嵌套安全列表指令均为错误。名称若不在完整导入／引用图中，会产生警告。安全列表在各入口图内合并，并在源或指令移除时撤回。`@reference` 不导入安全列表根节点。没有关键帧阻止列表，也没有独立的关键帧裁剪／保留目标。
+
+### `@blocklist` \{#blocklist\}
+使用完整字符串或 `*`、`?` 通配符模式，移除不需要的完整候选项：
+
+```css
+@blocklist "debug-*";
+@blocklist "example-token";
+```
+
+样式表语法不会将斜杠包围的模式解释为正则表达式。通配符策略属于阻止列表；安全列表提供的是完整类。
+
+## 原生 CSS 保留 \{#native-css-preservation\}
+原生 CSS 裁剪移除未使用的类选择器分支，并使关键帧按需可用。这是样式表策略，与工具类生成分开。[优化 CSS 交付](/guide/optimizing-css-delivery#native-pruning)说明何时启用；[扫描指令](/reference/directives/scanning)定义源与候选筛选。
+
+<ReferenceIllustration id="pruning-file-boundary" />
+
+原生 CSS 默认保留，即使提供类列表也一样。在集成或样式表 API 中设置 `pruneNativeCSS: true`，可裁剪项目拥有的源。包 CSS 仍保留，除非其源显式启用裁剪。
+
+### `@prune native` \{#prune-native\}
+
+```css
+@prune native;
+.used { color: red; }
+.unused { color: blue; }
+```
+
+此指令仅对声明文件启用裁剪，不会传递到导入样式表。同文件中的 `@preserve native;` 优先，即使集成启用全项目裁剪也一样。原生输出开关 `preserveNativeCSS: false` 是独立选项，无论两个指令如何设置，均抑制原生输出。
+
+### `@preserve native` \{#preserve-native\}
+Master 管理的样式表若包含不可被原生 CSS 裁剪移除的原生类规则，请用 `@preserve native;`。
+
+```css
+@import "@master/css";
+@preserve native;
+
+.injected-by-payment-widget {
+  color: blue;
+}
+```
+
+样式表仍由 Master CSS 处理。即使扫描源未使用这些类，原生类规则仍保留；常规编译器规范化仍会应用。此策略不会强制将未使用的受管理类加入生成输出，也不代表保留原始 CSS 字节。
+
+<ReferenceIllustration id="preserve-wins" />
+
+### 导入图 \{#import-graph\}
+已解析 CSS 导入保留各自源边界，因此每个文件的策略仅适用于自身。导入方不能为依赖文件启用裁剪。`pruneNativeCSS: true` 下，项目拥有的依赖文件参与裁剪，除非声明 `@preserve native;`；包和远程样式不会因为项目导入它们就变为项目拥有。带限定导入保留 media、supports 与 layer 包装。
+
+```css name=src/style.css
+@prune native;
+@import "@master/css";
+@import "./cards.css";
+```
+
+```css name=src/cards.css
+@prune native;
+.card { border: 1px solid rgb(0 0 0 / 12%); }
+.unused-card { color: red; }
+```
+
+扫描源含有 `card` 时，输出保留 `.card` 并移除 `.unused-card`。若 `cards.css` 没有该指令，两条规则均保留。
+
+### 根节点作用域 \{#root-scope\}
+启用设置属于各源文件；筛选使用导入该文件的根节点之使用范围。因此同一份已启用共享文件可在不同根节点下保留不同类。由 JavaScript 或框架路由直接导入的文件，仅当该导入进入 Master CSS 管线时才成为自身根节点。
+
+根节点默认使用全局扫描器范围。根节点导入图任意位置的 `@source`、`@source not`、`@safelist` 和 `@blocklist` 均可缩小或扩大范围；导入文件中的指令合并到每个导入它的根节点，相对模式则以声明文件为基准解析。
+
+```css name=app/a/a.css
+@prune native;
+@import "@master/css";
+@source "./page.html";
+@import "../shared.css";
+```
+
+```css name=app/shared.css
+@prune native;
+@blocklist "debug-*";
+.shared-card { border: 1px solid rgb(0 0 0 / 12%); }
+.only-used-in-b { color: blue; }
+.debug-outline { outline: 1px solid red; }
+```
+
+若 `app/a/page.html` 仅使用 `shared-card`，`a.css` 输出保留 `.shared-card`，并移除 `.only-used-in-b` 和 `.debug-outline`。另一根节点 `b.css` 的页面若使用 `only-used-in-b`，则从同一共享文件保留该规则。
+
+### 规则筛选 \{#rule-filtering\}
+类选择器规则只要有一条分支中的任一类被使用就会保留；选择器列表中未使用分支则被移除。检查依据是类名而非 DOM 关系：对于 `.card .title`，找到 `card` 或 `title` 任一个就保留分支，因此保留规则仍可能不匹配任何元素。
+
+```css
+@prune native;
+body { margin: 0; }
+.card, .unused:hover { border: 1px solid rgb(0 0 0 / 12%); }
+@media (width >= 48rem) {
+  .card .title { font-weight: 700; }
+  .debug-card { outline: 1px solid red; }
+}
+```
+
+使用 `card` 和 `title` 时，输出保留 `body`、`.card` 与 `.card .title`，并移除 `.unused:hover` 和 `.debug-card`。`body`、`html`、`:root` 这类没有类选择器的规则始终保留。裁剪后变空的 at-rule 块则移除。
+
+<ReferenceIllustration id="pruning-selector-branches" />
+
+### manifest 引用 \{#manifest-references\}
+保留的原生规则若读取 `var(--*)` 或指定 manifest 动画名称，会保留项目入口图中对应的主题变量和关键帧。被移除规则不保留任何资源。
+
+```css
+@prune native;
+@import "@master/css";
+@theme { --color-primary: #175cff; }
+
+.notice { color: var(--color-primary); }
+.unused-notice { color: var(--color-primary); }
+```
+
+若仅使用 `notice`，由于 `.notice` 被保留，会输出 `--color-primary`；`.unused-notice` 则被移除。
+
+### 包含的类 \{#included-classes\}
+来自有限外部来源的原生类可用 `@safelist` 标为已使用，使裁剪保留其规则。它不替代应用在扫描源中编写的类。
+
+```css
+@prune native;
+@safelist "dialog-open dialog-closing";
+.dialog-open { overflow: hidden; }
+.dialog-closing { pointer-events: none; }
+```
+
+### 原生关键帧 \{#native-keyframes\}
+在原生 CSS 中声明关键帧，并在其所属文件启用基于使用情况的输出：
+
+```css
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@safelist keyframes "external-enter" "external-exit";
+@keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes external-exit { from { opacity: 1; } to { opacity: 0; } }
+```
+
+关键帧与原生类规则遵循相同文件策略。默认是原生 CSS：在输出中原位、原样保留，Master CSS 绝不再次输出。`@prune native;` 使该文件的关键帧像令牌一样成为按需定义：它们离开原生输出，改由使用它们的输出与生成 CSS 一起输出。两个指令同时出现时，`@preserve native;` 优先。策略仅适用于声明文件，不通过导入传递。`pruneNativeCSS` 选项保留项目拥有文件的范围。包 CSS 仍保留，除非显式启用裁剪。`preserveNativeCSS: false` 抑制原生交付；按需定义仍在使用处输出。
+
+### 关键帧使用根节点 \{#keyframe-usage-roots\}
+
+动画工具类、原生动画声明、静态动画令牌和关键帧安全列表使用对应定义。分析追踪简写值、animation-name 列表、嵌套变量、回退值、限定作用域的覆盖及传递令牌依赖。已使用定义也会使用帧读取的令牌；原生定义仅提供这些令牌，因为样式表自身交付帧。未解析的动态名称保守使用编译图中所有候选定义，并产生信息诊断。
+
+<ReferenceIllustration id="keyframe-reachability" />
+
+### 关键帧条件与限制 \{#keyframe-conditions-and-restrictions\}
+
+输出的按需定义包在原声明位置的条件和层规则内，包括带限定导入的层，并位于生成层之后。同一容器内的定义共用一个包装。同名定义保持独立并按声明顺序排列，由浏览器决定胜出的定义。名称会解码且区分大小写。匿名层无法重新进入，因此位于匿名层内或导入匿名层的按需关键帧会导致编译错误；请为层命名或保留文件。帧在原样式表之外输出，因此其中的相对 `url()` 会导致编译错误；请使用绝对 URL 或保留文件。定义 ID 来自声明文件最近且具有名称的 `package.json` 及包相对路径，因此同项目从任何检出或安装目录均输出相同 CSS。重命名该包会改变 ID；不在命名包内的文件则回退至绝对路径。
+
+### 关键帧资源所有权 \{#keyframe-resource-ownership\}
+
+帧包含原生声明；不支持帧内嵌套指令和 `@apply`。未使用工具类和混入、已裁剪原生规则及未交付引用样式均不创建使用根节点。`@reference` 使定义按需可用，但不导入其保留策略或安全列表；含相对 URL 的原生关键帧仍随样式表交付。项目或基础 manifest 的原生关键帧，在不交付它们的样式表中同样按需可用。emitted globals 列出输出以原生或按需方式交付的关键帧，使其他输出不会重复输出。仅由 JavaScript 引入的动画名称，请使用 `@safelist keyframes "reveal";`。
+
+### 运行时关键帧生命周期 \{#runtime-keyframe-lifetime\}
+
+运行时分别追踪定义 ID 与名称，并将按需定义插入自身样式表。DOM 移除仅在没有原生使用、静态令牌或安全列表继续使用该定义时才释放它。HMR 一同替换定义与 emitted globals；SSR hydration 使用相同 ID 和资源顺序。链接样式表保持常规 CSS，不添加伴随文件或标记。
+
+<StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />

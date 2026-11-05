@@ -1,0 +1,31 @@
+# Reference prose: illustrations/token-dependency-chain
+
+## title \{#copy-title\}
+
+
+トークンを使うと依存関係も保持される
+
+## alt \{#copy-alt\}
+
+
+fg-action は color-action を経て color-brand にたどり着きます。別の color-unused トークンは、この連鎖につながっていません。
+
+## caption \{#copy-caption\}
+
+
+矢印は参照を表し、実行やカスケードの優先順位ではありません。この例には static トークン、セーフリスト、ほかの参照元はありません。
+
+## description-0 \{#copy-description-0\}
+
+
+テーマは --color-action: var(--color-brand)、--color-brand: #175cff と、無関係な --color-unused を定義します。
+
+## description-1 \{#copy-description-1\}
+
+
+fg-action を使うと、theme レイヤーに --color-action と、推移的に依存する --color-brand が保持されます。
+
+## description-2 \{#copy-description-2\}
+
+
+この例では無関係なトークンに使用の起点がないため、出力されません。生成する color 宣言は var(--color-action) を保持し、値はブラウザーが解決します。

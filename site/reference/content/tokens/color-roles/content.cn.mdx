@@ -1,0 +1,86 @@
+# Reference prose: tokens/color-roles
+
+## title \{#copy-title\}
+
+
+颜色角色
+
+## summary \{#copy-summary\}
+
+
+文本、表面和线条角色，各自具有浅色与深色值。
+
+## groups-0-title \{#copy-groups-0-title\}
+
+
+文本
+
+## groups-1-title \{#copy-groups-1-title\}
+
+
+表面
+
+## groups-2-title \{#copy-groups-2-title\}
+
+
+线条
+
+## note \{#copy-note\}
+
+
+角色是颜色键的一部分：`fg-text-muted` 通过 color 命名空间读取 `--color-text-muted`。每个颜色族都接受角色键，包括 `bg-text-link` 和 `outline-line-control`；角色名称不会限制属性。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+浅色与深色对应每个预设 light-dark() 值的两个参数。实际选择由元素使用的配色方案决定，而非仅由类前缀或操作系统决定。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+局部配色方案决定使用值
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`fg-text-muted` 生成 `color: var(--color-text-muted)`。其预设值使用 `light-dark(var(--color-zinc-60), var(--color-zinc-40))`：浅色选择第一个颜色，深色选择第二个。类与生成规则都不改变。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+预设在根元素启用 `color-scheme: light dark`。其中的 `data-theme="light"` 和 `data-theme="dark"` 选择器可在根元素、嵌套区域或 shadow host 选择配色方案。选择由原生 CSS 执行，切换配色方案不需要重新生成这个工具类。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`@dark` 和 `@light` 类后缀检查的是系统偏好。手动选择 `data-theme` 不会启用这些媒体查询。需要基于选择器的条件时，请使用模式契约定义的形式。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+角色提供的是颜色，不是组件，也不保证在每个背景上都有足够对比。反色表面有对应的反色文本角色。分隔线与弱化线条用于装饰，控件线条则用于识别边界。更改表面、透明度或令牌值时，请重新检查实际的颜色配对。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+变量与模式
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生 light-dark() 选择
+
+## usage-lead \{#copy-usage-lead\}
+
+
+使用角色组成卡片：抬升的表面、分隔线以及强调、正文和弱化文本。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+新增一个角色，为每个配色方案各设置一个值：`--color-text-brand` 会创建 `fg-text-brand`。
+
+## guide-label \{#copy-guide-label\}
+
+
+颜色

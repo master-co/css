@@ -1,0 +1,31 @@
+# Reference prose: illustrations/independent-registrations
+
+## title \{#copy-title\}
+
+
+静态名称与函数独立注册
+
+## alt \{#copy-alt\}
+
+
+两条独立路径将 badge 连接到 display 定义，将 badge(8px) 连接到 padding 函数。静态路径的替换不会跨到函数路径。
+
+## caption \{#copy-caption\}
+
+
+路径表示注册身份。名称相同不会使两个定义成为重载或合并主体。
+
+## description-0 \{#copy-description-0\}
+
+
+@utility badge \{ display: inline-block; \} 注册静态 badge 类。@utility badge(--inset) \{ padding: var(--inset); \} 注册独立函数。
+
+## description-1 \{#copy-description-1\}
+
+
+将静态定义改为 display: block 会改变 badge，但 badge(8px) 仍写入 padding: 8px。
+
+## description-2 \{#copy-description-2\}
+
+
+替换影响的是同形式、同名称的完整主体。函数不是静态类的回退。

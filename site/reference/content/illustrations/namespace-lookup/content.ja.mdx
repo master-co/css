@@ -1,0 +1,36 @@
+# Reference prose: illustrations/namespace-lookup
+
+## title \{#copy-title\}
+
+
+同じキーでも異なるトークンを選べる
+
+## alt \{#copy-alt\}
+
+
+独立した 3 行で、p-md は spacing-md と padding に、max-w-md は container-md と max-width に、font-md は font-size-md と font-size に対応します。各行は異なるトークン名の中で、同じ md キーを使っています。
+
+## caption \{#copy-caption\}
+
+
+各行は独立して解決されます。繰り返し現れる md は名前空間内のキーであり、これらのクラスが共有する単一のグローバル値ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+p-md は --spacing-md を選び、padding: var(--spacing-md) を設定します。
+
+## description-1 \{#copy-description-1\}
+
+
+max-w-md は --container-md を選び、max-width: var(--container-md) を設定します。
+
+## description-2 \{#copy-description-2\}
+
+
+font-md は --font-size-md を選び、font-size: var(--font-size-md) を設定します。プリセットの font- ファミリーでは、md は font-size 名前空間だけを一意に選びます。
+
+## description-3 \{#copy-description-3\}
+
+
+強調した md は、別々の名前空間にある同じキーです。矢印は検索とプロパティの対応を示しており、3 行の間の依存関係ではありません。図ではテーマ値とレイヤーのラッパーを省略していますが、下の生成例には両方が含まれます。

@@ -1,4 +1,6 @@
 ---
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 import DocumentOptions from '@master/internal-site/components/DocumentOptions.astro'
 import { agentOptionGroup } from '../utils/agent-options'
 
@@ -7,6 +9,8 @@ interface Props {
 }
 
 const { name } = Astro.props
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, `AgentOptions:${name}`, agentOptionGroup(name))
+
 ---
 
-<div data-agent-options={name}><DocumentOptions {...agentOptionGroup(name)} /></div>
+<div data-agent-options={name}><DocumentOptions {...copy} /></div>

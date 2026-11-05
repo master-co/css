@@ -1,4 +1,6 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import { guideStudies, type GuideStudyId } from '../studies'
 import light0 from '../../../assets/images/guide-studies/pipes-and-quotes-light.png'
@@ -97,7 +99,7 @@ const images = {
 }
 
 const { id } = Astro.props
-const study = guideStudies[id]
+const study = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, `GuideStudy:${id}`, guideStudies[id])
 ---
 
 <DocumentIllustration title={study.title} alt={study.alt} images={images[id]} caption={study.caption}>

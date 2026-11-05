@@ -1,0 +1,31 @@
+# Reference prose: illustrations/static-branch-extraction
+
+## title \{#copy-title\}
+
+
+静的な選択肢は分岐の実行前から見える
+
+## alt \{#copy-alt\}
+
+
+条件式の両側のリテラルから抽出クラスにつながる。実行時の tone を連結する式は未解決の断片で終わる。
+
+## caption \{#copy-caption\}
+
+
+2 つの分岐はソース上の選択肢で、実行手順ではありません。抽出は選ばれる分岐を予測せず、連結したクラス名を推測で作ることもありません。
+
+## description-0 \{#copy-description-0\}
+
+
+error ? "bg-red-60" : "bg-green-60" は、2 つの完全な静的クラス文字列を抽出に公開します。
+
+## description-1 \{#copy-description-1\}
+
+
+"bg-" + tone は結果の完全なクラスを公開しません。スキャナーは tone の値を推論しません。
+
+## description-2 \{#copy-description-2\}
+
+
+選択肢が有限なら完全な候補を使い、値自体に限りがない場合は固定クラスと動的な CSS 変数を組み合わせます。

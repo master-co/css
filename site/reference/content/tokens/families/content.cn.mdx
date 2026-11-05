@@ -1,0 +1,46 @@
+# Reference prose: tokens/families
+
+## intro \{#copy-intro\}
+
+
+令牌族连接类前缀、令牌命名空间以及它设置的 CSS 属性。这些表格列出预设注册的所有族，也包括没有预设值的族。
+
+## mapping \{#copy-mapping\}
+
+
+仅靠键无法识别令牌。在 `p-md` 中，`p-` 读取 `spacing` 命名空间，`md` 则选择 `--spacing-md`。相同的键用在其他族中，可能选择不同的令牌。
+
+## lookup \{#copy-lookup\}
+
+
+每行依次表示前缀 → 令牌名称模式 → 原生属性。请用已注册的键替换 `*`。链接的值页面列出可用键；命名空间列指出该族接受哪些令牌。
+
+## shared \{#copy-shared\}
+
+
+`font-` 对 `--font-family-*`、`--font-size-*` 和 `--font-weight-*` 各有独立的族。键必须能选出其中一个；如果同一个键存在于多个命名空间中，类就会有歧义，并且不会生成 CSS。
+
+## registration \{#copy-registration\}
+
+
+请在 `@theme` 中注册令牌。写在它外面的原生自定义属性不会注册键，新增命名空间也不会自动创建工具类族。新增族时，请定义对应的 `@utility` 模式。
+
+## roles \{#copy-roles\}
+
+
+`--color-text-muted` 属于 `color` 命名空间，键为 `text-muted`。颜色角色与调色板颜色使用相同的族，并不是独立的工具类命名空间。
+
+## limits \{#copy-limits\}
+
+
+本索引介绍会读取令牌的族。`w-full` 这类固定拼写即使遇到同键的令牌，也保留自身定义。`p(4)` 这类直接值函数与 `(padding:1rem)` 这类原生声明，可以不查找令牌就直接接受值。
+
+## title \{#copy-title\}
+
+
+令牌族
+
+## description \{#copy-description\}
+
+
+所有预设令牌族的类前缀、令牌命名空间与原生属性。

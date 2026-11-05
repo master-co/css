@@ -1,0 +1,144 @@
+---
+{
+  "title": "在 Angular 設定 Master CSS",
+  "description": "將 CLI 產生的 CSS 接入 Angular，同時執行兩個開發監看程序，並驗證正式環境樣式表或可選的瀏覽器執行階段。",
+  "category": "整合"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/angular/cover-light.webp'
+import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Angular" />
+
+保留 Angular 的建置器，並使用 Master CSS CLI 產生它可載入的樣式表。開發時，請同時執行兩個監看程序：Master CSS 更新產生的 CSS，而 Angular 提供匯入該 CSS 的應用程式。
+
+本設定假設你已有在瀏覽器渲染的 Angular 應用程式，包含全域 `src/styles.css`、可正常執行的 `npm start` 指令，以及受支援的 Node.js 24 版本。它使用 Angular 預設的[模擬封裝](https://angular.dev/guide/components/styling#viewencapsulationemulated)，讓全域樣式能作用於元件範本。Shadow DOM 元件則需要將樣式放入自己的 shadow root。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step>
+    ### 加入 Master CSS \{#add-master-css\}
+
+    從 Angular 專案根目錄執行安裝程式：
+
+    ```bash
+    npm create @master/css@VERSION -- --framework angular --yes
+    ```
+
+    靜態設定會加入 `@master/css` 與 `@master/css-cli`。安裝程式可選的工具及預覽選項，請參閱[安裝](/guide/installation#installation)。
+  </Step>
+  <Step>
+    ### 檢查樣式表連接 \{#check-the-stylesheet-connection\}
+
+    安裝程式會在專案根目錄建立 Master CSS 原始碼進入點：
+
+    ```css name=master.css
+    @import '@master/css';
+    ```
+
+    它也會在保留既有內容的前提下，將以下匯入加入 Angular 的全域樣式表：
+
+    ```css name=src/styles.css
+    @import './master.generated.css';
+    ```
+
+    在 `angular.json` 中，請將 `src/styles.css` 保留在應用程式的 `build.options.styles` 陣列內。Angular 的[全域樣式設定](https://angular.dev/reference/configs/workspace-config#styles-and-scripts-configuration)決定產生的 CSS 是否能傳到頁面。若工作區版面配置非標準結構，請一併調整輸出路徑與匯入。
+
+    將 `@theme`、`@utility` 等 Master CSS 定義放在 `master.css`。Angular 使用的是產生後的原生 CSS；一般 CSS 建置器不會編譯這些定義。請勿編輯 `src/master.generated.css`，或將它匯入回 `master.css`。
+  </Step>
+  <Step>
+    ### 產生 CSS \{#generate-the-css\}
+
+    在一個終端機產生樣式表，並持續監看變更：
+
+    ```bash
+    npx master-css generate --output src/master.generated.css --watch
+    ```
+
+    等待首次產生完成，再於第二個終端機啟動 Angular：
+
+    ```bash
+    npm start
+    ```
+
+    請讓兩個程序持續執行。新增類別時，只有 Angular 的監看程序不會重新產生 Master CSS。
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+
+    將以下標記加入根元件所參照的範本。依 Angular [目前的命名慣例](https://angular.dev/cli/new#file-name-style-guide)，通常是 `src/app/app.html`；既有專案可能使用 `src/app/app.component.html`。
+
+    <DemoConfiguredExample name="angular-check" title="檢查範本樣式" source="" caption="段落具有中性色表面、細邊框、小圓角，以及四邊各 1rem 的內距。" html={`<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello Angular
+</p>`} />
+  </Step>
+</StepSection>
+
+## 驗證結果 \{#verify-the-result\}
+
+開啟 Angular 應用程式。段落的間距與表面應符合範例。將範本中的 `p-md` 改成 `p-lg`：兩個監看程序都在執行時，內距應從 `1rem` 增加為 `1.5rem`。確認更新後改回原值。
+
+若未出現樣式，請依序追查連接：
+
+- 檢查 Master CSS 終端機是否有產生錯誤，並確認 `src/master.generated.css` 存在。
+- 檢查 `src/styles.css` 中的匯入，以及該檔案在 `angular.json` 中的註冊。
+- 在瀏覽器開發者工具中檢查段落，尋找相符的規則，以及是否有元件樣式覆寫它。
+
+靜態產生需要原始碼中的完整類別字串，或明確的安全清單。條件式類別名稱也要保持完整；動態值請使用 CSS 自訂屬性。若產生的輸出缺少類別，請參閱[掃描類別名稱](/guide/scanning-and-pruning)。
+
+## 建置以部署 \{#build-for-deployment\}
+
+先產生 CSS，再由 Angular 打包應用程式：
+
+```bash
+npx master-css generate --output src/master.generated.css
+npm run build
+```
+
+CI 也使用相同順序。提供舊的產生檔案，可能掩蓋樣式缺少的問題，因此請在重新產生後檢查正式環境建置。
+
+靜態描述的是 CSS 產生步驟。在瀏覽器渲染的 Angular 應用程式，仍需要 JavaScript 才能建立 HTML。
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+
+預設使用靜態渲染。若需要依瀏覽器 DOM 變更產生類別，而非依已知的原始碼字串產生，請使用執行階段渲染。
+
+| 模式 | 安裝程式選項 | CSS 傳遞方式 |
+| --- | --- | --- |
+| 靜態 | 無 | 由 `src/styles.css` 匯入 CLI 輸出 |
+| 執行階段 | `--mode runtime` | 從 `src/main.ts` 啟動瀏覽器執行階段 |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+執行階段設定請執行：
+
+```bash
+npm create @master/css@VERSION -- --framework angular --mode runtime --yes
+```
+
+安裝程式會從 `src/main.ts` 啟動 `MasterCSSRuntime`、載入 `@master/css-runtime/default-program`，並觀察文件中的類別變更。
+
+**啟動 Angular 前，請先完成全域樣式表設定。**安裝程式目前會將 `@import '@master/css';` 加入 `src/styles.css`。請以下方原生基礎樣式表取代該匯入，保留應用程式需要的其他原生 CSS 匯入與規則。若從靜態設定切換，也請移除 `./master.generated.css` 匯入；這條執行階段路徑不需要 CSS 監看程序。
+
+```css name=src/styles.css
+@import '@master/css/base.css';
+```
+
+預設程式提供預設集的詞彙。在 Angular 的一般 CSS 中加入 `@theme` 或 `@utility`，不會編譯出自訂的執行階段程式。若要使用專案自訂詞彙，請採用靜態 CLI 路徑，或透過[執行階段 API](/reference/packages#css-runtime)提供另外編譯的程式。
+
+建置並提供 Angular 應用程式，再於瀏覽器主控台執行以下程式碼。無須重新建置，範例段落就應出現底線：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+此執行階段從瀏覽器進入點啟動。Angular SSR 應用程式需要另外規劃初始 CSS 策略；本指南涵蓋的是瀏覽器渲染設定。
+
+</DocumentDisclosure>

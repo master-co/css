@@ -1,0 +1,36 @@
+# Reference prose: illustrations/grid-track-flow
+
+## title \{#copy-title\}
+
+
+列与行组合样式以不同方向填入相同子元素
+
+## alt \{#copy-alt\}
+
+
+六个编号项目使用 grid-cols(3) 时形成三列两行；使用 grid-rows(3) 时形成三行两列，先向下填满再开始下一列。
+
+## caption \{#copy-caption\}
+
+
+两个 Grid 使用相同的六个子元素与间隙。grid-rows(3) 还设置 grid-auto-flow: column，grid-cols(3) 则保留默认的行向流动。方块高度由内容决定。
+
+## description-0 \{#copy-description-0\}
+
+
+第一个 Grid 有三个显式 minmax(0, 1fr) 列。默认行向流动将项目 1、2、3 放在第一行，接着放入 4、5、6。
+
+## description-1 \{#copy-description-1\}
+
+
+第二个 Grid 有三个显式 minmax(0, 1fr) 行，并沿列自动布局。项目 1、2、3 填满第一列，4、5、6 填入第二列。
+
+## description-2 \{#copy-description-2\}
+
+
+两个场景都使用实际预设 CSS、六个相同且由内容决定尺寸的方块，以及 12px 间隙。外部宽度使方块宽度便于比较；这两个组合样式本身都不提供该间隙或宽度。
+
+## description-3 \{#copy-description-3\}
+
+
+图中使用默认项目布局。显式指定位置或跨越数可能改变结果；grid-cols 不会重置其他位置建立的列向流动。

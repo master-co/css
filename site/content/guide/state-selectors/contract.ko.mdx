@@ -1,0 +1,288 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+선택자 접미사는 클래스의 선언을 적용할 요소나 의사 요소를 결정합니다. 전체 클래스를 가진 요소가 시작점입니다. 접미사는 그 요소를 검사하거나 관련 요소를 선택하거나 두 작업을 함께 할 수 있습니다.
+
+이 페이지는 선택자 연결, 인코딩, 그룹화, 명시도를 정의합니다. 컴포넌트에 호버와 키보드 포커스 스타일을 추가하는 방법은 [구문 튜토리얼](/guide/syntax-tutorial#states)을, 네이티브 일치 동작은 [CSS 선택자](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selectors_and_combinators)를 참고하세요.
+
+## 선택자 연결 \{#basic-selectors\}
+
+등록된 유틸리티나 네이티브 선언의 닫는 괄호 뒤에 선택자를 붙입니다. [조건](/reference/rules/conditions)은 선택자 뒤에, 중요도는 맨 끝에 둡니다.
+
+```txt
+utility<selector><conditions>!
+(property:value)<selector><conditions>!
+```
+
+위의 꺾쇠괄호 부분과 `!`는 생략 가능한 구문 자리표시자입니다. 예를 들어 `underline:hover@sm`은 클래스를 가진 요소가 호버 상태이고 뷰포트가 `@sm`에 일치할 때 밑줄을 적용합니다. 조건은 선택자의 대상 요소를 바꾸지 않습니다.
+
+<Class2CSS classes={['underline:hover@sm', '(text-decoration-thickness:2px):hover@sm']} />
+
+Master CSS는 생성 CSS 선택자에서 전체 클래스 이름을 이스케이프합니다. `.underline\:hover` 안의 콜론은 리터럴 클래스 이름의 일부이고 뒤에 붙는 `:hover`가 실제 의사 클래스입니다. HTML에는 예제처럼 이스케이프하지 않은 클래스를 쓰세요.
+
+## 클래스를 가진 요소 일치 \{#matching-the-owner\}
+
+결합자가 없으면 접미사는 클래스를 가진 요소에 요구 조건을 추가합니다. `underline.active`는 클래스 목록에 `underline.active`와 `active`가 모두 있는 요소에만 일치합니다.
+
+```html
+<a class="underline.active active" href="/guide/installation">Installation</a>
+```
+
+<a id="class"></a>
+<a id="id"></a>
+<a id="attribute"></a>
+<a id="pseudo-class"></a>
+<a id="element"></a>
+<a id="--universal"></a>
+
+| 클래스 | 클래스를 가진 요소의 요구 조건 |
+| --- | --- |
+| `underline.active` | `active` 클래스도 있음 |
+| `underline#current` | ID가 `current` |
+| `underline[data-current]` | `data-current` 속성이 있음 |
+| `underline:hover` | 브라우저의 호버 상태에 일치 |
+| `underline:is(a)` | `a` 요소임 |
+
+<Class2CSS classes={['underline.active', 'underline#current', 'underline[data-current]', 'underline:hover', 'underline:is(a)']} />
+
+같은 요소의 타입을 검사하려면 `:is(a)`나 `:where(a)`를 사용하세요. 자식 요소를 선택하려면 `>a`나 `>*`를 사용합니다. 유틸리티 이름 바로 뒤의 단독 태그 이름은 별도의 선택자 접미사가 아닙니다.
+
+### 요구 조건 조합 \{#combined-requirements\}
+
+인접한 단순 선택자는 같은 요소를 설명합니다. `underline:hover:not([aria-disabled=true])`는 호버를 요구하고 `aria-disabled` 속성이 `true`인 요소를 제외합니다. 이 속성을 설정하거나 갱신하지는 않습니다.
+
+<Class2CSS classes={['underline:hover:not([aria-disabled=true])']} />
+
+선택자는 DOM과 브라우저 상태에 반응하며 상호작용 동작을 만들지는 않습니다. 네이티브 속성과 ARIA는 각자의 의미를 유지합니다. 특히 `aria-disabled="true"`는 비활성 상태를 설명할 뿐 자체적으로 활성화 동작을 막지 않습니다.
+
+## 관련 요소 \{#combinators\}
+
+결합자는 클래스를 가진 요소에서 다른 요소로 이동합니다. 선언은 선택자 끝의 요소에 적용되며 클래스를 가진 요소에서 상속되는 것이 아닙니다.
+
+<a id="_--descendant"></a>
+<a id="--child"></a>
+<a id="--adjacent-sibling"></a>
+<a id="--general-sibling"></a>
+
+| 클래스 | 대상 |
+| --- | --- |
+| `underline_a` | 깊이에 관계없는 하위 링크 |
+| `underline>a` | 직계 자식 링크 |
+| `underline+a` | 다음 형제 요소가 링크인 경우 그 요소 |
+| `underline~a` | 같은 부모를 가진 뒤쪽의 모든 형제 링크 |
+| `underline>*` | 모든 직계 자식 요소 |
+
+`_`는 선택자 사이의 하위 요소 공백을 인코딩합니다. HTML에 실제 공백을 쓰면 다른 클래스가 시작됩니다. `>`, `+`, `~`는 네이티브 CSS 의미를 유지합니다.
+
+<Class2CSS classes={['underline_a', 'underline>a', 'underline+a', 'underline~a', 'underline>*']} />
+
+<ReferenceIllustration id="descendant-depth" />
+
+<ReferenceIllustration id="sibling-direction" />
+
+### 상태의 위치 \{#state-position\}
+
+상태의 위치는 어떤 요소가 그 상태에 일치해야 하는지 결정합니다. 다음 두 클래스는 같은 부모와 자식 관계를 가지지만 서로 다른 위치에서 호버를 검사합니다.
+
+| article의 클래스 | 호버 요구 조건 | 밑줄을 적용할 링크 |
+| --- | --- | --- |
+| `underline:hover>a` | article이 호버 상태 | 모든 직계 자식 링크 |
+| `underline>a:hover` | 직계 자식 링크가 호버 상태 | 해당 링크만 |
+
+<ReferenceIllustration id="selector-targets" />
+
+```html
+<article class="underline:hover>a">
+  <p>Documentation</p>
+  <a class="(text-decoration-line:none)" href="/guide/installation">Installation and setup</a>
+  <a class="(text-decoration-line:none)" href="/reference/packages">API reference</a>
+</article>
+
+<article class="underline>a:hover">
+  <p>Documentation</p>
+  <a class="(text-decoration-line:none)" href="/guide/installation">Installation and setup</a>
+  <a class="(text-decoration-line:none)" href="/reference/packages">API reference</a>
+</article>
+```
+
+<Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
+
+링크를 호버하면 조상 article도 호버 상태가 됩니다. 첫 번째 예제에서는 두 링크가 모두 조건을 충족하지만 두 번째에서는 다른 링크가 자신의 `:hover` 검사에 여전히 일치하지 않습니다. 클래스는 각각 article이 가지지만 선언은 링크를 대상으로 합니다. 링크의 클래스가 기본 밑줄을 제거하고 명시도가 높은 부모와 자식 선택자가 호버 조건에 일치할 때 밑줄을 복원합니다.
+
+## 선택자 목록 \{#selector-groups\}
+
+최상위 쉼표는 같은 클래스 소유 요소에서 다른 분기를 시작합니다. 각 분기에서 결합자를 반복하세요. `block>div,>span`은 직계 `div` 자식과 직계 `span` 자식을 선택합니다. 두 번째 분기는 첫 번째 분기의 대상에서 이어지지 않습니다.
+
+```html
+<section class="block>div,>span">
+  <div>First child</div>
+  <span>Second child</span>
+</section>
+```
+
+<Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+함수나 따옴표로 감싼 속성 값의 쉼표는 해당 구조 안에 남습니다. `underline:is(:hover,:focus-visible)`는 두 대안을 가진 하나의 선택자 접미사이며 최상위 분기 두 개가 아닙니다.
+
+<Class2CSS classes={['underline:is(:hover,:focus-visible)', "underline[data-label='draft,review']"]} />
+
+<ReferenceIllustration id="selector-list-branches" />
+
+### 선택자 함수 \{#selector-functions\}
+
+<a id="not"></a>
+<a id="has"></a>
+
+| 함수 | 일치 동작 |
+| --- | --- |
+| `:is(...)` | 목록의 선택자 중 하나 이상에 일치 |
+| `:where(...)` | `:is()`와 같이 일치하지만 함수와 인수의 명시도는 0 |
+| `:not(...)` | 목록의 선택자 중 하나라도 일치하는 요소를 제외 |
+| `:has(...)` | 선택 중인 요소를 기준으로 상대적 일치를 검사 |
+
+`:has()`는 관계를 검사하며 일치하는 관련 요소로 선언을 옮기지 않습니다. `b-blue-60:has(>input:checked)`는 label의 직계 자식 input이 선택되었을 때 label의 테두리 색을 설정합니다.
+
+```html
+<label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
+  <input type="checkbox" /> Include archived items
+</label>
+```
+
+<Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+상대적 일치는 형제 요소일 수도 있습니다. `underline:has(+input:checked)`는 다음 형제 요소가 선택된 input일 때 클래스를 가진 요소에 밑줄을 적용합니다. 네이티브 [`:has()` 제한](https://www.w3.org/TR/selectors-4/#relational)이 그대로 적용되며 `:has()`를 자신 안에 중첩하는 것은 유효하지 않습니다. 작동하는 체크박스 예제와 실용적인 대안은 [호환성](/guide/compatibility#new-selectors)을 참고하세요.
+
+<ReferenceIllustration id="has-owner-target" />
+
+## 네이티브 상태 \{#pseudo-classes\}
+
+<a id="hover--active--focus"></a>
+<a id="first--last--odd--even"></a>
+<a id="valid--invalid--required"></a>
+<a id="disabled"></a>
+<a id="checked--indeterminate"></a>
+<a id="rtl--ltr"></a>
+
+Master CSS는 네이티브 의사 클래스 이름을 유지합니다. 다음은 자주 쓰는 접미사이며 전체 상태 레지스트리가 아닙니다.
+
+| 접미사 | 네이티브 일치 맥락 |
+| --- | --- |
+| `:hover`, `:active` | 포인터 호버 또는 활성화 |
+| `:focus`, `:focus-visible`, `:focus-within` | 요소의 포커스, 가시적 포커스 표시, 내부의 포커스 |
+| `:first-child`, `:last-child`, `:nth-child(even)` | 형제 요소 사이의 위치 |
+| `:valid`, `:invalid`, `:required` | 네이티브 폼 제약 |
+| `:disabled` | 비활성화된 폼 컨트롤 |
+| `:checked`, `:indeterminate` | 네이티브 컨트롤 상태 |
+| `:dir(rtl)`, `:dir(ltr)` | 해석된 텍스트 방향 |
+
+`:first-child`, `:nth-child(odd)` 같은 전체 이름을 사용하세요. Master CSS가 출력하는 표기라도 브라우저에서 지원하지 않거나 유효하지 않을 수 있습니다. 각 상태의 자세한 동작은 [네이티브 의사 클래스 레퍼런스](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes)를 참고하세요.
+
+```html
+<ul>
+  <li class="bg-surface-inset:nth-child(even)">Draft</li>
+  <li class="bg-surface-inset:nth-child(even)">In review</li>
+  <li class="bg-surface-inset:nth-child(even)">Published</li>
+</ul>
+```
+
+<Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+## 속성 선택자 \{#attribute-selectors\}
+
+속성 접미사는 DOM 값을 검사합니다. 불리언 형식의 속성 선택자는 존재 여부를 검사합니다. `[open]`은 펼쳐진 `details` 요소에 일치하고 `[data-active]`는 해당 속성이 있으면 일치합니다. 특정 상태 값을 검사하려면 `[aria-pressed=true]`처럼 값을 포함하세요.
+
+<a id="open"></a>
+<a id="aria-keyvalue"></a>
+<a id="data-keyvalue"></a>
+<a id="attrvalue"></a>
+<a id="attrvalue-1"></a>
+<a id="attrvalue-2"></a>
+<a id="attrvalue-3"></a>
+<a id="attrvalue-4"></a>
+<a id="attrvalue-5"></a>
+
+| 접미사 | 일치 조건 |
+| --- | --- |
+| `[data-active]` | 값이 비어 있어도 속성이 존재함 |
+| `[aria-pressed=true]` | 정확히 `true`인 값 |
+| `[href^=https]` | 값이 `https`로 시작 |
+| `[href$='.pdf']` | 값이 `.pdf`로 끝남 |
+| `[title*=master]` | 값에 `master`가 포함됨 |
+| `[lang\|=en]` | 값이 `en`이거나 `en-`으로 시작 |
+| `[title~=css]` | 공백으로 구분한 값에 단어 `css`가 포함됨 |
+
+<ReferenceIllustration id="attribute-word-match" />
+
+따옴표로 감싼 속성 텍스트는 리터럴로 유지됩니다. `underline[data-state=':first']:first-child`는 값 `:first`와 요소의 위치를 별도로 검사합니다. `[data-id='a_b']`의 밑줄은 값 안에 남고 `.is\_active`의 이스케이프된 밑줄은 클래스 식별자 안에 남습니다.
+
+```html
+<a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
+<a class="underline.is\_active is_active" href="/reference">Reference</a>
+```
+
+<Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+CSS 따옴표는 HTML 공백이 클래스를 나누는 것을 막지 못합니다. 속성 값에 실제 공백이 필요하면 `[data-label='New\000020collection']`처럼 CSS 이스케이프를 사용하세요. 따옴표 값 바로 뒤에 대소문자 플래그를 붙일 수 있습니다. 예를 들어 `[data-kind='draft'i]`는 ASCII 대소문자를 구분하지 않습니다. 네이티브 연산자와 대소문자 일치는 [속성 선택자](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors)를 참고하세요.
+
+<Class2CSS classes={["underline[data-label='New\\000020collection']", "underline[data-kind='draft'i]"]} />
+
+## 의사 요소 \{#pseudo-elements\}
+
+<a id="pseudo-element"></a>
+<a id="before--after"></a>
+<a id="scrollbar"></a>
+
+의사 요소 접미사는 원래 요소 대신 해당 의사 요소를 대상으로 합니다. 생성 콘텐츠에는 `content` 선언을 명시적으로 쓰세요.
+
+```html
+<span class="(content:open-quote)::before (content:close-quote)::after">
+  Keep the interface clear.
+</span>
+```
+
+<Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+<ReferenceIllustration id="pseudo-element-origin" />
+
+공급업체별 선택자는 명시적으로 쓰세요. Master CSS는 표기를 유지하며 의사 요소를 공급업체별 변형으로 확장하거나 브라우저 지원을 제공하지 않습니다. 괄호가 포함된 따옴표 값은 [네이티브 선언 경계](/reference/rules/declarations#declaration-heads)를 참고하세요.
+
+## 명시도 \{#specificity\}
+
+생성된 선택자는 브라우저의 [명시도 규칙](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity)을 따릅니다. 이스케이프된 클래스 이름은 안에 있는 구두점과 관계없이 클래스 선택자 하나의 명시도를 더합니다. 추가한 접미사는 별도로 기여합니다.
+
+| 클래스 | ID – 클래스/속성/상태 – 타입/의사 요소 |
+| --- | --- |
+| `underline` | `0-1-0` |
+| `underline:hover` | `0-2-0` |
+| `underline>a` | `0-1-1` |
+| `underline:where(:hover,#selected)` | `0-1-0` |
+| `underline:is(:hover,#selected)` | `1-1-0` |
+
+`:is()`, `:not()`, `:has()`는 선택자 목록에서 명시도가 가장 높은 인수를 사용합니다. `:where()`는 인수를 포함해 명시도를 더하지 않습니다. 결합자와 전체 선택자도 명시도를 더하지 않습니다. 이 가중치는 캐스케이드가 출처, 중요도, 레이어 우선순위를 결정한 뒤 적용됩니다. 따라서 명시도가 높은 선택자가 다른 레이어의 규칙을 자동으로 이기는 것은 아닙니다.
+
+<Class2CSS classes={['underline:where(:hover,#selected)', 'underline:is(:hover,#selected)']} />
+
+<ReferenceIllustration id="where-specificity" />
+
+규칙 정렬은 [캐스케이드 레이어](/reference/rules/layers)를, 실제 선택 방법은 [가이드의 재정의 흐름](/guide/cascade-layers#override-a-component-locally)을 참고하세요. HTML의 클래스 순서를 바꿔도 명시도는 바뀌지 않습니다.
+
+## 외부 맥락 \{#external-context\}
+
+<a id="of"></a>
+
+접미사는 클래스를 가진 요소에서 시작합니다. 대상에 조상이나 앞선 형제 요소에 따른 스타일이 필요하면 네이티브 CSS 규칙으로 그 관계를 직접 표현할 수 있습니다.
+
+```css
+@layer components {
+  .active .contextual { display: none; }
+  .active > .child-contextual { display: none; }
+  .active + .adjacent-contextual { display: none; }
+  .active ~ .sibling-contextual { display: none; }
+}
+```
+
+여러 유틸리티 선언을 같은 관계로 감싸려면 네이티브 선택자와 `@contents`가 있는 믹스인을 사용하세요. 확장과 전달은 [믹스인 콘텐츠 규칙](/reference/directives/definitions#contents)에, 이 형식을 선택할 때는 [스타일 재사용](/guide/reusing-styles#share-a-wrapper-with-contents)에 설명되어 있습니다.
+
+생성 CSS는 출력되었다는 증거이며 브라우저가 선택자를 지원하거나 일치시킨다는 증명은 아닙니다. DOM 관계, 실제 상태, 네이티브 선택자의 유효성을 확인하세요. 일반 CSS 선택자 목록에서는 잘못된 분기 하나가 전체 목록을 무효화할 수 있습니다. `:is()`와 `:where()`는 [오류를 허용하는 선택자 목록](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Selector_list)을 사용합니다. 브라우저 검사와 대안 설계는 [호환성](/guide/compatibility)을 참고하세요.

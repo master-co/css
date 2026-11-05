@@ -1,0 +1,188 @@
+---
+title: "CSS と CSS Modules からの移行"
+description: "クラス文字列、トークン、組み合わせで保守しやすくなる箇所から、グローバル CSS や CSS Modules を Master CSS に移します。"
+figures: {"CSSMigrationIllustration": {"title": "書く場所を変え、結果を維持する", "alt": "CSS ルールの gap 1rem、padding 1.5rem、角丸 0.5rem と、プリセットの gap-md、p-lg、r-lg が同じ値を供給し、同じ中立色の Account カードを作ります。", "caption": "宣言と計算結果を比較します。名前の類似だけでは足りず、値、配色、操作状態を一致させます。", "description": [{"title": "値から始める", "text": "CSS ルールは 1rem の間隔、1.5rem のパディング、0.5rem の角丸を指定します。"}, {"title": "プリセットを対応させる", "text": "gap-md、p-lg、r-lg が同じ値を指定し、両者が同じサーフェスと文字の役割を使います。"}, {"title": "結果を維持する", "text": "レイアウト、内容、色を維持し、スタイルを決める場所だけを変えます。"}]}}
+---
+import CSSMigrationIllustration from './components/CSSMigrationIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+通常の CSS や CSS Modules は、必要な間ずっと Master CSS と併用できます。移行は整理の機会と捉えてください。すべての宣言をクラスに変える必要はありません。
+
+繰り返し使う視覚的なスタイルのうち、マークアップで管理するのが適切なものを Master CSS のクラスに移します。グローバルなリセット、ベンダースタイル、複雑なセレクター、生成 CSS、読みにくい一度限りのルールは通常の CSS に残します。
+
+---
+
+## 移行方針 \{#migration-strategy\}
+元の CSS と描画状態を調べられる小さなコンポーネントを選びます。基準状態と各作業の確認には[共通の移行手順](/guide/migration#migration-strategy)を使ってください。このガイドでは、マークアップに移す宣言と、残すべきローカル CSS の契約を判断します。
+
+最初は視覚的な宣言が安定し、ベンダーのセレクターを含まない範囲が適しています。ローカルクラス名が API である場合、内部構造を選択する場合、置き換えると複雑なセレクターが呼び出し側に散らばる場合は、モジュールを残します。
+
+<CSSMigrationIllustration />
+
+---
+
+## 既存 CSS と並べて Master CSS を追加する \{#add-master-css-beside-existing-css\}
+新規または変換済みマークアップのルールを Master CSS が生成し始めても、既存 CSS を読み込み続けます。ローカルルールを削除する前にカスケードを確認してください。古い非レイヤー宣言は通常のレイヤー内ユーティリティより優先され、Master CSS を後にインポートしても変わりません。同じ要素に両方のセレクターを残すと、変換の不足を隠すことがあります。
+
+```css name=app.css
+@import "@master/css";
+```
+
+多くのプロジェクトでは既定のソース探索で十分です。スキャン範囲の明示や、完全な文字列としてソースにないクラスが必要な場合に限り、`@source`、`@source not`、`@safelist`、`@blocklist` を追加します。
+
+多数のファイルを変換する前に、[レンダリングモード](/guide/rendering-modes)に従って静的、ランタイム、プログレッシブのどれを使うか決めます。
+
+---
+
+## ローカル CSS をマークアップのクラスに変換する \{#convert-local-css-to-markup-classes\}
+別のセレクターよりクラスリストの方が確認しやすい場合は、局所的な視覚宣言をマークアップに移します。この例は、インストール済みプリセットの共通サーフェスとテキストの役割をすでに使っており、変換後も維持します。
+
+```css name=Card.module.css
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: .5rem;
+  background: var(--color-surface-raised);
+  color: var(--color-text-body);
+}
+```
+
+```tsx name=Card.tsx
+export function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+      {children}
+    </section>
+  )
+}
+```
+
+<DemoConfiguredExample
+  name="migration-card-equivalence"
+  title="二つのスタイル指定で同じカードを作る"
+  source={`@layer components {
+  .legacy-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: .5rem;
+    background: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+}`}
+  html={`<div class="container-inline">
+  <div class="grid gap-md grid-cols(2)@container(--md)">
+    <div class="grid gap-xs">
+      <p class="m(0) font-sm">CSS rule</p>
+      <section class="legacy-card">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
+      </section>
+    </div>
+    <div class="grid gap-xs">
+      <p class="m(0) font-sm">Markup classes</p>
+      <section class="grid gap-md p-lg r-lg bg-surface-raised fg-text-body">
+        <h3 class="m(0) text-lg font-regular">Account</h3>
+        <p class="m(0) text-sm">Review profile settings.</p>
+      </section>
+    </div>
+  </div>
+</div>`}
+  caption="両方のカードは同じギャップ、パディング、角丸、背景を使います。固定値 .5rem の角丸はプリセットの r-lg トークンに対応します。両方とも同じ適応型のサーフェスとテキストの役割を使います。"
+  code={false}
+/>
+
+値が製品の設計判断を表す場合は、`bg-surface-card`、`p-card`、`r-card` のような名前付きテーマトークンを優先します。新しい抽象化より CSS プロパティ自体が明確なら、`(scroll-margin-top:4rem)` のような直接のネイティブ宣言クラスを使います。
+
+---
+
+## CSS Modules がコンポーネントの API なら残す \{#keep-css-modules-when-they-are-the-component-api\}
+安定したローカルクラス名を公開する、内部構造を選択する、ローカルな派生形でプロジェクトトークンを使う、といったコンポーネントには CSS Modules が引き続き有用です。
+
+Vite、Next.js、Webpack は、ローカルスタイルシートにプロジェクトのテーマ定義を自動で供給します。ネイティブ宣言は必要な変数を出力するため、アプリ全体の CSS 出力を再度インポートする必要はありません。
+
+```css name=Button.module.css
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-blue-60);
+  color: oklch(100% 0 none);
+  min-height: 2.5rem;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+```
+
+```tsx name=Button.tsx
+import styles from './Button.module.css'
+
+export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { className, type = 'button', ...buttonProps } = props
+  return <button className={[styles.button, className].filter(Boolean).join(' ')} type={type} {...buttonProps} />
+}
+```
+
+モジュールを削除すると多数の呼び出し箇所を同時に変える必要がある場合は、このパターンを使います。ローカルクラスが役立たなくなった時点で、後からモジュールを除去できます。
+
+上のモジュールは非レイヤーなので、通常の宣言が `className` で渡されるレイヤー内ユーティリティより優先されます。呼び出し側でユーティリティによる既定値の上書きを許すなら、既定値を `@layer components` に置き、[カスケード](/guide/cascade-layers)を検証します。
+
+このラッパーの既定値は `type="button"` です。フォーム送信には `type="submit"` を渡します。導入時は既存コンポーネントの ref 転送とイベントの契約を維持してください。
+
+---
+
+## 共通の値を `@theme` に移す \{#move-shared-values-into--theme\}
+大規模なクラス変換の前に、プロジェクトが管理するカスタムプロパティを通常は `@theme` に置きます。マークアップで固定値ではなくトークン名を使えるようになります。
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-surface-card: var(--color-surface-raised);
+  --color-body: var(--color-text-body);
+  --spacing-card: 1.5rem;
+  --radius-card: .5rem;
+}
+
+```
+
+```html
+<article class="grid r-card fg-body grid-cols(3)@md bg-surface-card p-card">
+  ...
+</article>
+```
+
+実行時に管理する値、コンポーネント専用の値、意図的にデザインシステムの外に置く値には、通常の CSS カスタムプロパティを残します。
+
+```tsx
+<div className="(width:var(--progress)) bg-blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
+```
+
+---
+
+## 移行を検証する \{#validate-the-migration\}
+各作業をコードと UI の両面から確認します。
+
+- プロジェクトのフォーマッター、lint、型チェック、テスト、本番ビルドを実行します。
+- [コードの lint](/guide/code-linting)で Master CSS のクラス文字列を検証します。
+- ライト／ダークテーマ、レスポンシブの境界、ホバー、フォーカス状態で画面を比較します。
+- クラス文字列では理解しにくくなるセレクター、アニメーション、ベンダー出力の CSS は残します。
+- どのコンポーネントやページも依存しなくなってから旧 CSS を削除します。
+
+---
+
+## 関連資料 \{#useful-references\}
+- [インストール](/guide/installation)：プロジェクトへの導入。
+- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、プログレッシブの選択。
+- [スタイル宣言](/reference/rules/declarations)：クラス構文。
+- [テーマトークン](/guide/theme)：`@theme` トークン、[変数とモード](/reference/rules/modes)：モード、[条件](/reference/rules/conditions)：クエリー構文。
+- [CSS ディレクティブ](/reference#directives)：`@reference`、`@source`、`@safelist`、`@blocklist`。
+- [ルート単位のスタイル](/guide/route-level-styles)：プロジェクトの定義を組み合わせる CSS Modules とルートスタイル。
+- [グローバルスタイル](/guide/global-styles#shared-vocabulary)：マークアップのユーティリティ、テーマトークン、独自ユーティリティ、コンポーネントクラスの使い分け。

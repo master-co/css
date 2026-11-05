@@ -1,0 +1,31 @@
+# Reference prose: illustrations/span-includes-gaps
+
+## title \{#copy-title\}
+
+
+跨欄項目包含軌道間的間距
+
+## alt \{#copy-alt\}
+
+
+三個 96px 欄位之間有 16px 間距。一個項目跨越前兩欄，寬度為 208px。
+
+## caption \{#copy-caption\}
+
+
+320px 格線使用 grid-cols(3)、gap(16) 與 grid-col-span(2)。尺規呈現實際 CSS 幾何尺寸，不是任意比例。
+
+## description-0 \{#copy-description-0\}
+
+
+可用寬度是 320px。扣除兩個 16px 間距後，288px 平分給三條 96px 軌道。
+
+## description-1 \{#copy-description-1\}
+
+
+跨兩條軌道的項目涵蓋 96px + 16px + 96px，也就是 208px。它與第三條軌道之間仍保留下一個 16px 間距。
+
+## description-2 \{#copy-description-2\}
+
+
+改變欄數可能改變軌道寬度；請在相同斷點一併更新相關跨度。

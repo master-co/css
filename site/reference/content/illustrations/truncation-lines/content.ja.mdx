@@ -1,0 +1,36 @@
+# Reference prose: illustrations/truncation-lines
+
+## title \{#copy-title\}
+
+
+同じテキストを全文・1 行・2 行で表示する
+
+## alt \{#copy-alt\}
+
+
+同じ幅の段落を 3 つ並べ、全文、truncate による 1 行の省略、clamp-lines(2) による 2 行の省略を示します。切り取った例も、DOM 内には同じ全文を保っています。
+
+## caption \{#copy-caption\}
+
+
+フォント、幅、テキストは同じで、省略するクラスだけが変わります。省略記号はブラウザーがネイティブに描き、各要素には全文の文字列が残ります。
+
+## description-0 \{#copy-description-0\}
+
+
+各テキストは幅 192px、フォントサイズ 14px、行の高さ 24px です。
+
+## description-1 \{#copy-description-1\}
+
+
+最初のテキストは自由に折り返し、全行が入るように高さが増えます。truncate は 2 番目を 1 行に保ち、あふれた部分を省略記号で隠します。
+
+## description-2 \{#copy-description-2\}
+
+
+clamp-lines(2) は 3 番目のテキストの折り返しを許可し、接頭辞付きの line-clamp の組み合わせで表示を 2 行に制限します。
+
+## description-3 \{#copy-description-3\}
+
+
+3 つの要素はすべて同じ全文を含んでいます。読者が全文を表示して読む必要がある場合は、別の展開機能やリンクが必要です。

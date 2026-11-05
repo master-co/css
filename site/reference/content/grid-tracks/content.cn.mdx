@@ -1,0 +1,66 @@
+# Reference prose: grid-tracks
+
+## title \{#copy-title\}
+
+
+网格轨道
+
+## summary \{#copy-summary\}
+
+
+用一个类设置等分网格轨道或跨轨道布局。
+
+## note \{#copy-note\}
+
+
+`grid-cols()` 和 `grid-rows()` 创建 Grid；span 函数则将项目放入已有的 Grid。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+轨道数量与项目布局由不同元素负责
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`grid-cols(3)` 设置 `display: grid` 和三个 `minmax(0, 1fr)` 列。`grid-rows(3)` 设置三个相同规格的行，并设置 `grid-auto-flow: column`。其余布局都采用默认值时，相同的六个子元素在第一种情况下横向填入，在第二种情况下则向下填入。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+轨道数量和跨越数都必须使用正整数。轨道函数不会添加间隙。等分比例分配扣除间隙后的可用空间；零最小值允许轨道缩小，但本身不会让内容换行或裁剪内容。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`grid-col-span(2)` 和 `grid-row-span(2)` 设置项目的布局，不会设置父元素的 display。跨越数超出显式建立的 Grid 时，可能产生隐式轨道。跨断点协调轨道数量和跨越数的方法，见布局指南。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`grid-cols()` 不会重置 `grid-rows()` 建立的列向流动。如果两者都生效，两组轨道定义都会保留，自动布局仍沿着列向下进行。明确需要行向流动时，请添加 `(grid-auto-flow:row)`。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+行的等分比例需要受限的可用高度，才能分配固定的垂直空间。在高度为 auto 的 Grid 中，内容参与行尺寸计算；`grid-rows(3)` 并不是高度限制。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+布局
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生 Grid 布局
+
+## usage-lead \{#copy-usage-lead\}
+
+
+布局三个等宽列，让主要区块跨两列和两行。
+
+## guide-label \{#copy-guide-label\}
+
+
+布局

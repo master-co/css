@@ -1,0 +1,153 @@
+---
+{
+  "title": "在 Astro 中配置 Master CSS",
+  "description": "连接 Astro 集成与共享 CSS 入口，并验证生产样式及可选的运行时或渐进式交付。",
+  "category": "集成"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/astro/cover-light.webp'
+import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
+
+通过共享 CSS 入口将 Master CSS 接入 Astro 网站。集成支持静态、运行时和渐进式交付；页面渲染仍由 Astro 负责。
+
+(i) **静态生产输出的限制：**当前集成可能只输出基础样式，未包含扫描得到的工具类规则。请按下文检查生产结果。若要生成不依赖此集成路径的静态样式表，请使用 [CLI 构建](#cli-build)。
+
+## 安装 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 添加 Master CSS \{#add-master-css\}
+      在现有的 [Astro 项目](https://docs.astro.build/en/install-and-setup/)中，从项目根目录运行安装程序。默认使用静态模式：扫描完整的类名字符串，并输出普通 CSS。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework astro --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 连接样式表 \{#connect-the-stylesheet\}
+    安装程序会创建独立的 CSS 入口：
+
+    ```css name=src/styles/global.css
+    @import '@master/css';
+    ```
+
+    [从页面或布局的 frontmatter 导入它](https://docs.astro.build/en/guides/imports/#import-statements)。共享布局会向所有使用它的页面传递样式。在 `astro.config.mjs` 中，请将 Master CSS 集成与项目现有集成一并保留。
+  </Step>
+  <Step>
+    ### 开始使用 Master CSS \{#start-using-master-css\}
+    启动开发服务器。从页面 frontmatter 导入 `src/styles/global.css`，再添加段落。如果多个页面都需要样式，请在共享布局中使用相同的导入。
+  </Step>
+  <InstallationPreview>
+
+```astro name=src/pages/index.astro
+---
+import '../styles/global.css'
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Hello Master CSS</title>
+  </head>
+  <body>
+    <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  </body>
+</html>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 检查配置 \{#check-the-setup\}
+运行 `npm run dev`，将 `p-md` 改为 `p-lg`，确认内边距从 `1rem` 增加到 `1.5rem`。恢复原值后，测试生产页面：
+
+```bash
+npm run build
+npm run preview
+```
+
+禁用 JavaScript 并重新加载。段落应保留内边距、圆角和凸起表面。如果没有样式，请确认页面或其布局导入了 `global.css`，并且 Astro 配置包含 Master CSS 集成。自定义定义和局部作用域样式请参阅[全局样式](/guide/global-styles)。
+
+如果生产构建链接了基础样式，却缺少工具类规则，请在输出 CSS 中查找 `.p-md` 规则，并检查计算后的内边距。可以使用下方独立的 CLI 构建，或在应用适合交由运行时接管时选择渐进式渲染。
+
+## 使用 CLI 构建静态 CSS \{#cli-build\}
+
+这是 Astro 集成的替代方式。从 `astro.config.mjs` 中移除 Master CSS 注册，保留其他集成，并移除页面或布局中的 `global.css` 导入。安装 CLI：
+
+```bash
+npm install -D @master/css-cli@VERSION
+```
+
+在项目根目录创建源入口。项目定义也放在这里：
+
+```css name=master.css
+@import '@master/css';
+```
+
+从页面或共享布局的 `<head>` 链接生成的样式表：
+
+```html
+<link rel="stylesheet" href="/master.css" />
+```
+
+先生成 CSS，再构建 Astro：
+
+```bash
+npx @master/css-cli generate "src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}" --output public/master.css
+npm run build
+npm run preview
+```
+
+开发时，在生成命令中加入 `--watch`，并在第二个终端运行 `npm run dev`。Astro 会将 `public/` 复制到构建输出；请一并部署生成的样式表及其导入资源。如果网站配置了基础路径，请将该路径加在样式表 URL 前。禁用 JavaScript，验证段落样式。
+
+---
+
+## 选择其他渲染模式 \{#rendering-modes\}
+默认使用静态模式。其他模式的页面运行时脚本由集成注入，无需单独的浏览器启动代码：
+
+| 模式 | 安装程序选项 | 交付方式 |
+| --- | --- | --- |
+| 静态 | 无 | 扫描源代码后生成的样式表 |
+| 运行时 | `--mode runtime` | 浏览器运行时，不经 Astro 中间件预渲染 |
+| 渐进式 | `--mode progressive` | 中间件渲染 CSS，再交由运行时接管 |
+
+<DocumentDisclosure title="在浏览器中生成新类名">
+
+```bash
+npm create @master/css@VERSION -- --framework astro --mode runtime --yes
+```
+
+运行构建与预览脚本；运行时启动后，段落应应用样式。运行时模式依赖 JavaScript 和编译后的程序成功加载；如果段落始终没有样式，请检查控制台和网络请求。要测试页面生成后才添加的类名，请运行：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+无需重新构建，段落就应出现下划线。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="包含服务器渲染的样式">
+
+```bash
+npm create @master/css@VERSION -- --framework astro --mode progressive --yes
+```
+
+Astro 中间件会将 CSS 渲染到预渲染页面和服务器 HTML 响应中，再由运行时处理后续类名变更。禁用 JavaScript 并重新加载：段落仍应有样式。重新启用 JavaScript、重新加载，再按上例从控制台加入 `underline`。
+
+</DocumentDisclosure>

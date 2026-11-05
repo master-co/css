@@ -1,0 +1,120 @@
+---
+{
+  "title": "互換性",
+  "description": "使えるフォールバックを保ちながら新しい CSS 機能を使い、ブラウザーの動作を確認して、サードパーティのスタイルをカスケードに配置します。",
+  "category": "はじめに",
+  "figures": {
+    "CompatibilityIllustration": {
+      "title": "拡張が変えるのは大きさで、ノートへのアクセスではない",
+      "alt": "機能クエリーが、同じ六行のノートを持つ二つのテキストエリアに分岐する。フォールバックは短い欄をスクロールして読み、対応する欄は六行すべてを表示するまで伸びる。",
+      "caption": "同じノート、幅、制限です。拡張なしでは欄をスクロールし、拡張ありでは欄が伸び、最大高さに達するとスクロールします。",
+      "description": [
+        {
+          "title": "共通の基盤",
+          "text": "両方のテキストエリアは同じ六行を含み、幅、パディング、高さの制限も同じです。編集、縦方向のサイズ変更、スクロールは常に可能です。"
+        },
+        {
+          "title": "クエリーが一致しない",
+          "text": "通常の初期サイズを使います。一部の行は表示範囲外ですが、スクロールで読めます。"
+        },
+        {
+          "title": "クエリーが一致する",
+          "text": "field-sizing: content 宣言によりノートに合わせて欄が伸びます。最大高さで伸長が止まり、長いノートはその先をスクロールします。"
+        }
+      ]
+    },
+    "GuideStudy:fallback-addition": {
+      "title": "拡張は使えるフォールバックから始める",
+      "alt": "二つの分岐は同じ基盤から始まる。未対応ブラウザーはそれを維持し、対応ブラウザーは条件付きの拡張を追加する。",
+      "caption": "@supports が拡張を制御します。フォールバックはその条件外の通常の宣言として残ります。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import DemoFeatureSupport from '@master/internal-site/demo/DemoFeatureSupport.svelte'
+import CompatibilityIllustration from './components/CompatibilityIllustration.astro'
+
+Master CSS は CSS を生成し、適用できるプロパティ、値、セレクターはブラウザーが決めます。使える基盤を作り、それを改善する新しい機能を加え、既存のスタイルがカスケードでどう働くか確認してください。
+
+以下の例は、[インストール](/guide/installation)を完了し、アプリが `@import '@master/css';` を読み込んでいることを前提とします。
+
+## ブラウザーの基盤要件を確認する \{#overview\}
+
+既定のプリセットは、カスケードレイヤー、OKLCH 色、適応する値のための `light-dark()` を使います。拡張機能にフォールバックを用意しても、これらの基盤要件はなくなりません。対象ブラウザーに対して、[ブラウザーの基盤要件とベンダープレフィックス](/reference/rules/declarations#vendor-prefixes)を確認してください。
+
+クラスを認識できても、ブラウザー互換性の保証にはなりません。Master は一部のプロパティに互換プレフィックスを出力しますが、すべての新機能をポリフィルしません。同様に、ツールの `unknown` はその検査で CSS を未検証という意味であり、無効であるとも出荷可能であるとも証明しません。
+
+## フォールバックを保って機能を追加する \{#new-css-features\}
+
+### ネイティブの宣言 \{#native-declarations\}
+
+自動サイズ調整が使えなくても、ノート欄は編集できる必要があります。通常の textarea のサイズと縦方向のサイズ変更を設定し、拡張として [`field-sizing: content`](https://drafts.csswg.org/css-forms/#field-sizing) を加えます。このネイティブプロパティは内容に合わせてコントロールの大きさを変え、最小・最大高さが実用的な範囲を保ちます。
+
+<DemoFeatureSupport client:idle={{ timeout: 500 }} condition="field-sizing: content" />
+
+<DemoConfiguredExample name="compatibility-field" title="フォールバックのあるノート欄" source="" caption="行を追加・削除してください。対応ブラウザーでは欄が最大 12rem まで伸び、それ以外は初期サイズを保ちます。どちらでもスクロールとサイズ変更ができます。" html={`<div class="w-full (max-width:28rem) mx-auto">
+  <label for="project-note" class="block mb-xs text-sm fg-text-strong">Project notes</label>
+  <textarea id="project-note" name="note" rows="3" class="block w-full p-sm r-md b(1) b-solid b-line-divider bg-surface-inset text-sm fg-text-strong (resize:vertical) (min-height:6rem) (max-height:12rem) outline(2):focus-visible outline-solid:focus-visible outline-offset(3) (field-sizing:content)@supports(field-sizing:content)">Plan the next release.
+Review the draft.
+Check the examples.
+Test with a keyboard.
+Verify the small screen.
+Publish when ready.</textarea>
+</div>`} />
+
+`(field-sizing:content)` はネイティブの宣言を供給します。`@supports(field-sizing:content)` 接尾辞が、その宣言を [CSS 機能クエリー](https://www.w3.org/TR/css-conditional-3/#at-supports)内に置きます。一致しなければ、ベーススタイルと通常の textarea の動作が残ります。
+
+<CompatibilityIllustration />
+
+プレビューは現在のブラウザーの構文対応を確認します。対象ブラウザーで実際の編集動作もテストしてください。対応ブラウザーでフォールバックを調べるには、条件付きクラスを一時的に削除します。欄の自動伸長が止まり、スクロールですべてのテキストにアクセスできるはずです。これは拡張を切り離す操作で、古いブラウザーの再現ではありません。
+
+**生成された CSS** で出力条件を確認します。クラスの構文は[条件](/reference/rules/conditions#supportsfeature)に記載しています。ネイティブ CSS ではさらに複雑な機能クエリーを表せます。
+
+<GuideStudy id="fallback-addition" />
+
+### 新しいセレクター \{#new-selectors\}
+
+セレクターによる拡張にも同じ方法を使えます。ここでは [`:has(:checked)`](https://www.w3.org/TR/selectors-4/#relational) が、チェック時にラベルの境界線を青くします。未対応でも、ネイティブのチェックボックスは選択を記録します：
+
+<DemoConfiguredExample name="compatibility-selector" title="任意の強調を加えるチェック状態" source="" caption="チェックボックスを選択してください。対応ブラウザーではラベルの境界線も変わります。選択の主な表示はチェックマークです。" html={`<label class="flex items-center gap-sm w-fit mx-auto p-sm r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong b-blue-60:has(:checked)">
+  <input type="checkbox" name="updates" class="m(0) shrink(0) (accent-color:currentColor)">
+  <span>Send me release notes</span>
+</label>`} />
+
+ベーススタイルを新しいセレクターから独立させます。不可欠なコントロールや内容を拡張に依存させないでください。セレクターの表記と組み合わせは[セレクター](/reference/rules/selectors)を参照します。
+
+## サードパーティ CSS をカスケードに配置する \{#third-party-styles\}
+
+通常のユーティリティでライブラリーの通常スタイルを上書きしたい場合、その CSS を先の `defaults` レイヤーにインポートします。Master インテグレーションが処理するアプリの CSS エントリーで、それらのインポートより前にレイヤー順序を宣言してください。
+
+[Swiper のコア、ナビゲーション、ページネーションのスタイル](https://swiperjs.com/get-started)を使うプロジェクトでは、このエントリーから読み込み、別の場所でレイヤー外のコピーを追加でインポートしないでください：
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import 'swiper/css' layer(defaults);
+@import 'swiper/css/navigation' layer(defaults);
+@import 'swiper/css/pagination' layer(defaults);
+@import '@master/css';
+
+@layer components {
+  .swiper-slide {
+    background-color: var(--color-surface-raised);
+  }
+}
+```
+
+スライダーの既存マークアップで、一方のスライドはコンポーネントの面を保ち、もう一方にローカルなユーティリティを加えられます：
+
+```html
+<div class="swiper-slide">Default surface</div>
+<div class="swiper-slide bg-blue-60 fg-white">Featured slide</div>
+```
+
+`utilities` の通常の背景宣言は `components` より優先され、後者は `defaults` より上です。HTML のクラス名を並べ替えても結果は変わりません。
+
+より強い上書きを加える前に、ブラウザーの開発者ツールで競合する宣言を確認します。同じ作成者オリジンとコンテキストでは、レイヤー外の通常スタイルが、レイヤー内の通常スタイルより優先されます。ベンダーの `!important` 宣言も通常のユーティリティに優先し、重要宣言ではレイヤー順序が逆になります。これは Master 固有の優先順位ではなく、[ネイティブのカスケード規則](https://www.w3.org/TR/css-cascade-5/#layer-order)です。[カスケードレイヤー](/guide/cascade-layers)で診断手順を説明しています。
+
+Master 管理のスタイルシートでは、ネイティブセレクターは既定で保持されます。ネイティブの枝刈りを有効にする場合は、自分が管理するスタイルシートで [`@preserve native`](/reference/directives/pruning#preserve-native) を使い、ベンダー、CMS、外部から挿入するセレクターを保護するか、それらを枝刈り対象外にしてください。サードパーティのウィジェットが使うセレクターは、アプリの走査対象マークアップに現れない場合があります。

@@ -1,0 +1,84 @@
+---
+title: "排版"
+description: "选择完整文本样式或单个字体 token，并一次设置网站字体。"
+figures: {"TypeIllustration":{"title":"相同字号，也能呈现不同节奏","alt":"两份 Make room for details 都使用 32px 字号。font-3xl 继承 1.6 行高与常规字距；text-3xl 设置 1.25 行高与 -0.02em 字距，形成更紧凑的双行块。","caption":"以根字号 16px 呈现预设的实际排版。每一行标示一个行框；font-size 本身无法描述行与行之间的间距。","description":[{"title":"只有字号","text":"font-3xl 将字号设为 2rem。在此父元素中，会继承 line-height 1.6 与常规字距。"},{"title":"完整文本样式","text":"text-3xl 设置相同的 2rem 字号，再加上 line-height 1.25 与 letter-spacing -0.02em。"},{"title":"比较行框","text":"根字号为 16px 时，示例文本为 32px，行高分别为 51.2px 与 40px。相同两行文本占用不同高度。"}]},"GuideStudy:type-content-height":{"title":"固定文本列宽，让高度增长","alt":"两个等宽文本示例分别包含短文本与长文本。较长标题占用更多行，将后续内容往下推。","caption":"为了比较而控制宽度，两个文本框都未固定高度；垂直范围由内容决定。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import TypeIllustration from './components/TypeIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import FoundationTypography from '@master/internal-site/demo/foundations/FoundationTypography.astro'
+import FoundationTypeComparison from '@master/internal-site/demo/foundations/FoundationTypeComparison.astro'
+
+## 概览 [sr-only] \{#overview\}
+
+使用 `text-<token>`，以单个 class 设置完整文本样式：字号、行高与字距。字重、字体与颜色则分别用其他 class 补上。
+
+<FoundationTypography />
+
+```html
+<!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-regular -->
+<p class="text-xs font-regular fg-text-muted">Field notes / 024</p>
+<h2 class="text-2xl font-regular fg-text-strong">Make room for the details.</h2>
+<p class="text-sm">A consistent type scale helps readers move from the main idea to the supporting detail.</p>
+```
+
+<Class2CSS classes={['text-2xl', 'font-regular']} />
+
+此层级运用字号、间距与文本角色，同时保持常规字重。只在内容需要时加入强调；标题不必默认使用更粗的字重。[文本样式](/reference/tokens/text)列出所有设置与新增方式。
+
+---
+
+## 文本样式与字号 \{#without-vs-with-text-token\}
+
+`font-<size>` 只改变字号，保留继承的行高与字距。`text-<token>` 则同时设置三者。比较两种写法在相同字号下的差异：
+
+<TypeIllustration />
+
+<FoundationTypeComparison />
+
+```html
+<!-- @MARK font-3xl --><!-- @MARK text-3xl -->
+<div class="leading-md tracking-normal">
+  <p class="font-3xl">Designing for a clearer reading experience.</p>
+  <p class="text-3xl">Designing for a clearer reading experience.</p>
+</div>
+```
+
+<Class2CSS classes={['font-3xl', 'text-3xl']} />
+
+正文、标题与大型展示文本使用 `text-<token>`。只有设计刻意偏离既有文本样式时，才使用 `font-<size>`、`leading-<token>` 或 `tracking-<token>`。
+
+`font-` 前缀也接受字体与字重键名：`font-sans` 选择字体，`font-bold` 则请求指定字重。这些命名空间的自定义名称应保持区别；[字体](/reference/tokens/font)列出各自的值与解析规则。
+
+---
+
+## 网站字体 \{#site-typeface\}
+
+在 `@theme` 中设置一次应用字体。预设的 base 层会将它应用到文档，因此标记无需字体 class。
+
+```css name=globals.css
+@import "@master/css";
+
+@theme {
+  --font-sans: "Geist", "Noto Sans TC";
+  --font-mono: "IBM Plex Mono";
+  --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
+  --font-feature-mono: "cv01", "cv02", "cv29";
+}
+```
+
+base 层通过 `--font-family-sans` 解析 `--font-sans`，并应用到 `body` 与 Shadow Host；通过 `--font-family-mono` 解析 `--font-mono`，并应用到 `code`、`kbd`、`samp` 与 `pre`。`--font-feature-*` token 可以省略，默认回退到 `normal`；表单控件继承周围字体。使用 `@font-face` 或字体提供商的样式表加载字体文件。若只针对单个元素，改用 `font-mono` 这类 class。
+
+<ReferenceIllustration id="font-loading-boundary" />
+
+## 用实际文本验证 \{#verify-with-real-text\}
+
+在实际内容宽度下，检查短标题、长标题与完整段落，再用窄屏幕与放大文本重复检查。除了计算后的字号，也要留意换行，以及重音符号或下伸部被裁切的情况。
+
+<ReferenceIllustration id="reading-measure" />
+
+<GuideStudy id="type-content-height" />
+
+声明字体族只是提出请求，并不能证明字体文件已加载或包含所有字形。请检查实际渲染的字体，尤其是拉丁文本与中日韩文本混排时。让容器能随文本增长；不要只为维持某个英文示例的行数，就固定卡片高度。

@@ -1,0 +1,93 @@
+---
+{
+  "title": "在 Storybook 中配置 Master CSS",
+  "description": "将应用样式加载到 Storybook 预览 iframe，并使用 Vite 构建器验证开发和生产环境的 story。",
+  "category": "集成"
+}
+---
+
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/storybook/cover-light.webp'
+import dark from '~/site/assets/images/integrations/storybook/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Storybook" />
+
+在 Storybook 渲染 story 的预览 iframe 中使用应用的 CSS 入口。开始前，应用应已使用 Master CSS 并[安装 Storybook](https://storybook.js.org/docs/get-started/install)。本方案使用 React、Vite 构建器和 Master CSS 静态模式。请先通过 [Vite 集成](/guide/installation/vite#react)配置应用。其他基于 Vite 的框架应使用各自的 Storybook 软件包和 story 语法。
+
+## 导入共享 CSS 入口 \{#import-the-shared-css-entry\}
+Storybook 的 [Vite 构建器](https://storybook.js.org/docs/builders/vite)通常会读取应用的 Vite 配置。在该配置中仅注册一次 `masterCSS()`，再从 `.storybook/preview.ts` 导入应用样式表。保留现有的预览装饰器和参数。
+
+此导入会为预览 iframe 中的 story 应用样式，不会改变 Storybook 侧边栏或工具栏的样式。
+
+```ts name=.storybook/preview.ts
+import type { Preview } from '@storybook/react-vite'
+
+import '../src/index.css'
+
+const preview: Preview = {
+  parameters: {},
+}
+
+export default preview
+```
+
+## 验证实际的 story \{#verify-an-actual-story\}
+保留应用在 `src/index.css` 中的 `@import '@master/css';`。在已配置的 story glob 范围内创建以下 story；其中完整的类名会纳入静态 CSS 构建：
+
+<InstallationPreview>
+
+```tsx name=src/MasterCSS.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+const meta = { title: 'Master CSS/Installation' } satisfies Meta
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Check: Story = {
+  render: () => (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+</InstallationPreview>
+
+运行 `npm run storybook`，打开 **Master CSS / Installation / Check**。段落应具有凸起表面、圆角和 `1rem` 内边距。将 story 中的 `p-md` 改为 `p-lg`：内边距应增加到 `1.5rem`。检查后恢复原值，再构建生产预览：
+
+```bash
+npm run build-storybook
+```
+
+通过 HTTP 服务器提供 `storybook-static`，并打开同一个 story。请检查预览 iframe，而非管理界面的文档：样式表和段落都位于该独立文档中。静态模式会预先生成 CSS；Storybook 仍需要 JavaScript 才能渲染 story。
+
+如果应用有样式而 story 没有，请先检查 `preview.ts` 中的 CSS 导入，再确认 Master CSS 插件在 Storybook 构建器中运行。使用静态渲染时，请在 story 源代码中保留完整的类名字符串；如果 story 目录位于应用的扫描范围之外，请将其加入 `@source`。
+
+## 需要时注册独立的 Vite 集成 \{#register-a-separate-vite-integration-when-needed\}
+如果 Storybook 配置有意不加载应用的 Vite 配置，请在 `viteFinal` 中注册 Master CSS。将以下内容合并到现有配置，保留 story glob、附加组件和框架设置。如果应用插件已经加载，请跳过此次注册。
+
+```ts name=.storybook/main.ts
+import type { StorybookConfig } from '@storybook/react-vite'
+
+const config: StorybookConfig = {
+  framework: '@storybook/react-vite',
+  stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  async viteFinal(config) {
+    const { mergeConfig } = await import('vite')
+    const { default: masterCSS } = await import('@master/css-vite')
+
+    return mergeConfig(config, {
+      plugins: [
+        masterCSS()
+      ]
+    })
+  }
+}
+
+export default config
+```
+
+请使用与框架和构建器匹配的 Storybook 软件包。`viteFinal` 钩子适用于 Vite 构建器；基于 Webpack 的 Storybook 需要独立的 [Webpack 集成](/guide/installation/webpack)。

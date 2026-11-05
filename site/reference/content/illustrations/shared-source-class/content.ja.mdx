@@ -1,0 +1,36 @@
+# Reference prose: illustrations/shared-source-class
+
+## title \{#copy-title\}
+
+
+1 つのソースを削除しても共有ルールは消えない
+
+## alt \{#copy-alt\}
+
+
+ページ A は削除され、ページ B には p-md が残っています。保持された padding ルールへの有効なつながりは、ページ B にだけ残っています。
+
+## caption \{#copy-caption\}
+
+
+定義とポリシーが変わらなければ、ページ A を削除してもページ B の p-md への参照は残ります。生成 CSS が同じままでも、ソースの所属は変わります。
+
+## description-0 \{#copy-description-0\}
+
+
+最初は page-a.tsx と page-b.tsx の両方が、完全な p-md クラスを含みます。
+
+## description-1 \{#copy-description-1\}
+
+
+page-a.tsx を削除すると、そのソースの結果だけが削除されます。page-b.tsx からの有効なつながりが、共有ユーティリティと依存する --spacing-md を保持します。
+
+## description-2 \{#copy-description-2\}
+
+
+現在のソースにもセーフリストにも保持されなくなった場合、ユーティリティを除去できます。ソースの更新は結果を置き換えるもので、過去のクラスを蓄積しません。
+
+## description-3 \{#copy-description-3\}
+
+
+図は保持するユーティリティ宣言を示します。テーマの依存関係は別途説明し、完全なスタイルシートとして再掲するものではありません。

@@ -1,0 +1,159 @@
+---
+title: "布局"
+description: "用限宽外层容器、间距 token、列网格与显式轨道组合页面。"
+figures: {"LayoutIllustration":{"title":"跨列数与网格同步调整","alt":"八列网格中，页首跨满八列，两个指标各跨四列，最后一行分为五列的需求区与三列的任务区。","caption":"宽布局使用八条等宽轨道。每行都完整分配这些轨道：8、4 + 4，再来是 5 + 3。列间距位于轨道之间。","description":[{"title":"同一套网格","text":"宽版配置使用 grid-cols(8)，每对轨道之间都有相同间距。"},{"title":"整行与共用行","text":"页首跨八条轨道，每个指标跨四条；需求与任务区分别跨五条与三条。"},{"title":"同步调整","text":"断点改变网格列数时，在相同断点更新依赖它的跨列数。"}]},"GuideStudy:width-cap-growth":{"title":"宽度上限为较小父元素保留弹性","alt":"两个父元素包含相同的限宽内容框。较小父元素限制内容宽度；较大父元素则在达到最大宽度的内容框周围留下空间。","caption":"上限是最大值，不是固定宽度。图中宽度采用同一比例；标签描述限制条件，而非视口像素。"},"GuideStudy:grid-long-content":{"title":"可收缩轨道仍需要文本换行","alt":"两条等宽网格轨道比较短标签与会换行的长标签。第二行高度增加，轨道边界仍保持对齐。","caption":"minmax(0,1fr) 让轨道可收缩；文本仍需适当的换行策略。高度由内容决定。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LayoutIllustration from './components/LayoutIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
+
+## 概览 [sr-only] \{#overview\}
+组合页面时先决定三件事：限制宽度的外层容器、控制列间距与外边距的间距 token，以及区域使用的列网格。原生 [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) 与 [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout) 负责布局；Master CSS 为这些值命名。
+
+(resize) 使用滑块或方向键调整视口，观察布局从紧凑堆叠转为八列配置。
+
+<DemoPageViewport src="/examples/layout-system" title="工作区布局" height={540} />
+
+```html
+<!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
+<main class="w-full max-w-3xl mx-auto p-md">
+  <section class="grid-cols(4) gap-sm grid-cols(8)@2xs gap-md@2xs">
+    <header class="grid-col-span(4) grid-col-span(8)@2xs"><h1>Project overview</h1></header>
+    <article class="grid-col-span(4)"><h2>Revenue</h2><p>$128.4k</p></article>
+    <article class="grid-col-span(4)"><h2>Activation</h2><p>64.2%</p></article>
+    <article class="grid-col-span(4) grid-col-span(5)@2xs"><h2>Weekly demand</h2></article>
+    <aside class="grid-col-span(4) grid-col-span(3)@2xs"><h2>Launch tasks</h2></aside>
+  </section>
+</main>
+```
+
+<Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
+
+<LayoutIllustration />
+
+低于 `2xs` 时，每个区域都跨满四列。达到 `2xs` 后，页首跨八列，两个指标共用一行，需求与任务区则在下一行以五比三分配。
+
+---
+
+## 选择间距值 \{#namespace-for-spacing\}
+
+`p-`、`m-` 与 `gap-` 等间距 class 接受三种形式：
+
+| 形式 | Class | 生成结果 |
+| --- | --- | --- |
+| 间距 token | `p-md` | `padding: var(--spacing-md)` |
+| 直接值 | `p(1)` | `padding: calc(1 * 1px)` |
+| 原生长度 | `(padding:0.5rem)` | `padding: 0.5rem` |
+
+<Class2CSS classes={['p-md', 'p(1)', '(padding:0.5rem)']} />
+
+页面共用的节奏，例如列间距、内边距与区段间距，使用 token。直接值长度以像素表示，所以 `p(1)` 是一像素内边距，不是尺度中的一级；适合用于细线与 `m(0)` 这类重置。其他单位请写成原生声明。完整尺度请见[间距](/reference/tokens/spacing)，各函数请见[直接值](/reference/direct-values)。
+
+<a id="do-not-use-numeric-keys-as-tokens"></a>
+当某个距离成为反复使用的设计决策，请按角色命名。`--spacing-1` 这类数字键名会让人误读为直接值 `p(1)`。
+
+```css name=index.css
+@theme {
+  --spacing-section: 6rem;
+}
+```
+
+```html
+<!-- @MARK py-section -->
+<section class="py-section">…</section>
+```
+
+`px-*` 与 `py-*` 设置逻辑行内与块方向的内边距。实际方向会跟随元素的书写模式：
+
+<ReferenceIllustration id="logical-inline-axis" />
+
+`p-*` 设置四边。只有一侧内边距需要不同时，再加上指定该侧的 class：
+
+<ReferenceIllustration id="padding-coverage" />
+
+---
+
+## 用容器尺寸限制宽度 \{#use-container-tokens\}
+
+`w-`、`max-w-`、`h-`、`min-w-` 与 `basis-` 读取 `--container-*` token，因此 `max-w-5xl` 对应 `max-width: var(--container-5xl)`。填满与固有尺寸则是固定工具类：`w-full`、`w-fit`、`w-max` 与 `w-min` 始终设置 `100%`、`fit-content`、`max-content` 与 `min-content`，项目中的 `--container-full` token 不会改变它们。
+
+<Class2CSS classes={['max-w-5xl', 'w-full', 'w-fit']} />
+
+容器 token 只设置长度，不会移动容器查询的阈值。完整尺度请见[容器尺寸](/reference/tokens/container)。
+
+---
+
+<GuideStudy id="width-cap-growth" />
+
+## 从页面外层容器开始 \{#start-with-a-page-container\}
+
+让外层容器填满父元素，用容器尺寸设置上限、居中，并从间距尺度中选择两侧留白：
+
+```html
+<!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
+<main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
+```
+
+<Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
+
+外层容器负责页面对齐，内部网格则负责内容之间的关系。
+
+---
+
+## 建立列网格 \{#build-column-grids\}
+
+`grid-cols(<count>)` 建立等宽列网格，`grid-col-span(<count>)` 让条目跨越数列。断点改变列数时，也要在相同断点调整跨列数。
+
+(x) 网格增加为 12 列，但文章仍只跨四列，留下四个空列。
+
+```html
+<section class="grid-cols(4) gap-lg grid-cols(12)@md">
+  <article class="grid-col-span(4)">…</article>
+  <aside class="grid-col-span(4)">…</aside>
+</section>
+```
+
+(o) 文章在相同断点改为跨八列。
+
+```html
+<!-- @MARK grid-col-span(8)@md -->
+<section class="grid-cols(4) gap-lg grid-cols(12)@md">
+  <article class="grid-col-span(4) grid-col-span(8)@md">…</article>
+  <aside class="grid-col-span(4)">…</aside>
+</section>
+```
+
+<Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+<ReferenceIllustration id="span-includes-gaps" />
+
+两个轴向需要不同间距 token 时，使用 `col-gap-*` 与 `row-gap-*`。详见[网格轨道](/reference/grid-tracks)。
+
+---
+
+## 指定显式轨道 \{#add-explicit-tracks-only-when-needed\}
+
+需要固定或混合轨道时，写出原生 `grid-template-columns` 值。使用 `|` 分隔轨道，生成 CSS 时会转为空格：
+
+```html
+<!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) -->
+<section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
+  <nav>…</nav>
+  <main class="min-w(0)">…</main>
+</section>
+```
+
+<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
+
+`min-w(0)` 让主要区域可缩小至内容宽度以下。普通内容保持等宽列与跨列设置；应用外壳与分割面板再使用显式轨道。
+
+<GuideStudy id="grid-long-content" />
+
+## 用较长内容验证布局 \{#verify-the-layout-with-longer-content\}
+
+调整尺寸跨越各断点，同时检查网格列数与子条目的跨列数。使用更长的标题与任务标签，确认内容能垂直增长。固定尺寸留给需要测量的对象或刻意设置的视口；页面卡片通常只需内边距与宽度限制。
+
+使用键盘操作预览中的任务复选框，并打开各区段链接。内容换行时布局仍应可用；为了塞进固定高度卡片而缩小文本，只会掩盖真正的限制。

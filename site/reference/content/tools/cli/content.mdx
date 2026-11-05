@@ -1,0 +1,223 @@
+# Reference prose: tools/cli
+
+## editorial-suggest-examples-0-description \{#copy-editorial-suggest-examples-0-description\}
+
+Suggest classes from declarations using the active project manifest:
+
+## editorial-suggest-examples-1-description \{#copy-editorial-suggest-examples-1-description\}
+
+Read a declaration block from stdin:
+
+## editorial-suggest-notes-0 \{#copy-editorial-suggest-notes-0\}
+
+Pass one quoted declaration block or `--stdin`, never both. Select the project root with `--cwd` (default: current directory). For an argument beginning with `--`, use stdin or place `--` before the argument. Input must contain declarations only, without a selector or surrounding braces.
+
+## editorial-suggest-notes-1 \{#copy-editorial-suggest-notes-1\}
+
+The version 1 JSON envelope contains `cwd`, `manifest`, `result`, `validation` and `diagnostics`. `manifest.entries` lists discovered Master CSS entries; if none are found, suggestions use the default preset. A discovered entry that fails to load is an error, never a preset fallback. Check entries before relying on project tokens or utility overrides.
+
+## editorial-suggest-notes-2 \{#copy-editorial-suggest-notes-2\}
+
+`result` is the versioned declaration-suggestion report: classes, generated CSS, `remainingCss`, notes and verification. A `preserved` result retains the entire original block and exits successfully; keep that CSS and read its notes. A `suggested` result checks declaration correspondence, not cascade or browser rendering. Class-specific diagnostics identify `className`; `validation` separates matching, CSS syntax, CSS values and browser support.
+
+## editorial-suggest-notes-3 \{#copy-editorial-suggest-notes-3\}
+
+Reports always go to stdout as JSON. Errors are also written to stderr and exit with status 1. Input, manifest or execution failures return `result: null`; known invalid suggested CSS produces an error while retaining the proposal. Unknown values are not errors, and browser support remains `not-checked`. Argument-parser errors, such as unknown flags, use ordinary CLI help diagnostics.
+
+## editorial-generate-notes-0 \{#copy-editorial-generate-notes-0\}
+
+`--output` names the CSS entry (default: `master.css`). Publish its sibling stylesheet and resource assets as well; local imports and resources can remain separate files to preserve ordering, conditions and URL ownership. A copied entry alone may be incomplete. See [Imports](/reference/directives/imports) for stylesheet boundaries.
+
+## editorial-generate-notes-1 \{#copy-editorial-generate-notes-1\}
+
+`--strict` rejects known CSS syntax or value errors before publishing assets. Unknown browser capabilities are not treated as verified support. `--prune-native-css` opts project-owned files into native pruning; package files keep their own policy and `@preserve native` wins locally. [Native CSS pruning](/reference/directives/pruning) defines the rule and keyframe behavior.
+
+## editorial-generate-notes-2 \{#copy-editorial-generate-notes-2\}
+
+`--no-export` prints one CSS result and does not publish its referenced resources; preserve the required stylesheet and resource URL bases yourself. `--verbose 0` suppresses progress logging. Stop watch mode with Ctrl+C; a live watcher can still have a failed rebuild, with the last successful export retained.
+
+## editorial-generate-examples-0-description \{#copy-editorial-generate-examples-0-description\}
+
+Inspect generated CSS without writing output files:
+
+## editorial-generate-examples-1-description \{#copy-editorial-generate-examples-1-description\}
+
+Publish CSS to an explicit file:
+
+## editorial-generate-examples-2-description \{#copy-editorial-generate-examples-2-description\}
+
+Regenerate that output when project sources change; stop with Ctrl+C:
+
+## editorial-lint-notes-0 \{#copy-editorial-lint-notes-0\}
+
+Lint report v5 separates checked inputs from diagnostic files. `coverage.checkedFiles` lists every input passed to lint, including clean files and stdin virtual paths. `summary.checkedFiles` counts those inputs; `summary.filesWithDiagnostics` counts checked files with diagnostics. The `files` array remains limited to diagnostic results; an empty array does not mean no checks ran.
+
+## editorial-lint-notes-1 \{#copy-editorial-lint-notes-1\}
+
+Read `coverage.status` before interpreting zero diagnostics: `complete` means the selected inputs were checked, `no-inputs` means no source inputs matched, and `not-run` means manifest loading blocked source lint. Manifest diagnostics do not count as checked source files. With `--fix`, diagnostic counts describe the rechecked content. Clean stdin still counts as one input without creating a disk file. Stylish output includes the coverage summary on stderr.
+
+## editorial-lint-notes-2 \{#copy-editorial-lint-notes-2\}
+
+`coverage.description` explains the result and distinguishes manifest stylesheet entries from linted source inputs. Empty `manifest.entries` does not mean no source checks ran. Coverage applies only to the selected inputs and enabled lint rules. It does not verify browser behavior or prove the whole project was checked. A zero exit status with `no-inputs` is not evidence of a successful source check.
+
+## editorial-lint-examples-0-description \{#copy-editorial-lint-examples-0-description\}
+
+Inspect class-order proposals in one existing source file:
+
+## editorial-lint-examples-1-description \{#copy-editorial-lint-examples-1-description\}
+
+Apply those class-order fixes after reviewing the proposals:
+
+## editorial-lint-examples-2-description \{#copy-editorial-lint-examples-2-description\}
+
+Inspect a source buffer on stdin without modifying its virtual file:
+
+## editorial-inspect-examples-0-description \{#copy-editorial-inspect-examples-0-description\}
+
+Check a class used by an existing source file and include generated CSS:
+
+## editorial-inspect-examples-1-description \{#copy-editorial-inspect-examples-1-description\}
+
+Read a human-readable report on stderr:
+
+## editorial-inspect-examples-2-description \{#copy-editorial-inspect-examples-2-description\}
+
+Save JSON for automation while retaining diagnostic-based exit status:
+
+## editorial-inspect-examples-3-description \{#copy-editorial-inspect-examples-3-description\}
+
+Inspect token references and collisions across managed project CSS:
+
+## editorial-inspect-examples-4-description \{#copy-editorial-inspect-examples-4-description\}
+
+Read metadata and raw-value policy from an existing version 1 options file:
+
+## editorial-inspect-examples-5-description \{#copy-editorial-inspect-examples-5-description\}
+
+Add route and component stylesheets imported from JavaScript, which the CSS entry graph does not reach:
+
+## editorial-inspect-notes-0 \{#copy-editorial-inspect-notes-0\}
+
+### Project snapshots \{#project-snapshots\}
+
+## editorial-inspect-notes-1 \{#copy-editorial-inspect-notes-1\}
+
+`--snapshot` writes a resolved project snapshot to stdout. Save it before a change, then use `--compare` to compare that snapshot with the current project. These two modes are mutually exclusive and always return JSON. They compare definitions and known consumers, not browser pixels.
+
+## editorial-inspect-notes-2 \{#copy-editorial-inspect-notes-2\}
+
+```sh
+master-css inspect --snapshot > before.json
+# After the intended source change:
+master-css inspect --compare before.json > comparison.json
+```
+
+## editorial-inspect-notes-3 \{#copy-editorial-inspect-notes-3\}
+
+### Design-system options \{#design-system-options\}
+
+## editorial-inspect-notes-4 \{#copy-editorial-inspect-notes-4\}
+
+`--design-system-options` reads a JSON file and requires `--design-system`. The same object is accepted by the MCP `mastercss_scan_project` `designSystem` input (project context only) and the language server's `designSystem` setting; all three return the same report.
+
+## editorial-inspect-notes-5 \{#copy-editorial-inspect-notes-5\}
+
+```json name=design-system.json
+{
+  "version": 1,
+  "metadata": {
+    "--color-brand-old": {
+      "description": "Previous brand color",
+      "deprecated": true,
+      "replacement": "--color-brand"
+    }
+  },
+  "rawValuePolicy": {
+    "requireProperties": ["color", "background-color"]
+  }
+}
+```
+
+## editorial-inspect-notes-6 \{#copy-editorial-inspect-notes-6\}
+
+| Field | Contract |
+| --- | --- |
+| `version` | Required; `1`. |
+| `metadata` | Optional map from a token name in the active project to `description`, `deprecated` and `replacement`. Deprecation warnings cover authored CSS `var()` references; a replacement is a review suggestion and is never applied automatically. |
+| `rawValuePolicy.requireProperties` | Optional. Native declarations of these token-backed properties must use a token; a complete `var()` component, including its fallback, is exempt. Omit the policy to skip raw-value checks. |
+
+## editorial-inspect-notes-7 \{#copy-editorial-inspect-notes-7\}
+
+Unrecognized fields are rejected. The options only affect the inspection report, never generated CSS or browser programs. `components` lists each class's attribute vocabulary from attribute selectors in the same compound, such as `.button[data-variant="primary"]`: exact `values` and whether a bare `[name]` selector exists (`presence`); attributes inside functional pseudo-classes such as `:where()` are not collected. The report covers project entries and their local dependencies, plus any stylesheets named as source paths (listed in `project.routeStylesheets`, with no importers); with `--design-system`, source paths must match `.css` files. Package CSS and files outside the project root are excluded, an `@reference` edge supplies definition context without delivery, and `browser` stays `not-checked`.
+
+## body-23 \{#copy-body-23\}
+
+Install the CLI through the [setup guide](/guide/installation#cli), then run it from the project root. Generate, lint and inspect discover ordinary app sources without source arguments; explicit path arguments replace that selection. Suggest accepts a CSS declaration block.
+
+## body-24 \{#copy-body-24\}
+
+Quote source globs so the CLI, rather than the shell, expands them. These commands operate on the current working directory; only `suggest` exposes `--cwd`. [Extraction](/reference/rules/extraction) owns source parsing and [Scanning](/reference/directives/scanning) owns stylesheet source policy.
+
+## body-25 \{#copy-body-25\}
+
+Run `master-css --help` to list commands and `master-css <command> --help` to read all options for your installed version. Current command definitions live in the [CLI source](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts).
+
+## body-26 \{#copy-body-26\}
+
+Suggests classes and validates their generated declarations without editing files. Uses the active project manifest and preserves uncertain blocks as CSS. Review the cascade and browser behavior before applying a proposal.
+
+## body-27 \{#copy-body-27\}
+
+Publishes CSS and associated stylesheet resources. Use `--no-export --verbose 0` to print only CSS without publishing files. `--watch` runs until interrupted; check rebuild errors even while the process remains active.
+
+## body-28 \{#copy-body-28\}
+
+Reports class diagnostics without writing source by default. `--fix` applies supported fixes; `--fix-dry-run` returns proposals without applying them. Stdin content is never written back to its virtual path.
+
+## body-29 \{#copy-body-29\}
+
+Reports source discovery, stylesheet entries and missing CSS without publishing CSS or rewriting source files. `--classes` checks the scan result; it does not safelist those classes. Read diagnostics and coverage before interpreting an empty result.
+
+## body-30 \{#copy-body-30\}
+
+## Command effects \{#command-effects\}
+
+## body-31 \{#copy-body-31\}
+
+| Command | Default output | File effects |
+
+## body-32 \{#copy-body-32\}
+
+| [`generate`](#generate) | CSS entry and required assets | Publishes output; `--no-export` prints CSS instead. |
+
+## body-33 \{#copy-body-33\}
+
+| [`lint`](#lint) | JSON diagnostics | Reads source; `--fix` writes supported fixes. |
+
+## body-34 \{#copy-body-34\}
+
+| [`inspect`](#inspect) | JSON inspection report | Reads source; shell redirection can save the report. |
+
+## body-35 \{#copy-body-35\}
+
+| [`suggest`](#suggest) | JSON declaration proposal | Reads declarations; does not apply the proposal. |
+
+## body-36 \{#copy-body-36\}
+
+## Check results \{#check-results\}
+
+## body-37 \{#copy-body-37\}
+
+For lint and inspect, the default JSON report is written to stdout; `--format stylish` writes readable diagnostics to stderr. Diagnostic errors normally produce a nonzero exit status. `--exit-code never` suppresses diagnostic-based failure, so read the report before treating the run as successful. See [Code linting](/guide/code-linting) and [Scanning class names](/guide/scanning-and-pruning) for troubleshooting. Source links follow the `rc` branch.
+
+## title \{#copy-title\}
+
+CLI commands
+
+## description \{#copy-description\}
+
+Choose a command, check its file effects, and find complete options in CLI help and source.
+
+## command-help \{#copy-command-help\}
+
+Run `master-css %%command%% --help` for every option. [Implementation](https://github.com/master-co/css/blob/rc/packages/cli/src/%%command%%.ts).

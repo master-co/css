@@ -1,0 +1,256 @@
+---
+title: "Master CSS 語言服務"
+description: "設定 VS Code，確認依專案內容提供的 token 補全，檢查產生的 CSS，並設定 class 來源與工作區。"
+figures: {"LanguageIllustration":{"title":"專案定義成為編輯器詞彙","alt":"app.css 的 spacing-card token 提供 HTML class 屬性中的 p-card 補全。接受建議後，將滑鼠移到 p-card，即可看到 padding: var(--spacing-card)。","caption":"一個專案 token，兩種編輯器檢查：補全 class 名稱，再檢查宣告。編輯器預覽無法證明瀏覽器中哪個規則勝出。","description":[{"title":"定義","text":"應用程式樣式表匯入 @master/css，並在 @theme 中宣告 --spacing-card: 1.5rem。"},{"title":"補全","text":"在 HTML class 屬性中，p-ca 會取得依專案內容提供的 p-card 補全。"},{"title":"檢查","text":"將滑鼠移到 p-card，會顯示產生的 padding: var(--spacing-card) 宣告。CSS 仍由框架整合提供給頁面；渲染結果須另外驗證。"}]},"GuideStudy:editor-build-boundary":{"title":"編輯器預覽不會傳遞樣式表","alt":"一個來源 class 分成兩條路徑：語言服務向作者顯示產生的 CSS，整合工具則將 CSS 傳遞給瀏覽器。","caption":"補全與 hover 驗證撰寫脈絡。實際頁面也需透過建置與瀏覽器驗證。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentOptionList from '@master/internal-site/components/DocumentOptionList.astro'
+import DocumentOptionEntry from '@master/internal-site/components/DocumentOptionEntry.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LanguageIllustration from './components/LanguageIllustration.astro'
+
+## 概覽 [sr-only] \{#overview\}
+使用 Master CSS 語言服務，探索專案實際支援的 class，並在編輯時檢查 CSS。建議內容會讀取專案 token 與定義，包括你自訂的 utility、mixin、選擇器與條件。
+
+請先準備[已安裝 Master CSS](/guide/installation) 的專案。擴充功能協助撰寫來源；樣式表仍由框架整合傳遞到瀏覽器。
+
+---
+
+## 設定 VS Code \{#set-up-vs-code\}
+安裝官方 [Master CSS 擴充功能](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode)，在 VS Code 開啟專案資料夾，並啟用字串內補全：
+
+```json name=.vscode/settings.json
+{
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}
+```
+
+擴充功能透過匯入 `@master/css` 的 CSS 進入點，或宣告 Master CSS 套件的 `package.json`，探索專案脈絡。儲存庫有多個應用程式時，請開啟你想使用其主題的應用程式來源檔。
+
+## 檢查專案 token \{#check-a-project-token\}
+
+在應用程式 CSS 進入點的既有匯入後，加上間距 token：
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --spacing-card: 1.5rem;
+}
+```
+
+在 HTML 檔案的 class 屬性中輸入 `p-ca`。從建議中選擇 `p-card`，再將滑鼠移到完成的 class：
+
+```html
+<article class="p-card">Field notes</article>
+```
+
+<LanguageIllustration />
+
+Hover 的產生規則應包含 `padding: var(--spacing-card)`。Class 名稱來自專案 token，宣告保留變數參照。請在瀏覽器開啟頁面，查看實際內距。若沒有 `p-card`，先解決[工作區脈絡](#workspace-aware-manifests)，再新增其他編輯器設定。
+
+---
+
+<GuideStudy id="editor-build-boundary" />
+
+## 儲存時自動排序 class \{#add-class-sorting-on-save\}
+
+若要取得 class 政策診斷與儲存時排序，先設定[程式碼檢查](/guide/code-linting)，並安裝 [ESLint 擴充功能](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)。在 `editor.quickSuggestions` 旁加入下列選項：
+
+```json name=.vscode/settings.json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ]
+}
+```
+
+現在明確執行儲存時，就能依專案 ESLint 設定排序 class。只有規則清單不會啟用儲存動作。`eslint.codeActionsOnSave.mode` 維持預設 `all`：擴充功能的 `problems` 模式會忽略此規則篩選。詳見 [ESLint 擴充功能設定](https://github.com/microsoft/vscode-eslint#settings-options)。
+
+---
+
+## 編輯時檢查樣式 \{#inspect-styles-as-you-edit\}
+### 補全 class 與條件 \{#complete-classes-and-conditions\}
+補全適用於已設定的 class 來源：標記屬性、框架繫結屬性、JavaScript 輔助函式呼叫、標籤範本與專案專屬 class 宣告。建議包含 utility、屬性值、色彩 token、選擇器、查詢與指令語法；工作區 manifest 載入後也會顯示專案 token。
+
+### 閱讀產生的規則 \{#read-the-generated-rule\}
+將滑鼠移到 `fg-blue-60:hover@sm` 這類 class，檢查宣告、選擇器狀態與查詢。此例只在 `sm` 以上寬度的 hover 狀態套用預設集藍色 token：
+
+```html
+<a class="fg-text-body fg-blue-60:hover@sm" href="/notes">
+  Field notes
+</a>
+```
+
+### 語法醒目提示 \{#syntax-highlighting\}
+擴充功能在 CSS 類文件中醒目提示指令語法，並以語意 token 標示 class 清單區段：宣告、值、選擇器、查詢、單位、important 標記、引號區段與組成部分邊界。預設只標示游標下的 class 字串，讓長標記保持清楚。若看不到語意色彩，請在目前 VS Code 主題啟用語意醒目提示。
+
+Shiki 程式碼範例對標記 class 屬性採用相同的低干擾預設，以滑鼠移入取代游標。請在 `transformerMasterCSS` 旁匯入公開樣式表：
+
+```ts
+import '@master/css-language-service/shiki.css'
+import { transformerMasterCSS } from '@master/css-language-service/shiki'
+```
+
+### 色彩工具 \{#color-tools\}
+Master CSS 色彩 utility 與 manifest 色彩使用 VS Code 色彩裝飾與選色器。請同時啟用 `masterCSS.renderSyntaxColors` 與 VS Code 的 [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css)。
+
+### 指令格式化 \{#directive-formatting\}
+文件與範圍格式化可修整 CSS、SCSS、LESS 文件，以及 Vue、Svelte、Astro 中 CSS 類 `<style>` 區塊的指令來源，不改變產生的 CSS。對 class 清單指令，important 標記會緊貼對應 class：`@safelist "(background-color:transparent) !";` 會變成 `@safelist "(background-color:transparent)!";`。
+
+### 診斷 \{#diagnostics\}
+語言伺服器回報上述文件中的指令錯誤，以及專案 manifest 載入錯誤。Class 字串語法、政策與排序診斷由[程式碼檢查](/guide/code-linting)負責，不會重複回報。語言伺服器用戶端也可透過 `designSystem` 設定，選擇對已開啟且受管理的 CSS 檔案檢查 token 參照；它接受與 `master-css inspect` 相同的[設計系統選項](/reference/tools/cli#design-system-options)。
+
+---
+
+## 辨識 class 來源 \{#supported-class-sources\}
+
+內建來源包含 `class`、`className`、框架繫結、常用輔助函式呼叫與標籤範本。專案使用其他輔助函式或屬性時，加入其名稱：
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.classAttributes": ["ui"],
+  "masterCSS.classDeclarations": ["classes", "styles"],
+  "masterCSS.classFunctions": ["cn"]
+}
+```
+
+例如，現在 `cn("p-card")` 也會有 class 補全。語言服務陣列會**擴充**內建 class 來源，因此 `clsx` 仍可使用。ESLint 來源設定則會**取代**預設值；引入專案慣例時，請同時設定兩項工具。
+
+<DocumentDisclosure title="可用的 VS Code 設定">
+
+選項可設在 `.vscode/settings.json` 或 VS Code 使用者設定。預設涵蓋 HTML、PHP、JavaScript、TypeScript、JSX、TSX、CSS、SCSS、LESS、Vue、Svelte、Rust、Astro、Markdown 與 MDX。
+
+<DocumentOptionList label="VS Code 設定">
+
+<DocumentOptionEntry name="masterCSS.includedLanguages">
+
+預設：常見網頁與範本語言 ID。
+
+啟用語言服務功能的語言。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributes">
+
+預設：`class`, `className`.
+
+值包含 class 字串的標記屬性。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classAttributeBindings">
+
+預設：框架繫結預設值。
+
+`:class`、`v-bind:class`、`[ngClass]` 與 `class:list` 等繫結屬性。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classFunctions">
+
+預設：`clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+
+字串引數包含 class 字串的被呼叫對象；`styled` 也支援 `styled.button` 這類成員形式。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.classDeclarations">
+
+預設：`[]`.
+
+字串為 class 宣告的變數或物件屬性。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.exclude">
+
+預設：`.git`, `node_modules`, `.hg`.
+
+從所有功能排除的檔案。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.suggestSyntax">
+
+預設：`true`.
+
+補全項目。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.inspectSyntax">
+
+預設：`true`.
+
+滑鼠移入檢查與產生的 CSS 預覽。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.renderSyntaxColors">
+
+預設：`true`.
+
+Master CSS 色彩語法的色彩裝飾。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.formatDirectives">
+
+預設：`true`.
+
+指令格式化。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.embeddedSyntaxHighlighting">
+
+預設：`active`.
+
+`active` 醒目提示游標下的 class，`always` 提示所有內嵌 class，`off` 不提示；指令語法仍維持醒目提示。
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="masterCSS.workspaces">
+
+預設：`auto`.
+
+專案 manifest 的工作區偵測。
+
+</DocumentOptionEntry>
+
+</DocumentOptionList>
+
+</DocumentDisclosure>
+
+---
+
+## 依工作區選用的 manifest \{#workspace-aware-manifests\}
+在 `auto` 模式中，語言伺服器會為每個匯入 `@master/css` 的 CSS 檔案，以及宣告 Master CSS 套件的 `package.json` 偵測工作區，並各自建立 manifest。Monorepo 中的補全、hover 預覽、色彩與診斷會跟隨最近的 Master CSS 專案。偵測結果不符儲存庫配置時，請列出工作區目錄；專案邊界詳見 [Monorepo](/guide/monorepo)：
+
+```json name=.vscode/settings.json
+{
+  "masterCSS.workspaces": ["apps/admin", "apps/shop", "packages/design-system"]
+}
+```
+
+相依套件、工作區配置改變，或 VS Code 尚未讀到 manifest 編輯時，執行 `Master CSS: Restart Language Server`。
+
+## 疑難排解 \{#troubleshooting\}
+<DocumentComparison>
+
+| 狀況 | 處理方式 |
+| --- | --- |
+| 字串內沒有補全。 | 啟用 `editor.quickSuggestions.strings`。 |
+| 缺少專案 token 或 utility。 | 確認 token 位於偵測到的 CSS 進入點或其匯入中，修正 manifest 錯誤，必要時重啟語言伺服器。 |
+| 使用錯誤的 monorepo 套件。 | 將 `masterCSS.workspaces` 設為明確的工作區目錄。 |
+| 沒有色彩裝飾。 | 啟用 `masterCSS.renderSyntaxColors` 與 `editor.colorDecorators`，並檢查個別語言的覆寫設定。 |
+
+</DocumentComparison>

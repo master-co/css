@@ -1,0 +1,31 @@
+# Reference prose: illustrations/where-specificity
+
+## title \{#copy-title\}
+
+
+where() 與 is() 可比對相同狀態，但權重不同
+
+## alt \{#copy-alt\}
+
+
+兩個對齊的選擇器拆解都保留所屬元素的 0-1-0 權重。where 增加零；is 增加最高權重引數的 1-0-0。
+
+## caption \{#copy-caption\}
+
+
+圖示只比較選擇器權重。階層串接會先考量來源、重要性與串接層優先順序。
+
+## description-0 \{#copy-description-0\}
+
+
+兩個生成選擇器中，跳脫後的完整 class 所屬元素都貢獻 0-1-0。
+
+## description-1 \{#copy-description-1\}
+
+
+:where(:hover,#selected) 的後綴貢獻 0-0-0，因此總計為 0-1-0。
+
+## description-2 \{#copy-description-2\}
+
+
+對 :is(:hover,#selected) 而言，ID 引數提供最高引數權重 1-0-0，所以即使符合的是 hover 選項，總計仍為 1-1-0。

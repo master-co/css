@@ -1,0 +1,35 @@
+# Reference prose: illustrations/import-reference-output
+
+## title \{#copy-title\}
+
+가져오기는 네이티브 규칙을 전달하고 참조는 정의를 제공
+
+## alt \{#copy-alt\}
+
+
+같은 tokens.css가 bg-brand를 사용하는 두 로컬 컴파일에 제공된다. import 출력은 네이티브 .card 규칙을 포함하고 reference 출력은 .card를 생략하지만 bg-brand의 토큰은 제공한다.
+
+## caption \{#copy-caption\}
+
+
+두 로컬 출력 모두 bg-brand를 사용합니다. 가져오기는 네이티브 .card 규칙을 전달하고 참조는 정의만 사용할 수 있게 합니다. 로컬에서 사용하는 토큰은 어느 출력에도 포함될 수 있습니다.
+
+## description-0 \{#copy-description-0\}
+
+
+tokens.css는 @theme에서 --color-brand를 선언하고, 이를 참조하는 네이티브 .card 규칙도 정의합니다. 두 로컬 컴파일의 차이는 @import와 @reference뿐입니다.
+
+## description-1 \{#copy-description-1\}
+
+
+두 로컬 출력은 모두 bg-brand를 생성하고 --color-brand 의존성을 유지합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+가져오기 출력만 .card를 포함합니다. 참조는 그 규칙을 로컬 사용 루트로 만들거나 참조 스타일시트를 게시하지 않습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+분기는 컴파일 출력의 비교이며 런타임 로딩 단계가 아닙니다. 네이티브 재정의에도 실제 스타일시트 전달이 필요합니다.

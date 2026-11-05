@@ -1,0 +1,31 @@
+# Reference prose: illustrations/condition-eligibility
+
+## title \{#copy-title\}
+
+
+クエリーが一致するとルールが適用候補になる
+
+## alt \{#copy-alt\}
+
+
+同じコンパイル済みメディアルールが、2 つのビューポートの例につながります。しきい値未満では無効で、しきい値に達するとカスケードに参加します。
+
+## caption \{#copy-caption\}
+
+
+コンパイラーは、どちらのブラウザーの例を評価するより前にクエリーを出力します。クエリーが一致しても、カスケードで優先されるとは限りません。
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem) は、現在のビューポートを調べずに、display: grid を含む @media ルールを出力します。
+
+## description-1 \{#copy-description-1\}
+
+
+39rem ではブラウザーはルールを適用しません。40rem になると条件が一致し、宣言がカスケードに参加します。
+
+## description-2 \{#copy-description-2\}
+
+
+最終的な display 値は、ほかのカスケードルールで決まることもあります。コンパイル、クエリーの一致、最終的な計算済みスタイルは別の確認事項です。

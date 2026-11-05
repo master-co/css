@@ -1,0 +1,31 @@
+# Reference prose: illustrations/mixin-splice
+
+## title \{#copy-title\}
+
+
+mixin 在呼叫位置展開
+
+## alt \{#copy-alt\}
+
+
+原生 caption 規則中醒目標示的 apply 行，被兩個醒目宣告取代；前後的 color 與 font-weight 行不變。
+
+## caption \{#copy-caption\}
+
+
+插入位置前後的相同行保持對齊。選擇器、宣告順序與外層串接層仍由呼叫端擁有。
+
+## description-0 \{#copy-description-0\}
+
+
+--caption mixin 提供 font-size: 14px 與 line-height: 1.5。
+
+## description-1 \{#copy-description-1\}
+
+
+在 .caption 內，@apply --caption 展開於 color: currentColor 與 font-weight: 600 之間。
+
+## description-2 \{#copy-description-2\}
+
+
+展開不會註冊 class，也不會將原生規則移至生成串接層。重複宣告與撰寫順序都會保留。

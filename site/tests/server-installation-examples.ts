@@ -66,7 +66,7 @@ export async function serverInstallationFixture(route: typeof serverInstallation
     assert.equal(scripts['build:assets'], 'vite build')
     assert.equal(scripts['watch:assets'], 'vite build --watch')
     assert.match(source, /npm run build:assets/)
-    assert.match(source, /@master\/css@rc/)
+    assert.match(source, /@master\/css@VERSION/)
     const built = spawnSync(process.execPath, [join(dependency('vite'), 'bin/vite.js'), 'build'], { cwd: root, encoding: 'utf8', timeout: 60000 })
     assert.equal(built.status, 0, `${route}: ${built.stderr}\n${built.stdout}`)
     assert.equal(readFileSync(join(root, 'public/assets/keep.txt'), 'utf8'), 'existing host assets')

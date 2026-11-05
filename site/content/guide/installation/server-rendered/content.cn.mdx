@@ -1,0 +1,463 @@
+---
+{
+  "title": "在服务器渲染应用中配置 Master CSS",
+  "description": "使用 Vite 构建 Master CSS，并从 PHP、Laravel、Rails、WordPress、Shopify、ASP.NET Core、Blazor 或 Express 模板加载。",
+  "category": "集成"
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/server-rendered/cover-light.webp'
+import dark from '~/site/assets/images/integrations/server-rendered/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS 搭配服务器符号" />
+
+服务器或 CMS 渲染 HTML 时，由 Vite 构建 Master CSS 资源，再由宿主系统加载构建后的文件。本指南涵盖 PHP、Rails、WordPress、Shopify、ASP.NET Core、Blazor 和 Express；[Laravel](#laravel) 使用自己的 Vite 流程。页面、路由和其他资源仍由宿主系统提供。请先选择你的[宿主系统章节](#hosts)，再应用公共步骤：模板路径和公开目录决定扫描内容以及样式表的提供位置。Laravel 项目可直接前往[现有 Vite 流程](#laravel)。
+
+## 安装 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 安装 Vite 和 Master CSS \{#install-vite-and-master-css\}
+      在现有项目根目录或主题目录中安装 Vite 和 Master CSS Vite 集成。如果目录没有 `package.json`，请先运行 `npm init -y`。
+    </StepL>
+    <StepR>
+      ```bash
+      npm install @master/css@VERSION
+      npm install -D vite @master/css-vite@VERSION
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 配置 Vite \{#configure-vite\}
+      将资源入口构建到宿主系统的公开资源目录。按照[宿主系统表格](#hosts)设置 `outDir`；`emptyOutDir: false` 会保留宿主系统的其他文件。
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css-vite'
+
+      export default defineConfig({
+        base: './',
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: false,
+          rollupOptions: {
+            input: 'src/master.ts',
+            output: {
+              entryFileNames: '[name].js',
+              assetFileNames: '[name][extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 创建资源入口 \{#create-the-asset-entry\}
+      从入口导入 Master CSS。模板不属于 Vite 模块图，因此请将宿主系统[章节](#hosts)中的 `@source` 行追加到此样式表。
+    </StepL>
+    <StepR>
+      ```ts name=src/master.ts
+      import './master.css'
+      ```
+
+      ```css name=src/master.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### 添加构建脚本 \{#add-build-scripts\}
+      将这些脚本合并到 `package.json`。启动或发布宿主系统前先构建；开发时请让监听进程与宿主服务器一起运行。
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 加载样式表 \{#load-the-stylesheet\}
+    运行 `npm run build:assets`，按对应章节的方式从宿主布局链接构建后的 `master.css`，再将段落加入会渲染的模板。
+  </Step>
+  <InstallationPreview>
+
+```html
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 检查资源连接 \{#check-the-asset-connection\}
+
+运行宿主服务器，加载确实会渲染示例模板的页面。段落应具有凸起表面、圆角和 `1rem` 内边距。宿主与 `npm run watch:assets` 都在运行时，将 `p-md` 改为 `p-lg`：CSS 重新构建并重新加载页面后，内边距应增加到 `1.5rem`。检查后将类名恢复原值。
+
+如果页面没有样式，请按顺序追查三个连接：
+
+- **模板到扫描器：**将宿主的 `@source` 行追加到 `src/master.css`。路径相对于此样式表解析。添加时请保留 `@import`。
+- **构建到公开目录：**确认宿主提供文件前，`npm run build:assets` 已将 `master.css` 写入配置的 `outDir`。
+- **公开 URL 到页面：**确认布局的样式表请求返回 CSS，而非 404 或 HTML 回退页面，再检查段落的匹配规则。
+
+静态生成需要完整类名字符串。请将数据库或编辑器值映射到完整类名，或通过 [`@safelist`](/reference/directives/scanning#safelist) 添加范围有限的候选项。`bg-${color}` 这样的字符串拼接不会告诉扫描器应生成哪些类名。
+
+请将 `master.css` 及其导入的所有 CSS 文件一并部署，保留名称和相对路径。如果宿主会提供 HTML，请禁用 JavaScript 检查部署后的页面；独立 Blazor WebAssembly 仍需要 JavaScript 渲染页面。固定资源文件名也需要宿主的缓存版本策略，下方 Rails、WordPress 和 ASP.NET Core 示例有所演示。
+
+## 加载构建后的资源 \{#hosts\}
+
+| 宿主系统 | `outDir` | 模板来源 |
+| --- | --- | --- |
+| [PHP](#php) | `public/assets` | `.php` 文件 |
+| [Rails](#rails) | `public/assets` | ERB 视图 |
+| [WordPress](#wordpress) | 主题中的 `assets` | 主题 `.php` 模板 |
+| [Shopify](#shopify) | 主题中的 `assets` | Liquid 文件和模板 JSON |
+| [ASP.NET Core](#aspnet-core) | `wwwroot/assets` | Razor Pages 和 MVC 视图 |
+| [Blazor](#blazor) | `wwwroot/assets` | `.razor`、`.cshtml` 和宿主 HTML |
+| [Express](#express) | `public/assets` | 模板引擎视图 |
+
+### PHP \{#php\}
+扫描 PHP 模板，并从页面 head 链接样式表。CodeIgniter 请扫描 `app/Views/**/*.php`，并使用普通资源辅助函数加载 `/assets/master.css`。
+
+```css name=src/master.css
+@source "../app/**/*.php";
+@source "../public/**/*.php";
+```
+
+```html name=public/index.php
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+纯 PHP 项目假设以 `public` 为网站根目录，构建后运行 `php -S localhost:8000 -t public`。
+
+### Rails \{#rails\}
+扫描 ERB 视图，并从应用布局引用样式表：
+
+```css name=src/master.css
+@source "../app/views/**/*.erb";
+```
+
+```erb name=app/views/layouts/application.html.erb
+<%= stylesheet_link_tag "/assets/master.css", "data-turbo-track": "reload" %>
+```
+
+让路由和控制器能访问的视图渲染此段落，再启动 `bin/rails server`。这些 URL 会直接提供 `public/assets` 下的文件。发布新版本时，请为 URL 加上版本，例如 `/assets/master.css?v=2`：Turbo 的[资源跟踪](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change)会比较标签，因此仅覆盖相同 URL 的文件不会触发重新加载。
+
+### WordPress \{#wordpress\}
+在已启用的主题或子主题目录中工作，并设置 `outDir: 'assets'`。扫描主题 PHP 模板，包括 `woocommerce/**/*.php` 等覆盖文件，但不要扫描插件内部实现：
+
+```css name=src/master.css
+@source "../**/*.php";
+@source not "../vendor/**";
+@source not "../node_modules/**";
+```
+
+从 `functions.php` 将样式表加入加载队列，并保留现有配置。启用子主题时，[样式表目录辅助函数](https://developer.wordpress.org/reference/functions/get_stylesheet_directory_uri/) 会指向子主题：
+
+```php name=functions.php
+add_action('wp_enqueue_scripts', function () {
+  wp_enqueue_style(
+    'master-css',
+    get_stylesheet_directory_uri() . '/assets/master.css',
+    [],
+    filemtime(get_stylesheet_directory() . '/assets/master.css')
+  );
+});
+```
+
+加载页面前先构建，让 `filemtime()` 能读取文件；并在主题中保留 `wp_head()` 和 `wp_footer()`，让 WordPress 输出队列中的资源。
+
+### Shopify \{#shopify\}
+在本地主题目录中工作，并设置 `outDir: 'assets'`。扫描主题的 [Liquid 模板、分区、区块和代码片段](https://shopify.dev/docs/storefronts/themes/architecture)：
+
+```css name=src/master.css
+@source "../layout/**/*.liquid";
+@source "../sections/**/*.liquid";
+@source "../blocks/**/*.liquid";
+@source "../snippets/**/*.liquid";
+@source "../templates/**/*.liquid";
+@source "../templates/**/*.json";
+```
+
+将标签加入主题布局的 `<head>`，并保留 `content_for_header`、`content_for_layout` 和主题的其他资源：
+
+```liquid name=layout/theme.liquid
+{{ 'master.css' | asset_url | stylesheet_tag }}
+```
+
+将段落放入当前模板会渲染的分区，并让 Vite 监听进程与 `shopify theme dev` 一起运行；预览更新不会重新构建 CSS。预设包含全局基础样式，因此请检查现有店面组件，并使用[层叠层](/guide/cascade-layers)决定保留哪些主题样式。没有资源构建流程的主题可以使用 [CLI](/guide/installation#cli) 扫描相同来源。
+
+### ASP.NET Core \{#aspnet-core\}
+设置 `outDir: 'wwwroot/assets'`，扫描 Razor Pages 和 MVC 视图，并从共享布局引用样式表：
+
+```css name=src/master.css
+@source "../Pages/**/*.cshtml";
+@source "../Views/**/*.cshtml";
+@source not "../bin/**";
+@source not "../obj/**";
+```
+
+```html name=Pages/Shared/_Layout.cshtml
+<link rel="stylesheet" href="~/assets/master.css" asp-append-version="true">
+```
+
+在 `dotnet build` 或 `dotnet publish` 前先构建 Vite 资源，让 .NET 将其纳入静态资源输出。新的 .NET 模板可能包含 Bootstrap，其未分层声明可能覆盖已分层的 Master CSS 工具类；请参阅[层叠层](/guide/cascade-layers)。
+
+### Blazor \{#blazor\}
+Blazor 沿用 ASP.NET Core 配置，使用 `outDir: 'wwwroot/assets'`，并扫描组件和宿主页面：
+
+```css name=src/master.css
+@source "../**/*.{razor,cshtml,html}";
+@source not "../bin/**";
+@source not "../obj/**";
+@source not "../node_modules/**";
+@source not "../wwwroot/assets/**";
+```
+
+将样式表加入[所用 Blazor 模型的宿主文档](https://learn.microsoft.com/en-us/aspnet/core/blazor/project-structure?view=aspnetcore-10.0)的 `<head>`，例如 `Components/App.razor`、`wwwroot/index.html` 或 `Pages/_Host.cshtml`。保留 `<base>`、`<HeadOutlet />`、路由和 Blazor 启动脚本；相对路径会根据 `<base>` 解析。
+
+```html name=Components/App.razor
+<link rel="stylesheet" href="assets/master.css">
+```
+
+服务器渲染组件在禁用 JavaScript 时仍具有样式。仅使用 WebAssembly 的应用仍需要框架 JavaScript 才能渲染组件。
+
+### Express \{#express\}
+扫描模板引擎的视图，提供公开目录，并从渲染页面的布局链接样式表：
+
+```css name=src/master.css
+@source "../views/**/*.{ejs,hbs,pug}";
+```
+
+```js name=app.js
+app.use(express.static('public'))
+```
+
+```html name=views/layout.ejs
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+在 Network 面板中，`/assets/master.css` 必须返回 CSS，而非 HTML 回退页面。
+
+### Laravel \{#laravel\}
+Laravel 已通过 Vite 构建资源，因此请跳过上方步骤。在现有的 [Laravel 项目](https://laravel.com/docs/installation)中运行安装程序；它会将 Master CSS 加入 `resources/css/app.css`，并在 `laravel-vite-plugin` 旁注册插件：
+
+```bash
+npm create @master/css@VERSION -- --framework laravel --mode static --yes
+```
+
+从 CSS 入口扫描 Blade 视图，并将该入口保留在 Laravel 插件的 `input` 列表中。现有应用请保留 JavaScript 入口和其他插件：
+
+```css name=resources/css/app.css
+@import '@master/css';
+@source '../views/**/*.blade.php';
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [
+    laravel({ input: ['resources/css/app.css'], refresh: true }),
+    masterCSS({ mode: 'static' })
+  ]
+})
+```
+
+使用 `@vite` 加载入口，它会从 Laravel 构建 manifest 解析带版本的文件；再运行 `npm run build`，通过 Laravel 加载页面：
+
+```html name=resources/views/app.blade.php
+<head>
+  @vite('resources/css/app.css')
+</head>
+```
+
+如果应用改由 JavaScript 入口导入 CSS，请保留该入口，避免通过两条路径加载相同 CSS。参阅 [Laravel 的 Vite 集成](https://laravel.com/docs/vite)。
+
+---
+
+## 选择其他渲染模式 \{#rendering-modes\}
+默认使用静态模式。切换模式时，请保留资源入口：
+
+| 模式 | 宿主系统 | 变更内容 |
+| --- | --- | --- |
+| 静态 | 所有宿主 | 运行时无额外动作 |
+| 运行时 | PHP、Rails、WordPress、ASP.NET Core、Blazor、Express | `mode: 'runtime'`、运行时入口和模块脚本 |
+| 渐进式 | Express | 服务器渲染首次响应 CSS；运行时处理后续类名 |
+
+<DocumentDisclosure title="在浏览器中生成新类名">
+
+安装运行时，在 `vite.config.ts` 中设置 `masterCSS({ mode: 'runtime' })`，并从资源入口启动它。运行时生成不需要 `@source` 行：
+
+```bash
+npm install @master/css-runtime@VERSION
+```
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+runtime.observe()
+```
+
+在样式表旁将 `master.js` 作为模块加载，并保留布局的其他标签：
+
+<DocumentComparison>
+
+| 宿主系统 | 模块脚本 |
+| --- | --- |
+| PHP、Express | 在 `</body>` 前加入 `<script type="module" src="/assets/master.js"></script>` |
+| Rails | `<%= javascript_include_tag "/assets/master.js", type: "module", "data-turbo-track": "reload" %>` |
+| ASP.NET Core | `<script type="module" src="~/assets/master.js" asp-append-version="true"></script>` |
+| Blazor | 在 Blazor 启动脚本后加入 `<script type="module" src="assets/master.js"></script>` |
+
+</DocumentComparison>
+
+WordPress 6.5 及以上版本使用相同钩子中的 [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/) 加载模块：
+
+```php name=functions.php
+wp_enqueue_script_module(
+  'master-css-runtime',
+  get_stylesheet_directory_uri() . '/assets/master.js',
+  [],
+  filemtime(get_stylesheet_directory() . '/assets/master.js')
+);
+```
+
+Blazor Web Apps 在[增强导航](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/navigation?view=aspnetcore-10.0)期间会修补 DOM，可能移除运行时样式表。每次 `enhancedload` 后，请重启运行时并顺序处理流式更新。独立 WebAssembly 和较旧的 Blazor Server 宿主使用上方入口即可。
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+declare const Blazor: {
+  addEventListener(name: 'enhancedload', listener: () => void): void
+}
+
+async function startRuntime() {
+  const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+  runtime.observe()
+  return runtime
+}
+
+let runtime = await startRuntime()
+let navigation = Promise.resolve()
+
+Blazor.addEventListener('enhancedload', () => {
+  navigation = navigation.then(async () => {
+    runtime.dispose()
+    runtime = await startRuntime()
+  }).catch(console.error)
+})
+```
+
+一并部署所有生成的样式表、导入和程序资源。运行时样式在 JavaScript 加载后开始；脚本不可用时，请按[渲染模式](/guide/rendering-modes#prevent-premature-rendering)所述保持文档可见。启动后，在浏览器控制台运行以下代码。无需重新构建，段落就应出现下划线：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+运行时观察的是页面文档；独立 iframe 或 shadow root 内的内容需要自己的 CSS 交付方式。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="通过 Express 包含服务器渲染样式">
+
+使用渐进式渲染时，Express 先渲染模板，`@master/css-server` 再注入首次响应 CSS，运行时则接管这些样式并处理后续类名。请在运行时旁安装服务器渲染器和预设：
+
+```bash
+npm install @master/css-runtime@VERSION @master/css-server@VERSION @master/css-preset@VERSION
+```
+
+保留 `masterCSS({ mode: 'runtime' })`，让入口延迟加载程序；已完整覆盖的页面便能延后加载引擎，直到新类名需要它：
+
+```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
+import { MasterCSSRuntime } from '@master/css-runtime'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({
+  program: () => import('virtual:master-css-program').then(module => module.default),
+  emittedGlobals
+})
+runtime.observe()
+```
+
+先渲染模板，再将完整文档传给渲染器。ES 模块服务器需要在 `package.json` 中设置 `"type": "module"`：
+
+```js name=app.js
+import express from 'express'
+import ejs from 'ejs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
+
+const app = express()
+const renderer = createServerRenderer({ manifest })
+
+app.use('/assets', express.static('public/assets'))
+
+app.get('/', async (_request, response) => {
+  const body = await ejs.renderFile('views/index.ejs')
+  const document = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/assets/master.css">
+</head>
+<body>
+  ${body}
+  <script type="module" src="/assets/master.js"></script>
+</body>
+</html>`
+
+  const rendered = renderer.renderHTML(document, {
+    hydrationManifest: 'inject'
+  })
+  response.send(rendered.html)
+})
+
+const server = app.listen(3000)
+server.on('close', () => renderer.dispose())
+```
+
+首次响应包含 `style#master-css` 和小型水合记录；服务器 manifest 留在服务器上。本示例使用默认预设 manifest 渲染，与 `src/master.css` 的预设一致。如果加入项目令牌或工具类，也必须为服务器编译项目 manifest，否则初始 CSS 将与浏览器定义不一致。
+
+禁用 JavaScript 时，段落应已经具有样式。重新启用 JavaScript、重新加载，再从控制台加入 `underline`；它应直接应用，无需新的服务器响应。
+
+</DocumentDisclosure>

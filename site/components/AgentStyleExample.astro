@@ -1,4 +1,6 @@
 ---
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
 import { agentStyleExample } from '../utils/agent-style-example'
 
@@ -7,6 +9,8 @@ interface Props {
 }
 
 const { code = true } = Astro.props
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'AgentStyleExample', agentStyleExample)
+
 ---
 
-<DemoConfiguredExample name="agent-project-vocabulary" {...agentStyleExample} code={code} />
+<DemoConfiguredExample name="agent-project-vocabulary" {...copy} code={code} />

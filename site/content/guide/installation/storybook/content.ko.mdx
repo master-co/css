@@ -1,0 +1,93 @@
+---
+{
+  "title": "Storybook에서 Master CSS 설정하기",
+  "description": "애플리케이션 스타일을 Storybook 미리보기 iframe에 불러오고 Vite 빌더로 개발 및 프로덕션 스토리를 확인합니다.",
+  "category": "통합"
+}
+---
+
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/storybook/cover-light.webp'
+import dark from '~/site/assets/images/integrations/storybook/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Storybook" />
+
+스토리가 렌더링되는 Storybook 미리보기 iframe에서 애플리케이션의 CSS 진입점을 사용합니다. Master CSS를 이미 사용하고 [Storybook이 설치된](https://storybook.js.org/docs/get-started/install) 애플리케이션에서 시작하세요. 이 예제는 React, Vite 빌더, Master CSS 정적 모드를 사용합니다. 먼저 [Vite 통합](/guide/installation/vite#react)으로 애플리케이션을 설정하세요. Vite 기반의 다른 프레임워크는 각 프레임워크의 Storybook 패키지와 스토리 문법을 사용합니다.
+
+## 공유 CSS 진입점 가져오기 \{#import-the-shared-css-entry\}
+Storybook의 [Vite 빌더](https://storybook.js.org/docs/builders/vite)는 일반적으로 애플리케이션의 Vite 설정을 읽습니다. 그 설정에 `masterCSS()` 등록을 한 번만 유지하고 `.storybook/preview.ts`에서 애플리케이션 스타일시트를 가져오세요. 기존 미리보기 데코레이터와 매개변수는 유지합니다.
+
+이 가져오기는 미리보기 iframe 안의 스토리에 스타일을 적용합니다. Storybook 사이드바나 도구 모음에는 적용하지 않습니다.
+
+```ts name=.storybook/preview.ts
+import type { Preview } from '@storybook/react-vite'
+
+import '../src/index.css'
+
+const preview: Preview = {
+  parameters: {},
+}
+
+export default preview
+```
+
+## 실제 스토리로 확인하기 \{#verify-an-actual-story\}
+`src/index.css`에 애플리케이션의 `@import '@master/css';`를 유지하세요. 설정된 스토리 glob에 해당하는 위치에 다음 스토리를 만듭니다. 소스의 완전한 클래스 이름이 정적 CSS 빌드에 포함됩니다:
+
+<InstallationPreview>
+
+```tsx name=src/MasterCSS.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+const meta = { title: 'Master CSS/Installation' } satisfies Meta
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Check: Story = {
+  render: () => (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+</InstallationPreview>
+
+`npm run storybook`을 실행하고 **Master CSS / Installation / Check**를 여세요. 문단에 떠 있는 표면, 둥근 모서리, `1rem` 안쪽 여백이 적용되어야 합니다. 스토리의 `p-md`를 `p-lg`로 바꾸면 안쪽 여백이 `1.5rem`으로 늘어나야 합니다. 확인한 뒤 원래대로 돌리고 프로덕션 미리보기를 빌드합니다:
+
+```bash
+npm run build-storybook
+```
+
+HTTP 서버로 `storybook-static`을 제공하고 같은 스토리를 여세요. 관리 화면 문서가 아닌 미리보기 iframe을 검사합니다. 스타일시트와 문단은 이 별도 문서 안에 있습니다. 정적 모드는 CSS를 미리 생성하지만, Storybook이 스토리를 렌더링하려면 여전히 JavaScript가 필요합니다.
+
+앱에는 스타일이 적용되지만 스토리에는 적용되지 않는다면 먼저 `preview.ts`의 CSS 가져오기를 확인하고, Storybook 빌더에서 Master CSS 플러그인이 실행되는지 확인하세요. 정적 렌더링에서는 스토리 소스에 완전한 클래스 문자열을 유지해야 합니다. 스토리 디렉터리가 애플리케이션의 스캔 범위 밖에 있다면 `@source`에 추가하세요.
+
+## 필요할 때 별도의 Vite 통합 등록하기 \{#register-a-separate-vite-integration-when-needed\}
+Storybook 설정이 의도적으로 애플리케이션의 Vite 설정을 읽지 않는다면 `viteFinal`에서 Master CSS를 등록하세요. 다음 내용을 기존 설정에 병합하되 스토리 glob, 애드온, 프레임워크 설정은 유지합니다. 애플리케이션의 플러그인이 이미 로드되었다면 이 등록은 건너뛰세요.
+
+```ts name=.storybook/main.ts
+import type { StorybookConfig } from '@storybook/react-vite'
+
+const config: StorybookConfig = {
+  framework: '@storybook/react-vite',
+  stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  async viteFinal(config) {
+    const { mergeConfig } = await import('vite')
+    const { default: masterCSS } = await import('@master/css-vite')
+
+    return mergeConfig(config, {
+      plugins: [
+        masterCSS()
+      ]
+    })
+  }
+}
+
+export default config
+```
+
+프레임워크와 빌더에 맞는 Storybook 패키지를 사용하세요. `viteFinal` 훅은 Vite 빌더에 적용됩니다. Webpack 기반 Storybook에는 별도의 [Webpack 통합](/guide/installation/webpack)이 필요합니다.

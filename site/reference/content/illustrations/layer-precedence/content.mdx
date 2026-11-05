@@ -1,0 +1,29 @@
+# Reference prose: illustrations/layer-precedence
+
+## title \{#copy-title\}
+
+Importance reverses layer precedence
+
+## alt \{#copy-alt\}
+
+The five layers run from theme to utilities, followed by unlayered CSS. Normal declarations gain priority downward; important declarations gain priority upward.
+
+## caption \{#copy-caption\}
+
+Compare declarations of the same importance within author stylesheets. Normal unlayered rules outrank named layers; important named layers outrank important unlayered rules.
+
+## description-0 \{#copy-description-0\}
+
+The base stylesheet declares theme, base, defaults, components and utilities in that order.
+
+## description-1 \{#copy-description-1\}
+
+For normal author stylesheet declarations, priority increases from theme toward utilities, with unlayered declarations above every named layer.
+
+## description-2 \{#copy-description-2\}
+
+For important author stylesheet declarations, priority increases in the opposite direction: theme is strongest among these layers, and unlayered important declarations are weakest.
+
+## description-3 \{#copy-description-3\}
+
+Layer precedence is compared before selector specificity. The diagram compares each importance group separately, not normal declarations against important declarations or other cascade origins.

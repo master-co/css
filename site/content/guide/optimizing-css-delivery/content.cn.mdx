@@ -1,0 +1,368 @@
+---
+{
+  "title": "优化 CSS 交付",
+  "description": "通过路由归属与选择性裁剪减少无关 CSS，再验证生产输出、运行时行为与导航成本。",
+  "category": "构建与交付",
+  "figures": {
+    "DeliveryIllustration:ownership": {
+      "title": "移动导入，改变交付路径",
+      "alt": "Overview 与 Reports 的导入依赖图前后比较。",
+      "caption": "报表入口负责功能导入。共享导航仍抵达两页，报表规则只抵达 Reports。方块表示规则组，而不是实测字节。",
+      "description": [
+        {
+          "title": "公共导入",
+          "text": "main.js 同时导入导航与报表样式时，即使 Overview 没有报表标记，两页仍会收到两组样式。"
+        },
+        {
+          "title": "局部导入",
+          "text": "把 reports.css 移到 reports.js。两页保留公共入口，只有 Reports 加载 reports.js 并收到报表规则。"
+        }
+      ]
+    },
+    "DeliveryIllustration:evidence": {
+      "title": "已知类名保留稍后出现的选择器状态",
+      "alt": "完整报表类名用于裁剪，未知外部名称则应保留。",
+      "caption": "证据是可能使用的类名集合，而不是初始 DOM 截图。有限外部集合可以用安全列表补齐，未知集合则需要保留。",
+      "description": [
+        {
+          "title": "已知使用情况",
+          "text": "报表标记与完整 idle／ready 映射表提供 report、report-idle 与 report-ready。配备扫描器的构建会保留其规则，包括 report[data-state=\"ready\"] 与 report:focus-visible。"
+        },
+        {
+          "title": "未知使用情况",
+          "text": "源文件扫描无法证明无限定范围的 CMS 类名不存在。请保留所属原生样式表，并在 CMS 内容可能出现的位置加载。"
+        }
+      ]
+    },
+    "DeliveryIllustration:dimensions": {
+      "title": "渲染与原生裁剪是独立选择",
+      "alt": "矩阵比较静态与渐进式渲染，以及保留与裁剪原生 CSS 的组合。",
+      "caption": "两列都可以提供初始 CSS。渐进式行另外支持后续工具类；裁剪改变符合条件的原生输出，不改变渲染模式。",
+      "description": [
+        {
+          "title": "原生策略",
+          "text": "保留策略让原生规则继续存在。支持裁剪的流程会根据已知使用集合过滤符合条件的原生规则。矩阵说明策略，并不保证每个集成流程都会提供该集合。"
+        },
+        {
+          "title": "渲染模式",
+          "text": "静态渲染不会在浏览器中生成新规则。渐进式渲染在两种原生策略下都能提供初始 CSS，并生成稍后出现的有效工具类。"
+        },
+        {
+          "title": "边界",
+          "text": "运行时生成不会还原任意被移除的原生选择器。受管理关键帧遵循独立的定义与依赖契约。"
+        }
+      ]
+    },
+    "DeliveryIllustration:verification": {
+      "title": "输出变小，仍须检查行为",
+      "alt": "保存项目预算前，先结合资源比较与交互检查。",
+      "caption": "两项检查证明不同事实。功能缺失也可能让文件变小，因此仅有字节节省不能让更改通过。",
+      "description": [
+        {
+          "title": "输出证据",
+          "text": "用相同构建与压缩方法比较 Overview、Reports，追踪外部导入与行内 CSS，记录文件、深度、字节与缓存复用。"
+        },
+        {
+          "title": "行为证据",
+          "text": "直接打开两个路由、在两者间导航，并操作就绪、焦点、主题与响应式状态。渐进式页面应分别验证初始 CSS 与新的运行时工具类。"
+        },
+        {
+          "title": "预算",
+          "text": "只有预期交付更改与保留行为都经验证后，才保存项目专用上限。时间样本与可确定的字节限制仍须分开。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import DeliveryIllustration from './components/DeliveryIllustration.astro'
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+
+## 概览 [sr-only] \{#overview\}
+让每个页面获得需要的 CSS，包括交互后才出现的状态。先追踪交付路径，把功能样式移到所属入口，只有在构建掌握可能用途时才裁剪原生规则。比较输出资源与行为后，再设置回归检查预算。
+
+本指南以共享相同导航的 Overview 与 Reports 页面为例，只有 Reports 会渲染报表面板。目标是让 Overview 完全不下载面板规则，而 Reports 保留就绪与键盘焦点状态。
+
+请先完成框架的[安装](/guide/installation)。[路由级样式](/guide/route-level-styles)介绍局部样式归属与定义；[扫描类名](/guide/scanning-and-pruning)则介绍可被发现的类名字符串与源文件例外。日常组件开发请使用这些编写指南，调查交付成本或资源缺失时再使用此流程。
+
+记录已安装的 Master CSS 版本、CSS 入口、渲染模式与裁剪策略。重构交付方式时，保持既有模式。下方可复现的示例使用 Vite 与渐进式渲染，说明初始 CSS、后续工具类与原生裁剪是不同问题，并且只使用公开软件包与预设令牌。
+
+## 确认各页面收到的内容 \{#baseline\}
+
+构建当前源代码，把输出连同锁文件与工具版本一起保留。同时选择使用功能的页面与不使用的页面，涵盖直接加载及两者间的导航；共享资源若已在缓存中，可能改变第二页的成本。
+
+沿着各 HTML 样式表链接追踪 CSS 导入，每页的每个解析后资源只计算一次，行内 style 块则另行记录。还要检查模块导入：通过共享注册表导入的组件，即使没有标记，仍可能加载 CSS。运行时脚本、程序与水合数据应与样式表分开记录。
+
+使用三种不同证据：
+
+| 证据 | 记录项目 | 能够证明的事 |
+| --- | --- | --- |
+| 构建输出 | 不重复的外部文件、导入深度、原始与 gzip／Brotli 字节、行内 CSS | 构建交付哪些资源，以及在记录的压缩设置下可确定的大小 |
+| 浏览器请求 | 响应、编码、传输字节、缓存复用与发起者 | 此次导航实际获取的内容 |
+| 浏览器行为 | 绘制与交互时序、计算样式及相关状态 | 页面是否正常，以及在测试条件下的性能 |
+
+[Network 面板](https://developer.chrome.com/docs/devtools/network/reference)可以显示请求与依赖关系。冷加载与热缓存导航应分开测量，前后使用相同浏览器、视口、内容与节流设置。重复时间测量，保留各次样本与中位数。仅看压缩文件大小不能证明绘制更快。
+
+[Coverage](https://developer.chrome.com/docs/devtools/coverage) 可以帮助发现值得调查的功能。某次记录中未使用的规则仍可能用于尚未打开的对话框、焦点状态、其他视口或外部提供的内容。移除前，先明确归属与可能状态。
+
+## 让功能规则归属于局部入口 \{#ownership\}
+
+假设共享 JavaScript 入口同时导入导航与报表样式：
+
+```js name=src/main.js
+import './style.css'
+import './reports.css'
+```
+
+现在两页都会收到报表规则，Overview DOM 没有报表并不会改变导入。请将第二个导入移到只有 Reports 加载的报表入口，共享导航则保留在公共样式表中。
+
+<DeliveryIllustration id="ownership" />
+
+### 复现双页示例 \{#reproduce-the-two-page-example\}
+
+在空目录中创建以下文件。使用 `npm install` 安装公开软件包，运行 `npm run build`，再通过 `npm run preview` 提供结果。Master CSS 各软件包应使用匹配版本，并保留生成的锁文件以供比较。
+
+<ExplorerView items={[
+  { name: 'package.json' }, { name: 'vite.config.js' }, { name: 'index.html' },
+  { name: 'reports', children: [{ name: 'index.html' }] },
+  { name: 'src', children: [{ name: 'style.css' }, { name: 'main.js' }, { name: 'reports.css' }, { name: 'reports.js' }] }
+]} />
+
+[Vite 多页面构建](https://vite.dev/guide/build.html#multi-page-app)使用两个 HTML 入口，两者都包含初始标记，因此 Vite HTML 流水线可以预渲染。自定义请求时 SSR 应用需要框架服务器集成，此示例不会为 Vite 添加请求时渲染器。
+
+<DocumentDisclosure title="完整双页项目">
+
+```json name=package.json
+{
+  "name": "css-delivery-example",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "@master/css": "VERSION" },
+  "devDependencies": { "@master/css-vite": "VERSION", "vite": "^8" }
+}
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [masterCSS({ mode: 'progressive' })],
+  build: { rolldownOptions: { input: ['index.html', 'reports/index.html'] } }
+})
+```
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="p-lg">
+  <nav class="site-nav" aria-label="Main"><a href="/">Overview</a><a href="/reports/">Reports</a></nav>
+  <main><h1>Overview</h1><p>The overview does not render a report.</p></main>
+</body>
+</html>
+```
+
+```html name=reports/index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports</title>
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/reports.js"></script>
+</head>
+<body class="p-lg">
+  <nav class="site-nav" aria-label="Main"><a href="/">Overview</a><a href="/reports/">Reports</a></nav>
+  <main>
+    <h1>Reports</h1>
+    <button id="refresh" type="button">Refresh report</button>
+    <section id="report" class="report report-idle" data-state="idle" tabindex="0">Report waiting</section>
+  </main>
+</body>
+</html>
+```
+
+公共入口导入唯一的完整 Master CSS 入口，导航规则使用公开间距令牌：
+
+```js name=src/main.js
+import './style.css'
+```
+
+```css name=src/style.css
+@import '@master/css';
+
+@layer components {
+  .site-nav { display: flex; gap: var(--spacing-md); }
+}
+```
+
+报表模块导入自己的样式表。完整类名字符串描述有限的状态候选，属性选择器与焦点规则也与面板放在一起：
+
+```js name=src/reports.js
+import './reports.css'
+
+const states = { idle: 'report-idle', ready: 'report-ready' }
+const report = document.querySelector('#report')
+document.querySelector('#refresh').addEventListener('click', () => {
+  report.classList.replace(states.idle, states.ready)
+  report.dataset.state = 'ready'
+  report.textContent = 'Report ready'
+})
+```
+
+```css name=src/reports.css
+@prune native;
+
+@layer components {
+  .report { padding: var(--spacing-lg); border: 1px solid currentColor; }
+  .report[data-state="ready"] { border-width: 3px; }
+  .report:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .report-idle { opacity: .65; }
+  .report-ready { opacity: 1; }
+  .report-debug { outline: 8px solid red; }
+}
+```
+
+</DocumentDisclosure>
+
+直接打开 `/` 与 `/reports/`，追踪输出的 CSS 导入，应当只有 Reports 收到 `.report`。刷新报表，再用键盘聚焦面板：边框变为 3px、不透明度变为 1，键盘焦点则显示轮廓。
+
+`@prune native` 标记显式让此文件参与裁剪，但移除仍需要提供类名使用情况的构建流程。当前 Vite 局部样式表转换只用项目定义编译报表规则，未提供裁剪所需的使用集合，因此 `.report-debug` 仍留在局部输出中。归属范围的改善依然有效。下一节通过公开 CLI 独立验证裁剪，不把源代码中的指令视为生产文件缩小的证明。
+
+### 共享定义，不导入功能样式 \{#share-definitions-without-importing-the-feature\}
+
+局部样式表能够使用项目令牌与混入，无须再次导入完整入口，集成会提供定义上下文。定义位于入口依赖图之外时，请使用 [`@reference`](/guide/route-level-styles#reference-definitions-without-loading-their-native-rules)，只获取定义，不加载被引用文件的原生规则。
+
+原生选择器加载后仍保有常规文档作用域。路由归属控制交付，不控制选择器是否匹配，也不决定框架在导航后是否保留 CSS。共享值放在令牌中、共享角色放在原生类中、重复声明放在混入中，独立局部选择则使用工具类。[复用样式](/guide/reusing-styles)介绍这些设计决策。
+
+## 只裁剪已知的使用集合 \{#native-pruning\}
+
+原生 CSS 默认保留。先移除不必要的导入，再考虑能够掌握类名与状态的文件。确定这些边界时，请保持项目全局 `pruneNativeCSS` 关闭，并用 `@prune native;` 逐一启用源文件。
+
+裁剪应用于声明它的文件，并使用其根入口的类名使用范围，不会自动扩散到导入文件。软件包 CSS 需要自行显式启用，使用方的项目全局设置不会让所有软件包样式都可被裁剪。只有确定要裁剪全部项目自有样式表，且已覆盖其可能用途时，才考虑 `pruneNativeCSS: true`。完整作用域规则请参阅[裁剪参考文档](/reference/directives/pruning#import-graph)。
+
+此示例的标记包含 `report`、`report-idle`，JavaScript 映射表中还包含 `report-ready`。这些完整名称让配备扫描器的构建可以保留两种状态规则。找到 `report` 就会保留其属性与焦点选择器分支，即使就绪或焦点状态尚未激活。类名扫描不能证明选择器会匹配可达的 DOM 关系，保留的规则也可能始终不匹配。
+
+<DeliveryIllustration id="evidence" />
+
+没有类选择器的规则仍可使用。裁剪依据类名使用情况，而不是初始 DOM 快照。
+
+<ReferenceIllustration id="pruning-global-selectors" />
+
+### 独立验证裁剪步骤 \{#verify-the-pruning-step-independently\}
+
+<DocumentDisclosure title="通过 CLI 复现原生裁剪">
+
+要使用提供扫描使用集合的构建流程检查此文件，请通过 `npm install -D @master/css-cli@VERSION` 安装匹配的公开 CLI，再把报表源文件复制到临时检查目录：
+
+```sh
+mkdir pruning-check
+cp src/reports.css src/reports.js reports/index.html pruning-check/
+```
+
+在该目录添加这个入口：
+
+```css name=pruning-check/style.css
+@import '@master/css';
+@import './reports.css';
+```
+
+从项目根目录运行：
+
+```sh
+cd pruning-check
+npx master-css generate 'index.html' 'reports.js' --strict -o output.css
+```
+
+</DocumentDisclosure>
+
+从 `output.css` 追踪导入。报表规则及其间距依赖资源会保留，`.report-debug` 则不存在。此检查能够证明 CLI 对这些输入的输出，不会改变应用的 Vite 流水线。不要为了强制裁剪，把第二个完整入口导入应用，否则无关的共享交付会再次出现。只有生产集成的实际输出证明已达到预期过滤时，才应在该集成中使用裁剪。
+
+### 保护外部与不确定的源文件 \{#keep-external-and-uncertain-sources-safe\}
+
+小组件添加的类名若可有限列举，请在裁剪文件中列出完整名称：
+
+```css
+@prune native;
+@safelist "report-exported";
+
+@layer components {
+  .report-exported { border-style: double; }
+}
+```
+
+安全列表提供候选，不会把类名添加到 DOM。无法限定范围的 CMS 或第三方源文件，应在所属文件中保留原生规则，不要猜测完整列表：
+
+```css name=src/cms.css
+@preserve native;
+
+@layer components {
+  .cms-callout { border-inline-start: 3px solid currentColor; }
+}
+```
+
+CMS 内容可能出现的地方都应加载该文件。`@preserve native` 会覆盖所属文件的原生裁剪，保留的是原生规则交付，而不是逐字节不变的源代码格式，也不会强制把每个未使用工具类放入输出。
+
+检查选择器时，还应检查动画与变量。显式启用裁剪的文件中，受管理关键帧会成为按需定义；保留的动画声明与变量依赖可以让必要定义继续存在。仅由外部 JavaScript 提供的名称可能需要精确的 `@safelist keyframes "report-enter";` 条目。请遵循[关键帧契约](/reference/directives/pruning#native-keyframes)，包括条件／层叠层包装，以及匿名层叠层与相对 URL 的限制。任意手写原生选择器并非运行时定义。
+
+## 分开考虑渲染模式与裁剪 \{#rendering-and-pruning\}
+
+渲染模式回答类名何时成为 CSS，以及浏览器能否生成新规则；原生裁剪回答样式表构建后，哪些符合条件的原生规则会保留。渐进式渲染可以使用裁剪过的原生样式表，同时交付初始页面 CSS 并支持后续工具类。
+
+<DeliveryIllustration id="dimensions" />
+
+静态提取需要源文件集合中的完整类名；原生裁剪需要可能使用的原生类名。完整字面值映射表可以让两者的有限候选都可供审查。运行时与渐进式模式还可处理启动后才组合出的新有效工具类名，但其有效性与生成成本仍须考虑。持续变化的值若只需一条稳定规则，请使用 CSS 变量。
+
+运行时生成无法重建被裁剪移除的任意原生选择器。稍后添加 `report-ready`，只有在原生规则已保留并加载时才有效。受管理关键帧有自己的定义与依赖契约，不应从普通选择器的处理方式推断其行为。
+
+在此示例中，请分别验证：
+
+1. 在 JavaScript 运行前查看响应源代码：`style#master-css` 包含初始 `p-lg` 工具类；报表原生样式表则只在 Reports 中链接。
+2. 刷新 Reports 报表：保留的原生状态规则会应用，无须新生成的工具类。
+3. 重新加载 Reports，独立检查运行时。刷新报表前，先在开发者工具中添加页面水合清单没有的新有效工具类：
+
+```js
+const report = document.querySelector('#report')
+report.classList.add('(letter-spacing:0.123em)')
+```
+
+检查计算后的字距与 `document.querySelector('style#master-css').sheet.cssRules`。使用默认渐进式启动策略且水合数据有效时，未覆盖类名会触发延迟启动的引擎／程序路径。添加页面清单已覆盖的类名不能证明此路径正常。不要把 style 元素的文本内容当作实时 CSSOM 快照。
+
+HTML、CSS、水合数据与运行时资源应来自同一次构建。开发与生产环境都要测试，集成在开发时可能采用不同行为。启动选项、水合失败与框架支持请参阅[渲染模式](/guide/rendering-modes)。
+
+## 比较成本与行为，再设置预算 \{#verify-and-budget\}
+
+一次只审查一项更改：先调整交付归属，再在支持的流程中裁剪，最后才在测量结果支持时调整资源分组。此示例应比较 `main.js` 导入 `reports.css` 的版本与上方版本。Overview 应不再收到报表规则，Reports 则保留外观与交互状态。
+
+<DeliveryIllustration id="verification" />
+
+<DocumentComparison>
+
+| 检查 | Overview | Reports |
+| --- | --- | --- |
+| 生产环境直接加载 | 导航与页面排版保留，没有报表规则 | 面板与所有必要原生状态抵达 |
+| 交互 | 导航仍正常 | 刷新与键盘焦点保留预期样式 |
+| 导航与缓存 | 分别计算新获取与复用的 CSS 资源 | 测试从 Overview 导航到此处与全新直接加载 |
+| 渐进式输出 | 运行时前已有初始工具类 CSS | 初始 CSS 与真正新增的工具类都正常 |
+
+</DocumentComparison>
+
+使用与基线相同的方法记录不重复外部 CSS 字节、gzip／Brotli 字节、行内 CSS、文件数与导入深度。除了选择器，还要检查主题变量、条件规则、伪元素与动画依赖。逐项说明输出差异：移动交付位置、移除未使用规则、去重，或必要的依赖修复。
+
+单个局部文件可能产生多个输出片段，源文件数不等于请求数。这个小型示例移动导入后，在测试构建中减少了 Overview 收到的 CSS，却增加了 Reports 的片段。这证明归属范围更精确，并不代表每个路由都更快；将其视为优化前，先比较权衡。较小路由包可能减少冷加载，却让下一页需要获取更多新字节。共享稳定资源可以改善复用，过度拆分则会增加请求与导入链。应同时比较各页与完整导航序列。由适用的打包器或集成使用正确 URL、条件、层叠层与缓存标识组装资源，不要为减少数量而任意拼接 CSS 文件。
+
+行为通过验证后，才把实测每页上限保存到项目既有检查中。功能页与不应收到该功能的页面都要纳入，没有一个固定 KB 限制适合所有应用。新功能可能合理提高预算，但审查时应明确指出新增行为与实测成本。时间样本与可确定的字节上限应分开，不要把小幅时间波动说成速度改善。
+
+由代理辅助时，请提供本指南、目标路由、既有模式与允许范围，并要求交付基线、源代码更改、生产输出与实际操作过的状态。清单检查或无问题的 lint 结果是有用的源代码证据，但都不能替代构建或浏览器验证。

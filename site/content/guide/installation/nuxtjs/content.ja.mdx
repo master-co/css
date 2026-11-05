@@ -1,0 +1,120 @@
+---
+{
+  "title": "Nuxt で Master CSS を設定する",
+  "description": "Nuxt 経由でプロジェクトの CSS エントリーを読み込み、静的スタイル、ブラウザーでの生成、Nitro レスポンスのレンダリングを確認します。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/nuxtjs/cover-light.webp'
+import dark from '~/site/assets/images/integrations/nuxtjs/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Nuxt" />
+
+Master CSS の Nuxt モジュールをインストールし、Nuxt の `css` オプションで CSS エントリーを読み込みます。モジュールは Nuxt の HTML レンダリングモードを変えずに、CSS の配信を処理します。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      既存の [Nuxt プロジェクト](https://nuxt.com/docs/getting-started/installation)のルートでインストーラーを実行します。既定の静的モードは、完全なクラス文字列を走査して通常の CSS を出力します。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework nuxt --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### プロジェクトのスタイルシートを読み込む \{#load-the-project-stylesheet\}
+
+    モジュールの登録を保持し、インストーラーが作成した CSS エントリーを明示的に読み込んでください。`~~/` はプロジェクトのルートを指します。アプリのディレクトリーが `app/` の Nuxt プロジェクトでも同じです。
+
+    ```ts name=nuxt.config.ts
+    export default defineNuxtConfig({
+      modules: [['@master/css-nuxt', { mode: 'static' }]],
+      css: ['~~/assets/css/master.css']
+    })
+    ```
+
+    ```css name=assets/css/master.css
+    @import '@master/css';
+    ```
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    開発サーバーを起動し、最初のコンポーネントにスタイルを付けます。以下の例では Nuxt 4 の `app/` ディレクトリーを使います。
+  </Step>
+  <InstallationPreview>
+
+```vue name=app/app.vue
+<template>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+</template>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 設定を確認する \{#check-the-setup\}
+
+開発サーバーの実行中に `app/app.vue` の `p-md` を `p-lg` に変えます。パディングが `1rem` から `1.5rem` に増えるはずです。元に戻してから、アプリをビルドして配信します。Nuxt の既定の Node サーバープリセットでは、次を実行します：
+
+```bash
+npm run build
+node .output/server/index.mjs
+```
+
+別の Nitro デプロイプリセットでは、その配信手順に従ってください。Nuxt の SSR が有効な場合、JavaScript を無効にして再読み込みしても、段落のパディング、角丸、浮き上がった面が保たれるはずです。静的とは CSS の生成方法を指し、クライアント専用の Nuxt ページをサーバーレンダリングに変えるものではありません。
+
+スタイルが適用されない場合は、まず `css` オプションでルートのスタイルシートが読み込まれるか、次にモジュールが一度だけ登録されているか確認します。読み込まれた CSS 内で `.p-md` を探してください。ビルドの成功だけでは、エントリーがページまで届いたとは確認できません。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定は静的モードです。インストーラーのオプションがモジュールの `mode` を設定します。モードを変えても CSS エントリーを保持してください：
+
+| モード | インストーラーのオプション | 配信方法 |
+| --- | --- | --- |
+| 静的 | なし | ソースの走査で生成したスタイルシート |
+| ランタイム | `--mode runtime` | ブラウザーランタイム。サーバー側の初期ページ CSS はなし |
+| プログレッシブ | `--mode progressive` | Nitro が初回レスポンスの CSS を供給し、ランタイムへ引き継ぐ |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+```bash
+npm create @master/css@VERSION -- --framework nuxt --mode runtime --yes
+```
+
+インストーラーは `['@master/css-nuxt', { mode: 'runtime' }]` を登録します。SSR が有効なら、Nuxt は引き続きサーバーで HTML をレンダリングし、ランタイムがブラウザーでクラスのルールを生成します。Nitro の出力をビルドして配信した後、ブラウザーのコンソールで次を実行します：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+再ビルドせずに段落に下線が付くはずです。付かない場合は、ランタイムプログラムのリクエストとコンソールの診断を確認してください。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="サーバーでレンダリングしたスタイルを含める">
+
+```bash
+npm create @master/css@VERSION -- --framework nuxt --mode progressive --yes
+```
+
+プログレッシブモードは、本文が文字列の Nitro HTML レスポンスに初回レスポンス用の CSS を追加します。ストリーミング本文は変換しません。JavaScript を無効にして初期スタイルを確認し、上記と同様にページマニフェストにないクラスを後から追加して試してください。
+
+コピーしたデプロイ成果物も、移動先のディレクトリーでテストしてください。その場でのビルドだけでは、すべてのマニフェストとプログラムのパスが移植可能とは確認できません。コピー後のサーバーが元のプロジェクトの `node_modules/.master-css/manifest/` 以下のパスで `ENOENT` を報告する場合、ビルドマシンのマニフェストに依存しており、単独でデプロイできる状態ではありません。静的モードかランタイムモードで配信要件を満たせるなら、そちらを使い、出力を移動した後にも検証してください。
+
+</DocumentDisclosure>

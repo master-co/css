@@ -1,4 +1,6 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import { deliveryIllustrationImages } from './delivery-illustration-images'
 import { deliveryFlow, deliveryIllustrations, type DeliveryFlowName } from '../utils/delivery-flows'
@@ -8,10 +10,11 @@ interface Props {
 }
 
 const { name } = Astro.props
-const flow = deliveryFlow(name)
+const original = { ...deliveryFlow(name), alt: deliveryIllustrations[name].alt }
+const flow = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, `DeliveryFlow:${name}`, original)
 ---
 
-<DocumentIllustration title={flow.title} alt={deliveryIllustrations[name].alt} images={deliveryIllustrationImages[name]} caption={flow.caption}>
+<DocumentIllustration title={flow.title} alt={flow.alt} images={deliveryIllustrationImages[name]} caption={flow.caption}>
   <ol>
     {flow.steps.map(step => <li><strong>{step.title}.</strong> {step.description}</li>)}
   </ol>

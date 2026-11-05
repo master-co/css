@@ -1,0 +1,25 @@
+# Reference prose: illustrations/contents-default-vs-empty
+
+## title \{#copy-title\}
+
+An omitted contents block differs from an empty one
+
+## alt \{#copy-alt\}
+
+Three calls to the same mixin show the default grid declaration, no declaration for an explicit empty block, and supplied flex content replacing the default.
+
+## caption \{#copy-caption\}
+
+The mixin has @contents \{ display: grid; \}. Braces at the call site distinguish an intentional empty block from an omitted block.
+
+## description-0 \{#copy-description-0\}
+
+@apply --panel; omits a contents block and uses the display: grid fallback.
+
+## description-1 \{#copy-description-1\}
+
+@apply --panel \{\} supplies an empty block, suppressing the fallback and adding no declaration in this example.
+
+## description-2 \{#copy-description-2\}
+
+@apply --panel \{ display: flex; \} supplies its own content in place of the fallback. The two display declarations are not merged.

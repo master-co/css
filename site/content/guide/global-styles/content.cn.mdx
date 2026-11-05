@@ -1,0 +1,173 @@
+---
+{
+  "title": "全局样式",
+  "description": "加载一个应用入口，按职责拆分共享 CSS，并将文档默认值、组件规则和路由样式放在适当范围。",
+  "category": "编写",
+  "figures": {
+    "GlobalIllustration": {
+      "title": "多个源文件，一个应用入口",
+      "alt": "应用加载 app.css，其导入将 theme.css、defaults.css 和 components.css 收入同一 Master CSS 入口图。每个文件保有自己的样式职责。",
+      "caption": "从应用根位置加载入口。按归属拆分源代码；每个导入文件无需再次 @import @master/css。",
+      "description": [
+        {
+          "title": "加载一次",
+          "text": "应用根位置加载 app.css，其开头是默认的 @master/css 导入。"
+        },
+        {
+          "title": "按归属拆分",
+          "text": "app.css 导入 theme.css 提供共享值、defaults.css 提供原生文档默认样式，并以 components.css 提供共享组件规则。"
+        },
+        {
+          "title": "保留同一张图",
+          "text": "这些导入组成一个入口图。三个源文件无需各自完整导入 Master CSS 入口。"
+        }
+      ]
+    },
+    "GuideStudy:defaults-inheritance": {
+      "title": "文档默认样式沿 DOM 向下继承",
+      "alt": "body 默认样式为两个后代提供文本设置；局部 code 字体只覆盖 code 元素内的字体族。",
+      "caption": "继承遵循文档树。局部声明只替换自身设置的属性。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import GlobalIllustration from './components/GlobalIllustration.astro'
+
+## 概览 [sr-only] \{#overview\}
+让应用集中从一个位置加载每个页面需要的样式。此入口可以导入多个源文件：将共享值、文档默认样式和组件规则保留在各自所属来源，再通过同一份应用样式表组合。
+
+请先完成[框架安装](/guide/installation#integrations)。下方示例扩展现有 CSS 入口，无需再次安装 Master CSS。
+
+## 从一个应用入口开始 \{#entry-stylesheet\}
+
+在应用已加载的样式表开头保留默认导入：
+
+```css name=styles/app.css
+@import '@master/css';
+```
+
+此导入会带入预设定义和基础样式，包括 `theme, base, defaults, components, utilities` 的顺序。集成使用此入口交付项目生成的 CSS。请按照框架安装指南，从应用根组件、根布局或构建入口导入。
+
+拆分源文件无需另一个完整入口。从 `app.css` 导入自己的文件：
+
+```css name=styles/app.css
+@import '@master/css';
+@import './theme.css';
+@import './defaults.css';
+@import './components.css';
+```
+
+<GlobalIllustration />
+
+这些文件组成同一个入口图。无论直接写在 `app.css` 还是某个导入文件中，共享定义都可以使用。避免在每个路由样式表重复导入完整 Master CSS 入口：这会让每个文件都成为入口，并可能重复全局原生 CSS。
+
+---
+
+## 设置文档默认样式 \{#base-layer\}
+
+将预设重置样式保留在 `base`。产品的文档默认样式则放入 `defaults`，让普通组件和工具类声明能够覆盖它们：
+
+```css name=styles/defaults.css
+@layer defaults {
+  body {
+    background-color: var(--color-surface-base);
+    color: var(--color-text-body);
+  }
+}
+```
+
+不添加额外类名就应获取默认样式的元素，请使用原生选择器。有意识地控制选择范围：全局 `button` 规则也会作用于每个功能内的按钮。如果规则属于某个产品角色，请使用组件类名。
+
+预设基础样式已将字体令牌应用到文档。选择字体时，请按照[文字排版](/guide/typography#site-typeface)调整这些令牌。声明发生竞争时请参阅[层叠层](/guide/cascade-layers)；较晚加载规则不会使其进入更高优先级的层叠层。
+
+---
+
+<GuideStudy id="defaults-inheritance" />
+
+## 决定哪些内容属于共享图 \{#shared-vocabulary\}
+
+| 共享决策 | 定义位置 | 延伸阅读 |
+| --- | --- | --- |
+| 使用方应一起变化的值 | `theme.css` 中的 `@theme` | [主题令牌](/guide/theme) |
+| 每页都需要的默认样式 | `@layer defaults` 中的原生选择器 | 上方示例 |
+| 反复出现的产品元素 | `@layer components` 中的原生类名 | [复用样式](/guide/reusing-styles#keep-a-components-shared-appearance-together) |
+| 使用时才生成的类名能力 | 导入样式表中的 `@utility` | 下方辅助类示例 |
+| 重复的 CSS 声明或嵌套样式 | `@mixin`，以 `@apply` 展开 | [CSS 复用](/guide/reusing-styles) |
+| 具名视口或容器条件 | `@custom-media` 或 `@custom-container` | [响应式设计](/guide/responsive-design) |
+
+导入的 `theme.css` 可以从项目需要的值开始：
+
+```css name=styles/theme.css
+@theme {
+  --spacing-card: 1.5rem;
+}
+```
+
+此令牌会注册 `p-card`、`gap-card` 和其他接受该键名的间距系列。项目需要时才输出声明；放入入口图不会使普通令牌变成静态。
+
+因为语义共享，才共享定义。两个功能当前使用相同数字，仍可能需要不同令牌；一个元素用了多个类名，本身也不代表需要组件抽象。
+
+### 明确组件归属 \{#component-classes\}
+
+例如，共享通知组件可放在 `components.css`：
+
+```css name=styles/components.css
+@layer components {
+  .notice {
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-body);
+  }
+}
+```
+
+```html
+<aside class="notice">Your changes are saved locally.</aside>
+```
+
+此原生选择器为 `.notice` 应用样式，不会注册名为 `notice` 的工具类。将共享状态和条件写在组件规则中。如果需要接受 Master CSS 修饰符的类名配方，请改用 `@utility`。[复用样式](/guide/reusing-styles)通过可操作示例比较这些选择。
+
+入口图中的原生 CSS 默认会输出，包括未使用的组件规则。原生裁剪需要显式启用；请参阅[原生裁剪](/guide/optimizing-css-delivery#native-pruning)。不要仅为了让定义可见，就把大型路由专用样式表移入全局图。
+
+---
+
+## 加入共享辅助类 \{#custom-utilities\}
+
+全局定义可以描述多个功能需要的行为，而不必为每种可能类名都生成规则。这些辅助类排列相关链接、允许屏幕外内容跳过渲染工作，并在打印时隐藏整组内容：
+
+<DemoConfiguredExample name="global-related-guides" title="共享辅助类，一组相关链接" source={`@utility flow {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+
+@utility print-hidden {
+  @media print {
+    display: none;
+  }
+}`} html={`<section class="content-auto flow print-hidden p-md b-solid b(1) b-line-divider r-md bg-surface-raised">
+  <h2 class="m(0) text-lg font-regular">Related guides</h2>
+  <a class="text-sm fg-text-body underline" href="/guide/theme" target="_top">Choose shared theme values</a>
+  <a class="text-sm fg-text-body underline" href="/guide/responsive-design" target="_top">Adapt a layout to its available space</a>
+</section>`} caption="flow 提供网格和间隔。print-hidden 在打印媒体中隐藏整组内容。content-auto 可跳过屏幕外渲染；32rem 固有尺寸是回退估计值，并非固定区块高度。" />
+
+将定义放在现有 Master CSS 导入之后，或从应用入口导入 `utilities.css`。类名在标记中被发现时才生成 CSS。请在应用中打开打印预览，检查 `print-hidden`；如果链接也应出现在打印中，请移除该类名。按自己的布局内容选择[固有尺寸估计值](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/contain-intrinsic-size)。
+
+---
+
+跨页检查和基于输出逐步优化的流程，请参阅[优化 CSS 交付](/guide/optimizing-css-delivery)。
+
+## 局部样式保持局部交付 \{#organize-global-files\}
+
+让应用入口专注于跨页共享样式。集成会为路由样式表提供项目定义，无需再次完整导入 Master CSS。图之外的额外定义请使用 `@reference`；它不会交付引用的原生 CSS。路由加载器仍负责交付局部规则。
+
+此配置请参阅[路由级样式](/guide/route-level-styles)；独立应用需要各自入口图时，请参阅 [Monorepo](/guide/monorepo)。拆分全局文件后，检查一个使用其定义的页面和一个不使用的页面：共享样式仍应从应用入口传入，路由专用规则则应保留原有的局部归属。

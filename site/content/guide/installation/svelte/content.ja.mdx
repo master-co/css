@@ -1,0 +1,148 @@
+---
+{
+  "title": "SvelteKit で Master CSS を設定する",
+  "description": "SvelteKit アドオンをインストールしてルートのスタイルシートを接続し、静的、ランタイム、プログレッシブ、事前レンダリングのみの CSS 配信から選びます。",
+  "category": "インテグレーション"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/svelte/cover-light.webp'
+import dark from '~/site/assets/images/integrations/svelte/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Svelte" />
+
+SvelteKit アプリに Master CSS を追加します。アドオンが Vite インテグレーションを登録し、ルートレイアウトから CSS エントリーをインポートするため、すべてのルートに共通のスタイルが届きます。
+
+## インストール \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS を追加する \{#add-master-css\}
+      既存の [SvelteKit プロジェクト](https://svelte.dev/docs/kit/creating-a-project)のルートで、Svelte CLI アドオンを実行します。静的レンダリングを設定し、既存のサーバーフックは変更しません。
+    </StepL>
+    <StepR>
+      ```bash
+      npx sv add @master/css-svelte-addon
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 共通のエントリーを確認する \{#check-the-shared-entry\}
+    アドオンはプロジェクトの CSS エントリーに `@import '@master/css';` を追加し、`src/routes/+layout.svelte` からインポートします。レイアウト内の既存のスクリプト、子要素のレンダリング、ほかのインポートを保持してください。ほかのルートが読み込まないページに、グローバルなエントリーを置かないでください。
+
+    `vite.config.ts` では `masterCSS()` と `sveltekit(...)` の両方を保持します。静的モードに Master CSS のクライアントフックやサーバーフックは不要です。
+  </Step>
+  <Step>
+    ### Master CSS を使い始める \{#start-using-master-css\}
+    開発サーバーを起動し、`src/routes/+page.svelte` を次の段落に置き換えます。`src/routes/+layout.svelte` に追加されたスタイルシートのインポートは保持してください。
+  </Step>
+  <InstallationPreview>
+
+```svelte name=src/routes/%2Bpage.svelte
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 静的モードの設定を確認する \{#check-the-static-setup\}
+`npm run dev` を実行し、ページの `p-md` を `p-lg` に変えます。パディングが `1rem` から `1.5rem` に増えるはずです。元に戻してから、本番ビルドを確認します：
+
+```bash
+npm run build
+npm run preview
+```
+
+サーバーレンダリングが有効なら、JavaScript を無効にしても段落のパディング、角丸、浮き上がった面が保たれるはずです。別のルートでも、ルートレイアウトからエントリーが読み込まれるか確認してください。スタイルがない場合は、`vite.config.ts` の Master CSS プラグインと、ルートレイアウトの CSS インポートを確認します。
+
+コンポーネントの `<style>` ブロックでは、ネイティブの宣言でプロジェクトのトークンを使えます。リセット、ネイティブのコンポーネントルール、生成されたユーティリティのために、グローバル CSS エントリーは読み込んだままにしてください。プロジェクトのコンテキスト外にある定義ファイルには `@reference` を使います。
+
+---
+
+## 別のレンダリングモードを選ぶ \{#rendering-modes\}
+既定の静的モードでは、Master CSS のフックは不要です。モードを変えても CSS エントリーを保持してください：
+
+| モード | Vite のモード | Master CSS のフック |
+| --- | --- | --- |
+| 静的 | `static` | なし |
+| ランタイム | `runtime` | クライアント |
+| プログレッシブ | `progressive` | クライアントとサーバー |
+| 事前レンダリングのみ | `pre-render` | サーバー。ハイドレーションマニフェストは無効 |
+
+<DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
+
+`vite.config.ts` の既存の `masterCSS()` 呼び出しを、次のオプションに置き換えます。`sveltekit(...)` の呼び出し、そのアダプター設定、ほかのプラグインは保持してください：
+
+```ts
+masterCSS({ mode: 'runtime' })
+```
+
+クライアントフックから起動コードを一度だけ読み込みます。既存のフックのエクスポートは保持してください：
+
+```ts name=src/hooks.client.ts
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+SvelteKit は自身で HTML をレンダリングするため、Vite のモード指定だけではランタイムスクリプトは挿入されません。クライアント側のインポートがプロジェクトのプログラムでランタイムを起動し、Vite HMR を処理します。
+
+起動後、ブラウザーのコンソールで次を実行します。再ビルドせずに段落に下線が付くはずです：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="サーバーでレンダリングしたスタイルを含める">
+
+プログレッシブレンダリングでは、上記の Vite オプションを `mode: 'progressive'` に変え、クライアントフックを保持したうえでサーバーの handle を追加します：
+
+```ts name=src/hooks.server.ts
+export { handle } from '@master/css-svelte/hooks.server'
+```
+
+既存のサーバー handle がある場合は保持し、SvelteKit の [`sequence()`](https://svelte.dev/docs/kit/@sveltejs-kit-hooks#sequence) で Master CSS の handle を最初に置きます。ページ変換は逆順に実行されるため、Master CSS が後続のハンドラーの生成した HTML を処理できます。たとえば、既存の handle を動作を変えずに `src/hooks.application.ts` へ移し、両者を組み合わせます：
+
+```ts name=src/hooks.server.ts
+import { sequence } from '@sveltejs/kit/hooks'
+import { handle as masterCSS } from '@master/css-svelte/hooks.server'
+import { handle as application } from './hooks.application'
+
+export const handle = sequence(masterCSS, application)
+```
+
+`handleError` など、ほかのエクスポートは `hooks.server.ts` に残してください。
+
+事前レンダリングしたクラスでページをカバーできる場合、ランタイムエンジンの読み込みを遅らせられます。JavaScript を無効にして初期スタイルを確認し、再び有効にして新しいクラスを試してください。
+
+事前レンダリングのみで配信する場合は `mode: 'pre-render'` を選び、Master CSS のクライアント起動コードだけを削除して、次のサーバー設定を使います：
+
+```ts name=src/hooks.server.ts
+/// <reference types="@master/css/client" />
+
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import { createMasterCSSHandle } from '@master/css-svelte/hooks.server'
+
+export const handle = createMasterCSSHandle({
+  manifest,
+  emittedGlobals,
+  hydrationManifest: false
+})
+```
+
+これにより、Master CSS のブラウザーランタイムを使わずに、レンダリング済み HTML に CSS を供給できます。後から追加するクラスには、別途配信するスタイルシートか、ランタイム生成に対応するモードが必要です。
+
+</DocumentDisclosure>

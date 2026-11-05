@@ -28,8 +28,8 @@ export const resourceWaterfalls = [
   }
 ] as const satisfies readonly DemoWaterfallProps[]
 
-export function resourceWaterfallsMarkdown() {
-  return resourceWaterfalls.map(item => `**${item.title}.** ${item.description}\n\nResources shown: ${item.rows.map(row => row.label).join(', ')}. Marker: ${item.marker.label}. ${item.caption}`).join('\n\n')
+export function resourceWaterfallsMarkdown(scenarios = resourceWaterfalls, labels = { resources: 'Resources shown', marker: 'Marker' }) {
+  return scenarios.map(item => `**${item.title}.** ${item.description}\n\n${labels.resources}: ${item.rows.map(row => row.label).join(', ')}. ${labels.marker}: ${item.marker.label}. ${item.caption}`).join('\n\n')
 }
 
 export const firstPaintHTML = "<article class=\"m-xs p-md r-lg b(1) b-solid b-line-divider font-sans\">\n  <p class=\"m(0) font-xs fg-text-muted\">PROJECT NOTES</p>\n  <h2 class=\"my-sm font-2xl font-semibold leading-sm fg-text-strong\">A clearer first view</h2>\n  <p class=\"m(0) leading-lg fg-text-muted\">The same content, with typography and spacing ready to read.</p>\n</article>"
@@ -38,6 +38,6 @@ export function firstPaintCSS() {
   return configuredExampleCSS("", configuredMarkupClasses(firstPaintHTML))
 }
 
-export function firstPaintMarkdown() {
-  return `Browser defaults and CSS applied use the same HTML:\n\n\`\`\`html\n${firstPaintHTML}\n\`\`\`\n\nGenerated CSS for the styled preview:\n\n\`\`\`css disclosure=generated-css\n${firstPaintCSS()}\n\`\`\``
+export function firstPaintMarkdown(t: (text: string) => string = text => text) {
+  return `${t('Browser defaults and CSS applied use the same HTML:')}\n\n\`\`\`html\n${firstPaintHTML}\n\`\`\`\n\n${t('Generated CSS for the styled preview:')}\n\n\`\`\`css disclosure=generated-css\n${firstPaintCSS()}\n\`\`\``
 }

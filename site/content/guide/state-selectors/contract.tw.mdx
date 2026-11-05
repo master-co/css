@@ -1,0 +1,288 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+選擇器後綴決定哪個元素或偽元素會套用 class 的宣告。帶有完整 class 的元素是起點：後綴可以檢查該元素、選取相關元素，或同時進行兩者。
+
+本頁定義選擇器的附加方式、編碼、分組與選擇器權重。[語法教學](/guide/syntax-tutorial#states)說明如何為元件加入 hover 與鍵盤焦點樣式；[CSS 選擇器](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selectors_and_combinators)則定義原生比對行為。
+
+## 附加選擇器 \{#basic-selectors\}
+
+將選擇器接在已註冊的 utility 後方，或原生宣告的右括號之後。[條件](/reference/rules/conditions)放在選擇器之後，重要性標記放在最末端：
+
+```txt
+utility<selector><conditions>!
+(property:value)<selector><conditions>!
+```
+
+上方角括號內的部分與 `!` 是可省略的語法佔位符。例如，`underline:hover@sm` 會在帶有 class 的元素處於 hover，且檢視區符合 `@sm` 時套用底線。條件不會改變選擇器指向的元素。
+
+<Class2CSS classes={['underline:hover@sm', '(text-decoration-thickness:2px):hover@sm']} />
+
+Master CSS 會在生成的 CSS 選擇器中跳脫完整 class 名稱。`.underline\:hover` 中的冒號是字面 class 名稱的一部分；後接的 `:hover` 才是真正的偽類別。HTML 中請像範例一樣，撰寫未跳脫的 class。
+
+## 比對帶有 class 的元素 \{#matching-the-owner\}
+
+沒有組合器時，後綴會為帶有 class 的元素增加條件。`underline.active` 只會比對 class 清單同時含有 `underline.active` 與 `active` 的元素。
+
+```html
+<a class="underline.active active" href="/guide/installation">Installation</a>
+```
+
+<a id="class"></a>
+<a id="id"></a>
+<a id="attribute"></a>
+<a id="pseudo-class"></a>
+<a id="element"></a>
+<a id="--universal"></a>
+
+| class | 帶有 class 的元素須符合的條件 |
+| --- | --- |
+| `underline.active` | 也帶有 `active` class |
+| `underline#current` | ID 為 `current` |
+| `underline[data-current]` | 帶有 `data-current` 屬性 |
+| `underline:hover` | 符合瀏覽器的 hover 狀態 |
+| `underline:is(a)` | 是 `a` 元素 |
+
+<Class2CSS classes={['underline.active', 'underline#current', 'underline[data-current]', 'underline:hover', 'underline:is(a)']} />
+
+若要檢查同一元素的型別，請用 `:is(a)` 或 `:where(a)`。若要選取其子元素，請用 `>a` 或 `>*`。直接接在 utility 名稱後的裸標籤名稱，不是獨立的選擇器後綴。
+
+### 組合條件 \{#combined-requirements\}
+
+相鄰的簡單選擇器描述同一個元素。`underline:hover:not([aria-disabled=true])` 要求 hover，並排除 `aria-disabled` 屬性為 `true` 的元素；它不會設定或更新該屬性。
+
+<Class2CSS classes={['underline:hover:not([aria-disabled=true])']} />
+
+選擇器會回應 DOM 與瀏覽器狀態，不會建立互動行為。原生屬性與 ARIA 保有各自的語意。尤其 `aria-disabled="true"` 只描述停用狀態，本身不會阻止啟動操作。
+
+## 相關元素 \{#combinators\}
+
+組合器會從帶有 class 的元素移向另一個元素。宣告會套用到選擇器末端的元素，而非從帶有 class 的元素繼承而來。
+
+<a id="_--descendant"></a>
+<a id="--child"></a>
+<a id="--adjacent-sibling"></a>
+<a id="--general-sibling"></a>
+
+| class | 目標 |
+| --- | --- |
+| `underline_a` | 任意深度的後代連結 |
+| `underline>a` | 直接子連結 |
+| `underline+a` | 下一個同層元素，且該元素為連結 |
+| `underline~a` | 同一父元素下、位於後方的所有同層連結 |
+| `underline>*` | 每個直接子元素 |
+
+`_` 編碼選擇器之間的後代空白。HTML 中真正的空白會開始另一個 class。`>`、`+` 與 `~` 保留 CSS 原生意義。
+
+<Class2CSS classes={['underline_a', 'underline>a', 'underline+a', 'underline~a', 'underline>*']} />
+
+<ReferenceIllustration id="descendant-depth" />
+
+<ReferenceIllustration id="sibling-direction" />
+
+### 狀態的位置 \{#state-position\}
+
+狀態的位置決定哪個元素必須符合該狀態。這兩個 class 具有相同的父子關係，但在不同位置檢查 hover：
+
+| article 上的 class | hover 條件 | 加上底線的連結 |
+| --- | --- | --- |
+| `underline:hover>a` | article 處於 hover | 所有直接子連結 |
+| `underline>a:hover` | 直接子連結處於 hover | 只有該連結 |
+
+<ReferenceIllustration id="selector-targets" />
+
+```html
+<article class="underline:hover>a">
+  <p>Documentation</p>
+  <a class="(text-decoration-line:none)" href="/guide/installation">Installation and setup</a>
+  <a class="(text-decoration-line:none)" href="/reference/packages">API reference</a>
+</article>
+
+<article class="underline>a:hover">
+  <p>Documentation</p>
+  <a class="(text-decoration-line:none)" href="/guide/installation">Installation and setup</a>
+  <a class="(text-decoration-line:none)" href="/reference/packages">API reference</a>
+</article>
+```
+
+<Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
+
+連結處於 hover 時，其祖先 article 也會處於 hover。第一個範例因此讓兩個連結都符合條件；第二個範例中，另一個連結仍未通過自己的 `:hover` 檢查。各 class 都屬於 article，但宣告指向它的連結。連結自身的 class 先移除預設底線；權重較高的父子選擇器會在 hover 檢查符合時恢復底線。
+
+## 選擇器清單 \{#selector-groups\}
+
+頂層逗號會從同一個帶有 class 的元素開始另一個分支。每個分支都要重複組合器：`block>div,>span` 會選取直接的 `div` 子元素與直接的 `span` 子元素。第二個分支不會接續第一個分支的目標。
+
+```html
+<section class="block>div,>span">
+  <div>First child</div>
+  <span>Second child</span>
+</section>
+```
+
+<Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+函式或引號屬性值中的逗號仍留在該結構內。`underline:is(:hover,:focus-visible)` 是一個含有兩種選項的選擇器後綴，而非兩個頂層分支。
+
+<Class2CSS classes={['underline:is(:hover,:focus-visible)', "underline[data-label='draft,review']"]} />
+
+<ReferenceIllustration id="selector-list-branches" />
+
+### 選擇器函式 \{#selector-functions\}
+
+<a id="not"></a>
+<a id="has"></a>
+
+| 函式 | 比對行為 |
+| --- | --- |
+| `:is(...)` | 符合清單中至少一個選擇器 |
+| `:where(...)` | 與 `:is()` 相同，但函式及其引數的選擇器權重為零 |
+| `:not(...)` | 排除符合清單中任一選擇器的元素 |
+| `:has(...)` | 從目前選取的元素檢查相對關係是否符合 |
+
+`:has()` 檢查關係，但不會將宣告移到符合的相關元素。`b-blue-60:has(>input:checked)` 會在 label 的直接子 input 被勾選時，設定 label 的邊框色彩：
+
+```html
+<label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
+  <input type="checkbox" /> Include archived items
+</label>
+```
+
+<Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+相對比對也可以是同層元素：`underline:has(+input:checked)` 會在下一個同層元素是已勾選的 input 時，為帶有 class 的元素加上底線。原生 [`:has()` 限制](https://www.w3.org/TR/selectors-4/#relational)仍適用；將 `:has()` 巢狀放在自身內部是無效的。可運作的核取方塊範例與實用備援方式，請見[相容性](/guide/compatibility#new-selectors)。
+
+<ReferenceIllustration id="has-owner-target" />
+
+## 原生狀態 \{#pseudo-classes\}
+
+<a id="hover--active--focus"></a>
+<a id="first--last--odd--even"></a>
+<a id="valid--invalid--required"></a>
+<a id="disabled"></a>
+<a id="checked--indeterminate"></a>
+<a id="rtl--ltr"></a>
+
+Master CSS 保留原生偽類別名稱。以下列出常用後綴，並非完整的狀態註冊表：
+
+| 後綴 | 原生比對情境 |
+| --- | --- |
+| `:hover`, `:active` | 指標懸停或啟動狀態 |
+| `:focus`, `:focus-visible`, `:focus-within` | 元素取得焦點、顯示焦點指示，或其內部有焦點 |
+| `:first-child`, `:last-child`, `:nth-child(even)` | 同層元素間的位置 |
+| `:valid`, `:invalid`, `:required` | 原生表單限制 |
+| `:disabled` | 停用的表單控制項 |
+| `:checked`, `:indeterminate` | 原生控制項狀態 |
+| `:dir(rtl)`, `:dir(ltr)` | 解析後的文字方向 |
+
+請使用 `:first-child`、`:nth-child(odd)` 這類完整名稱。即使 Master CSS 能輸出某種拼法，瀏覽器仍可能不支援或視為無效。各狀態的詳細行為以[原生偽類別參考](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes)為準。
+
+```html
+<ul>
+  <li class="bg-surface-inset:nth-child(even)">Draft</li>
+  <li class="bg-surface-inset:nth-child(even)">In review</li>
+  <li class="bg-surface-inset:nth-child(even)">Published</li>
+</ul>
+```
+
+<Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+## 屬性選擇器 \{#attribute-selectors\}
+
+屬性後綴會檢查 DOM 值。布林形式的屬性選擇器檢查屬性是否存在：`[open]` 比對展開的 `details` 元素，`[data-active]` 則在該屬性存在時符合。若要檢查特定狀態值，請包含該值，例如 `[aria-pressed=true]`。
+
+<a id="open"></a>
+<a id="aria-keyvalue"></a>
+<a id="data-keyvalue"></a>
+<a id="attrvalue"></a>
+<a id="attrvalue-1"></a>
+<a id="attrvalue-2"></a>
+<a id="attrvalue-3"></a>
+<a id="attrvalue-4"></a>
+<a id="attrvalue-5"></a>
+
+| 後綴 | 比對條件 |
+| --- | --- |
+| `[data-active]` | 屬性存在，即使值為空 |
+| `[aria-pressed=true]` | 值恰為 `true` |
+| `[href^=https]` | 值以 `https` 開頭 |
+| `[href$='.pdf']` | 值以 `.pdf` 結尾 |
+| `[title*=master]` | 值包含 `master` |
+| `[lang\|=en]` | 值為 `en` 或以 `en-` 開頭 |
+| `[title~=css]` | 以空白分隔的值包含單字 `css` |
+
+<ReferenceIllustration id="attribute-word-match" />
+
+引號內的屬性文字保留字面意義：`underline[data-state=':first']:first-child` 會檢查值 `:first`，並另外檢查元素位置。`[data-id='a_b']` 中的底線留在值內；`.is\_active` 中跳脫的底線則留在 class 識別名稱內。
+
+```html
+<a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
+<a class="underline.is\_active is_active" href="/reference">Reference</a>
+```
+
+<Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+CSS 引號無法阻止 HTML 空白分隔 class。屬性值中若需要真正的空白，請用 CSS 跳脫，例如 `[data-label='New\000020collection']`。引號值後可直接接大小寫旗標，例如 `[data-kind='draft'i]` 代表 ASCII 不分大小寫比對。原生運算子與大小寫比對請見[屬性選擇器](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors)。
+
+<Class2CSS classes={["underline[data-label='New\\000020collection']", "underline[data-kind='draft'i]"]} />
+
+## 偽元素 \{#pseudo-elements\}
+
+<a id="pseudo-element"></a>
+<a id="before--after"></a>
+<a id="scrollbar"></a>
+
+偽元素後綴指向該偽元素，而非產生它的元素。使用生成內容時，請明確撰寫 `content` 宣告：
+
+```html
+<span class="(content:open-quote)::before (content:close-quote)::after">
+  Keep the interface clear.
+</span>
+```
+
+<Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+<ReferenceIllustration id="pseudo-element-origin" />
+
+廠商專屬選擇器須明確撰寫。Master CSS 會保留其拼法，不會將偽元素展開成廠商變體，也不會補上瀏覽器支援。引號值中含有括號的情況，請見[原生宣告邊界](/reference/rules/declarations#declaration-heads)。
+
+## 選擇器權重 \{#specificity\}
+
+生成的選擇器遵循瀏覽器的[選擇器權重規則](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity)。無論名稱內有多少標點，跳脫後的 class 名稱都只貢獻一個 class 選擇器的權重。附加的後綴則另外計算。
+
+| class | ID－class／屬性／狀態－型別／偽元素 |
+| --- | --- |
+| `underline` | `0-1-0` |
+| `underline:hover` | `0-2-0` |
+| `underline>a` | `0-1-1` |
+| `underline:where(:hover,#selected)` | `0-1-0` |
+| `underline:is(:hover,#selected)` | `1-1-0` |
+
+`:is()`、`:not()` 與 `:has()` 採用其選擇器清單中最高的權重。`:where()` 不增加權重，包含其引數也是如此。組合器與通用選擇器也不增加權重。這些權重是在階層串接已決定來源、重要性與串接層優先順序後才適用；較高權重的選擇器不會自動勝過另一個串接層中的規則。
+
+<Class2CSS classes={['underline:where(:hover,#selected)', 'underline:is(:hover,#selected)']} />
+
+<ReferenceIllustration id="where-specificity" />
+
+規則排序請見[串接層](/reference/rules/layers)，實務決策請見 [指南的覆寫流程](/guide/cascade-layers#override-a-component-locally)。重新排列 HTML class 不會改變選擇器權重。
+
+## 外部情境 \{#external-context\}
+
+<a id="of"></a>
+
+後綴以帶有 class 的元素為起點。目標需要依祖先或前方同層元素套用樣式時，可以用原生 CSS 規則直接表達關係：
+
+```css
+@layer components {
+  .active .contextual { display: none; }
+  .active > .child-contextual { display: none; }
+  .active + .adjacent-contextual { display: none; }
+  .active ~ .sibling-contextual { display: none; }
+}
+```
+
+若要將數個 utility 宣告包在相同關係中，請用含有原生選擇器與 `@contents` 的 mixin。[mixin 內容契約](/reference/directives/definitions#contents)定義展開與轉送方式；[重複使用樣式](/guide/reusing-styles#share-a-wrapper-with-contents)說明何時適合選用此形式。
+
+生成 CSS 證明已輸出規則，不代表瀏覽器一定支援或符合該選擇器。請檢查 DOM 關係、實際狀態與原生選擇器合法性。在一般 CSS 選擇器清單中，無效分支可能使整份清單失效；`:is()` 與 `:where()` 則使用[容錯清單](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Selector_list)。瀏覽器檢查與備援設計請見[相容性](/guide/compatibility)。

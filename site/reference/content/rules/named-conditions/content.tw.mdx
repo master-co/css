@@ -1,0 +1,72 @@
+# Reference prose: rules/named-conditions
+
+
+## intro \{#copy-intro\}
+
+
+預設集定義了各自獨立的媒體與容器條件。它們共用簡短名稱，但這兩個登錄表都不是主題 token 集合。單獨的 `@md` 查詢檢視區，`@container(--md)` 則查詢符合資格的祖先容器。
+
+## media \{#copy-media\}
+
+
+媒體名稱來自 `media.css`。寬度條件使用原本撰寫的 rem 值，方向與偏好條件則使用原生媒體功能。`@dark` 與 `@light` 檢查的是系統偏好，不是手動選取的網站主題。
+
+## container \{#copy-container\}
+
+
+容器名稱來自 `container.css`。定義只提供查詢條件：`@container(--md)` 使用最近且符合資格的容器，`@container(card|--md)` 則選取名為 `card` 且符合資格的容器。兩種形式都不會建立容器。
+
+## scope \{#copy-scope\}
+
+
+同一個鍵可以在不同查詢領域代表不同門檻。`--container-md` 這類容器尺寸 token 則屬於第三種獨立用途：為尺寸 utilities 提供長度。
+
+## complement \{#copy-complement\}
+
+
+每個預設 `max-` 條件，都是對應最小值條件的互補條件。下方展開的查詢在邊界處不會重疊。原始定義透過 `not (--name)` 參照對應名稱。
+
+## customize \{#copy-customize\}
+
+
+為檢視區或偏好查詢宣告自訂媒體名稱，或為元件查詢宣告自訂容器名稱。原生單位會保留。在已編譯的 manifest 中替換條件時，如果兩個門檻都要改變，也必須重新宣告其互補條件。
+
+## viewport-widths-title \{#copy-viewport-widths-title\}
+
+
+最小檢視區寬度
+
+## below-viewport-widths-title \{#copy-below-viewport-widths-title\}
+
+
+檢視區寬度小於門檻
+
+## media-features-title \{#copy-media-features-title\}
+
+
+方向與偏好設定
+
+## container-widths-title \{#copy-container-widths-title\}
+
+
+最小容器寬度
+
+## below-container-widths-title \{#copy-below-container-widths-title\}
+
+
+容器寬度小於門檻
+
+## usage-lead \{#copy-usage-lead\}
+
+
+這個版面在預設 md 檢視區門檻以下使用單欄，從門檻起改用三欄。
+
+## title \{#copy-title\}
+
+
+具名條件
+
+## description \{#copy-description\}
+
+
+所有預設媒體與容器條件、展開後的查詢，以及各自量測的範圍。

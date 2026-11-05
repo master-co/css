@@ -1,0 +1,36 @@
+# Reference prose: illustrations/role-value-selection
+
+## title \{#copy-title\}
+
+
+1 つのロールと 2 つのローカルなカラースキーム
+
+## alt \{#copy-alt\}
+
+
+控えめなテキストの light-dark 関数の 2 つの引数が、ライトとダークの見本につながります。両方に同じ補助テキストを表示し、明るい背景では zinc-60、暗い背景では zinc-40 を使います。
+
+## caption \{#copy-caption\}
+
+
+実際に使われるカラースキームが、最初か 2 番目の色を選びます。両方の見本は fg-text-muted と bg-surface-base を保ち、その場所のスキームが計算された色を変えます。
+
+## description-0 \{#copy-description-0\}
+
+
+fg-text-muted は color: var(--color-text-muted) を生成します。プリセットトークンは light-dark(var(--color-zinc-60), var(--color-zinc-40)) を含みます。
+
+## description-1 \{#copy-description-1\}
+
+
+ライトの見本は最初の引数 --color-zinc-60 を、ダークの見本は 2 番目の引数 --color-zinc-40 を使います。
+
+## description-2 \{#copy-description-2\}
+
+
+両方の見本は bg-surface-base と同じテキストクラスを使います。色付きの引き出し線は 2 つの引数を識別するための注記であり、結果の文字色ではありません。
+
+## description-3 \{#copy-description-3\}
+
+
+分岐を選ぶのは、その場所で実際に使われるカラースキームです。この比較は、システムのメディアクエリーが手動のローカルテーマに従うことを意味しません。

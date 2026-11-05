@@ -1,0 +1,210 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import FixedUtilities from '~/site/reference/FixedUtilities.astro'
+
+<a id="overview"></a>
+
+类以已注册的工具类或原生声明开头，后面可添加选择器、条件和重要性标记。本页定义这些声明形式、值解析与拒绝规则。完整教程见[语法教程](/guide/syntax-tutorial)，原生属性含义则参阅 [CSS 参考](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference)。
+
+下方具名形式假设已通过 `@import '@master/css'` 加载默认预设。项目定义可以添加或替换工具类，原生声明则不需要已注册的工具类。
+
+## 可用形式 \{#basic-syntax\}
+
+<a id="utilities"></a>
+
+| 形式 | 示例 | 含义 |
+| --- | --- | --- |
+| 静态工具类 | `flex` | 已注册名称；此例为 `display: flex` |
+| 令牌工具类 | `p-md` | 已注册前缀和令牌键；此例为 `padding: var(--spacing-md)` |
+| 函数工具类 | `p(12)` | 带参数的已注册函数；此例为 `padding: calc(12 * 1px)` |
+| 原生声明 | `(padding:1rem)` | 一个完整 CSS 属性与值 |
+
+这些是不同语法形式，不是可互换的拼写。静态、令牌和函数工具类都可能包含多个声明：`truncate`、`text-sm` 和 `grid-cols(2)` 都是组合样式。原生头部则恰好包含一个声明，可使用 CSS 简写属性。
+
+<Class2CSS classes={['flex', 'p-md', 'p(12)', '(padding:1rem)']} />
+
+<a id="combine-with-states-and-queries"></a>
+
+每种形式都接受后缀。在 `p(12):hover@sm!` 中，头部是 `p(12)`，`:hover` 是选择器，`@sm` 是条件，`!` 标记重要性。后缀只影响自身的类。完整契约见[选择器](/reference/rules/selectors)与[条件](/reference/rules/conditions)。
+
+## 原生声明 \{#declaration-heads\}
+
+<a id="native-properties"></a>
+<a id="native-declaration-fallback"></a>
+
+用完整属性名编写 `(property:value)`。Master CSS 先读取括号配对完整的头部，再解析后缀。单独名称后的冒号开始选择器：`flex:hover` 选择已注册的 `flex` 工具类，`display:block` 并不是 `(display:block)` 的替代形式。
+
+### 结束边界 \{#the-closing-boundary\}
+
+字符串、注释、转义、嵌套圆括号和方括号，以及无引号 `url()` 令牌，均遵循 CSS 组件值边界。引号字符串中的 `)` 不会关闭头部：
+
+```html
+<span class="(content:')')::before"></span>
+```
+
+<ReferenceIllustration id="native-value-boundary" />
+
+头部内的其他 CSS 结构也保留各自边界：
+
+| 类 | 值的边界 |
+| --- | --- |
+| `(width:calc(1px+(2px*3)))` | 嵌套括号属于计算式 |
+| `(grid-template-columns:[start]\|1fr\|[end])` | 方括号包住 Grid 线名称 |
+| `(background-image:url(/a{b.svg))` | 大括号属于无引号 URL 令牌 |
+
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+
+值内仍适用 CSS 转义规则。无引号 URL 若含括号，请改用带引号 URL 或 CSS 转义，保持令牌合法。
+
+### 无效头部 \{#invalid-heads\}
+
+格式错误的头部不会生成规则，也不会改以工具类或其他类形式重试。
+
+| 拒绝的类 | 原因 |
+| --- | --- |
+| `(display:block` | 缺少结束括号 |
+| `(color:red)(display:block)` | 一个类内有两个头部 |
+| `(color:red;display:block)` | 超过一个声明 |
+| `(display:block;)` | 顶层分号，即使出现在结尾也不接受 |
+| `(width:calc(1px])` | 分隔符不配对 |
+| `(width:)` | 普通属性的值为空 |
+| `(color:{red})` | 将大括号块作为普通属性值 |
+| `(width:calc(((…1px…))))` 嵌套 65 层 | 括号嵌套深度超过 64 层 |
+
+自定义属性可以有空值或配对完整的大括号块：`(--slot:)` 和 `(--state:{open})` 均合法。`(--slot:!important)` 是值为空的重要自定义属性，`(width:!important)` 则无效。
+
+### 输出与浏览器合法性 \{#vendor-prefixes\}
+
+语法合法的属性名即使工具没有列出，也能输出声明。原生值不限于预设，但仍必须是目标浏览器中该属性的合法值。例如 `(font-size:48)` 输出 `font-size: 48`，不会自动获得 `px`，而这个非零无单位长度是无效 CSS。请用 `(font-size:48px)` 表达该长度。`(field-sizing:content)` 这类原生属性不需要注册工具类。
+
+<Class2CSS classes={['(font-size:48px)', '(field-sizing:content)']} />
+
+Master CSS 输出特定兼容声明，例如在 `backdrop-filter` 旁添加 `-webkit-backdrop-filter`，但不会添加厂商专属选择器，也不会为浏览器功能提供 polyfill。请检查生成的 CSS，并通过[兼容性](/guide/compatibility)了解浏览器要求与回退设计。
+
+<Class2CSS classes={['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']} />
+
+## 值的编码 \{#values\}
+
+### 空白、字符串与下划线 \{#value-encoding\}
+
+即使值包含 CSS 引号，HTML 空白仍分隔类。类值内无引号的 `|` 编码一个空格；引号字符串内的竖线则保持字面含义。逗号和斜线等 CSS 标点应保留原位。
+
+```html
+<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+```
+
+<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+
+颜色值变为 `rgb(30 60 90 / 80%)`，content 字符串则保留为 `'a|b'`。CSS 字符串中需要实际空格时，请使用 `\000020` 这类 CSS 转义：`(content:'New\000020collection')::before` 产生“New collection”。六位转义可避免 HTML 类中出现终止空格。
+
+原生头部内的下划线是字面字符，例如 `slide_in`。头部结束后，`_` 开始后代选择器：`(color:red)_a` 指向后代链接。已注册工具类名称不能包含 `_`，但含下划线的令牌键仍可通过 `var(--name)` 引用。
+
+### 函数与显式变量 \{#functions\}
+
+CSS 函数仍是原生属性的值。Master CSS 规范化 `calc(100%-2rem)` 中的算术空白，涵盖最多 64 层嵌套括号以及 `1px-2px-3px` 这类连续减法，更深的内容保留原样。计算由浏览器执行。Master CSS 不会从单独单词推断令牌，也不会将 CSS 函数当作工具类调用求值。
+
+<Class2CSS classes={['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']} />
+
+<a id="rgb-hsl-oklch-"></a>
+<a id="hexadecimal-color"></a>
+
+原生颜色值保留原意：`(color:red)`、`(color:#175fe9)` 和 `(color:rgb(23,95,233))` 都提供 CSS 值，`fg-red` 则选择主题令牌。`var()` 引用必须明确编写；`(font-family:mono)` 指定 CSS 字体族 `mono`，不是 `--font-mono`。令牌解析、模式和派生值见[变量与模式](/reference/rules/modes)。
+
+### 数字与单位 \{#units\}
+
+<a id="decimal"></a>
+<a id="unit-conversion"></a>
+<a id="unit-sensing"></a>
+<a id="multiplier-units"></a>
+
+原生声明保留单位，不会将 `rem` 转为像素，也不会根据属性推断单位。小数前的零可以省略：`(opacity:.5)` 和 `(opacity:0.5)` 提供相同数值。
+
+| 原生值 | 解释 |
+| --- | --- |
+| `(margin:1rem)` | 相对于根元素字号的长度 |
+| `(width:50%)` | 根据属性上下文解析的百分比 |
+| `(rotate:30deg)` | 显式角度 |
+| `(animation-duration:200ms)` | 显式时间；`.2s` 表达相同时长 |
+| `(opacity:.5)` | 无单位数值 |
+| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | 以每个 CSS 像素的点数指定原生图像分辨率 |
+
+属性是否接受数字、长度、百分比或其他类型，由 [CSS 值与单位](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units)规则决定。`p(12)` 则不同：预设函数会显式将参数乘以 `1px`。
+
+### 负值 \{#negative\}
+
+原生负值写在值内，例如 `(margin-top:-2rem)`。直接数值参数使用 `mt(-8)`。负值令牌类则在完整类名前加 `-`：`-mt-sm`。负值令牌形式需要数值令牌及支持负值的工具类；padding 不支持负值，因此 `-p-sm` 会被拒绝。
+
+<Class2CSS classes={['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']} />
+
+参数验证不会重新定义 CSS 属性的值约束。
+
+## 已注册工具类 \{#registered-utilities\}
+
+### 令牌名称 \{#variable-alias\}
+
+<a id="property-abbreviations"></a>
+
+令牌前缀由工具类定义注册，不会从属性缩写推断。`p-md` 读取 `--spacing-md`；`fg-red` 和 `bg-red` 都读取 `--color-red`，但设置不同属性。不会自动产生 `padding-md` 这类完整属性名形式，也没有 `p-4` 这类隐式数值刻度：所选命名空间中必须存在该键。
+
+静态名称优先于拼写相同的令牌类。例如，即使项目定义了 `--container-full`，`w-full` 仍为 `width: 100%`；即使存在 `--radius-pill`，`pill` 仍为全圆角半径。同名静态工具类与函数各自独立注册。
+
+完整的前缀与命名空间映射见[令牌家族索引](/reference/tokens/families)，注册与替换规则见[工具类定义](/reference/directives/definitions#utilities)。[主题令牌](/guide/theme)说明如何定义项目值并设置作用域。
+
+<ReferenceIllustration id="fixed-name-reservation" />
+
+### 直接数值 \{#direct-values\}
+
+`m(4)`、`b(1)` 和 `grow(1)` 这类预设函数接受一个静态数字。长度函数输出乘以 `1px` 的运算；`grow()`、`shrink()` 和 `order()` 直接传递数值，其中 `order()` 要求整数。零、小数和负数参数是否可用，取决于各参数声明的类型。
+
+单位与动态表达式不属于数值参数：`m(1px)` 和 `b(var(--x))` 不会生成规则。这类值请使用 `(margin:1rem)` 或 `(border-width:var(--x))`。[直接数值](/reference/direct-values)提供完整函数列表、参数类型及生成声明。
+
+<a id="motion-properties"></a>
+
+配方可以协调多个属性或伴随值：`text-sm` 包含字号、行高和字距，`animate-fade` 则提供动画简写。查找与覆盖规则分别见[文字令牌](/reference/tokens/text#primary-and-companions)与[动效令牌](/reference/tokens/motion#duration-overrides)。
+
+## 自定义属性 \{#variable-properties\}
+
+`(--name:value)` 头部在匹配元素上声明 CSS 自定义属性。它可以使用与其他声明相同的选择器和条件，不会注册工具类或主题令牌。
+
+```html
+<div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
+  Progress
+</div>
+```
+
+<Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+`var(--progress)` 使用常规 CSS 解析与继承规则。未解析的变量或替换后不兼容的值可能导致引用它的声明失效；请按需使用 [CSS 变量回退值](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var)。[语法教程](/guide/syntax-tutorial#complete-card)说明如何固定类名并另行提供动态值。
+
+## 组合与重要性 \{#combining-declarations\}
+
+<a id="group"></a>
+<a id="independent-properties"></a>
+
+分开的类表达独立决策，例如 `b(1) b-solid b-line-control`。原生简写仍受支持；这项编写偏好不会改变 CSS 语法。需要相同选择器和条件的每个类都要分别添加后缀。
+
+```html
+<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
+```
+
+在相同层、条件与选择器中，配方排在单声明工具类之前，接着才是原生声明。单声明工具类先按属性家族和覆盖范围排序，再按值来源排序；同一属性中，令牌排在固定值或直接数值之前。HTML 类名顺序不会决定结果：
+
+<Class2CSS classes={['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']} />
+
+这里原生 padding 排在两个工具类之后，`mt(0)` 和 `mx-auto` 则覆盖 `m-md` 的对应部分。完整排序契约见[层叠层](/reference/rules/layers)。如何选择组件类、`@utility` 配方或 CSS 混入，请见[复用样式](/guide/reusing-styles)。
+
+### 重要性 \{#important\}
+
+末尾的 `!` 将该类的声明标为重要。括号值内末尾的原生 `!important` 效果相同；同时编写两者也只会输出一次。字符串内的 `'!important'` 仍为内容文字。
+
+<Class2CSS classes={['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]} />
+
+<ReferenceIllustration id="important-recipe" />
+
+## 固定工具类查询表 \{#fixed-utilities\}
+
+预设提供 292 个固定的单声明工具类，每个只设置表中列出的属性：`flex-col` 不会启用 flex 布局，`b-none` 不会重置边框宽度，`pill` 也不会设置尺寸。多声明的 `truncate` 配方单独列于[截断](/reference/truncation)。
+
+<FixedUtilities />
+
+`start` 和 `end` 保留原生含义，与 `flex-start`、`flex-end` 不同。逻辑轴中，`x` 表示行内轴，`y` 表示块轴；`t`、`r`、`b`、`l` 则为物理边。固定工具类接受选择器、条件与 `!`，在使用时输出 CSS。

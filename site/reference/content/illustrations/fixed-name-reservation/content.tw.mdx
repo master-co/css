@@ -1,0 +1,31 @@
+# Reference prose: illustrations/fixed-name-reservation
+
+## title \{#copy-title\}
+
+
+固定拼法保留自己的定義
+
+## alt \{#copy-alt\}
+
+
+w-full 填滿父元素；另一個相同的子元素則透過明確的原生 width 宣告讀取自訂 12rem container-full token 來決定寬度。
+
+## caption \{#copy-caption\}
+
+
+兩個父元素皆寬 240px。自訂 --container-full 為 12rem（根元素字級 16px 時為 192px）；w-full 仍是固定的 100% utility。
+
+## description-0 \{#copy-description-0\}
+
+
+設定定義 @theme \{ --container-full: 12rem; \}。預設集已將完整固定名稱 w-full 註冊為 width: 100%。
+
+## description-1 \{#copy-description-1\}
+
+
+因此 w-full 填滿 240px 的父元素。明確的 (width:var(--container-full)) class 讀取 --container-full，讓第二個區塊寬 192px。
+
+## description-2 \{#copy-description-2\}
+
+
+token 仍可透過明確的 var() 參照使用；定義它不會取代固定的 w-full 註冊。

@@ -1,0 +1,26 @@
+# Reference prose: illustrations/layer-token-separation
+
+## title \{#copy-title\}
+
+
+スタイルのレイヤーを選んでもトークンは移動しない
+
+## alt \{#copy-alt\}
+
+
+p-md@layer(defaults) は defaults 内の padding ルールに対応しますが、依存する spacing-md は theme に残ります。
+
+## caption \{#copy-caption\}
+
+
+2 本のレイヤー帯は出力の所属を示します。その位置関係は、カスケード全体の優先順位を表すものではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+p-md@layer(defaults) は、生成した padding 宣言を defaults レイヤーに出力します。
+
+## description-1 \{#copy-description-1\}
+
+
+依存する --spacing-md は、引き続き theme レイヤーの :root,:host に出力されます。@layer(defaults) が選ぶのはクラスルールのレイヤーであり、依存関係のレイヤーではありません。

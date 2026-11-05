@@ -1,0 +1,36 @@
+# Reference prose: illustrations/definition-replacement
+
+## title \{#copy-title\}
+
+
+뒤의 정의가 전체 등록을 교체
+
+## alt \{#copy-alt\}
+
+
+순서대로 배치한 두 badge 유틸리티 정의가 최종 규칙 하나로 이어진다. 첫 정의에는 빨간색과 padding이 있고 두 번째에는 파란색만 있다. 출력은 파란색만 포함한다.
+
+## caption \{#copy-caption\}
+
+
+두 정의는 같은 정적 유틸리티를 등록합니다. 두 번째 정의가 첫 번째 정의 전체를 교체하므로 기존 padding도 남지 않습니다. 이는 생성 전 정의 교체이며 두 CSS 규칙의 캐스케이드 경쟁이 아닙니다.
+
+## description-0 \{#copy-description-0\}
+
+
+첫 정적 badge 정의는 color: red와 padding: 1rem을 포함합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+뒤의 정적 badge 정의는 color: blue만 포함하며 첫 정의 전체를 교체합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+badge를 사용하면 color: blue를 포함한 규칙 하나를 생성합니다. 이전 padding과 그 의존성은 남지 않습니다.
+
+## description-3 \{#copy-description-3\}
+
+
+정적 등록과 함수 등록은 독립적입니다. 토큰 패턴은 접두사와 네임스페이스가 같은 분기만 교체하고 믹스인은 전체 명명 정의를 교체합니다.

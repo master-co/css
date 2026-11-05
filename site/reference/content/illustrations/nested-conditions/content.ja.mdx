@@ -1,0 +1,31 @@
+# Reference prose: illustrations/nested-conditions
+
+## title \{#copy-title\}
+
+
+2 つのクエリーが同じ宣言を囲む
+
+## alt \{#copy-alt\}
+
+
+メディアクエリーが supports クエリーを囲み、その中に grid ルールがあります。2 つのクラス接尾辞は、この入れ子の CSS 境界に対応します。
+
+## caption \{#copy-caption\}
+
+
+最初のクエリーが最も外側です。display 宣言は両方の条件が一致した場合だけカスケードに参加します。入れ子は実行の時間軸ではありません。
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem)@supports(display:grid) は、@supports (display:grid) 内に grid ルールを出力し、さらにそれを @media (width>=40rem) 内に置きます。
+
+## description-1 \{#copy-description-1\}
+
+
+メディアクエリーはビューポート幅を、supports クエリーはブラウザーの display: grid への対応を調べます。宣言がカスケードに参加するには、両方の一致が必要です。
+
+## description-2 \{#copy-description-2\}
+
+
+生成セレクターは、完全なクラスを持つ要素に一致します。図では外側の utilities レイヤーを省略していますが、生成 CSS の例には残っています。

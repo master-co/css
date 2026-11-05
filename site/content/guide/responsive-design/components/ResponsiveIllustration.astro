@@ -1,8 +1,12 @@
 ---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
 import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
 import light from '../../../../assets/images/responsive-design/local-boundaries-light.png'
 import dark from '../../../../assets/images/responsive-design/local-boundaries-dark.png'
-import { responsiveIllustration as figure } from '../illustration'
+import { responsiveIllustration as sourceFigure } from '../illustration'
+const figure = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'ResponsiveIllustration', sourceFigure)
+
 ---
 
 <DocumentIllustration title={figure.title} alt={figure.alt} images={{ light, dark }} caption={figure.caption}>

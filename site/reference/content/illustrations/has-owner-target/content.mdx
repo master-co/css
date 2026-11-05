@@ -1,0 +1,21 @@
+# Reference prose: illustrations/has-owner-target
+
+## title \{#copy-title\}
+
+has() tests the child and styles the owner
+
+## alt \{#copy-alt\}
+
+Two label controls contain unchecked and checked inputs. Only the checked child makes its enclosing label border blue.
+
+## caption \{#copy-caption\}
+
+The class is on the label. The input’s checked state is the test; the label receives border-color.
+
+## description-0 \{#copy-description-0\}
+
+b-blue-60:has(>input:checked) tests whether the class-bearing element has a checked direct child input.
+
+## description-1 \{#copy-description-1\}
+
+When it matches, the border color changes on the owner label, not on the input. The input is shown inside that same boundary to distinguish the test location from the style target.

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/pruning-file-boundary
+
+## title \{#copy-title\}
+
+
+裁剪指令止于文件边界
+
+## alt \{#copy-alt\}
+
+
+app.css 启用裁剪并导入 cards.css。仅 local 被使用。未使用本地规则被移除；cards.css 未启用裁剪，因此其两条规则均保留。
+
+## caption \{#copy-caption\}
+
+
+此次编译仅使用 local。app.css 启用，cards.css 未启用。导入 cards.css 不会将裁剪指令传入其中。
+
+## description-0 \{#copy-description-0\}
+
+
+app.css 包含 @prune native、导入 cards.css，并定义 .local 和 .unused-local。唯一使用的类是 local。
+
+## description-1 \{#copy-description-1\}
+
+
+其输出保留 .local，移除 .unused-local。
+
+## description-2 \{#copy-description-2\}
+
+
+cards.css 未声明裁剪或保留指令。即使两个类均未使用，默认策略仍保留 .card 和 .unused-card。
+
+## description-3 \{#copy-description-3\}
+
+
+全项目 pruneNativeCSS 选项可另行让项目文件参与裁剪。@preserve native 在其所属文件内优先。本例单独呈现显式逐文件策略。

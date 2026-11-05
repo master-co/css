@@ -6,7 +6,7 @@ This guide focuses on app-owned Bootstrap usage. Vendor markup, third-party plug
 
 ---
 
-## Migration strategy
+## Migration strategy \{#migration-strategy\}
 Follow the [shared migration workflow](/guide/migration#migration-strategy), starting with app-owned layout around existing widgets. Keep Bootstrap CSS, JavaScript and Sass output while any remaining component depends on them.
 
 Before converting a screen, identify three boundaries:
@@ -21,7 +21,7 @@ The first useful result is a converted layout around working components. Removin
 
 ---
 
-## Add Master CSS beside Bootstrap
+## Add Master CSS beside Bootstrap \{#add-master-css-beside-bootstrap\}
 Import Master CSS from the stylesheet your app already loads. Do not remove Bootstrap imports yet.
 
 ```css name=app.css
@@ -43,7 +43,7 @@ This changes cascade behavior. Compare existing overrides in the browser before 
 
 ---
 
-## Move Bootstrap Sass values into `@theme`
+## Move Bootstrap Sass values into `@theme` \{#move-bootstrap-sass-values-into--theme\}
 Bootstrap Sass variables often contain product decisions. Move those decisions into Master CSS tokens when they should be used by markup outside Bootstrap components.
 
 ```scss name=bootstrap-theme.scss
@@ -75,7 +75,7 @@ Do not assume Bootstrap's scale names match the Master CSS preset. Move the valu
 
 ---
 
-## Convert grid and utility classes
+## Convert grid and utility classes \{#convert-grid-and-utility-classes\}
 Start with layout wrappers and simple utility-only markup.
 
 Instead of preserving Bootstrap class spelling, preserve layout intent:
@@ -118,7 +118,7 @@ Keep Bootstrap layout classes in templates that still need Bootstrap's container
 
 ---
 
-## Convert simple components
+## Convert simple components \{#convert-simple-components\}
 Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert them to markup classes or Master CSS component classes when the project owns the behavior. Use a new class name during coexistence so the replacement does not change untouched Bootstrap buttons. Keep the theme tokens defined above.
 
 ```css name=app.css
@@ -161,7 +161,7 @@ Keep Bootstrap components when they still provide behavior, accessibility, or in
 
 ---
 
-## Preserve JavaScript-driven components
+## Preserve JavaScript-driven components \{#preserve-javascript-driven-components\}
 Bootstrap JavaScript components are not just CSS. Depending on the component, they manage focus, ARIA attributes, transitions, body scroll locks, Popper positioning and events. Use the [component’s JavaScript API](https://getbootstrap.com/docs/5.3/getting-started/javascript/) to inventory the behavior that must survive.
 
 Keep markup with `data-bs-*` attributes on Bootstrap until the replacement behavior has been implemented and tested. Convert only the surrounding layout or product-owned wrappers first.
@@ -176,7 +176,7 @@ When a component is replaced, remove its Bootstrap JavaScript import and related
 
 ---
 
-## Handle overrides and vendor CSS
+## Handle overrides and vendor CSS \{#handle-overrides-and-vendor-css\}
 Many Bootstrap projects rely on selector overrides such as component state classes, nested markup selectors, or specificity fixes. Do not translate those blindly.
 
 Keep the override as CSS when it targets Bootstrap internals:
@@ -199,7 +199,7 @@ Vendor CSS and third-party Bootstrap themes should remain regular CSS until the 
 
 ---
 
-## Validate the migration
+## Validate the migration \{#validate-the-migration\}
 - Run the project's formatter, linter, type check, tests, and production build after each batch.
 - Compare pages that used Bootstrap grid, container, form, modal, dropdown, collapse, tooltip, popover, and responsive utilities.
 - Test hover, focus-visible, disabled, expanded, selected, validation, and dark-mode states if the project supports them.
@@ -208,7 +208,7 @@ Vendor CSS and third-party Bootstrap themes should remain regular CSS until the 
 
 ---
 
-## Useful references
+## Useful references \{#useful-references\}
 - [Installation](/guide/installation) for adding Master CSS.
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.

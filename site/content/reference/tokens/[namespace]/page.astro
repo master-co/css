@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: Props) {
   return referenceMetadata(`tokens/${namespace}`, locale)
 }
 
-const { namespace } = Astro.props.params
-const doc = await loadReferenceRoute(`tokens/${namespace}`, 'tokens')
+const { namespace, locale } = Astro.props.params
+const doc = await loadReferenceRoute(`tokens/${namespace}`, locale, 'tokens')
 const sheet = doc.sheet
 if (sheet?.kind !== 'tokens' && sheet?.kind !== 'families') throw new Error(`Missing token sheet: ${doc.id}`)
 ---

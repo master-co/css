@@ -41,7 +41,7 @@ The conversion boundary is not a CSS isolation boundary. In an app where Account
 
 <GuideStudy id="migration-local-scope" />
 
-## Connect Master CSS beside the existing styles
+## Connect Master CSS beside the existing styles \{#connect-master-css-beside-the-existing-styles\}
 
 Follow [Installation](/guide/installation) for the app's framework or build tool. Confirm the app loads the CSS entry containing `@import '@master/css';`, and choose a [rendering mode](/guide/rendering-modes) that covers how the app supplies its class names.
 
@@ -51,7 +51,7 @@ Before converting the form, inspect the effects of setup itself: Master’s pres
 
 Adding the Master import later does not guarantee that its utilities win. Within the same author origin and context, normal unlayered declarations outrank normal layered declarations under the [CSS cascade rules](https://www.w3.org/TR/css-cascade-5/#layer-order). Keeping an old class on an element can therefore hide whether its new utility works. Inspect the winning declaration in browser devtools; use [Compatibility](/guide/compatibility#third-party-styles) and [Cascade layers](/guide/cascade-layers) to resolve the ordering deliberately.
 
-## Convert the component without changing its contract
+## Convert the component without changing its contract \{#convert-the-component-without-changing-its-contract\}
 
 Follow the source-system guide for the code conversion. Compare the resulting declarations and computed values, rather than assuming similarly named classes or tokens produce the same result.
 
@@ -74,7 +74,7 @@ Use the baseline to review the change before expanding to another component:
 
 Record intentional visual differences and remaining dependencies with the batch. Once that result is reviewable and verified, repeat the process for the next component or route.
 
-## Ask an agent to plan the work
+## Ask an agent to plan the work \{#ask-an-agent-to-plan-the-work\}
 
 The official [`master-css` skill](/guide/ai-coding#use-the-master-css-skill) includes
 an **Import external styles** workflow for bringing one CSS or Tailwind component

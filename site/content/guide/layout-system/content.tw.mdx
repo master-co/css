@@ -1,0 +1,159 @@
+---
+title: "版面"
+description: "以限寬包覆層、間距 token、欄格線與明確軌道組合頁面。"
+figures: {"LayoutIllustration":{"title":"跨欄數與格線同步調整","alt":"八欄格線中，頁首跨滿八欄，兩個指標各跨四欄，最後一列分為五欄的需求區與三欄的任務區。","caption":"寬版面使用八條等寬軌道。每列都完整分配這些軌道：8、4 + 4，再來是 5 + 3。欄間距位於軌道之間。","description":[{"title":"同一套格線","text":"寬版配置使用 grid-cols(8)，每對軌道之間都有相同間距。"},{"title":"整列與共用列","text":"頁首跨八條軌道，每個指標跨四條；需求與任務區分別跨五條與三條。"},{"title":"同步調整","text":"斷點改變格線欄數時，在相同斷點更新依賴它的跨欄數。"}]},"GuideStudy:width-cap-growth":{"title":"寬度上限為較小父元素保留彈性","alt":"兩個父元素包含相同的限寬內容框。較小父元素限制內容寬度；較大父元素則在達到最大寬度的內容框周圍留下空間。","caption":"上限是最大值，不是固定寬度。圖中寬度採同一比例；標籤描述限制條件，而非檢視區像素。"},"GuideStudy:grid-long-content":{"title":"可收縮軌道仍需要文字換行","alt":"兩條等寬格線軌道比較短標籤與會換行的長標籤。第二列高度增加，軌道邊界仍保持對齊。","caption":"minmax(0,1fr) 讓軌道可收縮；文字仍需適當的換行策略。高度由內容決定。"}}
+---
+
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import LayoutIllustration from './components/LayoutIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
+
+## 概覽 [sr-only] \{#overview\}
+組合頁面時先決定三件事：限制寬度的包覆層、控制欄間距與外距的間距 token，以及區域使用的欄格線。原生 [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) 與 [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout) 負責版面配置；Master CSS 為這些值命名。
+
+(resize) 使用滑桿或方向鍵調整檢視區，觀察版面從緊湊堆疊轉為八欄配置。
+
+<DemoPageViewport src="/examples/layout-system" title="工作區版面" height={540} />
+
+```html
+<!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
+<main class="w-full max-w-3xl mx-auto p-md">
+  <section class="grid-cols(4) gap-sm grid-cols(8)@2xs gap-md@2xs">
+    <header class="grid-col-span(4) grid-col-span(8)@2xs"><h1>Project overview</h1></header>
+    <article class="grid-col-span(4)"><h2>Revenue</h2><p>$128.4k</p></article>
+    <article class="grid-col-span(4)"><h2>Activation</h2><p>64.2%</p></article>
+    <article class="grid-col-span(4) grid-col-span(5)@2xs"><h2>Weekly demand</h2></article>
+    <aside class="grid-col-span(4) grid-col-span(3)@2xs"><h2>Launch tasks</h2></aside>
+  </section>
+</main>
+```
+
+<Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
+
+<LayoutIllustration />
+
+低於 `2xs` 時，每個區域都跨滿四欄。達到 `2xs` 後，頁首跨八欄，兩個指標共用一列，需求與任務區則在下一列以五比三分配。
+
+---
+
+## 選擇間距值 \{#namespace-for-spacing\}
+
+`p-`、`m-` 與 `gap-` 等間距 class 接受三種形式：
+
+| 形式 | Class | 產生結果 |
+| --- | --- | --- |
+| 間距 token | `p-md` | `padding: var(--spacing-md)` |
+| 直接值 | `p(1)` | `padding: calc(1 * 1px)` |
+| 原生長度 | `(padding:0.5rem)` | `padding: 0.5rem` |
+
+<Class2CSS classes={['p-md', 'p(1)', '(padding:0.5rem)']} />
+
+頁面共用的節奏，例如欄間距、內距與區段間距，使用 token。直接值長度以像素表示，所以 `p(1)` 是一像素內距，不是尺度中的一級；適合用於細線與 `m(0)` 這類重設。其他單位請寫成原生宣告。完整尺度請見[間距](/reference/tokens/spacing)，各函式請見[直接值](/reference/direct-values)。
+
+<a id="do-not-use-numeric-keys-as-tokens"></a>
+當某個距離成為反覆使用的設計決策，請依角色命名。`--spacing-1` 這類數字鍵名會讓人誤讀為直接值 `p(1)`。
+
+```css name=index.css
+@theme {
+  --spacing-section: 6rem;
+}
+```
+
+```html
+<!-- @MARK py-section -->
+<section class="py-section">…</section>
+```
+
+`px-*` 與 `py-*` 設定邏輯行內與區塊內距。實際方向會跟隨元素的書寫模式：
+
+<ReferenceIllustration id="logical-inline-axis" />
+
+`p-*` 設定四邊。只有一側內距需要不同時，再加上指定該側的 class：
+
+<ReferenceIllustration id="padding-coverage" />
+
+---
+
+## 以容器尺寸限制寬度 \{#use-container-tokens\}
+
+`w-`、`max-w-`、`h-`、`min-w-` 與 `basis-` 讀取 `--container-*` token，因此 `max-w-5xl` 對應 `max-width: var(--container-5xl)`。填滿與內在尺寸則是固定 utility：`w-full`、`w-fit`、`w-max` 與 `w-min` 一律設定 `100%`、`fit-content`、`max-content` 與 `min-content`，專案中的 `--container-full` token 不會改變它們。
+
+<Class2CSS classes={['max-w-5xl', 'w-full', 'w-fit']} />
+
+容器 token 只設定長度，不會移動容器查詢的門檻。完整尺度請見[容器尺寸](/reference/tokens/container)。
+
+---
+
+<GuideStudy id="width-cap-growth" />
+
+## 從頁面包覆層開始 \{#start-with-a-page-container\}
+
+讓包覆層填滿父元素，以容器尺寸設定上限、置中，並從間距尺度中選擇兩側留白：
+
+```html
+<!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
+<main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
+```
+
+<Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
+
+包覆層負責頁面對齊，內部格線則負責內容之間的關係。
+
+---
+
+## 建立欄格線 \{#build-column-grids\}
+
+`grid-cols(<count>)` 建立等寬欄格線，`grid-col-span(<count>)` 讓項目跨越數欄。斷點改變欄數時，也要在相同斷點調整跨欄數。
+
+(x) 格線增加為 12 欄，但文章仍只跨四欄，留下四個空欄。
+
+```html
+<section class="grid-cols(4) gap-lg grid-cols(12)@md">
+  <article class="grid-col-span(4)">…</article>
+  <aside class="grid-col-span(4)">…</aside>
+</section>
+```
+
+(o) 文章在相同斷點改為跨八欄。
+
+```html
+<!-- @MARK grid-col-span(8)@md -->
+<section class="grid-cols(4) gap-lg grid-cols(12)@md">
+  <article class="grid-col-span(4) grid-col-span(8)@md">…</article>
+  <aside class="grid-col-span(4)">…</aside>
+</section>
+```
+
+<Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+<ReferenceIllustration id="span-includes-gaps" />
+
+兩個軸向需要不同間距 token 時，使用 `col-gap-*` 與 `row-gap-*`。詳見[格線軌道](/reference/grid-tracks)。
+
+---
+
+## 指定明確軌道 \{#add-explicit-tracks-only-when-needed\}
+
+需要固定或混合軌道時，寫出原生 `grid-template-columns` 值。使用 `|` 分隔軌道，產生 CSS 時會轉為空格：
+
+```html
+<!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) -->
+<section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
+  <nav>…</nav>
+  <main class="min-w(0)">…</main>
+</section>
+```
+
+<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
+
+`min-w(0)` 讓主要區域可縮小至內容寬度以下。一般內容維持等寬欄與跨欄設定；應用程式外殼與分割面板再使用明確軌道。
+
+<GuideStudy id="grid-long-content" />
+
+## 以較長內容驗證版面 \{#verify-the-layout-with-longer-content\}
+
+調整尺寸跨越各斷點，同時檢查格線欄數與子項目的跨欄數。使用更長的標題與任務標籤，確認內容能垂直成長。固定尺寸留給需要量測的物件或刻意設定的檢視區；頁面卡片通常只需內距與寬度限制。
+
+使用鍵盤操作預覽中的任務核取方塊，並開啟各區段連結。內容換行時版面仍應可用；為了塞進固定高度卡片而縮小文字，只會掩蓋真正的限制。

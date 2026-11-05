@@ -1,0 +1,71 @@
+# Reference prose: tokens/leading
+
+## title \{#copy-title\}
+
+
+行の高さ
+
+## summary \{#copy-summary\}
+
+
+フォントサイズに応じて変わる、単位なしの行の高さ。
+
+## note \{#copy-note\}
+
+
+`leading-<name>` が設定するのは `line-height` だけです。フォントサイズ、段落間の余白、段落の高さの制約は変更しません。
+
+## valuesLead \{#copy-valuesLead\}
+
+
+5 つのプリセット値はすべて単位なしの比率であり、rem 単位の長さやピクセル数ではありません。実際の行の高さは、要素のフォントサイズによって決まります。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+継承した比率は各要素のフォントサイズに従う
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`leading-md` は数値 `1.6` を指定します。継承した子要素は自身のフォントサイズを使うため、16px なら 25.6px、24px なら 38.4px になります。継承される値は、引き続き比率です。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+明示的な長さや百分率は継承の動作が異なり、宣言された要素で長さに解決されます。独自の比率には、`(line-height:1.5)` のようなネイティブ宣言を使うか、テーマトークンを追加します。プリセットには `leading(1.5)` 関数はありません。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+行の高さが制御するのは行の縦方向の寸法であり、見えている字形同士の空白ではありません。ほかのインライン内容によって行ボックスが高くなることもあります。字形を切り取ったり、段落の高さを固定したりする指定ではありません。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+`text-*` のテキストスタイルは自身の行の高さを設定するため、継承した比率を置き換えます。意図的に上書きするには、同じ要素に `leading-*` を適用します。同じ条件では、単一プロパティのユーティリティが組み合わせスタイルより後になります。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+テキストスタイルの付随トークン
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+ネイティブの line-height の継承
+
+## usage-lead \{#copy-usage-lead\}
+
+
+親要素に比率を指定し、子要素で各自のフォントサイズに応じた行の高さを使います。
+
+## customize-lead \{#copy-customize-lead\}
+
+
+プリセット値を変更したり、トークンを追加したりできます。`--leading-prose` を定義すると `leading-prose` が使えるようになります。
+
+## guide-label \{#copy-guide-label\}
+
+
+タイポグラフィ

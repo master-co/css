@@ -1,0 +1,31 @@
+# Reference prose: illustrations/nested-conditions
+
+## title \{#copy-title\}
+
+
+两个查询包裹同一个声明
+
+## alt \{#copy-alt\}
+
+
+媒体查询包住 supports 查询，再由 supports 查询包住 grid 规则。两个类后缀对应这些嵌套 CSS 边界。
+
+## caption \{#copy-caption\}
+
+
+第一个查询位于最外层。只有两个条件都匹配，display 声明才参与层叠；嵌套结构不是执行时间线。
+
+## description-0 \{#copy-description-0\}
+
+
+grid@media(width>=40rem)@supports(display:grid) 将 grid 规则放在 @supports (display:grid) 内，再将其放在 @media (width>=40rem) 内。
+
+## description-1 \{#copy-description-1\}
+
+
+媒体查询测试视口宽度，supports 查询测试浏览器是否支持 display: grid。两者都必须匹配，该声明才参与层叠。
+
+## description-2 \{#copy-description-2\}
+
+
+生成选择器匹配带有完整类的元素。图中省略外围 utilities 层，但生成的 CSS 示例仍会保留它。

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/layer-precedence
+
+## title \{#copy-title\}
+
+
+중요 선언은 레이어 우선순위를 뒤집습니다
+
+## alt \{#copy-alt\}
+
+
+다섯 레이어가 theme부터 utilities까지 나열되고 그 뒤에 레이어 밖의 CSS가 이어집니다. 일반 선언은 아래로 갈수록, 중요 선언은 위로 갈수록 우선순위가 높습니다.
+
+## caption \{#copy-caption\}
+
+
+작성자 스타일시트 안에서 중요도가 같은 선언을 비교합니다. 레이어 밖의 일반 규칙은 이름이 있는 레이어보다 우선하고, 이름이 있는 레이어의 중요 규칙은 레이어 밖의 중요 규칙보다 우선합니다.
+
+## description-0 \{#copy-description-0\}
+
+
+기본 스타일시트는 theme, base, defaults, components, utilities 순으로 선언합니다.
+
+## description-1 \{#copy-description-1\}
+
+
+작성자 스타일시트의 일반 선언은 theme에서 utilities로 갈수록 우선순위가 높아지며, 레이어 밖의 선언이 모든 이름 있는 레이어보다 우선합니다.
+
+## description-2 \{#copy-description-2\}
+
+
+작성자 스타일시트의 중요 선언은 반대 방향으로 우선순위가 높아집니다. 이 레이어들 중 theme이 가장 강하고 레이어 밖의 중요 선언이 가장 약합니다.
+
+## description-3 \{#copy-description-3\}
+
+
+레이어 우선순위는 선택자 명시도보다 먼저 비교됩니다. 그림은 중요도별 그룹을 따로 비교하며, 일반 선언과 중요 선언 또는 다른 캐스케이드 출처를 서로 비교하지 않습니다.

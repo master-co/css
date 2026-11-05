@@ -1,14 +1,19 @@
+import { referenceText as text } from './copy'
 import { referenceSections, type ReferenceDocument } from './types'
 
 type Entry = Pick<ReferenceDocument, 'kind' | 'title' | 'category' | 'url'>
 
+export function referenceSectionCopy(locale = 'en') {
+  return referenceSections.map(section => ({ ...section, title: text('overview', `section-${section.id}-title`, locale), description: text('overview', `section-${section.id}-description`, locale) }))
+}
+
 /** The portable index follows the same section vocabulary and catalog as the UI. */
-export function referenceOverviewMarkdown(documents: (Entry & { description: string })[]) {
-  return referenceSections.map(section => [
+export function referenceOverviewMarkdown(documents: (Entry & { description: string })[], locale = 'en') {
+  return referenceSectionCopy(locale).map(section => [
     `<a id="${section.id}"></a>`, '', `## ${section.title}`, '', section.description, '',
     ...documents.filter(doc => section.kinds.includes(doc.kind))
       .map(doc => `- [${doc.title}](${doc.url}): ${doc.description}`)
-  ].join('\n')).join('\n\n') + '\n\n[Start with the Guide](/guide) to learn concepts and build with step-by-step examples.\n'
+  ].join('\n')).join('\n\n') + `\n\n${text('overview', 'guide-link', locale)}\n`
 }
 
 /** Both the existing sidebar and the mobile menu use the same selected catalog. */

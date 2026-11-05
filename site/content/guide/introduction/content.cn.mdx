@@ -1,0 +1,68 @@
+---
+title: "Master CSS 入门"
+description: "使用类构建界面，追踪对应的 CSS，并定义项目共用的值。"
+figures: {"IntroductionIllustration": {"title": "类选择样式，令牌提供值", "alt": "HTML 中的 p-lg 类连接到生成 CSS 中的 .p-lg 选择器。值为 1.5rem 的主题令牌 --spacing-lg，则连接到 padding 声明中的 var() 引用。", "caption": "对应的名称将各个部分连接起来：p-lg 选中规则，var(--spacing-lg) 读取共用值。图中仅展示相关声明；下方的完整输出还包含所属的层。", "description": [{"title": "类匹配", "text": "HTML 中的 p-lg 类匹配生成的 .p-lg 选择器。蓝色括号与连线将这两处对应起来。"}, {"title": "共用值", "text": "预设将 --spacing-lg 定义为 1.5rem。紫色括号与连线将这一定义连接到 padding: var(--spacing-lg) 中的引用。"}, {"title": "浏览器结果", "text": "浏览器解析 CSS 变量后，在四边应用 1.5rem 内边距。生成的规则保留变量引用，而不会将值复制进声明。"}]}, "GuideStudy:language-and-delivery": {"title": "交付方式改变，类词汇保持不变", "alt": "同一个类及其声明在图中分为两条交付路径：构建时生成的样式表，以及浏览器生成的样式表。", "caption": "语法表达请求的样式；渲染模式则决定何时、在哪里生成对应的 CSS。"}}
+---
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import Overview from './components/Overview.mdx'
+import IntroductionIllustration from './components/IntroductionIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+
+Master CSS 是一个 CSS 框架，用于在标记中设置界面样式，并在 CSS 中定义共用样式。创建元素时，就在相应位置编写类；整个项目共用的值和模式，则放在样式表中。Master 会生成这些类所需的 CSS。
+
+可以从内置的颜色、间距和排版设置开始。创建第一个组件之前，不必先设计完整的主题。
+
+## 使用 CSS 和工具类构建界面 \{#overview\}
+
+这张卡片结合了原生组件类与工具类。`.action` 在 CSS 中定义按钮的基础样式；`w-full`、`mt-md` 和 `bg-blue-60` 则为这张卡片设置按钮的宽度、外边距和颜色。其余标记使用预设工具类处理布局、间距和排版。
+
+完成[安装](/guide/installation)后，将示例的 CSS 添加到应用样式表中预设导入语句之后，再把 HTML 放入集成工具会扫描的源文件：
+
+```css name=app.css
+@import '@master/css';
+```
+
+<Overview />
+
+预览会同时使用展示的 CSS 和 HTML。这个示例在 `@layer components` 中定义 `.action`；Master 根据标记中的类生成工具类规则。将按钮共用的形态和焦点样式保留在 `.action` 中，而这个实例的蓝色和全宽设置仍由标记指定。
+
+试着将 `p-lg` 改为 `p-md`：卡片内容的内边距会缩小，但按钮的基础样式不会改变。
+
+图片 URL 假定应用会提供 `/building.jpg`。请替换为自己的图片和替代文本，并将链接指向应用中的页面。
+
+## 从类追踪到 CSS \{#write-your-first-class\}
+
+以卡片中的 `p-lg` 为例。预设将 `p-` 关联到内边距，将 `lg` 关联到间距令牌 `--spacing-lg`。Master 会生成一个类选择器，其声明引用这个 CSS 变量。
+
+<IntroductionIllustration />
+
+<Class2CSS classes={['p-lg']} />
+
+浏览器会对匹配的元素应用 `padding: var(--spacing-lg)`。按照预设值，四边的内边距都是 `1.5rem`。即使在主题中修改共用值，也无需改变类名。
+
+其他类表达的是不同类型的设置：`w-full` 是对应 `width: 100%` 的固定工具类，`bg-blue-70:hover` 则添加悬停状态。[语法教程](/guide/syntax-tutorial)会通过可运行的示例，介绍值、选择器和条件。
+
+## 定义哪些部分应该一起改变 \{#define-what-should-change-together\}
+
+当多个元素需要共享某项项目设置时，就添加一个主题令牌。以主要操作的颜色为例，在应用样式表的导入语句之后定义 `--color-brand`，再在标记中使用 `bg-brand`：
+
+<ConfiguredExample source={`@theme {
+  --color-brand: #2563eb;
+}`} html={`<a class="inline-flex px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
+  Start building
+</a>`} />
+
+修改 `--color-brand`，使用它的元素就会一起更新。共享令牌的理由，应该是这些元素需要一起改变；两个互不相关的颜色，即使当前值相同，也不必共用一个名称。[主题令牌](/guide/theme)会说明如何定义和覆盖共用值。
+
+多个元素需要共享样式规则时，可以使用 `.action` 这样的组件类；需要共享标记时，则使用 UI 组件。类列表很长，本身并不意味着需要再创建一个 CSS 名称。[复用样式](/guide/reusing-styles)会帮助你判断何时适合使用共用令牌、组件类或自定义工具类。
+
+<GuideStudy id="language-and-delivery" />
+
+## 从静态 CSS 开始 \{#start-with-static-css\}
+
+使用框架推荐的静态集成方式。它会在构建时从源文件中查找完整类名，交付普通 CSS，无需在浏览器中加载 Master 运行时或引擎。
+
+交互界面仍可正常工作：切换已知的类，使用 `:hover` 等选择器，或通过 CSS 自定义属性更新进度、坐标等值。当演练场、可视化编辑器或已部署的内容引入先前未知的类名时，运行时就能发挥作用。[渲染模式](/guide/rendering-modes)会说明各种交付方式。
+
+按照[安装指南](/guide/installation)将 Master CSS 接入应用，再跟随[语法教程](/guide/syntax-tutorial)，构建具有交互状态和响应式条件的卡片。如需编写时的补全与诊断，请配置[语言服务](/guide/language-service)。

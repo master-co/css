@@ -1,0 +1,57 @@
+# Reference prose: tokens/spacing
+
+## title \{#copy-title\}
+
+Spacing
+
+## summary \{#copy-summary\}
+
+One spacing scale for padding, margin, gaps, insets and offsets.
+
+## note \{#copy-note\}
+
+The family selects the property; the token supplies the distance. `px-` and `mx-` use the inline axis, while `pl-` and `ml-` use the physical left side. The complete family table lists each native property.
+
+## valuesLead \{#copy-valuesLead\}
+
+The preset scale uses rem lengths. Pixel equivalents assume a 16px root font size; the browser uses the actual root font size. Use direct-value functions such as `p(0)` for zero or `p(1)` for one CSS pixel.
+
+## explanation-title \{#copy-explanation-title\}
+
+One distance, different boundaries
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`p-md` and `gap-md` both read `--spacing-md`, but padding separates content from its box edge while gap separates items in the layout. A gap does not create outer padding.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+`gap-md` sets the gap value; it does not enable Grid or Flexbox. Likewise, an inset token sets an offset but does not choose a positioning scheme. The native property and layout determine the effect.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+Negative token forms depend on the consumer: `-mt-md` is accepted, while `-p-md` is rejected. The preset has no zero or auto spacing token; use `m(0)` for zero and a fixed utility such as `mx-auto` for automatic inline margins.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+negative values
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+direct values
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+native gap behavior
+
+## usage-lead \{#copy-usage-lead\}
+
+Pad a form, space its fields and separate each label from its control.
+
+## customize-lead \{#copy-customize-lead\}
+
+Change a preset value or add a token: `--spacing-card` creates `p-card`, `m-card`, `gap-card` and the other spacing classes.
+
+## guide-label \{#copy-guide-label\}
+
+Layout

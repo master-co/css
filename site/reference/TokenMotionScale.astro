@@ -1,4 +1,7 @@
 ---
+import { siteOf } from '@master/internal-site/astro/site-context'
+import { referenceLabel } from './ui'
+import { referenceText } from './copy'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import Demo from '@master/internal-site/demo/Demo.svelte'
 import DemoViewport from '@master/internal-site/demo/DemoViewport.svelte'
@@ -12,14 +15,13 @@ interface Props {
 
 /** Keep the existing native playback comparisons, selected by the complete lookup table. */
 const { group } = Astro.props
+const { locale } = siteOf(Astro)
 const shown = ['animate', 'duration', 'easing'].includes(group.namespace)
 const scene = shown ? foundationScene(group.namespace, group.values.map(value => value.key)) : undefined
 // Curves may travel beyond either endpoint. Reserve proportional paint room at every frame width.
 if (scene && group.namespace !== 'animate') scene.css += ' [data-motion-path] { margin-inline:16%; }'
-const title = `Compare all ${({ animate: 'animations', duration: 'durations', easing: 'easing curves' } as Record<string, string>)[group.namespace]}`
-const caption = group.namespace === 'animate'
-  ? 'Each preset animation runs once here and starts paused. Play, Pause and Replay control the native timelines. Reduced motion keeps the content still; the table above retains the complete preset shorthands.'
-  : scene?.caption
+const title = referenceLabel(locale, ({ animate: 'animationScale', duration: 'durationScale', easing: 'easingScale' } as const)[group.namespace as 'animate' | 'duration' | 'easing'] ?? 'animationScale')
+const caption = scene ? referenceText('specimens', `${group.namespace === 'animate' ? 'animation' : group.namespace}-caption`, locale) : undefined
 ---
 
 {scene && <DocumentDisclosure title={title}>

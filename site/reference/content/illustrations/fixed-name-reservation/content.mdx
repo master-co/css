@@ -1,0 +1,25 @@
+# Reference prose: illustrations/fixed-name-reservation
+
+## title \{#copy-title\}
+
+A fixed spelling keeps its own definition
+
+## alt \{#copy-alt\}
+
+w-full fills a parent while an explicit native width declaration reads a custom 12rem container-full token and sizes an otherwise identical child.
+
+## caption \{#copy-caption\}
+
+Both parents are 240px wide. The custom --container-full is 12rem (192px at a 16px root); w-full remains the fixed 100% utility.
+
+## description-0 \{#copy-description-0\}
+
+The configuration defines @theme \{ --container-full: 12rem; \}. The preset already registers the complete fixed name w-full with width: 100%.
+
+## description-1 \{#copy-description-1\}
+
+w-full therefore fills the 240px parent. The explicit (width:var(--container-full)) class reads --container-full and gives the second block a 192px width.
+
+## description-2 \{#copy-description-2\}
+
+The token remains available through an explicit var() reference; defining it does not replace the fixed w-full registration.

@@ -1,0 +1,36 @@
+# Reference prose: illustrations/leading-ratio
+
+## title \{#copy-title\}
+
+
+相同的繼承比例會產生不同的行高
+
+## alt \{#copy-alt\}
+
+
+兩個子元素都繼承 leading-md，也就是 1.6。兩個等寬欄顯示三個完整行框：16px 字型產生 25.6px 行高，24px 字型產生 38.4px 行高。
+
+## caption \{#copy-caption\}
+
+
+子元素繼承無單位的 1.6，並使用不同字型大小。淡色區帶顯示完整行框，不是字形之間的空白間隙。兩欄寬度維持相同。
+
+## description-0 \{#copy-description-0\}
+
+
+共用的父元素使用 leading-md，其預設值為數字 1.6。
+
+## description-1 \{#copy-description-1\}
+
+
+第一個子元素使用 font-md，根元素字型大小為 16px，因此文字為 16px、行高為 25.6px。
+
+## description-2 \{#copy-description-2\}
+
+
+第二個子元素使用 font-2xl，得到 24px 文字與 38.4px 行高。它繼承的是相同比例，不是固定的 25.6px 長度。
+
+## description-3 \{#copy-description-3\}
+
+
+每欄都包含相同的三行文字。有色區帶是完整行框的檢查標註，不是 leading-md 產生的 padding 或 gap。

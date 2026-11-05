@@ -1,0 +1,376 @@
+---
+{
+  "title": "レンダリングモード",
+  "description": "CSS を生成する場所を選び、静的、事前、ランタイム、プログレッシブの各配信方法を比較して結果を検証します。",
+  "category": "基礎",
+  "figures": {
+    "GuideStudy:static-late-class": {
+      "title": "後からのクラスは静的スタイルシートを拡張できない",
+      "alt": "静的ビルドは p-md を見つけてルールを出力する。後のブラウザー操作で p-lg が現れるが、出力にそのルールはない。",
+      "caption": "すべてのビルド入力とセーフリストに p-lg がないことを前提とします。動的な値はクラスを変えず、カスタムプロパティで扱えます。"
+    },
+    "GuideStudy:progressive-known-class": {
+      "title": "既知のクラスは配信済み CSS を再利用する",
+      "alt": "ブラウザーは CSS と有効なページマニフェストを持つ。接続された既知のクラスは既存 CSS を使い、マニフェスト外のクラスは遅延エンジンの読み込みへ分岐する。",
+      "caption": "有効な事前レンダリング成果物がある場合の、既定のプログレッシブの引き継ぎです。性能の時間軸ではありません。"
+    }
+  },
+  "demos": {
+    "DeliveryFlow:runtime": {
+      "title": "ランタイムの配信",
+      "alt": "接続された DOM のクラス使用状況がブラウザーエンジンを通り、ネイティブスタイルシートのルールになる。",
+      "caption": "ブラウザーエンジンが CSS ルールを挿入または再利用します。キャッシュのルールは、接続された DOM で使わなくなった後も残ることがあります。",
+      "steps": [
+        {
+          "title": "監視",
+          "description": "接続された要素を読み、DOM のクラス変更を受け取ります。"
+        },
+        {
+          "title": "ルールの確保",
+          "description": "コンパイル済みプロジェクトプログラムで、完全なクラスを実行します。"
+        },
+        {
+          "title": "更新",
+          "description": "ランタイムのスタイルシートで、ネイティブ CSS ルールを挿入または再利用します。"
+        }
+      ]
+    },
+    "DeliveryFlow:progressive": {
+      "title": "プログレッシブの配信",
+      "alt": "HTML が初期 CSS をブラウザーに届け、未対応クラスが遅延エンジンと追加 CSS を起動する。",
+      "caption": "初期 CSS は HTML とともに届きます。有効な事前レンダリング済みスタイルシートとページマニフェストがあれば、その外の接続されたクラスが現れるまでエンジンを遅延します。",
+      "steps": [
+        {
+          "title": "レンダリング",
+          "description": "レンダリング済みページ HTML のクラスから CSS を生成します。"
+        },
+        {
+          "title": "配信",
+          "description": "初期 CSS を HTML とともに送り、ランタイム起動前にブラウザーが適用できるようにします。"
+        },
+        {
+          "title": "継続",
+          "description": "ページ hydration マニフェストを読み、接続された DOM クラスを追跡します。既定ではマニフェスト外のクラスがブラウザーエンジンとプロジェクトプログラムを読み込み、一致する既存ルールを採用してから追加の CSS を生成します。"
+        }
+      ]
+    },
+    "DeliveryFlow:hydration": {
+      "title": "CSS ハイドレーション",
+      "alt": "既存 CSS と、ページマニフェストをエンジンで再実行した結果を比較する。一致するルールを採用し、不一致なら CSS を再構築する。",
+      "caption": "エンジン起動時に、一致するルールを採用し、不一致なら CSS を再構築します。参照したマニフェストを読み込めないか検証できない場合は、比較前に起動を拒否します。",
+      "steps": [
+        {
+          "title": "読み取り",
+          "description": "ページ hydration マニフェストを読み込み、既存のスタイルシートを使い続けます。"
+        },
+        {
+          "title": "検証",
+          "description": "ブラウザーエンジンの起動時に、プロジェクトプログラムでマニフェストのクラスをサーバーのルール順に再実行し、リソースを検証して生成ルールと既存 CSSOM を比較します。"
+        },
+        {
+          "title": "採用または再構築",
+          "description": "一致したルールをランタイム管理のルールオブジェクトとして再利用します。不一致なら CSS を再構築します。"
+        }
+      ]
+    }
+  }
+}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+
+## 概要 [sr-only] \{#overview\}
+アプリが完全なクラス名をいつ把握できるかで、レンダリングモードを選びます。ソースで見つかるなら、まず静的レンダリングを使います。完成したページ HTML から CSS を生成するには事前レンダリング、ブラウザーで作られる新しいクラスにはランタイムレンダリング、ページ CSS とランタイム対応を組み合わせるにはプログレッシブレンダリングを使います。
+
+先にフレームワークの[インストールガイド](/guide/installation)を完了してください。公式インテグレーションが CSS エントリーを読み込み、選んだモードを設定します。以下では各モードの動作と検証方法を説明します。フレームワークへの対応と処理できる HTML は、インテグレーションごとに異なります。
+
+## レンダリングモードを選ぶ \{#comparisons\}
+
+| モード | クラスの取得元 | 初期 CSS | ブラウザー内の Master CSS |
+| --- | --- | --- | --- |
+| [静的](#static-rendering) | ソースファイルの完全な文字列 | 生成されたスタイルシート | ランタイムもエンジンも不要 |
+| [事前](#pre-rendering--ssg-ssr) | レンダリング済みページ HTML | ページとともに配信するルール | ランタイムもエンジンも不要 |
+| [ランタイム](#runtime-rendering) | 接続された DOM 要素 | ランタイム起動後に生成するルール | ランタイムとエンジン |
+| [プログレッシブ](#progressive-rendering) | レンダリング済み HTML と、その後の DOM 変更 | ページとともに配信するルール | ランタイムが使用状況を追跡し、未対応クラスが現れるまでエンジンを遅延できる |
+
+対話型アプリでも静的 CSS を使えます。既知のクラスの切り替え、CSS 変数の変更、ネイティブセレクターの利用にランタイムエンジンは不要です。完全なクラス名がビルド後に初めて得られるとき、ランタイム生成が必要になります。
+
+事前レンダリングには実際のページマークアップが必要です。クライアント描画アプリの空のルート要素からは、サーバーレンダラーが処理するアプリのクラスを得られません。インテグレーションの境界も確認します。[Next.js のプログレッシブアダプター](/guide/installation/nextjs#rendering-modes)はビルド時 HTML を処理するため、リクエスト時の動的 SSR レスポンスのルール生成はブラウザーのランタイムに依存します。
+
+---
+
+## 静的レンダリング \{#static-rendering\}
+ビルドがソースから完全なクラス文字列をスキャンし、プロジェクト定義に基づいて CSS を生成します。アプリのコードの実行や DOM の監視は行いません。ブラウザーは Master CSS runtime なしで、出力されたスタイルシートを読み込みます。
+
+### 生成スタイルシートのエントリー \{#generated-stylesheet-entry\}
+アプリがすでに読み込んでいるスタイルシートから Master CSS を import します。
+
+```css name=src/style.css
+@import '@master/css';
+```
+
+この import が、生成ユーティリティ、必要なリソース、プリセットの基盤スタイルの挿入位置になります。生成スタイルシートのルートごとに1つ使います。通常のルールより前の、最上位の import ブロックに置いてください。同じブロックの他の CSS import は、生成された Master CSS より前に出力されます。
+
+ソースから CSS への流れを確認するには、import の後に次のユーティリティ定義を加え、スキャン対象のソースファイルでボタンを使います。
+
+<ConfiguredExample source={`@utility btn {
+  display: inline-flex;
+  padding-inline: var(--spacing-md);
+}`} html={'<button class="btn text-center">Save</button>'} />
+
+スキャナーが `btn` と `text-center` を見つけます。エンジンはプロジェクトのレシピとプリセットの固定ユーティリティを解決し、ルールと参照リソースを生成します。`btn` の定義だけではルールを出力しません。スキャンしたクラスか明示的なセーフリストからの要求が必要です。
+
+インテグレーションは通常のアプリのソースを探索し、開発中に CSS を更新します。ソースに完全なクラス名を残し、変化する値は CSS 変数で渡します。[クラス名のスキャン](/guide/scanning-and-pruning)では、この2つと、`@source` やセーフリストによる例外を扱います。
+
+### ネイティブ CSS のエントリー \{#native-css-entries\}
+CSS エントリー内のネイティブセレクターは、スキャンしたソースにクラスがなくても既定で保持されます。その `var(--*)` やアニメーションの参照により、対応するテーマ変数やキーフレームも保持されます。
+
+プロジェクト所有のネイティブ CSS を削除対象にする場合は `pruneNativeCSS: true`、1ファイルだけなら `@prune native;` を使います。`@preserve native;` はファイルをインテグレーション全体の削除対象から除外します。[未使用のネイティブ CSS の削除](/guide/optimizing-css-delivery#native-pruning)を参照してください。
+
+---
+
+<GuideStudy id="static-late-class" />
+
+## ランタイムレンダリング \{#runtime-rendering\}
+ビジュアルエディターやビルド後に読み込む内容など、ブラウザーで初めてクラス名が判明する場合はランタイムレンダリングを使います。ランタイムは [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) で接続された要素とクラスの変更を追跡し、一致する CSS ルールを挿入または再利用します。
+
+<DeliveryFlow name="runtime" />
+
+[Vite のランタイム設定](/guide/installation/vite#rendering-modes)など、インテグレーションを通じてランタイムモードを選びます。起動したら、ブラウザーのコンソールで次のスニペットを1つずつ実行します。
+
+<StepSection>
+  <Step>
+    #### 要素を挿入する \{#insert-an-element\}
+    ```js
+    const h1 = document.createElement('h1')
+    h1.className = 'text-center'
+    h1.textContent = 'Hello World'
+    document.body.append(h1)
+    ```
+    ランタイムがルールを生成すると、接続された見出しが中央揃えになります。
+  </Step>
+  <Step>
+    #### クラスを追加する \{#add-a-class\}
+    ```js
+    h1.classList.add('(font-size:3rem)')
+    ```
+    見出しが `3rem` に大きくなり、既存の揃えのルールも引き続き使われます。
+  </Step>
+  <Step>
+    #### クラスを削除する \{#remove-a-class\}
+    ```js
+    h1.classList.remove('text-center')
+    ```
+    見出しが揃えのルールに一致しなくなり、継承した揃えへ戻ります。ランタイムが未使用ルールを一時的に保持していても変わりません。
+  </Step>
+  <Step>
+    #### 要素を削除する \{#remove-the-element\}
+    ```js
+    h1.remove()
+    ```
+    この見出しはどちらのクラスも使わなくなります。他の接続された要素も使っていなければ、アイドル時のクリーンアップでルールを削除できます。
+  </Step>
+</StepSection>
+
+両方のクラスが存在するときに使われるルールは次のとおりです。
+
+<Class2CSS classes={['text-center', '(font-size:3rem)']} />
+
+ランタイム生成は JavaScript の起動に依存します。初期ルールをレスポンスに含める必要があるなら事前レンダリング CSS を使い、後から現れるクラス名に必要な場合だけランタイム対応を加えます。
+
+### ランタイム起動までページを隠す \{#prevent-premature-rendering\}
+ランタイムだけのページには、生成されるまでルールがありません。未装飾の状態で描画されないよう、ルート要素に `hidden` を加えます。
+
+```html
+<html lang="en" hidden>
+  <!-- Load the stylesheet and runtime using your integration's setup. -->
+</html>
+```
+
+起動後にランタイムが `hidden` を取り除き、処理できた起動エラーの経路でもルートを再表示します。ただし JavaScript が無効、スクリプトがブロックされた、ダウンロードできない場合は、ページが隠れたままです。その場合も読める必要がある内容には、静的 CSS か事前レンダリング CSS を使います。プログレッシブのページは最初の画面の CSS を持っているので、表示を保ちます。
+
+### ランタイムのプログラムをプリロードする \{#preload-runtime-engine\}
+エンジンが最初のルールを生成するにはプログラムが必要です。ランタイムだけのページでは、文書の解析中にリクエストを始められるようプログラムをプリロードします。ランタイムのリクエストと一致させるため、同一オリジンでも `as="fetch"` と `crossorigin` を指定します。
+
+```html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+  <link rel="preload" as="fetch" crossorigin href="/master-css/default-program.bin"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="/master-css/base.css">
+  <script src="/master-css/global.min.js"></script>
+</head>
+</html>
+```
+
+<DocumentComparison>
+
+| ファイル | プリロードするか |
+| --- | --- |
+| CDN の `default-program.bin` | 同梱の既定プリセットを使う、CDN ランタイムだけのページでは必要。 |
+| プロジェクトプログラム `master-css-program.<hash>.bin` | ランタイムだけのページでは必要で、公式ランタイムインテグレーションがヒントを加える。プログレッシブのページでは、必要なクラスが現れるまでエンジンとプログラムを遅延するため不要。 |
+| ページ hydration マニフェスト | 不要。描画には必要のない引き継ぎデータ。 |
+
+</DocumentComparison>
+
+開発者ツールで、ランタイムが再リクエストせずプリロードしたレスポンスを再利用しているか確認します。一致の条件は [`rel="preload"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload) を参照してください。
+
+<ReferenceIllustration id="preload-is-data" />
+
+---
+
+## 事前レンダリング — SSG、SSR \{#pre-rendering--ssg-ssr\}
+ビルドやサーバーが最終ページ HTML を持ち、後のクラスにブラウザー生成が不要なら事前レンダリングを使います。サーバーレンダラーが HTML を読み、ルールを生成し、`style#master-css` に挿入します。マークアップから CSS を生成するもので、アプリのコンポーネントを HTML に描画するものではありません。
+
+公式インテグレーションは、対応する HTML 出力にこの処理を行います。カスタムサーバーやビルドパイプライン向けの以下の例は、ビルドインテグレーションが提供する `virtual:master-css-manifest` を使います。サーバーコードの実行前に、ビルドツールでこの仮想モジュールを解決する必要があります。
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+返された `html` を書き出すか配信します。その `style#master-css` には見出しのルールと必要な font-size トークンが含まれます。
+
+<Class2CSS classes={'font-5xl'} />
+
+この出力に Master CSS runtime や hydration マニフェストは不要です。後からしか現れないクラスには別途 CSS を用意するか、ランタイム対応のモードが必要です。
+
+有限の静的ビルドでは、レンダラーはルールのキャッシュを再利用しながら、ページごとの CSS を出力できます。マニフェストが変わったら作り直し、ビルド終了時に破棄します。長時間動作するサーバーでは、例の `Infinity` ではなく、上限付きの `maxCachedClasses` を選んでください。[サーバー API](/reference/packages#css-server)を参照してください。
+
+---
+
+## プログレッシブレンダリング \{#progressive-rendering\}
+サーバーやビルドが初期ページ CSS を生成でき、ブラウザーが後から新しいクラスを追加し得る場合は、プログレッシブレンダリングを使います。レスポンスは `style#master-css` に CSS を含みます。ランタイムはページ hydration マニフェストを読み、対応済みクラスとエンジンが必要なクラスを区別します。
+
+<DeliveryFlow name="progressive" />
+
+一般的な出力では、style 要素が外部マニフェストを参照します。
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+実際のアセット URL はインテグレーションが提供します。安定した JSON アセットを公開できないカスタム SSR ホストでは、代わりにインラインの `script#master-css-hydration-manifest` を使えます。生成ルールも管理対象リソースもないページには、マニフェストへの参照は不要です。
+
+ブラウザーはランタイムやマニフェストの読み込み前に、インライン CSS を適用できます。これは CSS を利用できる時点の説明であり、実際の描画時期はページの他のリソースにも依存します。ページ hydration マニフェストや遅延したプロジェクトプログラムはプリロードしないでください。[プリロード](#preload-runtime-engine)を参照してください。
+
+マニフェストにあるクラスは、エンジンを起動せず再利用できます。通常の記述済みクラスに加え、生成セレクターやプロジェクトのセレクターが参照する、独自ルールを持たない状態・テーマ用クラスも含みます。すでに描画されたセレクターの属性を変えるだけでも、新しいクラスルールは不要です。完全なクラスがマニフェストになければ、プロジェクトの別のソースにあったとしてもエンジンが起動します。
+
+<GuideStudy id="progressive-known-class" />
+
+### CSS ハイドレーション \{#css-hydration\}
+ハイドレーションで、ランタイムが既存の CSS ルールを引き継げます。起動時には明示した `hydrationManifest` オプションを読み取るか、インラインマニフェストや `style#master-css` の URL を探します。エンジンを遅延している間は、スタイルシートを再構築せず使用状況を追跡します。
+
+<DeliveryFlow name="hydration" />
+
+新しいクラスや `cssRuntime.ready()` がエンジンを起動すると、ブラウザーエンジンはマニフェストのクラスをサーバーのルール順で再実行し、リソースを検証して、生成結果を既存の CSSOM と比較します。一致したルールはランタイム管理となり、新しいクラスから追加の CSS を生成できるようになります。削除済みクラスの事前レンダリングルールは、この引き継ぎまで残ることがあり、その後に通常の保持ルールのクリーンアップへ進みます。
+
+マニフェストはリソースの順序と、ページのスタイルシートがすでに出力したグローバルリソースを保持します。CSS テキストの複製やプロジェクトプログラムの代用はしません。同じビルドの HTML、アセットと一緒に扱ってください。
+
+---
+
+## インテグレーションの対応 \{#integration-support\}
+
+以下の公式アダプターは静的レンダリングが既定です。ビルド時に不明なクラスには、ランタイム生成を明示的に選びます。`pre-render` はクライアントランタイムなしで HTML から CSS を生成し、`progressive` は HTML の処理と後続クラスへのランタイム対応を組み合わせます。処理できる HTML は各ホストに依存します。
+
+| アダプター | 静的 | ランタイム | `pre-render` とサーバー HTML | `progressive` |
+| --- | --- | --- | --- | --- |
+| [Vite](/guide/installation/vite) | ビルド時の抽出 | Vite の HTML パイプラインで挿入 | Vite フックで処理する HTML。カスタム SSR にはサーバー統合が必要 | Vite の HTML 処理とランタイム。カスタム SSR には独自の HTML レンダリングが必要 |
+| [Webpack](/guide/installation/webpack) | ビルド時の抽出 | コンパイル対象の HTML アセットへ挿入 | HTML ホストから `@master/css-server` の呼び出しが必要。プラグインにリクエスト時のサーバーフックはない | ランタイムを配信し、ホストがレンダリング済み HTML と hydration データを提供 |
+| [Next.js](/guide/installation/nextjs) | ビルド時の抽出 | クライアント instrumentation | ビルド後の HTML 出力を処理。リクエスト時の動的 SSR は変換しない | ビルドで描画した HTML とランタイム。動的 SSR にはサーバー CSS の自動挿入なし |
+| [Astro](/guide/installation/astro) | Vite によるビルド時の抽出 | ページスクリプトを挿入 | Astro ミドルウェアが事前レンダリングページとサーバー HTML レスポンスを処理 | ミドルウェアの処理とランタイム |
+| [Nuxt](/guide/installation/nuxtjs) | Vite によるビルド時の抽出 | Nuxt クライアントプラグイン | 本体が文字列の Nitro HTML レスポンス。ストリーミング本体は変換しない | Nitro の HTML 処理とクライアントランタイム |
+| [SvelteKit](/guide/installation/svelte) | Vite によるビルド時の抽出 | 文書化されたクライアントフックが必要 | Master CSS のサーバー handle が必要。SSR と事前レンダリング中のページチャンクを処理 | サーバー handle とクライアントフックの両方が必要 |
+
+フレームワークが Vite や Webpack を使うだけで、そのバンドラーがサーバーの動作を追加できるわけではありません。Webpack の HTML 挿入も、開発サーバーの静的ディレクトリから直接配信するファイルは書き換えません。Astro ミドルウェアは返す前に HTML レスポンス全体を読み、SvelteKit はページチャンクのフックを使います。配信経路はフレームワークのガイドに従って選びます。PHP、Rails、CMS、.NET のホストは Vite でアセットをビルドし、テンプレートから読み込みます。[サーバーレンダリングのアプリ](/guide/installation/server-rendered)を参照してください。
+
+
+## ネイティブ CSS の削除は別に選ぶ \{#native-pruning-is-a-separate-choice\}
+
+プログレッシブレンダリングはネイティブ CSS の削除と併用でき、初期 CSS の配信や後続ユーティリティの生成時期は変わりません。削除には既知の使用集合と、それを渡すビルド経路が必要です。ランタイム生成では、配信から除いた任意のネイティブセレクターは復元できません。再現できる比較は[CSS 配信の最適化](/guide/optimizing-css-delivery#rendering-and-pruning)を参照してください。
+
+## 選んだモードを検証する \{#verify-the-selected-mode\}
+開発だけでなく本番ビルドも検証します。本番で CSS を事前レンダリングするインテグレーションでも、開発時はランタイム生成を使うことがあります。
+
+<DocumentComparison>
+
+| モード | 検証内容 |
+| --- | --- |
+| 静的 | 生成 HTML がスタイルシートを読み込み、代表的な完全なソースクラスのルールを含む。JavaScript を無効にしてもそのスタイルが残る。 |
+| 事前 | レスポンスソースの `style#master-css` にページのルールがある。JavaScript 実行前に確認し、実行中の DOM だけで事前レンダリングを証明しない。 |
+| ランタイム | 初期 DOM にないクラスを追加し、ランタイムが観測した後に算出スタイルと生成 CSS ルールを確認する。 |
+| プログレッシブ | 事前レンダリング CSS を確認後、ページマニフェストにないクラスを加え、ルールが生成されるか調べる。ビルド時 HTML だけを処理するアダプターでは動的 SSR ルートも個別に検証する。 |
+
+</DocumentComparison>
+
+### 動作中のスタイルシートを調べる \{#running-style-sheet\}
+ランタイムは `style#master-css` を所有し、その CSSOM を更新します。起動後の要素のテキスト内容は、現在の状態を正確に示すとは限りません。代わりにスタイルシートの [cssRules](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/cssRules) を調べます。
+
+```js
+const sheet = document.querySelector('style#master-css').sheet
+console.log(sheet.cssRules)
+```
+
+### プログレッシブの起動を診断する \{#diagnose-progressive-startup\}
+
+<DocumentComparison>
+
+| 観察結果 | 意味と次の確認 |
+| --- | --- |
+| 警告後に CSS が再構築される | 既存ルールが hydration データと不一致、または style にマニフェスト参照がない。HTML、CSS、マニフェストが同じビルドか確認する。 |
+| `INVALID_HYDRATION_MANIFEST` で起動が拒否される | 参照したインライン／外部マニフェストを読み込めないか検証できない。アセット URL、レスポンス、配備したファイルを調べる。 |
+| 初期 CSS は使えるが新しいクラスが使えない | 遅延エンジンの読み込みが失敗した可能性がある。`onDiagnostic`、プログラムのリクエスト、`cssRuntime.snapshot().engine` を確認する。既存の事前レンダリング CSS は保持され、`refresh()` または新しい `start()` で再試行できる。 |
+
+</DocumentComparison>
+
+読み込み直後に新しいクラスが現れそうなら、`enginePrefetch: 'idle'` でアイドル時にエンジンを起動できます。`engine: 'eager'` は `start()` 中に起動します。どちらも既定の遅延とのトレードオフを変えるため、実際のページ操作に合わせて選んでください。
+
+### 操作の多い画面 \{#interaction-heavy-screens\}
+初めてのクラスを大量に加える操作では、ブラウザーが DOM の変更と新しいスタイルシートルールの両方を処理します。エディター、データグリッド、ビルダーなど大規模な動的画面では、次を意識します。
+
+- 安定したレイアウト、タイポグラフィ、コンポーネントの状態は共有クラスにまとめます。
+- エンジンの準備完了後、画面を挿入する前に予測できるランタイムクラスをウォームアップします。
+- 座標やユーザーが生成する色など、要素ごとに頻繁に変わる値には CSS 変数かインラインスタイルを使います。
+- 値ごとに別の生成クラスが不要な繰り返しの状態には、ネイティブセレクターを使います。
+
+画面で予測できるクラスをウォームアップするには、`MasterCSSRuntime.start()` が返すハンドルを使います。
+
+```js
+await cssRuntime.ready()
+cssRuntime.ensureClassRules(['grid', 'gap-md'])
+```
+
+ランタイム JavaScript、プログラムの配信、初期化、DOM 監視、CSSOM の処理を合わせて測定します。圧縮した JavaScript のサイズだけでは操作コストは分かりません。測定と条件は[ベンチマーク](/benchmarks)を参照してください。
+
+### ユーザーが作成するマークアップ \{#user-generated-markup\}
+ランタイムが観測するクラスやサーバーが処理するクラスは CSS になるため、`class` 属性は `style` 属性と同じ力を持ちます。ネイティブ宣言、`url()`、`:has()` などのセレクターも含みます。コメント、CMS のリッチテキスト、チャットなど他者が記述したマークアップを描画する場合は、HTML サニタイザーで `style` と同様に `class` を扱ってください。削除するか、選んだクラスだけを許可します。属性値をエスケープするだけでは不十分です。クラス名自体が入力だからです。
+
+ランタイムの状態、配信アーティファクト、独自の起動エントリー、エンジンホストは、[runtime](/reference/packages#css-runtime)、[server](/reference/packages#css-server)、[engine](/reference/packages#css) の各パッケージを参照してください。

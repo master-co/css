@@ -1,0 +1,36 @@
+# Reference prose: illustrations/grid-track-flow
+
+## title \{#copy-title\}
+
+
+欄與列組合樣式以不同方向填入相同子元素
+
+## alt \{#copy-alt\}
+
+
+六個編號項目使用 grid-cols(3) 時形成三欄兩列；使用 grid-rows(3) 時形成三列兩欄，先向下填滿再開始下一欄。
+
+## caption \{#copy-caption\}
+
+
+兩個 Grid 使用相同的六個子元素與間隙。grid-rows(3) 還會設定 grid-auto-flow: column，grid-cols(3) 則保留預設的列向流動。方塊高度依內容決定。
+
+## description-0 \{#copy-description-0\}
+
+
+第一個 Grid 有三個明確的 minmax(0, 1fr) 欄。預設列向流動將項目 1、2、3 放在第一列，接著放入 4、5、6。
+
+## description-1 \{#copy-description-1\}
+
+
+第二個 Grid 有三個明確的 minmax(0, 1fr) 列，並沿欄自動配置。項目 1、2、3 填滿第一欄，4、5、6 填入第二欄。
+
+## description-2 \{#copy-description-2\}
+
+
+兩個場景都使用真正的預設 CSS、六個相同且由內容決定尺寸的方塊，以及 12px 間隙。外部寬度讓方塊寬度便於比較；這兩個組合樣式本身都不提供該間隙或寬度。
+
+## description-3 \{#copy-description-3\}
+
+
+圖中使用預設的項目配置。明確指定位置或跨越數可能改變結果；grid-cols 不會重設其他地方建立的欄向流動。

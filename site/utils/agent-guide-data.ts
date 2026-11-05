@@ -5,11 +5,11 @@ import type { DocumentFlowProps } from '@master/internal-site/components/documen
 export const agentPrompts = {
   "context": {
     "title": "A focused styling task",
-    "text": "Style the target component with Master CSS.\n\nDocumentation: https://rc.css.master.co\n\nFirst inspect the CSS entry, theme tokens, component classes, nearby UI, and project checks.\n\nUse existing vocabulary. Keep complete, statically readable class strings. Verify unfamiliar syntax against the documentation or generated CSS.\n\nPreserve semantic HTML, accessible names, keyboard behavior, and existing functionality. Explain any new shared token or component class.\n\nImplement one reviewable change. Run the relevant checks and inspect the result at narrow and wide widths in both themes. Report changed files and any unverified behavior."
+    "text": "Style the target component with Master CSS.\n\nDocumentation: https://css.master.co\n\nFirst inspect the CSS entry, theme tokens, component classes, nearby UI, and project checks.\n\nUse existing vocabulary. Keep complete, statically readable class strings. Verify unfamiliar syntax against the documentation or generated CSS.\n\nPreserve semantic HTML, accessible names, keyboard behavior, and existing functionality. Explain any new shared token or component class.\n\nImplement one reviewable change. Run the relevant checks and inspect the result at narrow and wide widths in both themes. Report changed files and any unverified behavior."
   },
   "rules": {
     "title": "AGENTS.md — Master CSS rules",
-    "text": "When editing Master CSS:\n- Read https://rc.css.master.co and the project's existing styling conventions.\n- Inspect the CSS entry, rendering mode, theme tokens, component classes, utilities, and custom variants.\n- Reuse existing vocabulary and keep class strings complete and statically readable.\n- Verify unfamiliar syntax with MCP or the CLI; do not assume another framework's syntax is supported.\n- Preserve semantic HTML, accessible names, keyboard behavior, and functionality.\n- Use ESLint for team class policy and the Language Service for completion, hover, and directive formatting.\n- Run the project's relevant checks and inspect the changed UI before reporting completion.\n\nAdd this project's actual validation commands below."
+    "text": "When editing Master CSS:\n- Read https://css.master.co and the project's existing styling conventions.\n- Inspect the CSS entry, rendering mode, theme tokens, component classes, utilities, and custom variants.\n- Reuse existing vocabulary and keep class strings complete and statically readable.\n- Verify unfamiliar syntax with MCP or the CLI; do not assume another framework's syntax is supported.\n- Preserve semantic HTML, accessible names, keyboard behavior, and functionality.\n- Use ESLint for team class policy and the Language Service for completion, hover, and directive formatting.\n- Run the project's relevant checks and inspect the changed UI before reporting completion.\n\nAdd this project's actual validation commands below."
   },
   "readability": {
     "title": "Review class readability",
@@ -33,7 +33,7 @@ export const agentPrompts = {
   },
   "setup": {
     "title": "Register the local server",
-    "text": "Set up the Master CSS MCP server for this project.\n\nProject root: /absolute/path/to/project\nCommand: npx -y @master/css-mcp@rc --root /absolute/path/to/project\n\nIdentify the MCP client and use its native registration path. Do not assume every client reads mcp.json. Keep machine-specific absolute paths out of team configuration unless requested.\n\nVerify the registration, reconnect the client if needed, then call mastercss_workspace_info. Confirm the returned root and manifest entries match this project."
+    "text": "Set up the Master CSS MCP server for this project.\n\nProject root: /absolute/path/to/project\nCommand: npx -y @master/css-mcp@VERSION --root /absolute/path/to/project\n\nIdentify the MCP client and use its native registration path. Do not assume every client reads mcp.json. Keep machine-specific absolute paths out of team configuration unless requested.\n\nVerify the registration, reconnect the client if needed, then call mastercss_workspace_info. Confirm the returned root and manifest entries match this project."
   },
   "inspect": {
     "title": "Inspect before editing",
@@ -55,12 +55,23 @@ export function agentPrompt(name: string): DocumentPromptProps {
   if (!Object.hasOwn(agentPrompts, name)) throw new Error(`Unknown agent prompt: ${name}`)
   return agentPrompts[name as keyof typeof agentPrompts]
 }
-export function agentPromptMarkdown(name: string) {
-  const prompt = agentPrompt(name)
+/** Resolve only the authored MCP placeholder and the two first-party documentation origins. */
+export function resolveAgentPrompt(prompt: DocumentPromptProps, { version, docsURL }: { version: string, docsURL: string }): DocumentPromptProps {
+  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error('Agent prompts require an exact public version')
+  const docs = new URL(docsURL)
+  if (!['http:', 'https:'].includes(docs.protocol)) throw new Error('Agent documentation requires an HTTP origin')
+  return {
+    ...prompt,
+    text: prompt.text.replace(/(@master\/css-mcp@)VERSION(?![\w.-])/g, (_, prefix) => prefix + version)
+      .replace(/https:\/\/(?:rc\.)?css\.master\.co(?=$|[\s/])/g, () => docs.origin)
+  }
+}
+
+export function agentPromptMarkdown(name: string, prompt = agentPrompt(name)) {
   return `${prompt.title}\n\n\`\`\`text\n${prompt.text}\n\`\`\``
 }
-export function previewWorkflowMarkdown() {
-  return [previewWorkflow.title, ...previewWorkflow.steps.map((step, index) => `${index + 1}. **${step.title}** — ${step.description}`), previewWorkflow.caption].join('\n\n')
+export function previewWorkflowMarkdown(workflow = previewWorkflow) {
+  return [workflow.title, ...workflow.steps.map((step, index) => `${index + 1}. **${step.title}** — ${step.description}`), workflow.caption].join('\n\n')
 }
 
 export const agentFixExample = {

@@ -1,0 +1,31 @@
+# Reference prose: illustrations/pruning-selector-branches
+
+## title \{#copy-title\}
+
+
+プルーニングはクラス使用で分岐を保持
+
+## alt \{#copy-alt\}
+
+
+セレクターリストから unused:hover が消え card が残る。別の card title 子孫セレクターも、DOM の一致関係の証拠がなくても card の使用で全体を保持する。
+
+## caption \{#copy-caption\}
+
+
+保持の強調はセレクターの分岐単位です。プルーニングは使用クラス名を調べ、完全なセレクターが現在要素に一致するかは調べません。
+
+## description-0 \{#copy-description-0\}
+
+
+@prune native を有効にして card を使うと、.card, .unused:hover は .card 分岐だけを保持します。
+
+## description-1 \{#copy-description-1\}
+
+
+別の .card .title 分岐は使用集合に card があるため保持し、title を見つける必要はありません。
+
+## description-2 \{#copy-description-2\}
+
+
+保持は DOM に title の子孫がある証明ではありません。クラスセレクターのない規則も引き続き保持します。

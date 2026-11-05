@@ -1,0 +1,358 @@
+---
+{
+  "title": "벤치마크",
+  "description": "페이지가 전달한 CSS 중 페이지에 일치하는 범위를 살펴보고 같은 UI의 생성 CSS를 비교하며 빌드와 런타임 비용 및 한계를 확인합니다.",
+  "category": "근거"
+}
+---
+
+import BenchmarkChart from '@master/internal-site/benchmarks/BenchmarkChart.astro'
+import PageCSSSizeBenchmark from './components/PageCSSSizeBenchmark.astro'
+import { BenchmarkSummaryTable } from './components/BenchmarkSummary'
+import { PageCSSSampleTable, PageCSSSiteTable } from './components/PageCSSSizeSample'
+import { RevisionComparisonTable } from './components/RevisionComparison'
+import {
+  StaticBuildChart,
+  StaticBuildTable,
+  StaticComparisonSummary,
+  StaticCSSBytesTable,
+  StaticCSSOutputChart,
+  StaticStructureChart,
+  StaticStructureTable
+} from './components/StaticTailwindComparison'
+import {
+  BrowserCSSCostSummary,
+  BrowserCSSCostTables,
+  BrowserCSSVolumeTraceChart,
+  BrowserDOMScalingTraceChart
+} from './components/BrowserCSSCostBenchmark'
+import {
+  MasterDeliveryLoadChart,
+  MasterDeliveryModesSummary,
+  MasterDeliveryModesTables,
+  MasterDeliveryPayloadChart,
+  MasterDeliveryRuntimeChart
+} from './components/MasterDeliveryModesBenchmark'
+import {
+  InteractionCostSummary,
+  InteractionCostTables,
+  InteractionPrimaryCharts,
+  InteractionRuntimeCharts
+} from './components/InteractionCostBenchmark'
+import {
+  BrowserLifecycleLongSessionCharts,
+  BrowserLifecycleLongSessionTable,
+  BrowserLifecycleSummary
+} from './components/BrowserLifecycleBenchmark'
+import {
+  BuildPathDiagnosticsCharts,
+  BuildPathDiagnosticsSummary,
+  BuildPathDiagnosticsTable
+} from './components/BuildPathDiagnosticsBenchmark'
+
+## 개요 [sr-only] \{#overview\}
+이 측정은 먼저 두 질문에 답합니다. 문서 페이지가 전달한 CSS 중 얼마나 페이지에 일치하는지, 같은 UI에서 Master CSS와 Tailwind CSS가 각각 얼마나 CSS를 생성하는지입니다. 기술 부록에서는 빌드 시간, CSS 규모에 대한 Chromium 반응, 각 Master CSS 렌더링 모드 비용을 다룹니다. 다른 앱에 결과를 적용하기 전에 각 절의 조건과 한계를 확인하세요.
+
+스냅샷은 2026년 11월 4일 같은 기기(Apple M5 Max, macOS)에서 Chromium 156으로 기록했습니다. Master CSS 패키지는 리비전 `add10eec6`에서 빌드했습니다. 브라우저 수명 주기 스냅샷은 같은 날 앞서 기록한 `3fc239c6c`를 사용합니다. `add10eec6`는 컴파일러와 정적 빌드 호스트를 변경하며 런타임, 프리셋, 엔진은 변경하지 않습니다. Master CSS 문서는 같은 체크아웃의 프로덕션 빌드에서 측정했고 다른 문서 사이트는 같은 날 공개 페이지를 가져왔습니다.
+
+<figure>
+  <BenchmarkChart chart={BenchmarkSummaryTable} />
+  <figcaption>주요 결과는 커밋된 스냅샷에서 계산했습니다. 아래 각 절에 결과별 조건과 전체 데이터를 제공합니다.</figcaption>
+</figure>
+
+---
+
+## 문서 페이지 CSS \{#page-css-size\}
+검증 질문: 각 문서 페이지의 초기 HTML에서 찾은 인라인 style 본문과 연결 스타일시트의 크기는 얼마이며 몇 개의 스타일 규칙이 페이지에 일치하는가?
+
+<PageCSSSizeBenchmark />
+
+차트는 각 사이트의 표시 페이지에서 인라인 `style` 본문과 연결 스타일시트를 합산합니다. Brotli 보기에서는 각 본문을 따로 압축합니다. 한 페이지가 사이트를 잘못 대표할 수 있어 표에는 사이트마다 문서 페이지 4개를 추가하고 범위를 표시합니다.
+
+<figure>
+  <BenchmarkChart chart={PageCSSSampleTable} />
+  <figcaption>사이트마다 문서 페이지 5개를 측정합니다. 일치한 스타일 규칙은 1280 × 800 뷰포트에서 로드된 페이지 요소에 선택자가 일치하는 규칙입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={PageCSSSiteTable} />
+  <figcaption>Master CSS 사이트맵에 나열된 모든 문서 페이지를 같은 방식으로 측정합니다.</figcaption>
+</figure>
+
+Master CSS 문서 페이지는 두 종류의 CSS를 결합합니다. 페이지별 `style#master-css` 본문은 해당 페이지가 쓰는 유틸리티를 담으며 표시된 페이지에서는 1 kB 미만입니다. 연결 스타일시트는 사이트 디자인 시스템 컴포넌트, 프리셋 기반 스타일, 참조 토큰을 담고 대부분의 바이트를 차지합니다. 각 스타일시트는 컴포넌트에 속하며 전체가 전달되므로 컴포넌트가 많은 페이지는 더 많은 파일을 연결하고 총량도 페이지마다 다릅니다. 닫힌 검색 대화상자나 일부 글 컴포넌트처럼 컴포넌트 일부만 렌더링해도 모든 규칙을 받습니다. 이것이 일치하지 않는 규칙 대부분의 출처입니다. 다른 사이트 중 일부는 모든 페이지에 같은 스타일시트를 전달합니다.
+
+일치 규칙은 크기와 별개로 페이지 CSS가 해당 페이지에 얼마나 정확히 맞는지 측정합니다. 상태 의사 클래스와 의사 요소를 제외한 선택자가 로드 후 요소에 일치하면 계산합니다. 다른 뷰포트, 색상 모드, 이후 상호작용 규칙도 대상 요소가 없을 때만 불일치로 계산합니다. 이 비율은 CSS 프레임워크만이 아닌 각 사이트 스타일시트의 특성입니다.
+
+한계: 수집된 CSS 본문 크기이며 브라우저 전송량이나 시간 측정이 아닙니다. 수집기는 CSS import 그래프를 따라가거나 JavaScript 삽입 스타일을 계산하지 않습니다. 전체 응답 압축, 캐시 재사용, 헤더, CDN 동작, 글꼴, 이미지, 앱 런타임 작업은 비교에서 제외됩니다. 각 사이트 CSS는 자체 설계와 빌드 선택도 반영하므로 이 표본은 CSS 프레임워크 비용만 분리하지 않습니다. 아래 정적 픽스처가 같은 UI에서 프레임워크를 비교합니다.
+
+---
+
+## 같은 UI의 생성 CSS \{#static-css-output\}
+검증 질문: 동등한 정적 Master CSS와 Tailwind CSS v4 픽스처의 생성 CSS 바이트, 파일, CSS AST 구조는 어떻게 다른가?
+
+정리된 스냅샷은 `css-output-size`, `build-performance`, `css-structure` 결과를 결합합니다. 주요 차트는 `docs` 픽스처의 CLI 변형을 사용해 첫 화면이 정적 산출물 출력에 집중하게 합니다. 프로덕션 명령 시간은 [기술 부록](#production-build)에 있습니다.
+
+<figure>
+  <BenchmarkChart chart={StaticComparisonSummary} />
+  <figcaption>측정한 모든 픽스처의 정적 비교를 정리한 스냅샷입니다.</figcaption>
+</figure>
+
+### 대표 픽스처 \{#static-css-fixture\}
+`docs` 픽스처는 탐색 메뉴, 코드 블록, 표가 있는 조밀한 글과 문서 레이아웃을 나타냅니다.
+
+<figure>
+  <BenchmarkChart chart={StaticCSSOutputChart} />
+  <figcaption>CLI 구성의 `docs` 픽스처에서 Brotli로 압축한 CSS 출력입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticStructureChart} />
+  <figcaption>CSS AST 파싱으로 얻은 `docs` 픽스처의 생성 선언 수입니다.</figcaption>
+</figure>
+
+### 전체 데이터 \{#complete-data\}
+전체 표는 측정한 모든 픽스처와 CLI/Vite 두 구성 변형을 유지합니다.
+
+<figure>
+  <BenchmarkChart chart={StaticCSSBytesTable} />
+  <figcaption>측정한 각 픽스처와 구성의 원본, gzip, brotli CSS 바이트 및 CSS 파일 수입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticStructureTable} />
+  <figcaption>생성 CSS에서 파싱한 규칙, 선택자, 선언, at-rule, 레이어, 선택자 형태 데이터입니다.</figcaption>
+</figure>
+
+해석: CSS 구조 지표는 브라우저 비용을 논하기 전에 바이트 수가 다른 이유를 설명합니다. Tailwind CSS와 Master CSS 픽스처는 같은 클래스 문자열이 아닌 동등한 렌더링 UI를 목표로 합니다.
+
+측정한 모든 구성은 CSS 파일 하나를 출력합니다. Master CSS 정적 빌드는 프리셋을 포함해 진입점이 가져온 스타일시트를 인라인으로 합치므로 Tailwind CSS와 마찬가지로 한 요청으로 생성 CSS를 받습니다. 외부 import, 네임스페이스, 자체 import를 가진 파일의 조건부 import를 유지하는 스타일시트는 별도 파일로 남지만 이 픽스처에는 해당 경우가 없습니다.
+
+한계: 브라우저 파싱, 스타일 재계산, 레이아웃, 페인트, 상호작용 비용, watch 모드, HMR은 측정하지 않습니다. 픽스처는 유틸리티 클래스만 사용합니다. [페이지 CSS](#page-css-size) 표본은 직접 작성한 컴포넌트 CSS가 얼마나 더해질 수 있는지 보여 줍니다.
+
+---
+
+## 7월 스냅샷 이후 변경 \{#changes\}
+이전 스냅샷은 2026년 7월 1일의 리비전을 측정했으며 이후 엔진이 Rust로 이동하고 클래스 구문도 바뀌었습니다. 코드 변경을 기기, 브라우저, 벤치마크 하네스 영향과 분리하려고 7월 리비전 `cd5a3972a`를 다시 빌드하고 해당 버전의 러너를 현재 측정과 같은 기기 및 Chromium 빌드에서 다시 실행했습니다. 두 체크아웃의 프로덕션 빌드를 세 차례 교대로 실행해 기기 백그라운드 부하가 양쪽에 비슷하게 영향을 주게 했습니다.
+
+재실행은 7월 정적 CSS 출력을 바이트 단위로 재현했으므로 이전 수치는 당시 리비전에 유효했습니다. 현재 픽스처는 현행 클래스 구문으로 같은 렌더링 값을 나타냅니다. 모든 클래스가 CSS를 생성하고 CLI의 `--strict` 모드를 통과합니다.
+
+<figure>
+  <BenchmarkChart chart={RevisionComparisonTable} />
+  <figcaption>같은 기기와 Chromium 빌드에서 각 리비전의 자체 러너로 얻은 중앙값입니다. 양쪽 프로덕션 빌드는 같은 Node.js 버전을 사용했으며 각 빌드 중앙값은 세 차례 교대 실행의 명령 15개를 합쳐 계산했습니다.</figcaption>
+</figure>
+
+이 기기에서 현재 리비전은 브라우저 런타임을 더 빨리 시작하고 더 적은 데이터로 점진적 페이지를 하이드레이션합니다. 반면 더 큰 런타임을 다운로드하고 콜드 프로덕션 명령은 더 오래 걸립니다. `docs` 픽스처 생성 CSS는 약 5% 늘었고 7월과 같이 파일 하나로 도착합니다. 각 체크아웃은 자체 Tailwind CSS와 Vite 버전을 설치하므로 Tailwind CSS 대조군에는 업그레이드와 실행 간 잡음도 반영됩니다.
+
+두 리비전 모두 Tailwind CSS를 포함한 각 모드의 상호작용 준비 시간은 거의 같습니다. Master CSS 작업이 아닌 하네스의 프레임 대기가 하한을 정하므로 값은 약 한 프레임(17 ms) 간격으로 움직입니다. 7월 리비전에서 더 낮은 Tailwind CSS 값도 그 한 단계 차이입니다.
+
+---
+
+## 기술 부록 \{#current-results\}
+이 테스트 모음은 앞선 결과의 비용을 설명합니다. 프로덕션 명령, CSS 규모에 대한 Chromium 반응, 각 Master CSS 렌더링 모드가 브라우저에서 전달하고 수행하는 내용입니다. 렌더링 모드를 고르거나 빌드 시간을 진단할 때 참고하세요.
+
+### 핵심 가설 \{#core-hypothesis\}
+전달의 질문은 더 적은 CSS 규칙을 로드해 절약한 브라우저 작업이 런타임 규칙 생성 비용을 상쇄할 수 있는지입니다. 초기 로드, 이후 상호작용, 장시간 세션 정리를 포함한 전체 페이지 수명 주기를 비교하세요.
+
+런타임과 점진적 렌더링은 관찰한 클래스에서 규칙을 생성하는 JavaScript 작업을 더합니다. 클래스 집합이 정적 소스에서 얻은 집합보다 작으면 초기 CSS와 CSSOM 규칙량을 줄일 수 있습니다. 이 감소가 시작 및 변경 작업을 상쇄하는지는 워크로드에 달려 있습니다. Tailwind CSS는 런타임 없는 정적 CSS 대조군으로 유용합니다. 런타임 동등 구현은 없지만 이 절충에서 큰 정적 CSS 쪽을 대표합니다.
+
+현재 근거는 방향을 보여 주는 결과로 읽어야 합니다. 측정 픽스처에서 런타임/점진적 모드가 CSSOM·규칙량과 스타일 재계산을 충분히 줄여 런타임 시작, 관찰, 변경 작업을 상쇄한다면 가설을 뒷받침할 수 있습니다. 모든 앱이 더 빨라진다는 뜻은 아닙니다.
+
+이 테스트 모음은 선택자 매칭을 안정적인 Chromium 지표로 직접 측정하지 않습니다. 전달된 선택자, CSSOM 규칙 수, 런타임 생성 규칙 수, 추적에서 얻은 스타일 재계산으로 추론합니다.
+
+### 결과 읽는 방법 \{#how-to-read-these-results\}
+벤치마크는 좁고 명확한 질문에 답할 때 유용합니다. 전달 절충을 평가할 때 다음 순서로 측정을 읽으세요:
+
+1. 페이지 CSS와 정적 CSS 출력은 페이지나 정적 구성이 전달하는 바이트, 파일, 선택자, 선언, 규칙 수를 보여 줍니다.
+2. 브라우저 CSS 비용은 DOM이 고정되고 CSS 규칙량이 늘 때 Chromium 반응을 보정합니다.
+3. 전달 모드는 Master 정적, 런타임, 점진적 및 Tailwind 정적이 초기 로드에서 보내고 수행하는 내용을 보여 줍니다.
+4. 상호작용 비용은 런타임 규칙 작업을 포함해 로드 후 DOM과 클래스 변경을 측정합니다.
+5. 브라우저 수명 주기 근거는 장시간 세션 브라우저 작업, CSSOM·규칙량, 런타임 계측을 결합합니다.
+
+각 차트는 측정한 픽스처와 명령의 근거로 읽고 다른 앱에 적용하기 전에 전체 표 및 커밋된 스냅샷과 비교하세요.
+
+| 질문 | 주요 근거 |
+|----------|------------------|
+| 각 문서 페이지에서 찾은 CSS 본문 크기와 페이지 사용량은 얼마인가? | 페이지 CSS 크기 스냅샷 |
+| 같은 UI의 생성 정적 CSS는 얼마나 큰가? | 정적 CSS 출력과 CSS 구조 스냅샷 |
+| 프로덕션 명령에 얼마나 걸리는가? | 프로덕션 빌드 |
+| Master CSS 빌드 시간은 어디에 쓰이는가? | 빌드 경로 진단 |
+| CSS 규칙량의 Chromium 비용은 얼마인가? | 브라우저 CSS 비용 보정 |
+| 전달 모드별 초기 로드에서 무엇을 보내고 수행하는가? | Master CSS 전달 모드 |
+| 로드 후 클래스와 DOM 변경 시 무엇이 일어나는가? | 상호작용 비용 |
+| 런타임 작업이 장시간 세션 비용을 바꾸는가? | 브라우저 수명 주기 근거 |
+| 리비전 사이 무엇이 바뀌었는가? | 리비전 비교 |
+
+Tailwind CSS는 런타임 동등 비교 대상이 아닙니다. 런타임 지향 테스트 모음에서는 가설의 런타임 없음·더 큰 정적 CSS 쪽을 대표하는 정적 브라우저 대조 기준선입니다.
+
+낮은 수치가 모든 상황에서 더 좋은 것은 아닙니다. 작은 CSS 산출물은 작업을 런타임으로 옮길 수 있고 빠른 콜드 명령은 덜 유용한 출력을 숨길 수 있습니다. 로컬 Chromium 추적은 실제 프로덕션 원격 측정을 대체하지 못합니다.
+
+시간과 함께 정확성도 검사하세요. 픽스처가 의도한 UI를 렌더링해야 더 작거나 빠른 결과가 유용합니다. 테스트 모음이 기록한 경우 표에 계산 스타일과 점진적 채택 검사를 포함합니다.
+
+### 프로덕션 빌드 \{#production-build\}
+검증 질문: 각 정적 픽스처와 구성에서 전체 콜드 또는 반복 프로덕션 명령에 얼마나 걸리는가?
+
+<figure>
+  <BenchmarkChart chart={StaticBuildChart} />
+  <figcaption>CLI 구성 `docs` 픽스처의 콜드 프로덕션 명령 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={StaticBuildTable} />
+  <figcaption>측정한 각 픽스처와 구성의 콜드 및 반복 프로덕션 명령 시간입니다.</figcaption>
+</figure>
+
+해석: 빌드 시간은 각 명령 경로의 프로세스, CLI 또는 Vite, 패키지 시작을 포함하므로 작은 픽스처는 주로 고정 시작 비용을 측정합니다. 반복 프로덕션 빌드는 같은 작업 공간에서 두 번째 명령을 실행한다는 뜻이며 watch 모드나 HMR이 아닙니다.
+
+### 빌드 경로 진단 \{#build-path-diagnostics\}
+검증 질문: Master CSS 시작, 통합, 추출, 컴파일러의 어떤 세부 단계가 전체 명령 비용을 설명하는가?
+
+이 스냅샷은 `startup-diagnostics`, `build-diagnostics`, `compiler-diagnostics`, `extraction-diagnostics`를 결합합니다. Master CSS 빌드 경로를 설명하며 프레임워크 간 프로덕션 벤치마크가 아닙니다.
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsSummary} />
+  <figcaption>Master CSS 빌드 경로 진단을 정리한 스냅샷입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsCharts} />
+  <figcaption>`docs` 픽스처의 진단 중앙값입니다. 시작 프로브는 방향을 보여 주며 합산 가능한 플레임 그래프가 아닙니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BuildPathDiagnosticsTable} />
+  <figcaption>측정한 모든 픽스처의 전체 빌드 경로 진단 스냅샷 데이터입니다.</figcaption>
+</figure>
+
+해석: 일반 픽스처 명령에서 모듈 import와 소스 스캔은 수 밀리초를 차지합니다. 스타일시트 진입점 등록과 출력 조합은 각각 수십 밀리초이며 같은 구성의 반복 조합도 첫 실행의 약 5분의 3이 듭니다. 한 CLI 실행의 CPU 프로파일(`node --cpu-prof`)에서는 명령에서 가장 큰 비중인 약 3분의 1이 가져온 프리셋 스타일시트 그래프 컴파일에 사용된 것으로 나타납니다. 이 작업은 픽스처 클래스와 무관하므로 작은 픽스처도 큰 픽스처와 거의 같은 고정 비용을 지불합니다.
+
+한계: 진단 프로브는 서로 다른 범위와 세부 단계를 측정합니다. 하나의 프로덕션 추적인 것처럼 시간을 합산하지 마세요.
+
+### 브라우저 CSS 비용 \{#browser-css-cost\}
+검증 질문: DOM이 고정될 때 CSS 규칙량은 Chromium 스타일 재계산, 레이아웃, 페인트에 어떤 영향을 주며 CSS가 고정될 때 DOM 규모 증가에 어떻게 반응하는가?
+
+이 테스트 모음은 로컬 픽스처 페이지, 결정론적인 외부 CSS, Playwright, Chromium 추적을 사용합니다. 브라우저 전용 보정 테스트이며 Master CSS와 Tailwind CSS 비교가 아닙니다.
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSCostSummary} />
+  <figcaption>브라우저 CSS 비용을 정리한 스냅샷입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSVolumeTraceChart} />
+  <figcaption>CSS 규칙량이 늘고 보이는 DOM이 고정된 웜 캐시 추적 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserDOMScalingTraceChart} />
+  <figcaption>DOM 규모가 늘고 CSS가 고정된 웜 캐시 추적 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserCSSCostTables} />
+  <figcaption>CSS 규모와 DOM 증가 변형의 전체 브라우저 CSS 비용 데이터입니다.</figcaption>
+</figure>
+
+해석: CSS 규모 곡선은 전달 모드가 상호작용 전에 Chromium에 얼마나 CSS를 로드하게 하는지 판단하는 주요 근거입니다. DOM 규모 대조군은 DOM, 스타일, 레이아웃 증가를 CSS 페이로드 크기와 분리하는 데 도움을 줍니다.
+
+한계: 런타임 규칙 생성, 실제 앱 JavaScript, Firefox, WebKit, CDN 동작, 공개 실제 페이지의 변동은 측정하지 않습니다. Chromium 추적 이벤트 이름은 브라우저 버전에 따라 바뀔 수 있습니다.
+
+### Master CSS 전달 모드 \{#master-css-delivery-modes\}
+검증 질문: 각 전달 모드는 어떤 초기 페이로드, 로컬 Chromium 로드 비용, 런타임 시작 비용, 프로그램 로드, 점진적 채택 동작을 만드는가?
+
+정적 픽스처 집합 전반에서 Master CSS 정적, 런타임, 점진적과 Tailwind CSS 정적 브라우저 대조 변형을 비교합니다.
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryModesSummary} />
+  <figcaption>Master CSS 전달 모드를 정리한 스냅샷입니다.</figcaption>
+</figure>
+
+#### 대표 픽스처 \{#delivery-representative-fixture\}
+주요 차트는 `docs` 픽스처를 보여 줍니다.
+
+페이로드 차트는 전체 HTML 응답과 초기 로드에서 요청한 각 외부 에셋을 한 번씩 계산합니다. 인라인 CSS와 삽입된 hydration 매니페스트는 이미 HTML 안에 있으므로 별도 구간이 아닙니다. 빈 에셋 필드는 압축 컨테이너 바이트를 총량에 더하지 않습니다.
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryPayloadChart} />
+  <figcaption>`docs` 픽스처의 기록된 응답 에셋을 각각 Brotli로 압축했습니다. 모든 막대는 0부터 최대 합계까지 같은 척도를 사용하고 구간은 각 에셋의 기여를 보여 줍니다.</figcaption>
+</figure>
+
+이 총량은 기록된 에셋 필드에서 추정한 값이며 실측 네트워크 전송 크기가 아닙니다. 헤더와 전송 오버헤드를 제외하고 각 페이지 HTML에는 벤치마크 하네스 스크립트가 포함됩니다. 상세 표는 개별 압축한 인라인 CSS와 hydration 조각을 진단용으로 유지합니다. 이 열을 응답 총량에 더하면 내용이 이중 계산됩니다.
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryLoadChart} />
+  <figcaption>`docs` 픽스처의 로컬 Chromium 로드 시간 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryRuntimeChart} />
+  <figcaption>Master 런타임 및 점진적 모드의 런타임 시작과 관찰 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={MasterDeliveryModesTables} />
+  <figcaption>측정한 모든 픽스처와 모드의 전체 전달 모드 스냅샷 데이터입니다.</figcaption>
+</figure>
+
+해석: 런타임 모드는 생성 CSS를 전달하지 않지만 페이지에 스타일이 적용되기 전에 브라우저 런타임과 컴파일된 기본 프로그램을 가져옵니다. 점진적 모드는 HTML의 서버/빌드 CSS로 시작하고 런타임이 이를 채택합니다. hydration 데이터에 없는 클래스가 있을 때만 프로그램을 가져오며 이번 초기 로드에서는 그런 경우가 없었습니다.
+
+한계: 로컬 픽스처의 초기 로드만 측정합니다. 로드 후 변경은 상호작용 테스트 모음에서 다룹니다. Master 정적과 Tailwind 정적은 같은 클래스 문자열이 아닌 동등한 픽스처 의도로 빌드한 CLI 생성 스타일시트를 하나씩 불러옵니다. 런타임과 점진적 페이지는 독립적인 전역 런타임 번들을 로드합니다. 번들러 통합은 더 작은 점진적 진입점을 로드할 수 있으며 [런타임 크기 계약](https://github.com/master-co/css/blob/rc/.ai/contracts/runtime-bundle-size.json)에서 측정합니다. 모드별 시작은 [렌더링 모드](/reference/packages#css-runtime)를 참고하세요.
+
+### 상호작용 비용 \{#interaction-cost\}
+검증 질문: 로드 후 클래스 전환, 최초 런타임 규칙 생성, DOM 추가/제거, 테마 전환, 뷰포트 크기 조절, 정리 주기의 비용은 얼마인가?
+
+`dynamic`, `dashboard`, `stress-dom` 픽스처에서 로컬 Chromium 상호작용을 측정합니다. Tailwind CSS 정적 변형은 스타일/레이아웃/페인트의 브라우저 대조군이며 동등한 클라이언트 런타임 규칙 생성은 없습니다.
+
+<figure>
+  <BenchmarkChart chart={InteractionCostSummary} />
+  <figcaption>상호작용 비용을 정리한 스냅샷입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionPrimaryCharts} />
+  <figcaption>주요 `dynamic` 픽스처 시나리오의 변경 후 준비 시간 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionRuntimeCharts} />
+  <figcaption>Master 런타임 및 점진적 `dynamic` 픽스처 시나리오의 런타임 규칙 갱신 중앙값입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={InteractionCostTables} />
+  <figcaption>지원하는 픽스처, 모드, 시나리오 조합의 전체 상호작용 비용 데이터입니다.</figcaption>
+</figure>
+
+해석: 런타임과 점진적 모드는 사용자에게 보이는 변경 후 준비 상태와 런타임 스타일시트 작업의 두 층으로 읽어야 합니다. 준비 시간은 하네스의 프레임 대기를 포함하고 모드 간 거의 같으므로 모드가 추가하는 비용은 런타임 변경 작업과 스타일 재계산을 비교하세요. 규칙 변화량은 런타임 공개 스냅샷의 규칙을 셉니다. 점진적 페이지가 엔진을 지연할 때 스냅샷에는 규칙이 없습니다. hydration 데이터에 없는 첫 클래스가 엔진을 시작하면 서버 렌더링 규칙을 상태로 채택하므로 해당 상호작용 변화량에는 채택한 규칙도 포함됩니다. CSSOM 비용은 런타임 변경 작업과 스타일 재계산으로 비교하세요.
+
+한계: 라우트 전환, HMR, 개발 흐름, CDN 동작, Firefox, WebKit, 공개 실제 앱의 변동은 측정하지 않습니다.
+
+### 브라우저 수명 주기와 장시간 세션 \{#browser-lifecycle-and-inp-style-interactions\}
+검증 질문: 기록한 각 5분 세션에서 렌더링과 런타임 작업이 얼마나 누적되었는가?
+
+수명 주기 테스트는 Master CSS 정적, 런타임, 점진적과 Tailwind CSS 정적 대조군을 비교합니다. 아래 차트는 5분 장시간 세션 시나리오를 사용합니다. 각 모드는 **실측 실행이 한 번뿐**입니다. 표본 하나의 중앙값은 그 단일 관찰이며 반복 가능성의 근거가 아닙니다.
+
+표의 경과 시간은 전체 스크립트 세션과 마지막 안정화 프레임을 포함합니다. 원본 지표 이름은 `inp-style-interaction-ms`이지만 이 시나리오에서는 설계상 약 5분입니다. 개별 입력 지연이나 Web Vitals INP를 측정하지 않습니다.
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleSummary} />
+  <figcaption>브라우저 수명 주기 근거의 범위와 정확성 검사입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleLongSessionCharts} />
+  <figcaption>모드별 단일 5분 실행에서 관찰한 브라우저 렌더링과 런타임 작업입니다.</figcaption>
+</figure>
+
+<figure>
+  <BenchmarkChart chart={BrowserLifecycleLongSessionTable} />
+  <figcaption>모든 모드의 전체 5분 장시간 세션 근거입니다.</figcaption>
+</figure>
+
+해석: 전체 스타일 재계산과 각 모드가 더하는 런타임 변경 작업을 비교하세요. 모드당 한 번 실행으로는 안정적인 속도 향상을 입증할 수 없습니다. 레이아웃, 페인트, 반응성, 전체 성능을 결론 내리기 전에 같은 기기에서 반복 실행을 비교하세요.
+
+한계: Chromium이 안정적인 추적 지표를 제공하지 않는 한 선택자 매칭 시간은 CSSOM·규칙량과 스타일 재계산에서 추론한 값입니다. CSSOM 메모리와 GC 압력은 같은 브라우저 버전에서 재현할 만큼 수집 방법이 안정적일 때만 보고합니다.
+
+---
+
+## 데이터 출처 \{#data-sources\}
+차트는 `benchmarks/**/snapshot.json`과 `benchmarks/browser-lifecycle/long-session-evidence.json`에 커밋된 2026년 11월 4일 스냅샷을 읽습니다. 픽스처, 지표 계열, 게시 규칙, 기록 명령, 검증 단계는 [벤치마크 README](https://github.com/master-co/css/tree/rc/benchmarks#readme)에 있습니다. 결과 재현에는 일치하는 소스 리비전과 잠금 파일이 필요하며 현재 패키지 설치만으로는 부족합니다.

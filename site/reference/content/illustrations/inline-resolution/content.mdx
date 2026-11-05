@@ -1,0 +1,29 @@
+# Reference prose: illustrations/inline-resolution
+
+## title \{#copy-title\}
+
+Inline substitution changes the remaining reference
+
+## alt \{#copy-alt\}
+
+Ordinary and inline theme definitions generate different variable references. In an identical plum section, the ordinary token stays blue while the inline class reads the local plum variable.
+
+## caption \{#copy-caption\}
+
+Both examples use bg-brand in the same markup. The ordinary token inherits a value resolved at the root; inline makes the generated declaration read --app-brand on the styled element.
+
+## description-0 \{#copy-description-0\}
+
+Both configurations define --color-brand: var(--app-brand). The root defines --app-brand as #1d4ed8, and a nested section overrides it to #86198f.
+
+## description-1 \{#copy-description-1\}
+
+With ordinary @theme, bg-brand emits background-color: var(--color-brand). The root computes --color-brand as blue; the nested consumer inherits that computed value.
+
+## description-2 \{#copy-description-2\}
+
+With @theme inline, bg-brand emits background-color: var(--app-brand). The consuming element reads the plum value inherited from its section.
+
+## description-3 \{#copy-description-3\}
+
+The swatches show the resulting backgrounds. Root values in the drawing are computed values, not a claim that the compiler evaluates colors.

@@ -1,0 +1,238 @@
+---
+title: "使用 Master CSS 进行 AI 编程"
+description: "将代理连接到 Master CSS 项目，要求范围明确的更改，验证渲染结果，并审查共用样式更改。"
+figures: {"AIIllustration":{"title":"输出中存在，不代表在浏览器中胜出","alt":"分层的 p-md 工具类用 --spacing-md 声明内边距，未分层的 notice 规则则声明 8px。普通未分层规则胜出，渲染后提示区的内边距为 8px。","caption":"两个规则都有效且存在。普通未分层 CSS 优先于普通分层 CSS，因此只检查生成的输出，无法证明间距符合预期。","description":[{"title":"生成的规则","text":"预设 p-md 工具类在 utilities 层提供 padding: var(--spacing-md)，默认值为 1rem。"},{"title":"竞争规则","text":"对于普通声明，未分层原生规则 .notice { padding: 8px; } 优先于分层工具类。"},{"title":"观察结果","text":"同时有 notice 与 p-md 的元素，四边内边距都是 8px。修复间距需审查胜出的原生规则，而非再次生成相同工具类。"}]},"GuideStudy:inspection-coverage":{"title":"已检查范围小于整个项目","alt":"项目边界包含三个来源；括号只框住两个已检查来源，第三个留在外面。","caption":"明确报告已检查文件与上下文。子集没有问题，不代表所有源码都已验证。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import DocumentPrompt from '@master/internal-site/components/DocumentPrompt.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import AIIllustration from './components/AIIllustration.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+
+## 概览 [sr-only] \{#overview\}
+让编程代理获得与你相同的样式上下文：CSS 入口、主题 token、组件 class，以及项目检查。连接 Master CSS MCP 服务器，要求范围明确的 UI 更改，并要求用最终源码与渲染结果提供证据。本指南从项目设置开始，带你完成第一次修复，再处理后续对共用定义的更改。
+
+---
+
+## 先设置项目 \{#set-up-the-project-first\}
+[安装程序](/guide/installation)默认会为项目准备代理工作环境。除了框架集成，`npm create @master/css@VERSION` 也会加入：
+
+- `@master/eslint-config-css`，以及展开此配置的 `eslint.config.js`，让代理输出接受[代码检查](/guide/code-linting)。
+- 开发依赖 `@master/css-mcp`，并打印在 MCP 客户端注册的 stdio 命令。
+- `AGENTS.md` 中的 `## Master CSS` 规则块，引导代理使用文档、项目词汇、MCP 与 ESLint。
+
+传入 `--no-eslint`、`--no-mcp` 或 `--no-ai` 可跳过其中一项；`--minimal` 则只设置框架。在生成的 `AGENTS.md` 块下方补上项目实际验证命令，让代理无需自行猜测。
+
+接着建立代理可复用的项目词汇。主题 token 明确表达重复值，组件 class 则为共用产品模式提供稳定名称：
+
+```css name=app.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+```
+
+---
+
+## 连接 MCP 服务器 \{#connect-the-mcp-server\}
+MCP 服务器在本地通过 stdio 运行，并读取 `--root` 指定的工作区。支持 `mcpServers` JSON 的客户端，可将下列项添加到 MCP 配置文件：
+
+```json name=mcp-client-config.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@VERSION", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+使用专属注册命令的客户端，也使用同一个 stdio 命令：
+
+```bash
+# Claude Code (add --scope project for a shared .mcp.json)
+claude mcp add --transport stdio master-css -- npx -y @master/css-mcp@VERSION --root /absolute/path/to/project
+
+# Codex
+codex mcp add master-css -- npx -y @master/css-mcp@VERSION --root /absolute/path/to/project
+```
+
+`--root` 使用绝对路径；提交项目范围配置前须审查，因为此路径因机器而异。重启客户端或打开新会话后，请代理调用 `mastercss_workspace_info`，确认返回的根目录与样式表入口属于此项目。Manifest 加载失败表示项目上下文需要修正；服务器不会静默改用预设回答。
+
+[MCP 工具目录](/reference/tools/mcp)列出所有工具、`debug-missing-css` 等内置提示，以及机器可读的结果封装。客户端无法使用 MCP 时，改从项目根目录运行 [CLI](/reference/tools/cli)，例如 `master-css lint --format json --exit-code never` 或 `master-css inspect --format json --exit-code never`。
+
+---
+
+## 使用 Master CSS skill \{#use-the-master-css-skill\}
+
+官方 `master-css` skill 会读取任务相关指引。在 Master CSS 项目中，可用于以下工作流程：
+
+| 工作流程 | 使用时机 |
+| --- | --- |
+| 构建与编辑 UI | 使用项目 token、工具类与原生 CSS 创建或优化组件。 |
+| 审查与调试样式 | 审查样式更改，或从源码提取到浏览器行为，追查缺失与非预期样式。 |
+| 优化 CSS 交付 | 评估生产环境 CSS、改善路由与组件加载边界，并验证选择性裁剪。 |
+
+从项目目录安装，并选择你的编程代理：
+
+```sh
+npx skills add master-co/css --skill master-css
+```
+
+[Skills CLI](https://github.com/vercel-labs/skills) 支持选择 Codex、Claude Code 或 Cursor 等代理。请核对 skill 的兼容性 metadata 与已安装 Master CSS 版本。Skill 按需读取相关参考资料，不会替你安装 Master CSS 或注册 MCP 服务器。安装程序的 `--ai` 选项只会打印此命令，不会运行。
+
+## 要求一项可观察的更改 \{#ask-for-one-observable-change\}
+
+要求代理先检查项目再编辑，接着完成一项聚焦的更改。例如，请它优化现有卡片，并描述你期望的结果：
+
+<DocumentPrompt title="优化单个组件" text={`Update the existing notes card so its padding follows the project's shared card spacing. Keep the card's links and keyboard behavior working, and verify the narrow layout.
+
+You are working in a Master CSS project.
+
+Read the installed package/language/binding versions and project manifest first. Use documentation that matches those versions.
+Consult the Guide and Reference for the installed Master CSS version.
+
+Before editing, inspect the framework, package manager, CSS entry, theme tokens, component classes, nearby UI patterns, and available validation commands.
+
+When styling markup:
+- use valid Master CSS syntax
+- prefer existing theme tokens and component classes
+- prefer fixed utilities and numeric functions, such as flex and p(16), over equivalent native declarations
+- use canonical token families for project values and full native property names when a native declaration is needed
+- do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax
+- keep semantic HTML and accessibility behavior unchanged
+- explain any value that should become a shared token
+
+After editing, inspect the final classes against the project manifest and run the relevant project checks. Verify computed styles and the affected states in the browser. Report changed files, styling decisions, checks actually run, and anything still unverified.`} />
+
+
+---
+
+## 验证修复 \{#verify-a-repair\}
+要求代理保留目前正常工作的行为，并提出支持修复的证据。编辑前保留源码快照，接着检查并重新构建最终文件，lint 自动修复后也要再做一次。被否决的提案可作为证据，但不能当作下一次修复的起始源码。
+
+不同检查回答不同问题：
+
+<DocumentComparison>
+
+| 证据 | 检查内容 |
+| --- | --- |
+| Lint 报告 | 读取 `coverage.checkedFiles` 与启用的规则。`summary.checkedFiles` 统计已检查输入，`summary.filesWithDiagnostics` 统计有诊断的文件。诊断 `files` 为空不代表未运行任何检查。 |
+| Class 检查 | 比较最终标记与加载的项目样式表，区分生成的工具类、原生 CSS 选择器挂钩，以及未解析的写法。 |
+| 浏览器验证 | 在受影响状态中比较计算值与匹配规则，包括先前正常的状态。生成规则不代表该声明会胜出。 |
+
+</DocumentComparison>
+
+### 生成的规则仍可能被覆盖 \{#a-generated-rule-can-still-lose\}
+
+此例两个 class 都能对应有效 CSS。预设 `p-md` 生成 1rem 内边距，但 `.notice` 在**未分层**的原生规则中设置 8px。对于普通声明，该规则会优先于分层工具类：
+
+<AIIllustration />
+
+<DemoConfiguredExample name="agent-cascade-check" title="检查实际生效的内边距" source={`.notice {
+  padding: 8px;
+}`} html={'<p class="w-fit m(0) p-md r-md text-sm bg-surface-raised fg-text-strong notice">Saved locally</p>'} caption="提示区四边都有 8px 内边距。先在浏览器中检查，再于“生成的 CSS”比较原生规则与 p-md。两个规则都存在，只有一个决定计算后的内边距。" />
+
+再生成一个 `p-md` 规则也无法修复。若提示区应跟随共用间距，移除竞争的内边距声明，或有意识地将组件规则放入 `@layer components`。修改共用规则前先检查其他提示区。请见 [CSS 层顺序](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer#description)。
+
+### 读懂检查覆盖范围 \{#read-inspection-coverage\}
+
+默认 lint 允许未知的手写 CSS 名称，因此没有 lint 问题不代表每个 class 都是已注册工具类。CLI 检查可能同时在 `discovered.invalid` 与 `discovered.usedNative` 报告原生选择器：它不会生成工具类，但样式表规则仍可能存在。明确请求 `inspect --classes` 时，应结合标记与原生规则读取 `missingCSS` 的存在原因。`missingCSS.checked` 列表为空，不代表 class 检查已完成。[CLI 目录](/reference/tools/cli#inspect)记录完整检查行为。
+
+原生规则与工具类影响同一属性时，请按项目实际层顺序进行[层叠诊断](/guide/cascade-layers#diagnose-a-competing-declaration)。修复报告应同时保留检查结果与浏览器中胜出的声明。
+
+即使两个 class 名称都已识别，冲突警告也需要审查。把已注册工具类当作原生 hover 选择器挂钩，不会让其独立生成的规则只限 hover。检查组件支持的普通状态、hover、键盘焦点、禁用与触控行为。最后编辑后重跑相关项目检查；先前通过的检查也要保留，不应接受其他地方出现新失败。
+
+<GuideStudy id="inspection-coverage" />
+
+### 报告结果与限制 \{#verification-limits\}
+要求简短的最终报告，指出改变的行为、保留的原生 CSS 与依赖、实际检查的文件与状态，以及未解决诊断。若完整 lint 在三个文件失败，但缩小范围后通过，两者都应报告。信息性未知值诊断应保持可见，不可描述为无效值。区分静态预期与浏览器实测结果，并明确说明尚未完成的浏览器验证。
+
+Skill 提供指引，不会自动运行浏览器或强制回滚修复。这些操作须由代理与项目检查负责。动态 class 组合、运行时更改与未测环境可能超出静态检查范围。构建成功、诊断列表为空，或单个视觉状态通过，都不保证修复完整。未完成的修复应明确保留，并遵守约定范围与验证预算。
+
+---
+
+## 审查工具生成的修复 \{#safe-write-previews\}
+只读工具不会写入文件。修复需要两次调用，让代理先向你展示差异：
+
+1. `mastercss_preview_fixes` 或 `mastercss_preview_directive_format` 返回差异与确认令牌，不会触碰工作区。
+2. 差异按项目审查流程获准后，`mastercss_apply_preview` 才写入；前提是令牌有效、所有路径位于工作区内，且各文件仍符合预览时的哈希。
+
+例如，预览单个文件的 class 排序修复：
+
+```json name=mastercss_preview_fixes
+{
+  "mode": "lint-fixes",
+  "patterns": ["src/button.html"],
+  "rules": "sort-classes"
+}
+```
+
+预览后若文件改变，应用会失败，不会覆盖较新的工作。文件或服务器会话变更时，请重新创建预览。令牌有效期与写入保证请见[预览生命周期](/reference/tools/mcp#preview-lifetime)。
+
+---
+
+## Class 不明确时转换声明 \{#translate-a-declaration-when-the-class-is-unclear\}
+
+阅读 MCP class 检查时，分别确认 `matchStatus`、`cssSyntaxStatus`、`cssValueStatus` 与 `browserSupport`：未知值不等于匹配失败，`not-checked` 的浏览器支持也不等于已验证支持。
+
+不确定 class 写法时，[CLI](/guide/installation#cli) 可从独立 CSS 声明块建议 class，无需 MCP 连接。请从应用根目录运行项目安装的版本：
+
+```bash
+master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
+```
+
+读取 JSON 响应中的 `result.classes`、`result.remainingCss`、`validation` 与 `diagnostics`。检查 `manifest.entries` 是否包含预期 CSS 入口；空列表代表使用预设。使用 `--cwd` 选择另一项目根目录，或 `--stdin` 从标准输入读取声明。退出状态与保留块请见[命令契约](/reference/tools/cli#suggest)。已安装 CLI 若没有 `suggest`，请继续使用现有检查，不要混用包版本。
+
+连接 MCP 后，`mastercss_suggest_classes` 接受相同声明块：
+
+```json
+{
+  "declarations": "display:flex; align-items:center; padding:16px; gap:1rem;"
+}
+```
+
+使用默认预设时，会建议 `flex items-center p(16) (gap:1rem)`。项目定义可能改变建议。结果包含生成的 CSS、独立的值验证状态，以及必须留在原生 CSS 的 `remainingCss` 块。工具会完整保留不确定块，包括重复声明与可能重叠的属性；不会编辑文件，也不会转换样式表选择器。
+
+应用建议前先审查层叠：把声明从选择器或行内样式移到工具类，可能改变胜出规则。工具的声明检查不会验证周围样式或浏览器渲染。
+
+---
+
+## 检查共用更改的影响范围 \{#review-the-second-change\}
+第一版看起来正确，不代表能看出下次编辑会影响什么。修改 `--color-brand` 这类共用定义前，先保存项目快照，编辑后再比较，即使标记没有改变也一样：
+
+```bash
+master-css inspect --snapshot > before.json
+master-css inspect --compare before.json > impact.json
+```
+
+`impact.json` 列出更改定义、已知 class 使用方与文件、前后生成的规则、原生样式表引用与输出交付。即使没有更改，也要读取 `coverage`：动态源码、远程内容与最终浏览器行为并未完整检查。在 MCP 中，前后各调用 `mastercss_scan_project` 并设置 `includeSnapshot: true`，再将两份快照交给 `mastercss_css_compare`。
+
+原生组件 CSS 应沿受管理样式表图检查 token 引用。从 JavaScript 导入的路由与组件样式表不在该图内，请用源码路径明确列出：
+
+```bash
+master-css inspect --design-system --design-system-options design-system.options.json "app/**/*.css"
+```
+
+报告列出每个 `var()` token 引用的源码范围、选择器、at-rule 祖先、导入方与共用前缀冲突。`components` 列表从 `.button[data-variant="primary"]` 这类选择器读取组件 class 的属性词汇，让代理可编写 CSS 实际支持的变体。可选的[选项文件](/reference/tools/cli#design-system-options)可加入 token 说明、弃用与建议替代项，以及特定属性的原始值策略；同一对象也可交给 `mastercss_scan_project.designSystem`，路由样式表放在 `routeStylesheets`，或用于[语言服务](/guide/language-service)的 `designSystem` 设置。这些报告是手写语法的证据；受影响布局与状态仍需在浏览器检查。
+
+
+## 与代理一起优化交付 \{#optimize-delivery-with-an-agent\}
+
+进行加载重构或性能评估时，向代理提供[优化 CSS 交付](/guide/optimizing-css-delivery)、目标路由、现有渲染模式与检查。要求先测量生产环境资源基准，把功能样式移到拥有它们的模块，再验证功能页与无关页面的输出与交互。除非任务要求，否则保留原有模式。
+
+公开 Master CSS skill 会通过交付参考资料引导这项工作。源码与 manifest 检查仍有帮助，但两者都不能证明浏览器传输成本或后续状态正确。普通组件更改只需相关局部检查，无需自动进行全站审计。

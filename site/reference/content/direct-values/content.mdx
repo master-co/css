@@ -1,0 +1,53 @@
+# Reference prose: direct-values
+
+## title \{#copy-title\}
+
+Direct values
+
+## summary \{#copy-summary\}
+
+Pass one static number to a length or numeric property.
+
+## note \{#copy-note\}
+
+Length functions multiply the number by `1px`; `grow()`, `shrink()` and `order()` pass it through. Write a native declaration such as `(margin:1rem)` for other units or dynamic values.
+
+## explanation-title \{#copy-explanation-title\}
+
+The property determines what the number means
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+`p(12)` writes `padding: calc(12 * 1px)`, so the number is a pixel count. It is not a spacing-scale key or a multiplier of the theme’s spacing tokens. Decimal numbers such as `p(1.5)` are allowed.
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+`grow(1)` and `shrink(1)` are unitless flex factors. Growth distributes remaining free space; the figure uses zero bases and no content minimum to isolate the 1:2 ratio. With other bases or minimum sizes, factors alone do not determine final widths. Shrink distribution also accounts for each item’s flex base size.
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+`order()` emits the number directly, but the CSS property requires an integer. Negative values remain subject to each property’s rules: `m(-4)` is a valid negative margin, while negative padding or a negative flex factor cannot request a negative used value.
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+Pass one static number only. Units, `var()` and arithmetic expressions belong in native declarations, such as `(padding:var(--panel-space))`. A named shared length belongs in a theme token such as `p-card`.
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+These functions set their listed declarations only. `b(1)` still needs a border style; `top(4)` needs positioning that accepts an inset; `gap(12)` needs a layout where gaps apply. The table keeps logical and physical properties distinct.
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+Spacing tokens
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+native declarations
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+flex factors
+
+## usage-lead \{#copy-usage-lead\}
+
+Set exact pixel lengths and let one box take the remaining space.

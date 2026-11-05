@@ -1,0 +1,36 @@
+# Reference prose: illustrations/scanning-two-filters
+
+## title \{#copy-title\}
+
+
+ファイルと候補の選択は別のフィルター
+
+## alt \{#copy-alt\}
+
+
+main.html は grid と hidden を供給し、draft.html は抽出前に除外する。セーフリストで block を加え、ブロックリストで hidden を除き、最終候補は grid と block になる。
+
+## caption \{#copy-caption\}
+
+
+draft.html の除外は flex 候補がこのスコープに入るのを防ぎます。hidden のブロックは収集後の除去、block のセーフリストは明示的な候補の追加です。
+
+## description-0 \{#copy-description-0\}
+
+
+@source は HTML を含め、@source not は draft.html を除外します。main.html だけが grid と hidden のクラス文字列を供給します。
+
+## description-1 \{#copy-description-1\}
+
+
+@safelist "block" はソースファイルと独立して完全な候補を加えます。
+
+## description-2 \{#copy-description-2\}
+
+
+@blocklist "hidden" はその候補を除きます。最終的な有効集合は grid と block で、flex はこのスコープに入っていません。
+
+## description-3 \{#copy-description-3\}
+
+
+ファイルと候補の方針は別です。候補であることは任意のクラス文字列の有効性を証明せず、通常の一致と診断は引き続き適用します。

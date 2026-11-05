@@ -1,0 +1,183 @@
+---
+{
+  "title": "パッケージの作成",
+  "description": "共通の CSS ソースを公開し、各アプリで公開トークンを上書きして、本番用の利用アプリでパックしたパッケージを確認します。",
+  "category": "記述",
+  "figures": {
+    "PackageIllustration": {
+      "title": "定義を共有し、アプリごとにコンパイルする",
+      "alt": "共通の master.css がネイティブな btn コンポーネントと必要時生成の content-auto を定義する。アプリ A は btn を使いコンポーネントを出力する。アプリ B は btn content-auto を使い、要求したユーティリティも出力する。",
+      "caption": "両方のアプリが同じ CSS ソースをインポートします。ネイティブコンポーネントは既定で含まれ、各アプリは自身のマークアップが要求するユーティリティを生成します。",
+      "description": [
+        {
+          "title": "ソースを共有する",
+          "text": "パッケージはネイティブな .btn コンポーネントと必要時生成の content-auto ユーティリティを定義します。"
+        },
+        {
+          "title": "アプリ A",
+          "text": "マークアップは btn を使います。ネイティブコンポーネントは含まれ、未使用の content-auto は出力されません。"
+        },
+        {
+          "title": "アプリ B",
+          "text": "マークアップは btn と content-auto を使います。出力にネイティブコンポーネントと要求したユーティリティが含まれます。"
+        }
+      ]
+    },
+    "GuideStudy:consumer-override": {
+      "title": "値を上書きし、コンポーネントを保つ",
+      "alt": "パッケージとアプリが一つの .btn 定義を共有する。アプリは --spacing-action-x を変え、ボタンの役割を保ったまま横パディングを広げる。",
+      "caption": "利用側の上書きはパッケージのインポート後に置きます。ガイドはルート 16px で 1rem と 1.5rem を比べ、.btn のルールは共通のままです。"
+    }
+  },
+  "demos": {
+    "PackageAuthoringExample": {
+      "title": "共通パッケージの語彙",
+      "caption": "ボタンのホバー、押下、フォーカスでパッケージの共通状態を確認してください。保存処理は行いません。アプリはパッケージの theme-motion 条件で、動きを抑える設定に従います。"
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import PackageIllustration from './components/PackageIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample.astro'
+
+## 概要 [sr-only] \{#overview\}
+CSS ソースを公開して、安定したスタイルの語彙を共有します。各利用アプリは自身の Master CSS エントリーにソースをインポートし、必要なトークン、ユーティリティ、ネイティブコンポーネントをコンパイルします。一つのアプリで語彙が動いてからここへ進んでください。その段階は[スタイルの再利用](/guide/reusing-styles)で説明しています。
+
+この形式のパッケージでは、アプリの生成スタイルシートやマニフェストではなくソース定義を公開します。アプリは自身のクラス利用、トークンの上書き、配信モードを選べます。ランタイムインテグレーションも提供するパッケージには、別の成果物の契約があります。
+
+<PackageIllustration />
+
+---
+
+## パッケージを作成する \{#create-a-package\}
+例では `@acme/ui-theme` を使います。公開前に自分のスコープへ置き換えてください。利用側はパッケージ名をインポートし、エクスポートする CSS ファイルは `master.css` です。
+
+<ExplorerView items={[
+  { name: 'my-master-theme', children: [
+    { name: 'package.json' },
+    { name: 'master.css' },
+    { name: 'README.md' }
+  ]}
+]} />
+
+パッケージルートを `master.css` に向けます：
+
+```json name=package.json
+{
+  "name": "@acme/ui-theme",
+  "version": "0.1.0",
+  "files": ["master.css"],
+  "style": "./master.css",
+  "exports": {
+    ".": {
+      "style": "./master.css",
+      "default": "./master.css"
+    }
+  },
+  "sideEffects": ["./master.css"]
+}
+```
+
+この形式にはバンドラー、TypeScript ビルド、マニフェスト生成、コンパイル済み CSS 出力は不要です。パッケージはソース CSS を公開し、Master CSS 対応プロジェクトが自身のスタイルシートグラフの一部としてコンパイルできます。
+
+---
+
+## master.css を書く \{#write-mastercss\}
+利用プロジェクトに供給する共通の語彙を `master.css` に置きます。
+
+<PackageAuthoringExample part="source" />
+
+例はカラーマーカー、ネイティブな `.btn` コンポーネント、必要時に生成する `content-auto` ユーティリティ、名前付きの `theme-motion` 条件を供給します。共通状態はコンポーネントが持ち、トランジションの利用はアプリが選びます。ネイティブなコンポーネント CSS は既定で含まれ、ユーティリティは使用時だけルールを生成します。
+
+利用側に必要な最小限の公開語彙を選びます：
+
+- 色、間隔、半径、タイポグラフィ、影、モーション、コンテナーのトークンなどの共通値には `@theme` を使います。
+- メディア名には `@custom-media`、ほかの再利用ラッパーには `@contents` を持つ `@mixin` を使います。
+- 必要時に生成するクラスには `@utility`、ネイティブ CSS 内の再利用には `@mixin` を使います。
+- `btn`、`field`、`card`、`toolbar` などの意味を持つ UI 語彙を、パッケージが意図的に担当する場合だけネイティブの `@layer components` を使います。
+
+トークンの命名は[テーマトークン](/guide/theme)、構文は [CSS ディレクティブ](/reference#directives)、抽象の選択は[グローバルスタイル](/guide/global-styles#shared-vocabulary)を参照してください。
+
+---
+
+## パッケージを使う \{#use-the-package\}
+インストール後、既定の Master CSS エントリーの後にインポートします：
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+```
+
+インポートしたソースは、プロジェクトの CSS エントリーグラフの一部になります。マークアップで共通の語彙をユーティリティやネイティブ CSS クラスとして使えます：
+
+<PackageAuthoringExample part="preview" />
+
+プロジェクトのエントリーがインポートしたパッケージは、すでにローカルスタイルシートから使えます。一つのスタイルシートのコンパイル時コンテキストだけに加えるには、`@reference` を使います：
+
+```css name=components/Button.module.css
+@reference '@acme/ui-theme';
+
+.button {
+  padding-inline: var(--spacing-action-x);
+  border-radius: var(--radius-action);
+  background-color: var(--color-brand);
+}
+```
+
+ローカルの `.button` はパッケージの間隔、半径、ブランドのトークンを使います。`@reference` はこのスタイルシートのコンパイル中に定義を供給し、出力には必要なテーマリソースが含まれます。ネイティブな `.btn` ルールや生成ユーティリティクラスはコピーしません。それらが必要ならパッケージの CSS を別に読み込んでください。ローカルスタイルシートの使い方は[ルートレベルのスタイル](/guide/route-level-styles)を参照します。
+
+---
+
+## 利用側で公開値を上書きする \{#override-a-public-value-in-the-consumer\}
+
+アプリ固有の選択はパッケージのインポート後に置きます。たとえばこのアプリは、コンポーネント CSS をコピーせず共通のアクションを広げます：
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+
+@theme {
+  --spacing-action-x: 1.5rem;
+}
+```
+
+`.btn` は引き続き `var(--spacing-action-x)` を読みます。アプリは横パディングを 1rem から 1.5rem に変え、ほかのアプリは各自の値を保ちます。利用側が依存できるトークン名、コンポーネントセレクター、ユーティリティ名を文書化してください。JavaScript がなくても公開名の変更は、利用側のマークアップやスタイルシートに影響します。
+
+<GuideStudy id="consumer-override" />
+
+## アプリの方針をアプリに置く \{#keep-app-policy-in-the-app\}
+再利用する記述用パッケージが、一つのアプリのソース走査、フィルター、配信方法を決めるべきではありません。
+
+以下は利用アプリに置きます：
+
+- アプリ固有の `@source` と `@source not` のルール。
+- アプリ固有の `@safelist` と `@blocklist` の方針。
+- ルート、ページ、コンポーネントの一回限りのクラス。
+- 生成マニフェスト JSON とコンパイルした生成 CSS 出力。
+
+パッケージには共通の語彙を、アプリの CSS エントリーにはローカルなソース境界、配信の選択、アプリ固有の方針を置きます。
+
+---
+
+## 例で検証する \{#validate-with-an-example\}
+パッケージディレクトリーからソースをパックします。`npm pack` はローカルのアーカイブを作り、レジストリーには公開しません：
+
+```bash
+npm pack
+```
+
+例の名前とバージョンでは、アーカイブは `acme-ui-theme-0.1.0.tgz` です。`master.css` と想定する `package.json` のエクスポートが入っているか確認してください。`files` リストは無関係なソースやビルド成果物を除き、npm は標準のメタデータファイルも含めます。
+
+Master CSS を統合済みの小さな利用アプリへ、そのアーカイブをインストールします：
+
+```bash
+npm install ../my-master-theme/acme-ui-theme-0.1.0.tgz
+npm run build
+```
+
+上記のマークアップを走査対象のソースに置きます。本番出力でネイティブな `.btn`、要求した `content-auto`、必要なテーマリソースを確認してください。アプリを開いてボタンの計算済みパディングを調べ、ローカルな上書きでも繰り返します。通常状態に加え、ホバー、キーボードフォーカス、動きを抑える設定も確認します。
+
+パッケージ解決の検証には、フレームワークインテグレーションのビルドを使います。現在の単独 CLI の検査は、アプリのエントリーを読み込んでも、サードパーティのベアパッケージインポートをスタイルシートグラフ外に残す場合があります。依存一覧にパッケージの `master.css` がなければ、その語彙は未検証です。本番の利用アプリは、ローカルのソースだけのプレビューでは調べられないファイルとエクスポートパスも検証します。

@@ -1,0 +1,197 @@
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+
+<a id="overview"></a>
+
+条件后缀限制类规则可应用的时机。Master CSS 解析具名定义并输出原生 CSS 查询，由浏览器评估。编译不会测试当前视口、输入设备或浏览器支持。
+
+本页定义支持的后缀、查询编码与组合方式。选择视口或组件边界的方法，见[响应式设计](/guide/responsive-design)；渐进增强则见[兼容性](/guide/compatibility)。
+
+<ReferenceIllustration id="condition-eligibility" />
+
+## 查询形式 \{#arbitrary-conditions-and-queries\}
+
+将条件添加在工具类和任何[选择器后缀](/reference/rules/selectors)之后。类中的括号用于界定查询，不要再在媒体特性、范围或 supports 声明外加一层括号。
+
+| 查询 | 类后缀 | 原生条件 |
+| --- | --- | --- |
+| 具名媒体 | `@sm` | 解析 `@custom-media --sm` |
+| 媒体类型 | `@media(print)` | `@media print` |
+| 布尔媒体特性 | `@media(hover)` | `@media (hover)` |
+| 媒体特性 | `@media(pointer:coarse)` | `@media (pointer:coarse)` |
+| 媒体范围 | `@media(width>=40rem)` | `@media (width>=40rem)` |
+| Supports 声明 | `@supports(display:grid)` | `@supports (display:grid)` |
+| 容器尺寸 | `@container(width>=40rem)` | `@container (width>=40rem)` |
+| 具名容器 | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
+| 自定义容器条件 | `@container(card\|--md)` | 为 `card` 解析 `@custom-container --md` |
+| 容器样式 | `@container(style(--density:compact))` | `@container style(--density:compact)` |
+
+<Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
+
+`|` 编码字符串、注释和 CSS 转义之外的空白。在 `@container(card|width>=40rem)` 中，它分隔容器名称与条件。带引号字符串和转义保留字面内容。这种编码用于类，CSS 定义中应写普通空白。
+
+<a id="simple-queries-in-classes"></a>
+
+每个后缀接受一个简单查询，单个值中括号配对完整的函数会保留。Master CSS 不会依据浏览器支持数据库限制特性名称；成功生成不代表浏览器支持该条件，或当前匹配该条件。复合表达式与查询列表见[应写在 CSS 中的查询](#queries-in-css)。
+
+## 组合条件 \{#grouping-conditions\}
+
+叠加简单查询后缀，要求所有条件同时成立。第一个后缀成为外层查询，后续后缀依次嵌套其中。同类型的重复包裹也会保留顺序。
+
+<ReferenceIllustration id="nested-conditions" />
+
+```html
+<div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
+```
+
+<Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+这些是嵌套 CSS 条件，不是按顺序执行的步骤。两个查询都必须匹配，`display: grid` 声明才参与层叠。哪些元素获得声明，仍由选择器决定。
+
+### 选择器与令牌依赖项 \{#composition\}
+
+`fg-red:hover@sm` 结合令牌驱动的工具类、选择器与具名媒体条件：
+
+```html
+<div class="fg-red:hover@sm">Hover at sm and above</div>
+```
+
+使用预设时，`fg-red` 读取 `--color-red`，`:hover` 检查带有类的元素，`@sm` 要求视口宽度至少为 `52.125rem`。预设 red 别名具有固定颜色，项目可覆盖其值。没有令牌值与竞争的 CSS，仅凭类无法确定最终颜色。
+
+<a id="complete-generated-css"></a>
+
+<Class2CSS classes={['fg-red:hover@sm']} />
+
+生成的 CSS 包含必要的令牌依赖项，不会插入基础层顺序声明。请加载[基础样式表](/reference/rules/layers)，通常通过 `@import '@master/css'`。
+
+## 具名媒体条件 \{#common-condition-variants\}
+
+`@sm` 这类单独后缀解析 `@custom-media` 定义。未定义名称会报错。混入名称使用独立的 `@apply(--name)` 语法，容器条件使用 `@container(--name)`，两者都不由单独后缀选择。
+
+| 预设后缀 | 含义 |
+| --- | --- |
+| `@sm`, `@md`, … | 视口至少达到该断点 |
+| `@max-sm`, `@max-md`, … | 对应断点的互补条件 |
+| `@landscape`, `@portrait` | 视口方向 |
+| `@motion-safe`, `@motion-reduce` | 减少动态效果偏好 |
+| `@light`, `@dark` | 系统颜色偏好 |
+
+### 断点 \{#sm--md--lg--and-more\}
+
+预设的 `media.css` 注册十一个视口断点。仅导入 `theme.css` 不会注册它们，主题变量也不会定义媒体条件。各个值见[断点参考](/reference/rules/named-conditions#viewport-widths)。
+
+项目可以替换查询，同时保留原生单位。预设 `--max-*` 定义会否定对应名称：`--max-md` 是 `not (--md)`。定义一起编译时，替换 `--md` 会更新两个范围，且在边界处不重叠。
+
+<a id="compiled-condition-definitions"></a>
+
+已编译的 manifest 内已包含展开后的查询。向该 manifest 添加定义，不会重新展开已有的依赖条件。如果配置片段必须替换两个范围，应显式声明两个名称：
+
+<ConfiguredExample source={'@custom-media --md (width >= 60rem);\n@custom-media --max-md not (--md);'} classes={['hidden@md', 'hidden@max-md']} />
+
+<ReferenceIllustration id="compiled-query-snapshot" />
+
+### 系统颜色偏好 \{#light--dark--and-custom-modes\}
+
+预设的 `@light` 和 `@dark` 查询 `prefers-color-scheme`，不会插入祖先选择器，也不会跟随手动选择的网站主题。手动启用使用 `@apply(--manual-dark)` 这类显式选择器混入；见[变量与模式](/reference/rules/modes#mode-triggers)。
+
+## 原生查询 \{#native-queries\}
+
+### 媒体特性与范围 \{#mediafeature\}
+
+使用完整的原生特性名称与单位。`print`、`screen` 和 `all` 这类媒体类型输出时不加分组括号。不是媒体类型的单个名称视为布尔特性：`@media(hover)` 输出 `@media (hover)`。
+
+<a id="comparison-operators"></a>
+
+范围接受 `<`、`<=`、`>`、`>=` 和 `=`，也支持链式比较。小数值与原生单位会保留，CSS 分辨率单位 `x` 也保有原生含义。
+
+<Class2CSS classes={['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)', 'hidden@media(resolution>=2x)']} />
+
+同单位且可比较的范围保留范围优先级。具名媒体条件与等价的原生查询使用相同排序依据。不同单位与表达式采用稳定的语法排序，Master CSS 不会假设浏览器根元素字号，也不会为排序换算单位。容器查询领域仍与媒体查询分开。等价条件与相同属性作用域内，直接值排在具名令牌之后。
+
+浏览器如何解读特性与范围，见[媒体查询](https://www.w3.org/TR/mediaqueries-5/)。
+
+### Supports 声明 \{#supportsfeature\}
+
+`@supports(property:value)` 接受一个 CSS 声明，例如 `@supports(display:grid)`，由浏览器测试是否支持该属性与值的组合。`selector()` 检查、否定和复合支持条件应放在 [CSS 混入](#queries-in-css)中。
+
+<Class2CSS classes={['grid@supports(display:grid)']} />
+
+### 容器 \{#containersize\}
+
+尺寸查询测量符合条件的祖先查询容器。请用普通 CSS 建立该容器；如果查询应选择特定容器，而不是最近的合格容器，再添加名称。此例中，被查询的元素是后代元素：
+
+```html
+<aside class="(container-name:card) container-inline">
+  <div class="grid-cols(2)@container(card|width>=40rem)">
+    <div>First item</div>
+    <div>Second item</div>
+  </div>
+</aside>
+```
+
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+
+条件匹配时，组合样式同时设置 `display: grid` 与两个等宽列。低于阈值时，两个声明都不会提供，因此这两个块级子元素仍在常规流中垂直堆叠。容器自身宽度由周围布局决定。
+
+自定义属性样式查询检查祖先容器上的值，不需要 `container-inline`：
+
+```html
+<div style="--density:compact">
+  <div class="p(8)@container(style(--density:compact))">Compact content</div>
+</div>
+```
+
+<Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+原生[容器查询](https://www.w3.org/TR/css-conditional-5/#container-queries)定义容器资格与匹配方式。修改 `--container-md` 这类尺寸令牌，不会改变显式查询阈值或具名容器条件。它们独立的尺寸用途见[容器令牌](/reference/tokens/container)。
+
+### 具名容器条件 \{#named-container-conditions\}
+
+`@container(--md)` 解析 `@custom-container --md`；`@container(card|--md)` 则将相同条件应用到名为 `card` 的合格容器。定义提供的是条件，不是容器名称。
+
+预设的 `container.css` 注册十三个组件宽度及各自的 `max-` 互补条件。它们与视口断点各自独立：`@container(--md)` 是 `28rem`，`@md` 则是 `64rem`。
+
+完整的预设容器尺度与互补条件，见[具名条件](/reference/rules/named-conditions#container-widths)。
+
+每个 `--max-*` 名称都是对应最小宽度条件的否定，例如 `--max-md` 是 `not (--md)`。与媒体条件相同，一起编译的定义会跟随被引用名称的覆盖；[已展开的 manifest 定义](#compiled-condition-definitions)则不会在片段仅替换该名称时重新展开。
+
+<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+
+用 [`@custom-container`](/reference/directives/queries#custom-container) 定义或替换名称。未定义名称会报错。
+
+## 应写在 CSS 中的查询 \{#queries-in-css\}
+
+<a id="upgrading-rc-conditions"></a>
+
+类查询有意只接受比原生 CSS 更小的语法。媒体查询列表、复合条件与否定应通过 `@custom-media` 定义。其他查询请使用 `@mixin`，通过其中的 `@contents` 标示类声明的插入位置。
+
+| 拒绝的类形式 | 原因 | 可用替代形式 |
+| --- | --- | --- |
+| `@media((width>=50rem))` | 多余的分组括号 | `@media(width>=50rem)` |
+| `@media(screen\|and\|(width>=50rem))` | 复合查询 | 具名 `@custom-media` |
+| `@media(not\|print)` | 否定查询 | 具名 `@custom-media` |
+| `@media(screen,print)` | 查询列表 | 具名 `@custom-media` |
+| `@supports(selector([lang\|=en]))` | 选择器支持测试 | 包含原生 `@supports` 的 `@mixin` |
+
+多余的分组括号报告 `CLASS_SYNTAX_ERROR`，并提示应使用的类形式。复杂形式报告 `MASTER_QUERY_REQUIRES_CSS`，且不生成规则。给查询加引号不会扩展支持的语法。`|=` 属性运算符这类字面竖线，请留在原生 CSS 中，不要放进类查询编码。
+
+<ConfiguredExample source={'@custom-media --wide-screen screen and (width >= 50rem);\n@mixin --language-selector {\n  @supports selector([lang|=en]) { @contents; }\n}'} classes={['p-md@wide-screen', 'block@apply(--language-selector)']} />
+
+可复用的包裹与参数见[工具类与混入](/reference/directives/definitions#reusing-a-matched-value)。
+
+## 其他后缀 \{#other-suffixes\}
+
+以下后缀也使用 `@` 记号，但不会测试媒体、支持或容器条件。
+
+### 层叠层选择 \{#base--default--component--utility\}
+
+`@layer(base)`、`@layer(defaults)`、`@layer(components)` 和 `@layer(utilities)` 为整个类选择层，不会创建子层。可以重复相同层，但同一类选择不同层会报错。顺序与限制见[层叠层](/reference/rules/layers)。
+
+### 起始样式 \{#starting-style\}
+
+`@starting-style` 以原生 at-rule 包裹规则。元素没有先前渲染样式时，它提供变更前样式，使入场过渡得以运行。它不会自行创建过渡，也不是通用的“首次渲染”选择器。原生行为见 [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@starting-style)。
+
+<Class2CSS classes={['(opacity:0)@starting-style']} />
+
+`@starting-style` 和 `@layer(...)` 是内置后缀，不需要预设定义。可复用的 CSS 包裹则使用 [`@apply(--name)`](/reference/directives/definitions#reusing-a-matched-value)。

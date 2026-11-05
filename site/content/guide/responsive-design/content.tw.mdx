@@ -1,0 +1,163 @@
+---
+title: "響應式設計"
+description: "選擇合適的響應式邊界，調整頁面欄數與可重用摘要，並驗證版面發生變化的寬度。"
+figures: {"ResponsiveIllustration":{"title":"同一檢視區，兩種元件寬度","alt":"同一頁中，相同摘要在主欄取得 448px 容器，在側欄取得 160px 容器。只有主欄容器達到 28rem 門檻，因此只在主欄顯示雙軌道。","caption":"根字級為 16px 時，28rem 等於 448px。這些是實際容器寬度：同一檢視區內，寬摘要分為雙軌道，窄摘要維持堆疊。","description":[{"title":"相同檢視區","text":"兩張卡片位於同一頁面。檢視區斷點看到的寬度相同。"},{"title":"不同容器","text":"主容器寬 448px，側欄容器寬 160px。"},{"title":"區域回應","text":"每個祖先使用 container-inline。後代卡片使用 grid-cols(1) 與 grid-cols(2)@container(--md)，所以只有主欄卡片達到預設集的 28rem 查詢門檻。"}]},"GuideStudy:named-container-target":{"title":"具名查詢可越過較近容器","alt":"巢狀 article 與 card 容器邊界包住同一個子元素。藍色標示將子元素的 article 查詢配對到外層具名 article 邊界；較近的 card 邊界仍為紫色。","caption":"名稱選擇符合資格的祖先。被查詢元素須置於該祖先內；容器不會查詢自己。"},"GuideStudy:responsive-local-change":{"title":"改變版面，不重述表面樣式","alt":"兩張卡片共用表面、圓角與文字。父元素跨越門檻時，只有版面從堆疊改為橫列。","caption":"帶條件的版面 class 保留其他無關宣告。此示意圖省略非必要的卡片內容。"}}
+---
+
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import ResponsiveIllustration from './components/ResponsiveIllustration.astro'
+import Class2CSS from '~/site/components/Class2CSS.astro'
+import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import FoundationContainerGrid from '@master/internal-site/demo/foundations/FoundationContainerGrid.astro'
+
+## 概覽 [sr-only] \{#overview\}
+頁面版面與可重用卡片可能需要不同的響應式規則。頁面跟隨檢視區，卡片則跟隨父元素提供的空間。在 Master CSS 中，將條件附加到需要改變樣式的 class 後方。
+
+請先完成[安裝](/guide/installation)。這些範例使用預設集，以及載入 `@import '@master/css';` 的應用程式樣式表。每個預覽都提供觀察邊界所需的控制項；**產生的 CSS** 顯示隨附 class 的輸出。
+
+## 選擇變化的依據 \{#choose-a-boundary\}
+
+工作區欄數這類頁面整體決策，使用檢視區條件。同一元件可能出現在主欄、側欄或其他受限區域時，則使用容器查詢。
+
+| 由什麼決定？ | 寫法 | 量測對象 |
+| --- | --- | --- |
+| 頁面檢視區 | `grid-cols(3)@md` | 檢視區寬度 |
+| 元件可用空間 | `grid-cols(2)@container(--md)` | 最近且符合資格的祖先容器寬度 |
+
+<ResponsiveIllustration />
+
+圖中兩張卡片共用同一個檢視區，但父元素寬度不同。檢視區條件會同時套用到兩者；容器查詢則讓窄版維持堆疊，寬版分為多欄。
+
+## 讓頁面隨檢視區調整 \{#based-on-viewport-breakpoints\}
+
+從單欄開始，在內容有足夠空間時再增加欄數。此工作流程使用預設集的 `2xs` 門檻 37.5rem 與 `md` 門檻 64rem。以標準初始字級 16px 計算，兩者分別為 600px 與 1024px。
+
+<DemoConfiguredExample
+  name="responsive-workflow"
+  title="頁面欄數隨檢視區調整"
+  source=""
+  responsive
+  widthPresets={[{ label: '320px', width: 320 }, { label: '600px', width: 600 }, { label: '1024px', width: 1024 }]}
+  html={`<section aria-label="Publishing workflow" class="grid-cols(1) gap-md grid-cols(2)@2xs grid-cols(3)@md">
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Draft</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Collect the changes.</p>
+  </article>
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Review</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Check the examples.</p>
+  </article>
+  <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+    <h3 class="m(0) text-sm font-regular fg-text-strong">Publish</h3>
+    <p class="mb(0) mt-xs text-sm fg-text-muted">Share the release notes.</p>
+  </article>
+</section>`}
+  caption="選擇寬度或使用滑桿。實際預覽檢視區會改變：低於 2xs 為一欄，達到 2xs 為兩欄，達到 md 為三欄。外層頁面保有自己的檢視區。"
+/>
+
+`grid-cols(1)` 是基礎版面。條件只替換欄數；內容順序、間距與表面樣式維持不變。三欄只有在內容放得下時才有幫助——採用門檻前，先在應用程式中試用較長標籤。
+
+`@md` 讀取預設集的 `@custom-media --md` 定義，不會讀取 `--breakpoint-md` 主題變數。若要調整所有使用 `@md` 的 class 門檻，在應用程式 CSS 進入點重新宣告自訂媒體查詢：
+
+```css name=app.css
+@import '@master/css';
+
+@custom-media --md (width >= 48rem);
+```
+
+若新邊界只屬於某個版面，而非整個預設集，請使用專案專屬名稱：
+
+```css name=app.css
+@custom-media --workspace-wide (width >= 72rem);
+```
+
+```html
+<section class="grid-cols(1) grid-cols(3)@workspace-wide">…</section>
+```
+
+[斷點參考](/reference/rules/named-conditions#viewport-widths)列出預設集名稱與值。依內容需求選擇門檻；`md` 這類名稱不代表特定裝置。
+
+## 讓元件隨容器調整 \{#based-on-container-sizes\}
+
+在祖先元素加上 `container-inline`，再為後代元素設定容器條件。此處摘要與狀態在窄區域中上下堆疊；祖先達到預設集 `--md` 容器門檻 28rem 時，改為兩欄。
+
+<FoundationContainerGrid />
+
+```html
+<section class="container-inline">
+  <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
+    <div class="min-w(0)">
+      <h3 class="m(0) text-md font-regular fg-text-strong">Release notes</h3>
+      <p class="mb(0) mt-xs text-sm fg-text-muted">Review the changes before publishing.</p>
+    </div>
+    <dl class="grid gap-xs m(0) text-sm">
+      <div>
+        <dt class="fg-text-muted">Status</dt>
+        <dd class="m(0) fg-text-strong">Draft ready</dd>
+      </div>
+      <div>
+        <dt class="fg-text-muted">Next step</dt>
+        <dd class="m(0) fg-text-strong">Editorial review</dd>
+      </div>
+    </dl>
+  </article>
+</section>
+```
+
+<Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+保持瀏覽器視窗不變，移動 **容器** 滑桿。它調整的是祖先元素，而不是檢視區。以 16px 字級比較 447px 與 448px：第二欄應在 448px 出現。控制項受限於文章可用寬度；若文章本身比門檻窄，請加寬瀏覽器。
+
+祖先建立查詢邊界，後代改變版面。元素不能把自己的尺寸當作容器查詢的祖先。讓卡片高度由內容決定，文字換行時才能自然成長。
+
+### 區分兩套尺度 \{#keep-the-two-scales-separate\}
+
+`@md` 與 `@container(--md)` 使用不同定義：
+
+<DocumentComparison>
+
+| Class 或值 | 在預設集中的意義 |
+| --- | --- |
+| `@md` | 自訂媒體查詢的 64rem 檢視區門檻 |
+| `@container(--md)` | 自訂容器條件的 28rem 容器門檻 |
+| `max-w-md` | 使用 `--container-md` 尺寸 token 的最大寬度 |
+
+</DocumentComparison>
+
+調整 `--container-md` 會改變寬度上限，不會改變任一查詢門檻。使用 `@custom-container` 定義可重用容器條件，或直接撰寫 `grid-cols(2)@container(width>=30rem)` 這類區域查詢。定義語法與完整尺度請見[具名容器條件](/reference/rules/conditions#named-container-conditions)。
+
+### 為外層容器命名 \{#creating-named-containers\}
+
+未具名的尺寸查詢會量測最近且符合資格的祖先。若巢狀版面再建立另一個容器，就會改以內層邊界為準。當你要量測的是外層寬度，請以 `(container-name:outer)` 為外層命名，再使用 `@container(outer|--md)`。
+
+<DemoConfiguredExample name="named-container" title="選擇要量測的祖先" source="" responsive container widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} html={'<section class="(container-name:outer) container-inline p-md r-lg b(1) b-solid b-line-divider">\n  <p class="mt(0) text-sm fg-text-muted">Outer container</p>\n  <div class="container-inline (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(--md)">\n      <h3 class="m(0) text-sm font-regular">Nearest container</h3>\n      <p class="mb(0) mt-xs text-sm">\n        <span class="hidden@container(--md)">Below 28rem</span>\n        <span class="hidden inline@container(--md)">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(outer|--md)">\n      <h3 class="m(0) text-sm font-regular">Named outer container</h3>\n      <p class="mb(0) mt-xs text-sm">\n        <span class="hidden@container(outer|--md)">Below 28rem</span>\n        <span class="hidden inline@container(outer|--md)">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="切換 Narrow outer 與 Wide outer。內層容器維持低於 28rem，因此外層容器加寬時，只有具名查詢會改變。" />
+
+兩個狀態讀值位於同一個窄內層容器中。加寬外層邊界只會改變具名查詢的結果。容器命名是選擇祖先，不是讓元素查詢自身。
+
+<GuideStudy id="named-container-target" />
+
+## 只對改變的樣式加條件 \{#syntax-first\}
+
+共用樣式維持無條件。只有需要不同值的屬性與範圍才加上條件。例如，側欄在低於 `md` 時使用凸起表面，而較大版面不保留這個背景：
+
+```html
+<aside class="p-md bg-surface-raised@max-md">…</aside>
+```
+
+<Class2CSS classes={['bg-surface-raised@max-md']} />
+
+`@max-md` 是預設集 `@md` 的補集，兩者不重疊。重新宣告 `--md` 會一起移動兩個邊界。`hidden@media(52.125rem<=width<=64rem)` 這類區域範圍條件，可鎖定特定區間而不改變專案的具名門檻。[條件參考](/reference/rules/conditions#mediafeature)說明此查詢語法。
+
+<ReferenceIllustration id="breakpoint-partition" />
+
+<GuideStudy id="responsive-local-change" />
+
+## 驗證邊界，不只看截圖 \{#verify-the-boundary-not-just-the-screenshot\}
+
+測試每個門檻前一刻與剛好達到門檻的情況。頁面範例請檢查實際 iframe 檢視區的 599/600px 與 1023/1024px。元件範例則固定頁面檢視區，以 16px 字級檢查祖先元素的 447/448px。
+
+結果不如預期時，檢查後代元素計算後的 `grid-template-columns`。確認條件相符、容器查詢使用預期且符合資格的祖先，並且沒有其他規則在[階層串接](/guide/cascade-layers)中勝出。
+
+最後測試長文字、放大文字與窄版面。每種寬度都應保持合理的閱讀順序、允許內容換行，並避免固定卡片高度。[版面](/guide/layout-system)會另外說明格線與間距的決策，不與查詢邊界混為一談。

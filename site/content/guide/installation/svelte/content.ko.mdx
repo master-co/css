@@ -1,0 +1,148 @@
+---
+{
+  "title": "SvelteKit에서 Master CSS 설정하기",
+  "description": "SvelteKit 애드온을 설치하고 루트 스타일시트를 연결한 뒤 정적, 런타임, 점진적 또는 사전 렌더링 전용 CSS 전달 방식을 선택합니다.",
+  "category": "통합"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/svelte/cover-light.webp'
+import dark from '~/site/assets/images/integrations/svelte/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Svelte" />
+
+SvelteKit 애플리케이션에 Master CSS를 추가합니다. 애드온이 Vite 통합을 등록하고 루트 레이아웃에서 CSS 진입점을 가져오므로 모든 라우트에 공유 스타일이 전달됩니다.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS 추가하기 \{#add-master-css\}
+      기존 [SvelteKit 프로젝트](https://svelte.dev/docs/kit/creating-a-project)의 루트에서 Svelte CLI 애드온을 실행하세요. 정적 렌더링을 설치하며 기존 서버 훅은 변경하지 않습니다.
+    </StepL>
+    <StepR>
+      ```bash
+      npx sv add @master/css-svelte-addon
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 공유 진입점 확인하기 \{#check-the-shared-entry\}
+    애드온은 프로젝트 CSS 진입점에 `@import '@master/css';`를 추가하고 `src/routes/+layout.svelte`에서 해당 파일을 가져옵니다. 레이아웃의 기존 스크립트, 자식 렌더링, 다른 가져오기는 유지하세요. 다른 라우트에서 불러오지 않는 개별 페이지에 전역 진입점을 두지 마세요.
+
+    `vite.config.ts`에 `masterCSS()`와 `sveltekit(...)`를 모두 유지하세요. 정적 모드에는 Master CSS 클라이언트 훅이나 서버 훅이 필요하지 않습니다.
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+    개발 서버를 시작하고 `src/routes/+page.svelte`를 다음 문단으로 바꾸세요. `src/routes/+layout.svelte`에 추가된 스타일시트 가져오기는 유지합니다.
+  </Step>
+  <InstallationPreview>
+
+```svelte name=src/routes/%2Bpage.svelte
+<p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+  Hello World
+</p>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 정적 설정 확인하기 \{#check-the-static-setup\}
+`npm run dev`를 실행하고 페이지의 `p-md`를 `p-lg`로 바꾸세요. 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나야 합니다. 원래대로 돌린 뒤 프로덕션 빌드를 확인합니다:
+
+```bash
+npm run build
+npm run preview
+```
+
+서버 렌더링이 활성화되어 있다면 JavaScript를 꺼도 문단의 안쪽 여백, 둥근 모서리, 떠 있는 표면이 유지되어야 합니다. 다른 라우트로 이동해 루트 레이아웃이 해당 라우트에도 진입점을 불러오는지 확인하세요. 스타일이 없다면 `vite.config.ts`의 Master CSS 플러그인과 루트 레이아웃의 CSS 가져오기를 확인합니다.
+
+컴포넌트의 `<style>` 블록은 네이티브 선언에서 프로젝트 토큰을 사용할 수 있습니다. 초기화 스타일, 네이티브 컴포넌트 규칙, 생성된 유틸리티를 위해 전역 CSS 진입점은 계속 불러오세요. 프로젝트 컨텍스트 밖의 정의 파일에는 `@reference`를 사용합니다.
+
+---
+
+## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
+기본값인 정적 모드에는 Master CSS 훅이 필요하지 않습니다. 모드를 바꿀 때도 CSS 진입점은 유지하세요:
+
+| 모드 | Vite 모드 | Master CSS 훅 |
+| --- | --- | --- |
+| 정적 | `static` | 없음 |
+| 런타임 | `runtime` | 클라이언트 |
+| 점진적 | `progressive` | 클라이언트와 서버 |
+| 사전 렌더링 전용 | `pre-render` | 하이드레이션 매니페스트를 비활성화한 서버 |
+
+<DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
+
+`vite.config.ts`의 기존 `masterCSS()` 호출을 다음 옵션으로 바꾸세요. `sveltekit(...)` 호출과 어댑터 설정, 다른 플러그인은 유지합니다:
+
+```ts
+masterCSS({ mode: 'runtime' })
+```
+
+클라이언트 훅에서 부트스트랩을 한 번만 불러오세요. 기존 훅 내보내기는 모두 유지합니다:
+
+```ts name=src/hooks.client.ts
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+SvelteKit은 자체적으로 HTML을 렌더링하므로 Vite 모드 옵션만으로는 런타임 스크립트가 삽입되지 않습니다. 클라이언트 가져오기가 프로젝트 프로그램으로 런타임을 시작하고 Vite HMR을 처리합니다.
+
+시작 후 브라우저 콘솔에서 다음 코드를 실행하세요. 다시 빌드하지 않아도 문단에 밑줄이 생겨야 합니다:
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="서버에서 렌더링한 스타일 포함하기">
+
+점진적 렌더링을 사용하려면 위 Vite 옵션을 `mode: 'progressive'`로 바꾸고 클라이언트 훅을 유지한 뒤 서버 handle을 추가하세요:
+
+```ts name=src/hooks.server.ts
+export { handle } from '@master/css-svelte/hooks.server'
+```
+
+애플리케이션에 서버 handle이 이미 있다면 이를 유지하고 SvelteKit의 [`sequence()`](https://svelte.dev/docs/kit/@sveltejs-kit-hooks#sequence)에서 Master CSS handle을 첫 번째에 두세요. 페이지 변환은 역순으로 실행되므로 Master CSS가 뒤쪽 핸들러에서 생성한 HTML을 볼 수 있습니다. 예를 들어 기존 handle의 동작을 바꾸지 않고 `src/hooks.application.ts`로 옮긴 뒤 두 handle을 조합합니다:
+
+```ts name=src/hooks.server.ts
+import { sequence } from '@sveltejs/kit/hooks'
+import { handle as masterCSS } from '@master/css-svelte/hooks.server'
+import { handle as application } from './hooks.application'
+
+export const handle = sequence(masterCSS, application)
+```
+
+`handleError` 등 관련 없는 내보내기는 `hooks.server.ts`에 유지하세요.
+
+사전 렌더링된 클래스가 페이지를 모두 처리할 수 있다면 런타임 엔진 로딩을 미룰 수 있습니다. JavaScript를 끄고 초기 스타일을 확인한 다음 다시 켜서 새 클래스를 테스트하세요.
+
+사전 렌더링 전용 전달을 사용하려면 `mode: 'pre-render'`를 선택하고 Master CSS 클라이언트 부트스트랩만 제거한 뒤 다음 서버 설정을 사용하세요:
+
+```ts name=src/hooks.server.ts
+/// <reference types="@master/css/client" />
+
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import { createMasterCSSHandle } from '@master/css-svelte/hooks.server'
+
+export const handle = createMasterCSSHandle({
+  manifest,
+  emittedGlobals,
+  hydrationManifest: false
+})
+```
+
+이 설정은 Master CSS 브라우저 런타임 없이 렌더링된 HTML에 CSS를 제공합니다. 나중에 추가되는 클래스에는 별도로 전달하는 스타일시트나 런타임 생성이 가능한 모드가 필요합니다.
+
+</DocumentDisclosure>

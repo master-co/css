@@ -1,0 +1,35 @@
+# Reference prose: illustrations/import-reference-output
+
+## title \{#copy-title\}
+
+导入交付原生规则，引用提供定义
+
+## alt \{#copy-alt\}
+
+
+同一份 tokens.css 提供给两次使用 bg-brand 的本地编译。import 输出包含原生 .card 规则；reference 输出省略 .card，但仍提供 bg-brand 使用的令牌。
+
+## caption \{#copy-caption\}
+
+
+两份本地输出均使用 bg-brand。导入交付原生 .card 规则，引用则仅使定义可用。本地使用的令牌仍可在任一输出中产生。
+
+## description-0 \{#copy-description-0\}
+
+
+tokens.css 在 @theme 中声明 --color-brand，并定义读取它的原生 .card 规则。两次本地编译的唯一区别是使用 @import 还是 @reference。
+
+## description-1 \{#copy-description-1\}
+
+
+两份本地输出均生成 bg-brand，并保留其 --color-brand 依赖。
+
+## description-2 \{#copy-description-2\}
+
+
+仅 import 输出包含 .card。引用不会让该规则成为本地使用根节点，也不会发布被引用样式表。
+
+## description-3 \{#copy-description-3\}
+
+
+分支比较的是编译输出，并非运行时加载步骤。原生覆盖也需要实际交付样式表。

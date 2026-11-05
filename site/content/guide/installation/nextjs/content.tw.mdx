@@ -1,0 +1,165 @@
+---
+{
+  "title": "在 Next.js 設定 Master CSS",
+  "description": "將 Master CSS 接入 Next.js App Router，並驗證預先渲染與請求時渲染頁面的 CSS 傳遞。",
+  "category": "整合"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/nextjs/cover-light.webp'
+import dark from '~/site/assets/images/integrations/nextjs/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Next.js" />
+
+將 Master CSS 加入使用頂層 `app` 目錄的 Next.js App Router 專案。Master CSS 決定樣式如何傳遞；頁面 HTML 如何渲染，仍由 Next.js 控制。
+
+## 安裝 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### 加入 Master CSS \{#add-master-css\}
+      在既有的 [Next.js 專案](https://nextjs.org/docs/app/getting-started/installation)中，從專案根目錄執行安裝程式。預設使用靜態模式：轉接器會為 Next.js 建置準備產生的樣式表。
+
+      (i) 保留安裝程式加入 `app/globals.css` 的 `@import '@master/css';`。轉接器會處理該進入點，並提供掃描原始碼所產生的樣式。
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework nextjs --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 確認實際載入的設定 \{#verify-the-loaded-configuration\}
+
+    持續由[根版面配置](https://nextjs.org/docs/app/getting-started/css#global-css)匯入全域樣式表，並保留既有的 provider、中繼資料與文件結構。下方版面配置僅為最小範例。使用 TypeScript 設定時，請由非同步設定函式回傳整合，讓非同步建置模式無須在設定載入器中使用頂層 await：
+
+    ```ts name=next.config.ts
+    import type { NextConfig } from 'next'
+    import withMasterCSS from '@master/css-next'
+
+    const nextConfig: NextConfig = {}
+
+    export default async () => withMasterCSS(nextConfig, { mode: 'static' })
+    ```
+
+    將既有的 Next.js 選項保留在 `nextConfig` 中。
+
+    ```css name=app/globals.css
+    @import '@master/css';
+    ```
+
+    ```tsx name=app/layout.tsx
+    import './globals.css'
+
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return <html lang="en"><body>{children}</body></html>
+    }
+    ```
+  </Step>
+  <Step>
+    ### 開始使用 Master CSS \{#start-using-master-css\}
+    啟動開發伺服器，為第一個頁面套用樣式。
+  </Step>
+  <InstallationPreview>
+
+```tsx name=app/page.tsx
+export default function Home() {
+  return (
+    <p id="master-check" className="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+      Hello World
+    </p>
+  )
+}
+```
+
+  </InstallationPreview>
+</StepSection>
+
+<DocumentDisclosure title="在 CSS Modules 使用專案 token">
+
+無論使用 Turbopack 或 Webpack，區域 CSS 與 CSS Modules 都會自動取得專案定義。請直接在原生宣告中使用專案 token，並以原生選擇器處理共用行為。所需的主題資源會全域輸出，區域選擇器則保有框架原本的作用範圍。專案脈絡之外的其他定義檔，請使用 `@reference`。
+
+在 Webpack 路徑中，產生的主題資源會透過一般全域樣式表傳遞。區域 Module 選擇器仍使用 Next.js 命名；`:root`、`:host` 與模式選擇器保留原本的作用範圍。元件因此能繼承祖先元素或巢狀主題的 token，無須在元件上重複宣告。重複使用的元件會共用產生的資源。只要 token 由全域進入點提供，無論選用哪個打包工具，原生 `var(--token)` 都能用於一般 CSS 與 CSS Modules。
+
+</DocumentDisclosure>
+
+## 檢查設定 \{#check-the-setup\}
+
+執行 `npm run dev`，將頁面中的 `p-md` 改成 `p-lg`。內距應從 `1rem` 增加為 `1.5rem`。改回原值後，驗證正式環境傳遞：
+
+```bash
+npm run build
+npm run start
+```
+
+停用 JavaScript，重新載入正式環境頁面。段落應保有內距、圓角與浮起的表面。也請檢查巢狀路由：從根版面配置匯入全域進入點，可讓整個應用程式都能取得 CSS。
+
+若缺少樣式，請檢查版面配置的匯入，以及 Next.js 是否真的載入包含 `withMasterCSS()` 的設定。僅保留一個生效中的設定檔。使用 `src/app` 的專案，請明確調整樣式表進入點與版面配置路徑；本頁安裝方式以頂層 `app` 為目標。
+
+---
+
+## 選擇其他渲染模式 \{#rendering-modes\}
+預設使用靜態模式。安裝程式選項會設定對應的 `withMasterCSS()` 模式；切換模式時，請保留全域樣式表：
+
+| 模式 | 安裝程式選項 | 傳遞方式 |
+| --- | --- | --- |
+| 靜態 | 無 | 掃描原始碼後產生的樣式表 |
+| 執行階段 | `--mode runtime` | 透過 Next.js 用戶端 instrumentation 啟動瀏覽器執行階段 |
+| 漸進式 | `--mode progressive` | 預先渲染 CSS，再交由執行階段接手 |
+
+<DocumentDisclosure title="在瀏覽器產生新類別">
+
+執行階段模式透過 Next.js 用戶端 instrumentation 注入 Master CSS 執行階段，不使用建置轉接器預先渲染頁面 CSS：
+
+```bash
+npm create @master/css@VERSION -- --framework nextjs --mode runtime --yes
+```
+
+安裝程式會設定 `withMasterCSS(nextConfig, { mode: 'runtime' })`。執行 `npm run build` 與 `npm run start`，再加入初始 DOM 未包含的類別：
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+無須重新建置，段落就應出現底線。執行階段模式不會在 JavaScript 啟動前提供這些產生的規則。若更新沒有作用，請檢查瀏覽器主控台與執行階段程式請求。
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="包含預先渲染的樣式">
+
+漸進式渲染會將預先渲染的 CSS 與 hydration manifest 加入靜態或預先渲染的 Next.js 頁面：
+
+```bash
+npm create @master/css@VERSION -- --framework nextjs --mode progressive --yes
+```
+
+執行階段起初只追蹤已涵蓋的類別。頁面 manifest 之外的類別會啟動引擎，先驗證並接管相符規則，再產生額外 CSS。請求時動態 SSR 回應不在建置轉接器的預先渲染輸出範圍內，因此其產生的 utility 樣式依賴瀏覽器執行階段。若這些路由必須在沒有 JavaScript 時仍具有 utility 樣式，請使用靜態模式。
+
+執行 `npm run build` 與 `npm run start` 後，在 JavaScript 執行前，檢查預先渲染路由的回應原始碼是否包含 `style#master-css`，再依上述方式測試後續加入的類別。動態 SSR 路由請分開測試：此轉接器不會為請求時的 HTML 加入伺服器產生的 CSS。
+
+</DocumentDisclosure>
+
+若執行階段或漸進式模式的 Turbopack 正式環境建置回報無法解析產生的 `.master/stylesheets/...-entry.css`，請以 `npx next build --webpack` 檢查 Webpack 建置，並在部署前使用 `npm run start` 驗證產生的頁面。Webpack 建置成功，不能證明 Turbopack 路徑也能正常運作。
+
+## 保留既有的部署轉接器 \{#adapter-composition\}
+
+若專案已使用 Next.js [`adapterPath`](https://nextjs.org/docs/app/api-reference/config/next-config-js/adapterPath)，請將它保留在 `nextConfig`，再將設定傳給 `withMasterCSS()`。整合會將已設定的轉接器與自身建置轉接器組合。未明確設定外部轉接器路徑時，它也會辨識透過 `NEXT_ADAPTER_PATH` 提供的部署轉接器。
+
+預設由 Master CSS 先執行。接著，負責打包完整 HTML 的外部轉接器就能使用產生的 CSS 與頁面 manifest 參照。只有其他轉接器必須先處理建置輸出時，才使用 `adapterOrder: 'external-first'`。修改既有的設定匯出，並保留專案選項與已選的模式：
+
+```ts
+export default async () => withMasterCSS(nextConfig, {
+  mode: 'progressive',
+  adapterOrder: 'external-first'
+})
+```
+
+同時啟用兩個轉接器並執行正式環境建置。先檢查最終部署輸出中的預先渲染路由，再檢查實際提供的回應：`style#master-css` 必須保留，且它參照的 hydration manifest 必須能從部署後的網址載入。動態路由請分開測試；組合轉接器不會為 Master CSS 加入請求時的 CSS 渲染。

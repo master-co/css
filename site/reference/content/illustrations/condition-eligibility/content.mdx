@@ -1,0 +1,25 @@
+# Reference prose: illustrations/condition-eligibility
+
+## title \{#copy-title\}
+
+Matching a query makes a rule eligible
+
+## alt \{#copy-alt\}
+
+The same compiled media rule is connected to two viewport cases. Below the threshold it is inactive; at the threshold it enters the cascade.
+
+## caption \{#copy-caption\}
+
+The compiler emits the query before either browser case is evaluated. Matching the query does not guarantee winning the cascade.
+
+## description-0 \{#copy-description-0\}
+
+grid@media(width>=40rem) emits an @media rule containing display: grid without testing a current viewport.
+
+## description-1 \{#copy-description-1\}
+
+At 39rem the browser does not apply that rule. At 40rem the condition matches and the declaration participates in the cascade.
+
+## description-2 \{#copy-description-2\}
+
+Other cascade rules can still determine the final display value. Compilation, query matching and the final computed style are distinct checks.

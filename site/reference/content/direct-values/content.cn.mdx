@@ -1,0 +1,66 @@
+# Reference prose: direct-values
+
+## title \{#copy-title\}
+
+
+直接值
+
+## summary \{#copy-summary\}
+
+
+将一个静态数字传给长度或数值属性。
+
+## note \{#copy-note\}
+
+
+长度函数将数字乘以 `1px`；`grow()`、`shrink()` 和 `order()` 则直接传入该数字。需要其他单位或动态值时，请使用 `(margin:1rem)` 这类原生声明。
+
+## explanation-title \{#copy-explanation-title\}
+
+
+数字的含义由属性决定
+
+## explanation-paragraphs-0 \{#copy-explanation-paragraphs-0\}
+
+
+`p(12)` 生成 `padding: calc(12 * 1px)`，因此数字代表像素数量，不是间距尺度的键，也不是主题间距令牌的倍数。可以使用小数，例如 `p(1.5)`。
+
+## explanation-paragraphs-1 \{#copy-explanation-paragraphs-1\}
+
+
+`grow(1)` 和 `shrink(1)` 是无单位的 flex 系数。扩张分配剩余空间；图中使用零基准大小且不受内容最小尺寸限制，以便单独呈现 1:2 比例。使用其他基准大小或最小尺寸时，只靠系数无法决定最终宽度。收缩分配也会考虑每个项目的 flex 基准大小。
+
+## explanation-paragraphs-2 \{#copy-explanation-paragraphs-2\}
+
+
+`order()` 直接输出数字，但 CSS 属性要求整数。负值仍受各属性的规则限制：`m(-4)` 是合法的负外边距，但负内边距或负 flex 系数无法要求负的使用值。
+
+## explanation-paragraphs-3 \{#copy-explanation-paragraphs-3\}
+
+
+只能传入一个静态数字。单位、`var()` 和算术表达式应写在原生声明中，例如 `(padding:var(--panel-space))`。共享的具名长度则应使用主题令牌，例如 `p-card`。
+
+## explanation-paragraphs-4 \{#copy-explanation-paragraphs-4\}
+
+
+这些函数只设置表中列出的声明。`b(1)` 仍需要边框样式；`top(4)` 需要支持 inset 的定位方式；`gap(12)` 需要可应用间隙的布局。表格会区分逻辑属性与物理属性。
+
+## explanation-links-0-label \{#copy-explanation-links-0-label\}
+
+
+间距令牌
+
+## explanation-links-1-label \{#copy-explanation-links-1-label\}
+
+
+原生声明
+
+## explanation-links-2-label \{#copy-explanation-links-2-label\}
+
+
+flex 系数
+
+## usage-lead \{#copy-usage-lead\}
+
+
+设置精确的像素长度，并让其中一个盒子占用剩余空间。

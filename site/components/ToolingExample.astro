@@ -1,4 +1,6 @@
 ---
+import { demoCopy } from '@master/internal-site/utils/document-copy.js'
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context'
 import DocumentCodeExample from '@master/internal-site/components/DocumentCodeExample.astro'
 import { toolingExample, toolingExamples } from '../utils/tooling-guide-data'
 
@@ -7,6 +9,8 @@ interface Props {
 }
 
 const { name } = Astro.props
+const copy = demoCopy(documentCopyOf(Astro), siteOf(Astro).locale, `ToolingExample:${name}`, toolingExample(name))
+
 ---
 
-<div data-tooling-example={name}><DocumentCodeExample {...toolingExample(name)} /></div>
+<div data-tooling-example={name}><DocumentCodeExample {...copy} /></div>

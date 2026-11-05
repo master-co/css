@@ -1,0 +1,183 @@
+---
+{
+  "title": "패키지 작성",
+  "description": "공유 CSS 소스를 게시하고 각 앱에서 공개 토큰을 재정의하며 프로덕션 사용 앱에서 패키징한 패키지를 검증합니다.",
+  "category": "작성",
+  "figures": {
+    "PackageIllustration": {
+      "title": "정의는 공유하고 앱마다 컴파일하기",
+      "alt": "공유 master.css는 네이티브 btn 컴포넌트와 필요할 때 생성되는 content-auto 유틸리티를 정의합니다. 앱 A는 btn을 사용해 컴포넌트를 출력하고 앱 B는 btn content-auto를 사용해 요청한 유틸리티도 출력합니다.",
+      "caption": "두 앱은 같은 CSS 소스를 가져옵니다. 네이티브 컴포넌트는 기본적으로 포함되며 각 앱은 자체 마크업이 요청하는 유틸리티를 생성합니다.",
+      "description": [
+        {
+          "title": "소스 공유",
+          "text": "패키지는 네이티브 .btn 컴포넌트와 필요할 때 생성되는 content-auto 유틸리티를 정의합니다."
+        },
+        {
+          "title": "앱 A",
+          "text": "마크업은 btn을 사용합니다. 네이티브 컴포넌트는 포함되지만 사용하지 않는 content-auto 유틸리티는 출력되지 않습니다."
+        },
+        {
+          "title": "앱 B",
+          "text": "마크업은 btn과 content-auto를 사용합니다. 출력에 네이티브 컴포넌트와 요청한 유틸리티가 포함됩니다."
+        }
+      ]
+    },
+    "GuideStudy:consumer-override": {
+      "title": "값을 재정의하고 컴포넌트 유지하기",
+      "alt": "패키지와 앱이 하나의 .btn 정의를 공유합니다. 앱은 --spacing-action-x를 바꾸어 버튼의 정체성을 유지하면서 가로 안쪽 여백을 늘립니다.",
+      "caption": "사용 측 재정의는 패키지 가져오기 뒤에 둡니다. 안쪽 안내선은 루트 16px에서 1rem과 1.5rem을 비교하며 .btn 규칙은 계속 공유됩니다."
+    }
+  },
+  "demos": {
+    "PackageAuthoringExample": {
+      "title": "공유 패키지 어휘",
+      "caption": "버튼에 마우스를 올리거나 누르거나 초점을 맞춰 패키지의 공유 상태를 확인하세요. 저장 동작은 수행하지 않습니다. 앱은 패키지의 theme-motion 조건으로 동작 줄이기 설정을 존중합니다."
+    }
+  }
+}
+---
+
+import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
+import PackageIllustration from './components/PackageIllustration.astro'
+import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
+import PackageAuthoringExample from '~/site/components/demo/PackageAuthoringExample.astro'
+
+## 개요 [sr-only] \{#overview\}
+CSS 소스를 게시하여 안정적인 스타일 어휘를 공유하세요. 각 사용 앱은 자체 Master CSS 진입점에 소스를 가져오고 필요한 토큰, 유틸리티, 네이티브 컴포넌트를 컴파일합니다. 한 앱 안에서 어휘가 정상 동작한 뒤 여기서 시작하세요. [스타일 재사용](/guide/reusing-styles)이 그 첫 단계를 다룹니다.
+
+이 패키지 형태에서는 앱의 생성 스타일시트나 매니페스트가 아닌 소스 정의를 게시하세요. 그러면 앱이 자체 클래스 사용, 토큰 재정의, 전달 모드를 선택할 수 있습니다. 런타임 통합도 제공하는 패키지는 별도의 산출물 계약을 가집니다.
+
+<PackageIllustration />
+
+---
+
+## 패키지 만들기 \{#create-a-package\}
+이 예제는 `@acme/ui-theme`을 사용합니다. 게시 전에 자신이 소유한 scope로 바꾸세요. 사용 측은 패키지 이름으로 가져오며 내보내는 CSS 파일은 `master.css`입니다.
+
+<ExplorerView items={[
+  { name: 'my-master-theme', children: [
+    { name: 'package.json' },
+    { name: 'master.css' },
+    { name: 'README.md' }
+  ]}
+]} />
+
+패키지 루트가 `master.css`를 가리키게 하세요:
+
+```json name=package.json
+{
+  "name": "@acme/ui-theme",
+  "version": "0.1.0",
+  "files": ["master.css"],
+  "style": "./master.css",
+  "exports": {
+    ".": {
+      "style": "./master.css",
+      "default": "./master.css"
+    }
+  },
+  "sideEffects": ["./master.css"]
+}
+```
+
+이 패키지 형태에는 번들러, TypeScript 빌드, 매니페스트 생성, 컴파일된 CSS 출력이 필요하지 않습니다. 패키지는 소스 CSS를 게시하며 Master CSS를 지원하는 프로젝트가 자체 스타일시트 그래프의 일부로 컴파일할 수 있습니다.
+
+---
+
+## master.css 작성하기 \{#write-mastercss\}
+사용 프로젝트에 제공할 공유 어휘를 `master.css`에 두세요.
+
+<PackageAuthoringExample part="source" />
+
+이 예제는 색상 표시, 네이티브 `.btn` 컴포넌트, 필요할 때 생성되는 `content-auto` 유틸리티, 이름이 있는 `theme-motion` 조건을 제공합니다. 컴포넌트는 공유 상태를 소유하고 앱은 전환을 요청할지 선택합니다. 네이티브 컴포넌트 CSS는 기본적으로 포함되며 유틸리티는 사용할 때만 규칙을 생성합니다.
+
+사용 측에 필요한 최소 공개 어휘를 선택하세요:
+
+- 색상, 간격, 반경, 타이포그래피, 그림자, 모션, 컨테이너 토큰 같은 공유 값에는 `@theme`을 사용합니다.
+- 미디어 이름에는 `@custom-media`를, 다른 재사용 래퍼에는 `@contents`를 가진 `@mixin`을 사용합니다.
+- 필요할 때 생성되는 클래스에는 `@utility`를, 네이티브 CSS 안의 재사용에는 `@mixin`을 사용합니다.
+- 패키지가 `btn`, `field`, `card`, `toolbar` 같은 의미 있는 UI 어휘를 의도적으로 소유할 때만 네이티브 `@layer components`를 사용합니다.
+
+토큰 명명은 [테마 토큰](/guide/theme), 지시문 문법은 [CSS 지시문](/reference#directives), 추상화 선택은 [전역 스타일](/guide/global-styles#shared-vocabulary)을 참고하세요.
+
+---
+
+## 패키지 사용하기 \{#use-the-package\}
+패키지를 설치한 뒤 기본 Master CSS 진입점 다음에 가져오세요:
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+```
+
+가져온 소스는 프로젝트 CSS 진입점 그래프의 일부가 됩니다. 프로젝트 마크업은 공유 어휘를 유틸리티와 네이티브 CSS 클래스로 사용할 수 있습니다:
+
+<PackageAuthoringExample part="preview" />
+
+프로젝트 진입점에서 가져온 패키지는 이미 로컬 스타일시트에서 사용할 수 있습니다. 한 스타일시트의 컴파일 컨텍스트에만 패키지를 추가하려면 `@reference`를 사용하세요:
+
+```css name=components/Button.module.css
+@reference '@acme/ui-theme';
+
+.button {
+  padding-inline: var(--spacing-action-x);
+  border-radius: var(--radius-action);
+  background-color: var(--color-brand);
+}
+```
+
+로컬 `.button`은 패키지의 간격, 반경, 브랜드 토큰을 사용합니다. `@reference`는 이 스타일시트를 컴파일할 때 정의를 제공하며 출력에는 필요한 테마 리소스가 포함됩니다. 패키지의 네이티브 `.btn` 규칙이나 생성 유틸리티 클래스는 복사하지 않습니다. 해당 규칙이 필요하면 패키지 CSS를 별도로 불러오세요. 로컬 스타일시트 패턴은 [라우트 수준 스타일](/guide/route-level-styles)을 참고하세요.
+
+---
+
+## 사용 측에서 공개 값 재정의하기 \{#override-a-public-value-in-the-consumer\}
+
+앱별 선택은 패키지 가져오기 뒤에 두세요. 예를 들어 이 앱은 컴포넌트 CSS를 복사하지 않고 공유 동작 버튼을 넓힙니다:
+
+```css name=app.css
+@import '@master/css';
+@import '@acme/ui-theme';
+
+@theme {
+  --spacing-action-x: 1.5rem;
+}
+```
+
+`.btn`은 여전히 `var(--spacing-action-x)`를 읽습니다. 앱은 가로 안쪽 여백을 1rem에서 1.5rem으로 바꾸고 다른 앱은 각자 값을 유지합니다. 사용 측이 의존할 수 있는 토큰 이름, 컴포넌트 선택자, 유틸리티 이름을 문서화하세요. 패키지에 JavaScript가 없어도 공개 이름을 바꾸면 사용 측의 마크업이나 스타일시트에 영향을 줍니다.
+
+<GuideStudy id="consumer-override" />
+
+## 앱 정책은 앱 안에 유지하기 \{#keep-app-policy-in-the-app\}
+재사용 가능한 작성 패키지가 특정 앱의 소스 스캔, 필터링, 배포 방식을 결정해서는 안 됩니다.
+
+다음은 사용 앱에 유지하세요:
+
+- 앱별 `@source`와 `@source not` 규칙.
+- 앱별 `@safelist`와 `@blocklist` 정책.
+- 라우트, 페이지 또는 컴포넌트의 일회성 클래스.
+- 생성된 매니페스트 JSON과 컴파일된 생성 CSS 출력.
+
+패키지는 공유 어휘에 사용하고 앱 CSS 진입점은 로컬 소스 경계, 전달 선택, 앱별 정책에 사용하세요.
+
+---
+
+## 예제로 검증하기 \{#validate-with-an-example\}
+패키지 디렉터리에서 소스를 패키징하세요. `npm pack`은 로컬 아카이브를 만들며 레지스트리에 게시하지는 않습니다:
+
+```bash
+npm pack
+```
+
+예제 이름과 버전의 아카이브는 `acme-ui-theme-0.1.0.tgz`입니다. `master.css`와 예상한 `package.json` 내보내기가 포함되었는지 확인하세요. `files` 목록은 관련 없는 소스와 빌드 산출물을 제외하며 npm은 표준 메타데이터 파일도 포함합니다.
+
+Master CSS가 이미 통합된 작은 사용 앱에 아카이브를 설치하세요:
+
+```bash
+npm install ../my-master-theme/acme-ui-theme-0.1.0.tgz
+npm run build
+```
+
+위 마크업을 스캔되는 소스 파일에 넣으세요. 프로덕션 출력에서 네이티브 `.btn` 규칙, 요청한 `content-auto` 유틸리티, 필요한 테마 리소스를 확인합니다. 앱을 열어 버튼의 계산된 안쪽 여백을 검사하고 로컬 재정의로 반복하세요. 기본 상태뿐 아니라 호버, 키보드 초점, 동작 줄이기도 검증합니다.
+
+패키지 해석은 프레임워크 통합의 빌드로 검증하세요. 현재 독립형 CLI 검사에서는 앱 진입점을 불러와도 서드 파티 베어 패키지 가져오기가 스타일시트 그래프 밖에 남을 수 있습니다. 나열된 스타일시트 의존성을 확인하세요. 패키지의 `master.css`가 빠진 검사는 해당 어휘를 검증한 것이 아닙니다. 프로덕션 사용 앱은 로컬 소스 전용 미리보기로 확인할 수 없는 파일과 내보내기 경로도 검증합니다.

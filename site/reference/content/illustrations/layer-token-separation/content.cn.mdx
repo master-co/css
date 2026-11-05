@@ -1,0 +1,26 @@
+# Reference prose: illustrations/layer-token-separation
+
+## title \{#copy-title\}
+
+
+选择样式层不会移动其令牌
+
+## alt \{#copy-alt\}
+
+
+p-md@layer(defaults) 对应 defaults 中的 padding 规则，而其 spacing-md 依赖项仍在 theme。
+
+## caption \{#copy-caption\}
+
+
+两条层带显示输出的归属，并非以位置呈现完整的层叠比较。
+
+## description-0 \{#copy-description-0\}
+
+
+p-md@layer(defaults) 将生成的 padding 声明输出到 defaults 层。
+
+## description-1 \{#copy-description-1\}
+
+
+其 --spacing-md 依赖项仍输出在 theme 层的 :root,:host 下。@layer(defaults) 选择的是类规则的层，不是依赖项的层。

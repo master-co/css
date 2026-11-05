@@ -1,0 +1,120 @@
+---
+{
+  "title": "Nuxt에서 Master CSS 설정하기",
+  "description": "Nuxt를 통해 프로젝트 CSS 진입점을 불러오고 정적 스타일, 브라우저 생성 또는 Nitro 응답 렌더링을 확인합니다.",
+  "category": "통합"
+}
+---
+
+import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
+import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
+import StepSection from '@master/internal-site/components/StepSection.astro'
+import Step from '@master/internal-site/components/Step.astro'
+import StepL from '@master/internal-site/components/StepL.astro'
+import StepR from '@master/internal-site/components/StepR.astro'
+import IntegrationCover from '~/site/components/IntegrationCover.astro'
+import light from '~/site/assets/images/integrations/nuxtjs/cover-light.webp'
+import dark from '~/site/assets/images/integrations/nuxtjs/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Nuxt" />
+
+Master CSS Nuxt 모듈을 설치하고 Nuxt의 `css` 옵션으로 CSS 진입점을 불러옵니다. 모듈은 Nuxt의 HTML 렌더링 모드를 바꾸지 않고 CSS 전달을 처리합니다.
+
+## 설치 \{#installation\}
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### Master CSS 추가하기 \{#add-master-css\}
+      기존 [Nuxt 프로젝트](https://nuxt.com/docs/getting-started/installation)의 루트에서 설치 프로그램을 실행하세요. 기본값은 정적 모드로, 완전한 클래스 문자열을 스캔해 일반 CSS를 출력합니다.
+    </StepL>
+    <StepR>
+      ```bash
+      npm create @master/css@VERSION -- --framework nuxt --yes
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### 프로젝트 스타일시트 불러오기 \{#load-the-project-stylesheet\}
+
+    모듈 등록을 유지하고 설치 프로그램이 만든 CSS 진입점을 명시적으로 불러오세요. `~~/`는 프로젝트 루트를 가리키며, 애플리케이션 디렉터리가 `app/`인 Nuxt 프로젝트에서도 같습니다.
+
+    ```ts name=nuxt.config.ts
+    export default defineNuxtConfig({
+      modules: [['@master/css-nuxt', { mode: 'static' }]],
+      css: ['~~/assets/css/master.css']
+    })
+    ```
+
+    ```css name=assets/css/master.css
+    @import '@master/css';
+    ```
+  </Step>
+  <Step>
+    ### Master CSS 사용 시작하기 \{#start-using-master-css\}
+    개발 서버를 시작하고 첫 컴포넌트에 스타일을 적용하세요. 이 예제들은 Nuxt 4의 `app/` 디렉터리를 사용합니다.
+  </Step>
+  <InstallationPreview>
+
+```vue name=app/app.vue
+<template>
+  <p id="master-check" class="w-fit m(0) p-md b-solid b(1) b-line-divider r-md text-sm font-regular bg-surface-raised fg-text-strong">
+    Hello World
+  </p>
+</template>
+```
+
+  </InstallationPreview>
+</StepSection>
+
+## 설정 확인하기 \{#check-the-setup\}
+
+개발 서버가 실행 중일 때 `app/app.vue`의 `p-md`를 `p-lg`로 바꾸세요. 안쪽 여백이 `1rem`에서 `1.5rem`으로 늘어나야 합니다. 원래대로 돌린 뒤 앱을 빌드하고 제공하세요. Nuxt의 기본 Node 서버 프리셋을 사용한다면 다음과 같이 실행합니다:
+
+```bash
+npm run build
+node .output/server/index.mjs
+```
+
+다른 Nitro 배포 프리셋을 사용한다면 해당 제공 절차를 따르세요. Nuxt SSR이 활성화된 상태에서 JavaScript를 끄고 새로고침해도 문단의 안쪽 여백, 둥근 모서리, 떠 있는 표면이 유지되어야 합니다. 정적이라는 말은 CSS 생성 방식을 뜻하며, 클라이언트 전용 Nuxt 페이지를 서버 렌더링 페이지로 바꾸지는 않습니다.
+
+페이지에 스타일이 없다면 먼저 `css` 옵션이 루트 스타일시트를 불러오는지 확인한 뒤 모듈이 한 번만 등록되었는지 확인하세요. 로드된 CSS에서 `.p-md`를 찾아보세요. 빌드 성공만으로는 진입점이 페이지에 전달되었다고 확인할 수 없습니다.
+
+---
+
+## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
+기본값은 정적 모드입니다. 설치 프로그램 옵션이 모듈의 `mode`를 설정합니다. 모드를 바꿀 때도 CSS 진입점을 유지하세요:
+
+| 모드 | 설치 프로그램 옵션 | 전달 방식 |
+| --- | --- | --- |
+| 정적 | 없음 | 소스 스캔으로 생성한 스타일시트 |
+| 런타임 | `--mode runtime` | 서버 측 첫 페이지 CSS 없이 브라우저 런타임 사용 |
+| 점진적 | `--mode progressive` | Nitro의 첫 응답 CSS와 런타임으로의 인계 |
+
+<DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
+
+```bash
+npm create @master/css@VERSION -- --framework nuxt --mode runtime --yes
+```
+
+설치 프로그램은 `['@master/css-nuxt', { mode: 'runtime' }]`를 등록합니다. SSR이 활성화되어 있으면 Nuxt는 계속 서버에서 HTML을 렌더링하고, 런타임은 브라우저에서 생성된 클래스 규칙을 제공합니다. Nitro 출력을 빌드하고 제공한 뒤 브라우저 콘솔에서 다음 코드를 실행하세요:
+
+```js
+document.querySelector('#master-check').classList.add('underline')
+```
+
+다시 빌드하지 않아도 문단에 밑줄이 생겨야 합니다. 그렇지 않다면 런타임 프로그램 요청과 콘솔 진단을 확인하세요.
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="서버에서 렌더링한 스타일 포함하기">
+
+```bash
+npm create @master/css@VERSION -- --framework nuxt --mode progressive --yes
+```
+
+점진적 모드는 본문이 문자열인 Nitro HTML 응답에 첫 응답 CSS를 추가하며, 스트리밍 본문은 변환하지 않습니다. JavaScript를 끄고 초기 스타일을 확인한 뒤, 위와 같이 페이지 매니페스트에 없는 클래스를 나중에 추가해 테스트하세요.
+
+복사한 배포 산출물도 대상 디렉터리에서 테스트하세요. 원래 위치에서의 빌드만으로는 모든 매니페스트와 프로그램 경로가 이동 가능하다고 확인할 수 없습니다. 복사한 서버가 원래 프로젝트의 `node_modules/.master-css/manifest/` 아래 경로에서 `ENOENT`를 보고한다면 빌드 머신의 매니페스트에 여전히 의존하므로 독립적으로 배포할 준비가 되지 않은 것입니다. 정적 모드나 런타임 모드가 앱의 전달 요구를 충족한다면 그중 하나를 사용하고, 출력물을 이동한 뒤에도 검증하세요.
+
+</DocumentDisclosure>

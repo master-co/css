@@ -1,8 +1,9 @@
+import { translateSite } from './translations'
 import { responsiveIllustrationMarkdown } from '../content/guide/responsive-design/illustration'
 import { layoutIllustrationMarkdown } from '../content/guide/layout-system/illustration'
 import { typeIllustrationMarkdown } from '../content/guide/typography/illustration'
 import { colorIllustrationMarkdown } from '../content/guide/colors/illustration'
-import path from 'node:path'
+import { localizedContentFile } from './localized-content'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { sizingRoles } from '@master/internal-site/css/foundation-data/sizing/scale-data.ts'
 import { paletteKeys } from '@master/internal-site/css/foundation-data/tokens.ts'
@@ -23,21 +24,21 @@ const visualComponents = new Set([
   'SurfacesDemo', 'LineRolesDemo', 'TextRolesDemo',
   'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo'
 ])
-function foundationComponent(_slug: string, name: string, _attributes: Record<string, unknown>) {
+function foundationComponent(_slug: string, name: string, _attributes: Record<string, unknown>, t: (text: string) => string) {
   if (name === 'ResponsiveIllustration') return responsiveIllustrationMarkdown()
   if (name === 'LayoutIllustration') return layoutIllustrationMarkdown()
   if (name === 'TypeIllustration') return typeIllustrationMarkdown()
   if (name === 'ColorIllustration') return colorIllustrationMarkdown()
-  if (name === 'FoundationPalette') return selectedSpecimensMarkdown('color', paletteKeys)
+  if (name === 'FoundationPalette') return selectedSpecimensMarkdown('color', paletteKeys, t)
   if (visualComponents.has(name)) return ''
-  if (name === 'SizingRoleTable') return sizingRoles.map(row => `- \`${row.utility}\` — ${row.role}. ${row.description}`).join('\n')
+  if (name === 'SizingRoleTable') return sizingRoles.map(row => `- \`${row.utility}\` — ${t(row.role)}. ${t(row.description)}`).join('\n')
 }
 
 /** No JSX execution: authored MDX, native generated CSS and the same data as SSR. */
-export async function foundationGuideContent(siteRoot: string, slug: string) {
+export async function foundationGuideContent(siteRoot: string, slug: string, locale = 'en') {
   if (!foundationGuideSlugs.includes(slug as typeof foundationGuideSlugs[number])) throw new Error(`Unsupported foundation guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
-    overview: 'include', component: (name, attributes) => foundationComponent(slug, name, attributes)
+  const result = await extractReferenceMdx(await localizedContentFile(siteRoot, `content/guide/${slug}/content.mdx`, locale), [], [], {
+    overview: 'include', component: (name, attributes) => foundationComponent(slug, name, attributes, text => translateSite(locale, text))
   })
   if (result.notes.length) throw new Error(`Incomplete ${slug} export: ${result.notes.join('; ')}`)
   return { ...result, searchMarkdown: result.markdown, markdown: portableMarkdown(result.markdown) }

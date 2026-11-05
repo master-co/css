@@ -23,7 +23,7 @@ import './agents-content.test'
 import './editor-content.test'
 // The Workflow section checks its integrations, monorepo swatches, route samples and impact graph against the packages.
 import './workflow-content.test'
-import { agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
+import { installCommand, agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })
 const recommendedConfig: Linter.Config[] = [...masterCSS, {
@@ -174,4 +174,9 @@ test('homepage page CSS sizes come from the committed snapshot', () => {
       ratio: Number((page.css.total[kind] / masterCSSPage.css.total[kind]).toFixed(1))
     })))
   }
+})
+
+test('homepage installation uses the exact stable or prerelease public version', () => {
+  for (const version of ['2.0.0', '2.0.0-rc.89']) assert.equal(installCommand(version), `npm create @master/css@${version}`)
+  for (const version of ['', 'rc', 'latest']) assert.throws(() => installCommand(version))
 })
