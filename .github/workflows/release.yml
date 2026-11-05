@@ -102,6 +102,14 @@ jobs:
             release-artifacts/checksums.json
           if-no-files-found: warn
           retention-days: 90
+      - name: Preserve complete release notes
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-artifacts/release-notes.md
+          if-no-files-found: warn
+          retention-days: 90
 
   deploy-site:
     needs:

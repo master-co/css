@@ -54,6 +54,10 @@ for (const [file, jobName] of [['release.yml', 'release'], ['site-toolchain-snap
 }
 
 const releaseWorkflow = YAML.parse(readFileSync(new URL('../.github/workflows/release.yml', import.meta.url), 'utf8'))
+const notesReceipt = releaseWorkflow.jobs.release.steps.find(step => step.with?.path === 'release-artifacts/release-notes.md')
+assert.equal(notesReceipt?.if, '${{ always() }}', 'Retain the complete generated notes even if GitHub publication fails')
+assert.equal(notesReceipt.with.name, 'release-notes-${{ github.sha }}-${{ github.run_attempt }}', 'Bind retained notes to their owning source and attempt')
+assert.equal(notesReceipt.with['retention-days'], 90, 'Keep notes for the same recovery window as npm evidence')
 const site = releaseWorkflow.jobs['deploy-site']
 assert.deepEqual(site.needs, ['validation', 'release', 'publish-editors'], 'Site delivery must follow validation, npm promotion and editor publication')
 for (const condition of [`needs.validation.result == 'success'`, `needs.release.result == 'success'`,

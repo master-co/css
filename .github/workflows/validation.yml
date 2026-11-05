@@ -126,7 +126,7 @@ jobs:
           bun run check:toolchain
           bun run test:toolchain
           bun test scripts/validation-workflow.test.mjs scripts/editor-release-gate.test.mjs
-          node --test scripts/pages-release-target.test.mjs scripts/pages-site-manifest.test.mjs scripts/pages-site-release.test.mjs scripts/pages-release-github.test.mjs scripts/npm-package-bootstrap.test.mjs site/utils/release-code.test.mjs scripts/release-outcome.test.mjs scripts/release-readiness.test.mjs scripts/semantic-release-promotion.test.mjs scripts/release-recovery-artifact.test.mjs
+          node --test scripts/pages-release-target.test.mjs scripts/pages-site-manifest.test.mjs scripts/pages-site-release.test.mjs scripts/pages-release-github.test.mjs scripts/npm-package-bootstrap.test.mjs site/utils/release-code.test.mjs scripts/release-outcome.test.mjs scripts/release-readiness.test.mjs scripts/semantic-release-promotion.test.mjs scripts/release-recovery-artifact.test.mjs scripts/semantic-release-notes.test.mjs
       - name: Verify isolated package-manager archive consumers
         shell: bash
         run: |

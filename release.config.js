@@ -1,4 +1,5 @@
 import configure from '@aronrepo/semantic-release-config/configure'
+import { releaseBodyTemplate, releaseNotesPath } from './scripts/semantic-release-notes.mjs'
 
 const SOURCE_RELEASE_PLUGIN = '@aronrepo/semantic-release-pnpm'
 const WORKSPACE_RELEASE_PLUGIN = './scripts/semantic-release-workspace.mjs'
@@ -33,7 +34,13 @@ function orderReleasePlugins(plugins) {
 const config = configure({
   plugins: {
     '@semantic-release/github': {
+      releaseBodyTemplate,
       assets: [
+        {
+          path: releaseNotesPath,
+          name: 'release-notes-${nextRelease.gitTag}.md',
+          label: 'Complete release notes'
+        },
         {
           path: 'packages/runtime/dist/global.min.js',
           name: 'global-${nextRelease.gitTag}.min.js',
@@ -62,6 +69,6 @@ config.plugins = orderReleasePlugins([...config.plugins.map(plugin =>
   Array.isArray(plugin) && plugin[0] === SOURCE_RELEASE_PLUGIN
     ? [WORKSPACE_RELEASE_PLUGIN, { ...plugin[1], workspaceRoots }]
     : plugin
-), [PROMOTION_PLUGIN, { workspaceRoots }]])
+), ['./scripts/semantic-release-notes.mjs'], [PROMOTION_PLUGIN, { workspaceRoots }]])
 
 export default config
