@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default {
   entry: './src/index.js',
+  experiments: { css: true },
   // Exercise package exports instead of the monorepo's TypeScript source aliases.
   resolve: { tsconfig: false },
   output: {
@@ -19,7 +20,7 @@ export default {
     new HtmlWebpackPlugin({
       template: join(__dirname, 'src/index.html')
     }),
-    new MasterCSSPlugin({ sources: ['./src/index.html'] })
+    new MasterCSSPlugin()
   ],
   devServer: {
     watchFiles: ['src/**/*']
@@ -27,7 +28,7 @@ export default {
   module: {
     rules: [
       { test: /\.svg/, type: 'asset/resource' },
-      { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+      { test: /\.css$/i, type: 'css/auto' }
     ]
   }
 }

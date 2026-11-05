@@ -49,7 +49,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { normalizePath } from './utils/path'
 import ScannerLifecyclePlugin from './plugins/scanner-lifecycle'
-import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
+import VirtualModuleRegistryPlugin, { usesRspackCSSExtraction } from './plugins/virtual-modules'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
 import ManifestJSONAssetsPlugin from './plugins/manifest-json-assets'
 import ProgramAssetsPlugin from './plugins/program-assets'
@@ -98,7 +98,7 @@ export interface MasterCSSWebpackContext {
   runtimeEntryName: string
   slotCSSRule: string
   mode: ResolvedMasterCSSWebpackPluginOptions['mode']
-  virtualModule?: VirtualModulesPlugin
+  virtualModule?: Pick<VirtualModulesPlugin, 'writeModule'>
   shouldInjectRuntime(): boolean
   shouldPreloadRuntime(): boolean
   on(...args: Parameters<MasterCSSScanner['on']>): unknown
@@ -457,6 +457,7 @@ export class MasterCSSWebpackPlugin {
   private createContext(compiler: Compiler): MasterCSSWebpackContext {
     const compilerContext = compiler.context || this.cwd || process.cwd()
     this.development = compiler.options.mode === 'development'
+    const watchCSSMirror = usesRspackCSSExtraction(compiler)
     const context: MasterCSSWebpackContext = {
       name: NAME,
       cwd: this.cwd,
@@ -498,6 +499,13 @@ export class MasterCSSWebpackPlugin {
         } catch (error) {
           if (!(error instanceof TypeError) || !String(error.message).includes('_writeVirtualFile')) {
             throw error
+          }
+        }
+        if (watchCSSMirror && modulePath === context.virtualCSSImportModuleId) {
+          try {
+            if (readFileSync(modulePath, 'utf8') === moduleContent) return
+          } catch {
+            // Write the mirror below when it is missing or cannot be read.
           }
         }
         mkdirSync(dirname(modulePath), { recursive: true })
