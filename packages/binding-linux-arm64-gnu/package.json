@@ -4,6 +4,11 @@
   "engines": { "node": "^24" },
   "license": "MIT",
   "description": "Master CSS native binding for Linux ARM64 glibc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/binding-linux-arm64-gnu"
+  },
   "exports": { ".": "./mastercss.node" },
   "os": ["linux"],
   "cpu": ["arm64"],

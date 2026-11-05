@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 export const npmRegistry = 'https://registry.npmjs.org/'
+const provenanceRepository = 'https://github.com/master-co/css'
 
 export function assertNpmOidcEnvironment(env = {}) {
   if (env.GITHUB_ACTIONS !== 'true'
@@ -23,6 +24,18 @@ export function assertNpmPublishConfig(pkg) {
   if (pkg.publishConfig?.registry
     && new URL(pkg.publishConfig.registry).href !== npmRegistry) {
     throw new Error('OIDC publication requires the official npm registry')
+  }
+}
+
+export function assertNpmProvenanceRepository(pkg, packageRoot) {
+  if (pkg.publishConfig?.provenance !== true) return
+  const { type, url, directory } = pkg.repository ?? {}
+  if (type !== 'git' || typeof url !== 'string'
+    || url.replace(/^git\+/, '').replace(/\.git$/, '') !== provenanceRepository) {
+    throw new Error(`npm provenance for ${pkg.name} requires repository.url matching ${provenanceRepository}`)
+  }
+  if (packageRoot !== undefined && directory !== packageRoot) {
+    throw new Error(`npm provenance for ${pkg.name} requires repository.directory ${packageRoot}`)
   }
 }
 

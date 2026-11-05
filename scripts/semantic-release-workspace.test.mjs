@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { test } from 'node:test'
 import { execa } from 'execa'
-import { createWorkspaceRelease, packedManifest, validatePackedManifest } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest, validatePackedArchive, validatePackedManifest } from './semantic-release-workspace.mjs'
 import { assertNpmOidcEnvironment, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 
 const githubEnv = {
@@ -75,7 +75,9 @@ test('release versions all workspaces before packing and publishes verified tarb
   try {
     for (const [index, root] of roots.entries()) {
       await mkdir(join(cwd, root), { recursive: true })
-      await writeFile(join(cwd, root, 'package.json'), JSON.stringify({ name: `@fixture/${index ? 'b' : 'a'}`, version: '0.0.0', publishConfig: { provenance: true }, ...(index ? {} : { dependencies: { '@fixture/b': 'workspace:*' } }) }))
+      await writeFile(join(cwd, root, 'package.json'), JSON.stringify({ name: `@fixture/${index ? 'b' : 'a'}`, version: '0.0.0', publishConfig: { provenance: true },
+        repository: { type: 'git', url: 'https://github.com/master-co/css.git', directory: root },
+        ...(index ? {} : { dependencies: { '@fixture/b': 'workspace:*' } }) }))
     }
     const config = { pkgRoot: roots[0], workspaceRoots: roots }
     await plugin.verifyConditions(config, context)
@@ -96,6 +98,25 @@ test('release versions all workspaces before packing and publishes verified tarb
     await plugin.success()
     for (const session of sessions) await assert.rejects(stat(session), { code: 'ENOENT' })
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
+})
+
+test('provenance requires the source and packed manifests to identify the official repository', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'master-release-provenance-'))
+  const root = 'packages/a'
+  const manifest = { name: '@master/css-binding-darwin-arm64', version: '2.0.0', gitHead: revision, publishConfig: { provenance: true } }
+  const repository = { type: 'git', url: 'https://github.com/master-co/css.git', directory: root }
+  const plugin = createWorkspaceRelease({ run: () => assert.fail('Invalid provenance must not run an external command') })
+  try {
+    await mkdir(join(cwd, root), { recursive: true })
+    await writeFile(join(cwd, root, 'package.json'), JSON.stringify(manifest))
+    await assert.rejects(plugin.verifyConditions({ pkgRoot: root }, { cwd, env: githubEnv }), /requires repository\.url/)
+    await writeFile(join(cwd, root, 'package.json'), JSON.stringify({ ...manifest, repository: { ...repository, directory: 'packages/other' } }))
+    await assert.rejects(plugin.verifyConditions({ pkgRoot: root }, { cwd, env: githubEnv }), /requires repository\.directory/)
+    for (const wrong of [undefined, { ...repository, url: '' }, { ...repository, url: 'https://github.com/master-co/other.git' }]) {
+      assert.throws(() => validatePackedArchive(archive({ ...manifest, repository: wrong }), manifest.name, manifest.version, revision), /requires repository\.url/)
+    }
+    assert.doesNotThrow(() => validatePackedArchive(archive({ ...manifest, repository }), manifest.name, manifest.version, revision))
+  } finally { await rm(cwd, { recursive: true, force: true }) }
 })
 
 test('unresolved workspace dependencies and incorrect package identity fail validation', () => {

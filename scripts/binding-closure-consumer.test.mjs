@@ -90,7 +90,8 @@ async function fixture() {
     await mkdir(join(directory, 'dist'), { recursive: true })
     await writeFile(join(directory, 'dist/index.js'), 'export const fixture = true\n')
     await writeFile(join(directory, 'package.json'), JSON.stringify({ ...entry, type: 'module',
-      files: ['dist'], exports: { '.': './dist/index.js' }, publishConfig: { access: 'public', provenance: true } }))
+      files: ['dist'], exports: { '.': './dist/index.js' }, publishConfig: { access: 'public', provenance: true },
+      repository: { type: 'git', url: 'https://github.com/master-co/css.git' } }))
   }
   return root
 }

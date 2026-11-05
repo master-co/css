@@ -5,7 +5,7 @@ import { gunzipSync } from 'node:zlib'
 import { execa } from 'execa'
 // Reuse manifest/version helpers only; npm CLI owns OIDC authentication.
 import { readPackage, writeReleaseVersion } from '@aronrepo/semantic-release-pnpm'
-import { assertNpmOidcEnvironment, assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
+import { assertNpmOidcEnvironment, assertNpmProvenanceRepository, assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 import { assertReleaseFlag, recoveryArchive, stagePackage } from './semantic-release-promotion.mjs'
 
 function* packedEntries(archive) {
@@ -44,6 +44,7 @@ export function validatePackedArchive(archive, expectedName, version, gitHead) {
 export function validatePackedManifest(manifest, expectedName, version) {
   if (manifest.name !== expectedName || manifest.version !== version) throw new Error(`Incorrect release identity for ${expectedName}@${version}`)
   assertNpmPublishConfig(manifest)
+  assertNpmProvenanceRepository(manifest)
   for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies', 'devDependencies']) {
     for (const [name, value] of Object.entries(manifest[field] || {})) {
       if (String(value).startsWith('workspace:')) throw new Error(`Unresolved workspace dependency ${manifest.name}: ${name}`)
@@ -116,6 +117,7 @@ export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch } = 
     if (!pkg.private && config.npmPublish !== false) {
       assertNpmOidcEnvironment(context.env)
       assertNpmPublishConfig(pkg)
+      assertNpmProvenanceRepository(pkg, config.pkgRoot)
       assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     }
   }

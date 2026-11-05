@@ -4,6 +4,11 @@
   "engines": { "node": "^24" },
   "license": "MIT",
   "description": "Master CSS native binding for Windows ARM64.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/binding-win32-arm64-msvc"
+  },
   "exports": { ".": "./mastercss.node" },
   "os": ["win32"],
   "cpu": ["arm64"],

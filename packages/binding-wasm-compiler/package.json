@@ -14,6 +14,11 @@
   },
   "license": "MIT",
   "description": "Internal Master CSS compiler Wasm binding provider.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/binding-wasm-compiler"
+  },
   "sideEffects": false,
   "types": "./dist/provider.d.ts",
   "exports": {

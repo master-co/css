@@ -32,7 +32,8 @@ async function fixture(t) {
   for (const letter of ['a', 'b']) {
     const root = join(cwd, 'packages', letter)
     await mkdir(root, { recursive: true })
-    await writeFile(join(root, 'package.json'), JSON.stringify({ name: `@fixture/${letter}`, version: '0.0.0', publishConfig: { provenance: true } }))
+    await writeFile(join(root, 'package.json'), JSON.stringify({ name: `@fixture/${letter}`, version: '0.0.0', publishConfig: { provenance: true },
+      repository: { type: 'git', url: 'https://github.com/master-co/css.git', directory: `packages/${letter}` } }))
     registry.set(`@fixture/${letter}`, { versions: {}, 'dist-tags': { rc: '1.0.0', latest: '0.9.0' } })
   }
   const fetchMetadata = async url => {

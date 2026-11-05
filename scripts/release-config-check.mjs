@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { YAML } from 'bun'
 import config from '../release.config.js'
-import { assertNpmPublishConfig } from './npm-oidc.mjs'
+import { assertNpmProvenanceRepository, assertNpmPublishConfig } from './npm-oidc.mjs'
 
 const WORKSPACE_RELEASE_PLUGIN = './scripts/semantic-release-workspace.mjs'
 const expectedFirstPackages = [
@@ -50,7 +50,10 @@ assert.equal(
   'GitHub release assets must publish only after all npm packages succeed.'
 )
 
-for (const manifest of manifests) assertNpmPublishConfig(manifest)
+for (const [index, manifest] of manifests.entries()) {
+  assertNpmPublishConfig(manifest)
+  assertNpmProvenanceRepository(manifest, packageRoots[index])
+}
 for (const [file, jobName] of [['release.yml', 'release'], ['site-toolchain-snapshot.yml', 'snapshot']]) {
   const workflow = YAML.parse(readFileSync(new URL(`../.github/workflows/${file}`, import.meta.url), 'utf8'))
   const job = workflow.jobs[jobName]
