@@ -7,7 +7,8 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import { execa } from 'execa'
 import { bootstrapPackages, bootstrapTag, bootstrapConfirmation, bootstrapRequest, verifyBootstrapSource, githubReader, planBootstrap,
-  packBootstrap, prepareBootstrap, publishBootstrap, assertBootstrapPublication, extractNativePython } from './npm-package-bootstrap.mjs'
+  packBootstrap, prepareBootstrap, publishBootstrap, assertBootstrapPublication, extractNativePython,
+  cleanupFailedBootstrapLatest, cleanupConfirmation, verifyFailedBootstrapEvidence, verifyHistoricalBootstrapStatement } from './npm-package-bootstrap.mjs'
 
 const revision = 'a'.repeat(40), repo = { id: 434642460, full_name: 'master-co/css' }
 const targets = ['darwin-arm64', 'darwin-x64', 'linux-arm64-gnu', 'linux-arm64-musl', 'linux-x64-gnu', 'linux-x64-musl', 'win32-arm64-msvc', 'win32-x64-msvc']
@@ -192,7 +193,14 @@ test('controlled publish retains exact archives/provenance receipts, isolates cr
   const env = { ...publicationEnv(), GITHUB_TOKEN: 'must-not-reach-npm', NPM_TOKEN: 'poison', NODE_OPTIONS: '--require poison', npm_config_registry: 'https://evil.test' }
   try {
     const result = await publishBootstrap(f.planFile, { publish: true, confirm: bootstrapConfirmation, env, github: f.github,
-      fetchMetadata: async url => registry.has(decodeURIComponent(url.split('/').at(-1))) ? Response.json(registry.get(decodeURIComponent(url.split('/').at(-1)))) : absent(),
+      fetchMetadata: async url => {
+        const segments = new URL(url).pathname.split('/').filter(Boolean)
+        const last = segments.at(-1)
+        const name = decodeURIComponent(segments.length === 1 ? last : segments.at(-2))
+        const value = registry.get(name)
+        if (!value) return absent()
+        return Response.json(last === 'dist-tags' ? value['dist-tags'] : value.versions[last])
+      },
       run: async (command, args, options) => {
         calls.push(args); sessions.push(options.cwd)
         assert.equal(command, 'npm'); assert.equal(args[0], 'publish'); assert.equal(args[args.indexOf('--tag') + 1], bootstrapTag)
@@ -204,7 +212,7 @@ test('controlled publish retains exact archives/provenance receipts, isolates cr
         assert.ok(config.includes('${NPM_PACKAGE_BOOTSTRAP_TOKEN}')); assert.ok(!config.includes(token))
         assert.equal((await stat(options.env.NPM_CONFIG_USERCONFIG)).mode & 0o777, 0o600)
         const p = f.prepared.packages.find(p => args[1] === join(f.output, p.file))
-        registry.set(p.name, { versions: { [request.version]: { version: request.version, gitHead: revision,
+        registry.set(p.name, { versions: { [request.version]: { name: p.name, version: request.version, gitHead: revision,
           dist: { integrity: p.integrity, attestations: { url: 'https://registry.npmjs.org/fixture-attestation' }, tarball: 'https://registry.npmjs.org/fixture.tgz' } } }, 'dist-tags': { bootstrap: request.version } })
         return { stdout: 'discarded', stderr: '' }
       } })
@@ -320,4 +328,143 @@ test('workflow defaults to dry run and never exposes the bootstrap credential to
   assert.match(credentialSteps[0].run, / publish --plan /)
   assert.match(credentialSteps[0].env.NPM_PACKAGE_BOOTSTRAP_TOKEN, /inputs\.publish/)
   assert.equal(workflow.jobs.bootstrap.steps.at(-1).if, '${{ always() }}')
+  assert.equal(workflow.on.workflow_dispatch.inputs.cleanup_failed_c5_latest.default, false)
+  assert.match(workflow.jobs.bootstrap.if, /!inputs\.cleanup_failed_c5_latest/)
+  assert.equal(workflow.jobs.cleanup.permissions['id-token'], undefined)
+  assert.match(workflow.jobs.cleanup.if, /&& inputs\.cleanup_failed_c5_latest/)
+  const [cleanupStep, ...other] = workflow.jobs.cleanup.steps.filter(step => step.env?.NPM_PACKAGE_BOOTSTRAP_TOKEN)
+  assert.equal(other.length, 0)
+  assert.match(cleanupStep.run, /cleanup-failed-c5-latest/)
+  assert.ok(cleanupStep.env.NPM_PACKAGE_BOOTSTRAP_TOKEN.includes(`!inputs.publish && inputs.confirm == '${cleanupConfirmation}'`))
+  assert.equal(workflow.jobs.cleanup.steps.at(-1).if, '${{ always() }}')
+})
+
+const oldName = '@master/css-next', oldVersion = '0.0.0-bootstrap.41977322027.1'
+const oldRevision = '441516cfe59171a75ae6e25049ebb13bbe093e7d'
+const oldIntegrity = 'sha512-I4eb91M3tTfSivpwwFZTddmE3s9ODme6H4+Yjph5xi9GuVUd7IG0JMViVQ4CTtoeAjxHeLXczLQA/nV/90f7ww=='
+const oldWorkflow = '.github/workflows/npm-package-bootstrap.yml'
+const registryName = '@master%2fcss-next', latestTags = { bootstrap: oldVersion, latest: oldVersion }, onlyBootstrap = { bootstrap: oldVersion }
+
+test('C5 cleanup selects only the original unsuccessful run, failed publishing job and provider ZIP', () => {
+  const run = { id: 41983776353, run_attempt: 1, workflow_id: 407567928, path: oldWorkflow, head_sha: oldRevision, head_branch: 'rc',
+    event: 'workflow_dispatch', status: 'completed', conclusion: 'failure', repository: repo, head_repository: repo,
+    run_started_at: '2026-11-05T06:56:34Z', updated_at: '2026-11-05T07:04:04Z' }
+  const original = { workflow: { id: run.workflow_id, path: oldWorkflow }, releaseWorkflow: { path: '.github/workflows/release.yml', state: 'disabled_manually' },
+    run, latest: structuredClone(run), jobs: [{ id: 127099659562, run_id: run.id, run_attempt: 1, head_sha: oldRevision,
+      name: 'bootstrap', status: 'completed', conclusion: 'failure', steps: [
+        { name: 'Dry-run or explicitly publish the reviewed six archives', status: 'completed', conclusion: 'failure' },
+        { name: 'Retain original archives and source/integrity/provenance receipts even after failure', status: 'completed', conclusion: 'success' }
+      ] }], artifact: { id: 13395446596, name: `npm-package-bootstrap-${oldRevision}-1`, size_in_bytes: 144409301, expired: false,
+      digest: 'sha256:7c828ddc73f1dfb5049455bd3d2c6d8412099d61d3086f9c816fed0bc288933e', created_at: '2026-11-05T07:04:01Z',
+      workflow_run: { id: run.id, repository_id: repo.id, head_repository_id: repo.id, head_sha: oldRevision, head_branch: 'rc' } } }
+  verifyFailedBootstrapEvidence(original)
+  for (const edit of [d => { d.latest.run_attempt++ }, d => { d.run.conclusion = 'success' }, d => { d.jobs[0].steps[0].conclusion = 'success' },
+    d => { d.artifact.digest += '0' }, d => { d.artifact.expired = true }, d => { d.releaseWorkflow.state = 'active' }]) {
+    const data = structuredClone(original); edit(data)
+    assert.throws(() => verifyFailedBootstrapEvidence(data))
+  }
+})
+
+test('C5 provenance binds the archived digest and exact failed run invocation', () => {
+  const source = 'https://github.com/master-co/css', ref = 'refs/heads/rc', predicateType = 'https://slsa.dev/provenance/v1'
+  const original = { _type: 'https://in-toto.io/Statement/v1', predicateType,
+    subject: [{ name: `pkg:npm/%40master/css-next@${oldVersion}`, digest: { sha512: Buffer.from(oldIntegrity.slice(7), 'base64').toString('hex') } }],
+    predicate: { buildDefinition: { buildType: 'https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1',
+      externalParameters: { workflow: { ref, repository: source, path: oldWorkflow } },
+      internalParameters: { github: { repository_id: String(repo.id), event_name: 'workflow_dispatch' } },
+      resolvedDependencies: [{ uri: `git+${source}@${ref}`, digest: { gitCommit: oldRevision } }] },
+    runDetails: { builder: { id: 'https://github.com/actions/runner/github-hosted' }, metadata: { invocationId: `${source}/actions/runs/41983776353/attempts/1` } } } }
+  const bundle = statement => ({ dsseEnvelope: { payloadType: 'application/vnd.in-toto+json', payload: Buffer.from(JSON.stringify(statement)).toString('base64') } })
+  assert.deepEqual(verifyHistoricalBootstrapStatement(bundle(original), oldIntegrity), original)
+  for (const edit of [d => { d.subject[0].digest.sha512 = '0' }, d => { d.predicate.buildDefinition.resolvedDependencies[0].digest.gitCommit = revision },
+    d => { d.predicate.runDetails.metadata.invocationId += '0' }]) {
+    const data = structuredClone(original); edit(data)
+    assert.throws(() => verifyHistoricalBootstrapStatement(bundle(data), oldIntegrity))
+  }
+})
+
+function cleanupFixture({ read = () => ({ tags: latestTags, alias: oldVersion }), publish = false } = {}) {
+  const observations = []
+  const version = { name: oldName, version: oldVersion, gitHead: oldRevision, dist: { integrity: oldIntegrity } }
+  const options = { revision, cleanup: true, publish, confirm: cleanupConfirmation, env: publicationEnv(),
+    loadHistorical: async () => ({}), verifyPackage: async () => ({ publicTarballByteIdentical: true, cryptographicProvenanceVerified: true }),
+    fetchMetadata: async (url, config) => {
+      const route = new URL(url)
+      const auth = config.headers.Authorization === `Bearer ${token}`
+      assert.equal(route.hostname, 'registry.npmjs.org')
+      assert.equal(config.redirect, 'error')
+      const abbreviated = config.headers.accept === 'application/vnd.npm.install-v1+json'
+      observations.push({ path: route.pathname, search: route.search, auth, abbreviated })
+      const { tags, alias } = read(route, auth)
+      if (route.pathname === `/-/package/${registryName}/dist-tags`) return Response.json(tags)
+      if (route.pathname === `/${registryName}/latest`) return alias === null ? absent() : Response.json({ ...version, version: alias })
+      assert.equal(route.pathname, `/${registryName}`)
+      if (auth) assert.equal(route.search, '?write=true')
+      return Response.json({ name: oldName, 'dist-tags': tags, versions: { [oldVersion]: abbreviated ? { dist: version.dist } : version, '0.0.0-stage': {
+        description: abbreviated ? undefined : 'Temporary package placeholder for staged publishing',
+        dist: { integrity: 'sha512-/m0BuqDmx3lEMNP1oyClKRV7RlWpECNGAwr6yJN8t4LLNVSTzWy/WWfVNzx7RuebiyNzC/Vn3Zkk9kmjt8K+oA==' } } } })
+    } }
+  return { observations, options }
+}
+
+test('cleanup deletes only archived latest once and waits for ordinary packument and aliases to converge', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'master-c5-cleanup-')), output = join(root, 'receipt')
+  let deleted = false, time = 0, calls = 0, cwd
+  const { options, observations } = cleanupFixture({ read: (route, auth) => ({
+    tags: deleted && (route.search || route.pathname.endsWith('/dist-tags') || time >= 300_000) ? onlyBootstrap : latestTags,
+    alias: deleted && (auth || time >= 300_000) ? null : oldVersion }) })
+  try {
+    const receipt = await cleanupFailedBootstrapLatest(output, { ...options, wait: async delay => { time += delay }, run: async (command, args, session) => {
+      calls++; cwd = session.cwd
+      assert.equal(command, 'npm')
+      assert.deepEqual(args, ['dist-tag', 'rm', oldName, 'latest', '--registry', 'https://registry.npmjs.org/', '--fetch-retries=0', '--color=false'])
+      assert.equal(session.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN, undefined)
+      assert.equal(session.env.NPM_PACKAGE_BOOTSTRAP_TOKEN, token)
+      assert.equal((await readJSON(join(output, 'cleanup-receipt.json'))).latestRemovalPerformed, null)
+      deleted = true
+      return { stdout: `-latest: ${oldName}@${oldVersion}\n` }
+    } })
+    assert.equal(calls, 1)
+    assert.ok(time >= 300_000)
+    assert.equal(receipt.state, 'verified')
+    assert.equal(receipt.latestAliasHTTPStatusAfter, 404)
+    assert.deepEqual(receipt.tagsAfter, onlyBootstrap)
+    assert.equal(receipt.publicationPerformed, false)
+    assert.ok(observations.some(o => o.auth && o.path.endsWith('/latest')) && observations.some(o => !o.auth && o.path.endsWith('/latest')))
+    assert.ok(observations.some(o => o.abbreviated && !o.auth && !o.search))
+    assert.ok(!(await readFile(join(output, 'cleanup-receipt.json'), 'utf8')).includes(token))
+    await assert.rejects(stat(cwd), { code: 'ENOENT' })
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+test('cleanup rejects unexpected tags, aliases, mixed mode and an observed concurrent change before writing', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'master-c5-cleanup-conflict-'))
+  try {
+    let directReads = 0, calls = 0
+    const cases = [cleanupFixture({ read: () => ({ tags: { ...latestTags, rc: '2.0.0-rc.1' }, alias: oldVersion }) }),
+      cleanupFixture({ read: () => ({ tags: latestTags, alias: '2.0.0' }) }), cleanupFixture({ publish: true }),
+      cleanupFixture({ read: route => ({ tags: route.pathname.endsWith('/dist-tags') && ++directReads > 2 ? { ...latestTags, latest: '2.0.0' } : latestTags, alias: oldVersion }) })]
+    for (const [index, { options }] of cases.entries()) {
+      await assert.rejects(cleanupFailedBootstrapLatest(join(root, String(index)), { ...options, run: () => { calls++; throw Error('should not write') } }))
+    }
+    assert.equal(calls, 0)
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+test('cleanup refusal or stale registry leaves attempted receipt and never retries DELETE', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'master-c5-cleanup-failure-'))
+  try {
+    for (const failure of ['credential', 'stale']) {
+      let calls = 0, waited = 0
+      const output = join(root, failure), { options } = cleanupFixture()
+      await assert.rejects(cleanupFailedBootstrapLatest(output, { ...options, wait: async delay => { waited += delay }, run: async () => {
+        calls++
+        if (failure === 'credential') throw Error(token)
+        return { stdout: `-latest: ${oldName}@${oldVersion}\n` }
+      } }), error => !error.message.includes(token) && /receipt/.test(error.message))
+      assert.equal(calls, 1)
+      assert.equal((await readJSON(join(output, 'cleanup-receipt.json'))).state, 'attempted')
+      assert.ok(failure === 'credential' ? waited === 0 : waited > 300_000)
+    }
+  } finally { await rm(root, { recursive: true, force: true }) }
 })

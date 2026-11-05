@@ -3,21 +3,25 @@ on:
   workflow_dispatch:
     inputs:
       source_ci_run_id:
-        description: Completed CI release_candidate run on this exact HEAD
-        required: true
+        description: Completed CI release_candidate run on this HEAD (omit for C5 latest cleanup)
+        required: false
         type: string
       source_ci_attempt:
-        description: Latest successful attempt of that CI run
-        required: true
+        description: Latest successful CI attempt (omit for C5 latest cleanup)
+        required: false
         type: string
       publish:
         description: Publish only the six inactive bootstrap versions (default is dry run)
         type: boolean
         default: false
       confirm:
-        description: Type BOOTSTRAP SIX NPM NAMES only for the reviewed one-time publication
+        description: Exact confirmation for the selected reviewed write
         type: string
         default: ""
+      cleanup_failed_c5_latest:
+        description: Remove only the unintended C5 @master/css-next latest tag
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -28,7 +32,7 @@ concurrency:
 
 jobs:
   bootstrap:
-    if: ${{ github.repository == 'master-co/css' && github.ref_type == 'branch' && (github.ref_name == 'main' || github.ref_name == 'rc') }}
+    if: ${{ github.repository == 'master-co/css' && github.ref_type == 'branch' && (github.ref_name == 'main' || github.ref_name == 'rc') && !inputs.cleanup_failed_c5_latest }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     permissions:
@@ -71,5 +75,44 @@ jobs:
         with:
           name: npm-package-bootstrap-${{ github.sha }}-${{ github.run_attempt }}
           path: bootstrap-artifacts/
+          if-no-files-found: warn
+          retention-days: 90
+
+  cleanup:
+    name: Remove unintended latest from the archived C5 bootstrap version
+    if: ${{ github.repository == 'master-co/css' && github.ref_type == 'branch' && (github.ref_name == 'main' || github.ref_name == 'rc') && inputs.cleanup_failed_c5_latest }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache: "false"
+      - name: Test the isolated bootstrap and cleanup guards
+        run: node --test scripts/npm-package-bootstrap.test.mjs
+      - name: Install the pinned npm CLI and provenance verifier
+        run: npm install --global npm@11.21.0
+      - name: Verify original provenance and remove only the unintended C5 latest tag
+        run: node scripts/npm-package-bootstrap.mjs cleanup-failed-c5-latest --output cleanup-artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOOTSTRAP_SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          BOOTSTRAP_SOURCE_CI_ATTEMPT: ${{ inputs.source_ci_attempt }}
+          BOOTSTRAP_CLEANUP: ${{ inputs.cleanup_failed_c5_latest }}
+          BOOTSTRAP_PUBLISH: ${{ inputs.publish }}
+          BOOTSTRAP_CONFIRM: ${{ inputs.confirm }}
+          NPM_PACKAGE_BOOTSTRAP_TOKEN: ${{ !inputs.publish && inputs.confirm == 'REMOVE C5 BOOTSTRAP LATEST' && !inputs.source_ci_run_id && !inputs.source_ci_attempt && secrets.NPM_PACKAGE_BOOTSTRAP_TOKEN || '' }}
+      - name: Retain verified evidence and attempted cleanup receipt
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-package-bootstrap-cleanup-${{ github.sha }}-${{ github.run_attempt }}
+          path: cleanup-artifacts/
           if-no-files-found: warn
           retention-days: 90
