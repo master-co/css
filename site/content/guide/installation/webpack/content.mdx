@@ -38,9 +38,21 @@ Build Master CSS into a Webpack, Rspack or Rsbuild application. All three use `@
       ```
     </StepR>
   </Step>
+  <Step $row>
+    <StepL>
+      ### Include the HTML template \{#include-html-template\}
+      If you put the paragraph in a standalone `index.html` template, include it with `@source`. The path is relative to `src/index.css`; adjust it if your HTML plugin uses a different template. Classes in framework components are detected from the module graph.
+    </StepL>
+    <StepR>
+      ```css name=src/index.css
+      @import '@master/css';
+      @source '../index.html';
+      ```
+    </StepR>
+  </Step>
   <Step>
     ### Start using Master CSS \{#start-using-master-css\}
-    Start the dev server and place the paragraph in the HTML template processed by the HTML plugin, or in a framework component.
+    Place the paragraph in your HTML template or framework component, then start the dev server. After editing a standalone template, reload the page once the dev server has rebuilt it.
   </Step>
   <InstallationPreview>
 

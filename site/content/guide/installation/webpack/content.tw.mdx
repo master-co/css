@@ -46,9 +46,21 @@ import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
       ```
     </StepR>
   </Step>
+  <Step $row>
+    <StepL>
+      ### 將 HTML 範本納入掃描 \{#include-html-template\}
+      如果將段落放在獨立的 `index.html` 範本中，請用 `@source` 將它納入掃描。路徑相對於 `src/index.css`；如果 HTML 外掛使用不同的範本，請調整路徑。框架元件中的類別會從模組依賴中偵測。
+    </StepL>
+    <StepR>
+      ```css name=src/index.css
+      @import '@master/css';
+      @source '../index.html';
+      ```
+    </StepR>
+  </Step>
   <Step>
     ### 開始使用 Master CSS \{#start-using-master-css\}
-    啟動開發伺服器，將段落放進 HTML 外掛處理的 HTML 範本，或框架元件中。
+    將段落放進 HTML 範本或框架元件，再啟動開發伺服器。修改獨立範本後，等開發伺服器重新建置，再重新載入頁面。
   </Step>
   <InstallationPreview>
 

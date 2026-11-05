@@ -417,20 +417,20 @@
     },
     "guide/installation/webpack/content.mdx": {
       "tw": {
-        "sourceHash": "352d10ddc310486ac64d4d735aea3c5fcc2196c2db09af627baec2e13509fd85",
-        "translationHash": "7f7d150e2b13d3b523f9a66715cb3123bfb2ff148334c71badafa62f18e0998b"
+        "sourceHash": "17c6ea863157957e61e20270801966866d4be5bad831e1ce128e2209fb5b8e92",
+        "translationHash": "b9c385475fbc8bbd00cb77e57f34d5b49fe19d5241f11e23a56e27f21a0f6058"
       },
       "ja": {
-        "sourceHash": "352d10ddc310486ac64d4d735aea3c5fcc2196c2db09af627baec2e13509fd85",
-        "translationHash": "00289413bc80a53f3c378611ff16ce278d36c262f93d79ec1a99219af37ab2d8"
+        "sourceHash": "17c6ea863157957e61e20270801966866d4be5bad831e1ce128e2209fb5b8e92",
+        "translationHash": "b9e09c457727eec9767bdab860b29996a496800ee3901ba00ada88383efad7f6"
       },
       "ko": {
-        "sourceHash": "352d10ddc310486ac64d4d735aea3c5fcc2196c2db09af627baec2e13509fd85",
-        "translationHash": "473830d9f0723ee9a11d5754862cba7e144af382962eb3b2c33f17de870e4b3d"
+        "sourceHash": "17c6ea863157957e61e20270801966866d4be5bad831e1ce128e2209fb5b8e92",
+        "translationHash": "92a6a7df45be1918e5015da4f57fa69c4f365a8a98838c264288e2ca45141f1f"
       },
       "cn": {
-        "sourceHash": "352d10ddc310486ac64d4d735aea3c5fcc2196c2db09af627baec2e13509fd85",
-        "translationHash": "110d4a5dfed2641698470a4a980cec5ddf2e7990112e98157583172732550fca"
+        "sourceHash": "17c6ea863157957e61e20270801966866d4be5bad831e1ce128e2209fb5b8e92",
+        "translationHash": "8935e10be81315da5f0b8bfba8da99e1d4cc4136af8c4712b569e09d722ad8de"
       }
     },
     "guide/introduction/components/Overview.mdx": {

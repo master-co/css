@@ -46,9 +46,21 @@ Master CSS를 Webpack, Rspack 또는 Rsbuild 애플리케이션에 빌드합니�
       ```
     </StepR>
   </Step>
+  <Step $row>
+    <StepL>
+      ### HTML 템플릿을 검사에 포함하기 \{#include-html-template\}
+      별도의 `index.html` 템플릿에 문단을 넣는 경우 `@source`로 해당 템플릿을 검사에 포함하세요. 경로는 `src/index.css`를 기준으로 합니다. HTML 플러그인이 다른 템플릿을 사용하면 경로를 맞춰 변경하세요. 프레임워크 컴포넌트의 클래스는 모듈 의존 관계에서 찾습니다.
+    </StepL>
+    <StepR>
+      ```css name=src/index.css
+      @import '@master/css';
+      @source '../index.html';
+      ```
+    </StepR>
+  </Step>
   <Step>
     ### Master CSS 사용 시작하기 \{#start-using-master-css\}
-    개발 서버를 시작하고 HTML 플러그인이 처리하는 HTML 템플릿이나 프레임워크 컴포넌트에 문단을 배치하세요.
+    HTML 템플릿이나 프레임워크 컴포넌트에 문단을 넣고 개발 서버를 시작하세요. 별도 템플릿을 수정한 뒤에는 개발 서버의 빌드가 끝나면 페이지를 다시 불러오세요.
   </Step>
   <InstallationPreview>
 

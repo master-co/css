@@ -46,9 +46,21 @@ Webpack、Rspack、Rsbuild のアプリに Master CSS を組み込みます。�
       ```
     </StepR>
   </Step>
+  <Step $row>
+    <StepL>
+      ### HTML テンプレートを検出対象に加える \{#include-html-template\}
+      段落を独立した `index.html` テンプレートに置く場合は、`@source` で検出対象に加えます。パスは `src/index.css` からの相対パスです。HTML プラグインが別のテンプレートを使う場合は調整してください。コンポーネント内のクラスはモジュールの依存関係から検出されます。
+    </StepL>
+    <StepR>
+      ```css name=src/index.css
+      @import '@master/css';
+      @source '../index.html';
+      ```
+    </StepR>
+  </Step>
   <Step>
     ### Master CSS を使い始める \{#start-using-master-css\}
-    開発サーバーを起動し、HTML プラグインが処理する HTML テンプレートか、フレームワークのコンポーネントに段落を置きます。
+    HTML テンプレートまたはフレームワークのコンポーネントに段落を置き、開発サーバーを起動します。独立したテンプレートを編集したら、開発サーバーの再ビルドが完了してからページを再読み込みします。
   </Step>
   <InstallationPreview>
 
