@@ -28,6 +28,22 @@ jobs:
       - uses: ./.github/actions/setup-bun
         with:
           turbo-cache-scope: compat
+      - name: Verify packed Svelte addon with GNU tar
+        if: ${{ inputs.mode == 'focused' || inputs.mode == 'full' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar_path="$(type -P tar)"
+          export PATH="${tar_path%/*}:$PATH"
+          tar --version
+          bun --eval '
+            const { execFileSync } = require("node:child_process");
+            const version = execFileSync("tar", ["--version"], { encoding: "utf8" });
+            if (!version.includes("GNU tar")) throw new Error("Packed addon verification requires GNU tar");
+            process.stdout.write(version);
+          '
+          bun run --filter @master/css-svelte-addon build
+          bun run --cwd packages/css-sv test tests/issues/489.test.ts
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: windows-compatibility

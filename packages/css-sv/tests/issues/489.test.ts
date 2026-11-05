@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { expect, test } from 'vitest'
 import addon from '../../src'
@@ -46,8 +46,9 @@ for (const version of ['2.0.0', '2.0.0-rc.42', '0.0.0']) {
       execFileSync('bun', ['pm', 'pack', '--ignore-scripts', '--destination', archives], { cwd: stage, stdio: 'pipe' })
       const packed = readdirSync(archives).filter(file => file.endsWith('.tgz'))
       expect(packed).toHaveLength(1)
-      // GNU tar treats a Windows drive in the archive name as a remote host.
-      execFileSync('tar', ['-xzf', packed[0], '-C', installed, '--strip-components', '1'], { cwd: archives })
+      // GNU tar needs both the archive and destination without Windows drive/backslash spelling.
+      const destination = relative(archives, installed).split(sep).join('/')
+      execFileSync('tar', ['-xzf', packed[0], '-C', destination, '--strip-components', '1'], { cwd: archives })
       expect(JSON.parse(readFileSync(join(installed, 'package.json'), 'utf8')).version).toBe(version)
       // sv supplies the one external peer when it loads a community add-on.
       symlinkSync(svRoot, join(consumer, 'node_modules/sv'), process.platform === 'win32' ? 'junction' : 'dir')
