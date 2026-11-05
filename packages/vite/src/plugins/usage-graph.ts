@@ -6,6 +6,7 @@ import { getScanner } from '../utils/scanner-context'
 
 export default function UsageGraphPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   const sources = new Set<string>()
+  const closedEnvironments = new WeakSet<object>()
   let watcher: ViteDevServer['watcher'] | undefined
   return {
     name: 'master-css:usage-graph',
@@ -14,8 +15,17 @@ export default function UsageGraphPlugin(_options: ResolvedMasterCSSVitePluginOp
     apply(_, env) {
       return !env.isSsrBuild
     },
+    buildStart() {
+      if (this.environment) closedEnvironments.delete(this.environment)
+    },
+    closeBundle() {
+      if (this.environment) closedEnvironments.add(this.environment)
+    },
     async transform(code, id) {
       if (id.startsWith('\0')) return
+      // A framework can still use a closed SSR child compiler to inspect route exports.
+      // The transform may proceed, but its disposed scanner no longer owns any CSS output.
+      if (this.environment && closedEnvironments.has(this.environment)) return
       const source = id.split('?')[0]
       // Framework plugins compile these in load; scan the authored file once.
       if (/\.(?:mdx?|vue|svelte|astro)$/.test(source)) {
