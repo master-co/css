@@ -237,11 +237,11 @@ Keep only one Master CSS language extension enabled to avoid competing language 
 
 ## Documentation
 
-See the [language service guide](https://rc.css.master.co/guide/language-service), the [`@master/css-language-service`](../language-service) README, and the [`@master/css-language-server`](../language-server) README for deeper details.
+See the [language service guide](https://css.master.co/guide/language-service), the [`@master/css-language-service`](../language-service) README, and the [`@master/css-language-server`](../language-server) README for deeper details.
 
 ## Community
 
-- [Documentation](https://rc.css.master.co/guide/language-service) — Start with setup, features, and troubleshooting.
+- [Documentation](https://css.master.co/guide/language-service) — Start with setup, features, and troubleshooting.
 - [GitHub Discussions](https://github.com/master-co/css/discussions) — Ask usage questions and share ideas in English or Chinese.
 - [GitHub Issues](https://github.com/master-co/css/issues) — Report reproducible bugs with your editor, extension version, and project setup.
 
