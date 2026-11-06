@@ -30,6 +30,10 @@ export interface MasterCSSLintClassListOptions {
   readonly rawValuePolicy?: RawValuePolicyOptions
   readonly remoteStylingPolicy?: RemoteStylingPolicyOptions
   readonly canonicalOptions?: CanonicalClassNameOptions
+  /** Classes the same element always receives from its other class lists. */
+  readonly elementClassNames?: readonly string[]
+  /** Whether this class list only applies under a condition of a class binding. */
+  readonly conditional?: boolean
 }
 
 export interface MasterCSSLintEdit {
@@ -80,6 +84,13 @@ export interface MasterCSSLintDocumentAnalysis {
     contextRange: Readonly<{ start: number, end: number }>
     raw: string
     token: string
+  }>[]
+  /** Absent from bindings built before element class list groups. */
+  readonly classListGroups?: readonly Readonly<{
+    lists: readonly Readonly<{
+      range: Readonly<{ start: number, end: number }>
+      conditional: boolean
+    }>[]
   }>[]
 }
 

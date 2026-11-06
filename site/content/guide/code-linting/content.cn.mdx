@@ -130,6 +130,15 @@ b-solid bt-dashed
 
 移除刻意覆盖前，先比较生成的声明，并在浏览器检查元素。
 
+在 Vue 与 HTML 模板中，[`master-css lint`](/reference/tools/cli#lint) 也会比较元素的静态 `class` 与 `:class` 绑定添加的 class。若条件 class 总是被静态 class 覆盖，它就永远不会生效，因此会报告，但不提供自动修复：
+
+```vue
+<button class="(cursor:pointer)" :class="{ '(cursor:not-allowed)': disabled }"> <!-- [!code --] -->
+<button class="(cursor:pointer) (cursor:not-allowed):disabled" :disabled="disabled"> <!-- [!code ++] -->
+```
+
+请把基础 class 也改为条件 class，或用选择器限定状态 class。
+
 ---
 
 <GuideStudy id="lint-ownership" />

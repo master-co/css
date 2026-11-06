@@ -816,3 +816,43 @@ fn completes_native_declaration_components_at_the_cursor() {
         assert_eq!(complete("html", marked), None, "{marked}");
     }
 }
+
+#[test]
+fn groups_static_and_bound_class_lists_of_each_element() {
+    let source = concat!(
+        "<template>\n",
+        "  <button class=\"(cursor:pointer) (cursor:not-allowed)\">same</button>\n",
+        "  <button class=\"(cursor:pointer)\" :class=\"{ '(cursor:not-allowed)': disabled }\">split</button>\n",
+        "  <button :class=\"['(cursor:pointer)', disabled && '(cursor:not-allowed)']\">array</button>\n",
+        "  <i class=\"a\" v-bind:class=\"on ? 'b' : `c ${d}`\" />\n",
+        "  <MyItem class=\"a\" :content-class=\"'b'\" />\n",
+        "</template>\n",
+        "<script setup>const x = a < b; const y = '<i class=\"z\" :class=\"w\">'</script>",
+    );
+    let index = crate::document_index::DocumentIndex::new(source);
+    let groups = crate::element_groups::collect_class_list_groups(source, &index, "vue");
+    let lists = groups
+        .iter()
+        .map(|group| {
+            group
+                .lists
+                .iter()
+                .map(|list| {
+                    (
+                        &source[list.range.start as usize..list.range.end as usize],
+                        list.conditional,
+                    )
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        lists,
+        [
+            vec![("(cursor:pointer)", false), ("(cursor:not-allowed)", true)],
+            vec![("(cursor:pointer)", false), ("(cursor:not-allowed)", true)],
+            vec![("a", false), ("b", true), ("c ", true)],
+        ]
+    );
+    assert!(crate::element_groups::collect_class_list_groups(source, &index, "svelte").is_empty());
+}

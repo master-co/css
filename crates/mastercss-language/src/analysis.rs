@@ -13,6 +13,7 @@ pub(crate) struct PreparedDocument {
     index: DocumentIndex,
     pub(crate) contexts: Vec<ClassListContextIr>,
     pub(crate) positions: Vec<ClassPositionIr>,
+    class_list_groups: Vec<ClassListGroupIr>,
     keyframe_positions: Vec<ClassPositionIr>,
     class_names: Vec<String>,
     native_candidates: Vec<NativeDeclarationCandidateIr>,
@@ -107,8 +108,14 @@ impl LanguageSession {
             .collect::<Vec<_>>();
         let keyframe_diagnostics =
             keyframes::diagnostics(&request.source, &request.language_id, &index);
+        let class_list_groups = if markdown.is_some() {
+            Vec::new()
+        } else {
+            element_groups::collect_class_list_groups(&request.source, &index, &request.language_id)
+        };
         Ok(PreparedDocument {
             id,
+            class_list_groups,
             contexts,
             positions,
             keyframe_positions: keyframes::positions(&request.source, &request.language_id, &index),
@@ -148,6 +155,7 @@ impl LanguageSession {
                 &semantic_tokens,
             ),
             semantic_tokens,
+            class_list_groups: prepared.class_list_groups,
         })
     }
 

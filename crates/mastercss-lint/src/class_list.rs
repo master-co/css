@@ -1,7 +1,7 @@
 use crate::{
-    CanonicalClassGroupSuggestionIr, CanonicalClassSuggestionIr, LintBatchIr, LintClassListIr,
-    LintDiagnosticIr, LintEditIr, LintEditScope, RawValueCandidateIr, RawValuePolicy,
-    RemoteStylingPolicy,
+    CanonicalClassGroupSuggestionIr, CanonicalClassSuggestionIr, ClassConflictIr, LintBatchIr,
+    LintClassListIr, LintDiagnosticIr, LintEditIr, LintEditScope, RawValueCandidateIr,
+    RawValuePolicy, RemoteStylingPolicy,
 };
 use mastercss_lexer::utf16_len;
 use mastercss_schema::{LINT_BATCH_VERSION, SourceRange};
@@ -327,6 +327,53 @@ fn create_diagnostics(
         });
     }
     diagnostics
+}
+
+/// Reports classes of this list that another class list of the same element
+/// always overrides. Removing the class is rarely the intent when it only
+/// applies under a condition, so these diagnostics carry no fix.
+pub(crate) fn add_element_conflict_diagnostics(
+    result: &mut LintClassListIr,
+    class_list: &str,
+    class_names: &[String],
+    conflicts: &[ClassConflictIr],
+    conditional: bool,
+) {
+    let items = parse_class_list(class_list, class_names);
+    for conflict in conflicts {
+        let Some(range) = find_class_range(&items, &conflict.class_name) else {
+            continue;
+        };
+        let winner = conflict.conflicts.join(" ");
+        let message = if conditional {
+            format!(
+                "Class {} never applies, even when its condition is met; class {} on the same element always overrides it in generated CSS. Make the base class conditional too, or scope the state class with a selector.",
+                quote_diagnostic_value(&conflict.class_name),
+                quote_diagnostic_value(&winner),
+            )
+        } else {
+            format!(
+                "Remove class {}; it is overridden by class {} from another class list on the same element in generated CSS.",
+                quote_diagnostic_value(&conflict.class_name),
+                quote_diagnostic_value(&winner),
+            )
+        };
+        result.diagnostics.push(LintDiagnosticIr {
+            rule_id: "no-conflicting-classes".into(),
+            code: "element-conflicting-class".into(),
+            message,
+            range,
+            data: serde_json::Map::from_iter([
+                (
+                    "className".into(),
+                    serde_json::Value::String(conflict.class_name.clone()),
+                ),
+                ("conflicts".into(), serde_json::json!(conflict.conflicts)),
+                ("conditional".into(), serde_json::Value::Bool(conditional)),
+            ]),
+            fix: None,
+        });
+    }
 }
 
 fn create_validation_diagnostics(

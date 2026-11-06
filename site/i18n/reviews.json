@@ -111,20 +111,20 @@
     },
     "guide/code-linting/content.mdx": {
       "tw": {
-        "sourceHash": "229bf326bf7b02998a0e5bfc1e0e896adb05127b093d838622d9eb2bf3dd5da5",
-        "translationHash": "c5c6ae759425e5b61a2f401a0c12ad5de164a1455aaa7f4a9d696045417be1dd"
+        "sourceHash": "2efd0a2b36aec18958b15e0b99299f264e9c8c7fd7fd8be1c65cf089f8e8c1d5",
+        "translationHash": "cc158ae69dd4c6ecce3f48b1488c80a342595274767736f0e81e8db8efaf1fb0"
       },
       "ja": {
-        "sourceHash": "229bf326bf7b02998a0e5bfc1e0e896adb05127b093d838622d9eb2bf3dd5da5",
-        "translationHash": "55d92f58fc1732e0740084fafb7c2fa321acd1b8b03bff4e4562b7618dfd8a62"
+        "sourceHash": "2efd0a2b36aec18958b15e0b99299f264e9c8c7fd7fd8be1c65cf089f8e8c1d5",
+        "translationHash": "4814e1643c4ea49a717d16e9647051f62e9cd8993e0878f5e243de83a003256e"
       },
       "ko": {
-        "sourceHash": "229bf326bf7b02998a0e5bfc1e0e896adb05127b093d838622d9eb2bf3dd5da5",
-        "translationHash": "291f92108f89e759467159fe5f5c9e572f9b5c93ea707f77bb5f28794c4e628c"
+        "sourceHash": "2efd0a2b36aec18958b15e0b99299f264e9c8c7fd7fd8be1c65cf089f8e8c1d5",
+        "translationHash": "4f41ee1d9dbf585132016a06974a19ca18221c39183f5fd0bbacdb64dac684d1"
       },
       "cn": {
-        "sourceHash": "229bf326bf7b02998a0e5bfc1e0e896adb05127b093d838622d9eb2bf3dd5da5",
-        "translationHash": "b6fb958e3f430a069178b7f70a271531f03c303bb040f17cd34052aadd0982e0"
+        "sourceHash": "2efd0a2b36aec18958b15e0b99299f264e9c8c7fd7fd8be1c65cf089f8e8c1d5",
+        "translationHash": "2ce00199a97dfe0579483a639d39abc70bae36dd2af312c43ef0d7d097dde8a8"
       }
     },
     "guide/colors/content.mdx": {

@@ -126,6 +126,10 @@ struct LintClassListRequest {
     raw_value_policy: Option<mastercss_lint::RawValuePolicyRequest>,
     remote_styling_policy: Option<mastercss_lint::RemoteStylingPolicy>,
     canonical_options: Option<mastercss_lint::CanonicalClassNameOptions>,
+    #[serde(default)]
+    element_class_names: Vec<String>,
+    #[serde(default)]
+    conditional: bool,
 }
 
 #[wasm_bindgen(js_name = extractClassCandidates)]
@@ -334,6 +338,8 @@ impl ToolingLintSession {
                     raw_value_policy: raw_value_policy.as_ref(),
                     remote_styling_policy: request.remote_styling_policy.as_ref(),
                     canonical_options: request.canonical_options.as_ref(),
+                    element_class_names: &request.element_class_names,
+                    conditional: request.conditional,
                 },
             )
             .map_err(scanner_error)?;

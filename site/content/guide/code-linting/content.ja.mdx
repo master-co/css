@@ -130,6 +130,15 @@ b-solid bt-dashed
 
 意図的な上書きを消す前に、生成宣言を比較し、ブラウザーで要素を確認します。
 
+Vue と HTML のテンプレートでは、[`master-css lint`](/reference/tools/cli#lint) が要素の静的な `class` と `:class` バインディングで追加されるクラスも比較します。静的なクラスに常に上書きされる条件付きクラスは決して適用されないため、自動修正なしで報告します。
+
+```vue
+<button class="(cursor:pointer)" :class="{ '(cursor:not-allowed)': disabled }"> <!-- [!code --] -->
+<button class="(cursor:pointer) (cursor:not-allowed):disabled" :disabled="disabled"> <!-- [!code ++] -->
+```
+
+基本のクラスも条件付きにするか、状態のクラスをセレクターで限定します。
+
 ---
 
 <GuideStudy id="lint-ownership" />

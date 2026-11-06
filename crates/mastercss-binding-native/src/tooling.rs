@@ -144,6 +144,8 @@ impl NodeLintSession {
                         raw_value_policy: raw_value_policy.as_ref(),
                         remote_styling_policy: request.remote_styling_policy.as_ref(),
                         canonical_options: request.canonical_options.as_ref(),
+                        element_class_names: &request.element_class_names,
+                        conditional: request.conditional,
                     },
                 )
                 .map_err(to_napi_error)?,

@@ -667,6 +667,10 @@ export interface MasterCSSLintClassListPolicyRequest {
   canonicalOptions?: Partial<MasterCSSLintCanonicalClassNameOptions>
   rawValuePolicy?: MasterCSSLintRawValuePolicy
   remoteStylingPolicy?: MasterCSSLintRemoteStylingPolicy
+  /** Classes the same element always receives from its other class lists. */
+  elementClassNames?: readonly string[]
+  /** Whether this class list only applies under a condition of a class binding. */
+  conditional?: boolean
 }
 
 export interface MasterCSSLanguageClassListContext {
@@ -709,6 +713,16 @@ export interface MasterCSSLanguageDocument {
   diagnostics: MasterCSSDiagnostic[]
   semanticTokens: MasterCSSLanguageSemanticToken[]
   semanticTokenData: number[]
+  /** Class lists of each element that combines a static `class` with a class binding. */
+  classListGroups: MasterCSSLanguageClassListGroup[]
+}
+
+export interface MasterCSSLanguageClassListGroup {
+  lists: {
+    range: MasterCSSSourceRange
+    /** Whether the list only applies under a condition of the binding. */
+    conditional: boolean
+  }[]
 }
 
 export interface MasterCSSLanguageFormatRequest {

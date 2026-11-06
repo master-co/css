@@ -1,7 +1,7 @@
 use super::{
     CanonicalClassGroupSuggestionsIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
-    CanonicalClassSuggestionsIr, ClassDescriptor, EngineError, EngineSession, HashSet,
-    LINT_BATCH_VERSION, LintBatchIr, LintClassListIr, LintClassListPolicy, LintSession,
+    CanonicalClassSuggestionsIr, ClassConflictIr, ClassDescriptor, EngineError, EngineSession,
+    HashSet, LINT_BATCH_VERSION, LintBatchIr, LintClassListIr, LintClassListPolicy, LintSession,
     NativeDeclarationCandidateIr, RawValueCandidatesIr, Value,
     build_canonical_recommendation_index, class_list, find_conflicts, find_partial_conflicts,
     sort_descriptors,
@@ -160,6 +160,20 @@ impl LintSession {
                 });
             }
         }
+        if !policy.element_class_names.is_empty() {
+            let element_conflicts = self.element_conflicts(
+                class_names,
+                policy.element_class_names,
+                invalid_generated_classes,
+            )?;
+            class_list::add_element_conflict_diagnostics(
+                &mut result,
+                class_list,
+                class_names,
+                &element_conflicts,
+                policy.conditional,
+            );
+        }
         if let Some(options) = policy.canonical_options {
             let groups = self.canonical_class_groups(class_names, native_support, options)?;
             let names = self.canonical_class_names(class_names, native_support, options)?;
@@ -172,6 +186,38 @@ impl LintSession {
             );
         }
         Ok(result)
+    }
+
+    /// Classes of this list that a class the element always receives from
+    /// another list overrides in generated CSS.
+    fn element_conflicts(
+        &mut self,
+        class_names: &[String],
+        element_class_names: &[String],
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<Vec<ClassConflictIr>, EngineError> {
+        let own = class_names.iter().collect::<HashSet<_>>();
+        let element = element_class_names.iter().collect::<HashSet<_>>();
+        let mut combined = Vec::new();
+        let mut seen = HashSet::new();
+        for class_name in element_class_names.iter().chain(class_names) {
+            if seen.insert(class_name) {
+                combined.push(class_name.clone());
+            }
+        }
+        let (analysis, _) = self.analyze_with_matches(combined, None, invalid_generated_classes)?;
+        Ok(analysis
+            .conflicts
+            .into_iter()
+            .filter(|conflict| {
+                own.contains(&conflict.class_name)
+                    && !element.contains(&conflict.class_name)
+                    && conflict
+                        .conflicts
+                        .iter()
+                        .all(|winner| element.contains(winner) && !own.contains(winner))
+            })
+            .collect())
     }
 
     pub fn raw_value_candidates(

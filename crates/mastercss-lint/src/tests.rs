@@ -444,3 +444,58 @@ fn reports_class_lists_that_style_other_elements_past_the_limit() {
         .is_empty()
     );
 }
+
+#[test]
+fn reports_element_classes_that_always_override_a_class_list() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    let mut analyze = |class_list: &str, element: &[&str], conditional: bool| {
+        let class_names = class_list
+            .split_whitespace()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        let element = element
+            .iter()
+            .map(|name| (*name).to_owned())
+            .collect::<Vec<_>>();
+        session
+            .analyze_class_list(
+                class_list,
+                &class_names,
+                None,
+                &HashSet::new(),
+                LintClassListPolicy {
+                    element_class_names: &element,
+                    conditional,
+                    ..LintClassListPolicy::default()
+                },
+            )
+            .unwrap()
+            .diagnostics
+            .into_iter()
+            .filter(|diagnostic| diagnostic.code == "element-conflicting-class")
+            .collect::<Vec<_>>()
+    };
+    let diagnostics = analyze("block (cursor:not-allowed)", &["(cursor:pointer)"], true);
+    assert_eq!(diagnostics.len(), 1);
+    assert_eq!(diagnostics[0].range, SourceRange { start: 6, end: 26 });
+    assert_eq!(
+        diagnostics[0].message,
+        "Class \"(cursor:not-allowed)\" never applies, even when its condition is met; class \"(cursor:pointer)\" on the same element always overrides it in generated CSS. Make the base class conditional too, or scope the state class with a selector."
+    );
+    assert_eq!(
+        diagnostics[0].data["conflicts"],
+        serde_json::json!(["(cursor:pointer)"])
+    );
+    assert!(diagnostics[0].fix.is_none());
+    assert!(
+        analyze("(cursor:not-allowed)", &["(cursor:pointer)"], false)[0]
+            .message
+            .starts_with("Remove class \"(cursor:not-allowed)\"; it is overridden")
+    );
+    // A state class that wins, an unrelated property and a scoped state are fine.
+    assert!(analyze("(cursor:pointer)", &["(cursor:not-allowed)"], true).is_empty());
+    assert!(analyze("(cursor:not-allowed)", &["(color:red)"], true).is_empty());
+    assert!(analyze("(cursor:not-allowed):disabled", &["(cursor:pointer)"], true).is_empty());
+    // Conflicts within the list itself stay with the regular conflict diagnostic.
+    assert!(analyze("(cursor:pointer) (cursor:not-allowed)", &["block"], true).is_empty());
+}

@@ -41,3 +41,36 @@ test('bound Vue class props only sort the class lists inside their expression (#
   }
   expect(fixMasterCSSContent(options)).toBe(content.replaceAll('p(8) flex', 'flex p(8)'))
 })
+
+test('reports conditional classes that the static class always overrides (#495)', () => {
+  using session = createTestToolingSession()
+  const content = [
+    '<script setup lang="ts">',
+    'defineProps<{ disabled: boolean }>()',
+    '</script>',
+    '',
+    '<template>',
+    '  <button class="(cursor:pointer) (cursor:not-allowed)">same attribute</button>',
+    '  <button class="(cursor:pointer)" :class="{ \'(cursor:not-allowed)\': disabled }">split</button>',
+    '  <button :class="[\'(cursor:pointer)\', disabled && \'(cursor:not-allowed)\']">array</button>',
+    '  <button class="(cursor:not-allowed)" :class="{ \'(cursor:pointer)\': !disabled }">wins</button>',
+    '  <button :class="disabled ? \'(cursor:not-allowed)\' : \'(cursor:pointer)\'">ternary</button>',
+    '</template>',
+    ''
+  ].join('\n')
+  const options = { content, filePath: 'Button.vue', lintSession: session }
+  const diagnostics = lintMasterCSSContent(options).diagnostics
+    .filter(({ ruleId }) => ruleId === 'no-conflicting-classes')
+  expect(diagnostics.map(({ code, loc }) => [code, loc.start.line])).toEqual([
+    ['conflicting-class', 6],
+    ['element-conflicting-class', 7],
+    ['element-conflicting-class', 8]
+  ])
+  for (const diagnostic of diagnostics.slice(1)) {
+    expect(content.slice(diagnostic.range.start, diagnostic.range.end)).toBe('(cursor:not-allowed)')
+    expect(diagnostic.message).toMatch(/^Class "\(cursor:not-allowed\)" never applies, even when its condition is met; class "\(cursor:pointer\)"/)
+    expect(diagnostic.fixes).toBeUndefined()
+  }
+  expect(lintMasterCSSContent({ ...options, rules: { 'no-conflicting-classes': false } }).diagnostics
+    .some(({ code }) => code === 'element-conflicting-class')).toBe(false)
+})

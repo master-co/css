@@ -121,6 +121,10 @@ struct LintClassListRequest {
     raw_value_policy: Option<RawValuePolicyRequest>,
     remote_styling_policy: Option<mastercss_lint::RemoteStylingPolicy>,
     canonical_options: Option<CanonicalClassNameOptions>,
+    #[serde(default)]
+    element_class_names: Vec<String>,
+    #[serde(default)]
+    conditional: bool,
 }
 
 fn to_napi_error(error: EngineError) -> Error {

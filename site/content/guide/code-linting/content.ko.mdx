@@ -130,6 +130,15 @@ b-solid bt-dashed
 
 의도적인 재정의를 제거하기 전에 생성 선언을 비교하고 브라우저에서 요소를 검사하세요.
 
+Vue와 HTML 템플릿에서는 [`master-css lint`](/reference/tools/cli#lint)가 요소의 정적 `class`와 `:class` 바인딩이 추가하는 클래스도 비교합니다. 정적 클래스가 항상 재정의하는 조건부 클래스는 절대 적용되지 않으므로 자동 수정 없이 보고됩니다.
+
+```vue
+<button class="(cursor:pointer)" :class="{ '(cursor:not-allowed)': disabled }"> <!-- [!code --] -->
+<button class="(cursor:pointer) (cursor:not-allowed):disabled" :disabled="disabled"> <!-- [!code ++] -->
+```
+
+기본 클래스도 조건부로 만들거나 상태 클래스를 선택자로 한정하세요.
+
 ---
 
 <GuideStudy id="lint-ownership" />

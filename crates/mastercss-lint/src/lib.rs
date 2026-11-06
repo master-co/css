@@ -310,6 +310,12 @@ pub struct LintClassListPolicy<'a> {
     pub raw_value_policy: Option<&'a RawValuePolicy>,
     pub remote_styling_policy: Option<&'a RemoteStylingPolicy>,
     pub canonical_options: Option<&'a CanonicalClassNameOptions>,
+    /// Classes the same element always receives from its other class lists,
+    /// such as the static `class` beside a `:class` binding.
+    pub element_class_names: &'a [String],
+    /// Whether this class list only applies under a condition, such as an
+    /// object key or a conditional array entry of a class binding.
+    pub conditional: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

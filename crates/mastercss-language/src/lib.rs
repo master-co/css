@@ -75,6 +75,9 @@ pub struct LanguageDocumentIr {
     pub diagnostics: Vec<mastercss_schema::Diagnostic>,
     pub semantic_tokens: Vec<SemanticTokenInputIr>,
     pub semantic_token_data: Vec<u32>,
+    /// Class lists of each element that combines a static `class` with a class
+    /// binding, or has several lists in its binding.
+    pub class_list_groups: Vec<ClassListGroupIr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -421,6 +424,8 @@ mod document_index;
 pub use analysis::PreparedDocumentIr;
 use document_index::DocumentIndex;
 mod document;
+mod element_groups;
+pub use element_groups::{ClassListGroupIr, GroupedClassListIr};
 mod formatting;
 mod positions;
 mod semantic_tokens;

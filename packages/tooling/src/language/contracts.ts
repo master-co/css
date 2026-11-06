@@ -42,6 +42,14 @@ export interface MasterCSSDocumentAnalysis {
   readonly diagnostics: readonly import('@master/css-binding/tooling').MasterCSSDiagnostic[]
   readonly semanticTokens: readonly SemanticTokenItem[]
   readonly semanticTokenData: readonly number[]
+  readonly classListGroups: readonly MasterCSSLanguageClassListGroup[]
+}
+
+export interface MasterCSSLanguageClassListGroup {
+  readonly lists: readonly Readonly<{
+    range: Readonly<{ start: number, end: number }>
+    conditional: boolean
+  }>[]
 }
 
 export interface MasterCSSNativeDeclarationCompletionRequest extends MasterCSSDocumentAnalysisRequest {

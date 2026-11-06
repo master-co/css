@@ -130,6 +130,15 @@ b-solid bt-dashed
 
 移除刻意覆寫前，先比較產生的宣告，並在瀏覽器檢查元素。
 
+在 Vue 與 HTML 範本中，[`master-css lint`](/reference/tools/cli#lint) 也會比較元素的靜態 `class` 與 `:class` 綁定加入的 class。若條件 class 一律被靜態 class 覆寫，它就永遠不會生效，因此會回報，但不提供自動修正：
+
+```vue
+<button class="(cursor:pointer)" :class="{ '(cursor:not-allowed)': disabled }"> <!-- [!code --] -->
+<button class="(cursor:pointer) (cursor:not-allowed):disabled" :disabled="disabled"> <!-- [!code ++] -->
+```
+
+請把基礎 class 也改為條件式，或用選擇器限定狀態 class。
+
 ---
 
 <GuideStudy id="lint-ownership" />

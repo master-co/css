@@ -114,6 +114,9 @@ interface ClassListContext {
   unescape?: string | false
   classNames: string[]
   transformed: boolean
+  /** Classes the same element always receives from its other class lists. */
+  elementClassNames?: string[]
+  conditional?: boolean
 }
 
 const languageByExtension: Record<string, string> = {
@@ -217,6 +220,20 @@ function collectClassListContexts(
       transformed: position.raw !== position.token,
     })
   }
+  for (const group of analysis.classListGroups ?? []) {
+    const lists = group.lists.flatMap(({ range, conditional }) => {
+      const context = contexts.get(`${range.start}:${range.end}`)
+      return context ? [{ context, conditional }] : []
+    })
+    for (const list of lists) {
+      const elementClassNames = [...new Set(lists
+        .filter((other) => other !== list && !other.conditional)
+        .flatMap((other) => other.context.classNames))]
+      if (!elementClassNames.length) continue
+      list.context.elementClassNames = elementClassNames
+      list.context.conditional = list.conditional
+    }
+  }
   return [...contexts.values()].map(context => {
     const tokens = lintSession.tokenizeClassList(context.text, context.unescape).map(item => item.token)
     context.transformed ||= tokens.length !== context.classNames.length || tokens.some((token, index) => token !== context.classNames[index])
@@ -264,6 +281,9 @@ function createContextLintDiagnostics(
       remoteStylingPolicy: rules['prefer-component-classes']
         ? { max: options.ruleOptions?.['prefer-component-classes']?.max }
         : undefined,
+      ...(rules['no-conflicting-classes'] && context.elementClassNames
+        ? { elementClassNames: context.elementClassNames, conditional: context.conditional }
+        : {}),
     }).diagnostics
       .filter(({ ruleId }) => rules[ruleId])
       .map((diagnostic): MasterCSSLintDiagnostic => ({
@@ -377,7 +397,9 @@ function fixClassListText(context: ClassListContext, rules: Record<MasterCSSLint
       ...context,
       range: { start: 0, end: fixed.length },
       text: fixed,
-      classNames: options.lintSession.tokenizeClassList(fixed, context.unescape).map(({ token }) => token)
+      classNames: options.lintSession.tokenizeClassList(fixed, context.unescape).map(({ token }) => token),
+      // Element conflicts carry no fix, so fix passes skip that analysis.
+      elementClassNames: undefined
     }
     const fix = createContextLintDiagnostics(nextContext, rules, options)
       .map((diagnostic) => diagnostic.fix)

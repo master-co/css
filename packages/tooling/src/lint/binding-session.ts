@@ -153,17 +153,22 @@ export function bindLintSession(
     },
     analyzeClassList(classList, classNames, options) {
       const inputs = resolveInputs(classNames)
+      const elementClassNames = options?.elementClassNames?.length ? [...options.elementClassNames] : undefined
+      const invalidGeneratedClasses = elementClassNames
+        ? [...new Set([...inputs.invalidGeneratedClasses, ...resolveInputs(elementClassNames).invalidGeneratedClasses])]
+        : inputs.invalidGeneratedClasses
       return lint.analyzeClassListPolicy({
         version: MASTER_CSS_LINT_BATCH_VERSION,
         classList,
         classNames,
         nativeSupport: inputs.nativeSupport,
-        invalidGeneratedClasses: inputs.invalidGeneratedClasses,
+        invalidGeneratedClasses,
         validationErrors: inputs.validationErrors,
         disallowUnknownClass: options?.disallowUnknownClass,
         canonicalOptions: options?.canonicalOptions,
         rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy),
-        remoteStylingPolicy: options?.remoteStylingPolicy && { ...options.remoteStylingPolicy }
+        remoteStylingPolicy: options?.remoteStylingPolicy && { ...options.remoteStylingPolicy },
+        ...(elementClassNames ? { elementClassNames, conditional: Boolean(options?.conditional) } : {})
       }) as MasterCSSLintClassListAnalysis
     },
     dispose() {

@@ -124,6 +124,15 @@ b-solid bt-dashed
 
 Compare the generated declarations and inspect the element in the browser before removing an intentional override.
 
+In Vue and HTML templates, [`master-css lint`](/reference/tools/cli#lint) also compares an element's static `class` with the classes its `:class` binding adds. A conditional class that a static class always overrides never applies, so it is reported without an automatic fix:
+
+```vue
+<button class="(cursor:pointer)" :class="{ '(cursor:not-allowed)': disabled }"> <!-- [!code --] -->
+<button class="(cursor:pointer) (cursor:not-allowed):disabled" :disabled="disabled"> <!-- [!code ++] -->
+```
+
+Make the base class conditional too, or scope the state class with a selector.
+
 ---
 
 <GuideStudy id="lint-ownership" />
