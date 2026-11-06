@@ -49,6 +49,11 @@ jobs:
         with:
           turbo-cache-scope: benchmark
       - run: bun run playwright install --with-deps --only-shell chromium
+      - name: Initialize the pinned Rust toolchain
+        # Let rustup finish installing before Turbo starts concurrent Cargo jobs.
+        run: |
+          cargo --version
+          rustup target add wasm32-unknown-unknown
       - name: Build benchmark packages
         # Follow workspace build dependencies, including the host's native binding.
         run: bun run turbo run build --filter=@master/css-runtime --filter=@master/css-tooling --concurrency=2
