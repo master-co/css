@@ -52,7 +52,7 @@ export function validatePackedManifest(manifest, expectedName, version) {
   }
 }
 
-export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch } = {}) {
+export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch, wait } = {}) {
   const versions = new Map()
   const tarballs = new Map()
 
@@ -131,7 +131,8 @@ export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch } = 
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     const key = `${cwd}:${config.pkgRoot}:${context.nextRelease.version}`
     if (!tarballs.has(key)) await prepare(config, context)
-    const channel = await stagePackage(config, context, pkg, tarballs.get(key), executeNpm, fetchMetadata)
+    // The promotion plugin verifies every remaining upload before any formal tag write.
+    const channel = await stagePackage(config, context, pkg, tarballs.get(key), executeNpm, fetchMetadata, { deferVerification: true, wait })
     return { name: `npm package (@${channel} dist-tag)`, channel, url: `https://www.npmjs.com/package/${pkg.name}/v/${context.nextRelease.version}` }
   }
 

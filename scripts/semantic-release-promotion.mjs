@@ -22,11 +22,18 @@ export function assertReleaseFlag(context, name) {
   assert.equal(context.env?.[name], '1', `Set ${name}=1 only in the authorized release workflow`)
 }
 
-async function save(context, state) {
-  const file = statePath(context)
-  await mkdir(dirname(file), { recursive: true })
-  await writeFile(`${file}.tmp`, JSON.stringify(state, null, 2) + '\n', { mode: 0o600 })
-  await rename(`${file}.tmp`, file)
+// Concurrent verifications share one state file; write each snapshot in turn.
+let saving = Promise.resolve()
+function save(context, state) {
+  const write = async () => {
+    const file = statePath(context)
+    await mkdir(dirname(file), { recursive: true })
+    await writeFile(`${file}.tmp`, JSON.stringify(state, null, 2) + '\n', { mode: 0o600 })
+    await rename(`${file}.tmp`, file)
+  }
+  const result = saving.then(write)
+  saving = result.catch(() => {})
+  return result
 }
 
 async function load(context) {
@@ -115,9 +122,9 @@ async function confirmRegistryTag(name, channel, version, baseline, fetchMetadat
   }, tagRetryDelays)
 }
 
-async function confirmCandidateTags(name, candidate, version, before, fetchMetadata) {
+async function confirmCandidateTags(name, candidate, version, before, fetchMetadata, wait = pause) {
   const { [candidate]: previousCandidate, ...baseline } = before
-  return readRegistry(distTagsPath(name), fetchMetadata, pause, (tags, retry) => {
+  return readRegistry(distTagsPath(name), fetchMetadata, wait, (tags, retry) => {
     const { [candidate]: observedCandidate, ...observed } = validateRegistryTags(tags, name)
     assert.deepEqual(observed, baseline, `Non-candidate registry tags changed while staging ${name}`)
     if (retry && observedCandidate === previousCandidate && observedCandidate !== version) return undefined
@@ -251,7 +258,30 @@ async function initializeChannel(state, channel, context, fetchMetadata) {
   await save(context, state)
 }
 
-export async function stagePackage(config, context, pkg, archive, executeNpm, fetchMetadata = fetch) {
+async function verifyUpload(state, item, context, fetchMetadata, wait) {
+  await confirmCandidateTags(item.name, state.candidateTag, state.version, item.tagsBefore, fetchMetadata, wait)
+  const expected = { ...item, gitHead: state.revision }
+  await Promise.all([readPublishedPackage(expected, state.version, fetchMetadata, wait), readInstallableVersion(expected, state.version, fetchMetadata, wait)])
+  item.staged = true
+  state.events.push({ operation: 'upload-verified', name: item.name, at: new Date().toISOString() })
+  await save(context, state)
+}
+
+/** Verifies this run's unverified uploads among names together; npm scans them in parallel. */
+async function verifyUploads(state, names, context, fetchMetadata, wait) {
+  const pending = state.packages.filter(item => names.has(item.name) && !item.staged && item.attempt && item.uploadRun === runIdentity(context))
+  const results = await Promise.allSettled(pending.map(item => verifyUpload(state, item, context, fetchMetadata, wait)))
+  const failure = results.find(result => result.status === 'rejected')
+  if (failure) throw failure.reason
+}
+
+/**
+ * Uploads one cohort archive under the candidate tag. By default it waits until npm
+ * serves the exact archive. With deferVerification it instead waits only for this
+ * package's in-cohort dependencies before uploading, so npm scans independent
+ * packages concurrently while no dependent is uploaded before its dependencies.
+ */
+export async function stagePackage(config, context, pkg, archive, executeNpm, fetchMetadata = fetch, { deferVerification = false, wait = pause } = {}) {
   assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
   const state = await initialize(config, context, fetchMetadata)
   const item = state.packages.find(entry => entry.name === pkg.name)
@@ -278,6 +308,12 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
     return state.candidateTag
   }
   assert.equal(item.staged, false, `Previously staged candidate disappeared: ${pkg.name}`)
+  if (deferVerification) {
+    const { packedManifest } = await import('./semantic-release-workspace.mjs')
+    const { publishedDependencies } = await import('./release-readiness.mjs')
+    const cohortNames = new Set(state.packages.map(entry => entry.name))
+    await verifyUploads(state, new Set(publishedDependencies(packedManifest(bytes), cohortNames)), context, fetchMetadata, wait)
+  }
   const tagsBefore = await readRegistryTags(pkg.name, fetchMetadata)
   const channel = getChannel(context.nextRelease.channel)
   assert.equal(tagsBefore[channel] ?? null, state.channels[channel].baseline[pkg.name],
@@ -297,11 +333,14 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   const args = ['publish', archive, '--tag', state.candidateTag, '--ignore-scripts', '--fetch-retries=0']
   if (pkg.publishConfig?.provenance) args.push('--provenance')
   await executeNpm(pkg, args, context)
-  await confirmCandidateTags(pkg.name, state.candidateTag, state.version, tagsBefore, fetchMetadata)
-  await Promise.all([readPublishedPackage(expected, state.version, fetchMetadata), readInstallableVersion(expected, state.version, fetchMetadata)])
-  item.staged = true
-  state.events.push({ operation: 'upload-verified', name: pkg.name, at: new Date().toISOString() })
-  await save(context, state)
+  if (deferVerification) {
+    // One immediate read still stops later uploads once a formal tag visibly moved.
+    const observed = await readRegistryTags(pkg.name, fetchMetadata, wait)
+    delete observed[state.candidateTag]
+    assert.deepEqual(observed, tagsBefore, `Non-candidate registry tags changed while staging ${pkg.name}`)
+    return state.candidateTag
+  }
+  await verifyUpload(state, item, context, fetchMetadata, wait)
   return state.candidateTag
 }
 
@@ -336,6 +375,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     await assertCohort(state, config, context, true)
     const channel = getChannel(context.nextRelease.channel)
     // Complete-cohort registry verification must precede every formal tag write.
+    await verifyUploads(state, new Set(state.packages.map(pkg => pkg.name)), context, fetchMetadata, wait)
     const manifests = []
     for (const pkg of state.packages) manifests.push(await readPublishedPackage({ ...pkg, gitHead: state.revision }, state.version, fetchMetadata, wait))
     // The internal site snapshot channel is separate from formal product releases.

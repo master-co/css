@@ -17,7 +17,7 @@ function archive(manifest) {
   return gzipSync(Buffer.concat([header, bytes, Buffer.alloc((512 - bytes.length % 512) % 512), Buffer.alloc(1024)]))
 }
 
-async function fixture(t) {
+async function fixture(t, { dependent = false } = {}) {
   const cwd = await mkdtemp(join(tmpdir(), 'master-promotion-'))
   t.after(() => rm(cwd, { recursive: true, force: true }))
   const config = { workspaceRoots: ['packages/a', 'packages/b'] }
@@ -27,12 +27,13 @@ async function fixture(t) {
     MASTER_CSS_RELEASE_STAGE: '1', MASTER_CSS_RELEASE_PROMOTE: '1' }, nextRelease: { version: '2.0.0', channel: 'rc', gitHead: revision } }
   const registry = new Map(), calls = [], waits = []
   const controls = { failUpload: null, failAfterUpload: null, failTag: null, failAfterTag: null, failConsumer: false, failProvenance: false, wrongProof: false,
-    afterTagReads: [], autoLatest: false, forbiddenTags: null }
+    afterTagReads: [], autoLatest: false, forbiddenTags: null, scanOnUpload: false, scanning: new Set(), rejectScan: null }
   const pendingTagReads = new Map()
   for (const letter of ['a', 'b']) {
     const root = join(cwd, 'packages', letter)
     await mkdir(root, { recursive: true })
     await writeFile(join(root, 'package.json'), JSON.stringify({ name: `@fixture/${letter}`, version: '0.0.0', publishConfig: { provenance: true },
+      ...dependent && letter === 'b' ? { dependencies: { '@fixture/a': '2.0.0' } } : {},
       repository: { type: 'git', url: 'https://github.com/master-co/css.git', directory: `packages/${letter}` } }))
     registry.set(`@fixture/${letter}`, { versions: {}, 'dist-tags': { rc: '1.0.0', latest: '0.9.0' } })
   }
@@ -53,6 +54,10 @@ async function fixture(t) {
       return Response.json({ ...data, name })
     }
     const exact = /^\/([^/]+)\/([^/]+)$/.exec(path)
+    const scanned = exact && decodeURIComponent(exact[1])
+    // Model npm's post-upload scan: the version stays absent until a later read.
+    if (scanned && controls.scanning.delete(scanned)) return new Response('{}', { status: 404 })
+    if (scanned && controls.rejectScan === scanned) return new Response('{}', { status: 404 })
     const data = exact && registry.get(decodeURIComponent(exact[1]))?.versions[decodeURIComponent(exact[2])]
     return data ? Response.json(data) : new Response('{}', { status: 404 })
   }
@@ -74,6 +79,7 @@ async function fixture(t) {
         } }
         data['dist-tags'][args[args.indexOf('--tag') + 1]] = pkg.version
         if (controls.autoLatest) data['dist-tags'].latest = pkg.version
+        if (controls.scanOnUpload) controls.scanning.add(pkg.name)
         if (controls.failAfterUpload === pkg.name) throw new Error('fixture lost upload response')
       } else {
         assert.deepEqual(args.slice(0, 2), ['dist-tag', 'add'])
@@ -86,7 +92,7 @@ async function fixture(t) {
     }
     return { stdout: '' }
   }
-  const workspace = createWorkspaceRelease({ run, fetchMetadata })
+  const workspace = createWorkspaceRelease({ run, fetchMetadata, wait: async delay => { waits.push(delay) } })
   const provenanceProbe = async ({ state, manifests }) => {
     if (controls.failProvenance) throw new Error('fixture invalid npm provenance signature')
     assert.deepEqual(manifests.map(manifest => manifest.name), state.packages.map(pkg => pkg.name))
@@ -121,6 +127,37 @@ test('all archives stage without formal tags; full verified cohort promotes befo
   await f.promotion.addChannel(f.config, f.context)
   for (const data of f.registry.values()) assert.equal(data['dist-tags'].latest, '2.0.0')
   assert.deepEqual(f.calls.filter(args => args[0] === 'publish').map(args => args[args.indexOf('--tag') + 1]), ['candidate-2.0.0', 'candidate-2.0.0'])
+})
+
+const stagingEvents = async f => (await f.state()).events.map(event => `${event.operation} ${event.name}`)
+
+test('independent uploads continue while npm scans earlier archives; promotion verifies them first', async t => {
+  const f = await fixture(t)
+  f.controls.scanOnUpload = true
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  assert.deepEqual(await stagingEvents(f), ['upload-start @fixture/a', 'upload-start @fixture/b'])
+  assert.deepEqual(f.waits, [])
+  await f.promotion.publish(f.config, f.context)
+  const state = await f.state()
+  assert.ok(state.packages.every(pkg => pkg.staged))
+  assert.ok(f.waits.length > 0, 'promotion waited for the scans')
+  assert.equal(state.channels.rc.complete, true)
+})
+
+test('a dependent upload waits until npm serves its in-cohort dependency', async t => {
+  const f = await fixture(t, { dependent: true })
+  f.controls.scanOnUpload = true
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  assert.deepEqual(await stagingEvents(f), ['upload-start @fixture/a', 'upload-verified @fixture/a', 'upload-start @fixture/b'])
+})
+
+test('a dependency that npm never serves stops before its dependent is uploaded', async t => {
+  const f = await fixture(t, { dependent: true })
+  await f.prepare(); await f.stage('a')
+  f.controls.rejectScan = '@fixture/a'
+  await assert.rejects(f.stage('b'), /Candidate version missing: @fixture\/a@2\.0\.0/)
+  assert.equal(f.calls.filter(args => args[0] === 'publish').length, 1)
+  assert.equal(f.registry.get('@fixture/b').versions['2.0.0'], undefined)
 })
 
 test('partial upload recovery requires archived state and exact existing integrity', async t => {
@@ -219,7 +256,8 @@ test('observed concurrent formal-tag change aborts without automatic rollback', 
   const f = await fixture(t)
   await f.prepare(); await f.stage('a'); await f.stage('b')
   f.registry.get('@fixture/a')['dist-tags'].rc = '2.1.0'
-  await assert.rejects(f.promotion.publish(f.config, f.context), /tag changed outside/)
+  // Deferred upload verification observes the change first; either way no tag is written.
+  await assert.rejects(f.promotion.publish(f.config, f.context), /tag changed outside|Non-candidate registry tags changed while staging @fixture\/a/)
   assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 0)
   assert.equal(f.registry.get('@fixture/a')['dist-tags'].rc, '2.1.0')
 })
