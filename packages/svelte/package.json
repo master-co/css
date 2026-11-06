@@ -6,7 +6,8 @@
   },
   "scripts": {
     "dev": "bun --bun vite dev",
-    "build": "bun --bun vite build && bun run package",
+    "build": "bun run package",
+    "build:demo": "bun --bun vite build",
     "preview": "bun --bun vite preview",
     "package": "bun --bun svelte-kit sync && bun --bun tsdown --config ../../shared/tsdown-package.config.ts && publint --pack false",
     "prepublishOnly": "bun run package",
