@@ -28,9 +28,15 @@ function orderReleasePlugins(plugins) {
     return { name: manifest.name, manifest, root, plugin }
   })
   const publishedNames = new Set(workspaces.map(({ name }) => name))
-  const ordered = dependencyOrder(workspaces.map(entry => ({ ...entry,
-    dependencies: publishedDependencies(entry.manifest, publishedNames)
-  })), (a, b) => packageReleasePriority(a.root) - packageReleasePriority(b.root) || a.root.localeCompare(b.root))
+  const entries = workspaces.map(entry => ({ ...entry, dependencies: publishedDependencies(entry.manifest, publishedNames) }))
+  // Uploads wait only for their own dependencies, so finishing each dependency
+  // depth before the next lets npm scan as many archives at once as possible.
+  const byName = new Map(entries.map(entry => [entry.name, entry]))
+  const depths = new Map()
+  const depth = entry => depths.get(entry.name) ?? depths.set(entry.name,
+    Math.max(-1, ...entry.dependencies.map(name => depth(byName.get(name)))) + 1).get(entry.name)
+  const ordered = dependencyOrder(entries, (a, b) => packageReleasePriority(a.root) - packageReleasePriority(b.root) ||
+    depth(a) - depth(b) || a.root.localeCompare(b.root))
   const publication = [...ordered.map(({ plugin }) => plugin), ...named(PROMOTION_PLUGIN), ...named('@semantic-release/github')]
   const publicationSet = new Set(publication)
   return [...plugins.filter(plugin => !publicationSet.has(plugin)), ...publication]

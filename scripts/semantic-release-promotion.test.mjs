@@ -493,6 +493,12 @@ test('configured release uploads the public dependency graph before cohort promo
   }
   assert.deepEqual(packageRoots.slice(8, 12), ['packages/schema', 'packages/binding-wasm-compiler',
     'packages/binding-wasm-engine', 'packages/binding-wasm-tooling'])
+  // After that fixed group, finish each dependency depth before the next so npm
+  // scans as many independent uploads together as the dependency graph allows.
+  const depths = new Map()
+  for (const pkg of packages) depths.set(pkg.name, Math.max(-1, ...publishedDependencies(pkg, order).map(name => depths.get(name))) + 1)
+  const later = packages.slice(12).map(({ name }) => depths.get(name))
+  assert.deepEqual(later, [...later].sort((a, b) => a - b))
 
   const installFields = {
     dependencies: { '@fixture/runtime': 'workspace:*', '@fixture/private': 'workspace:*', external: '^1.0.0' },
