@@ -237,24 +237,6 @@ export default defineConfig([
 
 `flex block_h4 hidden_h4 grid_svg flex>li` reports once: four classes reach other elements. States of the element itself (`:hover`), relative selectors inside `:has()` or `:is()`, and conditions such as `@sm` never count. It has no autofix.
 
-### `@master/css/no-legacy-classes`
-
-Reports pre-2.0 `property:value` classes, such as `align-items:center` or `p:8px`, which 2.0 no longer generates, and rewrites each one to its 2.0 spelling. The rewrite uses the same mapping as `master-css suggest` and is offered only when 2.0 generates an equivalent class; values that relied on a release-candidate unit or token conversion, such as `p:8`, are reported without a fix. This rule is opt-in and is not enabled by the recommended config.
-
-```js
-import { defineConfig } from 'eslint/config'
-
-export default defineConfig([
-  {
-    rules: {
-      '@master/css/no-legacy-classes': 'error'
-    }
-  }
-])
-```
-
-`flex align-items:center p:8px w:full flex:1` becomes `flex items-center p(8) w-full (flex:1)`.
-
 ## Settings
 
 Settings live under the `@master/css` settings key:
