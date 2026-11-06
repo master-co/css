@@ -74,6 +74,6 @@ config.plugins = orderReleasePlugins([...config.plugins.map(plugin =>
   Array.isArray(plugin) && plugin[0] === SOURCE_RELEASE_PLUGIN
     ? [WORKSPACE_RELEASE_PLUGIN, { ...plugin[1], workspaceRoots }]
     : plugin
-), ['./scripts/semantic-release-notes.mjs'], [PROMOTION_PLUGIN, { workspaceRoots }]])
+), ['./scripts/semantic-release-major-guard.mjs'], ['./scripts/semantic-release-notes.mjs'], [PROMOTION_PLUGIN, { workspaceRoots }]])
 
 export default config

@@ -82,6 +82,7 @@ Use [Aronrepo conventional commits](https://github.com/1aron/aronrepo/tree/main/
 | None | `Docs`, `Example`, `Test`, `Benchmark`, `Build`, `CI`, `Style`, `Refactor`, `Chore`, `Misc` |
 
 - Never choose a Major or Minor type (`Bump(Major)`, `Feat`, `New`, `Bump(Minor)`) unless the user explicitly asks for that release level. A new capability, option, rule or API is `Add`; an enhancement is `Improve` or `Update`; a bug fix is `Fix`.
+- A `BREAKING CHANGE:` footer or a `!` after the type releases a major version whatever the type says. Never write either outside a `Bump(Major)` commit the user asked for; describe an incompatible change in the body instead. commitlint rejects it, and the release refuses an unrequested major version.
 - Pick the lowest type that accurately describes the change. Use a Patch type only when published package behavior, public API/types, generated output, release behavior or a published README changes; otherwise use a None type.
 - None defaults: `Chore(Agent)` for AI instructions and repository context, `Chore(Deps)` for development dependencies and lockfiles, `Build` for dev tooling, `CI` for workflows and status checks, `Style` for formatting or lint-only changes, `Benchmark` for measurement-only changes (never `Perf`), `Test`, `Example`, plain `Docs` for site and internal docs, and `Refactor` for behavior-preserving restructuring.
 - Split unrelated changes so each commit carries its own release level; a commit mixing a Patch change with internal work takes the Patch type.

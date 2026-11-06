@@ -84,7 +84,7 @@ jobs:
         run: |
           test "$(npm --version)" = 11.21.0
           bun run check:release
-          node --test scripts/semantic-release-workspace.test.mjs scripts/semantic-release-promotion.test.mjs scripts/release-registry-provenance.test.mjs
+          node --test scripts/semantic-release-workspace.test.mjs scripts/semantic-release-promotion.test.mjs scripts/semantic-release-major-guard.test.mjs scripts/release-registry-provenance.test.mjs
       - name: Require unused editor versions before publishing npm
         if: ${{ needs.validation.outputs.vscode_release_affected == 'true' }}
         run: node packages/vscode/scripts/verify-store-availability.mjs
