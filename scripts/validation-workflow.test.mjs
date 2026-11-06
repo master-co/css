@@ -126,3 +126,13 @@ test('cache pruning is skipped for pull requests and never fails validation', ()
   const failed = prune({ caches: [[1, 'Linux-X64-bun-1.4.4-turbo-build-main-2'], [2, 'Linux-X64-bun-1.4.4-turbo-build-main-1']], listFailure: true })
   assert.deepEqual(failed.deleted, [])
 })
+
+test('jobs that leave Wasm to Turbo order each package build after its own artifacts', () => {
+  const turbo = JSON.parse(readFileSync(new URL('../turbo.json', import.meta.url), 'utf8'))
+  // binding-wasm-* bundle their generated ../artifacts modules, so a build that
+  // could start before its own build:artifacts fails to resolve them.
+  assert.ok(turbo.tasks.build.dependsOn.includes('build:artifacts'))
+  for (const job of ['e2e_linux', 'compat_windows', 'compat_macos']) {
+    assert.equal(workflow.jobs[job].steps.some(step => step.run === 'bun run build:rust:wasm'), false, job)
+  }
+})
