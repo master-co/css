@@ -8,14 +8,20 @@ on:
       - rc
       - canary
     paths:
+      - .cargo/**
       - benchmarks/**
       - crates/**
+      - packages/binding*/**
+      - packages/engine-js/**
       - packages/schema/**
       - packages/tooling/**
       - packages/css/**
       - packages/preset/**
       - packages/runtime/**
       - shared/**
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
       - package.json
       - bun.lock
       - bunfig.toml
@@ -44,12 +50,8 @@ jobs:
           turbo-cache-scope: benchmark
       - run: bun run playwright install --with-deps --only-shell chromium
       - name: Build benchmark packages
-        run: |
-          bun run --filter @master/css-schema build
-          bun run --filter @master/css-tooling build
-          bun run --filter @master/css build
-          bun run --filter @master/css-preset build
-          bun run --filter @master/css-runtime build
+        # Follow workspace build dependencies, including the host's native binding.
+        run: bun run turbo run build --filter=@master/css-runtime --filter=@master/css-tooling --concurrency=2
       - name: Prepare benchmark output
         shell: bash
         run: |
@@ -64,7 +66,7 @@ jobs:
             echo "RUNTIME_BENCHMARK_ARTIFACT=master-css-benchmark-$branch_slug-runtime-$GITHUB_SHA"
           } >> "$GITHUB_ENV"
       - name: Run engine benchmark
-        run: bun run --filter @master/css bench --outputJson "$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
+        run: bun run --filter @master/css bench --run --reporter=default --reporter=json --outputFile.json="$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
       - name: Run runtime browser benchmark
         run: bun run --filter @master/css-runtime bench --output "$BENCHMARK_OUTPUT_DIR/runtime.json"
       - name: Write benchmark reports
@@ -90,9 +92,11 @@ jobs:
         with:
           name: ${{ env.ENGINE_BENCHMARK_ARTIFACT }}
           path: ${{ env.BENCHMARK_OUTPUT_DIR }}/engine
+          if-no-files-found: error
           retention-days: 90
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.RUNTIME_BENCHMARK_ARTIFACT }}
           path: ${{ env.BENCHMARK_OUTPUT_DIR }}/runtime
+          if-no-files-found: error
           retention-days: 90

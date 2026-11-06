@@ -46,25 +46,29 @@ await writeJSON(resolve(outputRoot, 'benchmark-summary.json'), {
 function normalizeEngineReport(raw, baseMetadata) {
   const benchmarks = []
 
-  for (const file of raw.files || []) {
-    for (const group of file.groups || []) {
-      for (const benchmark of group.benchmarks || []) {
-        benchmarks.push({
-          name: benchmark.name,
-          group: group.fullName,
-          file: toRepoPath(file.filepath),
-          unit: 'ms/op',
-          hz: benchmark.hz,
-          min: benchmark.min,
-          max: benchmark.max,
-          mean: benchmark.mean,
-          median: benchmark.median,
-          rme: benchmark.rme,
-          sampleCount: benchmark.sampleCount
-        })
+  for (const file of raw.testResults || []) {
+    for (const test of file.assertionResults) {
+      for (const benchmark of test.benchmarks || []) {
+        for (const task of benchmark.tasks) {
+          const { latency, throughput } = task
+          benchmarks.push({
+            name: task.name,
+            group: test.ancestorTitles.join(' > '),
+            file: toRepoPath(file.name),
+            unit: 'ms/op',
+            hz: throughput.mean,
+            min: latency.min,
+            max: latency.max,
+            mean: latency.mean,
+            median: latency.p50,
+            rme: latency.rme,
+            sampleCount: latency.samplesCount
+          })
+        }
       }
     }
   }
+  if (!benchmarks.length) throw new Error('The Vitest report contains no engine benchmark measurements.')
 
   const assets = [
     measureAsset('packages/css/dist/index.js')
@@ -87,7 +91,7 @@ function normalizeEngineReport(raw, baseMetadata) {
 function normalizeRuntimeReport(raw, baseMetadata) {
   const assets = [
     measureAsset('packages/runtime/dist/global.min.js'),
-    measureAsset('packages/runtime/dist/default-manifest.json')
+    measureAsset('packages/runtime/dist/default-program.bin')
   ]
 
   return {
