@@ -152,8 +152,8 @@ npm run build
 | 模式 | 安裝程式選項 | CSS 傳遞方式 |
 | --- | --- | --- |
 | `static` | 無 | 掃描原始碼後產生的樣式表 |
-| `runtime` | `--mode runtime` | 瀏覽器執行階段 |
 | `prerender` | `--mode prerender` | 從 Vite 處理的 HTML 生成 CSS |
+| `runtime` | `--mode runtime` | 瀏覽器執行階段 |
 | `progressive` | `--mode progressive` | 從 Vite 處理的 HTML 生成 CSS，並加入瀏覽器執行階段 |
 
 預先渲染和漸進式模式只能為 Vite 處理的 HTML 中已有的 class 生成初始 CSS。空白的應用程式掛載點不含稍後才掛載的元件 class。React Router、TanStack Start 等自行渲染 HTML 的框架，必須由伺服器呼叫 [HTML 渲染器](/guide/rendering-modes#pre-rendering--ssg-ssr) 來生成初始 CSS。

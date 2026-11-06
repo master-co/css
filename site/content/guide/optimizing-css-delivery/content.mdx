@@ -5,7 +5,7 @@ import DocumentComparison from '@master/internal-site/components/DocumentCompari
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
 ## Overview [sr-only] \{#overview\}
-Make each page receive the CSS it needs, including the states that appear after interaction. Start by tracing delivery, move feature styles to their owners, and prune native rules only where the build knows their possible uses. Compare the resulting assets and behavior before setting a regression budget.
+Make each page receive the CSS it needs, including the states that appear after interaction. Start by tracing delivery, move feature styles to their owners, and prune native rules only where the build knows their possible uses. Prerender pages whose classes are all in their HTML. Compare the resulting assets and behavior before setting a regression budget.
 
 This guide follows an overview page and a reports page with the same navigation. Only Reports renders a report panel. The desired result is that Overview never downloads the panel's rules, while Reports keeps its ready and keyboard-focus states.
 
@@ -263,6 +263,36 @@ report.classList.add('(letter-spacing:0.123em)')
 Inspect the computed letter spacing and `document.querySelector('style#master-css').sheet.cssRules`. With the default progressive startup policy and valid hydration data, a missing class triggers the deferred engine/program path. A class already covered by the page manifest does not establish that this path works. Do not use the style element's text content as a live CSSOM snapshot.
 
 Keep HTML, CSS, hydration data and runtime resources from the same build. Test production as well as development; integrations can use different development behavior. See [Rendering modes](/guide/rendering-modes) for startup options, hydration failures and framework support.
+
+## Prerender pages whose classes are in their HTML \{#prerender\}
+
+When every route is rendered at build or request time, `prerender` delivers each page's rules in `style#master-css` and ships no Master CSS runtime, engine, program or hydration data. It suits documentation, marketing and content sites whose interactive islands only switch between states the server renders. In a 384-page documentation build, switching from `progressive` to `prerender` left every page's initial CSS unchanged and removed a 38 KB runtime script and a hydration manifest from each page.
+
+The cost moves to authoring. A class that first appears after hydration has no rule, and `@safelist` does not add one: prerendering generates CSS from page HTML only. Before switching, keep the progressive build and find the rules its runtime generates. Install this recorder before the page's scripts run, for example with Playwright's `page.addInitScript()`, then scroll each page and exercise its controls:
+
+```js
+// Each call is a rule the runtime made for a class absent from the HTML.
+window.generatedRules = []
+for (const prototype of [CSSStyleSheet.prototype, CSSGroupingRule.prototype]) {
+  const insertRule = prototype.insertRule
+  prototype.insertRule = function (rule, index) {
+    window.generatedRules.push(rule)
+    return insertRule.call(this, rule, index)
+  }
+}
+```
+
+Most pages record nothing. Rewrite each class that does appear so the server HTML already contains it:
+
+| Source of the late class | Prerender-safe form |
+| --- | --- |
+| A state appends it, such as `invisible` while a dialog is open | Keep `invisible[data-open]` in the markup and toggle `data-open` |
+| It is built from a value, such as `` `items-${align}` `` | List each finite option, such as `items-center[data-align=center]`, and set `data-align`; pass unbounded values through CSS variables |
+| It belongs to a view rendered only after an interaction | Render that view on the server with the `hidden` attribute and toggle the attribute |
+
+The `hidden` attribute relies on the base `[hidden]` rule, so a display utility such as `grid` on the same element overrides it. Put `hidden` on an element without one. Hidden elements take no part in view transitions, so a hidden view can share a `view-transition-name` with the visible one.
+
+Verify the switch with both builds. Compare each page's `style#master-css` after removing the hydration attribute: only the rewritten pages should change, by the rules that previously came from the runtime. Repeat the recording on the prerender build, and list classes on elements that match no rule. Raise the style budget only for the pages whose rules moved into the HTML.
 
 ## Compare cost and behavior, then set a budget \{#verify-and-budget\}
 

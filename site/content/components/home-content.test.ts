@@ -13,7 +13,7 @@ import { getHomePageCSSSize } from '../../utils/home-page-css-size'
 import preset from '@master/internal-site/css/preset-manifest.ts'
 import { fixMasterCSSContent, lintMasterCSSContent, resolveMasterCSSLintRules } from '@master/css-tooling/lint'
 import { lintRuleReach } from './lint-content'
-import { deliveryLateClass, deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
+import { deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
 // The Design system section checks its gallery classes, token values and cascade probe against the engine.
 import './design-system-content.test'
 import './delivery-content.test'
@@ -128,7 +128,7 @@ test('the agent session shows what the lint rules report and fix', () => {
 
 test('homepage markup samples are valid and sorted', () => {
   const samples = [
-    [...deliveryMarkup.map((line) => `<${line.tag} class="${line.className}"></${line.tag}>`), `<li class="${deliveryLateClass}"></li>`].join('\n'),
+    deliveryMarkup.map((line) => `<${line.tag} class="${line.className}"></${line.tag}>`).join('\n'),
     ...ctaClassRows.map((row) => row.map((className) => `<span class="${className}"></span>`).join('\n'))
   ]
   for (const code of samples) {
@@ -136,17 +136,16 @@ test('homepage markup samples are valid and sorted', () => {
   }
 })
 
-test('the rendering stage generates a rule for every class, and the script adds one the markup lacks', () => {
+test('the rendering stage generates a rule for every class in its markup', () => {
   const engine = createRenderSessionSync({ manifest: preset })
   try {
-    const { classRules, invalidClassNames } = engine.ensureClassRules([...deliveryRenderedClasses, deliveryLateClass])
+    const { classRules, invalidClassNames } = engine.ensureClassRules(deliveryRenderedClasses)
     assert.deepEqual(invalidClassNames, [])
-    for (const className of [...deliveryRenderedClasses, deliveryLateClass]) assert.equal(classRules[className].length, 1, className)
+    for (const className of deliveryRenderedClasses) assert.equal(classRules[className].length, 1, className)
   } finally {
     engine.dispose()
   }
   assert.deepEqual(deliveryRenderedClasses, deliveryMarkup.flatMap((line) => line.className.split(' ')))
-  assert.ok(!deliveryRenderedClasses.includes(deliveryLateClass))
 })
 
 test('homepage stylesheet samples compile without errors', () => {

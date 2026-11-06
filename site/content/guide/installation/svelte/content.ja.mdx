@@ -1,7 +1,7 @@
 ---
 {
   "title": "SvelteKit で Master CSS を設定する",
-  "description": "SvelteKit アドオンをインストールしてルートのスタイルシートを接続し、静的、ランタイム、プログレッシブ、事前レンダリングのみの CSS 配信から選びます。",
+  "description": "SvelteKit アドオンをインストールしてルートのスタイルシートを接続し、静的、事前レンダリングのみ、ランタイム、プログレッシブの CSS 配信から選びます。",
   "category": "インテグレーション"
 }
 ---
@@ -75,9 +75,9 @@ npm run preview
 | モード | Vite のモード | Master CSS のフック |
 | --- | --- | --- |
 | 静的 | `static` | なし |
+| 事前レンダリングのみ | `prerender` | サーバー。ハイドレーションマニフェストは無効 |
 | ランタイム | `runtime` | クライアント |
 | プログレッシブ | `progressive` | クライアントとサーバー |
-| 事前レンダリングのみ | `prerender` | サーバー。ハイドレーションマニフェストは無効 |
 
 <DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
 

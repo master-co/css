@@ -187,8 +187,8 @@ HTML 外掛會輸出樣式表連結與所需的執行階段指令碼。直接從
 | 模式 | 外掛選項 | 安裝程式選項 |
 | --- | --- | --- |
 | 靜態 | `mode: 'static'` | 無 |
-| 執行階段 | `mode: 'runtime'` | `--mode runtime` |
 | 預先渲染 | `mode: 'prerender'` | `--mode prerender` |
+| 執行階段 | `mode: 'runtime'` | `--mode runtime` |
 | 漸進式 | `mode: 'progressive'` | `--mode progressive` |
 
 Webpack 外掛也接受 `prerender` 和 `progressive`。獨立使用 Webpack 時，`prerender` 和 `static` 都會透過掃描生成相同的 CSS。`progressive` 則由外掛提供瀏覽器執行階段。若要在這兩種模式從渲染完成的文件生成初始 CSS，HTML 主機須呼叫[伺服器渲染器](/guide/rendering-modes#pre-rendering--ssg-ssr)，並在 `progressive` 模式提供 hydration 資料。

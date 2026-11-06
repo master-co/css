@@ -7,17 +7,17 @@
 @layer components {
   .home-delivery {
     --delivery-static-on: 0;
-    --delivery-progressive-on: 0;
+    --delivery-prerender-on: 0;
     --delivery-runtime-on: 0;
     --delivery-static-visibility: hidden;
-    --delivery-progressive-visibility: hidden;
+    --delivery-prerender-visibility: hidden;
     --delivery-runtime-visibility: hidden;
     --delivery-artwork-light: block;
     --delivery-artwork-dark: none;
   }
   .dark .home-delivery { --delivery-artwork-light: none; --delivery-artwork-dark: block; }
   .home-delivery:has(#home-delivery-static:checked) { --delivery-static-on: 1; --delivery-static-visibility: visible; }
-  .home-delivery:has(#home-delivery-progressive:checked) { --delivery-progressive-on: 1; --delivery-progressive-visibility: visible; }
+  .home-delivery:has(#home-delivery-prerender:checked) { --delivery-prerender-on: 1; --delivery-prerender-visibility: visible; }
   .home-delivery:has(#home-delivery-runtime:checked) { --delivery-runtime-on: 1; --delivery-runtime-visibility: visible; }
   .home-delivery-figure { container: home-delivery / inline-size; }
   .home-delivery-stage:not([data-playing]) { --delivery-reveal-rate: 1000; --delivery-variant-duration: 0ms; }
@@ -35,7 +35,8 @@
   .home-delivery-board { display: grid; grid-template-columns: minmax(0, 1fr); }
   .home-delivery-code-column { display: grid; min-width: 0; }
   .home-delivery-pane { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 3rem minmax(0, 1fr) 2.75rem; min-width: 0; container: delivery-pane / inline-size; }
-  .home-delivery-template { grid-template-rows: 3rem var(--delivery-html-height) 2.75rem; }
+  /* The former action row's height stays with the code, so the workbench keeps its size. */
+  .home-delivery-template { grid-template-rows: 3rem calc(var(--delivery-html-height) + 2.75rem); }
   .home-delivery-css { grid-template-rows: 3rem var(--delivery-css-height) 2.75rem; border-top: 1px solid var(--home-hairline); }
   .home-delivery-browser { min-height: 0; }
   .home-delivery-pane-bar { gap: 0.5rem; padding-inline: 0.875rem; }
@@ -49,7 +50,7 @@
   .home-delivery-code-stack::after { position: absolute; z-index: 1; inset: 0 0 0 auto; width: 1rem; background: linear-gradient(to right, transparent, var(--home-sheet)); pointer-events: none; content: ''; }
   .home-delivery-variant { position: relative; grid-area: 1 / 1; min-width: 0; visibility: hidden; opacity: 0; transition: opacity var(--home-quick) var(--home-ease), visibility 0s linear var(--home-quick); }
   .home-delivery:has(#home-delivery-static:checked) .home-delivery-variant[data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-variant[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-prerender:checked) .home-delivery-variant[data-mode='prerender'],
   .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-variant[data-mode='runtime'] { visibility: visible; opacity: 1; transition-delay: 0s; }
 
   /* The tour scrolls the panes and keys read them; the wheel and a swipe always belong to the page. */
@@ -78,10 +79,6 @@
   .home-delivery-token, .home-delivery-code-selector, .home-delivery-code-property, .home-delivery-code-value { border-radius: 0.1875rem; box-decoration-break: clone; }
   .home-delivery-token[data-hot] { background: color-mix(in oklab, var(--home-signal) 17%, transparent); }
   .home-delivery-rule-row :is(.home-delivery-code-selector, .home-delivery-code-property, .home-delivery-code-value) { background: color-mix(in oklab, var(--home-signal) calc(var(--flash) * 18%), transparent); }
-  .home-delivery-template-new { position: relative; display: inline-block; overflow: clip; width: calc(var(--added) * 12ch); vertical-align: top; color: var(--home-code-string); }
-  .home-delivery-stage:not([data-playing]) .home-delivery-template-new[aria-hidden='false'] { width: 12ch; }
-  .home-delivery-edit-row .home-delivery-template-new .home-delivery-token { background: color-mix(in oklab, var(--home-signal) calc(clamp(0, min(var(--home-delivery-t) - 3.04, 3.9 - var(--home-delivery-t)) * 8, 1) * 14%), transparent); }
-  .home-delivery-caret { position: absolute; top: 0.1875rem; right: 0; display: block; height: 1rem; border-left: 1px solid var(--home-text); opacity: clamp(0, min(var(--home-delivery-t) - 3.04, 3.25 - var(--home-delivery-t)) * 10, 1); }
   [data-css-reference] { text-decoration-line: underline; text-decoration-style: dotted; text-underline-offset: 3px; text-decoration-color: var(--home-rule-strong); }
   .home-delivery-code-reference { margin: 0; padding: 0; border: 0; font: inherit; line-height: inherit; vertical-align: baseline; white-space: inherit; color: inherit; background: transparent; cursor: pointer; }
   .home-delivery-code-reference:hover:enabled { text-decoration-color: var(--home-signal); text-decoration-style: solid; }
@@ -90,16 +87,9 @@
   .home-delivery-stage[data-inspecting] [data-css-reference] { background: color-mix(in oklab, var(--home-signal) 15%, transparent); text-decoration-color: var(--home-signal); }
   .home-delivery-stage[data-inspecting] .home-delivery-css .home-editor-tab { --home-editor-tab-line: var(--home-signal); }
 
-  .home-delivery-template-action, .home-delivery-pane-footer { display: grid; align-items: center; min-width: 0; padding-inline: 0.875rem; border-top: 1px solid var(--home-hairline); font-size: var(--home-label); color: var(--home-text-faint); background: color-mix(in oklab, var(--home-ground) 45%, var(--home-sheet)); }
-  .home-delivery-template-action { padding: 0; }
-  .home-delivery-add { display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 2.75rem; padding: 0.5rem 0.875rem; border: 0; font-size: 0.6875rem; color: var(--home-text-quiet); background: transparent; cursor: pointer; }
-  .home-delivery-add code { margin-left: auto; font-family: var(--home-mono); font-size: 0.625rem; color: var(--home-text); }
-  .home-delivery-add:hover:enabled { background: color-mix(in oklab, var(--home-signal) 7%, transparent); }
-  .home-delivery-add:focus-visible { position: relative; z-index: 5; outline: 2px solid var(--home-ink); outline-offset: -3px; }
-  .home-delivery-add:disabled { cursor: default; }
-  .home-delivery-css-footer { display: flex; justify-content: space-between; }
-  .home-delivery-footer-receipts { display: grid; min-width: 0; }
-  .home-delivery-css-receipt, .home-delivery-applied { display: inline-flex; align-items: center; gap: 0.375rem; opacity: var(--on); }
+  .home-delivery-pane-footer { display: grid; align-items: center; min-width: 0; padding-inline: 0.875rem; border-top: 1px solid var(--home-hairline); font-size: var(--home-label); color: var(--home-text-faint); background: color-mix(in oklab, var(--home-ground) 45%, var(--home-sheet)); }
+  .home-delivery-css-footer { display: flex; justify-content: flex-end; }
+  .home-delivery-applied { display: inline-flex; align-items: center; gap: 0.375rem; opacity: var(--on); }
   .home-delivery-file-reference { min-width: 0; padding: 0; border: 0; font: inherit; line-height: inherit; text-align: inherit; color: inherit; background: none; cursor: pointer; }
   .home-delivery-file-reference:hover:enabled { text-decoration: underline; text-underline-offset: 3px; }
   .home-delivery-file-reference:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 4px; }
@@ -115,7 +105,7 @@
   .home-delivery-flow-label[data-flow-label='input'] { left: 1.25rem; }
   .home-delivery-flow-label[data-flow-label='output'] { right: 1.25rem; }
   .home-delivery-engine-group { position: relative; display: grid; min-height: 6rem; }
-  .home-delivery-engine { position: relative; display: grid; grid-area: 1 / 1; align-content: center; justify-items: center; gap: 0.5rem; opacity: var(--phase); }
+  .home-delivery-engine { position: relative; display: grid; grid-area: 1 / 1; align-content: center; justify-items: center; gap: 0.5rem; }
   .home-delivery-engine-core { position: relative; display: grid; place-items: center; box-sizing: border-box; width: 2.75rem; height: 2.75rem; border-radius: 0.875rem; }
   /* The engine is cut from the hero's stone; while it generates, its lower bevel mirrors the gold. */
   .home-delivery-engine-core.home-stone { --stone-mirror: color-mix(in oklab, var(--stone-gold) calc(28% + var(--glow) * 40%), transparent); box-shadow: var(--stone-shadow), 0 0 0 calc(var(--glow) * 4px) var(--home-signal-glow); }
@@ -126,9 +116,6 @@
   .home-delivery-engine-core i { position: absolute; top: 50%; left: -3px; width: 5px; height: 5px; border-radius: 50%; background: color-mix(in oklab, var(--home-signal) calc(var(--glow) * 100%), var(--home-rule)); box-shadow: 0 0 0 3px var(--home-ground); }
   .home-delivery-engine-core i:last-child { left: auto; right: -3px; }
   .home-delivery-engine-label { font-family: var(--home-mono); font-size: var(--home-label); line-height: 1.2; white-space: nowrap; color: var(--home-text-quiet); }
-  .home-delivery-engine-state { --delivery-reveal-rate: 1000; position: absolute; top: calc(50% + 2.25rem); left: 50%; display: grid; translate: -50% 0; font-family: var(--home-mono); font-size: 0.625rem; line-height: 1.2; color: var(--home-text-faint); }
-  .home-delivery-engine-state code { grid-area: 1 / 1; opacity: var(--on); }
-  .home-delivery-engine[data-deferred] .home-delivery-engine-core { opacity: calc(.55 + var(--ready) * .45); }
   .home-delivery-preview-host { overflow: auto; min-height: 0; contain: inline-size; scrollbar-width: thin; background: var(--home-ground); }
   .home-delivery-arrivals { position: absolute; inset: 3rem 0 2.75rem; display: grid; pointer-events: none; }
   .home-delivery-arrivals > .home-delivery-variant { width: 100%; height: 100%; }
@@ -136,7 +123,8 @@
 
   .home-delivery-routes { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; overflow: visible; color: var(--home-rule-strong); pointer-events: none; }
   .home-delivery-routes > path { fill: none; stroke: currentColor; stroke-width: 1px; marker-end: url(#home-delivery-arrow); opacity: clamp(0, var(--home-delivery-t) * 10, 1); }
-  .home-delivery-routes > [data-route='paint'] { opacity: clamp(0, (var(--home-delivery-t) - 1.68) * 10, 1); }
+  /* CSS connects to the preview only at First paint, the moment its rules style the card. */
+  .home-delivery-routes > [data-route='paint'] { opacity: clamp(0, (var(--home-delivery-t) - 2) * 10, 1); }
   .home-delivery-flights { position: absolute; z-index: 6; inset: 0; overflow: hidden; pointer-events: none; }
   .home-delivery-flights > [data-flight='class'], .home-delivery-flights > [data-flight='packet'] { position: absolute; top: 0; left: 0; padding: 0.25rem 0.5rem; border: 1px solid var(--home-hairline); border-radius: var(--home-radius-chip); font-family: var(--home-mono); font-size: 0.625rem; line-height: 1.4; white-space: nowrap; color: var(--home-text); background: var(--home-float); box-shadow: var(--home-elevation-2); will-change: transform, opacity; }
   .home-delivery-flights > [data-flight='class'] { border-color: color-mix(in oklab, var(--home-signal) 55%, var(--home-hairline)); }
@@ -153,7 +141,6 @@
     .home-delivery-engine { gap: 0.75rem; }
     .home-delivery-engine-core { width: 3.25rem; height: 3.25rem; border-radius: 1rem; }
     .home-delivery-engine-core::before { border-radius: 0.75rem; }
-    .home-delivery-engine-state { top: calc(50% + 2.75rem); }
     .home-delivery-browser { min-height: 0; }
   }
   @container home-delivery (width >= 72rem) {
@@ -169,7 +156,7 @@
     .home-delivery-pane-bar .home-editor-tab { max-width: 100%; padding-inline: 0.5rem; }
     .home-delivery-filenames > .home-delivery-variant { overflow: hidden; text-overflow: ellipsis; }
   }
-  @media (--motion-reduce) { .home-delivery-variant, .home-delivery-add, .home-delivery-moment { transition: none; } }
+  @media (--motion-reduce) { .home-delivery-variant, .home-delivery-moment { transition: none; } }
   /*
    * Controls: one area for the mode, the moment and what the chosen mode is. From 52rem it sits
    * under the drawing on the same columns: the mode switch on the left, the player on the right,
@@ -214,7 +201,7 @@
   }
 
   .home-delivery:has(#home-delivery-static:checked) .home-delivery-switch [data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-switch [data-mode='progressive'],
+  .home-delivery:has(#home-delivery-prerender:checked) .home-delivery-switch [data-mode='prerender'],
   .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-switch [data-mode='runtime'] {
     color: var(--home-text);
     background-color: var(--home-sheet);
@@ -227,7 +214,7 @@
     outline-offset: 1px;
   }
 
-  /* Player: play, then four equal moments. Their names are the only words the timeline needs. */
+  /* Player: play, then three equal moments. Their names are the only words the timeline needs. */
   .home-delivery-player {
     display: grid;
     grid-column: 1 / -1;
@@ -249,7 +236,7 @@
 
   .home-delivery-timeline {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: 0.5rem;
   }
 
@@ -319,8 +306,7 @@
   .home-delivery-explanation > span { grid-area: 1 / 1; visibility: hidden; }
   .home-delivery-stage[data-moment='0'] [data-explanation-moment='0'],
   .home-delivery-stage[data-moment='1'] [data-explanation-moment='1'],
-  .home-delivery-stage[data-moment='2'] [data-explanation-moment='2'],
-  .home-delivery-stage[data-moment='3'] [data-explanation-moment='3'] { visibility: inherit; }
+  .home-delivery-stage[data-moment='2'] [data-explanation-moment='2'] { visibility: inherit; }
 
   /* The playhead rides the end of the moment in progress. */
   .home-delivery-moment[aria-pressed='true'] .home-delivery-moment-track::after {

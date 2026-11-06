@@ -138,6 +138,47 @@ CSS 진입점의 네이티브 선택자는 스캔 소스에 해당 클래스가 
 
 <GuideStudy id="static-late-class" />
 
+## 사전 렌더링 — SSG, SSR \{#pre-rendering--ssg-ssr\}
+빌드나 서버에 최종 페이지 HTML이 있고 이후 클래스에 브라우저 생성이 필요하지 않다면 사전 렌더링을 사용하세요. 서버 렌더러는 HTML을 읽고 규칙을 생성해 `style#master-css`에 삽입합니다. 마크업에서 CSS를 생성하며 앱 컴포넌트를 HTML로 렌더링하지는 않습니다.
+
+공식 통합은 지원하는 HTML 출력에 이 단계를 수행합니다. 사용자 지정 서버나 빌드 파이프라인을 위한 이 예제는 빌드 통합이 제공하는 `virtual:master-css-manifest`를 사용합니다. 서버 코드가 실행되기 전에 빌드 도구가 이 가상 모듈을 해석해야 합니다.
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+반환된 `html`을 저장하거나 응답으로 제공하세요. `style#master-css`에는 제목 규칙과 필요한 font-size 토큰이 포함됩니다:
+
+<Class2CSS classes={'font-5xl'} />
+
+이 출력에는 Master CSS 런타임이나 hydration 매니페스트가 필요하지 않습니다. 나중에만 나타나는 클래스에는 CSS를 따로 제공하거나 런타임을 지원하는 모드가 필요합니다. 이런 클래스를 찾아 서버 HTML에 유지하는 방법은 [클래스가 HTML에 있는 페이지 사전 렌더링하기](/guide/optimizing-css-delivery#prerender)를 참고하세요.
+
+유한한 정적 빌드에서는 렌더러가 캐시 규칙을 재사용하면서 페이지별 CSS를 생성할 수 있습니다. 매니페스트가 바뀌면 다시 만들고 빌드가 끝나면 해제하세요. 장기 실행 서버에서는 빌드 예제의 `Infinity` 대신 상한이 있는 `maxCachedClasses`를 선택하세요. [서버 API](/reference/packages#css-server)를 참고하세요.
+
+---
+
 ## 런타임 렌더링 \{#runtime-rendering\}
 시각 편집기나 빌드 후 로드되는 콘텐츠처럼 클래스 이름이 브라우저에서 알려진다면 런타임 렌더링을 사용하세요. 런타임은 [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)로 연결된 요소와 클래스 변경을 추적한 뒤 일치하는 CSS 규칙을 삽입하거나 재사용합니다.
 
@@ -226,47 +267,6 @@ CSS 진입점의 네이티브 선택자는 스캔 소스에 해당 클래스가 
 
 ---
 
-## 사전 렌더링 — SSG, SSR \{#pre-rendering--ssg-ssr\}
-빌드나 서버에 최종 페이지 HTML이 있고 이후 클래스에 브라우저 생성이 필요하지 않다면 사전 렌더링을 사용하세요. 서버 렌더러는 HTML을 읽고 규칙을 생성해 `style#master-css`에 삽입합니다. 마크업에서 CSS를 생성하며 앱 컴포넌트를 HTML로 렌더링하지는 않습니다.
-
-공식 통합은 지원하는 HTML 출력에 이 단계를 수행합니다. 사용자 지정 서버나 빌드 파이프라인을 위한 이 예제는 빌드 통합이 제공하는 `virtual:master-css-manifest`를 사용합니다. 서버 코드가 실행되기 전에 빌드 도구가 이 가상 모듈을 해석해야 합니다.
-
-```html name=index.html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <h1 class="font-5xl">Hello World</h1>
-</body>
-</html>
-```
-
-```ts name=server.ts
-import { readFileSync } from 'node:fs'
-import { createServerRenderer } from '@master/css-server'
-import manifest from 'virtual:master-css-manifest'
-
-const indexHTML = readFileSync('./index.html', 'utf-8')
-const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
-
-const { html } = renderer.renderHTML(indexHTML)
-
-renderer.dispose()
-```
-
-반환된 `html`을 저장하거나 응답으로 제공하세요. `style#master-css`에는 제목 규칙과 필요한 font-size 토큰이 포함됩니다:
-
-<Class2CSS classes={'font-5xl'} />
-
-이 출력에는 Master CSS 런타임이나 hydration 매니페스트가 필요하지 않습니다. 나중에만 나타나는 클래스에는 CSS를 따로 제공하거나 런타임을 지원하는 모드가 필요합니다.
-
-유한한 정적 빌드에서는 렌더러가 캐시 규칙을 재사용하면서 페이지별 CSS를 생성할 수 있습니다. 매니페스트가 바뀌면 다시 만들고 빌드가 끝나면 해제하세요. 장기 실행 서버에서는 빌드 예제의 `Infinity` 대신 상한이 있는 `maxCachedClasses`를 선택하세요. [서버 API](/reference/packages#css-server)를 참고하세요.
-
----
-
 ## 점진적 렌더링 \{#progressive-rendering\}
 서버나 빌드가 초기 페이지 CSS를 생성할 수 있고 브라우저가 나중에 새 클래스를 추가할 수 있다면 점진적 렌더링을 사용하세요. 응답은 `style#master-css`에 CSS를 포함하며 런타임은 페이지 hydration 매니페스트를 읽어 이미 포함된 클래스와 엔진이 필요한 클래스를 구분합니다.
 
@@ -299,16 +299,16 @@ renderer.dispose()
 
 ## 통합 지원 \{#integration-support\}
 
-다음 공식 어댑터의 기본값은 정적 렌더링입니다. 빌드 시점에 알 수 없는 클래스에는 런타임 생성을 명시적으로 선택합니다. `prerender`는 클라이언트 런타임 없이 HTML에서 CSS를 생성하고 `progressive`는 HTML 렌더링과 후속 클래스용 런타임을 결합합니다. 어댑터가 처리할 수 있는 HTML은 호스트에 따라 다릅니다:
+다음 공식 어댑터의 기본값은 정적 렌더링입니다. `prerender`는 클라이언트 런타임 없이 HTML에서 CSS를 생성합니다. 빌드 시점에 알 수 없는 클래스에는 런타임 생성을 명시적으로 선택하고, `progressive`는 HTML 렌더링과 후속 클래스용 런타임을 결합합니다. 어댑터가 처리할 수 있는 HTML은 호스트에 따라 다릅니다:
 
-| 어댑터 | 정적 | 런타임 | `prerender`와 서버 HTML | `progressive` |
+| 어댑터 | 정적 | `prerender`와 서버 HTML | 런타임 | `progressive` |
 | --- | --- | --- | --- | --- |
-| [Vite](/guide/installation/vite) | 빌드 시점 추출 | Vite HTML 파이프라인으로 삽입 | Vite 훅이 처리하는 HTML. 사용자 지정 SSR에는 서버 통합 필요 | Vite HTML 렌더링과 런타임. 사용자 지정 SSR은 자체 HTML 렌더링 필요 |
-| [Webpack](/guide/installation/webpack) | 빌드 시점 추출 | 컴파일 HTML 에셋에 삽입 | 소스 스캔으로 스타일시트 생성. HTML 호스트는 `@master/css-server`를 호출해 렌더링된 HTML에서 CSS를 생성할 수 있음 | 런타임 전달 제공. 호스트가 렌더링된 HTML과 hydration 데이터 제공 |
-| [Next.js](/guide/installation/nextjs) | 빌드 시점 추출 | 클라이언트 instrumentation | 빌드 후 HTML 출력 처리. 요청 시점 동적 SSR은 변환하지 않음 | 빌드 렌더링 HTML과 런타임. 동적 SSR은 서버 CSS 자동 삽입 없음 |
-| [Astro](/guide/installation/astro) | Vite를 통한 빌드 시점 추출 | 페이지 스크립트 삽입 | Astro 미들웨어가 사전 렌더링 페이지와 서버 HTML 응답 처리 | 미들웨어 렌더링과 런타임 |
-| [Nuxt](/guide/installation/nuxtjs) | Vite를 통한 빌드 시점 추출 | Nuxt 클라이언트 플러그인 | 본문이 문자열인 Nitro HTML 응답. 스트리밍 본문은 변환하지 않음 | Nitro HTML 렌더링과 클라이언트 런타임 |
-| [SvelteKit](/guide/installation/svelte) | Vite를 통한 빌드 시점 추출 | 문서에 명시된 클라이언트 훅 필요 | Master CSS 서버 handle 필요. SSR과 사전 렌더링 중 페이지 청크 처리 | 서버 handle과 클라이언트 훅 모두 필요 |
+| [Vite](/guide/installation/vite) | 빌드 시점 추출 | Vite 훅이 처리하는 HTML. 사용자 지정 SSR에는 서버 통합 필요 | Vite HTML 파이프라인으로 삽입 | Vite HTML 렌더링과 런타임. 사용자 지정 SSR은 자체 HTML 렌더링 필요 |
+| [Webpack](/guide/installation/webpack) | 빌드 시점 추출 | 소스 스캔으로 스타일시트 생성. HTML 호스트는 `@master/css-server`를 호출해 렌더링된 HTML에서 CSS를 생성할 수 있음 | 컴파일 HTML 에셋에 삽입 | 런타임 전달 제공. 호스트가 렌더링된 HTML과 hydration 데이터 제공 |
+| [Next.js](/guide/installation/nextjs) | 빌드 시점 추출 | 빌드 후 HTML 출력 처리. 요청 시점 동적 SSR은 변환하지 않음 | 클라이언트 instrumentation | 빌드 렌더링 HTML과 런타임. 동적 SSR은 서버 CSS 자동 삽입 없음 |
+| [Astro](/guide/installation/astro) | Vite를 통한 빌드 시점 추출 | Astro 미들웨어가 사전 렌더링 페이지와 서버 HTML 응답 처리 | 페이지 스크립트 삽입 | 미들웨어 렌더링과 런타임 |
+| [Nuxt](/guide/installation/nuxtjs) | Vite를 통한 빌드 시점 추출 | 본문이 문자열인 Nitro HTML 응답. 스트리밍 본문은 변환하지 않음 | Nuxt 클라이언트 플러그인 | Nitro HTML 렌더링과 클라이언트 런타임 |
+| [SvelteKit](/guide/installation/svelte) | Vite를 통한 빌드 시점 추출 | Master CSS 서버 handle 필요. SSR과 사전 렌더링 중 페이지 청크 처리 | 문서에 명시된 클라이언트 훅 필요 | 서버 handle과 클라이언트 훅 모두 필요 |
 
 프레임워크가 Vite나 Webpack을 사용한다는 이유만으로 번들러가 서버 동작을 추가할 수는 없습니다. Webpack HTML 삽입도 개발 서버의 정적 디렉터리에서 직접 제공되는 파일을 다시 쓰지 않습니다. Astro 미들웨어는 반환 전에 전체 HTML 응답을 읽고 SvelteKit은 페이지 청크 훅을 사용합니다. 전달 경로는 프레임워크 가이드에 따라 선택하세요. PHP, Rails, CMS, .NET 호스트는 Vite로 에셋을 빌드하고 템플릿에서 불러옵니다. [서버 렌더링 앱](/guide/installation/server-rendered)을 참고하세요.
 

@@ -83,7 +83,7 @@ import DocumentComparison from '@master/internal-site/components/DocumentCompari
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
 ## 概覽 [sr-only] \{#overview\}
-讓每個頁面取得需要的 CSS，包含互動後才出現的狀態。先追蹤傳遞路徑，將功能樣式移至負責的進入點，只有在建置掌握可能用途時才修剪原生規則。比較輸出資產與行為後，再設定回歸檢查預算。
+讓每個頁面取得需要的 CSS，包含互動後才出現的狀態。先追蹤傳遞路徑，將功能樣式移至負責的進入點，只有在建置掌握可能用途時才修剪原生規則。類別全都出現在 HTML 中的頁面，則改用預先渲染。比較輸出資產與行為後，再設定回歸檢查預算。
 
 本指南以共用相同導覽的 Overview 與 Reports 頁面為例，只有 Reports 會渲染報表面板。目標是讓 Overview 完全不下載面板規則，而 Reports 保留就緒與鍵盤焦點狀態。
 
@@ -341,6 +341,36 @@ report.classList.add('(letter-spacing:0.123em)')
 檢查計算後字距與 `document.querySelector('style#master-css').sheet.cssRules`。使用預設漸進式啟動政策且 hydration 資料有效時，未涵蓋類別會觸發延後啟動的引擎／程式流程。加入頁面 manifest 已涵蓋的類別，不能證明此流程正常。不要把 style 元素的文字內容當作即時 CSSOM 快照。
 
 HTML、CSS、hydration 資料與執行階段資源應來自同一次建置。開發與正式環境都要測試，整合在開發時可能採不同行為。啟動選項、hydration 失敗與框架支援請參閱[渲染模式](/guide/rendering-modes)。
+
+## 為類別都在 HTML 中的頁面預先渲染 \{#prerender\}
+
+當每個路由都在建置或請求時渲染，`prerender` 會把每個頁面的規則放進 `style#master-css` 傳遞，不再傳送 Master CSS 執行階段、引擎、程式或 hydration 資料。它適合文件、行銷與內容網站：這類網站的互動 island 只會在伺服器已渲染的狀態之間切換。在一個 384 頁的文件網站建置中，從 `progressive` 改為 `prerender` 後，每個頁面的初始 CSS 都沒有改變，而每個頁面少載入一支 38 KB 的執行階段指令碼與一份 hydration manifest。
+
+成本轉移到撰寫階段。hydration 後才首次出現的類別沒有規則，`@safelist` 也無法補上：預先渲染只從頁面 HTML 生成 CSS。切換前先保留漸進式建置，找出它的執行階段生成了哪些規則。在頁面指令碼執行前安裝下列記錄器，例如使用 Playwright 的 `page.addInitScript()`，再捲動每個頁面並操作其中的控制項：
+
+```js
+// Each call is a rule the runtime made for a class absent from the HTML.
+window.generatedRules = []
+for (const prototype of [CSSStyleSheet.prototype, CSSGroupingRule.prototype]) {
+  const insertRule = prototype.insertRule
+  prototype.insertRule = function (rule, index) {
+    window.generatedRules.push(rule)
+    return insertRule.call(this, rule, index)
+  }
+}
+```
+
+多數頁面不會記錄到任何規則。對每個出現的類別改寫，讓伺服器 HTML 事先就包含它：
+
+| 較晚出現的類別從何而來 | 適合預先渲染的寫法 |
+| --- | --- |
+| 由狀態附加，例如對話框開啟時加上 `invisible` | 在標記中保留 `invisible[data-open]`，改為切換 `data-open` |
+| 由值組合而成，例如 `` `items-${align}` `` | 列出每個有限選項，例如 `items-center[data-align=center]`，並設定 `data-align`；無上限的值改用 CSS 變數傳入 |
+| 屬於互動後才渲染的畫面 | 在伺服器上以 `hidden` 屬性渲染該畫面，再切換這個屬性 |
+
+`hidden` 屬性依靠基礎的 `[hidden]` 規則，因此同一元素上的 `grid` 等 display utility 會覆蓋它。請把 `hidden` 放在沒有這類 utility 的元素上。隱藏的元素不參與 view transition，所以隱藏的畫面可以和可見畫面共用同一個 `view-transition-name`。
+
+用兩份建置驗證切換結果。移除 hydration 屬性後比較每個頁面的 `style#master-css`：應該只有改寫過的頁面有變動，差異正是原本由執行階段產生的規則。在預先渲染建置上重複記錄，並列出元素上沒有任何對應規則的類別。只為規則移入 HTML 的頁面調高樣式預算。
 
 ## 比較成本與行為，再設定預算 \{#verify-and-budget\}
 

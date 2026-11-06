@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-共通の CSS エントリーを使って、Astro サイトに Master CSS を接続します。Astro がページをレンダリングし、Master CSS が静的、ランタイム、事前レンダリング、プログレッシブのいずれかのモードでスタイルを配信します。
+共通の CSS エントリーを使って、Astro サイトに Master CSS を接続します。Astro がページをレンダリングし、Master CSS が静的、事前レンダリング、ランタイム、プログレッシブのいずれかのモードでスタイルを配信します。
 
 ## インストール \{#installation\}
 
@@ -119,8 +119,8 @@ npm run preview
 | モード | インストーラーのオプション | 配信方法 |
 | --- | --- | --- |
 | 静的 | なし | ソースの走査で生成したスタイルシート |
-| ランタイム | `--mode runtime` | Astro ミドルウェアで事前レンダリングしないブラウザーランタイム |
 | 事前レンダリング | `--mode prerender` | ビルド済みページとサーバーの HTML レスポンスで CSS を配信。ブラウザーランタイムは不要 |
+| ランタイム | `--mode runtime` | Astro ミドルウェアで事前レンダリングしないブラウザーランタイム |
 | プログレッシブ | `--mode progressive` | ミドルウェアでレンダリングした CSS をランタイムへ引き継ぐ |
 
 <DocumentDisclosure title="ブラウザーで新しいクラスを生成する">

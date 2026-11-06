@@ -187,8 +187,8 @@ HTML 플러그인은 스타일시트 링크와 필요한 런타임 스크립트�
 | 모드 | 플러그인 옵션 | 설치 프로그램 옵션 |
 | --- | --- | --- |
 | 정적 | `mode: 'static'` | 없음 |
-| 런타임 | `mode: 'runtime'` | `--mode runtime` |
 | 사전 렌더링 | `mode: 'prerender'` | `--mode prerender` |
+| 런타임 | `mode: 'runtime'` | `--mode runtime` |
 | 점진적 | `mode: 'progressive'` | `--mode progressive` |
 
 Webpack 플러그인은 `prerender`와 `progressive`도 받습니다. Webpack을 단독으로 쓰는 경우 `prerender`는 `static`과 같은 스캔 기반 CSS를 생성합니다. `progressive`에서는 플러그인이 브라우저 런타임을 제공합니다. 두 모드에서 렌더링된 문서로 초기 CSS를 생성하려면 HTML 호스트가 [서버 렌더러](/guide/rendering-modes#pre-rendering--ssg-ssr)를 호출해야 합니다. `progressive`에서는 하이드레이션 데이터도 제공하세요.

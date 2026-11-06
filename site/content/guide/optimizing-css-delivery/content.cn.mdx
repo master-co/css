@@ -83,7 +83,7 @@ import DocumentComparison from '@master/internal-site/components/DocumentCompari
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
 ## 概览 [sr-only] \{#overview\}
-让每个页面获得需要的 CSS，包括交互后才出现的状态。先追踪交付路径，把功能样式移到所属入口，只有在构建掌握可能用途时才裁剪原生规则。比较输出资源与行为后，再设置回归检查预算。
+让每个页面获得需要的 CSS，包括交互后才出现的状态。先追踪交付路径，把功能样式移到所属入口，只有在构建掌握可能用途时才裁剪原生规则。类名全部出现在 HTML 中的页面，则改用预渲染。比较输出资源与行为后，再设置回归检查预算。
 
 本指南以共享相同导航的 Overview 与 Reports 页面为例，只有 Reports 会渲染报表面板。目标是让 Overview 完全不下载面板规则，而 Reports 保留就绪与键盘焦点状态。
 
@@ -341,6 +341,36 @@ report.classList.add('(letter-spacing:0.123em)')
 检查计算后的字距与 `document.querySelector('style#master-css').sheet.cssRules`。使用默认渐进式启动策略且水合数据有效时，未覆盖类名会触发延迟启动的引擎／程序路径。添加页面清单已覆盖的类名不能证明此路径正常。不要把 style 元素的文本内容当作实时 CSSOM 快照。
 
 HTML、CSS、水合数据与运行时资源应来自同一次构建。开发与生产环境都要测试，集成在开发时可能采用不同行为。启动选项、水合失败与框架支持请参阅[渲染模式](/guide/rendering-modes)。
+
+## 为类名都在 HTML 中的页面预渲染 \{#prerender\}
+
+当每个路由都在构建或请求时渲染，`prerender` 会把每个页面的规则放进 `style#master-css` 交付，不再交付 Master CSS 运行时、引擎、程序或水合数据。它适合文档、营销与内容站点：这类站点的交互 island 只会在服务器已渲染的状态之间切换。在一个 384 页的文档站点构建中，从 `progressive` 改为 `prerender` 后，每个页面的初始 CSS 都没有改变，而每个页面少加载一个 38 KB 的运行时脚本和一份水合清单。
+
+成本转移到编写阶段。水合后才首次出现的类名没有规则，`@safelist` 也无法补上：预渲染只从页面 HTML 生成 CSS。切换前先保留渐进式构建，找出它的运行时生成了哪些规则。在页面脚本执行前安装下面的记录器，例如使用 Playwright 的 `page.addInitScript()`，再滚动每个页面并操作其中的控件：
+
+```js
+// Each call is a rule the runtime made for a class absent from the HTML.
+window.generatedRules = []
+for (const prototype of [CSSStyleSheet.prototype, CSSGroupingRule.prototype]) {
+  const insertRule = prototype.insertRule
+  prototype.insertRule = function (rule, index) {
+    window.generatedRules.push(rule)
+    return insertRule.call(this, rule, index)
+  }
+}
+```
+
+多数页面不会记录到任何规则。对每个出现的类名进行改写，让服务器 HTML 事先就包含它：
+
+| 较晚出现的类名从何而来 | 适合预渲染的写法 |
+| --- | --- |
+| 由状态附加，例如对话框打开时加上 `invisible` | 在标记中保留 `invisible[data-open]`，改为切换 `data-open` |
+| 由值拼接而成，例如 `` `items-${align}` `` | 列出每个有限选项，例如 `items-center[data-align=center]`，并设置 `data-align`；无上限的值改用 CSS 变量传入 |
+| 属于交互后才渲染的视图 | 在服务器上以 `hidden` 属性渲染该视图，再切换这个属性 |
+
+`hidden` 属性依赖基础的 `[hidden]` 规则，因此同一元素上的 `grid` 等 display 工具类会覆盖它。请把 `hidden` 放在没有这类工具类的元素上。隐藏的元素不参与视图过渡，所以隐藏的视图可以与可见视图共用同一个 `view-transition-name`。
+
+用两份构建验证切换结果。移除水合属性后比较每个页面的 `style#master-css`：应该只有改写过的页面发生变化，差异正是原本由运行时生成的规则。在预渲染构建上重复记录，并列出元素上没有任何对应规则的类名。只为规则移入 HTML 的页面调高样式预算。
 
 ## 比较成本与行为，再设置预算 \{#verify-and-budget\}
 

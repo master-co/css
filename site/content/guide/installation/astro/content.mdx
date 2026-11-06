@@ -10,7 +10,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-Connect Master CSS to an Astro site through a shared CSS entry. Astro renders the pages, and Master CSS delivers their styles in static, runtime, prerender or progressive mode.
+Connect Master CSS to an Astro site through a shared CSS entry. Astro renders the pages, and Master CSS delivers their styles in static, prerender, runtime or progressive mode.
 
 ## Installation \{#installation\}
 
@@ -111,8 +111,8 @@ Static mode is the default. The integration injects a page script in runtime and
 | Mode | Installer option | Delivery |
 | --- | --- | --- |
 | Static | None | Generated stylesheet from source scanning |
-| Runtime | `--mode runtime` | Browser runtime, without Astro middleware pre-rendering |
 | Prerender | `--mode prerender` | CSS in built pages and server HTML responses, with no browser runtime |
+| Runtime | `--mode runtime` | Browser runtime, without Astro middleware pre-rendering |
 | Progressive | `--mode progressive` | Middleware-rendered CSS plus a runtime handoff |
 
 <DocumentDisclosure title="Generate new classes in the browser">

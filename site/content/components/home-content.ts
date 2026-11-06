@@ -1,7 +1,7 @@
 import colorNames from '@master/internal-site/data/color-names'
 import { COLOR_LEVELS } from '@master/internal-site/data/color-palette'
 
-export type DeliveryModeId = 'static' | 'progressive' | 'runtime'
+export type DeliveryModeId = 'static' | 'prerender' | 'runtime'
 
 export type HomeSectionId = typeof homeSections[keyof typeof homeSections]
 
@@ -144,10 +144,10 @@ export const deliveryModes = [
     default: true
   },
   {
-    id: 'progressive',
-    title: 'Progressive rendering',
-    body: 'Render first-load CSS into the page; the runtime starts its engine only for classes outside it.',
-    href: '/guide/rendering-modes#progressive-rendering'
+    id: 'prerender',
+    title: 'Prerendering',
+    body: 'Generate CSS from each rendered page’s HTML and deliver it with that page, with no runtime in the browser.',
+    href: '/guide/rendering-modes#pre-rendering--ssg-ssr'
   },
   {
     id: 'runtime',

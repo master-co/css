@@ -144,8 +144,8 @@ Static mode is the default and needs no Master CSS startup code. Keep the CSS en
 | Mode | Installer option | CSS delivery |
 | --- | --- | --- |
 | `static` | None | Generated stylesheet from source scanning |
-| `runtime` | `--mode runtime` | Browser runtime |
 | `prerender` | `--mode prerender` | CSS generated from HTML processed by Vite |
+| `runtime` | `--mode runtime` | Browser runtime |
 | `progressive` | `--mode progressive` | CSS generated from HTML processed by Vite, plus the browser runtime |
 
 Prerender and progressive modes can generate initial CSS only for classes present in the HTML Vite processes. An empty app mount point has no classes from components mounted later. For React Router, TanStack Start and other hosts that render their own HTML, the server must run the [HTML renderer](/guide/rendering-modes#pre-rendering--ssg-ssr) for initial CSS.

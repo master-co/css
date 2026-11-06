@@ -152,8 +152,8 @@ npm run build
 | 모드 | 설치 프로그램 옵션 | CSS 전달 방식 |
 | --- | --- | --- |
 | `static` | 없음 | 소스 스캔으로 생성한 스타일시트 |
-| `runtime` | `--mode runtime` | 브라우저 런타임 |
 | `prerender` | `--mode prerender` | Vite가 처리한 HTML에서 CSS 생성 |
+| `runtime` | `--mode runtime` | 브라우저 런타임 |
 | `progressive` | `--mode progressive` | Vite가 처리한 HTML에서 CSS를 생성하고 브라우저 런타임도 사용 |
 
 사전 렌더링과 점진적 모드는 Vite가 처리하는 HTML에 있는 클래스의 초기 CSS만 생성합니다. 비어 있는 앱 마운트 지점에는 나중에 마운트되는 컴포넌트의 클래스가 없습니다. React Router, TanStack Start처럼 자체 HTML을 렌더링하는 호스트는 서버에서 [HTML 렌더러](/guide/rendering-modes#pre-rendering--ssg-ssr)를 실행해 초기 CSS를 생성해야 합니다.

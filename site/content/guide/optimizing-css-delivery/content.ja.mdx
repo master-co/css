@@ -83,7 +83,7 @@ import DocumentComparison from '@master/internal-site/components/DocumentCompari
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
 ## 概要 [sr-only] \{#overview\}
-操作後の状態も含めて、各ページに必要な CSS を届けます。まず配信経路をたどり、機能のスタイルをその所有元へ移します。ネイティブルールの削除は、ビルドが可能な用途を把握できる場合だけ行います。出力アセットと動作を比較してから、回帰を防ぐ予算上限を設けます。
+操作後の状態も含めて、各ページに必要な CSS を届けます。まず配信経路をたどり、機能のスタイルをその所有元へ移します。ネイティブルールの削除は、ビルドが可能な用途を把握できる場合だけ行います。クラスがすべて HTML に含まれるページは事前レンダリングします。出力アセットと動作を比較してから、回帰を防ぐ予算上限を設けます。
 
 同じナビゲーションを持つ Overview と Reports の2ページを例にします。レポートパネルを描画するのは Reports だけです。Overview はパネルのルールを一切ダウンロードせず、Reports は ready とキーボードフォーカスの状態を保つことを目指します。
 
@@ -341,6 +341,36 @@ report.classList.add('(letter-spacing:0.123em)')
 算出された字間と `document.querySelector('style#master-css').sheet.cssRules` を調べます。既定のプログレッシブ起動ポリシーと有効な hydration データがあれば、未対応クラスが遅延エンジン／プログラムの経路を起動します。ページマニフェストにすでにあるクラスでは、その経路の動作は証明できません。style 要素のテキスト内容を現在の CSSOM のスナップショットとして使わないでください。
 
 HTML、CSS、hydration データ、ランタイムリソースは同じビルドのものを使います。インテグレーションの開発時動作は異なる場合があるので、本番も開発も検証してください。起動オプション、hydration の失敗、フレームワークへの対応は[レンダリングモード](/guide/rendering-modes)を参照してください。
+
+## クラスが HTML に含まれるページを事前レンダリングする \{#prerender\}
+
+すべてのルートをビルド時またはリクエスト時にレンダリングする場合、`prerender` は各ページのルールを `style#master-css` で届け、Master CSS のランタイム、エンジン、プログラム、hydration データを配信しません。インタラクティブなアイランドがサーバーでレンダリングした状態の間だけを切り替える、ドキュメント、マーケティング、コンテンツサイトに適しています。384 ページのドキュメントのビルドでは、`progressive` から `prerender` に切り替えても各ページの初期 CSS は変わらず、各ページから 38 KB のランタイムスクリプトと hydration マニフェストがなくなりました。
+
+コストはオーサリングに移ります。hydration 後に初めて現れるクラスにはルールがなく、`@safelist` でも追加できません。事前レンダリングはページの HTML からのみ CSS を生成するためです。切り替える前にプログレッシブのビルドを残し、そのランタイムが生成するルールを調べます。ページのスクリプトが実行される前に、たとえば Playwright の `page.addInitScript()` で次の記録処理を組み込み、各ページをスクロールしてコントロールを操作します。
+
+```js
+// Each call is a rule the runtime made for a class absent from the HTML.
+window.generatedRules = []
+for (const prototype of [CSSStyleSheet.prototype, CSSGroupingRule.prototype]) {
+  const insertRule = prototype.insertRule
+  prototype.insertRule = function (rule, index) {
+    window.generatedRules.push(rule)
+    return insertRule.call(this, rule, index)
+  }
+}
+```
+
+ほとんどのページでは何も記録されません。記録されたクラスは、サーバーの HTML に最初から含まれるように書き換えます。
+
+| 後から現れるクラスの出どころ | 事前レンダリングに適した書き方 |
+| --- | --- |
+| 状態に応じて追加される。例：ダイアログを開いている間の `invisible` | マークアップに `invisible[data-open]` を残し、`data-open` を切り替える |
+| 値から組み立てられる。例：`` `items-${align}` `` | 有限の選択肢をそれぞれ `items-center[data-align=center]` のように列挙し、`data-align` を設定する。上限のない値は CSS 変数で渡す |
+| 操作の後にだけレンダリングするビューに属する | そのビューを `hidden` 属性付きでサーバーでレンダリングし、属性を切り替える |
+
+`hidden` 属性はベースの `[hidden]` ルールに依存するため、同じ要素の `grid` などの display ユーティリティに上書きされます。`hidden` はそうしたユーティリティのない要素に付けます。非表示の要素はビュートランジションに参加しないため、非表示のビューは表示中のビューと同じ `view-transition-name` を共有できます。
+
+切り替えは両方のビルドで検証します。hydration 属性を除いて各ページの `style#master-css` を比べます。変わるのは書き換えたページだけのはずで、その差分は以前ランタイムが生成していたルールです。事前レンダリングのビルドでも記録を繰り返し、どのルールにも一致しない要素上のクラスを洗い出します。スタイル予算は、ルールが HTML に移ったページについてだけ引き上げます。
 
 ## コストと動作を比較してから予算を決める \{#verify-and-budget\}
 

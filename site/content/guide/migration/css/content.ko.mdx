@@ -30,7 +30,7 @@ Master CSS가 새 마크업이나 변환한 마크업의 규칙을 생성해도 
 
 대부분의 프로젝트에는 기본 소스 탐색으로 충분합니다. 명시적인 스캔 경계가 필요하거나 클래스가 완전한 문자열로 소스에 없는 경우에만 `@source`, `@source not`, `@safelist`, `@blocklist`를 추가합니다.
 
-많은 파일을 변환하기 전에 [렌더링 모드](/guide/rendering-modes)를 참고해 정적, 런타임, 사전 렌더링, 점진적 렌더링 중 프로젝트에 맞는 방식을 선택하세요.
+많은 파일을 변환하기 전에 [렌더링 모드](/guide/rendering-modes)를 참고해 정적, 사전 렌더링, 런타임, 점진적 렌더링 중 프로젝트에 맞는 방식을 선택하세요.
 
 ---
 
@@ -180,7 +180,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
 
 ## 관련 참고 자료 \{#useful-references\}
 - [설치](/guide/installation): 프로젝트에 Master CSS 추가.
-- [렌더링 모드](/guide/rendering-modes): 정적, 런타임, 사전 렌더링, 점진적 렌더링 선택.
+- [렌더링 모드](/guide/rendering-modes): 정적, 사전 렌더링, 런타임, 점진적 렌더링 선택.
 - [스타일 선언](/reference/rules/declarations): 클래스 구문.
 - [테마 토큰](/guide/theme): `@theme` 토큰, [변수와 모드](/reference/rules/modes): 모드, [조건](/reference/rules/conditions): 쿼리 구문.
 - [CSS 지시문](/reference#directives): `@reference`, `@source`, `@safelist`, `@blocklist`.

@@ -4,11 +4,16 @@
   import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
   import IconRotate from '@tabler/icons-svelte-runes/icons/rotate'
   import { getSite } from '@master/internal-site/site'
-  import { deliveryAdded, deliveryExplanations, deliveryLateClass, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
+  import { deliveryEnd, deliveryExplanations, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
 
-  /** Give each cause and result time to register, then hold the finished mode for comparison. */
-  const unit = 4200
-  const rest = 4800
+  /**
+   * Give each cause and result time to register, then hold the finished mode for comparison.
+   * Browser tests may set `window.__masterDeliverySpeed` before the island loads to run the same
+   * timeline faster; visitors always get real time.
+   */
+  const speed = typeof window === 'undefined' ? 1 : Math.max(1, Number((window as { __masterDeliverySpeed?: unknown }).__masterDeliverySpeed) || 1)
+  const unit = 4200 / speed
+  const rest = 4800 / speed
   /** How far ahead of its moment, in timeline units, a flight leaves so it lands on time. */
   const rainLead = 0.32
   const carryLead = 0.36
@@ -21,15 +26,15 @@
   }
 
   /**
-   * The Rendering section's timeline: template, CSS, first paint, and a new class that the
-   * stage plays for the chosen mode. While in view the section tours the modes; pointer or focus inside
+   * The Rendering section's timeline: template, CSS and first paint, which the stage plays for
+   * the chosen mode. While in view the section tours the modes; pointer or focus inside
    * holds the current mode, and choosing a mode or a moment ends the tour. The stage is server-rendered
    * at its last moment; this island writes `--home-delivery-t` and flies class glyphs and files between
    * the stations. Reduced motion keeps the last moment and lets the moments be chosen directly.
    */
   let { sectionId }: { sectionId: string } = $props()
   const { t: translate } = getSite()
-  let moment = $state(3)
+  let moment = $state(deliveryEnd - 1)
   let playback = $state<Playback>('ended')
   let motion = $state(false)
   let ready = $state(false)
@@ -45,20 +50,17 @@
     const frame = section?.querySelector<HTMLElement>('.home-delivery-figure')
     const layer = stage?.querySelector<HTMLElement>('.home-delivery-flights')
     const routes = stage?.querySelector<SVGSVGElement>('.home-delivery-routes')
-    const add = stage?.querySelector<HTMLButtonElement>('[data-add-class]')
     const inspectButtons = stage ? [...stage.querySelectorAll<HTMLButtonElement>('[data-inspect-css], [data-reveal-css]')] : []
     const previewHost = stage?.querySelector<HTMLElement>('[data-preview-host]')
     const preview = previewHost?.shadowRoot
     const sample = preview?.querySelector<HTMLElement>('[data-preview-sample]')
-    const previewChange = preview?.querySelector<HTMLButtonElement>('[data-preview-change]')
-    const previewClass = preview?.querySelector<HTMLElement>('#delivery-preview-class')
     const radios = section ? [...section.querySelectorAll<HTMLInputElement>('input[name="home-delivery-mode"]')] : []
-    if (!section || !stage || !frame || !layer || !routes || !add || !inspectButtons.length || !preview || !sample || !previewChange || !previewClass || !radios.length) return
+    if (!section || !stage || !frame || !layer || !routes || !inspectButtons.length || !preview || !sample || !radios.length) return
     const preference = matchMedia('(prefers-reduced-motion: reduce)')
     let reduce = preference.matches
 
-    let t = 4
-    let shown = 3
+    let t = deliveryEnd
+    let shown = deliveryEnd - 1
     let playing = false
     let touring = !reduce && !radios.some(radio => radio.checked !== radio.defaultChecked)
     let scrubbed = false
@@ -82,7 +84,6 @@
     const mode = () => (radios.find((radio) => radio.checked)?.value ?? 'static') as DeliveryMode
     const ruleStyles = [...preview.querySelectorAll<HTMLStyleElement>('style[data-delivery-rule]')].map(style => ({ style, className: style.dataset.deliveryRule!, text: `@layer utilities{${style.dataset.ruleText}}` }))
     let previewKey = ''
-    const editedTokens = [...stage.querySelectorAll<HTMLElement>('.home-delivery-template-new')]
     const cues = [...stage.querySelectorAll<HTMLElement>('[data-cue-at]')].map(element => ({ element, at: Number(element.dataset.cueAt), shown: undefined as boolean | undefined }))
     const codeDocuments = [...stage.querySelectorAll('.home-delivery-code')].map(document => [...document.querySelectorAll<HTMLElement>('.home-delivery-code-row')].map(row => ({ row, label: row.querySelector('.home-delivery-line-number')!, at: Number(row.dataset.lineAt), present: undefined as boolean | undefined })))
     const updateRows = () => {
@@ -114,30 +115,16 @@
     const updatePreview = () => {
       const current = mode()
       const timing = deliveryTiming[current]
-      const late = t >= deliveryAdded
-      const available = t >= (current === 'static' ? timing.sheet : timing.latePaint)
-      const key = `${current}|${late}|${ruleStyles.map(({ className: rule }) => {
-        const activeAt = current === 'static' ? timing.sheet : rule === deliveryLateClass ? timing.latePaint : current === 'progressive' ? timing.sheet : deliveryRuleAt(current, rule)
-        return t >= activeAt ? '1' : '0'
-      }).join('')}`
-      const changed = key !== previewKey
-      if (changed) {
-        previewKey = key
-        editedTokens.forEach(token => token.setAttribute('aria-hidden', String(!late)))
-        sample.classList.toggle(deliveryLateClass, late)
-        sample.toggleAttribute('data-applied', late && available)
-        sample.toggleAttribute('data-pending', late && !available)
-        previewChange.setAttribute('aria-disabled', String(late && !available))
-        previewChange.setAttribute('aria-busy', String(late && !available))
-        const availability = key.slice(key.lastIndexOf('|') + 1)
-        ruleStyles.forEach(({ style, text }, index) => {
-          const next = availability[index] === '1' ? text : ''
-          if (style.textContent !== next) style.textContent = next
-        })
-      }
-      const from = current === 'static' ? deliveryAdded : timing.lateRule
-      previewHost!.style.setProperty('--preview-flash', String(Math.max(0, Math.min(1, (t - from) * 12, (from + .38 - t) * 8))))
-      return changed
+      // Delivered stylesheets arrive whole; runtime rules apply one by one as the engine writes them.
+      const key = `${current}|${ruleStyles.map(({ className: rule }) => t >= (current === 'runtime' ? deliveryRuleAt(current, rule) : timing.sheet) ? '1' : '0').join('')}`
+      if (key === previewKey) return false
+      previewKey = key
+      const availability = key.slice(key.lastIndexOf('|') + 1)
+      ruleStyles.forEach(({ style, text }, index) => {
+        const next = availability[index] === '1' ? text : ''
+        if (style.textContent !== next) style.textContent = next
+      })
+      return true
     }
     const syncAnimations = () => {
       for (const animation of animations) {
@@ -149,15 +136,15 @@
       playing = value
       syncAnimations()
       stage.toggleAttribute('data-playing', value)
-      setPlayback(value ? 'playing' : t >= 4 ? 'ended' : 'paused')
+      setPlayback(value ? 'playing' : t >= deliveryEnd ? 'ended' : 'paused')
     }
     const setT = (value: number) => {
-      t = Math.min(4, Math.max(0, value))
+      t = Math.min(deliveryEnd, Math.max(0, value))
       stage.style.setProperty('--home-delivery-t', t.toFixed(3))
       const previewChanged = updatePreview()
       const changed = updateRows()
       if (changed || previewChanged) drawRoutes()
-      const next = tween?.moment ?? Math.min(3, Math.max(0, Math.ceil(t - 0.0001) - 1))
+      const next = tween?.moment ?? Math.min(deliveryEnd - 1, Math.max(0, Math.ceil(t - 0.0001) - 1))
       if (next !== shown) {
         shown = next
         stage.dataset.moment = String(next)
@@ -242,7 +229,7 @@
         later(() => delete source.dataset.hot, unit / 3)
       }
       const duration = Math.max(140, (Number(line.dataset.at) - t) * unit)
-      const inputTime = className === deliveryLateClass ? duration * .62 : Math.min(duration * .62, deliveryTiming[mode()].step * unit * .9)
+      const inputTime = Math.min(duration * .62, deliveryTiming[mode()].step * unit * .9)
       flight(className, 'class', 'input', inputTime)
       later(() => {
         pulse(ring)
@@ -251,9 +238,7 @@
     }
     const carry = (label: string, target: HTMLElement) => {
       if (!isShown(target)) return
-      const css = stage.querySelector('[data-station="css"]')!.getBoundingClientRect()
-      const across = sample.getBoundingClientRect().left > css.right
-      flight(label, 'packet', 'paint', Math.max(180, Number(target.dataset.lead ?? carryLead) * unit), across && label === deliveryLateClass ? previewClass : undefined)
+      flight(label, 'packet', 'paint', Math.max(180, Number(target.dataset.lead ?? carryLead) * unit))
     }
 
     const cancel = () => {
@@ -268,8 +253,7 @@
       stage.querySelectorAll<HTMLElement>('[data-land]').forEach((line) => {
         if (!belongs(line)) return
         const at = Number(line.dataset.at) - rainLead
-        const ready = line.dataset.engine === 'progressive-runtime' ? deliveryTiming.progressive.ready : -Infinity
-        events.push({ at: Math.max(at, ready), run: () => rain(line.dataset.land!, line) })
+        events.push({ at, run: () => rain(line.dataset.land!, line) })
       })
       stage.querySelectorAll<HTMLElement>('[data-carry]').forEach((target) => {
         if (!isShown(target)) return
@@ -279,7 +263,6 @@
     const advance = (to: number) => {
       // On a film's first frame, flights that had to leave before it (to land early in the build) leave at once.
       const from = begun ? t : -Infinity
-      if (from < 3 && to >= 3) focusCode('[data-edit-line]')
       begun = true
       setT(to)
       if (!reduce) for (const event of events) if (event.at > from && event.at <= to) event.run()
@@ -316,7 +299,7 @@
         setT(tween.from + (tween.to - tween.from) * eased)
         if (progress >= 1) {
           tween = undefined
-          setPlayback(t >= 4 ? 'ended' : 'paused')
+          setPlayback(t >= deliveryEnd ? 'ended' : 'paused')
         }
         return
       }
@@ -328,11 +311,11 @@
           timer.run()
         }
         advance(t + elapsed / unit)
-        if (t >= 4) {
+        if (t >= deliveryEnd) {
           endedAt = visibleClock
           setPlaying(false)
         }
-      } else if (touring && t >= 4 && !hovered && !focused && visibleClock - Math.max(endedAt, releasedAt) > rest) {
+      } else if (touring && t >= deliveryEnd && !hovered && !focused && visibleClock - Math.max(endedAt, releasedAt) > rest) {
         const index = radios.findIndex((radio) => radio.checked)
         radios[(index + 1) % radios.length].checked = true
         film()
@@ -381,27 +364,6 @@
     }
     const onClick = () => choose(true)
     const onChange = () => choose(false)
-    const onAdd = () => {
-      touring = false
-      stage.removeAttribute('data-touring')
-      cancel()
-      tween = undefined
-      filmMode = mode()
-      begun = true
-      scrubbed = false
-      clock = 0
-      stage.removeAttribute('data-inspecting')
-      setT(reduce ? 4 : 3)
-      focusCode('[data-edit-line]')
-      shown = 3
-      stage.dataset.moment = '3'
-      setMoment(3)
-      collect()
-      setPlaying(!reduce)
-    }
-    add.addEventListener('click', onAdd)
-    const onPreviewChange = () => { if (previewChange.getAttribute('aria-disabled') !== 'true') onAdd() }
-    previewChange.addEventListener('click', onPreviewChange)
     inspectButtons.forEach(button => button.addEventListener('click', onInspect))
     radios.forEach((radio) => {
       radio.addEventListener('click', onClick)
@@ -422,8 +384,7 @@
         shown = index
         stage.dataset.moment = String(index)
         setMoment(index)
-        if (index === 3) focusCode('[data-edit-line]')
-        else if (index === 1) focusCode('[data-reference-line]')
+        if (index === 1) focusCode('[data-reference-line]')
         else if (index === 0) stage.querySelectorAll('.home-delivery-template .home-delivery-code-scroll').forEach(scroll => { scroll.scrollTop = 0 })
         redraw()
       },
@@ -432,7 +393,7 @@
         stage.removeAttribute('data-touring')
         if (playing) {
           setPlaying(false)
-        } else if (t >= 4) {
+        } else if (t >= deliveryEnd) {
           film()
         } else {
           scrubbed = false
@@ -485,7 +446,7 @@
       stage.removeAttribute('data-touring')
       cancel()
       tween = undefined
-      setT(4)
+      setT(deliveryEnd)
       setPlaying(false)
       setMotion(!reduce)
     }
@@ -512,8 +473,8 @@
       const outputY = cssTab.top - bounds.top + cssTab.height / 2
       const deliveryY = cssCode.top - bounds.top + 16
       const sampleBox = sample.getBoundingClientRect()
-      const classBox = previewClass.getBoundingClientRect()
-      const landing = { x: sampleBox.left - bounds.left - 8, y: classBox.top - bounds.top + classBox.height / 2 }
+      // Deliveries land low on the card's edge, where the route clears the engine label above it.
+      const landing = { x: sampleBox.left - bounds.left - 8, y: sampleBox.bottom - bounds.top - 28 }
       const paths = horizontal ? {
         input: `M${template.right} ${inputY}C${ring.x - 14} ${inputY} ${ring.x - 14} ${ring.cy} ${ring.x} ${ring.cy}`,
         rules: `M${ring.x} ${ring.cy + 9}C${ring.x - 14} ${ring.cy + 9} ${ring.x - 14} ${outputY} ${css.right} ${outputY}`,
@@ -561,9 +522,7 @@
     filmMode = mode()
     collect()
     setReady(true)
-    add.disabled = false
     inspectButtons.forEach(button => { button.disabled = false })
-    previewChange.disabled = false
     updatePreview()
     updateRows()
     if (!reduce) {
@@ -586,10 +545,7 @@
       scrolls.forEach(scroll => scroll.removeEventListener('pointerdown', onCodeFocus))
       scrolls.forEach(scroll => scroll.removeEventListener('keydown', readCode))
       stage.removeAttribute('data-routed')
-      add.removeEventListener('click', onAdd)
-      previewChange.removeEventListener('click', onPreviewChange)
       inspectButtons.forEach(button => { button.removeEventListener('click', onInspect); button.disabled = true })
-      add.disabled = true
       preference.removeEventListener('change', onPreference)
       document.removeEventListener('visibilitychange', updateVisibility)
       frame.removeEventListener('pointerenter', hold)
@@ -610,7 +566,7 @@
 </script>
 
 <div class="home-delivery-player">
-  <!-- Every state renders on the server: the page runs on pre-rendered CSS, and a class that first appears in the browser would start its engine. -->
+  <!-- Every state renders on the server: the page runs on prerendered CSS, so a class that first appears in the browser would have no rule. -->
   <!-- The page lamp writes its light onto the play button before or after hydration. -->
   <button aria-label={playLabel} class="home-delivery-play home-lit home-stone home-stone-button home-stone-quiet" data-playback={playback} hidden={!motion} onclick={() => controls?.toggle()} title={playLabel} type="button">
     <IconPlayerPauseFilled aria-hidden="true" data-icon="playing" size={12} stroke={1.75} />

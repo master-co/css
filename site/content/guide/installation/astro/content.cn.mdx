@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-通过共享 CSS 入口将 Master CSS 接入 Astro 站点。Astro 负责渲染页面，Master CSS 则以静态、运行时、预渲染或渐进式模式交付样式。
+通过共享 CSS 入口将 Master CSS 接入 Astro 站点。Astro 负责渲染页面，Master CSS 则以静态、预渲染、运行时或渐进式模式交付样式。
 
 ## 安装 \{#installation\}
 
@@ -119,8 +119,8 @@ npm run preview
 | 模式 | 安装程序选项 | 交付方式 |
 | --- | --- | --- |
 | 静态 | 无 | 扫描源代码后生成的样式表 |
-| 运行时 | `--mode runtime` | 浏览器运行时，不经 Astro 中间件预渲染 |
 | 预渲染 | `--mode prerender` | CSS 随构建页面和服务器 HTML 响应交付，无需浏览器运行时 |
+| 运行时 | `--mode runtime` | 浏览器运行时，不经 Astro 中间件预渲染 |
 | 渐进式 | `--mode progressive` | 中间件渲染 CSS，再交由运行时接管 |
 
 <DocumentDisclosure title="在浏览器中生成新类名">

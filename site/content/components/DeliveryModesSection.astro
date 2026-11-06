@@ -8,11 +8,12 @@ import DeliveryFigures from './DeliveryFigures.svelte'
 import DeliveryStage from './DeliveryStage.astro'
 import HomeSectionHeader from './HomeSectionHeader.astro'
 import { deliveryModes, homeSections, type DeliveryModeId } from './home-content'
+import { deliveryEnd } from './delivery-content'
 
 /** Short names for the mode switch. */
 const modeNames = {
   static: 'Static',
-  progressive: 'Progressive',
+  prerender: 'Prerender',
   runtime: 'Runtime'
 } satisfies Record<DeliveryModeId, string>
 
@@ -26,7 +27,7 @@ const { t } = siteOf(Astro)
       index="03"
       label={t('Rendering')}
       title={t('One syntax. Every delivery path.')}
-      body={t('Choose static, runtime, prerender, or progressive delivery. Your classes stay the same.')}>
+      body={t('Choose static, prerender, or runtime delivery. Your classes stay the same.')}>
       <Link class="home-section-link" href="/guide/rendering-modes">{t('Compare rendering modes')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
     </HomeSectionHeader>
 
@@ -35,7 +36,7 @@ const { t } = siteOf(Astro)
       under it one control area holds the mode choice and player. The preview is the mode explanation.
       On narrow screens the controls come first, followed by the split editor, processor and preview.
     */}
-    <div class="home-delivery-figure home-delivery-stage" data-moment="3" style={{ '--home-delivery-t': 4 }}>
+    <div class="home-delivery-figure home-delivery-stage" data-moment={deliveryEnd - 1} style={{ '--home-delivery-t': deliveryEnd }}>
       <div class="home-delivery-layout">
         {/* The drawing is an artboard: corner marks frame it, the way a design tool marks a frame. */}
         <div class="home-delivery-drawing home-marks">

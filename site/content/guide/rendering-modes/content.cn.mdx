@@ -138,6 +138,47 @@ CSS 入口中的原生选择器默认保留，即使扫描源文件中没有其�
 
 <GuideStudy id="static-late-class" />
 
+## 预渲染 — SSG、SSR \{#pre-rendering--ssg-ssr\}
+构建或服务器取得最终页面 HTML，且后续类名不需要浏览器生成时，请使用预渲染。服务器渲染器读取 HTML、生成规则，并插入 `style#master-css`。它从标记生成 CSS，不会将应用组件渲染为 HTML。
+
+官方集成会对支持的 HTML 输出执行此步骤。自定义服务器或构建流水线可参考此示例，使用构建集成提供的 `virtual:master-css-manifest`。服务器代码运行前，构建工具必须先解析这个虚拟模块。
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+写入或返回取得的 `html`。其中的 `style#master-css` 包含标题规则与所需 font-size 令牌：
+
+<Class2CSS classes={'font-5xl'} />
+
+此输出不需要 Master CSS 运行时或水合清单。只在稍后出现的类名，需要另外提供 CSS，或选择支持运行时的模式。[为类名都在 HTML 中的页面预渲染](/guide/optimizing-css-delivery#prerender)说明如何找出这类类名，并让它们保留在服务器 HTML 中。
+
+在有限的静态构建中，渲染器可以复用缓存规则，同时生成各页面专属 CSS。清单变化时重新创建渲染器，构建结束后则释放。长期运行的服务器应设置有上限的 `maxCachedClasses`，不要沿用构建示例的 `Infinity`；请参阅[服务器 API](/reference/packages#css-server)。
+
+---
+
 ## 运行时渲染 \{#runtime-rendering\}
 类名在浏览器中才能确定时，例如可视化编辑器或构建后加载的内容，请使用运行时渲染。运行时通过 [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) 跟踪已连接元素及其类名变化，再插入或复用匹配的 CSS 规则。
 
@@ -226,47 +267,6 @@ CSS 入口中的原生选择器默认保留，即使扫描源文件中没有其�
 
 ---
 
-## 预渲染 — SSG、SSR \{#pre-rendering--ssg-ssr\}
-构建或服务器取得最终页面 HTML，且后续类名不需要浏览器生成时，请使用预渲染。服务器渲染器读取 HTML、生成规则，并插入 `style#master-css`。它从标记生成 CSS，不会将应用组件渲染为 HTML。
-
-官方集成会对支持的 HTML 输出执行此步骤。自定义服务器或构建流水线可参考此示例，使用构建集成提供的 `virtual:master-css-manifest`。服务器代码运行前，构建工具必须先解析这个虚拟模块。
-
-```html name=index.html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <h1 class="font-5xl">Hello World</h1>
-</body>
-</html>
-```
-
-```ts name=server.ts
-import { readFileSync } from 'node:fs'
-import { createServerRenderer } from '@master/css-server'
-import manifest from 'virtual:master-css-manifest'
-
-const indexHTML = readFileSync('./index.html', 'utf-8')
-const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
-
-const { html } = renderer.renderHTML(indexHTML)
-
-renderer.dispose()
-```
-
-写入或返回取得的 `html`。其中的 `style#master-css` 包含标题规则与所需 font-size 令牌：
-
-<Class2CSS classes={'font-5xl'} />
-
-此输出不需要 Master CSS 运行时或水合清单。只在稍后出现的类名，需要另外提供 CSS，或选择支持运行时的模式。
-
-在有限的静态构建中，渲染器可以复用缓存规则，同时生成各页面专属 CSS。清单变化时重新创建渲染器，构建结束后则释放。长期运行的服务器应设置有上限的 `maxCachedClasses`，不要沿用构建示例的 `Infinity`；请参阅[服务器 API](/reference/packages#css-server)。
-
----
-
 ## 渐进式渲染 \{#progressive-rendering\}
 服务器或构建可以生成页面初始 CSS，且浏览器稍后可能引入新类名时，请使用渐进式渲染。响应通过 `style#master-css` 带有 CSS；运行时读取页面水合清单，区分已覆盖类名与需要引擎的类名。
 
@@ -299,16 +299,16 @@ renderer.dispose()
 
 ## 集成支持 \{#integration-support\}
 
-这些官方适配器默认使用静态渲染。构建时尚未确定的类名需要显式选择运行时生成。`prerender` 从 HTML 生成 CSS，不需要客户端运行时；`progressive` 则结合 HTML 渲染与支持后续类名的运行时。各适配器能够处理的 HTML 取决于宿主：
+这些官方适配器默认使用静态渲染。`prerender` 从 HTML 生成 CSS，不需要客户端运行时。构建时尚未确定的类名需要显式选择运行时生成；`progressive` 则结合 HTML 渲染与支持后续类名的运行时。各适配器能够处理的 HTML 取决于宿主：
 
-| 适配器 | 静态 | 运行时 | `prerender` 与服务器 HTML | `progressive` |
+| 适配器 | 静态 | `prerender` 与服务器 HTML | 运行时 | `progressive` |
 | --- | --- | --- | --- | --- |
-| [Vite](/guide/installation/vite) | 构建时提取 | 通过 Vite HTML 流水线注入 | Vite 钩子处理的 HTML；自定义 SSR 需要服务器集成 | Vite HTML 渲染加运行时；自定义 SSR 需自行渲染 HTML |
-| [Webpack](/guide/installation/webpack) | 构建时提取 | 注入编译的 HTML 资源 | 扫描源码并生成样式表。HTML 宿主可调用 `@master/css-server` 从渲染后的 HTML 生成 CSS | 提供运行时交付；宿主提供渲染后 HTML 与水合数据 |
-| [Next.js](/guide/installation/nextjs) | 构建时提取 | 客户端 instrumentation | 构建后处理 HTML 输出；不转换请求时动态 SSR | 构建渲染 HTML 加运行时；动态 SSR 不自动注入服务器 CSS |
-| [Astro](/guide/installation/astro) | 通过 Vite 在构建时提取 | 注入页面脚本 | Astro 中间件处理预渲染页面与服务器 HTML 响应 | 中间件渲染加运行时 |
-| [Nuxt](/guide/installation/nuxtjs) | 通过 Vite 在构建时提取 | Nuxt 客户端插件 | 主体为字符串的 Nitro HTML 响应；不转换流式主体 | Nitro HTML 渲染加客户端运行时 |
-| [SvelteKit](/guide/installation/svelte) | 通过 Vite 在构建时提取 | 需要文档所述的客户端钩子 | 需要 Master CSS 服务器 handle；在 SSR 与预渲染期间处理页面块 | 同时需要服务器 handle 与客户端钩子 |
+| [Vite](/guide/installation/vite) | 构建时提取 | Vite 钩子处理的 HTML；自定义 SSR 需要服务器集成 | 通过 Vite HTML 流水线注入 | Vite HTML 渲染加运行时；自定义 SSR 需自行渲染 HTML |
+| [Webpack](/guide/installation/webpack) | 构建时提取 | 扫描源码并生成样式表。HTML 宿主可调用 `@master/css-server` 从渲染后的 HTML 生成 CSS | 注入编译的 HTML 资源 | 提供运行时交付；宿主提供渲染后 HTML 与水合数据 |
+| [Next.js](/guide/installation/nextjs) | 构建时提取 | 构建后处理 HTML 输出；不转换请求时动态 SSR | 客户端 instrumentation | 构建渲染 HTML 加运行时；动态 SSR 不自动注入服务器 CSS |
+| [Astro](/guide/installation/astro) | 通过 Vite 在构建时提取 | Astro 中间件处理预渲染页面与服务器 HTML 响应 | 注入页面脚本 | 中间件渲染加运行时 |
+| [Nuxt](/guide/installation/nuxtjs) | 通过 Vite 在构建时提取 | 主体为字符串的 Nitro HTML 响应；不转换流式主体 | Nuxt 客户端插件 | Nitro HTML 渲染加客户端运行时 |
+| [SvelteKit](/guide/installation/svelte) | 通过 Vite 在构建时提取 | 需要 Master CSS 服务器 handle；在 SSR 与预渲染期间处理页面块 | 需要文档所述的客户端钩子 | 同时需要服务器 handle 与客户端钩子 |
 
 框架采用 Vite 或 Webpack，并不代表该打包器能为它添加服务器行为。Webpack 的 HTML 注入也不会重写由开发服务器静态目录直接提供的文件。Astro 中间件在返回前读取完整 HTML 响应，SvelteKit 则使用页面块钩子。选择交付方式时，请遵循框架指南。PHP、Rails、CMS 与 .NET 宿主通过 Vite 构建资源，再从模板加载；请参阅[服务器渲染应用](/guide/installation/server-rendered)。
 

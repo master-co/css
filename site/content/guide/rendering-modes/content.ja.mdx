@@ -138,6 +138,47 @@ CSS エントリー内のネイティブセレクターは、スキャンした�
 
 <GuideStudy id="static-late-class" />
 
+## 事前レンダリング — SSG、SSR \{#pre-rendering--ssg-ssr\}
+ビルドやサーバーが最終ページ HTML を持ち、後のクラスにブラウザー生成が不要なら事前レンダリングを使います。サーバーレンダラーが HTML を読み、ルールを生成し、`style#master-css` に挿入します。マークアップから CSS を生成するもので、アプリのコンポーネントを HTML に描画するものではありません。
+
+公式インテグレーションは、対応する HTML 出力にこの処理を行います。カスタムサーバーやビルドパイプライン向けの以下の例は、ビルドインテグレーションが提供する `virtual:master-css-manifest` を使います。サーバーコードの実行前に、ビルドツールでこの仮想モジュールを解決する必要があります。
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+返された `html` を書き出すか配信します。その `style#master-css` には見出しのルールと必要な font-size トークンが含まれます。
+
+<Class2CSS classes={'font-5xl'} />
+
+この出力に Master CSS runtime や hydration マニフェストは不要です。後からしか現れないクラスには別途 CSS を用意するか、ランタイム対応のモードが必要です。そうしたクラスを見つけてサーバーの HTML に含める方法は、[クラスが HTML に含まれるページを事前レンダリングする](/guide/optimizing-css-delivery#prerender)を参照してください。
+
+有限の静的ビルドでは、レンダラーはルールのキャッシュを再利用しながら、ページごとの CSS を出力できます。マニフェストが変わったら作り直し、ビルド終了時に破棄します。長時間動作するサーバーでは、例の `Infinity` ではなく、上限付きの `maxCachedClasses` を選んでください。[サーバー API](/reference/packages#css-server)を参照してください。
+
+---
+
 ## ランタイムレンダリング \{#runtime-rendering\}
 ビジュアルエディターやビルド後に読み込む内容など、ブラウザーで初めてクラス名が判明する場合はランタイムレンダリングを使います。ランタイムは [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) で接続された要素とクラスの変更を追跡し、一致する CSS ルールを挿入または再利用します。
 
@@ -226,47 +267,6 @@ CSS エントリー内のネイティブセレクターは、スキャンした�
 
 ---
 
-## 事前レンダリング — SSG、SSR \{#pre-rendering--ssg-ssr\}
-ビルドやサーバーが最終ページ HTML を持ち、後のクラスにブラウザー生成が不要なら事前レンダリングを使います。サーバーレンダラーが HTML を読み、ルールを生成し、`style#master-css` に挿入します。マークアップから CSS を生成するもので、アプリのコンポーネントを HTML に描画するものではありません。
-
-公式インテグレーションは、対応する HTML 出力にこの処理を行います。カスタムサーバーやビルドパイプライン向けの以下の例は、ビルドインテグレーションが提供する `virtual:master-css-manifest` を使います。サーバーコードの実行前に、ビルドツールでこの仮想モジュールを解決する必要があります。
-
-```html name=index.html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <h1 class="font-5xl">Hello World</h1>
-</body>
-</html>
-```
-
-```ts name=server.ts
-import { readFileSync } from 'node:fs'
-import { createServerRenderer } from '@master/css-server'
-import manifest from 'virtual:master-css-manifest'
-
-const indexHTML = readFileSync('./index.html', 'utf-8')
-const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
-
-const { html } = renderer.renderHTML(indexHTML)
-
-renderer.dispose()
-```
-
-返された `html` を書き出すか配信します。その `style#master-css` には見出しのルールと必要な font-size トークンが含まれます。
-
-<Class2CSS classes={'font-5xl'} />
-
-この出力に Master CSS runtime や hydration マニフェストは不要です。後からしか現れないクラスには別途 CSS を用意するか、ランタイム対応のモードが必要です。
-
-有限の静的ビルドでは、レンダラーはルールのキャッシュを再利用しながら、ページごとの CSS を出力できます。マニフェストが変わったら作り直し、ビルド終了時に破棄します。長時間動作するサーバーでは、例の `Infinity` ではなく、上限付きの `maxCachedClasses` を選んでください。[サーバー API](/reference/packages#css-server)を参照してください。
-
----
-
 ## プログレッシブレンダリング \{#progressive-rendering\}
 サーバーやビルドが初期ページ CSS を生成でき、ブラウザーが後から新しいクラスを追加し得る場合は、プログレッシブレンダリングを使います。レスポンスは `style#master-css` に CSS を含みます。ランタイムはページ hydration マニフェストを読み、対応済みクラスとエンジンが必要なクラスを区別します。
 
@@ -299,16 +299,16 @@ renderer.dispose()
 
 ## インテグレーションの対応 \{#integration-support\}
 
-以下の公式アダプターは静的レンダリングが既定です。ビルド時に不明なクラスには、ランタイム生成を明示的に選びます。`prerender` はクライアントランタイムなしで HTML から CSS を生成し、`progressive` は HTML の処理と後続クラスへのランタイム対応を組み合わせます。処理できる HTML は各ホストに依存します。
+以下の公式アダプターは静的レンダリングが既定です。`prerender` はクライアントランタイムなしで HTML から CSS を生成します。ビルド時に不明なクラスには、ランタイム生成を明示的に選びます。`progressive` は HTML の処理と後続クラスへのランタイム対応を組み合わせます。処理できる HTML は各ホストに依存します。
 
-| アダプター | 静的 | ランタイム | `prerender` とサーバー HTML | `progressive` |
+| アダプター | 静的 | `prerender` とサーバー HTML | ランタイム | `progressive` |
 | --- | --- | --- | --- | --- |
-| [Vite](/guide/installation/vite) | ビルド時の抽出 | Vite の HTML パイプラインで挿入 | Vite フックで処理する HTML。カスタム SSR にはサーバー統合が必要 | Vite の HTML 処理とランタイム。カスタム SSR には独自の HTML レンダリングが必要 |
-| [Webpack](/guide/installation/webpack) | ビルド時の抽出 | コンパイル対象の HTML アセットへ挿入 | ソースを走査してスタイルシートを生成。HTML ホストは `@master/css-server` を呼び出し、レンダリング済み HTML から CSS を生成できる | ランタイムを配信し、ホストがレンダリング済み HTML と hydration データを提供 |
-| [Next.js](/guide/installation/nextjs) | ビルド時の抽出 | クライアント instrumentation | ビルド後の HTML 出力を処理。リクエスト時の動的 SSR は変換しない | ビルドで描画した HTML とランタイム。動的 SSR にはサーバー CSS の自動挿入なし |
-| [Astro](/guide/installation/astro) | Vite によるビルド時の抽出 | ページスクリプトを挿入 | Astro ミドルウェアが事前レンダリングページとサーバー HTML レスポンスを処理 | ミドルウェアの処理とランタイム |
-| [Nuxt](/guide/installation/nuxtjs) | Vite によるビルド時の抽出 | Nuxt クライアントプラグイン | 本体が文字列の Nitro HTML レスポンス。ストリーミング本体は変換しない | Nitro の HTML 処理とクライアントランタイム |
-| [SvelteKit](/guide/installation/svelte) | Vite によるビルド時の抽出 | 文書化されたクライアントフックが必要 | Master CSS のサーバー handle が必要。SSR と事前レンダリング中のページチャンクを処理 | サーバー handle とクライアントフックの両方が必要 |
+| [Vite](/guide/installation/vite) | ビルド時の抽出 | Vite フックで処理する HTML。カスタム SSR にはサーバー統合が必要 | Vite の HTML パイプラインで挿入 | Vite の HTML 処理とランタイム。カスタム SSR には独自の HTML レンダリングが必要 |
+| [Webpack](/guide/installation/webpack) | ビルド時の抽出 | ソースを走査してスタイルシートを生成。HTML ホストは `@master/css-server` を呼び出し、レンダリング済み HTML から CSS を生成できる | コンパイル対象の HTML アセットへ挿入 | ランタイムを配信し、ホストがレンダリング済み HTML と hydration データを提供 |
+| [Next.js](/guide/installation/nextjs) | ビルド時の抽出 | ビルド後の HTML 出力を処理。リクエスト時の動的 SSR は変換しない | クライアント instrumentation | ビルドで描画した HTML とランタイム。動的 SSR にはサーバー CSS の自動挿入なし |
+| [Astro](/guide/installation/astro) | Vite によるビルド時の抽出 | Astro ミドルウェアが事前レンダリングページとサーバー HTML レスポンスを処理 | ページスクリプトを挿入 | ミドルウェアの処理とランタイム |
+| [Nuxt](/guide/installation/nuxtjs) | Vite によるビルド時の抽出 | 本体が文字列の Nitro HTML レスポンス。ストリーミング本体は変換しない | Nuxt クライアントプラグイン | Nitro の HTML 処理とクライアントランタイム |
+| [SvelteKit](/guide/installation/svelte) | Vite によるビルド時の抽出 | Master CSS のサーバー handle が必要。SSR と事前レンダリング中のページチャンクを処理 | 文書化されたクライアントフックが必要 | サーバー handle とクライアントフックの両方が必要 |
 
 フレームワークが Vite や Webpack を使うだけで、そのバンドラーがサーバーの動作を追加できるわけではありません。Webpack の HTML 挿入も、開発サーバーの静的ディレクトリから直接配信するファイルは書き換えません。Astro ミドルウェアは返す前に HTML レスポンス全体を読み、SvelteKit はページチャンクのフックを使います。配信経路はフレームワークのガイドに従って選びます。PHP、Rails、CMS、.NET のホストは Vite でアセットをビルドし、テンプレートから読み込みます。[サーバーレンダリングのアプリ](/guide/installation/server-rendered)を参照してください。
 

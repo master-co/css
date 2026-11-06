@@ -30,7 +30,7 @@ Master CSS 为新增或已转换标记生成规则时，继续加载现有 CSS �
 
 默认源文件发现足以满足多数项目。只有迁移需要明确扫描范围，或类名未以完整字符串出现在源码中时，才添加 `@source`、`@source not`、`@safelist` 或 `@blocklist`。
 
-大量转换文件前，先根据[渲染模式](/guide/rendering-modes)决定使用静态、运行时、预渲染还是渐进式渲染。
+大量转换文件前，先根据[渲染模式](/guide/rendering-modes)决定使用静态、预渲染、运行时还是渐进式渲染。
 
 ---
 
@@ -180,7 +180,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
 
 ## 相关参考 \{#useful-references\}
 - [安装](/guide/installation)：将 Master CSS 加入项目。
-- [渲染模式](/guide/rendering-modes)：选择静态、运行时、预渲染或渐进式渲染。
+- [渲染模式](/guide/rendering-modes)：选择静态、预渲染、运行时或渐进式渲染。
 - [样式声明](/reference/rules/declarations)：类语法。
 - [主题令牌](/guide/theme)：`@theme` 令牌；[变量与模式](/reference/rules/modes)：模式；[条件](/reference/rules/conditions)：查询语法。
 - [CSS 指令](/reference#directives)：`@reference`、`@source`、`@safelist` 和 `@blocklist`。

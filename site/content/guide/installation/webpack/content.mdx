@@ -179,8 +179,8 @@ Static mode is the default. The plugin's `mode` option selects another delivery,
 | Mode | Plugin option | Installer option |
 | --- | --- | --- |
 | Static | `mode: 'static'` | None |
-| Runtime | `mode: 'runtime'` | `--mode runtime` |
 | Prerender | `mode: 'prerender'` | `--mode prerender` |
+| Runtime | `mode: 'runtime'` | `--mode runtime` |
 | Progressive | `mode: 'progressive'` | `--mode progressive` |
 
 The Webpack plugin accepts `prerender` and `progressive` too. Standalone Webpack in `prerender` mode generates the same scanned CSS as `static`. In `progressive` mode the plugin supplies the browser runtime. To generate initial CSS from a rendered document in either mode, the HTML host must call the [server renderer](/guide/rendering-modes#pre-rendering--ssg-ssr) and provide hydration data for `progressive`.

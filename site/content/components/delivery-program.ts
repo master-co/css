@@ -1,6 +1,6 @@
 import { createRenderSessionSync } from '@master/css/node'
 import preset from '@master/internal-site/css/preset-manifest.ts'
-import { deliverySourceClasses, type DeliveryRule } from './delivery-content'
+import { deliveryRenderedClasses, type DeliveryRule } from './delivery-content'
 
 let cache: { globals: string, rules: DeliveryRule[] } | undefined
 /** Keep both the code inspector and isolated preview on the public Rust engine's actual output. */
@@ -8,8 +8,8 @@ export function getDeliveryProgram() {
   if (cache) return cache
   const engine = createRenderSessionSync({ manifest: preset })
   try {
-    const { classRules, cssText } = engine.ensureClassRules(deliverySourceClasses)
-    const rules = deliverySourceClasses.map(className => {
+    const { classRules, cssText } = engine.ensureClassRules(deliveryRenderedClasses)
+    const rules = deliveryRenderedClasses.map(className => {
       const [rule] = classRules[className]
       if (!rule.selectorText) throw new Error(`The delivery sample requires a style rule for ${className}`)
       return { className, text: rule.text, selector: rule.selectorText }

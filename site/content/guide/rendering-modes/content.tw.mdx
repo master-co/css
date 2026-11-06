@@ -138,6 +138,47 @@ CSS 進入點中的原生選擇器預設保留，即使掃描來源中沒有其�
 
 <GuideStudy id="static-late-class" />
 
+## 預先渲染 — SSG、SSR \{#pre-rendering--ssg-ssr\}
+建置或伺服器取得最終頁面 HTML，且後續類別不需要瀏覽器生成時，請使用預先渲染。伺服器渲染器讀取 HTML、生成規則，並插入 `style#master-css`。它從標記生成 CSS，不會將應用程式元件渲染成 HTML。
+
+官方整合會對支援的 HTML 輸出執行此步驟。自訂伺服器或建置流程可參考此範例，使用建置整合提供的 `virtual:master-css-manifest`。伺服器程式碼執行前，建置工具必須先解析這個虛擬模組。
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+寫入或回傳取得的 `html`。其中的 `style#master-css` 包含標題規則與所需 font-size token：
+
+<Class2CSS classes={'font-5xl'} />
+
+此輸出不需要 Master CSS 執行階段或 hydration manifest。只在稍後出現的類別，需要另外提供 CSS，或選擇支援執行階段的模式。[為類別都在 HTML 中的頁面預先渲染](/guide/optimizing-css-delivery#prerender)說明如何找出這類類別，並讓它們留在伺服器 HTML 中。
+
+在有限次數的靜態建置中，渲染器可重用快取規則，同時產生每頁專屬 CSS。manifest 改變時重新建立渲染器，建置結束後則釋放。長期運作的伺服器應設定有上限的 `maxCachedClasses`，不要沿用建置範例的 `Infinity`；請參閱[伺服器 API](/reference/packages#css-server)。
+
+---
+
 ## 執行階段渲染 \{#runtime-rendering\}
 類別名稱在瀏覽器才得知時，例如視覺編輯器或建置後載入的內容，請使用執行階段渲染。執行階段透過 [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) 追蹤已連接元素及其類別變更，再插入或重用相符 CSS 規則。
 
@@ -226,47 +267,6 @@ CSS 進入點中的原生選擇器預設保留，即使掃描來源中沒有其�
 
 ---
 
-## 預先渲染 — SSG、SSR \{#pre-rendering--ssg-ssr\}
-建置或伺服器取得最終頁面 HTML，且後續類別不需要瀏覽器生成時，請使用預先渲染。伺服器渲染器讀取 HTML、生成規則，並插入 `style#master-css`。它從標記生成 CSS，不會將應用程式元件渲染成 HTML。
-
-官方整合會對支援的 HTML 輸出執行此步驟。自訂伺服器或建置流程可參考此範例，使用建置整合提供的 `virtual:master-css-manifest`。伺服器程式碼執行前，建置工具必須先解析這個虛擬模組。
-
-```html name=index.html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <h1 class="font-5xl">Hello World</h1>
-</body>
-</html>
-```
-
-```ts name=server.ts
-import { readFileSync } from 'node:fs'
-import { createServerRenderer } from '@master/css-server'
-import manifest from 'virtual:master-css-manifest'
-
-const indexHTML = readFileSync('./index.html', 'utf-8')
-const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
-
-const { html } = renderer.renderHTML(indexHTML)
-
-renderer.dispose()
-```
-
-寫入或回傳取得的 `html`。其中的 `style#master-css` 包含標題規則與所需 font-size token：
-
-<Class2CSS classes={'font-5xl'} />
-
-此輸出不需要 Master CSS 執行階段或 hydration manifest。只在稍後出現的類別，需要另外提供 CSS，或選擇支援執行階段的模式。
-
-在有限次數的靜態建置中，渲染器可重用快取規則，同時產生每頁專屬 CSS。manifest 改變時重新建立渲染器，建置結束後則釋放。長期運作的伺服器應設定有上限的 `maxCachedClasses`，不要沿用建置範例的 `Infinity`；請參閱[伺服器 API](/reference/packages#css-server)。
-
----
-
 ## 漸進式渲染 \{#progressive-rendering\}
 伺服器或建置可生成頁面初始 CSS，且瀏覽器稍後可能引入新類別時，請使用漸進式渲染。回應透過 `style#master-css` 帶有 CSS；執行階段讀取頁面 hydration manifest，區分已涵蓋類別與需要引擎的類別。
 
@@ -299,16 +299,16 @@ manifest 帶有資源順序，以及頁面樣式表已輸出的全域資源，�
 
 ## 整合支援 \{#integration-support\}
 
-這些官方轉接器預設使用靜態渲染。建置階段尚未知的類別，需明確選擇執行階段生成。`prerender` 從 HTML 生成 CSS，不需要用戶端執行階段；`progressive` 則結合 HTML 渲染與支援後續類別的執行階段。各轉接器能處理的 HTML 取決於主框架：
+這些官方轉接器預設使用靜態渲染。`prerender` 從 HTML 生成 CSS，不需要用戶端執行階段。建置階段尚未知的類別，需明確選擇執行階段生成；`progressive` 則結合 HTML 渲染與支援後續類別的執行階段。各轉接器能處理的 HTML 取決於主框架：
 
-| 轉接器 | 靜態 | 執行階段 | `prerender` 與伺服器 HTML | `progressive` |
+| 轉接器 | 靜態 | `prerender` 與伺服器 HTML | 執行階段 | `progressive` |
 | --- | --- | --- | --- | --- |
-| [Vite](/guide/installation/vite) | 建置階段擷取 | 透過 Vite HTML 流程注入 | Vite 掛鉤處理的 HTML；自訂 SSR 需要伺服器整合 | Vite HTML 渲染加上執行階段；自訂 SSR 需自行渲染 HTML |
-| [Webpack](/guide/installation/webpack) | 建置階段擷取 | 注入編譯的 HTML 資產 | 掃描原始碼並生成樣式表。HTML 主機可呼叫 `@master/css-server` 從渲染完成的 HTML 生成 CSS | 提供執行階段傳遞；主機提供渲染後 HTML 與 hydration 資料 |
-| [Next.js](/guide/installation/nextjs) | 建置階段擷取 | 用戶端 instrumentation | 建置後處理 HTML 輸出；不轉換請求時動態 SSR | 建置渲染 HTML 加上執行階段；動態 SSR 不會自動注入伺服器 CSS |
-| [Astro](/guide/installation/astro) | 透過 Vite 在建置階段擷取 | 注入頁面指令碼 | Astro 中介軟體處理預先渲染頁面與伺服器 HTML 回應 | 中介軟體渲染加上執行階段 |
-| [Nuxt](/guide/installation/nuxtjs) | 透過 Vite 在建置階段擷取 | Nuxt 用戶端外掛 | 內容主體為字串的 Nitro HTML 回應；不轉換串流主體 | Nitro HTML 渲染加上用戶端執行階段 |
-| [SvelteKit](/guide/installation/svelte) | 透過 Vite 在建置階段擷取 | 需要文件所述的用戶端掛鉤 | 需要 Master CSS 伺服器 handle；在 SSR 與預先渲染期間處理頁面區塊 | 同時需要伺服器 handle 與用戶端掛鉤 |
+| [Vite](/guide/installation/vite) | 建置階段擷取 | Vite 掛鉤處理的 HTML；自訂 SSR 需要伺服器整合 | 透過 Vite HTML 流程注入 | Vite HTML 渲染加上執行階段；自訂 SSR 需自行渲染 HTML |
+| [Webpack](/guide/installation/webpack) | 建置階段擷取 | 掃描原始碼並生成樣式表。HTML 主機可呼叫 `@master/css-server` 從渲染完成的 HTML 生成 CSS | 注入編譯的 HTML 資產 | 提供執行階段傳遞；主機提供渲染後 HTML 與 hydration 資料 |
+| [Next.js](/guide/installation/nextjs) | 建置階段擷取 | 建置後處理 HTML 輸出；不轉換請求時動態 SSR | 用戶端 instrumentation | 建置渲染 HTML 加上執行階段；動態 SSR 不會自動注入伺服器 CSS |
+| [Astro](/guide/installation/astro) | 透過 Vite 在建置階段擷取 | Astro 中介軟體處理預先渲染頁面與伺服器 HTML 回應 | 注入頁面指令碼 | 中介軟體渲染加上執行階段 |
+| [Nuxt](/guide/installation/nuxtjs) | 透過 Vite 在建置階段擷取 | 內容主體為字串的 Nitro HTML 回應；不轉換串流主體 | Nuxt 用戶端外掛 | Nitro HTML 渲染加上用戶端執行階段 |
+| [SvelteKit](/guide/installation/svelte) | 透過 Vite 在建置階段擷取 | 需要 Master CSS 伺服器 handle；在 SSR 與預先渲染期間處理頁面區塊 | 需要文件所述的用戶端掛鉤 | 同時需要伺服器 handle 與用戶端掛鉤 |
 
 框架採用 Vite 或 Webpack，不代表該 bundler 能為它加入伺服器行為。Webpack 的 HTML 注入也不會重寫由開發伺服器靜態目錄直接提供的檔案。Astro 中介軟體在回傳前讀取完整 HTML 回應，SvelteKit 則使用頁面區塊掛鉤。選擇傳遞方式時，請依框架指南操作。PHP、Rails、CMS 與 .NET 主機會透過 Vite 建置資產，再從樣板載入；請參閱[伺服器渲染應用程式](/guide/installation/server-rendered)。
 

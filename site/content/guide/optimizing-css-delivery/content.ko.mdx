@@ -83,7 +83,7 @@ import DocumentComparison from '@master/internal-site/components/DocumentCompari
 import ExplorerView from '@master/internal-site/components/ExplorerView.astro'
 
 ## 개요 [sr-only] \{#overview\}
-상호작용 후 나타나는 상태까지 각 페이지가 필요한 CSS를 받게 하세요. 전달 경로를 추적하고 기능 스타일을 소유 진입점으로 옮긴 뒤 빌드가 가능한 용도를 알고 있을 때만 네이티브 규칙을 가지치기하세요. 출력 에셋과 동작을 비교한 후 회귀 검사 예산을 정하세요.
+상호작용 후 나타나는 상태까지 각 페이지가 필요한 CSS를 받게 하세요. 전달 경로를 추적하고 기능 스타일을 소유 진입점으로 옮긴 뒤 빌드가 가능한 용도를 알고 있을 때만 네이티브 규칙을 가지치기하세요. 클래스가 모두 HTML에 있는 페이지는 사전 렌더링하세요. 출력 에셋과 동작을 비교한 후 회귀 검사 예산을 정하세요.
 
 이 가이드는 같은 탐색 메뉴를 공유하는 Overview와 Reports 페이지를 다룹니다. Reports만 보고서 패널을 렌더링합니다. 목표는 Overview가 패널 규칙을 전혀 다운로드하지 않고 Reports는 준비 및 키보드 포커스 상태를 유지하는 것입니다.
 
@@ -341,6 +341,36 @@ report.classList.add('(letter-spacing:0.123em)')
 계산된 자간과 `document.querySelector('style#master-css').sheet.cssRules`를 검사하세요. 기본 점진적 시작 정책과 유효한 hydration 데이터에서는 미포함 클래스가 지연 엔진/프로그램 경로를 트리거합니다. 페이지 매니페스트가 이미 포함한 클래스로는 이 경로의 동작을 입증할 수 없습니다. style 요소의 텍스트 내용을 실시간 CSSOM 스냅샷으로 사용하지 마세요.
 
 HTML, CSS, hydration 데이터, 런타임 리소스는 같은 빌드의 것을 유지하세요. 통합은 개발 시 동작이 다를 수 있으므로 프로덕션과 개발을 모두 테스트하세요. 시작 옵션, hydration 실패, 프레임워크 지원은 [렌더링 모드](/guide/rendering-modes)를 참고하세요.
+
+## 클래스가 HTML에 있는 페이지 사전 렌더링하기 \{#prerender\}
+
+모든 라우트를 빌드 시점이나 요청 시점에 렌더링한다면 `prerender`는 각 페이지의 규칙을 `style#master-css`로 전달하고 Master CSS 런타임, 엔진, 프로그램, hydration 데이터를 보내지 않습니다. 인터랙티브 아일랜드가 서버에서 렌더링한 상태 사이만 전환하는 문서, 마케팅, 콘텐츠 사이트에 적합합니다. 384페이지 문서 빌드에서 `progressive`를 `prerender`로 바꾸자 모든 페이지의 초기 CSS는 그대로였고, 각 페이지에서 38 KB 런타임 스크립트와 hydration 매니페스트가 사라졌습니다.
+
+비용은 작성 단계로 옮겨 갑니다. hydration 후 처음 나타나는 클래스에는 규칙이 없고 `@safelist`로도 추가되지 않습니다. 사전 렌더링은 페이지 HTML에서만 CSS를 생성하기 때문입니다. 전환하기 전에 점진적 빌드를 유지하고 그 런타임이 생성하는 규칙을 찾으세요. 페이지 스크립트보다 먼저 다음 기록기를 설치하고(예: Playwright의 `page.addInitScript()`), 각 페이지를 스크롤하며 컨트롤을 조작합니다.
+
+```js
+// Each call is a rule the runtime made for a class absent from the HTML.
+window.generatedRules = []
+for (const prototype of [CSSStyleSheet.prototype, CSSGroupingRule.prototype]) {
+  const insertRule = prototype.insertRule
+  prototype.insertRule = function (rule, index) {
+    window.generatedRules.push(rule)
+    return insertRule.call(this, rule, index)
+  }
+}
+```
+
+대부분의 페이지에서는 아무것도 기록되지 않습니다. 기록된 클래스는 서버 HTML에 처음부터 포함되도록 다시 작성하세요.
+
+| 나중에 나타나는 클래스의 출처 | 사전 렌더링에 맞는 형태 |
+| --- | --- |
+| 상태가 덧붙임. 예: 대화상자가 열린 동안의 `invisible` | 마크업에 `invisible[data-open]`을 두고 `data-open`을 전환 |
+| 값으로 조합함. 예: `` `items-${align}` `` | 유한한 선택지를 `items-center[data-align=center]`처럼 각각 나열하고 `data-align`을 설정. 상한이 없는 값은 CSS 변수로 전달 |
+| 상호작용 후에만 렌더링하는 화면에 속함 | 그 화면을 서버에서 `hidden` 속성과 함께 렌더링하고 속성을 전환 |
+
+`hidden` 속성은 기본 `[hidden]` 규칙에 의존하므로 같은 요소의 `grid` 같은 display 유틸리티가 이를 덮어씁니다. `hidden`은 그런 유틸리티가 없는 요소에 두세요. 숨긴 요소는 뷰 전환에 참여하지 않으므로 숨긴 화면은 보이는 화면과 같은 `view-transition-name`을 공유할 수 있습니다.
+
+두 빌드로 전환을 검증하세요. hydration 속성을 제거한 뒤 각 페이지의 `style#master-css`를 비교하세요. 다시 작성한 페이지만 바뀌어야 하며, 그 차이는 이전에 런타임에서 온 규칙입니다. 사전 렌더링 빌드에서도 기록을 반복해 어떤 규칙과도 일치하지 않는 요소의 클래스를 나열하세요. 스타일 예산은 규칙이 HTML로 옮겨 간 페이지에 대해서만 올리세요.
 
 ## 비용과 동작 비교 후 예산 설정하기 \{#verify-and-budget\}
 

@@ -1,7 +1,7 @@
 ---
 {
   "title": "在 SvelteKit 設定 Master CSS",
-  "description": "安裝 SvelteKit 附加元件、連接根樣式表，並選擇靜態、執行階段、漸進式或僅預先渲染的 CSS 傳遞方式。",
+  "description": "安裝 SvelteKit 附加元件、連接根樣式表，並選擇靜態、僅預先渲染、執行階段或漸進式的 CSS 傳遞方式。",
   "category": "整合"
 }
 ---
@@ -75,9 +75,9 @@ npm run preview
 | 模式 | Vite 模式 | Master CSS 掛鉤 |
 | --- | --- | --- |
 | 靜態 | `static` | 無 |
+| 僅預先渲染 | `prerender` | 伺服器，並停用 hydration manifest |
 | 執行階段 | `runtime` | 用戶端 |
 | 漸進式 | `progressive` | 用戶端與伺服器 |
-| 僅預先渲染 | `prerender` | 伺服器，並停用 hydration manifest |
 
 <DocumentDisclosure title="在瀏覽器產生新類別">
 

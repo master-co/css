@@ -152,8 +152,8 @@ npm run build
 | モード | インストーラーのオプション | CSS の配信方法 |
 | --- | --- | --- |
 | `static` | なし | ソースの走査で生成したスタイルシート |
-| `runtime` | `--mode runtime` | ブラウザーランタイム |
 | `prerender` | `--mode prerender` | Vite が処理した HTML から CSS を生成 |
+| `runtime` | `--mode runtime` | ブラウザーランタイム |
 | `progressive` | `--mode progressive` | Vite が処理した HTML から CSS を生成し、ブラウザーランタイムも使用 |
 
 事前レンダリングとプログレッシブの各モードが初期 CSS を生成できるのは、Vite が処理する HTML に含まれるクラスだけです。空のマウント先には、後からマウントするコンポーネントのクラスがありません。React Router や TanStack Start など、独自に HTML をレンダリングするホストでは、サーバーが [HTML レンダラー](/guide/rendering-modes#pre-rendering--ssg-ssr) を使って初期 CSS を生成します。

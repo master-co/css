@@ -152,8 +152,8 @@ npm run build
 | 模式 | 安装程序选项 | CSS 交付方式 |
 | --- | --- | --- |
 | `static` | 无 | 扫描源代码后生成的样式表 |
-| `runtime` | `--mode runtime` | 浏览器运行时 |
 | `prerender` | `--mode prerender` | 从 Vite 处理的 HTML 生成 CSS |
+| `runtime` | `--mode runtime` | 浏览器运行时 |
 | `progressive` | `--mode progressive` | 从 Vite 处理的 HTML 生成 CSS，并加入浏览器运行时 |
 
 预渲染和渐进式模式只能为 Vite 处理的 HTML 中已有的类生成初始 CSS。空的应用挂载点不包含稍后才挂载的组件类。React Router、TanStack Start 等自行渲染 HTML 的宿主必须由服务器调用 [HTML 渲染器](/guide/rendering-modes#pre-rendering--ssg-ssr) 生成初始 CSS。

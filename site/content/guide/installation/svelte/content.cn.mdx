@@ -1,7 +1,7 @@
 ---
 {
   "title": "在 SvelteKit 中配置 Master CSS",
-  "description": "安装 SvelteKit 附加组件，连接根样式表，并选择静态、运行时、渐进式或仅预渲染的 CSS 交付方式。",
+  "description": "安装 SvelteKit 附加组件，连接根样式表，并选择静态、仅预渲染、运行时或渐进式的 CSS 交付方式。",
   "category": "集成"
 }
 ---
@@ -75,9 +75,9 @@ npm run preview
 | 模式 | Vite 模式 | Master CSS 钩子 |
 | --- | --- | --- |
 | 静态 | `static` | 无 |
+| 仅预渲染 | `prerender` | 服务器，并禁用水合 manifest |
 | 运行时 | `runtime` | 客户端 |
 | 渐进式 | `progressive` | 客户端与服务器 |
-| 仅预渲染 | `prerender` | 服务器，并禁用水合 manifest |
 
 <DocumentDisclosure title="在浏览器中生成新类名">
 

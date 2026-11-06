@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-공유 CSS 진입점으로 Astro 사이트에 Master CSS를 연결합니다. Astro가 페이지를 렌더링하고 Master CSS는 정적, 런타임, 사전 렌더링, 점진적 모드 중 하나로 스타일을 전달합니다.
+공유 CSS 진입점으로 Astro 사이트에 Master CSS를 연결합니다. Astro가 페이지를 렌더링하고 Master CSS는 정적, 사전 렌더링, 런타임, 점진적 모드 중 하나로 스타일을 전달합니다.
 
 ## 설치 \{#installation\}
 
@@ -119,8 +119,8 @@ npm run preview
 | 모드 | 설치 프로그램 옵션 | 전달 방식 |
 | --- | --- | --- |
 | 정적 | 없음 | 소스 스캔으로 생성한 스타일시트 |
-| 런타임 | `--mode runtime` | Astro 미들웨어 사전 렌더링 없이 브라우저 런타임 사용 |
 | 사전 렌더링 | `--mode prerender` | 빌드된 페이지와 서버 HTML 응답에 CSS 포함. 브라우저 런타임은 필요 없음 |
+| 런타임 | `--mode runtime` | Astro 미들웨어 사전 렌더링 없이 브라우저 런타임 사용 |
 | 점진적 | `--mode progressive` | 미들웨어가 렌더링한 CSS와 런타임으로의 인계 |
 
 <DocumentDisclosure title="브라우저에서 새 클래스 생성하기">

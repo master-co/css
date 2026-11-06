@@ -59,6 +59,47 @@ Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or
 
 <GuideStudy id="static-late-class" />
 
+## Prerendering — SSG, SSR \{#pre-rendering--ssg-ssr\}
+Use pre-rendering when your build or server has the final page HTML and you do not need browser generation for later classes. The server renderer reads that HTML, generates its rules, and inserts them into `style#master-css`. It generates CSS from markup; it does not render your application components into HTML.
+
+Official integrations perform this step for their supported HTML outputs. For a custom server or build pipeline, this example uses `virtual:master-css-manifest` supplied by a build integration. That virtual module must be resolved by the build tool before the server code runs.
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1 class="font-5xl">Hello World</h1>
+</body>
+</html>
+```
+
+```ts name=server.ts
+import { readFileSync } from 'node:fs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from 'virtual:master-css-manifest'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
+
+const { html } = renderer.renderHTML(indexHTML)
+
+renderer.dispose()
+```
+
+Write or serve the returned `html`. Its `style#master-css` contains the heading's rule and the font-size token it needs:
+
+<Class2CSS classes={'font-5xl'} />
+
+No Master CSS runtime or hydration manifest is needed for this output. A class that only appears later needs CSS supplied separately, or a mode with runtime support. [Prerender pages whose classes are in their HTML](/guide/optimizing-css-delivery#prerender) shows how to find such classes and keep them in the server HTML.
+
+The renderer can reuse cached rules across a finite static build while producing page-specific CSS. Recreate it when the manifest changes and dispose it when the build ends. For a long-lived server, choose a bounded `maxCachedClasses` instead of the build example's `Infinity`; see the [server API](/reference/packages#css-server).
+
+---
+
 ## Runtime rendering \{#runtime-rendering\}
 Use runtime rendering when class names become known in the browser, such as in a visual editor or content loaded after the build. The runtime uses [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to track connected elements and their class changes, then inserts or reuses the matching CSS rules.
 
@@ -147,47 +188,6 @@ Confirm in DevTools that the runtime reuses the preloaded response instead of re
 
 ---
 
-## Pre-rendering — SSG, SSR \{#pre-rendering--ssg-ssr\}
-Use pre-rendering when your build or server has the final page HTML and you do not need browser generation for later classes. The server renderer reads that HTML, generates its rules, and inserts them into `style#master-css`. It generates CSS from markup; it does not render your application components into HTML.
-
-Official integrations perform this step for their supported HTML outputs. For a custom server or build pipeline, this example uses `virtual:master-css-manifest` supplied by a build integration. That virtual module must be resolved by the build tool before the server code runs.
-
-```html name=index.html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <h1 class="font-5xl">Hello World</h1>
-</body>
-</html>
-```
-
-```ts name=server.ts
-import { readFileSync } from 'node:fs'
-import { createServerRenderer } from '@master/css-server'
-import manifest from 'virtual:master-css-manifest'
-
-const indexHTML = readFileSync('./index.html', 'utf-8')
-const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
-
-const { html } = renderer.renderHTML(indexHTML)
-
-renderer.dispose()
-```
-
-Write or serve the returned `html`. Its `style#master-css` contains the heading's rule and the font-size token it needs:
-
-<Class2CSS classes={'font-5xl'} />
-
-No Master CSS runtime or hydration manifest is needed for this output. A class that only appears later needs CSS supplied separately, or a mode with runtime support.
-
-The renderer can reuse cached rules across a finite static build while producing page-specific CSS. Recreate it when the manifest changes and dispose it when the build ends. For a long-lived server, choose a bounded `maxCachedClasses` instead of the build example's `Infinity`; see the [server API](/reference/packages#css-server).
-
----
-
 ## Progressive rendering \{#progressive-rendering\}
 Use progressive rendering when the server or build can generate the initial page CSS and the browser may later introduce new classes. The response carries that CSS in `style#master-css`; the runtime reads a page hydration manifest to distinguish covered classes from those that need the engine.
 
@@ -220,16 +220,16 @@ The manifest carries resource order and the globals already emitted by the page'
 
 ## Integration support \{#integration-support\}
 
-Static rendering is the default for these official adapters. Runtime generation is an explicit choice for classes that are unknown at build time. `prerender` generates CSS from HTML without a client runtime; `progressive` combines HTML rendering with a runtime for later classes. The HTML each adapter can process depends on its host:
+Static rendering is the default for these official adapters. `prerender` generates CSS from HTML without a client runtime. Runtime generation is an explicit choice for classes that are unknown at build time; `progressive` combines HTML rendering with a runtime for later classes. The HTML each adapter can process depends on its host:
 
-| Adapter | Static | Runtime | `prerender` and server HTML | `progressive` |
+| Adapter | Static | `prerender` and server HTML | Runtime | `progressive` |
 | --- | --- | --- | --- | --- |
-| [Vite](/guide/installation/vite) | Build-time extraction | Injected through Vite's HTML pipeline | HTML processed by Vite hooks; custom SSR needs a server integration | Vite HTML rendering plus runtime; custom SSR needs its own HTML rendering |
-| [Webpack](/guide/installation/webpack) | Build-time extraction | Injected into compilation HTML assets | Generates a scanned stylesheet. The HTML host can call `@master/css-server` to generate CSS from rendered HTML | Runtime delivery is provided; your host supplies rendered HTML and hydration data |
-| [Next.js](/guide/installation/nextjs) | Build-time extraction | Client instrumentation | HTML outputs processed after the build; dynamic request-time SSR is not transformed | Build-rendered HTML plus runtime; dynamic SSR has no automatic server CSS injection |
-| [Astro](/guide/installation/astro) | Build-time extraction through Vite | Injected page script | Astro middleware processes prerendered pages and server HTML responses | Middleware rendering plus runtime |
-| [Nuxt](/guide/installation/nuxtjs) | Build-time extraction through Vite | Nuxt client plugin | Nitro HTML responses with string bodies; streaming bodies are not transformed | Nitro HTML rendering plus client runtime |
-| [SvelteKit](/guide/installation/svelte) | Build-time extraction through Vite | Requires the documented client hook | Requires the Master CSS server handle; it processes page chunks during SSR and prerendering | Requires both the server handle and client hook |
+| [Vite](/guide/installation/vite) | Build-time extraction | HTML processed by Vite hooks; custom SSR needs a server integration | Injected through Vite's HTML pipeline | Vite HTML rendering plus runtime; custom SSR needs its own HTML rendering |
+| [Webpack](/guide/installation/webpack) | Build-time extraction | Generates a scanned stylesheet. The HTML host can call `@master/css-server` to generate CSS from rendered HTML | Injected into compilation HTML assets | Runtime delivery is provided; your host supplies rendered HTML and hydration data |
+| [Next.js](/guide/installation/nextjs) | Build-time extraction | HTML outputs processed after the build; dynamic request-time SSR is not transformed | Client instrumentation | Build-rendered HTML plus runtime; dynamic SSR has no automatic server CSS injection |
+| [Astro](/guide/installation/astro) | Build-time extraction through Vite | Astro middleware processes prerendered pages and server HTML responses | Injected page script | Middleware rendering plus runtime |
+| [Nuxt](/guide/installation/nuxtjs) | Build-time extraction through Vite | Nitro HTML responses with string bodies; streaming bodies are not transformed | Nuxt client plugin | Nitro HTML rendering plus client runtime |
+| [SvelteKit](/guide/installation/svelte) | Build-time extraction through Vite | Requires the Master CSS server handle; it processes page chunks during SSR and prerendering | Requires the documented client hook | Requires both the server handle and client hook |
 
 Vite and Webpack cannot add server behavior to a framework merely because it uses that bundler. Webpack's HTML injection also does not rewrite files served directly from a development server's static directory. Astro middleware reads the complete HTML response before returning it; SvelteKit uses its page-chunk hook. Follow the framework guide when choosing the delivery path. PHP, Rails, CMS and .NET hosts build the asset with Vite and load it from their templates; see [Server-rendered apps](/guide/installation/server-rendered).
 

@@ -1,7 +1,7 @@
 ---
 {
   "title": "SvelteKit에서 Master CSS 설정하기",
-  "description": "SvelteKit 애드온을 설치하고 루트 스타일시트를 연결한 뒤 정적, 런타임, 점진적 또는 사전 렌더링 전용 CSS 전달 방식을 선택합니다.",
+  "description": "SvelteKit 애드온을 설치하고 루트 스타일시트를 연결한 뒤 정적, 사전 렌더링 전용, 런타임 또는 점진적 CSS 전달 방식을 선택합니다.",
   "category": "통합"
 }
 ---
@@ -75,9 +75,9 @@ npm run preview
 | 모드 | Vite 모드 | Master CSS 훅 |
 | --- | --- | --- |
 | 정적 | `static` | 없음 |
+| 사전 렌더링 전용 | `prerender` | 하이드레이션 매니페스트를 비활성화한 서버 |
 | 런타임 | `runtime` | 클라이언트 |
 | 점진적 | `progressive` | 클라이언트와 서버 |
-| 사전 렌더링 전용 | `prerender` | 하이드레이션 매니페스트를 비활성화한 서버 |
 
 <DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
 
