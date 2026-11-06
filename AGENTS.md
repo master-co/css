@@ -72,8 +72,16 @@ Report the result, intentional behavior/API changes, validation, and remaining l
 
 ## Commit Format
 
-Use Aronrepo conventional commits: `Type(Target): Summary`, sentence-case summary, no trailing period; target is optional but recommended.
+Use [Aronrepo conventional commits](https://github.com/1aron/aronrepo/tree/main/packages/conventional-commits) (`@aronrepo/conventional-commits`, enforced by commitlint): `Type(Scope): Summary` or `Type: Summary`, sentence-case summary, no trailing period. Add a scope when it names the package, crate, workflow or area; omit an artificial one. Append `, resolved #123` (or `#123 #124`) when the commit closes issues.
 
-Allowed types: `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Benchmark`, `Build`, `CI`, `Style`, `Refactor`, `Chore`, `Misc`.
+| Release | Types |
+| --- | --- |
+| Major | `Bump(Major)` |
+| Minor | `Feat`, `New`, `Bump(Minor)` |
+| Patch | `Fix`, `Perf`, `Add`, `Update`, `Improve`, `Upgrade`, `Deprecate`, `Drop`, `Revert`, `Bump(Patch)`, `Docs(README)` |
+| None | `Docs`, `Example`, `Test`, `Benchmark`, `Build`, `CI`, `Style`, `Refactor`, `Chore`, `Misc` |
 
-Use release-impacting types only for published behavior/APIs, release behavior, or published README changes. Use `Chore(Agent)` for internal AI instructions, `Chore(Deps)` for development dependencies/lockfiles, `Build` for dev tooling, `CI` for workflows/status checks, `Style` for formatting/lint-only changes, and `Benchmark` for measurement-only changes.
+- Never choose a Major or Minor type (`Bump(Major)`, `Feat`, `New`, `Bump(Minor)`) unless the user explicitly asks for that release level. A new capability, option, rule or API is `Add`; an enhancement is `Improve` or `Update`; a bug fix is `Fix`.
+- Pick the lowest type that accurately describes the change. Use a Patch type only when published package behavior, public API/types, generated output, release behavior or a published README changes; otherwise use a None type.
+- None defaults: `Chore(Agent)` for AI instructions and repository context, `Chore(Deps)` for development dependencies and lockfiles, `Build` for dev tooling, `CI` for workflows and status checks, `Style` for formatting or lint-only changes, `Benchmark` for measurement-only changes (never `Perf`), `Test`, `Example`, plain `Docs` for site and internal docs, and `Refactor` for behavior-preserving restructuring.
+- Split unrelated changes so each commit carries its own release level; a commit mixing a Patch change with internal work takes the Patch type.
