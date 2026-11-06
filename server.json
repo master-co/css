@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.master-co/master-css",
+  "title": "Master CSS",
+  "description": "Inspect Master CSS classes, generated CSS, and project stylesheets from your AI client.",
+  "repository": {
+    "url": "https://github.com/master-co/css",
+    "source": "github"
+  },
+  "websiteUrl": "https://css.master.co/guide/ai-coding#connect-the-mcp-server",
+  "version": "2.0.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@master/css-mcp",
+      "version": "2.0.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

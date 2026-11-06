@@ -1,5 +1,6 @@
 {
   "name": "@master/css-mcp",
+  "mcpName": "io.github.master-co/master-css",
   "type": "module",
   "engines": {
     "node": "^24"

@@ -163,6 +163,27 @@ authorized publication; do not exercise a real tag mutation as a preflight test.
 See [npm's Trusted Publisher documentation](https://docs.npmjs.com/trusted-publishers/#managing-dist-tags-with-trusted-publishing)
 and [npm 11.21.0's implementation](https://github.com/npm/cli/blob/v11.21.0/lib/commands/dist-tag.js).
 
+## MCP Registry listing
+
+After the stable npm release, set `VERSION` to the exact released
+`@master/css-mcp` version and use it for both versions in `server.json`. Verify that
+`npm view "@master/css-mcp@$VERSION" mcpName` matches `server.json`'s `name`.
+Run the [package's client check](../packages/mcp/README.md#mcp-client-config) in
+an empty workspace on Node.js 24, pinning the npm command to that version.
+
+Validate with `mcp-publisher validate server.json`. A `master-co` GitHub
+organization owner can authenticate with `mcp-publisher login github` and run
+`mcp-publisher publish` from the repository root. The registry also supports
+`mcp-publisher login github-oidc` in a workflow in this repository with
+`id-token: write`. See the [official publishing guide](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/quickstart.mdx).
+
+Verify `server.packages` in the public response contains `@master/css-mcp` at
+`$VERSION` with `stdio` transport:
+
+```sh
+curl --fail --silent --show-error "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.master-co%2Fmaster-css/versions/$VERSION"
+```
+
 ## Partial failure: inspect before retrying
 
 Do not blindly rerun the release workflow or use `--skip-duplicate`. Retain the

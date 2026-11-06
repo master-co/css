@@ -4,6 +4,8 @@ Model Context Protocol server for Master CSS tooling. It lets AI clients inspect
 
 ## Installation
 
+Use Node.js 24.
+
 ```bash
 npm install -D @master/css-mcp
 ```
@@ -30,6 +32,15 @@ Most MCP clients accept a command and arguments for stdio servers:
 ```
 
 Use an absolute `--root` path so the server resolves the intended workspace.
+
+To verify the connection in an empty workspace, call `mastercss_inspect_class` with:
+
+```json
+{"className": "p-md", "context": "preset"}
+```
+
+Read `result.data.css` in the response. It contains `.p-md{padding:var(--spacing-md)}`.
+The `preset` context uses the bundled Master CSS defaults, so this check works before you set up a project.
 
 ## Project tools
 
