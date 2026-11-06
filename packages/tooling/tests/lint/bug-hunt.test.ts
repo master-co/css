@@ -23,3 +23,21 @@ test('audit control: source fixes converge and preserve Unicode surrounding mark
     }
   }
 })
+
+test('bound Vue class props only sort the class lists inside their expression (#493)', () => {
+  using session = createTestToolingSession()
+  const content = '<template>\n  <div :class="active ? \'\' : `p(8) flex`" />\n  <MyItem :content-class="active ? \'\' : `p(8) flex`" />\n  <MyItem v-bind:item-class="active ? \'\' : `p(8) flex`" />\n  <MyItem content-class="p(8) flex" />\n</template>\n'
+  const options = { content, filePath: 'Repro.vue', lintSession: session }
+  const diagnostics = lintMasterCSSContent(options).diagnostics
+  expect(diagnostics.map(({ code, loc }) => [code, loc.start.line])).toEqual([
+    ['invalid-class-order', 2],
+    ['invalid-class-order', 3],
+    ['invalid-class-order', 4],
+    ['invalid-class-order', 5]
+  ])
+  for (const diagnostic of diagnostics) {
+    expect(content.slice(diagnostic.range.start, diagnostic.range.end)).toBe('p(8) flex')
+    expect(diagnostic.fixes?.map(({ text }) => text)).toEqual(['flex p(8)'])
+  }
+  expect(fixMasterCSSContent(options)).toBe(content.replaceAll('p(8) flex', 'flex p(8)'))
+})

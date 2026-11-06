@@ -208,11 +208,14 @@ pub(crate) fn collect_markup_attribute_contexts(
             }
             end += 1;
         }
-        if names.contains(&name) && end < bytes.len() {
-            if matches!(
-                name.as_str(),
-                ":class" | "v-bind:class" | "[class]" | "[classname]" | "[ngclass]"
-            ) {
+        let bound_class = bound_class_attribute(&name, &names);
+        if (bound_class || names.contains(&name)) && end < bytes.len() {
+            if bound_class
+                || matches!(
+                    name.as_str(),
+                    ":class" | "v-bind:class" | "[class]" | "[classname]" | "[ngclass]"
+                )
+            {
                 collect_nested_string_contexts(source, positions, index + 1, end, contexts);
             } else {
                 push_byte_context(
@@ -227,6 +230,34 @@ pub(crate) fn collect_markup_attribute_contexts(
         }
         index = end.saturating_add(1);
     }
+}
+
+/// The attribute name of a Vue binding (`:name` or `v-bind:name`), lowercased.
+fn vue_bound_attribute(name: &str) -> Option<&str> {
+    let base = name
+        .strip_prefix("v-bind:")
+        .or_else(|| name.strip_prefix(':'))?;
+    (!base.is_empty() && !base.contains(':')).then_some(base)
+}
+
+/// A bound class prop such as `:content-class` holds a JavaScript expression
+/// like `:class`, so only its string literals are class lists. Static attributes
+/// whose names end in `class` are class lists themselves.
+fn bound_class_attribute(name: &str, names: &[String]) -> bool {
+    vue_bound_attribute(name)
+        .is_some_and(|base| base.ends_with("class") || names.iter().any(|name| name == base))
+}
+
+/// The lowercased attribute name directly before `=` at the end of `prefix`.
+fn attribute_name_before_value(prefix: &str) -> Option<&str> {
+    let before = prefix.trim_end().strip_suffix('=')?.trim_end();
+    let start = before
+        .rfind(|character: char| {
+            character.is_ascii_whitespace() || matches!(character, '<' | '>' | '/' | '{' | '}')
+        })
+        .map_or(0, |index| index + 1);
+    let name = &before[start..];
+    (!name.is_empty()).then_some(name)
 }
 
 pub(crate) fn collect_script_string_contexts(
@@ -321,7 +352,10 @@ pub(crate) fn collect_script_string_contexts(
             .collect::<String>();
         let binding_expression = compact_prefix.ends_with(":class=")
             || compact_prefix.ends_with("v-bind:class=")
-            || compact_prefix.ends_with("class:list=");
+            || compact_prefix.ends_with("class:list=")
+            || attribute_name_before_value(&prefix)
+                .and_then(vue_bound_attribute)
+                .is_some_and(|name| name.ends_with("class"));
         let direct_class = !binding_expression
             && patterns.iter().any(|pattern| {
                 let compact_pattern = pattern

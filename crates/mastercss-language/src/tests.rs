@@ -562,6 +562,19 @@ fn comparisons_inside_class_expressions_are_not_class_positions() {
 }
 
 #[test]
+fn bound_vue_class_props_are_expressions_like_class_bindings() {
+    let source = "<template>\n  <MyItem content-class=\"p(8) flex\" />\n  <MyItem :content-class=\"active ? '' : `p(4) grid`\" />\n  <MyItem v-bind:item-class=\"{ 'm(2) block': active }\" />\n</template>";
+    let contexts = crate::document::collect_document_contexts(source, "vue", &Default::default());
+    let mut values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    values.sort_unstable();
+    values.dedup();
+    assert_eq!(values, ["", "m(2) block", "p(4) grid", "p(8) flex"]);
+}
+
+#[test]
 fn closed_class_calls_do_not_claim_later_function_strings() {
     let source = "document.documentElement.classList.toggle('dark(', active); const query = window.matchMedia('(prefers-color-scheme: dark)'); const classes = clsx('block', nested('ignored'));";
     let contexts =
