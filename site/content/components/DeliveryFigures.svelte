@@ -59,7 +59,7 @@
     const preference = matchMedia('(prefers-reduced-motion: reduce)')
     let reduce = preference.matches
 
-    let t = deliveryEnd
+    let t: number = deliveryEnd
     let shown = deliveryEnd - 1
     let playing = false
     let touring = !reduce && !radios.some(radio => radio.checked !== radio.defaultChecked)
