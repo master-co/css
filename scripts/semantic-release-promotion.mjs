@@ -47,7 +47,8 @@ const pause = milliseconds => new Promise(resolve => setTimeout(resolve, millise
 const registryRetryDelays = [1000, 2000, 4000, 8000, 15_000]
 const tagRetryDelays = [...registryRetryDelays, 20_000, 25_000, 30_000]
 // npm scans new versions after accepting an upload. Scan time can exceed 15 minutes.
-const publicationRetryDelays = [...tagRetryDelays, ...Array(23).fill(45_000)]
+// Poll every 15 seconds so a finished scan is noticed promptly.
+const publicationRetryDelays = [...tagRetryDelays, ...Array(69).fill(15_000)]
 const installMetadataMediaType = 'application/vnd.npm.install-v1+json'
 const exactVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/
 
