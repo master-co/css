@@ -16,8 +16,8 @@ test('manual release-candidate validation remains read-only and requires the reu
   assert.deepEqual(Object.keys(ci.jobs).sort(), ['required', 'validation'])
   assert.ok('workflow_call' in editor.on)
   const gate = validation.jobs.editor_evidence
-  assert.equal(gate.needs, 'quality_linux')
-  assert.equal(gate.if, '${{ inputs.release_build && (github.event_name == \'workflow_dispatch\' || needs.quality_linux.outputs.vscode_release_affected == \'true\') }}')
+  assert.equal(gate.needs, 'editor_delivery')
+  assert.equal(gate.if, '${{ inputs.release_build && (github.event_name == \'workflow_dispatch\' || needs.editor_delivery.outputs.vscode_release_affected == \'true\') }}')
   assert.equal(gate.uses, './.github/workflows/editor-verification.yml')
   assert.deepEqual(gate.permissions, { contents: 'read' })
   assert.equal(gate.secrets, undefined)

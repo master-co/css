@@ -55,7 +55,7 @@ test('affected validation keeps independent site and editor selection', () => {
   assert.equal(selection({ full: false, range: true, vscode: true }), 'site_affected=false\nvscode_affected=true\n')
 })
 
-const selectDelivery = workflow.jobs.quality_linux.steps.find(step => step.id === 'delivery').run
+const selectDelivery = workflow.jobs.editor_delivery.steps.find(step => step.id === 'delivery').run
 
 test('full validation alone does not re-publish an unchanged editor version', () => {
   assert.equal(selection({ full: true, range: true }, selectDelivery), 'vscode_release_affected=false\n')
@@ -76,4 +76,12 @@ test('native and shared build inputs select editor delivery without relying on T
 test('failed affected or native-input queries cannot silently skip editor delivery', () => {
   assert.throws(() => selection({ full: true, range: true, queryFailure: true }, selectDelivery), /Simulated affected query failure/)
   assert.throws(() => selection({ full: true, range: true, diffFailure: true }, selectDelivery), /Simulated diff failure/)
+})
+
+test('editor delivery is selected without waiting for quality-linux', () => {
+  const delivery = workflow.jobs.editor_delivery
+  assert.equal(delivery.needs, 'preflight')
+  assert.equal(workflow.jobs.editor_evidence.needs, 'editor_delivery')
+  assert.equal(workflow.on.workflow_call.outputs.vscode_release_affected.value, '${{ jobs.editor_delivery.outputs.vscode_release_affected }}')
+  assert.equal(workflow.jobs.quality_linux.steps.some(step => step.id === 'delivery'), false)
 })

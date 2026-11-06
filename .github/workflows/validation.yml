@@ -24,7 +24,7 @@ on:
         value: ${{ jobs.quality_linux.outputs.site_affected }}
       vscode_release_affected:
         description: Whether editor inputs changed, independent of full validation selection.
-        value: ${{ jobs.quality_linux.outputs.vscode_release_affected }}
+        value: ${{ jobs.editor_delivery.outputs.vscode_release_affected }}
       vscode_affected:
         description: Whether the VS Code extension build is affected by this change.
         value: ${{ jobs.quality_linux.outputs.vscode_affected }}
@@ -93,10 +93,56 @@ jobs:
             echo "range_valid=$range_valid"
           } >> "$GITHUB_OUTPUT"
 
+  # Editor delivery depends only on which inputs changed, so it is selected in
+  # its own short job. The editor evidence then builds in parallel with
+  # quality-linux instead of waiting for the site verification to finish.
+  editor_delivery:
+    name: editor-delivery
+    needs: preflight
+    runs-on: ubuntu-latest
+    outputs:
+      vscode_release_affected: ${{ steps.delivery.outputs.vscode_release_affected }}
+    env:
+      TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
+      TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache: "false"
+      - name: Select editor delivery from actual input changes
+        id: delivery
+        shell: bash
+        env:
+          RANGE_VALID: ${{ needs.preflight.outputs.range_valid }}
+        run: |
+          set -euo pipefail
+          vscode_release_affected=true
+          if [ "$RANGE_VALID" = true ]; then
+            vscode_release_affected=$(bun run turbo run build --filter=@master/css-vscode --affected --dry=json \
+              | jq -r 'any(.tasks[]; .taskId == "@master/css-vscode#build")')
+            # Turbo's affected package selection does not include task inputs
+            # outside package roots. These can change the bundled native payload
+            # or JavaScript even when the editor's own files did not change.
+            changed_files=$(git diff --name-only "$TURBO_SCM_BASE...$TURBO_SCM_HEAD")
+            while IFS= read -r file; do
+              case "$file" in
+                crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml|.cargo/*|shared/*|scripts/build-rust-mdn-completion-registry.mjs|scripts/typescript-api.mjs|scripts/typescript-declarations.mjs|scripts/toolchain-policy.mjs|scripts/isolate-tooling-typescript.mjs)
+                  vscode_release_affected=true
+                  break
+                  ;;
+              esac
+            done <<< "$changed_files"
+          fi
+          echo "vscode_release_affected=$vscode_release_affected" >> "$GITHUB_OUTPUT"
+
   editor_evidence:
     name: editor-release-evidence
-    needs: quality_linux
-    if: ${{ inputs.release_build && (github.event_name == 'workflow_dispatch' || needs.quality_linux.outputs.vscode_release_affected == 'true') }}
+    needs: editor_delivery
+    if: ${{ inputs.release_build && (github.event_name == 'workflow_dispatch' || needs.editor_delivery.outputs.vscode_release_affected == 'true') }}
     uses: ./.github/workflows/editor-verification.yml
     permissions:
       contents: read
@@ -108,7 +154,6 @@ jobs:
     outputs:
       site_affected: ${{ steps.consumers.outputs.site_affected }}
       vscode_affected: ${{ steps.consumers.outputs.vscode_affected }}
-      vscode_release_affected: ${{ steps.delivery.outputs.vscode_release_affected }}
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
       TURBO_SCM_HEAD: ${{ needs.preflight.outputs.head_sha }}
@@ -172,31 +217,6 @@ jobs:
             echo "site_affected=$site_affected"
             echo "vscode_affected=$vscode_affected"
           } >> "$GITHUB_OUTPUT"
-      - name: Select editor delivery from actual input changes
-        id: delivery
-        shell: bash
-        env:
-          RANGE_VALID: ${{ needs.preflight.outputs.range_valid }}
-        run: |
-          set -euo pipefail
-          vscode_release_affected=true
-          if [ "$RANGE_VALID" = true ]; then
-            vscode_release_affected=$(bun run turbo run build --filter=@master/css-vscode --affected --dry=json \
-              | jq -r 'any(.tasks[]; .taskId == "@master/css-vscode#build")')
-            # Turbo's affected package selection does not include task inputs
-            # outside package roots. These can change the bundled native payload
-            # or JavaScript even when the editor's own files did not change.
-            changed_files=$(git diff --name-only "$TURBO_SCM_BASE...$TURBO_SCM_HEAD")
-            while IFS= read -r file; do
-              case "$file" in
-                crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml|.cargo/*|shared/*|scripts/build-rust-mdn-completion-registry.mjs|scripts/typescript-api.mjs|scripts/typescript-declarations.mjs|scripts/toolchain-policy.mjs|scripts/isolate-tooling-typescript.mjs)
-                  vscode_release_affected=true
-                  break
-                  ;;
-              esac
-            done <<< "$changed_files"
-          fi
-          echo "vscode_release_affected=$vscode_release_affected" >> "$GITHUB_OUTPUT"
       - name: Install Chromium headless shell
         run: bun run playwright install --with-deps --only-shell chromium
       - name: Build release packages
