@@ -24,6 +24,10 @@ describe('masterCSS plugin composition', () => {
     ]))
   })
 
+  test('the deprecated pre-render mode resolves to prerender', () => {
+    expect(pluginNames({ mode: 'pre-render' })).toEqual(pluginNames({ mode: 'prerender' }))
+  })
+
   test('static mode registers the shared scanner and style entry pipeline', () => {
     const names = pluginNames({ mode: 'static' })
 
@@ -51,8 +55,8 @@ describe('masterCSS plugin composition', () => {
     expect(pluginNames({ enabled: false })).toEqual([])
   })
 
-  test('rejects the retired mode spelling in JavaScript configs', () => {
-    const options = JSON.parse('{"mode":"pre-render"}')
-    expect(() => masterCSS(options)).toThrow('Invalid Master CSS rendering mode "pre-render". Supported modes: runtime, static, prerender, progressive.')
+  test('rejects an unknown mode in JavaScript configs', () => {
+    const options = JSON.parse('{"mode":"browser"}')
+    expect(() => masterCSS(options)).toThrow('Invalid Master CSS rendering mode "browser". Supported modes: runtime, static, prerender, progressive.')
   })
 })

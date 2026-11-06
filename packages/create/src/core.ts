@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { Command, InvalidArgumentError } from 'commander'
 import { applyMasterCSSSetupPlan, planMasterCSSSetup } from '.'
 import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
-import { formatRenderingModes, isRenderingMode } from './modes'
+import { formatRenderingModes, resolveRenderingMode } from './modes'
 import { MASTER_CSS_VERSION } from './constants'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -177,8 +177,11 @@ function shouldPrompt(options: CommandOptions) {
 }
 
 function parseRenderingModeOption(value: string): MasterCSSRenderingMode {
-  if (isRenderingMode(value)) return value
-  throw new InvalidArgumentError(`Invalid rendering mode "${value}". Supported modes: ${formatRenderingModes()}.`)
+  try {
+    return resolveRenderingMode(value) as MasterCSSRenderingMode
+  } catch {
+    throw new InvalidArgumentError(`Invalid rendering mode "${value}". Supported modes: ${formatRenderingModes()}.`)
+  }
 }
 
 function createTTYPrompt() {

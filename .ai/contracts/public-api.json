@@ -960,14 +960,16 @@
           "MasterCSSErrorPayload"
         ],
         "./integration": [
+          "DeprecatedMasterCSSRenderingMode",
           "MASTER_CSS_RENDERING_MODES",
           "MasterCSSIntegrationOptions",
           "MasterCSSIntegrationRuntimeOptions",
           "MasterCSSRenderingMode",
+          "MasterCSSRenderingModeOption",
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "307316b2e70262e9"
+      "surface": "b8cc4460f43703d7"
     },
     "@master/css-server": {
       "directory": "server",

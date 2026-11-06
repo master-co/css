@@ -1,5 +1,5 @@
-import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
-import type { MasterCSSIntegrationRuntimeOptions } from '@master/css-schema/integration'
+import { resolveIntegrationMode, resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import type { MasterCSSIntegrationRuntimeOptions, MasterCSSRenderingMode } from '@master/css-schema/integration'
 import type { MasterCSSVitePluginOptions } from '@master/css-vite'
 
 export type MasterCSSNuxtModuleOptions = MasterCSSVitePluginOptions
@@ -7,7 +7,7 @@ export type MasterCSSNuxtModuleOptions = MasterCSSVitePluginOptions
 export interface ResolvedMasterCSSNuxtModuleOptions
 extends Omit<MasterCSSNuxtModuleOptions, 'runtime'> {
   enabled: boolean
-  mode: NonNullable<MasterCSSNuxtModuleOptions['mode']>
+  mode: MasterCSSRenderingMode
   runtime: MasterCSSIntegrationRuntimeOptions
   injectRuntime: boolean
 }
@@ -15,7 +15,7 @@ extends Omit<MasterCSSNuxtModuleOptions, 'runtime'> {
 export function resolveMasterCSSNuxtModuleOptions(
   options: MasterCSSNuxtModuleOptions = {}
 ): ResolvedMasterCSSNuxtModuleOptions {
-  const mode = options.mode ?? 'static'
+  const mode = resolveIntegrationMode(options.mode)
   const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     ...options,

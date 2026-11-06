@@ -1,5 +1,5 @@
-import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
-import type { MasterCSSIntegrationRuntimeOptions } from '@master/css-schema/integration'
+import { resolveIntegrationMode, resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import type { MasterCSSIntegrationRuntimeOptions, MasterCSSRenderingMode } from '@master/css-schema/integration'
 import type { MasterCSSVitePluginOptions } from '@master/css-vite'
 
 export type MasterCSSAstroIntegrationOptions = MasterCSSVitePluginOptions
@@ -7,7 +7,7 @@ export type MasterCSSAstroIntegrationOptions = MasterCSSVitePluginOptions
 export interface ResolvedMasterCSSAstroIntegrationOptions
 extends Omit<MasterCSSAstroIntegrationOptions, 'runtime'> {
   enabled: boolean
-  mode: NonNullable<MasterCSSAstroIntegrationOptions['mode']>
+  mode: MasterCSSRenderingMode
   injectRuntime: boolean
   runtime: MasterCSSIntegrationRuntimeOptions
 }
@@ -15,7 +15,7 @@ extends Omit<MasterCSSAstroIntegrationOptions, 'runtime'> {
 export function resolveMasterCSSAstroIntegrationOptions(
   options: MasterCSSAstroIntegrationOptions = {}
 ): ResolvedMasterCSSAstroIntegrationOptions {
-  const mode = options.mode ?? 'static'
+  const mode = resolveIntegrationMode(options.mode)
   const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     ...options,

@@ -1,7 +1,8 @@
-import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import { resolveIntegrationMode, resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
 import type {
   MasterCSSIntegrationRuntimeOptions,
-  MasterCSSRenderingMode
+  MasterCSSRenderingMode,
+  MasterCSSRenderingModeOption
 } from '@master/css-schema/integration'
 import type { MasterCSSScannerConfiguration } from '@master/css-tooling/scanner/node'
 
@@ -9,7 +10,7 @@ export type MasterCSSNextAdapterOrder = 'master-first' | 'external-first'
 
 export interface MasterCSSNextOptions {
   enabled?: boolean
-  mode?: MasterCSSRenderingMode
+  mode?: MasterCSSRenderingModeOption
   pruneNativeCSS?: boolean
   runtime?: boolean | MasterCSSIntegrationRuntimeOptions
   scanner?: MasterCSSScannerConfiguration
@@ -45,7 +46,7 @@ declare global {
 }
 
 export function resolveOptions(options: MasterCSSNextOptions = {}): ResolvedMasterCSSNextOptions {
-  const mode = options.mode ?? 'static'
+  const mode = resolveIntegrationMode(options.mode)
   const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     enabled: options.enabled ?? true,

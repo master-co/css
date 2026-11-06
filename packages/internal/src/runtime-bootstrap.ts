@@ -2,7 +2,8 @@ import {
   isMasterCSSRenderingMode,
   MASTER_CSS_RENDERING_MODES,
   type MasterCSSIntegrationRuntimeOptions,
-  type MasterCSSRenderingMode
+  type MasterCSSRenderingMode,
+  type MasterCSSRenderingModeOption
 } from '@master/css-schema/integration'
 
 export const MASTER_CSS_RUNTIME_BOOTSTRAP_ID = 'virtual:master-css-runtime'
@@ -85,6 +86,18 @@ export function createMasterCSSRuntimeBootstrapSource({ progressive }: MasterCSS
 }
 
 /** Resolve the public delivery contract before any adapter injects code. */
+let warnedDeprecatedPreRender = false
+
+/** Resolves a `mode` option, defaulting to `static` and reading the deprecated `pre-render` as `prerender`. */
+export function resolveIntegrationMode(mode: MasterCSSRenderingModeOption | undefined): MasterCSSRenderingMode {
+  if (mode !== 'pre-render') return mode ?? 'static'
+  if (!warnedDeprecatedPreRender) {
+    warnedDeprecatedPreRender = true
+    console.warn('[Master CSS] mode "pre-render" is deprecated; use "prerender".')
+  }
+  return 'prerender'
+}
+
 export function resolveIntegrationRuntime(
   mode: MasterCSSRenderingMode,
   runtime: boolean | MasterCSSIntegrationRuntimeOptions | undefined

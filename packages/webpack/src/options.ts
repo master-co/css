@@ -1,13 +1,14 @@
-import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import { resolveIntegrationMode, resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
 import type {
   MasterCSSIntegrationRuntimeOptions,
-  MasterCSSRenderingMode
+  MasterCSSRenderingMode,
+  MasterCSSRenderingModeOption
 } from '@master/css-schema/integration'
 import type { MasterCSSScannerConfiguration } from '@master/css-tooling/scanner/node'
 
 export interface MasterCSSWebpackPluginOptions {
   enabled?: boolean
-  mode?: MasterCSSRenderingMode
+  mode?: MasterCSSRenderingModeOption
   pruneNativeCSS?: boolean
   runtime?: boolean | MasterCSSIntegrationRuntimeOptions
   scanner?: MasterCSSScannerConfiguration
@@ -24,7 +25,7 @@ export interface ResolvedMasterCSSWebpackPluginOptions {
 export function resolveMasterCSSWebpackPluginOptions(
   options: MasterCSSWebpackPluginOptions = {}
 ): ResolvedMasterCSSWebpackPluginOptions {
-  const mode = options.mode ?? 'static'
+  const mode = resolveIntegrationMode(options.mode)
   const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     enabled: options.enabled ?? true,

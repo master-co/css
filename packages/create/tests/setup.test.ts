@@ -350,7 +350,20 @@ export default defineConfig([
     expect(existsSync(join(root, 'next.config.js'))).toBe(false)
   })
 
-  test.each(['browser', 'pre-render'])('rejects the invalid rendering mode %s before planning', (mode) => {
+  test('reads the deprecated pre-render mode as prerender', () => {
+    const root = createTempProject('master-css-create-cli-pre-render-', {
+      dependencies: {
+        next: '^16.0.0'
+      }
+    })
+
+    const result = runCLI(['--cwd', root, '--json', '--minimal', '--framework', 'nextjs', '--mode', 'pre-render'])
+
+    expect(result.status).toBe(0)
+    expect(JSON.parse(result.stdout).mode).toBe('prerender')
+  })
+
+  test.each(['browser'])('rejects the invalid rendering mode %s before planning', (mode) => {
     const root = createTempProject('master-css-create-cli-invalid-mode-', {
       dependencies: {
         next: '^16.0.0'

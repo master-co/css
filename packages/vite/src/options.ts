@@ -1,13 +1,14 @@
-import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import { resolveIntegrationMode, resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
 import type {
   MasterCSSIntegrationRuntimeOptions,
-  MasterCSSRenderingMode
+  MasterCSSRenderingMode,
+  MasterCSSRenderingModeOption
 } from '@master/css-schema/integration'
 import type { MasterCSSScannerConfiguration } from '@master/css-tooling/scanner/node'
 
 export interface MasterCSSVitePluginOptions {
   enabled?: boolean
-  mode?: MasterCSSRenderingMode
+  mode?: MasterCSSRenderingModeOption
   pruneNativeCSS?: boolean
   scanner?: MasterCSSScannerConfiguration
   runtime?: boolean | MasterCSSIntegrationRuntimeOptions
@@ -35,7 +36,7 @@ Readonly<ResolvedMasterCSSVitePluginOptions> = Object.freeze({
 export function resolveMasterCSSVitePluginOptions(
   options: MasterCSSVitePluginOptions = {}
 ): ResolvedMasterCSSVitePluginOptions {
-  const mode = options.mode ?? 'static'
+  const mode = resolveIntegrationMode(options.mode)
   const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     enabled: options.enabled ?? true,
