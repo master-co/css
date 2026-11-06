@@ -14,7 +14,7 @@
   "license": "MIT",
   "description": "Astro integration for Master CSS",
   "author": "Aoyue Design LLC.",
-  "homepage": "https://css.master.co",
+  "homepage": "https://css.master.co/guide/installation/astro",
   "bugs": {
     "url": "https://github.com/master-co/css/issues"
   },
@@ -27,6 +27,7 @@
     "plugin",
     "integration",
     "astro",
+    "astro-integration",
     "build tools",
     "static rendering",
     "static",
