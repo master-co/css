@@ -650,7 +650,14 @@ function extractClassAttributeValues(text: string): { index: number, value: stri
     if (quote === '"' || quote === '\'' || quote === '`') {
       const literal = readStringLiteral(text, index)
       if (literal) {
-        out.push({ index, value: literal.value })
+        // A bound Vue `:class` value is an expression; only its string literals hold classes.
+        if (text[match.index - 1] === ':') {
+          for (const eachString of extractStringLiteralValues(literal.value)) {
+            out.push({ index: index + 1 + eachString.index, value: eachString.value })
+          }
+        } else {
+          out.push({ index, value: literal.value })
+        }
         pattern.lastIndex = literal.end
       }
       continue
