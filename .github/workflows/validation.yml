@@ -222,8 +222,9 @@ jobs:
       - name: Build release packages
         if: ${{ inputs.release_build }}
         run: bun run build
-      # Tests depend on build:artifacts, so Turbo builds the Rust Wasm modules or
-      # restores them from its cache when crates/ and Cargo inputs are unchanged.
+      - name: Build Rust Wasm artifacts
+        if: ${{ !inputs.release_build }}
+        run: bun run build:rust:wasm
       - name: Validate packages
         shell: bash
         env:
@@ -452,8 +453,8 @@ jobs:
           turbo-cache-scope: e2e
       - name: Install E2E browsers
         run: bun run playwright install --with-deps chromium firefox webkit
-      # Tests depend on build:artifacts, so Turbo builds the Rust Wasm modules or
-      # restores them from its cache when crates/ and Cargo inputs are unchanged.
+      - name: Build Rust Wasm artifacts
+        run: bun run build:rust:wasm
       - name: Run E2E tests
         shell: bash
         env:
@@ -503,8 +504,8 @@ jobs:
           turbo-cache-scope: compat
       - name: Install Chromium headless shell
         run: bun run playwright install --only-shell chromium
-      # Tests depend on build:artifacts, so Turbo builds the Rust Wasm modules or
-      # restores them from its cache when crates/ and Cargo inputs are unchanged.
+      - name: Build Rust Wasm artifacts
+        run: bun run build:rust:wasm
       - name: Test packages
         shell: bash
         env:
@@ -557,8 +558,8 @@ jobs:
           turbo-cache-scope: compat
       - name: Install Chromium headless shell
         run: bun run playwright install --only-shell chromium
-      # Tests depend on build:artifacts, so Turbo builds the Rust Wasm modules or
-      # restores them from its cache when crates/ and Cargo inputs are unchanged.
+      - name: Build Rust Wasm artifacts
+        run: bun run build:rust:wasm
       - name: Test packages
         shell: bash
         env:
