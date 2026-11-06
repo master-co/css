@@ -594,3 +594,43 @@ jobs:
         with:
           path: .turbo/cache
           key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}
+
+  # Every push saves a new 0.3 to 0.5 GB Turbo cache per scope and OS, and each
+  # supersedes the previous one. Keeping them all exceeded the repository's
+  # 10 GB cache limit, so GitHub evicted the Bun install and Rust caches and
+  # Windows reinstalled every dependency. Keep only the newest Turbo cache of
+  # each scope on this ref; housekeeping never fails validation.
+  turbo_cache_prune:
+    name: turbo-cache-prune
+    needs: [quality_linux, e2e_linux, compat_windows, compat_macos]
+    if: ${{ always() && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Delete superseded Turbo caches for this ref
+        id: prune
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CACHE_REF: ${{ github.ref }}
+        run: |
+          set -uo pipefail
+          if ! caches=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/caches?ref=$CACHE_REF&sort=created_at&direction=desc&per_page=100" \
+            --jq '.actions_caches[] | [.id, .key] | @tsv'); then
+            echo "::warning::Cannot list Actions caches; skipped Turbo cache pruning"
+            exit 0
+          fi
+          kept=$'\n'
+          while IFS=$'\t' read -r id key; do
+            [[ "$key" =~ ^(.+-turbo-.+)-[0-9]+$ ]] || continue
+            scope="${BASH_REMATCH[1]}"
+            if [[ "$kept" != *$'\n'"$scope"$'\n'* ]]; then
+              kept+="$scope"$'\n'
+              echo "Keeping $key"
+              continue
+            fi
+            echo "Deleting superseded $key"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/caches/$id" >/dev/null \
+              || echo "::warning::Cannot delete $key"
+          done <<< "$caches"

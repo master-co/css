@@ -37,6 +37,10 @@ jobs:
   validation:
     if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/validation.yml
+    # Only validation's turbo-cache-prune job uses actions: write.
+    permissions:
+      contents: read
+      actions: write
     with:
       base_sha: ${{ github.event.before }}
       head_sha: ${{ github.sha }}

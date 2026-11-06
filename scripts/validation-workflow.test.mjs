@@ -85,3 +85,44 @@ test('editor delivery is selected without waiting for quality-linux', () => {
   assert.equal(workflow.on.workflow_call.outputs.vscode_release_affected.value, '${{ jobs.editor_delivery.outputs.vscode_release_affected }}')
   assert.equal(workflow.jobs.quality_linux.steps.some(step => step.id === 'delivery'), false)
 })
+
+function prune({ caches = [], listFailure = false, deleteFailure = false } = {}) {
+  const root = mkdtempSync(join(tmpdir(), 'master-cache-prune-'))
+  try {
+    const deleted = join(root, 'deleted')
+    writeFileSync(deleted, '')
+    // Stand in for the GitHub CLI: list this ref's caches newest first, record deletions.
+    writeFileSync(join(root, 'gh'), `#!/usr/bin/env bash
+if [ "$2" = -X ]; then printf '%s\\n' "$4" >> "$DELETED"; [ "$DELETE_FAILURE" != true ]; exit; fi
+if [ "$LIST_FAILURE" = true ]; then echo 'Simulated list failure' >&2; exit 1; fi
+printf '%s' "$CACHES"
+`, { mode: 0o755 })
+    const result = spawnSync('bash', ['-c', workflow.jobs.turbo_cache_prune.steps.find(step => step.id === 'prune').run], {
+      env: { ...process.env, PATH: `${root}:${process.env.PATH}`, DELETED: deleted, GITHUB_REPOSITORY: 'master-co/css',
+        CACHE_REF: 'refs/heads/main', CACHES: caches.map(([id, key]) => `${id}\t${key}\n`).join(''),
+        LIST_FAILURE: String(listFailure), DELETE_FAILURE: String(deleteFailure) },
+      encoding: 'utf8'
+    })
+    assert.equal(result.status, 0, result.stderr)
+    return { stdout: result.stdout, deleted: readFileSync(deleted, 'utf8').split('\n').filter(Boolean) }
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+}
+
+test('cache pruning keeps the newest Turbo cache of each scope and every other cache', () => {
+  const caches = [[1, 'Linux-X64-bun-1.4.4-turbo-build-main-300'], [2, 'Linux-X64-bun-1.4.4-3d224cac'],
+    [3, 'Windows-X64-bun-1.4.4-turbo-compat-main-300'], [4, 'Linux-X64-bun-1.4.4-turbo-build-main-200'],
+    [5, 'v0-rust-native-binding-linux-x64-gnu-Linux-x64-41224fa4-ea3c0cbd'], [6, 'Windows-X64-bun-1.4.4-turbo-compat-main-200'],
+    [7, 'Linux-X64-bun-1.4.4-turbo-e2e-main-100'], [8, 'Linux-X64-bun-1.4.4-turbo-build-main-100']]
+  assert.deepEqual(prune({ caches }).deleted, [4, 6, 8].map(id => `repos/master-co/css/actions/caches/${id}`))
+  assert.equal(prune({ caches, deleteFailure: true }).deleted.length, 3, 'one failed deletion does not stop the rest')
+})
+
+test('cache pruning is skipped for pull requests and never fails validation', () => {
+  const job = workflow.jobs.turbo_cache_prune
+  assert.deepEqual(job.permissions, { 'actions': 'write' })
+  assert.equal(job.if, '${{ always() && github.event_name != \'pull_request\' }}')
+  const failed = prune({ caches: [[1, 'Linux-X64-bun-1.4.4-turbo-build-main-2'], [2, 'Linux-X64-bun-1.4.4-turbo-build-main-1']], listFailure: true })
+  assert.deepEqual(failed.deleted, [])
+})
