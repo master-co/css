@@ -19,9 +19,9 @@
     "/examples/article-transitions": {
       "files": 5,
       "depth": 1,
-      "gzip": 15387,
-      "brotli": 13106,
-      "inlineBytes": 3470
+      "gzip": 15574,
+      "brotli": 13273,
+      "inlineBytes": 4378
     },
     "/examples/layout-system": {
       "files": 3,
@@ -322,7 +322,7 @@
       "depth": 1,
       "gzip": 63559,
       "brotli": 49926,
-      "inlineBytes": 13416
+      "inlineBytes": 13532
     },
     "/reference": {
       "files": 18,

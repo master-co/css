@@ -200,7 +200,7 @@
         onpointerenter={(event) => select(artwork.id, event.currentTarget)}
         onpointerleave={deselect}
         type="button">
-        <span class={['home-gallery-frame', modalArtworkId === artwork.id && 'invisible']} {@attach frameOf(artwork.id)}>
+        <span class="invisible[data-lifted] home-gallery-frame" data-lifted={modalArtworkId === artwork.id || undefined} {@attach frameOf(artwork.id)}>
           <!-- Four small photos load with the page at low priority, so a cell is rarely empty when the card scrolls in. -->
           <Image alt={t(artwork.imageAlt)} class="object-cover object-center" fetchpriority="low" fill loading="eager" sizes="(min-width: 64rem) 34vw, 50vw" src={artwork.image} />
         </span>

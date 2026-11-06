@@ -140,7 +140,8 @@
         <div class="relative (height:1.25rem) w-full">
           {#each axis.ticks as tick, index (tick.label)}
             <span
-              class={['absolute top(0) whitespace-nowrap home-bench-tick', plot.narrow && index > 0 && index < axis.ticks.length - 1 && 'invisible']}
+              class="absolute top(0) whitespace-nowrap invisible[data-crowded] home-bench-tick"
+              data-crowded={(plot.narrow && index > 0 && index < axis.ticks.length - 1) || undefined}
               style:left={`${tick.percent}%`}
               style:translate={tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%'}>
               {tick.label}
