@@ -121,6 +121,9 @@ pub(crate) fn with_source_stack<T: Send>(
     content_len: usize,
     parse: impl FnOnce() -> T + Send,
 ) -> T {
+    #[cfg(target_arch = "wasm32")]
+    let _ = content_len;
+
     #[cfg(not(target_arch = "wasm32"))]
     {
         // Short sources cannot nest deeper than an ordinary stack allows.
