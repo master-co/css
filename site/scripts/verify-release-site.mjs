@@ -53,7 +53,12 @@ const findFile = pathname => {
   if (file !== out && !file.startsWith(out + path.sep)) return undefined
   return [file, file + '.html', path.join(file, 'index.html')].find(candidate => existsSync(candidate) && statSync(candidate).isFile())
 }
-const save = () => { mkdirSync(path.dirname(reportPath), { recursive: true }); writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n') }
+// Engines run concurrently; order their entries by --browsers for a stable report.
+const byEngine = (a, b) => engines.indexOf(a.engine) - engines.indexOf(b.engine)
+const save = () => {
+  report.profiles.sort(byEngine); report.noJavaScript.sort(byEngine)
+  mkdirSync(path.dirname(reportPath), { recursive: true }); writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
+}
 const check = async (name, operation) => {
   try { await operation() } catch (error) { report.failures.push({ name, message: String(error) }); console.error(`${name}: ${error}`) }
 }
@@ -156,7 +161,9 @@ if (!process.argv.includes('--static-only')) {
   })))
   routes.push(...['/guide/migration', '/guide/language-service'].map(route => ({ ...editions[0], route })))
   try {
-    for (const engine of engines) await check(`${engine}: launch and profiles`, async () => {
+    // Each engine has its own browser process and checks; running them together
+    // takes the slowest engine's time instead of the sum of all three.
+    await Promise.all(engines.map(engine => check(`${engine}: launch and profiles`, async () => {
       assert.ok({ chromium, firefox, webkit }[engine], `unknown browser ${engine}`)
       const browser = await ({ chromium, firefox, webkit })[engine].launch()
       try {
@@ -204,7 +211,7 @@ if (!process.argv.includes('--static-only')) {
           } finally { await page.close() }
         })
       } finally { await browser.close() }
-    })
+    })))
   } finally { await new Promise(resolve => server.close(resolve)) }
 }
 save()
