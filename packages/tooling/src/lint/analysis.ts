@@ -34,6 +34,8 @@ export interface MasterCSSLintClassListOptions {
   readonly elementClassNames?: readonly string[]
   /** Whether this class list only applies under a condition of a class binding. */
   readonly conditional?: boolean
+  /** Report pre-2.0 `property:value` classes with their 2.0 spelling. */
+  readonly legacyClasses?: boolean
 }
 
 export interface MasterCSSLintEdit {

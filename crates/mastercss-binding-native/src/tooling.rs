@@ -146,6 +146,7 @@ impl NodeLintSession {
                         canonical_options: request.canonical_options.as_ref(),
                         element_class_names: &request.element_class_names,
                         conditional: request.conditional,
+                        legacy_classes: request.legacy_classes,
                     },
                 )
                 .map_err(to_napi_error)?,

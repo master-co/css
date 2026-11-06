@@ -227,3 +227,36 @@ fn token_keys_with_descendant_markers_stay_variables_only() {
     assert!(labels.iter().any(|label| label == "fg-ink"));
     assert!(!labels.iter().any(|label| label.contains("brand_ink")));
 }
+
+#[test]
+fn pre_v2_property_value_classes_point_to_their_native_declaration() {
+    let engine = engine();
+    for (class, replacement) in [
+        ("flex:1", "(flex:1)"),
+        ("flex:1:hover@sm", "(flex:1):hover@sm"),
+        ("flex:1!", "(flex:1)!"),
+    ] {
+        let inspection = engine.inspect(class).unwrap();
+        assert_eq!(inspection.diagnostics.len(), 1, "{class}");
+        let diagnostic = &inspection.diagnostics[0];
+        assert_eq!(diagnostic.code, ErrorCode::ClassSyntaxError, "{class}");
+        assert_eq!(
+            diagnostic.message,
+            format!("Pre-2.0 property:value syntax: write {replacement} instead of {class}")
+        );
+        assert_eq!(diagnostic.notes[0], replacement);
+    }
+    // A registered name with a valid selector, and non-properties, keep their meaning.
+    assert!(engine.inspect("flex:hover").unwrap().diagnostics.is_empty());
+    for class in ["cols:1", "not-a-property:1"] {
+        assert!(
+            engine
+                .inspect(class)
+                .unwrap()
+                .diagnostics
+                .iter()
+                .all(|diagnostic| !diagnostic.message.starts_with("Pre-2.0")),
+            "{class}"
+        );
+    }
+}

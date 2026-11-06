@@ -267,7 +267,8 @@ describe('source content linting', () => {
       'no-conflicting-classes': false,
       'prefer-canonical-classes': false,
       'no-unapproved-raw-values': false,
-      'prefer-component-classes': false
+      'prefer-component-classes': false,
+      'no-legacy-classes': false
     })
     expect(resolveMasterCSSLintRules('recommended')).toEqual({
       'sort-classes': true,
@@ -275,9 +276,11 @@ describe('source content linting', () => {
       'no-conflicting-classes': true,
       'prefer-canonical-classes': true,
       'no-unapproved-raw-values': false,
-      'prefer-component-classes': false
+      'prefer-component-classes': false,
+      'no-legacy-classes': false
     })
     expect(resolveMasterCSSLintRules('prefer-component-classes')['prefer-component-classes']).toBe(true)
+    expect(resolveMasterCSSLintRules('recommended,no-legacy-classes')['no-legacy-classes']).toBe(true)
     expect(() => resolveMasterCSSLintRules('unknown-rule')).toThrow('Unknown Master CSS lint rule')
   })
 

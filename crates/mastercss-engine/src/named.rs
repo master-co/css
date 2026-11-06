@@ -85,6 +85,59 @@ fn token_owners(source: &str, prefix: &str, manifest: &Program) -> Vec<usize> {
 }
 
 pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagnostic> {
+    let mut found = class_diagnostics(source, manifest);
+    if let Some(first) = found.first_mut()
+        && let Some(replacement) = pre_v2_native_declaration(source, manifest)
+    {
+        first.message =
+            format!("Pre-2.0 property:value syntax: write {replacement} instead of {source}");
+        first.notes.insert(0, replacement);
+    }
+    found
+}
+
+/// The native declaration a pre-2.0 `property:value` class such as `flex:1`
+/// or `font-size:12px:hover` means, when that declaration is a valid class.
+pub(crate) fn pre_v2_native_declaration(source: &str, manifest: &Program) -> Option<String> {
+    let (source, important) = source
+        .strip_suffix('!')
+        .map_or((source, ""), |source| (source, "!"));
+    let (property, rest) = source.split_once(':')?;
+    if rest.is_empty()
+        || rest.starts_with(':')
+        || !mastercss_schema::is_listed_native_css_property(property)
+    {
+        return None;
+    }
+    let end = top_level_suffix_start(rest);
+    if end == 0 {
+        return None;
+    }
+    let candidate = format!("({property}:{}){}{important}", &rest[..end], &rest[end..]);
+    class_diagnostics(&candidate, manifest)
+        .is_empty()
+        .then_some(candidate)
+}
+
+/// The first `:` or `@` outside parentheses, brackets and quotes.
+fn top_level_suffix_start(value: &str) -> usize {
+    let mut depth = 0_usize;
+    let mut quote = None;
+    for (index, character) in value.char_indices() {
+        match (quote, character) {
+            (Some(open), _) if character == open => quote = None,
+            (Some(_), _) => {}
+            (None, '\'' | '"') => quote = Some(character),
+            (None, '(' | '[') => depth += 1,
+            (None, ')' | ']') => depth = depth.saturating_sub(1),
+            (None, ':' | '@') if depth == 0 => return index,
+            _ => {}
+        }
+    }
+    value.len()
+}
+
+fn class_diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagnostic> {
     let diagnostic_source = source;
     let source = source.strip_suffix('!').unwrap_or(source);
     let error = |code, message: String| super::Diagnostic {

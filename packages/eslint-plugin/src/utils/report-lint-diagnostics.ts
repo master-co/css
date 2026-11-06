@@ -19,7 +19,9 @@ export const messageIdByCode: Record<string, string> = {
   'prefer-native-declaration': 'preferClass',
   'prefer-variant-block': 'preferClass',
   'unapproved-raw-value': 'unapprovedRawValue',
-  'remote-styling-limit': 'remoteStylingLimit'
+  'remote-styling-limit': 'remoteStylingLimit',
+  'element-conflicting-class': 'collisionClass',
+  'legacy-class': 'legacyClass'
 }
 
 export function stringifyLintDiagnosticData(data: MasterCSSLintDiagnostic['data'] = {}) {

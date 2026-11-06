@@ -316,6 +316,8 @@ pub struct LintClassListPolicy<'a> {
     /// Whether this class list only applies under a condition, such as an
     /// object key or a conditional array entry of a class binding.
     pub conditional: bool,
+    /// Report pre-2.0 `property:value` classes with their 2.0 spelling.
+    pub legacy_classes: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -427,6 +429,7 @@ struct ClassDescriptor {
 
 mod composition;
 mod conflicts;
+mod legacy;
 mod order;
 mod partial_conflicts;
 mod recommendation;

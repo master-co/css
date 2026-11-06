@@ -157,19 +157,27 @@ export function bindLintSession(
       const invalidGeneratedClasses = elementClassNames
         ? [...new Set([...inputs.invalidGeneratedClasses, ...resolveInputs(elementClassNames).invalidGeneratedClasses])]
         : inputs.invalidGeneratedClasses
-      return lint.analyzeClassListPolicy({
+      const analyze = (invalid: string[]) => lint.analyzeClassListPolicy({
         version: MASTER_CSS_LINT_BATCH_VERSION,
         classList,
         classNames,
         nativeSupport: inputs.nativeSupport,
-        invalidGeneratedClasses,
+        invalidGeneratedClasses: invalid,
         validationErrors: inputs.validationErrors,
         disallowUnknownClass: options?.disallowUnknownClass,
         canonicalOptions: options?.canonicalOptions,
         rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy),
         remoteStylingPolicy: options?.remoteStylingPolicy && { ...options.remoteStylingPolicy },
-        ...(elementClassNames ? { elementClassNames, conditional: Boolean(options?.conditional) } : {})
+        ...(elementClassNames ? { elementClassNames, conditional: Boolean(options?.conditional) } : {}),
+        ...(options?.legacyClasses ? { legacyClasses: true } : {})
       }) as MasterCSSLintClassListAnalysis
+      const result = analyze(invalidGeneratedClasses)
+      if (!options?.legacyClasses) return result
+      // CSS value validity is a host check: re-run once without replacements it rejects.
+      const replacements = [...new Set(result.diagnostics.flatMap(({ ruleId, data }) =>
+        ruleId === 'no-legacy-classes' && typeof data?.replacement === 'string' ? [data.replacement] : []))]
+      const rejected = replacements.length ? resolveInputs(replacements).invalidGeneratedClasses : []
+      return rejected.length ? analyze([...invalidGeneratedClasses, ...rejected]) : result
     },
     dispose() {
       lint.dispose()

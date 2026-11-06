@@ -21,7 +21,8 @@ export const masterCSSLintRuleIds: readonly MasterCSSLintRuleId[] = Object.freez
   'no-conflicting-classes',
   'prefer-canonical-classes',
   'no-unapproved-raw-values',
-  'prefer-component-classes'
+  'prefer-component-classes',
+  'no-legacy-classes'
 ])
 
 export const defaultMasterCSSLintRules: Readonly<Record<MasterCSSLintRuleId, boolean>> = Object.freeze({
@@ -30,7 +31,8 @@ export const defaultMasterCSSLintRules: Readonly<Record<MasterCSSLintRuleId, boo
   'no-conflicting-classes': true,
   'prefer-canonical-classes': true,
   'no-unapproved-raw-values': false,
-  'prefer-component-classes': false
+  'prefer-component-classes': false,
+  'no-legacy-classes': false
 })
 
 export type MasterCSSLintFileSourceKind = 'source' | 'stylesheet' | 'manifest'
@@ -281,6 +283,7 @@ function createContextLintDiagnostics(
       remoteStylingPolicy: rules['prefer-component-classes']
         ? { max: options.ruleOptions?.['prefer-component-classes']?.max }
         : undefined,
+      ...(rules['no-legacy-classes'] ? { legacyClasses: true } : {}),
       ...(rules['no-conflicting-classes'] && context.elementClassNames
         ? { elementClassNames: context.elementClassNames, conditional: context.conditional }
         : {}),

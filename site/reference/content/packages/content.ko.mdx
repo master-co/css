@@ -573,7 +573,7 @@ ESLint flat config에 프리셋을 추가하세요. 프로젝트별 동작은 [�
 | `@master/css/no-conflicting-classes` | `warn` | 예 | 같은 변형 범위의 전체 및 부분 선언 충돌. 전체 재정의만 수정. |
 | `@master/css/prefer-canonical-classes` | `warn` | 예 | 토큰 동일성과 생성 규칙 동작을 유지할 때만 비표준 형식을 보고. |
 
-`@master/css/no-unapproved-raw-values`와 `@master/css/prefer-component-classes`는 프리셋에 없습니다.
+`@master/css/no-unapproved-raw-values`, `@master/css/prefer-component-classes`, `@master/css/no-legacy-classes`는 프리셋에 없습니다.
 
 ## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
 
@@ -592,6 +592,8 @@ ESLint flat config에 프리셋을 추가하세요. 프로젝트별 동작은 [�
 `@master/css/no-unapproved-raw-values`는 토큰 지원 유틸리티의 원시 값을 보고합니다. `requireProperties`는 나열한 네이티브 속성으로 제한하며 비어 있거나 생략하면 모든 토큰 지원 속성을 검사합니다. `allowProperties`와 `allowedPatterns`는 예외를 추가하고 `allowRawValues`는 규칙을 비활성화합니다. 네이티브 사용자 지정 속성 참조는 유효합니다. 진단 `data`는 속성 범위와 표준 토큰 계열을 명시하며 자동 수정은 없습니다.
 
 `@master/css/prefer-component-classes`는 최상위 `_`, `>`, `+`, `~` 결합자로 다른 요소를 스타일하는 클래스가 `max`개(기본 `3`)를 초과하는 클래스 목록을 보고합니다. 진단 `data`는 `classNames`와 `targets`를 나열하며 자동 수정은 없습니다.
+
+`@master/css/no-legacy-classes`는 `p:8px`처럼 2.0에서 더 이상 생성되지 않는 2.0 이전 `property:value` 클래스를 보고합니다. 진단 `data`는 `className`, 선언의 `property`, 그리고 2.0이 동등한 클래스를 생성할 때 자동 수정이 쓰는 `replacement`를 담습니다.
 
 ## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
 

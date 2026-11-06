@@ -131,9 +131,7 @@ impl LintSession {
             for diagnostic in inspection.diagnostics {
                 // Unregistered names can belong to author CSS. Keep the existing
                 // unknown-class policy; actual token ambiguities remain errors.
-                let unknown_token = diagnostic
-                    .message
-                    .starts_with("Unknown or unsupported token");
+                let unknown_token = diagnostic.code == mastercss_schema::ErrorCode::UnknownToken;
                 if unknown_token && !policy.disallow_unknown_class {
                     continue;
                 }
@@ -173,6 +171,10 @@ impl LintSession {
                 &element_conflicts,
                 policy.conditional,
             );
+        }
+        if policy.legacy_classes {
+            let legacy = self.legacy_classes(class_names, invalid_generated_classes)?;
+            class_list::add_legacy_class_diagnostics(&mut result, class_list, class_names, &legacy);
         }
         if let Some(options) = policy.canonical_options {
             let groups = self.canonical_class_groups(class_names, native_support, options)?;

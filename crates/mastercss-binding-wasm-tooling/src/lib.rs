@@ -130,6 +130,8 @@ struct LintClassListRequest {
     element_class_names: Vec<String>,
     #[serde(default)]
     conditional: bool,
+    #[serde(default)]
+    legacy_classes: bool,
 }
 
 #[wasm_bindgen(js_name = extractClassCandidates)]
@@ -340,6 +342,7 @@ impl ToolingLintSession {
                     canonical_options: request.canonical_options.as_ref(),
                     element_class_names: &request.element_class_names,
                     conditional: request.conditional,
+                    legacy_classes: request.legacy_classes,
                 },
             )
             .map_err(scanner_error)?;

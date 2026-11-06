@@ -125,6 +125,8 @@ struct LintClassListRequest {
     element_class_names: Vec<String>,
     #[serde(default)]
     conditional: bool,
+    #[serde(default)]
+    legacy_classes: bool,
 }
 
 fn to_napi_error(error: EngineError) -> Error {

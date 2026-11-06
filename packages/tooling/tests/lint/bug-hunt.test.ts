@@ -74,3 +74,30 @@ test('reports conditional classes that the static class always overrides (#495)'
   expect(lintMasterCSSContent({ ...options, rules: { 'no-conflicting-classes': false } }).diagnostics
     .some(({ code }) => code === 'element-conflicting-class')).toBe(false)
 })
+
+test('opt-in no-legacy-classes points pre-2.0 classes to their 2.0 spelling (#496)', () => {
+  using session = createTestToolingSession()
+  const content = '<template>\n  <div class="flex align-items:center p:8px font-size:12px flex:1 w:full p:8">rc syntax</div>\n</template>\n'
+  const options = { content, filePath: 'Legacy.vue', lintSession: session }
+  expect(lintMasterCSSContent(options).diagnostics.some(({ ruleId }) => ruleId === 'no-legacy-classes')).toBe(false)
+  const rules = { 'no-legacy-classes': true }
+  const diagnostics = lintMasterCSSContent({ ...options, rules }).diagnostics
+    .filter(({ ruleId }) => ruleId === 'no-legacy-classes')
+  expect(diagnostics.map(({ data }) => [data?.className, data?.replacement])).toEqual([
+    ['align-items:center', 'items-center'],
+    ['p:8px', 'p(8)'],
+    ['font-size:12px', '(font-size:12px)'],
+    ['flex:1', '(flex:1)'],
+    ['w:full', 'w-full'],
+    // `(padding:8)` fails the host CSS value check, so no replacement is offered.
+    ['p:8', undefined]
+  ])
+  expect(diagnostics.at(-1)?.fixes).toBeUndefined()
+  expect(fixMasterCSSContent({ ...options, rules: { ...rules, 'sort-classes': false } }))
+    .toBe(content.replace('flex align-items:center p:8px font-size:12px flex:1 w:full', 'flex items-center p(8) (font-size:12px) (flex:1) w-full'))
+  // The flex:1 syntax error now names its 2.0 native declaration.
+  expect(lintMasterCSSContent(options).diagnostics.find(({ ruleId }) => ruleId === 'no-invalid-classes')?.message)
+    .toBe('Pre-2.0 property:value syntax: write (flex:1) instead of flex:1')
+  expect(session.inspectClassName('font-size:12px').diagnostics?.[0]?.message)
+    .toBe('Pre-2.0 property:value syntax: write (font-size:12px) instead of font-size:12px')
+})

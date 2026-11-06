@@ -499,3 +499,72 @@ fn reports_element_classes_that_always_override_a_class_list() {
     // Conflicts within the list itself stay with the regular conflict diagnostic.
     assert!(analyze("(cursor:pointer) (cursor:not-allowed)", &["block"], true).is_empty());
 }
+
+#[test]
+fn points_pre_v2_property_value_classes_to_their_2_0_spelling() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    let mut analyze = |class_list: &str, invalid: &[&str]| {
+        let class_names = class_list
+            .split_whitespace()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        session
+            .analyze_class_list(
+                class_list,
+                &class_names,
+                None,
+                &invalid.iter().map(|name| (*name).to_owned()).collect(),
+                LintClassListPolicy {
+                    legacy_classes: true,
+                    ..LintClassListPolicy::default()
+                },
+            )
+            .unwrap()
+            .diagnostics
+            .into_iter()
+            .filter(|diagnostic| diagnostic.rule_id == "no-legacy-classes")
+            .collect::<Vec<_>>()
+    };
+    let class_list = "flex align-items:center p:8px font-size:12px flex:1 w:full";
+    let diagnostics = analyze(class_list, &[]);
+    let replacements = diagnostics
+        .iter()
+        .map(|diagnostic| {
+            (
+                diagnostic.data["className"].as_str().unwrap(),
+                diagnostic.data["replacement"].as_str().unwrap_or_default(),
+            )
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        replacements,
+        [
+            ("align-items:center", "items-center"),
+            ("p:8px", "p(8)"),
+            ("font-size:12px", "(font-size:12px)"),
+            ("flex:1", "(flex:1)"),
+            ("w:full", "w-full"),
+        ]
+    );
+    assert_eq!(
+        diagnostics[1].message,
+        "Class \"p:8px\" uses pre-2.0 property:value syntax; use \"p(8)\"."
+    );
+    assert_eq!(diagnostics[1].range, SourceRange { start: 24, end: 29 });
+    let fix = diagnostics[0].fix.as_ref().unwrap();
+    assert_eq!(
+        fix.text,
+        "flex items-center p(8) (font-size:12px) (flex:1) w-full"
+    );
+    // Suffixes and importance carry over; host-invalid replacements are not offered.
+    let diagnostics = analyze("p:8px:hover@sm! p:8", &["(padding:8)"]);
+    assert_eq!(diagnostics[0].data["replacement"], "p(8):hover@sm!");
+    assert!(diagnostics[1].data.get("replacement").is_none());
+    assert_eq!(
+        diagnostics[1].message,
+        "Class \"p:8\" uses pre-2.0 property:value syntax; rewrite it with a 2.0 utility or a \"(padding:<value>)\" native declaration."
+    );
+    assert!(diagnostics[1].fix.is_none());
+    // 2.0 classes with selectors are not legacy.
+    assert!(analyze("flex:hover block:hover (flex:1) items-center", &[]).is_empty());
+}

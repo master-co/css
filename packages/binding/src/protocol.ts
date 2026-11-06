@@ -532,7 +532,7 @@ export interface MasterCSSLintEdit {
 }
 
 export interface MasterCSSLintDiagnostic {
-  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes' | 'prefer-canonical-classes' | 'no-unapproved-raw-values' | 'prefer-component-classes'
+  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes' | 'prefer-canonical-classes' | 'no-unapproved-raw-values' | 'prefer-component-classes' | 'no-legacy-classes'
   code:
     | 'invalid-class-order'
     | 'invalid-class'
@@ -671,6 +671,8 @@ export interface MasterCSSLintClassListPolicyRequest {
   elementClassNames?: readonly string[]
   /** Whether this class list only applies under a condition of a class binding. */
   conditional?: boolean
+  /** Report pre-2.0 `property:value` classes with their 2.0 spelling. */
+  legacyClasses?: boolean
 }
 
 export interface MasterCSSLanguageClassListContext {

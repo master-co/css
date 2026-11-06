@@ -329,6 +329,76 @@ fn create_diagnostics(
     diagnostics
 }
 
+/// Reports pre-2.0 `property:value` classes. One fix replaces every class with
+/// a verified 2.0 spelling at once.
+pub(crate) fn add_legacy_class_diagnostics(
+    result: &mut LintClassListIr,
+    class_list: &str,
+    class_names: &[String],
+    legacy: &[crate::legacy::LegacyClass],
+) {
+    if legacy.is_empty() {
+        return;
+    }
+    let items = parse_class_list(class_list, class_names);
+    let mut replaced = items.clone();
+    for class in legacy {
+        if let Some(replacement) = &class.replacement {
+            while replace_class_token(&mut replaced, &class.class_name, replacement) {}
+        }
+    }
+    let replaced = build_class_list(&replaced);
+    let fix = (replaced != class_list).then(|| LintEditIr {
+        range: SourceRange {
+            start: 0,
+            end: utf16_len(class_list),
+        },
+        text: replaced,
+        scope: LintEditScope::ClassList,
+    });
+    for class in legacy {
+        let Some(range) = find_class_range(&items, &class.class_name) else {
+            continue;
+        };
+        let message = match &class.replacement {
+            Some(replacement) => format!(
+                "Class {} uses pre-2.0 property:value syntax; use {}.",
+                quote_diagnostic_value(&class.class_name),
+                quote_diagnostic_value(replacement),
+            ),
+            None => format!(
+                "Class {} uses pre-2.0 property:value syntax; rewrite it with a 2.0 utility or a {} native declaration.",
+                quote_diagnostic_value(&class.class_name),
+                quote_diagnostic_value(&format!("({}:<value>)", class.property)),
+            ),
+        };
+        let mut data = serde_json::Map::from_iter([
+            (
+                "className".into(),
+                serde_json::Value::String(class.class_name.clone()),
+            ),
+            (
+                "property".into(),
+                serde_json::Value::String(class.property.clone()),
+            ),
+        ]);
+        if let Some(replacement) = &class.replacement {
+            data.insert(
+                "replacement".into(),
+                serde_json::Value::String(replacement.clone()),
+            );
+        }
+        result.diagnostics.push(LintDiagnosticIr {
+            rule_id: "no-legacy-classes".into(),
+            code: "legacy-class".into(),
+            message,
+            range,
+            data,
+            fix: class.replacement.as_ref().and(fix.clone()),
+        });
+    }
+}
+
 /// Reports classes of this list that another class list of the same element
 /// always overrides. Removing the class is rarely the intent when it only
 /// applies under a condition, so these diagnostics carry no fix.

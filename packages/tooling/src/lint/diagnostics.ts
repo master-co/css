@@ -15,6 +15,7 @@ export type MasterCSSLintRuleId =
   | 'prefer-canonical-classes'
   | 'no-unapproved-raw-values'
   | 'prefer-component-classes'
+  | 'no-legacy-classes'
 
 export type MasterCSSLintDiagnosticSeverity = 'error' | 'warning'
 export interface MasterCSSLintRange { start: number, end: number }

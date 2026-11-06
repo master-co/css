@@ -481,7 +481,7 @@ Add the preset to your ESLint flat configuration. Configure project-specific beh
 | `@master/css/no-conflicting-classes` | `warn` | Yes | Full and partial declaration conflicts in the same variant scope; only full overrides are fixed. |
 | `@master/css/prefer-canonical-classes` | `warn` | Yes | Non-canonical forms, only when token identity and generated-rule behavior are preserved. |
 
-`@master/css/no-unapproved-raw-values` and `@master/css/prefer-component-classes` are not in the preset.
+`@master/css/no-unapproved-raw-values`, `@master/css/prefer-component-classes` and `@master/css/no-legacy-classes` are not in the preset.
 
 ## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
 
@@ -499,6 +499,8 @@ Settings live under the `@master/css` settings key. Arrays replace their default
 `@master/css/no-unapproved-raw-values` reports raw values in token-backed utilities. `requireProperties` limits it to listed native properties (empty or omitted checks every token-backed property); `allowProperties` and `allowedPatterns` add exceptions; `allowRawValues` disables it. Native custom-property references stay valid. Its diagnostic `data` names the property scope and canonical token families; it has no autofix.
 
 `@master/css/prefer-component-classes` reports a class list in which more than `max` classes (default `3`) style other elements through a top-level `_`, `>`, `+` or `~` combinator. Its diagnostic `data` lists `classNames` and their `targets`; it has no autofix.
+
+`@master/css/no-legacy-classes` reports pre-2.0 `property:value` classes, such as `p:8px`, that 2.0 no longer generates. Its diagnostic `data` names the `className`, the declaration `property` and, when 2.0 generates an equivalent class, the `replacement` its autofix writes.
 
 ## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
 

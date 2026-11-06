@@ -248,6 +248,36 @@ flex block_h4 hidden_h4 grid_svg flex>li
 
 ---
 
+## 2.0 이전 클래스 업그레이드 \{#upgrade-pre-2-0-classes\}
+2.0 이전 릴리스 후보 버전은 선언을 `property:value` 클래스로 작성했습니다. 2.0에서 단독 `name:suffix`는 등록된 이름 뒤에 선택자가 오는 형태이므로, 이런 클래스 대부분은 오류를 보고하지 않은 채 CSS를 생성하지 않게 됩니다. 업그레이드하는 동안 `no-legacy-classes`를 활성화해 이런 클래스를 보고하고 각각을 2.0 표기로 다시 작성하세요.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-legacy-classes': 'error'
+    }
+  }
+])
+```
+
+```mcss
+align-items:center p:8px w:full flex:1 <!-- [!code --] -->
+items-center p(8) w-full (flex:1) <!-- [!code ++] -->
+```
+
+다시 작성할 때는 [`master-css suggest`](/reference/tools/cli#suggest)와 같은 매핑을 사용하며, 2.0이 동등한 클래스를 생성할 때만 제안합니다. `p:8`처럼 릴리스 후보 버전의 값이 단위나 토큰 변환에 의존하던 클래스는 수정 없이 보고됩니다. 명령줄에서 프로젝트를 다시 작성하려면 다음을 실행하세요.
+
+```bash
+master-css lint --rules recommended,no-legacy-classes --fix
+```
+
+---
+
 ## 네이티브 컴포넌트 CSS \{#native-component-css\}
 네이티브 CSS의 토큰 참조를 검사하려면 [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change)을 실행하고 JavaScript에서 가져온 라우트 스타일시트를 소스 경로로 전달하세요. ESLint는 클래스 목록만 검사합니다.
 

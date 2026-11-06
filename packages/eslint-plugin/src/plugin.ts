@@ -1,5 +1,6 @@
 import noConflictingClasses from './rules/no-conflicting-classes'
 import noInvalidClasses from './rules/no-invalid-classes'
+import noLegacyClasses from './rules/no-legacy-classes'
 import noUnapprovedRawValues from './rules/no-unapproved-raw-values'
 import preferCanonicalClasses from './rules/prefer-canonical-classes'
 import preferComponentClasses from './rules/prefer-component-classes'
@@ -21,6 +22,7 @@ const plugin = {
   rules: {
     'no-conflicting-classes': noConflictingClasses,
     'no-invalid-classes': noInvalidClasses,
+    'no-legacy-classes': noLegacyClasses,
     'no-unapproved-raw-values': noUnapprovedRawValues,
     'prefer-canonical-classes': preferCanonicalClasses,
     'prefer-component-classes': preferComponentClasses,

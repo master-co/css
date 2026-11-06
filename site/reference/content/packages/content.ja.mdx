@@ -573,7 +573,7 @@ ESLint の flat config にプリセットを加えます。プロジェクト固
 | `@master/css/no-conflicting-classes` | `warn` | はい | 同じバリアントスコープ内の宣言の完全・部分競合。完全な上書きだけを修正。 |
 | `@master/css/prefer-canonical-classes` | `warn` | はい | トークンの同一性と生成規則の動作を保てる場合だけ非正規形を報告。 |
 
-`@master/css/no-unapproved-raw-values` と `@master/css/prefer-component-classes` はプリセットに含みません。
+`@master/css/no-unapproved-raw-values`、`@master/css/prefer-component-classes`、`@master/css/no-legacy-classes` はプリセットに含みません。
 
 ## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
 
@@ -592,6 +592,8 @@ ESLint の flat config にプリセットを加えます。プロジェクト固
 `@master/css/no-unapproved-raw-values` はトークン対応ユーティリティの生の値を報告します。`requireProperties` は列挙したネイティブプロパティに絞り、空または省略なら全トークン対応プロパティを調べます。`allowProperties` と `allowedPatterns` は例外を加え、`allowRawValues` は無効化します。ネイティブカスタムプロパティ参照は有効です。診断の `data` はプロパティのスコープと標準トークンファミリーを示し、自動修正はありません。
 
 `@master/css/prefer-component-classes` は、最上位の `_`、`>`、`+`、`~` 結合子で別要素をスタイルするクラスが `max`（既定 `3`）を超えるクラスリストを報告します。診断の `data` は `classNames` と `targets` を列挙し、自動修正はありません。
+
+`@master/css/no-legacy-classes` は、`p:8px` のように 2.0 では生成されなくなった 2.0 より前の `property:value` クラスを報告します。診断の `data` は `className`、宣言の `property`、そして 2.0 が同等のクラスを生成する場合は自動修正が書き込む `replacement` を示します。
 
 ## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
 

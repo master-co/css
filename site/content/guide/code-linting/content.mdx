@@ -242,6 +242,36 @@ States of the element itself, relative selectors inside `:has()` or `:is()`, and
 
 ---
 
+## Upgrade pre-2.0 classes \{#upgrade-pre-2-0-classes\}
+Release candidates before 2.0 wrote declarations as `property:value` classes. In 2.0, a bare `name:suffix` is a registered name followed by a selector, so most of those classes stop generating CSS without reporting an error. While upgrading, enable `no-legacy-classes` to report them and rewrite each one to its 2.0 spelling:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-legacy-classes': 'error'
+    }
+  }
+])
+```
+
+```mcss
+align-items:center p:8px w:full flex:1 <!-- [!code --] -->
+items-center p(8) w-full (flex:1) <!-- [!code ++] -->
+```
+
+The rewrite uses the same mapping as [`master-css suggest`](/reference/tools/cli#suggest) and is offered only when 2.0 generates an equivalent class. A class whose release-candidate value relied on a unit or token conversion, such as `p:8`, is reported without a fix. To rewrite a project from the command line:
+
+```bash
+master-css lint --rules recommended,no-legacy-classes --fix
+```
+
+---
+
 ## Native component CSS \{#native-component-css\}
 To check token references in native CSS, run [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change) and pass route stylesheets imported from JavaScript as source paths; ESLint checks class lists only.
 
