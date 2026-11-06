@@ -436,8 +436,9 @@ test('configured release uploads the public dependency graph before cohort promo
   const positions = config.plugins.map((plugin, index) => [Array.isArray(plugin) ? plugin[0] : plugin, index])
   const promoteAt = positions.find(([name]) => name === promotion)[1]
   assert.ok(positions.filter(([name]) => name === workspace).every(([, index]) => index < promoteAt))
-  assert.deepEqual(positions.slice(0, 3).map(([name]) => name), [
-    '@semantic-release/commit-analyzer', '@semantic-release/release-notes-generator', './scripts/semantic-release-notes.mjs'
+  assert.deepEqual(positions.slice(0, 4).map(([name]) => name), [
+    '@semantic-release/commit-analyzer', '@semantic-release/release-notes-generator',
+    './scripts/semantic-release-major-guard.mjs', './scripts/semantic-release-notes.mjs'
   ])
   assert.equal(config.plugins.at(-2)[0], promotion)
   assert.equal(config.plugins.at(-1)[0], '@semantic-release/github')
