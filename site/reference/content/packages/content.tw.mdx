@@ -573,7 +573,7 @@ API 要求基底 manifest 時，請明確提供。使用結果前先檢查回傳
 | `@master/css/no-conflicting-classes` | `warn` | 是 | 同變體範圍的完整與部分宣告衝突；只修正完整覆寫。 |
 | `@master/css/prefer-canonical-classes` | `warn` | 是 | 非標準形式，僅在保留 token 身分與生成規則行為時回報。 |
 
-`@master/css/no-unapproved-raw-values`、`@master/css/prefer-component-classes` 與 `@master/css/no-legacy-classes` 不在預設組態內。
+`@master/css/no-unapproved-raw-values` 與 `@master/css/prefer-component-classes` 不在預設組態內。
 
 ## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
 
@@ -592,8 +592,6 @@ API 要求基底 manifest 時，請明確提供。使用結果前先檢查回傳
 `@master/css/no-unapproved-raw-values` 回報有 token 支援的 utility 中使用的原始值。`requireProperties` 將範圍限於所列原生屬性（空或省略時檢查所有有 token 支援的屬性）；`allowProperties` 與 `allowedPatterns` 加入例外，`allowRawValues` 則停用規則。原生自訂屬性參照仍有效。診斷 `data` 指定屬性範圍與標準 token 家族；沒有自動修正。
 
 `@master/css/prefer-component-classes` 回報 class 清單中，超過 `max` 個 class（預設 `3`）透過頂層 `_`、`>`、`+` 或 `~` 組合器替其他元素設定樣式的情況。診斷 `data` 列出 `classNames` 與其 `targets`；沒有自動修正。
-
-`@master/css/no-legacy-classes` 回報 2.0 之前的 `property:value` class，例如 `p:8px`，這類 class 在 2.0 已不再產生。診斷 `data` 列出 `className`、宣告的 `property`，以及 2.0 能產生等效 class 時由自動修正寫入的 `replacement`。
 
 ## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
 

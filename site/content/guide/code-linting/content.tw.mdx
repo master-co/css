@@ -248,36 +248,6 @@ flex block_h4 hidden_h4 grid_svg flex>li
 
 ---
 
-## 升級 2.0 之前的 class \{#upgrade-pre-2-0-classes\}
-2.0 之前的候選版本以 `property:value` class 撰寫宣告。在 2.0 中，單獨的 `name:suffix` 是已註冊名稱加上選擇器，因此這類 class 大多會停止產生 CSS，也不會回報錯誤。升級期間，請啟用 `no-legacy-classes` 回報這些 class，並將每個 class 改寫為 2.0 寫法：
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS,
-  {
-    rules: {
-      '@master/css/no-legacy-classes': 'error'
-    }
-  }
-])
-```
-
-```mcss
-align-items:center p:8px w:full flex:1 <!-- [!code --] -->
-items-center p(8) w-full (flex:1) <!-- [!code ++] -->
-```
-
-改寫使用與 [`master-css suggest`](/reference/tools/cli#suggest) 相同的對應，且只在 2.0 能產生等效 class 時提供。若 class 在候選版本中的值依賴單位或 token 轉換，例如 `p:8`，則只回報、不提供修正。若要從命令列改寫專案：
-
-```bash
-master-css lint --rules recommended,no-legacy-classes --fix
-```
-
----
-
 ## 原生元件 CSS \{#native-component-css\}
 要檢查原生 CSS 的 token 參照，請執行 [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change)，並以來源路徑傳入從 JavaScript 匯入的路由樣式表；ESLint 只檢查 class 清單。
 

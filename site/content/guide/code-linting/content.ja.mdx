@@ -248,36 +248,6 @@ flex block_h4 hidden_h4 grid_svg flex>li
 
 ---
 
-## 2.0 より前のクラスを移行する \{#upgrade-pre-2-0-classes\}
-2.0 より前のリリース候補版では、宣言を `property:value` クラスとして書いていました。2.0 では単独の `name:suffix` は登録済みの名前とそれに続くセレクターなので、こうしたクラスの多くはエラーを報告しないまま CSS を生成しなくなります。移行中は `no-legacy-classes` を有効にして、これらを報告し、それぞれを 2.0 の書き方に書き換えます。
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS,
-  {
-    rules: {
-      '@master/css/no-legacy-classes': 'error'
-    }
-  }
-])
-```
-
-```mcss
-align-items:center p:8px w:full flex:1 <!-- [!code --] -->
-items-center p(8) w-full (flex:1) <!-- [!code ++] -->
-```
-
-書き換えには [`master-css suggest`](/reference/tools/cli#suggest) と同じ対応付けを使い、2.0 が同等のクラスを生成する場合にだけ提示します。`p:8` のように、リリース候補版での値が単位やトークンの変換に依存していたクラスは、修正なしで報告します。コマンドラインからプロジェクトを書き換えるには、次を実行します。
-
-```bash
-master-css lint --rules recommended,no-legacy-classes --fix
-```
-
----
-
 ## ネイティブのコンポーネント CSS \{#native-component-css\}
 ネイティブ CSS のトークン参照には、[`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change) を実行し、JavaScript から読み込むルートスタイルシートをソースパスで渡します。ESLint が調べるのはクラスリストだけです。
 

@@ -54,14 +54,6 @@ export function verifyLintExamples() {
       }
     }
     assert.equal(pairsChecked, 4, 'Every displayed before/after lint example is exercised')
-    const upgrade = source.split('{#upgrade-pre-2-0-classes\\}')[1].split('\n## ')[0]
-    const legacyPairs = deliveryFences(upgrade).filter(fence => fence.language === 'mcss')
-      .flatMap(fence => [...fence.text.matchAll(/([^\n]+) <!-- \[!code --\] -->\n([^\n]+) <!-- \[!code \+\+\] -->/g)])
-    assert.equal(legacyPairs.length, 1, 'The pre-2.0 upgrade example is exercised')
-    for (const [, before, after] of legacyPairs) {
-      assert.equal(lint.verifyAndFix(html(before), config('no-legacy-classes')).output, html(after), `Upgrade: ${before}`)
-    }
-    assert.equal(lint.verifyAndFix(html('p:8'), config('no-legacy-classes')).fixed, false)
     assert.equal(lint.verifyAndFix(html('(margin:1.25rem) (margin:0.625rem)'), config('no-conflicting-classes')).output, html('(margin:1.25rem)'))
     const partial = deliveryFences(section('No conflicting classes')).find(fence => fence.text.includes('bt-dashed'))!
     const partialResult = lint.verifyAndFix(html(partial.text.trim()), config('no-conflicting-classes'))

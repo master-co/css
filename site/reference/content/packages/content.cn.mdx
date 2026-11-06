@@ -573,7 +573,7 @@ API 要求基础 manifest 时请显式提供。使用结果前先检查返回诊
 | `@master/css/no-conflicting-classes` | `warn` | 是 | 同变体范围的完整与部分声明冲突；仅修复完整覆盖。 |
 | `@master/css/prefer-canonical-classes` | `warn` | 是 | 非标准形式，仅在保留令牌身份及生成规则行为时报告。 |
 
-`@master/css/no-unapproved-raw-values`、`@master/css/prefer-component-classes` 和 `@master/css/no-legacy-classes` 不在预设配置中。
+`@master/css/no-unapproved-raw-values` 和 `@master/css/prefer-component-classes` 不在预设配置中。
 
 ## editorial--master-eslint-plugin-css-usage \{#copy-editorial--master-eslint-plugin-css-usage\}
 
@@ -592,8 +592,6 @@ API 要求基础 manifest 时请显式提供。使用结果前先检查返回诊
 `@master/css/no-unapproved-raw-values` 报告有令牌支持的工具类中的原始值。`requireProperties` 将范围限制于所列原生属性（为空或省略时检查全部令牌支持属性）；`allowProperties` 与 `allowedPatterns` 添加例外，`allowRawValues` 则禁用规则。原生自定义属性引用仍有效。诊断 `data` 指定属性范围和标准令牌家族；无自动修复。
 
 `@master/css/prefer-component-classes` 报告类列表中超过 `max` 个类（默认 `3`）通过顶层 `_`、`>`、`+` 或 `~` 组合器为其他元素设置样式的情况。诊断 `data` 列出 `classNames` 及其 `targets`；无自动修复。
-
-`@master/css/no-legacy-classes` 报告 2.0 之前的 `property:value` 类，例如 `p:8px`，这些类在 2.0 中已不再生成。诊断 `data` 列出 `className`、声明的 `property`，以及 2.0 能生成等效类时由自动修复写入的 `replacement`。
 
 ## editorial--master-css-runtime-usage \{#copy-editorial--master-css-runtime-usage\}
 
