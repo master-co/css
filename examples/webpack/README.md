@@ -28,4 +28,4 @@ bun run dev
 
 Open the URL printed by Webpack. From this directory, run `bun run build` to generate the production files in `dist/`.
 
-See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack).
+Webpack also supports `runtime` and can supply the browser runtime for `progressive`. When your server handles HTML, it supplies the rendered styles for `prerender` or `progressive`. See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for setup.

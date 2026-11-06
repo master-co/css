@@ -113,6 +113,7 @@ npm run start
 | --- | --- | --- |
 | 靜態 | 無 | 掃描原始碼後產生的樣式表 |
 | 執行階段 | `--mode runtime` | 透過 Next.js 用戶端 instrumentation 啟動瀏覽器執行階段 |
+| 預先渲染 | `--mode prerender` | CSS 隨建置時產生的 HTML 傳遞，無須瀏覽器執行階段 |
 | 漸進式 | `--mode progressive` | 預先渲染 CSS，再交由執行階段接手 |
 
 <DocumentDisclosure title="在瀏覽器產生新類別">
@@ -144,6 +145,8 @@ npm create @master/css@VERSION -- --framework nextjs --mode progressive --yes
 執行階段起初只追蹤已涵蓋的類別。頁面 manifest 之外的類別會啟動引擎，先驗證並接管相符規則，再產生額外 CSS。請求時動態 SSR 回應不在建置轉接器的預先渲染輸出範圍內，因此其產生的 utility 樣式依賴瀏覽器執行階段。若這些路由必須在沒有 JavaScript 時仍具有 utility 樣式，請使用靜態模式。
 
 執行 `npm run build` 與 `npm run start` 後，在 JavaScript 執行前，檢查預先渲染路由的回應原始碼是否包含 `style#master-css`，再依上述方式測試後續加入的類別。動態 SSR 路由請分開測試：此轉接器不會為請求時的 HTML 加入伺服器產生的 CSS。
+
+在同一指令中使用 `--mode prerender`，即可在建置時產生的頁面中傳遞 CSS，無須 Master CSS 瀏覽器執行階段。確認建置頁面的回應含有 `style#master-css`。若請求時渲染的路由使用可在原始碼找到的完整 class 名稱，可選擇靜態模式傳遞對應規則。
 
 </DocumentDisclosure>
 

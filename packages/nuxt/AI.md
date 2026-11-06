@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-nuxt` wires Master CSS into Nuxt, Vite, Nitro, client runtime, and server pre-render workflows.
+`@master/css-nuxt` wires Master CSS into Nuxt, Vite, and Nitro for `static`, `runtime`, `prerender`, and `progressive` modes.
 
 ## Owns
 

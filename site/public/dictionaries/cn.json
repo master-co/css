@@ -166,7 +166,7 @@
   "Session steps": "会话步骤",
   "Set up the MCP server": "配置 MCP 服务器",
   "Shapes and masks": "形状与遮罩",
-  "Ship static CSS by default, pre-render it into HTML or generate it in the browser. Your classes stay the same.": "默认交付静态 CSS，也可将其预渲染到 HTML 中，或在浏览器内生成。类的写法保持不变。",
+  "Choose static, runtime, prerender, or progressive delivery. Your classes stay the same.": "可选择静态、运行时、预渲染或渐进式交付，类的写法保持不变。",
   "Sizing": "尺寸",
   "Spacing": "间距",
   "Start with one class string,": "从一串类名开始，",

@@ -34,9 +34,10 @@ Browser timings should be measured with fixed viewport, device scale, browser ve
 ### Delivery modes
 | Mode | Benchmark focus |
 |------|-----------------|
-| Runtime | Runtime bundle size, manifest delivery, initial DOM scan, CSSOM insertion/deletion, mutation handling, and repeated mutation cleanup |
-| Static | Generated stylesheet size, source scanning, source include/exclude behavior, safelist/blocklist, warm rebuild, and mixed authored CSS |
-| Progressive | Inline first-page CSS, hydration manifest size, runtime adoption success/fallback, and post-hydration dynamic classes |
+| `static` | Generated stylesheet size, source scanning, source include/exclude behavior, safelist/blocklist, warm rebuild, and mixed authored CSS |
+| `runtime` | Runtime bundle size, manifest delivery, initial DOM scan, CSSOM insertion/deletion, mutation handling, and repeated mutation cleanup |
+| `prerender` | Renders CSS from each page's HTML without the browser runtime. The delivery benchmark has no separate measurements for this mode. |
+| `progressive` | Inline first-page CSS, hydration manifest size, runtime adoption success/fallback, and post-hydration dynamic classes |
 
 Runtime and progressive rendering optimize what CSS is delivered up front. They do not make browser style calculation free: when an interaction creates many first-time utility rules, the browser still needs to account for those new stylesheet rules before it can paint the updated DOM.
 

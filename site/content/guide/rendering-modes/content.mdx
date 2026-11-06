@@ -16,10 +16,10 @@ Complete your framework's [installation guide](/guide/installation) first. Offic
 
 | Mode | Classes come from | Initial CSS | Master CSS in the browser |
 | --- | --- | --- | --- |
-| [Static](#static-rendering) | Complete strings in source files | A generated stylesheet | No runtime or engine |
-| [Pre-render](#pre-rendering--ssg-ssr) | Rendered page HTML | Rules delivered with that page | No runtime or engine |
-| [Runtime](#runtime-rendering) | Connected DOM elements | Rules generated after runtime startup | Runtime and engine |
-| [Progressive](#progressive-rendering) | Rendered HTML, then later DOM changes | Rules delivered with that page | Runtime tracks usage; the engine can wait until a class is missing |
+| [Static](#static-rendering) (`static`) | Complete strings in source files | A generated stylesheet | No runtime or engine |
+| [Prerender](#pre-rendering--ssg-ssr) (`prerender`) | Rendered page HTML | Rules delivered with that page | No runtime or engine |
+| [Runtime](#runtime-rendering) (`runtime`) | Connected DOM elements | Rules generated after runtime startup | Runtime and engine |
+| [Progressive](#progressive-rendering) (`progressive`) | Rendered HTML, then later DOM changes | Rules delivered with that page | Runtime tracks usage; the engine can wait until a class is missing |
 
 An interactive application can use static CSS. Switching among known classes, changing CSS variables, and using native selectors do not require a runtime engine. Runtime generation matters when a complete class name first becomes available after the build.
 
@@ -220,12 +220,12 @@ The manifest carries resource order and the globals already emitted by the page'
 
 ## Integration support \{#integration-support\}
 
-Static rendering is the default for these official adapters. Runtime generation is an explicit choice for classes that are unknown at build time. `pre-render` generates CSS from HTML without a client runtime; `progressive` combines HTML rendering with a runtime for later classes. The HTML each adapter can process depends on its host:
+Static rendering is the default for these official adapters. Runtime generation is an explicit choice for classes that are unknown at build time. `prerender` generates CSS from HTML without a client runtime; `progressive` combines HTML rendering with a runtime for later classes. The HTML each adapter can process depends on its host:
 
-| Adapter | Static | Runtime | `pre-render` and server HTML | `progressive` |
+| Adapter | Static | Runtime | `prerender` and server HTML | `progressive` |
 | --- | --- | --- | --- | --- |
 | [Vite](/guide/installation/vite) | Build-time extraction | Injected through Vite's HTML pipeline | HTML processed by Vite hooks; custom SSR needs a server integration | Vite HTML rendering plus runtime; custom SSR needs its own HTML rendering |
-| [Webpack](/guide/installation/webpack) | Build-time extraction | Injected into compilation HTML assets | Your HTML host must call `@master/css-server`; the plugin has no request-time server hook | Runtime delivery is provided; your host supplies rendered HTML and hydration data |
+| [Webpack](/guide/installation/webpack) | Build-time extraction | Injected into compilation HTML assets | Generates a scanned stylesheet. The HTML host can call `@master/css-server` to generate CSS from rendered HTML | Runtime delivery is provided; your host supplies rendered HTML and hydration data |
 | [Next.js](/guide/installation/nextjs) | Build-time extraction | Client instrumentation | HTML outputs processed after the build; dynamic request-time SSR is not transformed | Build-rendered HTML plus runtime; dynamic SSR has no automatic server CSS injection |
 | [Astro](/guide/installation/astro) | Build-time extraction through Vite | Injected page script | Astro middleware processes prerendered pages and server HTML responses | Middleware rendering plus runtime |
 | [Nuxt](/guide/installation/nuxtjs) | Build-time extraction through Vite | Nuxt client plugin | Nitro HTML responses with string bodies; streaming bodies are not transformed | Nitro HTML rendering plus client runtime |
@@ -246,7 +246,7 @@ Test a production build as well as development: an integration may use runtime g
 | Mode | What to verify |
 | --- | --- |
 | Static | The generated HTML loads the stylesheet, and representative complete source classes have rules in it. Those styles remain with JavaScript disabled. |
-| Pre-render | The response source contains `style#master-css` with the page's rules. Verify before running JavaScript; the live DOM alone cannot prove pre-rendering occurred. |
+| Prerender | The response source contains `style#master-css` with the page's rules. Verify before running JavaScript; the live DOM alone cannot prove pre-rendering occurred. |
 | Runtime | Insert a class absent from the initial DOM and check its computed style and generated CSS rule after the runtime observes it. |
 | Progressive | Verify pre-rendered CSS first, then introduce a class absent from the page manifest and check that its rule is generated. Test dynamic SSR routes separately if the adapter only processes build-time HTML. |
 

@@ -7,7 +7,7 @@ function pluginNames(options: MasterCSSVitePluginOptions = {}) {
 }
 
 describe('masterCSS plugin composition', () => {
-  test.each(['runtime', "static", 'pre-render', 'progressive'] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
+  test.each(['runtime', "static", 'prerender', 'progressive'] as const)('%s mode registers the shared scanner and style entry pipeline', (mode) => {
     const names = pluginNames({ mode })
 
     expect(names.filter((name) => name === 'master-css:scanner')).toHaveLength(1)
@@ -43,11 +43,16 @@ describe('masterCSS plugin composition', () => {
     expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:runtime-preload')
     expect(pluginNames({ mode: 'static' })).not.toContain('master-css:program-preload')
     expect(pluginNames({ mode: 'static' })).not.toContain('master-css:runtime-preload')
-    expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:program-preload')
-    expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:runtime-preload')
+    expect(pluginNames({ mode: 'prerender' })).not.toContain('master-css:program-preload')
+    expect(pluginNames({ mode: 'prerender' })).not.toContain('master-css:runtime-preload')
   })
 
   test('enabled false disables the integration', () => {
     expect(pluginNames({ enabled: false })).toEqual([])
+  })
+
+  test('rejects the retired mode spelling in JavaScript configs', () => {
+    const options = JSON.parse('{"mode":"pre-render"}')
+    expect(() => masterCSS(options)).toThrow('Invalid Master CSS rendering mode "pre-render". Supported modes: runtime, static, prerender, progressive.')
   })
 })

@@ -95,10 +95,10 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 | 模式 | 类名来源 | 初始 CSS | 浏览器中的 Master CSS |
 | --- | --- | --- | --- |
-| [静态](#static-rendering) | 源文件中的完整字符串 | 生成的样式表 | 不需要运行时或引擎 |
-| [预渲染](#pre-rendering--ssg-ssr) | 渲染完成的页面 HTML | 随该页面交付的规则 | 不需要运行时或引擎 |
-| [运行时](#runtime-rendering) | 已连接的 DOM 元素 | 运行时启动后生成规则 | 运行时与引擎 |
-| [渐进式](#progressive-rendering) | 渲染完成的 HTML，接着是后续 DOM 变化 | 随该页面交付的规则 | 运行时跟踪使用情况；引擎可等到出现未覆盖类名时再启动 |
+| [静态](#static-rendering) (`static`) | 源文件中的完整字符串 | 生成的样式表 | 不需要运行时或引擎 |
+| [预渲染](#pre-rendering--ssg-ssr) (`prerender`) | 渲染完成的页面 HTML | 随该页面交付的规则 | 不需要运行时或引擎 |
+| [运行时](#runtime-rendering) (`runtime`) | 已连接的 DOM 元素 | 运行时启动后生成规则 | 运行时与引擎 |
+| [渐进式](#progressive-rendering) (`progressive`) | 渲染完成的 HTML，接着是后续 DOM 变化 | 随该页面交付的规则 | 运行时跟踪使用情况；引擎可等到出现未覆盖类名时再启动 |
 
 交互式应用也可以使用静态 CSS。切换已知类名、修改 CSS 变量及使用原生选择器，都不需要运行时引擎。完整类名在构建后才首次出现时，才需要考虑运行时生成。
 
@@ -299,12 +299,12 @@ renderer.dispose()
 
 ## 集成支持 \{#integration-support\}
 
-这些官方适配器默认使用静态渲染。构建时尚未确定的类名需要显式选择运行时生成。`pre-render` 从 HTML 生成 CSS，不需要客户端运行时；`progressive` 则结合 HTML 渲染与支持后续类名的运行时。各适配器能够处理的 HTML 取决于宿主：
+这些官方适配器默认使用静态渲染。构建时尚未确定的类名需要显式选择运行时生成。`prerender` 从 HTML 生成 CSS，不需要客户端运行时；`progressive` 则结合 HTML 渲染与支持后续类名的运行时。各适配器能够处理的 HTML 取决于宿主：
 
-| 适配器 | 静态 | 运行时 | `pre-render` 与服务器 HTML | `progressive` |
+| 适配器 | 静态 | 运行时 | `prerender` 与服务器 HTML | `progressive` |
 | --- | --- | --- | --- | --- |
 | [Vite](/guide/installation/vite) | 构建时提取 | 通过 Vite HTML 流水线注入 | Vite 钩子处理的 HTML；自定义 SSR 需要服务器集成 | Vite HTML 渲染加运行时；自定义 SSR 需自行渲染 HTML |
-| [Webpack](/guide/installation/webpack) | 构建时提取 | 注入编译的 HTML 资源 | HTML 宿主必须调用 `@master/css-server`；插件没有请求时服务器钩子 | 提供运行时交付；宿主提供渲染后 HTML 与水合数据 |
+| [Webpack](/guide/installation/webpack) | 构建时提取 | 注入编译的 HTML 资源 | 扫描源码并生成样式表。HTML 宿主可调用 `@master/css-server` 从渲染后的 HTML 生成 CSS | 提供运行时交付；宿主提供渲染后 HTML 与水合数据 |
 | [Next.js](/guide/installation/nextjs) | 构建时提取 | 客户端 instrumentation | 构建后处理 HTML 输出；不转换请求时动态 SSR | 构建渲染 HTML 加运行时；动态 SSR 不自动注入服务器 CSS |
 | [Astro](/guide/installation/astro) | 通过 Vite 在构建时提取 | 注入页面脚本 | Astro 中间件处理预渲染页面与服务器 HTML 响应 | 中间件渲染加运行时 |
 | [Nuxt](/guide/installation/nuxtjs) | 通过 Vite 在构建时提取 | Nuxt 客户端插件 | 主体为字符串的 Nitro HTML 响应；不转换流式主体 | Nitro HTML 渲染加客户端运行时 |

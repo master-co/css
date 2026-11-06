@@ -307,6 +307,7 @@ Laravel のビルドマニフェストからバージョン付きファイルを
 | --- | --- | --- |
 | 静的 | すべて | 実行時の変更なし |
 | ランタイム | PHP、Rails、WordPress、ASP.NET Core、Blazor、Express | `mode: 'runtime'`、ランタイムエントリー、モジュールスクリプト |
+| 事前レンダリング | Express | サーバーが初回レスポンスの CSS をレンダリング。ブラウザーランタイムは不要 |
 | プログレッシブ | Express | サーバーが初回レスポンスの CSS をレンダリングし、後からのクラスはランタイムが処理 |
 
 <DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
@@ -459,5 +460,7 @@ server.on('close', () => renderer.dispose())
 初回レスポンスには `style#master-css` と小さなハイドレーションレコードが含まれ、サーバーマニフェストはサーバーに残ります。この例は `src/master.css` のプリセットと一致する、既定のプリセットマニフェストでレンダリングします。プロジェクトのトークンやユーティリティを追加する場合は、サーバー用のプロジェクトマニフェストもコンパイルしてください。そうしなければ、初期 CSS がブラウザーの定義と一致しません。
 
 JavaScript を無効にしても、段落には最初からスタイルが付くはずです。JavaScript を再び有効にして読み込み直し、コンソールから `underline` を追加すると、新しいサーバーレスポンスなしに適用されるはずです。
+
+事前レンダリングで配信する場合は、Express のサーバーレンダリング処理を残します。`renderHTML()` に `hydrationManifest: false` を渡し、`src/master.ts` から Master CSS ランタイムの起動処理を削除します。レスポンスのソースに `style#master-css` があることを確認します。
 
 </DocumentDisclosure>

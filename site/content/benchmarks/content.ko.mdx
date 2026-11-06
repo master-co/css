@@ -51,7 +51,7 @@ import {
 } from './components/BuildPathDiagnosticsBenchmark'
 
 ## 개요 [sr-only] \{#overview\}
-이 측정은 먼저 두 질문에 답합니다. 문서 페이지가 전달한 CSS 중 얼마나 페이지에 일치하는지, 같은 UI에서 Master CSS와 Tailwind CSS가 각각 얼마나 CSS를 생성하는지입니다. 기술 부록에서는 빌드 시간, CSS 규모에 대한 Chromium 반응, 각 Master CSS 렌더링 모드 비용을 다룹니다. 다른 앱에 결과를 적용하기 전에 각 절의 조건과 한계를 확인하세요.
+이 측정은 먼저 두 질문에 답합니다. 문서 페이지가 전달한 CSS 중 얼마나 페이지에 일치하는지, 같은 UI에서 Master CSS와 Tailwind CSS가 각각 얼마나 CSS를 생성하는지입니다. 기술 부록에서는 빌드 시간, CSS 규모에 대한 Chromium 반응, 측정한 Master CSS 렌더링 모드 비용을 다룹니다. 다른 앱에 결과를 적용하기 전에 각 절의 조건과 한계를 확인하세요.
 
 스냅샷은 2026년 11월 4일 같은 기기(Apple M5 Max, macOS)에서 Chromium 156으로 기록했습니다. Master CSS 패키지는 리비전 `add10eec6`에서 빌드했습니다. 브라우저 수명 주기 스냅샷은 같은 날 앞서 기록한 `3fc239c6c`를 사용합니다. `add10eec6`는 컴파일러와 정적 빌드 호스트를 변경하며 런타임, 프리셋, 엔진은 변경하지 않습니다. Master CSS 문서는 같은 체크아웃의 프로덕션 빌드에서 측정했고 다른 문서 사이트는 같은 날 공개 페이지를 가져왔습니다.
 
@@ -259,7 +259,7 @@ Tailwind CSS는 런타임 동등 비교 대상이 아닙니다. 런타임 지향
 ### Master CSS 전달 모드 \{#master-css-delivery-modes\}
 검증 질문: 각 전달 모드는 어떤 초기 페이로드, 로컬 Chromium 로드 비용, 런타임 시작 비용, 프로그램 로드, 점진적 채택 동작을 만드는가?
 
-정적 픽스처 집합 전반에서 Master CSS 정적, 런타임, 점진적과 Tailwind CSS 정적 브라우저 대조 변형을 비교합니다.
+정적 픽스처 집합 전반에서 Master CSS 정적, 런타임, 점진적과 Tailwind CSS 정적 브라우저 대조 변형을 비교합니다. `prerender` 모드는 별도로 측정하지 않았습니다.
 
 <figure>
   <BenchmarkChart chart={MasterDeliveryModesSummary} />

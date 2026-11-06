@@ -1,6 +1,6 @@
 # Master CSS Astro example
 
-This example explicitly selects `progressive` mode in `@master/css-astro`. The integration's default is `static`.
+This example selects `progressive` mode in `@master/css-astro`. Astro also supports `static` (the default), `runtime`, and `prerender`. Both `prerender` and `progressive` render CSS from Astro's HTML.
 
 The integration:
 

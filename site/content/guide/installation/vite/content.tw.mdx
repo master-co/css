@@ -147,12 +147,18 @@ npm run build
 ---
 
 ## 選擇其他渲染模式 \{#rendering-modes\}
-預設使用靜態模式，無須 Master CSS 啟動程式碼。切換模式時，請保留 CSS 進入點：
+預設使用靜態模式，無須 Master CSS 啟動程式碼。切換模式時，請保留 CSS 進入點。
 
-| 框架 | 安裝程式選項 | 執行階段啟動方式 |
+| 模式 | 安裝程式選項 | CSS 傳遞方式 |
 | --- | --- | --- |
-| Vite、React、Vue | `--mode runtime` | 由 Vite 外掛注入 `index.html` |
-| React Router、TanStack Start | `--mode runtime` | 根路由中僅在瀏覽器執行的匯入 |
+| `static` | 無 | 掃描原始碼後產生的樣式表 |
+| `runtime` | `--mode runtime` | 瀏覽器執行階段 |
+| `prerender` | `--mode prerender` | 從 Vite 處理的 HTML 生成 CSS |
+| `progressive` | `--mode progressive` | 從 Vite 處理的 HTML 生成 CSS，並加入瀏覽器執行階段 |
+
+預先渲染和漸進式模式只能為 Vite 處理的 HTML 中已有的 class 生成初始 CSS。空白的應用程式掛載點不含稍後才掛載的元件 class。React Router、TanStack Start 等自行渲染 HTML 的框架，必須由伺服器呼叫 [HTML 渲染器](/guide/rendering-modes#pre-rendering--ssg-ssr) 來生成初始 CSS。
+
+若 Vite 的 HTML 進入點含有初始標記，請以 `--mode prerender` 或 `--mode progressive` 執行安裝程式，建置應用程式，並確認回應原始碼含有 `style#master-css`。若使用漸進式模式，也請確認稍後新增的 class 會在瀏覽器取得對應規則。
 
 <DocumentDisclosure title="在瀏覽器產生新類別">
 

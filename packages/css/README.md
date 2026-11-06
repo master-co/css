@@ -56,6 +56,8 @@
 
 Read the [installation guide](https://css.master.co/guide/installation) to set up Master CSS for an application.
 
+Compare [the four rendering modes](https://css.master.co/guide/rendering-modes): `static`, `runtime`, `prerender`, and `progressive`.
+
 ## Community
 
 - [Documentation](https://css.master.co/guide/installation) — Set up Master CSS and look up supported behavior.

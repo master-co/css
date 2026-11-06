@@ -89,6 +89,7 @@ node .output/server/index.mjs
 | --- | --- | --- |
 | 정적 | 없음 | 소스 스캔으로 생성한 스타일시트 |
 | 런타임 | `--mode runtime` | 서버 측 첫 페이지 CSS 없이 브라우저 런타임 사용 |
+| 사전 렌더링 | `--mode prerender` | 본문이 문자열인 Nitro HTML 응답에 CSS 포함. 브라우저 런타임은 필요 없음 |
 | 점진적 | `--mode progressive` | Nitro의 첫 응답 CSS와 런타임으로의 인계 |
 
 <DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
@@ -116,5 +117,7 @@ npm create @master/css@VERSION -- --framework nuxt --mode progressive --yes
 점진적 모드는 본문이 문자열인 Nitro HTML 응답에 첫 응답 CSS를 추가하며, 스트리밍 본문은 변환하지 않습니다. JavaScript를 끄고 초기 스타일을 확인한 뒤, 위와 같이 페이지 매니페스트에 없는 클래스를 나중에 추가해 테스트하세요.
 
 복사한 배포 산출물도 대상 디렉터리에서 테스트하세요. 원래 위치에서의 빌드만으로는 모든 매니페스트와 프로그램 경로가 이동 가능하다고 확인할 수 없습니다. 복사한 서버가 원래 프로젝트의 `node_modules/.master-css/manifest/` 아래 경로에서 `ENOENT`를 보고한다면 빌드 머신의 매니페스트에 여전히 의존하므로 독립적으로 배포할 준비가 되지 않은 것입니다. 정적 모드나 런타임 모드가 앱의 전달 요구를 충족한다면 그중 하나를 사용하고, 출력물을 이동한 뒤에도 검증하세요.
+
+같은 명령에서 `--mode prerender`를 사용하면 Nitro가 렌더링한 CSS를 Master CSS 브라우저 런타임 없이 전달할 수 있습니다. 응답 소스에 `style#master-css`가 있는지 확인하고 위의 절차에 따라 배포 결과물을 테스트하세요.
 
 </DocumentDisclosure>

@@ -267,7 +267,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
           scanner: options.scanner,
           pruneNativeCSS: options.pruneNativeCSS,
           runtime: options.runtime
-        }).filter(plugin => !['master-css:pre-render', 'master-css:inject-runtime', 'master-css:inject-runtime:serve', 'master-css:runtime-preload', 'master-css:program-preload'].includes(plugin.name)) as unknown as Plugin)
+        }).filter(plugin => !['master-css:prerender', 'master-css:inject-runtime', 'master-css:inject-runtime:serve', 'master-css:runtime-preload', 'master-css:program-preload'].includes(plugin.name)) as unknown as Plugin)
       })
     }
     switch (options.mode) {
@@ -283,7 +283,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
           })
         }
         break
-      case 'pre-render':
+      case 'prerender':
         addCSSVitePlugin()
         break
       case 'static':
@@ -295,7 +295,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
     }
 
     switch (options.mode) {
-      case 'pre-render':
+      case 'prerender':
       case 'progressive':
         nuxt.hook('nitro:config', (config) => {
           externalizeNitroServerRenderer(config)

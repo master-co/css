@@ -22,7 +22,7 @@ import type { DependencyHost } from '../utils/failed-stylesheet-dependencies'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
 
-export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
+export default function PrerenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let cssManifest: MasterCSSManifest | undefined = undefined
   let cssManifestDependencies: string[] = []
   let manifestSignature: string | undefined
@@ -37,7 +37,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       if (!allow.includes(path)) allow.push(path)
     }
   }
-  const recovery = createManifestRecovery(context, '\0master-css:pre-render-manifest', async (onDependency, _host, active) => {
+  const recovery = createManifestRecovery(context, '\0master-css:prerender-manifest', async (onDependency, _host, active) => {
     try {
       const root = context.config?.root
       const entries = await discoverManifestEntries({ root })
@@ -119,14 +119,14 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
     } : false
   })
   return {
-    name: 'master-css:pre-render',
+    name: 'master-css:prerender',
     enforce: 'pre',
     async configResolved(config) {
       const isSvelte = config.plugins.some(p => p.name?.startsWith('vite-plugin-svelte'))
       if (isSvelte) {
         enabled = false
         if (process.env.DEBUG) {
-          console.log('[@master/css-vite] SvelteKit detected, skipping pre-render plugin')
+          console.log('[@master/css-vite] SvelteKit detected, skipping prerender plugin')
         }
         return
       }
@@ -149,7 +149,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       try {
         const changed = await loadCSSManifest({ environment })
         if (!recovery.isActive(environment)) return
-        if (wasFailed || (changed && options.mode === 'pre-render')) server.ws.send({ type: 'full-reload' })
+        if (wasFailed || (changed && options.mode === 'prerender')) server.ws.send({ type: 'full-reload' })
       } catch (error) {
         if (recovery.isActive(environment)) throw error
       }

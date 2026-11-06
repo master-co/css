@@ -10,7 +10,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-Connect Master CSS to an Astro site through a shared CSS entry. The integration supports static, runtime and progressive delivery; Astro still owns page rendering.
+Connect Master CSS to an Astro site through a shared CSS entry. Astro renders the pages, and Master CSS delivers their styles in static, runtime, prerender or progressive mode.
 
 ## Installation \{#installation\}
 
@@ -106,12 +106,13 @@ During development, add `--watch` to the generation command and run `npm run dev
 ---
 
 ## Choose another rendering mode \{#rendering-modes\}
-Static mode is the default. The integration injects the runtime page script for the other modes, so they need no separate browser bootstrap:
+Static mode is the default. The integration injects a page script in runtime and progressive modes. In prerender mode, Astro middleware adds CSS to HTML without a browser runtime.
 
 | Mode | Installer option | Delivery |
 | --- | --- | --- |
 | Static | None | Generated stylesheet from source scanning |
 | Runtime | `--mode runtime` | Browser runtime, without Astro middleware pre-rendering |
+| Prerender | `--mode prerender` | CSS in built pages and server HTML responses, with no browser runtime |
 | Progressive | `--mode progressive` | Middleware-rendered CSS plus a runtime handoff |
 
 <DocumentDisclosure title="Generate new classes in the browser">
@@ -137,5 +138,7 @@ npm create @master/css@VERSION -- --framework astro --mode progressive --yes
 ```
 
 Astro middleware renders the CSS into prerendered pages and server HTML responses, then the runtime handles later class changes. Disable JavaScript and reload: the paragraph should still be styled. Re-enable JavaScript, reload, and add `underline` from the console as above.
+
+To deliver CSS with the HTML and skip browser generation, use `--mode prerender` in the same command. Verify that the response source contains `style#master-css`. Any Master CSS classes introduced in the browser must already be covered by the delivered CSS.
 
 </DocumentDisclosure>

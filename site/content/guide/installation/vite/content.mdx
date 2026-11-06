@@ -139,12 +139,18 @@ If the file loads but one class is missing, keep its full name in source; see [S
 ---
 
 ## Choose another rendering mode \{#rendering-modes\}
-Static mode is the default and needs no Master CSS startup code. Keep the CSS entry when changing modes:
+Static mode is the default and needs no Master CSS startup code. Keep the CSS entry when changing modes.
 
-| Framework | Installer option | Runtime startup |
+| Mode | Installer option | CSS delivery |
 | --- | --- | --- |
-| Vite, React, Vue | `--mode runtime` | Injected into `index.html` by the Vite plugin |
-| React Router, TanStack Start | `--mode runtime` | A browser-only import in the root route |
+| `static` | None | Generated stylesheet from source scanning |
+| `runtime` | `--mode runtime` | Browser runtime |
+| `prerender` | `--mode prerender` | CSS generated from HTML processed by Vite |
+| `progressive` | `--mode progressive` | CSS generated from HTML processed by Vite, plus the browser runtime |
+
+Prerender and progressive modes can generate initial CSS only for classes present in the HTML Vite processes. An empty app mount point has no classes from components mounted later. For React Router, TanStack Start and other hosts that render their own HTML, the server must run the [HTML renderer](/guide/rendering-modes#pre-rendering--ssg-ssr) for initial CSS.
+
+For Vite HTML entries with initial markup, run the installer with `--mode prerender` or `--mode progressive`, build the app, and check its response source for `style#master-css`. In progressive mode, also verify that a later class gains its rule in the browser.
 
 <DocumentDisclosure title="Generate new classes in the browser">
 

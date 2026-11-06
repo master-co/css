@@ -113,6 +113,7 @@ npm run start
 | --- | --- | --- |
 | 静态 | 无 | 扫描源代码后生成的样式表 |
 | 运行时 | `--mode runtime` | 通过 Next.js 客户端 instrumentation 启动浏览器运行时 |
+| 预渲染 | `--mode prerender` | CSS 随构建时生成的 HTML 交付，无需浏览器运行时 |
 | 渐进式 | `--mode progressive` | 预渲染 CSS，再交由运行时接管 |
 
 <DocumentDisclosure title="在浏览器中生成新类名">
@@ -144,6 +145,8 @@ npm create @master/css@VERSION -- --framework nextjs --mode progressive --yes
 运行时最初只跟踪已覆盖的类名。页面 manifest 之外的类名会启动引擎，先验证并接管匹配规则，再生成额外 CSS。请求时的动态 SSR 响应不属于构建适配器的预渲染输出，因此其生成的工具类样式依赖浏览器运行时。如果这些路由必须在没有 JavaScript 时仍具有工具类样式，请使用静态模式。
 
 运行 `npm run build` 和 `npm run start` 后，在 JavaScript 执行前检查预渲染路由的响应源代码是否包含 `style#master-css`，再按上文测试后续添加的类名。动态 SSR 路由请单独测试：此适配器不会为请求时的 HTML 加入服务器生成的 CSS。
+
+在同一命令中使用 `--mode prerender`，即可随构建时生成的页面交付 CSS，无需 Master CSS 浏览器运行时。确认构建页面的响应包含 `style#master-css`。如果请求时渲染的路由所用的完整类名可在源码中找到，可选择静态模式交付相应规则。
 
 </DocumentDisclosure>
 

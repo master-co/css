@@ -1,7 +1,7 @@
 ---
 {
   "title": "在 Astro 中配置 Master CSS",
-  "description": "连接 Astro 集成与共享 CSS 入口，并验证生产样式及可选的运行时或渐进式交付。",
+  "description": "连接 Astro 集成与共享 CSS 入口，并验证所选渲染模式在生产环境交付的样式。",
   "category": "集成"
 }
 ---
@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-通过共享 CSS 入口将 Master CSS 接入 Astro 网站。集成支持静态、运行时和渐进式交付；页面渲染仍由 Astro 负责。
+通过共享 CSS 入口将 Master CSS 接入 Astro 站点。Astro 负责渲染页面，Master CSS 则以静态、运行时、预渲染或渐进式模式交付样式。
 
 ## 安装 \{#installation\}
 
@@ -114,12 +114,13 @@ npm run preview
 ---
 
 ## 选择其他渲染模式 \{#rendering-modes\}
-默认使用静态模式。其他模式的页面运行时脚本由集成注入，无需单独的浏览器启动代码：
+默认使用静态模式。集成会在运行时和渐进式模式下注入页面脚本。预渲染模式由 Astro 中间件将 CSS 加入 HTML，无需浏览器运行时。
 
 | 模式 | 安装程序选项 | 交付方式 |
 | --- | --- | --- |
 | 静态 | 无 | 扫描源代码后生成的样式表 |
 | 运行时 | `--mode runtime` | 浏览器运行时，不经 Astro 中间件预渲染 |
+| 预渲染 | `--mode prerender` | CSS 随构建页面和服务器 HTML 响应交付，无需浏览器运行时 |
 | 渐进式 | `--mode progressive` | 中间件渲染 CSS，再交由运行时接管 |
 
 <DocumentDisclosure title="在浏览器中生成新类名">
@@ -145,5 +146,7 @@ npm create @master/css@VERSION -- --framework astro --mode progressive --yes
 ```
 
 Astro 中间件会将 CSS 渲染到预渲染页面和服务器 HTML 响应中，再由运行时处理后续类名变更。禁用 JavaScript 并重新加载：段落仍应有样式。重新启用 JavaScript、重新加载，再按上例从控制台加入 `underline`。
+
+如果要随 HTML 交付 CSS，且不在浏览器中生成规则，请在同一命令中使用 `--mode prerender`。确认响应源码包含 `style#master-css`。浏览器中添加的 Master CSS 类必须已有对应的 CSS 规则。
 
 </DocumentDisclosure>

@@ -77,7 +77,7 @@ npm run preview
 | 静态 | `static` | 无 |
 | 运行时 | `runtime` | 客户端 |
 | 渐进式 | `progressive` | 客户端与服务器 |
-| 仅预渲染 | `pre-render` | 服务器，并禁用水合 manifest |
+| 仅预渲染 | `prerender` | 服务器，并禁用水合 manifest |
 
 <DocumentDisclosure title="在浏览器中生成新类名">
 
@@ -127,7 +127,7 @@ export const handle = sequence(masterCSS, application)
 
 如果预渲染的类名已覆盖页面，就可以延后加载运行时引擎。先禁用 JavaScript 检查初始样式，再重新启用并测试新类名。
 
-仅需预渲染交付时，选择 `mode: 'pre-render'`，只移除 Master CSS 客户端启动代码，并使用以下服务器配置：
+仅需预渲染交付时，选择 `mode: 'prerender'`，只移除 Master CSS 客户端启动代码，并使用以下服务器配置：
 
 ```ts name=src/hooks.server.ts
 /// <reference types="@master/css/client" />

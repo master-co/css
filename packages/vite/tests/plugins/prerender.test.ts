@@ -9,7 +9,7 @@ import {
 } from '@master/css-schema/hydration-manifest'
 import { MasterCSSServerRenderer } from '@master/css-server'
 
-const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
+const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/prerender/master-css-entry')
 
 async function resolveConfigHooks(plugins: any[], config: any) {
   for (const plugin of plugins) {
@@ -21,8 +21,8 @@ async function resolveConfigHooks(plugins: any[], config: any) {
 
 afterEach(() => vi.restoreAllMocks())
 
-describe('PreRenderPlugin', () => {
-  it.each(['pre-render', 'progressive'] as const)('renders HTML classes in %s with the managed CSS manifest entry', async (mode) => {
+describe('PrerenderPlugin', () => {
+  it.each(['prerender', 'progressive'] as const)('renders HTML classes in %s with the managed CSS manifest entry', async (mode) => {
     const plugins = masterCSS({
       mode,
     })
@@ -38,9 +38,9 @@ describe('PreRenderPlugin', () => {
 
     await resolveConfigHooks(plugins, viteConfig)
 
-    const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render')
-    expect(preRenderPlugin).toBeDefined()
-    const result = await (preRenderPlugin as any).transformIndexHtml.call(
+    const prerenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:prerender')
+    expect(prerenderPlugin).toBeDefined()
+    const result = await (prerenderPlugin as any).transformIndexHtml.call(
       {},
       "<html><head></head><body><section class=\"card (padding:0.125rem)\">Content</section></body></html>",
     )
@@ -56,7 +56,7 @@ describe('PreRenderPlugin', () => {
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
 
-    if (mode === 'pre-render') {
+    if (mode === 'prerender') {
       expect(hydrationManifestSource).toBeUndefined()
       expect(html).not.toContain('master-css-hydration')
       return
@@ -64,7 +64,7 @@ describe('PreRenderPlugin', () => {
 
     let middleware: ((request: { url?: string }, response: { statusCode?: number, setHeader: (name: string, value: string) => void, end: (source: string) => void }, next: () => void) => void) | undefined
     const middlewares = { use: vi.fn((handler) => { middleware = handler }) }
-    const configureServer = (preRenderPlugin as any).configureServer
+    const configureServer = (prerenderPlugin as any).configureServer
     configureServer.call({}, { middlewares })
     const headers = new Map<string, string>()
     let body = ''
@@ -93,7 +93,7 @@ describe('PreRenderPlugin', () => {
     ['successful builds', 'closeBundle'],
     ['failed builds', 'buildEnd']
   ])('disposes production renderers after %s', async (_label, hook) => {
-    const plugins = masterCSS({ mode: 'pre-render' })
+    const plugins = masterCSS({ mode: 'prerender' })
     const viteConfig = {
       command: 'build',
       root: FIXTURE_DIR,
@@ -104,18 +104,18 @@ describe('PreRenderPlugin', () => {
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     await resolveConfigHooks(plugins, viteConfig)
 
-    const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
+    const prerenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:prerender') as any
     if (hook === 'buildEnd') {
-      await preRenderPlugin.buildEnd.call({}, new Error('build failed'))
+      await prerenderPlugin.buildEnd.call({}, new Error('build failed'))
     } else {
-      await preRenderPlugin.closeBundle.call({})
+      await prerenderPlugin.closeBundle.call({})
     }
 
     expect(dispose).toHaveBeenCalledOnce()
   })
 
   it('reloads CSS entry dependencies for pre-rendered HTML', async () => {
-    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-'))
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-prerender-'))
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
@@ -130,7 +130,7 @@ describe('PreRenderPlugin', () => {
 `)
 
       const plugins = masterCSS({
-        mode: 'pre-render'
+        mode: 'prerender'
       })
       const viteConfig = {
         root,
@@ -144,9 +144,9 @@ describe('PreRenderPlugin', () => {
 
       await resolveConfigHooks(plugins, viteConfig)
 
-      const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render')
-      expect(preRenderPlugin).toBeDefined()
-      let result = await (preRenderPlugin as any).transformIndexHtml.call(
+      const prerenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:prerender')
+      expect(prerenderPlugin).toBeDefined()
+      let result = await (prerenderPlugin as any).transformIndexHtml.call(
         {},
         '<html><head></head><body><section class="card">Content</section></body></html>',
       )
@@ -155,11 +155,11 @@ describe('PreRenderPlugin', () => {
 
       writeFileSync(themePath, "@mixin --card { color: #abcdef; } @utility card { color: #abcdef; }")
       const send = vi.fn()
-      await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath, server: { ws: { send } } })
+      await (prerenderPlugin as any).handleHotUpdate.call({}, { file: themePath, server: { ws: { send } } })
       expect(send).toHaveBeenCalledWith({ type: 'full-reload' })
       expect(dispose).toHaveBeenCalledOnce()
 
-      result = await (preRenderPlugin as any).transformIndexHtml.call(
+      result = await (prerenderPlugin as any).transformIndexHtml.call(
         {},
         '<html><head></head><body><section class="card">Content</section></body></html>',
       )
@@ -172,14 +172,14 @@ describe('PreRenderPlugin', () => {
   })
 
   it('does not duplicate globals already emitted by managed CSS entries', async () => {
-    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-globals-'))
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-prerender-globals-'))
     const entryPath = path.join(root, 'app.css')
     try {
       writeFileSync(entryPath, `@import url("@master/css");
 @theme { --color-primary: #123456; }
 
 .host { color: var(--color-primary); }`)
-      const plugins = masterCSS({ mode: 'pre-render' })
+      const plugins = masterCSS({ mode: 'prerender' })
       const viteConfig = {
         root,
         plugins,
@@ -187,8 +187,8 @@ describe('PreRenderPlugin', () => {
       }
 
       await resolveConfigHooks(plugins, viteConfig)
-      const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
-      const result = await preRenderPlugin.transformIndexHtml.call(
+      const prerenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:prerender') as any
+      const result = await prerenderPlugin.transformIndexHtml.call(
         {},
         '<html><head></head><body><section class="fg-primary">Content</section></body></html>'
       )

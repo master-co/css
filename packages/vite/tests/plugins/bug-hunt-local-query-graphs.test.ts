@@ -6,7 +6,7 @@ import masterCSS from '../../src/core'
 
 for (const command of ['serve', 'build'] as const) {
   for (const query of ['url', 'theme=dark']) {
-    test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`local imported directives survive ${command}/?${query}/%s`, async mode => {
+    test.each(["static", 'runtime', 'prerender', 'progressive'] as const)(`local imported directives survive ${command}/?${query}/%s`, async mode => {
       const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
       const root = mkdtempSync(join(parent, 'local-query-graph-'))
       let server: Awaited<ReturnType<typeof createServer>> | undefined

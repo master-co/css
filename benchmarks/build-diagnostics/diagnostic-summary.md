@@ -91,7 +91,7 @@ Environment:
 
 The startup diagnostic now includes cold import probes for the CLI bin/core/scan entries, Vite package entry/core/options/common modules, Vite mode/plugin modules, and key lower package imports. The browser runtime entry was intentionally excluded from Node cold import probes because it depends on Vite virtual modules.
 
-The accepted product change keeps `@master/css-vite` mode-specific plugins as lazy shells. Static mode no longer eagerly imports runtime/progressive/pre-render mode modules, while public plugin names, `masterCSS(options): Plugin[]`, virtual module IDs, and generated CSS behavior stay unchanged.
+The accepted product change keeps `@master/css-vite` mode-specific plugins as lazy shells. `static` mode loads independently of the `runtime`, `progressive`, and `prerender` modules. At the measured revision, the change preserved public plugin names, `masterCSS(options): Plugin[]`, virtual module IDs, and generated CSS.
 
 One-round same-machine diagnostic comparison for static Vite fixtures:
 

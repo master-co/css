@@ -63,16 +63,22 @@ export default {
 }
 ```
 
-Static mode is the default and does not inject the browser runtime. Select
-`mode: 'runtime'` or `mode: 'progressive'` explicitly when class names first
-appear in the browser. The webpack integration does not write page hydration
-manifests itself. The browser runtime executes the project's runtime program, the
+The plugin accepts these four `mode` values:
+
+| `mode` | What the Webpack plugin delivers |
+| --- | --- |
+| `static` (default) | Generates a stylesheet from source classes at build time. |
+| `runtime` | Starts the browser runtime, which generates rules for classes as they appear. |
+| `prerender` | Produces the same build output as `static`; a separate server renderer is needed to generate CSS from the rendered HTML. |
+| `progressive` | Starts the browser runtime; a separate server renderer can add initial CSS and the page hydration manifest. |
+
+The browser runtime executes the project's runtime program, the
 manifest compiled at build time: development inlines it, and production builds emit
 it as a hashed `master-css-program.<hash>.bin` asset that runtime-mode HTML
 preloads. In `progressive` mode, the runtime defers its engine when the server that
 renders the HTML injects one, and loads the program only when the engine starts.
 
-In those modes, when `output.filename` is fixed, uses only a build-wide hash, or is a callback,
+In `runtime` and `progressive` modes, when `output.filename` is fixed, uses only a build-wide hash, or is a callback,
 the injected runtime entry uses its own content-hashed file under `_master-css/`.
 Application filenames retain their configured behavior. Chunk-specific templates
 such as `[name].js` or `[contenthash].js` also apply to the runtime entry.

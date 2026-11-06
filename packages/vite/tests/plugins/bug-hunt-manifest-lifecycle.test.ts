@@ -22,7 +22,7 @@ vi.mock('@master/css-compiler/stylesheet', async importOriginal => {
 })
 afterEach(() => { interception.afterGlobals = undefined;vi.restoreAllMocks() })
 
-const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
+const modes = ["static", 'runtime', 'prerender', 'progressive'] as const
 function fixture(initiallyMissing = false) {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
   mkdirSync(root);mkdirSync(join(parent, 'external'))
@@ -45,7 +45,7 @@ function hold(fail = false) {
   return { release, entered: () => entered }
 }
 
-for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as const)('BH-0004 SSR close preserves the live client renderer after pending manifest response in %s (failure=' + fail + ')', async mode => {
+for (const fail of [false, true]) test.each(['prerender', 'progressive'] as const)('BH-0004 SSR close preserves the live client renderer after pending manifest response in %s (failure=' + fail + ')', async mode => {
   const f = fixture();let server: ViteDevServer | undefined, pending: Promise<unknown> | undefined, gate: ReturnType<typeof hold> | undefined
   const render = vi.spyOn(MasterCSSServerRenderer.prototype, 'renderHTML')
   try {
@@ -76,18 +76,18 @@ test.each(modes)('BH-0004 restarting a failed manifest server transfers recovery
     oldTransform.mockClear();const send = vi.spyOn(server.ws, 'send');f.write()
     await vi.waitFor(() => expect(reloaded(send.mock.calls)).toBe(true), { timeout: watchDeadline })
     await expect.poll(async () => (await html(server!)).status, { timeout: watchDeadline }).toBe(200)
-    if (mode === 'pre-render' || mode === 'progressive') expect((await html(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
+    if (mode === 'prerender' || mode === 'progressive') expect((await html(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
     expect(oldTransform).not.toHaveBeenCalled()
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }
 })
 
-for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as const)('BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in %s (failure=' + fail + ')', async mode => {
+for (const fail of [false, true]) test.each(['prerender', 'progressive'] as const)('BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in %s (failure=' + fail + ')', async mode => {
   const f = fixture();let server: ViteDevServer | undefined, gate: ReturnType<typeof hold> | undefined, pending: Promise<unknown> | undefined
   try {
     server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] } } })
     await server.listen();expect((await html(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}');await server.environments.client.waitForRequestsIdle()
-    const hook = server.config.plugins.find(p => p.name === 'master-css:pre-render')!.handleHotUpdate
-    if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
+    const hook = server.config.plugins.find(p => p.name === 'master-css:prerender')!.handleHotUpdate
+    if (typeof hook !== 'function') throw new Error('Expected prerender HMR hook')
     gate = hold(fail);f.write('9rem')
     pending = Promise.resolve(hook.call({} as never, { file: f.dependency, server } as never)).catch(error => ({ error }))
     await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: watchDeadline })

@@ -20,6 +20,12 @@ rendering mode, native preserve/prune policy and existing validation commands.
 Confirm MCP points at that root before inspecting its manifest. If unavailable,
 use the project's installed CLI; do not change versions merely to get a tool.
 
+Check what supplies utility class names in the selected mode. `static` scans
+source files at build time. `runtime` observes browser DOM classes. `prerender`
+uses rendered HTML, and `progressive` uses rendered HTML plus browser generation
+for later classes. Check which modes the integration supports and which HTML
+outputs it can process.
+
 Choose the target route and at least one route that must not load the feature.
 Include the relevant later states, external content and navigation path. For a
 missing-style repair, start with that file/state and broaden only if the evidence

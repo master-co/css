@@ -16,7 +16,7 @@ import {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const rootDir = resolve(__dirname, './fixtures/pre-render/')
+const rootDir = resolve(__dirname, './fixtures/prerender/')
 
 setupNuxtTest({ rootDir })
 
@@ -24,9 +24,9 @@ it('matches generated CSS', async () => {
   const html = await $fetch('/') as string
   const match = html.match(/<link rel="stylesheet" href="([^"]+\.css)"[^>]*>/)
   expect(match).toBeTruthy()
-  if (!match) throw new Error('Expected a stylesheet link in Nuxt pre-render HTML.')
+  if (!match) throw new Error('Expected a stylesheet link in Nuxt prerender HTML.')
   const href = match[1]
-  if (!href) throw new Error('Expected Nuxt pre-render stylesheet link to include an href.')
+  if (!href) throw new Error('Expected Nuxt prerender stylesheet link to include an href.')
   expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
   expect(html).toContain('.fg-host')

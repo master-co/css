@@ -79,7 +79,7 @@ describe('@master/css-astro integration', () => {
       entrypoint: ASTRO_MIDDLEWARE_ENTRYPOINT
     })
     expect(result.injectScript).toHaveBeenCalledWith('page', ASTRO_RUNTIME_INJECTION)
-    expect(result.pluginNames).not.toContain('master-css:pre-render')
+    expect(result.pluginNames).not.toContain('master-css:prerender')
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
     expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
     expect(result.pluginNames).toContain('master-css:virtual-module:emitted-globals')
@@ -89,15 +89,15 @@ describe('@master/css-astro integration', () => {
     expect(result.viteConfig?.build?.rollupOptions?.external).toEqual(ASTRO_SSR_EXTERNAL)
   })
 
-  it('uses Astro middleware without runtime script in pre-render mode', async () => {
-    const result = await setup({ mode: 'pre-render' })
+  it('uses Astro middleware without runtime script in prerender mode', async () => {
+    const result = await setup({ mode: 'prerender' })
 
     expect(result.addMiddleware).toHaveBeenCalledWith({
       order: 'pre',
       entrypoint: ASTRO_MIDDLEWARE_ENTRYPOINT
     })
     expect(result.injectScript).not.toHaveBeenCalled()
-    expect(result.pluginNames).not.toContain('master-css:pre-render')
+    expect(result.pluginNames).not.toContain('master-css:prerender')
     expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
     expect(result.pluginNames).toContain('master-css:virtual-module:emitted-globals')
   })
@@ -114,7 +114,7 @@ describe('@master/css-astro integration', () => {
   it('rejects an explicit runtime option that contradicts its mode', async () => {
     await expect(setup({ mode: 'progressive', runtime: false })).rejects.toThrow('requires runtime.enabled=true')
     await expect(setup({ mode: 'static', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
-    await expect(setup({ mode: 'pre-render', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
+    await expect(setup({ mode: 'prerender', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
   })
 
   it('does not inject client runtime or middleware by default', async () => {
@@ -159,7 +159,7 @@ describe('@master/css-astro integration', () => {
     for (const scenario of [
       { integrationOptions: { mode: 'static' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'progressive' }, buildOutput: 'static' },
-      { integrationOptions: { mode: 'pre-render' }, buildOutput: 'static' },
+      { integrationOptions: { mode: 'prerender' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'runtime' }, buildOutput: 'server' }
     ] as const) {
       const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-no-runtime-'))

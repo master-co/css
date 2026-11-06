@@ -307,6 +307,7 @@ export default defineConfig({
 | --- | --- | --- |
 | 静态 | 所有宿主 | 运行时无额外动作 |
 | 运行时 | PHP、Rails、WordPress、ASP.NET Core、Blazor、Express | `mode: 'runtime'`、运行时入口和模块脚本 |
+| 预渲染 | Express | 服务器渲染首次响应 CSS，无需浏览器运行时 |
 | 渐进式 | Express | 服务器渲染首次响应 CSS；运行时处理后续类名 |
 
 <DocumentDisclosure title="在浏览器中生成新类名">
@@ -459,5 +460,7 @@ server.on('close', () => renderer.dispose())
 首次响应包含 `style#master-css` 和小型水合记录；服务器 manifest 留在服务器上。本示例使用默认预设 manifest 渲染，与 `src/master.css` 的预设一致。如果加入项目令牌或工具类，也必须为服务器编译项目 manifest，否则初始 CSS 将与浏览器定义不一致。
 
 禁用 JavaScript 时，段落应已经具有样式。重新启用 JavaScript、重新加载，再从控制台加入 `underline`；它应直接应用，无需新的服务器响应。
+
+如果使用预渲染交付，请保留 Express 的服务器渲染步骤。将 `hydrationManifest: false` 传给 `renderHTML()`，并删除 `src/master.ts` 中的 Master CSS 运行时启动代码。确认响应源码包含 `style#master-css`。
 
 </DocumentDisclosure>

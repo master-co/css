@@ -12,7 +12,7 @@ describe('Svelte Vite integration', () => {
   })
 
   test('omits index HTML hooks, which SvelteKit never calls', () => {
-    for (const mode of ['static', 'runtime', 'progressive', 'pre-render'] as const) {
+    for (const mode of ['static', 'runtime', 'progressive', 'prerender'] as const) {
       expect(masterCSS({ mode }).filter(plugin => plugin.transformIndexHtml).map(plugin => plugin.name)).toEqual([])
     }
   })

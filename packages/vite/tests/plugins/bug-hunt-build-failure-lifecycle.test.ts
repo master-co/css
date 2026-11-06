@@ -7,11 +7,11 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-async function fixture(mode: "static" | 'runtime' | 'pre-render' | 'progressive', run: (state: Awaited<ReturnType<typeof setup>>) => Promise<void>, exclude?: string[], managed = false) {
+async function fixture(mode: "static" | 'runtime' | 'prerender' | 'progressive', run: (state: Awaited<ReturnType<typeof setup>>) => Promise<void>, exclude?: string[], managed = false) {
   const state = await setup(mode, exclude, managed)
   try { await run(state) } finally { await state.close();rmSync(state.root, { recursive: true, force: true }) }
 }
-async function setup(mode: "static" | 'runtime' | 'pre-render' | 'progressive', exclude?: string[], managed = false, include?: string[], onBuildEnd?: (error: unknown) => Promise<void>) {
+async function setup(mode: "static" | 'runtime' | 'prerender' | 'progressive', exclude?: string[], managed = false, include?: string[], onBuildEnd?: (error: unknown) => Promise<void>) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-build-recovery-'))), cacheDir = join(root, '.vite')
   const reference = join(root, 'missing/nested/tokens.css'), style = join(root, 'style.css')
   const trace = (kind: string, detail: unknown) => {
@@ -106,7 +106,7 @@ test('repeated previous errors must recover within one original watch deadline',
     expect(output).not.toHaveBeenCalled()
   } finally { vi.useRealTimers() }
 })
-for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) {
+for (const managed of [false, true]) for (const mode of ["static", 'runtime', 'prerender', 'progressive'] as const) {
   test(`build recovery replaces failures and forgets successful dependencies in ${mode} (managed=${managed})`, async () => {
     await fixture(mode, async state => {
       expect((await state.next()).code).toBe('ERROR')

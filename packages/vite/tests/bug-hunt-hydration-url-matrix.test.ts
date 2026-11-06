@@ -10,7 +10,7 @@ test.each([
   { base: './', assetsDir: '', mode: 'progressive' },
   { base: '/app/', assetsDir: 'assets', mode: 'progressive' },
   { base: 'https://cdn.example.test/app/', assetsDir: 'assets', mode: 'progressive' },
-  { base: './', assetsDir: 'custom/files', mode: 'pre-render' }
+  { base: './', assetsDir: 'custom/files', mode: 'prerender' }
 ] as const)('BH-0016 resolves each emitted manifest for $mode / $base / $assetsDir', async ({ base, assetsDir, mode }) => {
   const temporaryParent = resolve('tmp')
   mkdirSync(temporaryParent, { recursive: true })
@@ -31,7 +31,7 @@ test.each([
     for (const name of names) {
       const html = readFileSync(join(root, 'dist', name), 'utf8')
       const hrefs = [...html.matchAll(/data-master-css-hydration-manifest="([^"]+)"/g)].map(match => match[1])
-      if (mode === 'pre-render') {
+      if (mode === 'prerender') {
         expect(hrefs, name).toHaveLength(0)
         expect(html).toContain(".\\(display\\:block\\){display:block}")
         expect(html).not.toContain('master-css-hydration-manifest')

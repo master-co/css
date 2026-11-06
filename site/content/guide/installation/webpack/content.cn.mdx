@@ -188,6 +188,10 @@ HTML 插件会输出样式表链接和所需的运行时脚本。直接从开发
 | --- | --- | --- |
 | 静态 | `mode: 'static'` | 无 |
 | 运行时 | `mode: 'runtime'` | `--mode runtime` |
+| 预渲染 | `mode: 'prerender'` | `--mode prerender` |
+| 渐进式 | `mode: 'progressive'` | `--mode progressive` |
+
+Webpack 插件也接受 `prerender` 和 `progressive`。单独使用 Webpack 时，`prerender` 与 `static` 通过扫描生成相同的 CSS。`progressive` 模式下插件会提供浏览器运行时。如果要在这两种模式下从渲染后的文档生成初始 CSS，HTML 宿主必须调用[服务器渲染器](/guide/rendering-modes#pre-rendering--ssg-ssr)，并为 `progressive` 提供水合数据。
 
 <DocumentDisclosure title="在浏览器中生成新类名">
 

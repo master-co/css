@@ -58,6 +58,8 @@
 npm install @master/css-runtime
 ```
 
+The [rendering modes](https://css.master.co/guide/rendering-modes) that use this package are `runtime` and `progressive`. The `static` and `prerender` modes deliver generated CSS without a Master CSS browser runtime.
+
 Initialize the runtime with the project's runtime program and emitted global CSS state provided by an official integration:
 
 ```js

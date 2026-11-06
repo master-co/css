@@ -8,7 +8,7 @@ import { basename } from 'node:path'
 // fixture handed both files in each pair the same port and the second to boot
 // failed with EADDRINUSE once Vitest ran the files in parallel.
 const testPorts: Record<string, number> = {
-  'pre-render': 49_101,
+  'prerender': 49_101,
   progressive: 49_102,
   runtime: 49_103,
   static: 49_104,

@@ -4,7 +4,7 @@ import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 
-test.each(['pre-render', 'progressive'] as const)('manifest HMR refreshes server-rendered rules in %s', async mode => {
+test.each(['prerender', 'progressive'] as const)('manifest HMR refreshes server-rendered rules in %s', async mode => {
   const parent = join(process.cwd(), 'tmp')
   mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'prerender-manifest-hmr-')), file = join(root, 'style.css')
@@ -15,16 +15,16 @@ test.each(['pre-render', 'progressive'] as const)('manifest HMR refreshes server
     writeFileSync(join(root, 'index.html'), '<!doctype html><div class="card"></div>')
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] } } })
     await server.listen()
-    const plugin = server.config.plugins.find(p => p.name === 'master-css:pre-render')!
+    const plugin = server.config.plugins.find(p => p.name === 'master-css:prerender')!
     const hook = plugin.handleHotUpdate
-    if (typeof hook !== 'function') throw new Error('Expected the pre-render HMR hook')
+    if (typeof hook !== 'function') throw new Error('Expected the prerender HMR hook')
     const send = vi.spyOn(server.ws, 'send')
     writeFileSync(file, source('#123456', 'blue'))
     await hook.call({} as never, { file, server } as never)
     expect(send.mock.calls.some(([message]) => typeof message === 'object' && (message as { type: string }).type === 'full-reload')).toBe(false)
     writeFileSync(file, source('#654321', 'blue'))
     await hook.call({} as never, { file, server } as never)
-    expect(send.mock.calls.some(([message]) => typeof message === 'object' && (message as { type: string }).type === 'full-reload')).toBe(mode === 'pre-render')
+    expect(send.mock.calls.some(([message]) => typeof message === 'object' && (message as { type: string }).type === 'full-reload')).toBe(mode === 'prerender')
     send.mockRestore()
   } finally {
     await server?.environments.client.waitForRequestsIdle()

@@ -187,8 +187,8 @@ follow the framework's named `handle` contract instead of adding a default expor
 The exact default-export entrypoints are enforced by
 `scripts/check-package-contracts.mjs`.
 
-Vite coordinates runtime, static, pre-render, and progressive modes. Webpack owns its
-module lifecycle. Next owns Next-specific build and instrumentation behavior. Astro,
+Vite coordinates `static`, `runtime`, `prerender`, and `progressive` modes. Webpack owns
+its module lifecycle. Next owns Next-specific build and instrumentation behavior. Astro,
 Nuxt, and Svelte wrap the official lower adapters without reimplementing CSS semantics.
 
 ## Language And ESLint

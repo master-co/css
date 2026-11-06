@@ -140,7 +140,7 @@ Interaction readiness is about the same for every mode, including Tailwind CSS, 
 ---
 
 ## Technical appendix \{#current-results\}
-These suites explain the costs behind the results above: production commands, Chromium's response to CSS volume, and what each Master CSS rendering mode sends and does in the browser. Read them when choosing a rendering mode or diagnosing build time.
+These suites explain the costs behind the results above: production commands, Chromium's response to CSS volume, and what the measured Master CSS rendering modes send and do in the browser. Read them when choosing a rendering mode or diagnosing build time.
 
 ### Core hypothesis \{#core-hypothesis\}
 The delivery question is whether the browser work saved by loading fewer CSS rules can offset the cost of generating rules at runtime. Compare the whole page lifecycle: initial loading, later interactions and long-session cleanup.
@@ -251,7 +251,7 @@ Limits: these numbers do not measure runtime rule generation, real application J
 ### Master CSS delivery modes \{#master-css-delivery-modes\}
 Question answered: what initial payload, local Chromium load cost, runtime bootstrap cost, program loading, and progressive adoption behavior does each delivery mode produce?
 
-The suite compares Master CSS static, runtime, progressive, and Tailwind CSS static browser-control variants across the static fixture set.
+The suite compares Master CSS static, runtime, progressive, and Tailwind CSS static browser-control variants across the static fixture set. It does not measure the standalone `prerender` mode.
 
 <figure>
   <BenchmarkChart chart={MasterDeliveryModesSummary} />

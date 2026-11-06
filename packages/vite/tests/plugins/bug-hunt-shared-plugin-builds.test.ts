@@ -32,7 +32,7 @@ function singleOutput(result: Awaited<ReturnType<typeof build>>) {
   return result.output
 }
 
-test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 shared %s plugins isolate concurrent HTML builds and resources', async mode => {
+test.each(["static", 'runtime', 'prerender', 'progressive'] as const)('BH-0004 shared %s plugins isolate concurrent HTML builds and resources', async mode => {
   await rootsFixture(async roots => {
     const plugins = masterCSS({ mode })
     const outputs = await settleBuilds(roots.map((root, index) => build({ root, configFile: false, base: `/root-${index}/`, logLevel: 'silent', plugins: process.env.BH_INDEPENDENT === '1' ? masterCSS({ mode }) : plugins, build: { write: false, minify: false, cssMinify: false } }).then(singleOutput)))
@@ -47,7 +47,7 @@ test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 
       const html = String(assets.find(item => item.fileName === 'index.html')!.source)
       expect(html).toContain(`/root-${index}/`)
       expect(html).not.toContain(`/root-${1 - index}/`)
-      if (mode === 'pre-render' || mode === 'progressive') {
+      if (mode === 'prerender' || mode === 'progressive') {
         expect(html).toContain(`.card{color:${['#123456', '#abcdef'][index]}}`)
         expect(html).not.toContain(['#abcdef', '#123456'][index])
         expect(assets.some(item => item.fileName.includes('master-css-hydration.'))).toBe(mode === 'progressive')

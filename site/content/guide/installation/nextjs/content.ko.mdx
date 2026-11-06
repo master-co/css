@@ -113,6 +113,7 @@ JavaScript를 끄고 프로덕션 페이지를 새로고침하세요. 문단의 
 | --- | --- | --- |
 | 정적 | 없음 | 소스 스캔으로 생성한 스타일시트 |
 | 런타임 | `--mode runtime` | Next.js 클라이언트 instrumentation을 통한 브라우저 런타임 |
+| 사전 렌더링 | `--mode prerender` | 빌드 시 생성한 HTML에 CSS 포함. 브라우저 런타임은 필요 없음 |
 | 점진적 | `--mode progressive` | 사전 렌더링된 CSS와 런타임으로의 인계 |
 
 <DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
@@ -144,6 +145,8 @@ npm create @master/css@VERSION -- --framework nextjs --mode progressive --yes
 런타임은 처음에는 이미 처리된 클래스만 추적합니다. 페이지 매니페스트 밖의 클래스가 나타나면 엔진을 시작하여 일치하는 규칙을 검증하고 채택한 뒤 추가 CSS를 생성합니다. 요청 시점의 동적 SSR 응답은 빌드 어댑터의 사전 렌더링 출력 범위 밖이므로 생성된 유틸리티 스타일이 브라우저 런타임에 의존합니다. 이런 라우트에 JavaScript 없이도 유틸리티 스타일이 필요하다면 정적 모드를 사용하세요.
 
 `npm run build`와 `npm run start`를 실행한 뒤, JavaScript가 실행되기 전 사전 렌더링 라우트의 응답 소스에 `style#master-css`가 있는지 확인하고 위와 같이 나중에 추가하는 클래스를 테스트하세요. 동적 SSR 라우트는 별도로 테스트합니다. 이 어댑터는 요청 시점 HTML에 서버 생성 CSS를 추가하지 않습니다.
+
+빌드 시 생성한 페이지와 함께 CSS를 전달하고 Master CSS 브라우저 런타임을 생략하려면 같은 명령에서 `--mode prerender`를 사용하세요. 빌드된 페이지 응답에 `style#master-css`가 있는지 확인하세요. 요청 시 렌더링하는 경로의 완전한 클래스 이름을 소스에서 찾을 수 있다면 정적 모드로 해당 규칙을 전달할 수 있습니다.
 
 </DocumentDisclosure>
 

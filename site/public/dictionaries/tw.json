@@ -606,7 +606,7 @@
   "Button": "按鈕",
   "Themes, tokens, wide-gamut color, layout and motion are all written as classes, and the CSS they generate stays predictable.": "主題、token、廣色域色彩、版面與動態都寫成 class，產生的 CSS 也始終可預期。",
   "The language service completes classes from your manifest, shows the CSS behind each class on hover and marks colors in place.": "語言服務依你的 manifest 補全 class，hover 時顯示每個 class 背後的 CSS，並直接標出顏色。",
-  "Ship static CSS by default, pre-render it into HTML or generate it in the browser. Your classes stay the same.": "預設輸出靜態 CSS，也可以預先渲染進 HTML，或在瀏覽器中產生；你的 class 都不用改。",
+  "Choose static, runtime, prerender, or progressive delivery. Your classes stay the same.": "可選擇靜態、執行階段、預先渲染或漸進式傳遞，class 寫法維持相同。",
   "The CSS each page loads, raw and with Brotli. Master CSS adds only the utilities a page uses; the rest is each site’s own styles.": "每個頁面載入的 CSS，分別以原始大小與 Brotli 壓縮計算。Master CSS 只加入頁面用到的 utilities，其餘是各網站自己的樣式。",
   "ESLint in your editor, the CLI in your scripts and the MCP server for agents check classes with the same rules and fixes.": "編輯器裡的 ESLint、腳本中的 CLI，以及給 agent 的 MCP 伺服器，都用同一套規則與修正檢查 class。",
   "The MCP server gives coding agents your manifest and lint rules, so they check their own edits and hand you fixes as diffs.": "MCP 伺服器把你的 manifest 與 lint 規則交給 coding agent，讓它們檢查自己的修改，並以 diff 交給你修正。",

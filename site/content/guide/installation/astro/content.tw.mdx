@@ -1,7 +1,7 @@
 ---
 {
   "title": "在 Astro 設定 Master CSS",
-  "description": "連接 Astro 整合與共用 CSS 進入點，並驗證正式環境樣式及可選的執行階段或漸進式傳遞。",
+  "description": "連接 Astro 整合與共用 CSS 進入點，並驗證所選渲染模式在正式環境傳遞的樣式。",
   "category": "整合"
 }
 ---
@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-透過共用 CSS 進入點，將 Master CSS 接入 Astro 網站。整合支援靜態、執行階段與漸進式傳遞；頁面渲染仍由 Astro 負責。
+透過共用 CSS 進入點將 Master CSS 接入 Astro 網站。Astro 負責渲染頁面，Master CSS 則以靜態、執行階段、預先渲染或漸進式模式傳遞樣式。
 
 ## 安裝 \{#installation\}
 
@@ -114,12 +114,13 @@ npm run preview
 ---
 
 ## 選擇其他渲染模式 \{#rendering-modes\}
-預設使用靜態模式。其他模式的頁面執行階段指令碼會由整合注入，不需要額外的瀏覽器啟動程式：
+預設使用靜態模式。整合會在執行階段與漸進式模式注入頁面指令碼。預先渲染模式由 Astro 中介軟體將 CSS 加入 HTML，無須瀏覽器執行階段。
 
 | 模式 | 安裝程式選項 | 傳遞方式 |
 | --- | --- | --- |
 | 靜態 | 無 | 掃描原始碼後產生的樣式表 |
 | 執行階段 | `--mode runtime` | 瀏覽器執行階段，不經 Astro 中介軟體預先渲染 |
+| 預先渲染 | `--mode prerender` | CSS 隨建置頁面和伺服器 HTML 回應傳遞，無須瀏覽器執行階段 |
 | 漸進式 | `--mode progressive` | 中介軟體渲染 CSS，再交由執行階段接手 |
 
 <DocumentDisclosure title="在瀏覽器產生新類別">
@@ -145,5 +146,7 @@ npm create @master/css@VERSION -- --framework astro --mode progressive --yes
 ```
 
 Astro 中介軟體會將 CSS 渲染到預先渲染的頁面與伺服器 HTML 回應中，再由執行階段處理後續的類別變更。停用 JavaScript 並重新載入：段落仍應有樣式。重新啟用 JavaScript、重新載入，再依上例從主控台加入 `underline`。
+
+若要隨 HTML 傳遞 CSS，且不在瀏覽器生成規則，請在同一指令中使用 `--mode prerender`。確認回應原始碼含有 `style#master-css`。瀏覽器新增的 Master CSS class 必須已有對應的 CSS 規則。
 
 </DocumentDisclosure>

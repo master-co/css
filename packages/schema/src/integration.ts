@@ -1,7 +1,7 @@
 export const MASTER_CSS_RENDERING_MODES = [
   'runtime',
   'static',
-  'pre-render',
+  'prerender',
   'progressive'
 ] as const
 

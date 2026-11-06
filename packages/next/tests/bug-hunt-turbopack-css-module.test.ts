@@ -15,7 +15,7 @@ function matches(condition: Condition | undefined, file: string, source: string)
 }
 function stylesheetRules(file: string, source: string) {
   const sassOptions = { loadPaths: ['/project/styles'] }
-  const config = withMasterCSS({ sassOptions }, { mode: 'pre-render' }) as NextConfig
+  const config = withMasterCSS({ sassOptions }, { mode: 'prerender' }) as NextConfig
   const rules = config.turbopack?.rules?.['*'] as { type?: string; as?: string; condition?: Condition; loaders?: unknown[] }[]
   return rules.filter(rule => rule.loaders?.some(loader => String(typeof loader === 'string' ? loader : (loader as { loader: string }).loader).endsWith('stylesheet-loader.js')) && matches(rule.condition, file, source))
 }

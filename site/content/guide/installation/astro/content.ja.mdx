@@ -1,7 +1,7 @@
 ---
 {
   "title": "Astro で Master CSS を設定する",
-  "description": "Astro インテグレーションと共通の CSS エントリーを接続し、本番のスタイルと、任意のランタイムまたはプログレッシブ配信を確認します。",
+  "description": "Astro インテグレーションと共通の CSS エントリーを接続し、選んだレンダリングモードで本番のスタイルを確認します。",
   "category": "インテグレーション"
 }
 ---
@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/astro/cover-dark.webp'
 
 <IntegrationCover images={{ light, dark }} alt="Master CSS × Astro" />
 
-共通の CSS エントリーで Astro サイトに Master CSS を接続します。インテグレーションは静的、ランタイム、プログレッシブ配信に対応し、ページのレンダリングは引き続き Astro が担います。
+共通の CSS エントリーを使って、Astro サイトに Master CSS を接続します。Astro がページをレンダリングし、Master CSS が静的、ランタイム、事前レンダリング、プログレッシブのいずれかのモードでスタイルを配信します。
 
 ## インストール \{#installation\}
 
@@ -114,12 +114,13 @@ npm run preview
 ---
 
 ## 別のレンダリングモードを選ぶ \{#rendering-modes\}
-既定は静的モードです。ほかのモードではインテグレーションがページにランタイムスクリプトを挿入するため、別途ブラウザーの起動コードは不要です：
+既定は静的モードです。ランタイムとプログレッシブの各モードでは、インテグレーションがページにスクリプトを挿入します。事前レンダリングモードでは Astro ミドルウェアが HTML に CSS を追加し、ブラウザーランタイムは不要です。
 
 | モード | インストーラーのオプション | 配信方法 |
 | --- | --- | --- |
 | 静的 | なし | ソースの走査で生成したスタイルシート |
 | ランタイム | `--mode runtime` | Astro ミドルウェアで事前レンダリングしないブラウザーランタイム |
+| 事前レンダリング | `--mode prerender` | ビルド済みページとサーバーの HTML レスポンスで CSS を配信。ブラウザーランタイムは不要 |
 | プログレッシブ | `--mode progressive` | ミドルウェアでレンダリングした CSS をランタイムへ引き継ぐ |
 
 <DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
@@ -145,5 +146,7 @@ npm create @master/css@VERSION -- --framework astro --mode progressive --yes
 ```
 
 Astro ミドルウェアが事前レンダリングするページとサーバーの HTML レスポンスへ CSS をレンダリングし、後からのクラス変更をランタイムが処理します。JavaScript を無効にして再読み込みしても、段落にスタイルが付くはずです。JavaScript を再び有効にして読み込み直し、上記のようにコンソールから `underline` を追加してください。
+
+HTML とともに CSS を配信し、ブラウザーでの生成が不要な場合は、同じコマンドで `--mode prerender` を使います。レスポンスのソースに `style#master-css` が含まれることを確認します。ブラウザーで追加する Master CSS クラスのルールは、配信済みの CSS に含めておきます。
 
 </DocumentDisclosure>

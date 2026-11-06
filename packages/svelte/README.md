@@ -78,6 +78,15 @@ export default defineConfig({
 })
 ```
 
+### Rendering modes
+
+| `mode` | Master CSS setup |
+| --- | --- |
+| `static` (default) | Vite plugin and stylesheet. |
+| `runtime` | Client runtime for classes as they appear in the browser. |
+| `prerender` | Server hook to style classes in the rendered HTML; disable its hydration manifest. |
+| `progressive` | Server hook for initial CSS and client runtime for new browser classes. |
+
 ### Client runtime
 
 For `runtime` or `progressive` mode, load the Vite-provided runtime bootstrap in `src/hooks.client.ts`. SvelteKit renders its own HTML, so selecting a mode does not insert Vite's HTML runtime script into the page.
@@ -88,14 +97,26 @@ For `runtime` or `progressive` mode, load the Vite-provided runtime bootstrap in
 import 'virtual:master-css-runtime'
 ```
 
-This module starts the runtime with the compiled runtime program and emitted globals and handles Vite HMR. Static and pre-render modes do not use this client import.
+This module starts the runtime with the compiled runtime program and emitted globals and handles Vite HMR. `static` and `prerender` modes do not use this client import.
 
 ### Server hook
 
-For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })`, load the client runtime above, and export the server handle to inject streamed CSS before `</head>`. The runtime then downloads its engine and the compiled runtime program only when a page introduces a class that was not pre-rendered. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
+For progressive rendering, set `masterCSS({ mode: 'progressive' })`, load the client runtime above, and export the server handle to inject streamed CSS before `</head>`. The runtime downloads its engine and the compiled runtime program when a class outside the page manifest appears.
 
 ```ts
 export { handle } from '@master/css-svelte/hooks.server'
+```
+
+For `mode: 'prerender'`, omit the client runtime and configure the server handle:
+
+```ts
+/// <reference types="@master/css/client" />
+
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import { createMasterCSSHandle } from '@master/css-svelte/hooks.server'
+
+export const handle = createMasterCSSHandle({ manifest, emittedGlobals, hydrationManifest: false })
 ```
 
 If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.

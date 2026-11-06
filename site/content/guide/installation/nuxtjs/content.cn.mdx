@@ -89,6 +89,7 @@ node .output/server/index.mjs
 | --- | --- | --- |
 | 静态 | 无 | 扫描源代码后生成的样式表 |
 | 运行时 | `--mode runtime` | 浏览器运行时，不提供服务器端初始页面 CSS |
+| 预渲染 | `--mode prerender` | CSS 随正文为字符串的 Nitro HTML 响应交付，无需浏览器运行时 |
 | 渐进式 | `--mode progressive` | Nitro 提供首次响应 CSS，再交由运行时接管 |
 
 <DocumentDisclosure title="在浏览器中生成新类名">
@@ -116,5 +117,7 @@ npm create @master/css@VERSION -- --framework nuxt --mode progressive --yes
 渐进式模式会为正文为字符串的 Nitro HTML 响应加入首次响应 CSS；流式正文不会转换。先禁用 JavaScript 检查初始样式，再按上述方式测试页面 manifest 中没有包含的后续类名。
 
 还请在目标目录测试复制后的部署产物：仅在原位构建，无法证明所有 manifest 和程序路径都可迁移。如果复制后的服务器报告原项目 `node_modules/.master-css/manifest/` 下的 `ENOENT` 路径错误，说明它仍依赖构建机器上的 manifest，尚不能独立部署。如果静态或运行时模式能满足应用的交付需求，请改用其中一种，并在移动输出后再次验证。
+
+在同一命令中使用 `--mode prerender`，即可交付 Nitro 渲染的 CSS，无需 Master CSS 浏览器运行时。确认响应源码包含 `style#master-css`，并按上述方式验证部署产物。
 
 </DocumentDisclosure>

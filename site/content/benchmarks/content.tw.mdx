@@ -148,7 +148,7 @@ Master CSS 文件頁面結合兩種 CSS。每頁的 `style#master-css` 內容保
 ---
 
 ## 技術附錄 \{#current-results\}
-這些測試組說明上述結果背後的成本：正式環境建置命令、Chromium 對 CSS 規模的反應，以及每種 Master CSS 渲染模式在瀏覽器傳送與執行的內容。選擇渲染模式或診斷建置時間時，可閱讀這些資料。
+這些測試組說明上述結果背後的成本：正式環境建置命令、Chromium 對 CSS 規模的反應，以及受測的 Master CSS 渲染模式在瀏覽器傳送與執行的內容。選擇渲染模式或診斷建置時間時，可閱讀這些資料。
 
 ### 核心假說 \{#core-hypothesis\}
 傳遞方面的問題是：載入較少 CSS 規則所節省的瀏覽器工作，能否抵銷執行階段生成規則的成本。請比較完整頁面生命週期：初始載入、後續互動與長時間工作階段清理。
@@ -259,7 +259,7 @@ Tailwind CSS 不是等效執行階段實作的比較對象。在執行階段導�
 ### Master CSS 傳遞模式 \{#master-css-delivery-modes\}
 回答的問題：各傳遞模式會產生多少初始酬載、本地 Chromium 載入成本、執行階段啟動成本、程式載入，以及何種漸進式採用行為？
 
-測試組跨靜態 fixture 集合，比較 Master CSS 靜態、執行階段、漸進式，以及 Tailwind CSS 靜態瀏覽器對照變體。
+測試組跨靜態 fixture 集合，比較 Master CSS 靜態、執行階段、漸進式，以及 Tailwind CSS 靜態瀏覽器對照變體。測試並未單獨量測 `prerender` 模式。
 
 <figure>
   <BenchmarkChart chart={MasterDeliveryModesSummary} />

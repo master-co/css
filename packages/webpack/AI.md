@@ -4,6 +4,8 @@
 
 `@master/css-webpack` provides a Webpack integration plugin based on `MasterCSSScanner`, `webpack-virtual-modules`, and build-tool runtime injection.
 
+It accepts `static`, `runtime`, `prerender`, and `progressive`. The plugin generates the same stylesheet in `prerender` as in `static`; an external server renderer owns any CSS generated from HTML and its page hydration data.
+
 ## Owns
 
 - Webpack plugin integration.

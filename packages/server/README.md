@@ -55,6 +55,8 @@ npm install @master/css-server
 requires an explicit `MasterCSSManifest`; class-only rendering belongs to
 `@master/css/node`.
 
+Use this package for the HTML step of the [`prerender` and `progressive` rendering modes](https://css.master.co/guide/rendering-modes). Both generate CSS from the rendered page. For `prerender`, pass `hydrationManifest: false`. For `progressive`, deliver the hydration manifest so the browser runtime can reuse the page CSS and generate rules for later classes.
+
 ## API
 
 ### `renderHTML()`

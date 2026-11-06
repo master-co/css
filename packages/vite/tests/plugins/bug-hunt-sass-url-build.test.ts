@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
 for (const managed of [false, true]) {
-  test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)(`Sass URL build retains stylesheet identity with plugin=${managed}/%s`, async mode => {
+  test.each(["static", 'runtime', 'prerender', 'progressive'] as const)(`Sass URL build retains stylesheet identity with plugin=${managed}/%s`, async mode => {
     const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
     const root = mkdtempSync(join(parent, 'sass-url-build-'))
     try {

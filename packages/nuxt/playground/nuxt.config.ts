@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   modules: [
     // '../src/module',
     ['../src/module', {
-      mode: 'pre-render'
+      mode: 'prerender'
     }],
   ],
   devtools: { enabled: true },

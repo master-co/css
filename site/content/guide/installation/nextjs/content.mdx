@@ -105,6 +105,7 @@ Static mode is the default. The installer option sets the matching `withMasterCS
 | --- | --- | --- |
 | Static | None | Generated stylesheet from source scanning |
 | Runtime | `--mode runtime` | Browser runtime through Next.js client instrumentation |
+| Prerender | `--mode prerender` | CSS in build-time HTML, with no browser runtime |
 | Progressive | `--mode progressive` | Pre-rendered CSS plus a runtime handoff |
 
 <DocumentDisclosure title="Generate new classes in the browser">
@@ -136,6 +137,8 @@ npm create @master/css@VERSION -- --framework nextjs --mode progressive --yes
 The runtime initially tracks covered classes. A class outside the page manifest starts its engine, which validates and adopts matching rules before generating additional CSS. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output, so their generated utility styles depend on the browser runtime. Use static mode if those routes must have utility styles without JavaScript.
 
 After `npm run build` and `npm run start`, check a pre-rendered route's response source for `style#master-css` before JavaScript runs, then test a later class as above. Test a dynamic SSR route separately: this adapter does not add server-generated CSS to request-time HTML.
+
+Use `--mode prerender` in the same command to deliver CSS with build-time pages and omit the Master CSS browser runtime. Verify `style#master-css` in the built page response. For request-time routes that use complete class names visible in source, choose static mode to deliver those rules.
 
 </DocumentDisclosure>
 

@@ -215,7 +215,7 @@ describe('renderNextBuildOutputs', () => {
     const htmlFile = join(projectDir, '.next/server/app/index.html')
     mkdirSync(dirname(htmlFile), { recursive: true })
     writeFileSync(htmlFile, '<html><head></head><body class="fg-red"></body></html>')
-    const [output] = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile), { mode: 'pre-render' })
+    const [output] = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile), { mode: 'prerender' })
     expect(output.cssBytes).toBeGreaterThan(0)
     expect(output.hydrationManifestBytes).toBe(0)
     expect(output.hydrationManifestFile).toBeUndefined()
@@ -223,7 +223,7 @@ describe('renderNextBuildOutputs', () => {
     expect(existsSync(join(projectDir, '.next/static/master-css/hydration'))).toBe(false)
   })
 
-  it.each(['pre-render', 'progressive'] as const)('keeps class-derived CSS inside style#master-css in %s mode', async (mode) => {
+  it.each(['prerender', 'progressive'] as const)('keeps class-derived CSS inside style#master-css in %s mode', async (mode) => {
     const projectDir = createFixtureDir()
     const htmlFile = join(projectDir, '.next/server/app/index.html')
     mkdirSync(dirname(htmlFile), { recursive: true })

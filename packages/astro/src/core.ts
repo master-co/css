@@ -20,7 +20,7 @@ export const ASTRO_RUNTIME_INJECTION = 'import "virtual:master-css-runtime";'
 
 // Astro owns HTML rendering and injection through its middleware and build hooks.
 const ASTRO_OMITTED_VITE_PLUGINS = new Set([
-  'master-css:pre-render',
+  'master-css:prerender',
   'master-css:inject-runtime',
   'master-css:inject-runtime:serve',
   'master-css:runtime-preload',
@@ -158,7 +158,7 @@ export function createMasterCSSAstroIntegration(
             break
         }
         switch (options.mode) {
-          case 'pre-render':
+          case 'prerender':
           case 'progressive':
             addMiddleware({
               order: 'pre',
@@ -198,7 +198,7 @@ export function createMasterCSSAstroIntegration(
       },
       'astro:build:start': () => {
         outputStylesheets = undefined
-        if (options.mode !== 'pre-render' && options.mode !== 'progressive') return
+        if (options.mode !== 'prerender' && options.mode !== 'progressive') return
         providePrerenderStylesheets({
           stylesheets: () => outputStylesheets ??= describeOutputStylesheets(clientDir!, astroBase)
         })

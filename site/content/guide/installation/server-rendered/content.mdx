@@ -299,6 +299,7 @@ Static mode is the default. Keep the asset entry when changing modes:
 | --- | --- | --- |
 | Static | All hosts | Nothing at runtime |
 | Runtime | PHP, Rails, WordPress, ASP.NET Core, Blazor, Express | `mode: 'runtime'`, a runtime entry and a module script |
+| Prerender | Express | The server renders first-response CSS without a browser runtime |
 | Progressive | Express | The server renders first-response CSS; the runtime handles later classes |
 
 <DocumentDisclosure title="Generate new classes in the browser">
@@ -451,5 +452,7 @@ server.on('close', () => renderer.dispose())
 The first response carries `style#master-css` and a small hydration record; the server manifest stays on the server. This example renders with the default preset manifest, matching the preset in `src/master.css`. If you add project tokens or utilities, compile the project manifest for the server too, or the initial CSS will not match the browser's definitions.
 
 With JavaScript disabled, the paragraph should already be styled. Re-enable JavaScript, reload, and add `underline` from the console; it should apply without a new server response.
+
+For prerender delivery, keep the Express server rendering step. Pass `hydrationManifest: false` to `renderHTML()` and remove the Master CSS runtime startup from `src/master.ts`. Verify that the response source contains `style#master-css`.
 
 </DocumentDisclosure>

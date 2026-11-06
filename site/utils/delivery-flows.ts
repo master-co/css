@@ -3,7 +3,7 @@ export const deliveryFlows = {
     title: 'One app, three sets of classes',
     steps: [
       { title: 'Source → static CSS', description: 'The button source contains both bg-blue and bg-neutral. Static mode generates both rules before either state is selected.' },
-      { title: 'Build HTML → pre-rendered CSS', description: 'The emitted HTML contains only an empty app mount point. It has neither button class, so pre-render mode generates neither button rule.' },
+      { title: 'Build HTML → pre-rendered CSS', description: 'The emitted HTML contains only an empty app mount point. It has neither button class, so prerender mode generates neither button rule.' },
       { title: 'Connected DOM → runtime CSS', description: 'The first browser render connects a button with bg-blue. Runtime mode generates that rule; switching to bg-neutral later generates its rule too.' }
     ],
     caption: 'These are alternative generation inputs for the same client-rendered app. Changing a class can reuse existing static CSS; an empty HTML mount point provides no initial button rules.'
@@ -86,8 +86,8 @@ export type DeliveryFlowName = keyof typeof deliveryFlows
 /** Short figure labels and alternatives share the delivery content owner. */
 export const deliveryIllustrations = {
   'vite-coverage': {
-    alt: 'Static mode sees both source variants, pre-render mode sees neither in the empty HTML mount point, and runtime mode sees the connected blue button.',
-    labels: { static: 'Static', prerender: 'Pre-render', runtime: 'Runtime', source: 'Source', html: 'Build HTML', dom: 'Connected DOM', blue: "'bg-blue'", neutral: "'bg-neutral'", mount: '<div id="app">', mountEnd: '</div>', button: '<button', buttonClass: 'class="bg-blue">', buttonEnd: '</button>', css: 'Generated rules', blueRule: '.bg-blue', neutralRule: '.bg-neutral', empty: 'No button rules', sourceResult: 'Both states covered', htmlResult: 'No button in HTML', domResult: 'Current state covered' }
+    alt: 'Static mode sees both source variants, prerender mode sees neither in the empty HTML mount point, and runtime mode sees the connected blue button.',
+    labels: { static: 'Static', prerender: 'Prerender', runtime: 'Runtime', source: 'Source', html: 'Build HTML', dom: 'Connected DOM', blue: "'bg-blue'", neutral: "'bg-neutral'", mount: '<div id="app">', mountEnd: '</div>', button: '<button', buttonClass: 'class="bg-blue">', buttonEnd: '</button>', css: 'Generated rules', blueRule: '.bg-blue', neutralRule: '.bg-neutral', empty: 'No button rules', sourceResult: 'Both states covered', htmlResult: 'No button in HTML', domResult: 'Current state covered' }
   },
   scanning: {
     alt: 'Complete strings are extracted from source files, then resolved against project definitions to generate CSS.',

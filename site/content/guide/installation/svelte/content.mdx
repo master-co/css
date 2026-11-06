@@ -69,7 +69,7 @@ Static mode is the default and needs no Master CSS hooks. Keep the CSS entry whe
 | Static | `static` | None |
 | Runtime | `runtime` | Client |
 | Progressive | `progressive` | Client and server |
-| Pre-render only | `pre-render` | Server with hydration manifest disabled |
+| Prerender | `prerender` | Server with hydration manifest disabled |
 
 <DocumentDisclosure title="Generate new classes in the browser">
 
@@ -119,7 +119,7 @@ Keep unrelated exports such as `handleError` in `hooks.server.ts`.
 
 A page covered by its pre-rendered classes can defer loading the runtime engine. Check initial styling with JavaScript disabled, then re-enable it and test a new class.
 
-For pre-render-only delivery, choose `mode: 'pre-render'`, remove only the Master CSS client bootstrap, and use this server configuration:
+For prerender mode, choose `mode: 'prerender'`, remove only the Master CSS client bootstrap, and use this server configuration:
 
 ```ts name=src/hooks.server.ts
 /// <reference types="@master/css/client" />

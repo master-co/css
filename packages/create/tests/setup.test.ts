@@ -341,26 +341,26 @@ export default defineConfig([
       }
     })
 
-    const result = runCLI(['--cwd', root, '--json', '--minimal', '--framework', 'nextjs', '--mode', "static"])
+    const result = runCLI(['--cwd', root, '--json', '--minimal', '--framework', 'nextjs', '--mode', 'prerender'])
     const plan = JSON.parse(result.stdout)
 
     expect(result.status).toBe(0)
-    expect(plan.mode).toBe("static")
-    expect(plan.files.find((file: { path: string }) => file.path === 'next.config.js').content).toContain("async () => withMasterCSS({}, { mode: 'static' })")
+    expect(plan.mode).toBe('prerender')
+    expect(plan.files.find((file: { path: string }) => file.path === 'next.config.js').content).toContain("withMasterCSS({}, { mode: 'prerender' })")
     expect(existsSync(join(root, 'next.config.js'))).toBe(false)
   })
 
-  test('rejects invalid rendering modes before planning', () => {
+  test.each(['browser', 'pre-render'])('rejects the invalid rendering mode %s before planning', (mode) => {
     const root = createTempProject('master-css-create-cli-invalid-mode-', {
       dependencies: {
         next: '^16.0.0'
       }
     })
 
-    const result = runCLI(['--cwd', root, '--json', '--mode', 'browser'])
+    const result = runCLI(['--cwd', root, '--json', '--mode', mode])
 
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('Invalid rendering mode "browser"')
+    expect(result.stderr).toContain(`Invalid rendering mode "${mode}". Supported modes: runtime, static, prerender, progressive.`)
   })
 
   test('prints a concise CLI error for unsupported rendering mode targets', () => {

@@ -32,7 +32,7 @@ Without `--mode`, the installer configures static rendering. Use `--mode <mode>`
 npm create @master/css@latest -- --framework nextjs --mode static --yes
 ```
 
-Supported `--mode` values are `runtime`, `static`, `progressive`, and `pre-render`. All four modes are supported for `vite`, `react`, `react-router`, `tanstack-start`, `vue`, `nextjs`, `nuxt`, `astro`, `webpack`, `rspack`, `rsbuild`, and `lit`. `laravel` supports `static` only; `angular` and `none` support `static` and `runtime`. SvelteKit setup is delegated to the Svelte CLI add-on and does not accept `--mode` here.
+The installer accepts `static`, `runtime`, `prerender`, and `progressive` for `vite`, `react`, `react-router`, `tanstack-start`, `vue`, `nextjs`, `nuxt`, `astro`, `webpack`, `rspack`, `rsbuild`, and `lit`. The [rendering modes guide](https://css.master.co/guide/rendering-modes) explains where each integration generates CSS. `laravel` accepts `static` only; `angular` and `none` accept `static` and `runtime`. SvelteKit setup is delegated to the Svelte CLI add-on and does not accept `--mode` here.
 
 If you do not have a project yet, create one first:
 

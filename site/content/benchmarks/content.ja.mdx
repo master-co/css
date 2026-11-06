@@ -51,7 +51,7 @@ import {
 } from './components/BuildPathDiagnosticsBenchmark'
 
 ## 概要 [sr-only] \{#overview\}
-まず、ドキュメントページが配信する CSS のどれだけがページに一致するかと、同じ UI で Master CSS と Tailwind CSS がそれぞれどれだけの CSS を生成するかを測定します。技術付録ではビルド時間、CSS の量に対する Chromium の反応、各 Master CSS レンダリングモードのコストを扱います。他のアプリへ結果を当てはめる前に、各節の条件と制約を確認してください。
+まず、ドキュメントページが配信する CSS のどれだけがページに一致するかと、同じ UI で Master CSS と Tailwind CSS がそれぞれどれだけの CSS を生成するかを測定します。技術付録ではビルド時間、CSS の量に対する Chromium の反応、測定対象の Master CSS レンダリングモードのコストを扱います。他のアプリへ結果を当てはめる前に、各節の条件と制約を確認してください。
 
 スナップショットは2026年11月4日に、同じマシン（Apple M5 Max、macOS）と Chromium 156 で記録しました。Master CSS のパッケージはリビジョン `add10eec6` からビルドしています。ブラウザーライフサイクルの記録は同日早い時刻の `3fc239c6c` に基づきます。`add10eec6` の変更はコンパイラーと静的ビルドのホストで、ランタイム、プリセット、エンジンは変えていません。Master CSS のドキュメントは同じチェックアウトの本番ビルドから測定し、他のサイトは同日の公開ページを取得しました。
 
@@ -259,7 +259,7 @@ Tailwind CSS は等価なランタイムの比較対象ではありません。�
 ### Master CSS の配信モード \{#master-css-delivery-modes\}
 検証する問い：各配信モードの初期ペイロード、ローカル Chromium の読み込みコスト、ランタイムの起動コスト、プログラム読み込み、プログレッシブの採用動作はどうなるか。
 
-静的フィクスチャ全体で、Master CSS の静的、ランタイム、プログレッシブと、Tailwind CSS 静的のブラウザー対照を比較します。
+静的フィクスチャ全体で、Master CSS の静的、ランタイム、プログレッシブと、Tailwind CSS 静的のブラウザー対照を比較します。`prerender` モードの単独測定は含みません。
 
 <figure>
   <BenchmarkChart chart={MasterDeliveryModesSummary} />

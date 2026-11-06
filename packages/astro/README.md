@@ -64,9 +64,14 @@ export default defineConfig({
 })
 ```
 
-The integration uses `static` mode by default, generating CSS at build time without injecting the browser runtime. Choose `mode: 'progressive'` to register Astro middleware that pre-renders initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. The runtime downloads its engine and the runtime program only when a page introduces a class that was not pre-rendered. Source extraction for `.astro` files is handled automatically by `@master/css-tooling/source`.
+| `mode` | Where Master CSS generates utility rules |
+| --- | --- |
+| `static` (default) | Scans source, including `.astro` files, and writes the rules to a stylesheet. |
+| `runtime` | Generates rules in the browser for classes as they appear. |
+| `prerender` | Uses Astro middleware to put rules for classes in the rendered HTML into `style#master-css`. |
+| `progressive` | Uses the same middleware for initial CSS and starts the browser engine when a class outside the page manifest appears. |
 
-In static builds with `mode: 'runtime'`, the integration modulepreloads the runtime script and preloads the emitted runtime program with `<link rel="preload" as="fetch">` when it also injects the runtime script. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected. SSR-only Astro output does not receive these preloads because the integration cannot reliably resolve the final client program asset URL at build time.
+In static builds with `mode: 'runtime'`, the integration modulepreloads the runtime script and preloads the emitted runtime program with `<link rel="preload" as="fetch">` when it also injects the runtime script. To omit the browser runtime, choose `static` or `prerender`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected. SSR-only Astro output does not receive these preloads because the integration cannot reliably resolve the final client program asset URL at build time.
 
 ```css
 @import '@master/css';
@@ -89,14 +94,14 @@ export default defineConfig({
 })
 ```
 
-For `pre-render` and `progressive` modes, Astro owns the HTML rendering step through `@master/css-astro/middleware`, so you do not need to add `@master/css-server` manually.
+For `prerender` and `progressive` modes, Astro owns the HTML rendering step through `@master/css-astro/middleware`, so you do not need to add `@master/css-server` manually.
 
 Default options:
 
 | Option | Default | Description |
 | --- | --- | --- |
 | `enabled` | `true` | Enables the integration. |
-| `mode` | `'static'` | Selects static, pre-render, runtime, or progressive rendering. |
+| `mode` | `'static'` | Selects `static`, `prerender`, `runtime`, or `progressive` rendering. |
 | `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
 | `runtime` | `{ enabled: false }` | Enabled by runtime/progressive modes; optional FOUC protection. Explicit enabled values must agree with the mode. |
 

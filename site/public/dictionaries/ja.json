@@ -166,7 +166,7 @@
   "Session steps": "セッションの手順",
   "Set up the MCP server": "MCP サーバーを設定",
   "Shapes and masks": "シェイプとマスク",
-  "Ship static CSS by default, pre-render it into HTML or generate it in the browser. Your classes stay the same.": "標準は静的 CSS の配信です。HTML に事前レンダリングすることも、ブラウザーで生成することもできます。クラスはそのままです。",
+  "Choose static, runtime, prerender, or progressive delivery. Your classes stay the same.": "静的、ランタイム、事前レンダリング、プログレッシブから配信方法を選べます。クラスの書き方は同じです。",
   "Sizing": "サイズ",
   "Spacing": "余白",
   "Start with one class string,": "ひとつのクラス文字列から始めて、",

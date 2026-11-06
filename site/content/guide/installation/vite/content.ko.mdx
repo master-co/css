@@ -147,12 +147,18 @@ npm run build
 ---
 
 ## 다른 렌더링 모드 선택하기 \{#rendering-modes\}
-기본값인 정적 모드에는 Master CSS 시작 코드가 필요하지 않습니다. 모드를 바꿀 때도 CSS 진입점을 유지하세요:
+기본값인 정적 모드에는 Master CSS 시작 코드가 필요하지 않습니다. 모드를 바꿀 때도 CSS 진입점을 유지하세요.
 
-| 프레임워크 | 설치 프로그램 옵션 | 런타임 시작 방식 |
+| 모드 | 설치 프로그램 옵션 | CSS 전달 방식 |
 | --- | --- | --- |
-| Vite, React, Vue | `--mode runtime` | Vite 플러그인이 `index.html`에 주입 |
-| React Router, TanStack Start | `--mode runtime` | 루트 라우트의 브라우저 전용 가져오기 |
+| `static` | 없음 | 소스 스캔으로 생성한 스타일시트 |
+| `runtime` | `--mode runtime` | 브라우저 런타임 |
+| `prerender` | `--mode prerender` | Vite가 처리한 HTML에서 CSS 생성 |
+| `progressive` | `--mode progressive` | Vite가 처리한 HTML에서 CSS를 생성하고 브라우저 런타임도 사용 |
+
+사전 렌더링과 점진적 모드는 Vite가 처리하는 HTML에 있는 클래스의 초기 CSS만 생성합니다. 비어 있는 앱 마운트 지점에는 나중에 마운트되는 컴포넌트의 클래스가 없습니다. React Router, TanStack Start처럼 자체 HTML을 렌더링하는 호스트는 서버에서 [HTML 렌더러](/guide/rendering-modes#pre-rendering--ssg-ssr)를 실행해 초기 CSS를 생성해야 합니다.
+
+초기 마크업을 담은 Vite HTML 진입점에서는 `--mode prerender` 또는 `--mode progressive`로 설치 프로그램을 실행하세요. 앱을 빌드한 뒤 응답 소스에 `style#master-css`가 있는지 확인하세요. 점진적 모드에서는 나중에 추가한 클래스의 규칙이 브라우저에서 생성되는지도 확인하세요.
 
 <DocumentDisclosure title="브라우저에서 새 클래스 생성하기">
 

@@ -1,3 +1,10 @@
+import {
+  isMasterCSSRenderingMode,
+  MASTER_CSS_RENDERING_MODES,
+  type MasterCSSIntegrationRuntimeOptions,
+  type MasterCSSRenderingMode
+} from '@master/css-schema/integration'
+
 export const MASTER_CSS_RUNTIME_BOOTSTRAP_ID = 'virtual:master-css-runtime'
 export const RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID = `\0${MASTER_CSS_RUNTIME_BOOTSTRAP_ID}`
 
@@ -79,9 +86,12 @@ export function createMasterCSSRuntimeBootstrapSource({ progressive }: MasterCSS
 
 /** Resolve the public delivery contract before any adapter injects code. */
 export function resolveIntegrationRuntime(
-  mode: import('@master/css-schema/integration').MasterCSSRenderingMode,
-  runtime: boolean | import('@master/css-schema/integration').MasterCSSIntegrationRuntimeOptions | undefined
+  mode: MasterCSSRenderingMode,
+  runtime: boolean | MasterCSSIntegrationRuntimeOptions | undefined
 ) {
+  if (!isMasterCSSRenderingMode(mode)) {
+    throw new TypeError(`Invalid Master CSS rendering mode "${String(mode)}". Supported modes: ${MASTER_CSS_RENDERING_MODES.join(', ')}.`)
+  }
   const options = typeof runtime === 'object' ? runtime : { enabled: runtime }
   const enabled = mode === 'runtime' || mode === 'progressive'
   if (options.enabled !== undefined && options.enabled !== enabled) {

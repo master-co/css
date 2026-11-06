@@ -30,7 +30,7 @@ import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExam
 
 多くのプロジェクトでは既定のソース探索で十分です。スキャン範囲の明示や、完全な文字列としてソースにないクラスが必要な場合に限り、`@source`、`@source not`、`@safelist`、`@blocklist` を追加します。
 
-多数のファイルを変換する前に、[レンダリングモード](/guide/rendering-modes)に従って静的、ランタイム、プログレッシブのどれを使うか決めます。
+多数のファイルを変換する前に、[レンダリングモード](/guide/rendering-modes)に従って静的、ランタイム、事前レンダリング、プログレッシブのどれを使うか決めます。
 
 ---
 
@@ -180,7 +180,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
 
 ## 関連資料 \{#useful-references\}
 - [インストール](/guide/installation)：プロジェクトへの導入。
-- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、プログレッシブの選択。
+- [レンダリングモード](/guide/rendering-modes)：静的、ランタイム、事前レンダリング、プログレッシブの選択。
 - [スタイル宣言](/reference/rules/declarations)：クラス構文。
 - [テーマトークン](/guide/theme)：`@theme` トークン、[変数とモード](/reference/rules/modes)：モード、[条件](/reference/rules/conditions)：クエリー構文。
 - [CSS ディレクティブ](/reference#directives)：`@reference`、`@source`、`@safelist`、`@blocklist`。

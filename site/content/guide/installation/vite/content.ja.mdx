@@ -147,12 +147,18 @@ npm run build
 ---
 
 ## 別のレンダリングモードを選ぶ \{#rendering-modes\}
-既定の静的モードでは、Master CSS の起動コードは不要です。モードを変えても CSS エントリーを保持してください：
+既定の静的モードでは、Master CSS の起動コードは不要です。モードを変えても CSS エントリーを保持してください。
 
-| フレームワーク | インストーラーのオプション | ランタイムの起動 |
+| モード | インストーラーのオプション | CSS の配信方法 |
 | --- | --- | --- |
-| Vite、React、Vue | `--mode runtime` | Vite プラグインが `index.html` に挿入 |
-| React Router、TanStack Start | `--mode runtime` | ルートに置くブラウザー専用のインポート |
+| `static` | なし | ソースの走査で生成したスタイルシート |
+| `runtime` | `--mode runtime` | ブラウザーランタイム |
+| `prerender` | `--mode prerender` | Vite が処理した HTML から CSS を生成 |
+| `progressive` | `--mode progressive` | Vite が処理した HTML から CSS を生成し、ブラウザーランタイムも使用 |
+
+事前レンダリングとプログレッシブの各モードが初期 CSS を生成できるのは、Vite が処理する HTML に含まれるクラスだけです。空のマウント先には、後からマウントするコンポーネントのクラスがありません。React Router や TanStack Start など、独自に HTML をレンダリングするホストでは、サーバーが [HTML レンダラー](/guide/rendering-modes#pre-rendering--ssg-ssr) を使って初期 CSS を生成します。
+
+初期マークアップを含む Vite の HTML エントリーでは、`--mode prerender` または `--mode progressive` を指定してインストーラーを実行し、アプリをビルドしてレスポンスのソースに `style#master-css` があることを確認します。プログレッシブモードでは、後から追加したクラスにブラウザーでルールが生成されることも確認します。
 
 <DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
 

@@ -95,10 +95,10 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 | モード | クラスの取得元 | 初期 CSS | ブラウザー内の Master CSS |
 | --- | --- | --- | --- |
-| [静的](#static-rendering) | ソースファイルの完全な文字列 | 生成されたスタイルシート | ランタイムもエンジンも不要 |
-| [事前](#pre-rendering--ssg-ssr) | レンダリング済みページ HTML | ページとともに配信するルール | ランタイムもエンジンも不要 |
-| [ランタイム](#runtime-rendering) | 接続された DOM 要素 | ランタイム起動後に生成するルール | ランタイムとエンジン |
-| [プログレッシブ](#progressive-rendering) | レンダリング済み HTML と、その後の DOM 変更 | ページとともに配信するルール | ランタイムが使用状況を追跡し、未対応クラスが現れるまでエンジンを遅延できる |
+| [静的](#static-rendering) (`static`) | ソースファイルの完全な文字列 | 生成されたスタイルシート | ランタイムもエンジンも不要 |
+| [事前レンダリング](#pre-rendering--ssg-ssr) (`prerender`) | レンダリング済みページ HTML | ページとともに配信するルール | ランタイムもエンジンも不要 |
+| [ランタイム](#runtime-rendering) (`runtime`) | 接続された DOM 要素 | ランタイム起動後に生成するルール | ランタイムとエンジン |
+| [プログレッシブ](#progressive-rendering) (`progressive`) | レンダリング済み HTML と、その後の DOM 変更 | ページとともに配信するルール | ランタイムが使用状況を追跡し、未対応クラスが現れるまでエンジンを遅延できる |
 
 対話型アプリでも静的 CSS を使えます。既知のクラスの切り替え、CSS 変数の変更、ネイティブセレクターの利用にランタイムエンジンは不要です。完全なクラス名がビルド後に初めて得られるとき、ランタイム生成が必要になります。
 
@@ -299,12 +299,12 @@ renderer.dispose()
 
 ## インテグレーションの対応 \{#integration-support\}
 
-以下の公式アダプターは静的レンダリングが既定です。ビルド時に不明なクラスには、ランタイム生成を明示的に選びます。`pre-render` はクライアントランタイムなしで HTML から CSS を生成し、`progressive` は HTML の処理と後続クラスへのランタイム対応を組み合わせます。処理できる HTML は各ホストに依存します。
+以下の公式アダプターは静的レンダリングが既定です。ビルド時に不明なクラスには、ランタイム生成を明示的に選びます。`prerender` はクライアントランタイムなしで HTML から CSS を生成し、`progressive` は HTML の処理と後続クラスへのランタイム対応を組み合わせます。処理できる HTML は各ホストに依存します。
 
-| アダプター | 静的 | ランタイム | `pre-render` とサーバー HTML | `progressive` |
+| アダプター | 静的 | ランタイム | `prerender` とサーバー HTML | `progressive` |
 | --- | --- | --- | --- | --- |
 | [Vite](/guide/installation/vite) | ビルド時の抽出 | Vite の HTML パイプラインで挿入 | Vite フックで処理する HTML。カスタム SSR にはサーバー統合が必要 | Vite の HTML 処理とランタイム。カスタム SSR には独自の HTML レンダリングが必要 |
-| [Webpack](/guide/installation/webpack) | ビルド時の抽出 | コンパイル対象の HTML アセットへ挿入 | HTML ホストから `@master/css-server` の呼び出しが必要。プラグインにリクエスト時のサーバーフックはない | ランタイムを配信し、ホストがレンダリング済み HTML と hydration データを提供 |
+| [Webpack](/guide/installation/webpack) | ビルド時の抽出 | コンパイル対象の HTML アセットへ挿入 | ソースを走査してスタイルシートを生成。HTML ホストは `@master/css-server` を呼び出し、レンダリング済み HTML から CSS を生成できる | ランタイムを配信し、ホストがレンダリング済み HTML と hydration データを提供 |
 | [Next.js](/guide/installation/nextjs) | ビルド時の抽出 | クライアント instrumentation | ビルド後の HTML 出力を処理。リクエスト時の動的 SSR は変換しない | ビルドで描画した HTML とランタイム。動的 SSR にはサーバー CSS の自動挿入なし |
 | [Astro](/guide/installation/astro) | Vite によるビルド時の抽出 | ページスクリプトを挿入 | Astro ミドルウェアが事前レンダリングページとサーバー HTML レスポンスを処理 | ミドルウェアの処理とランタイム |
 | [Nuxt](/guide/installation/nuxtjs) | Vite によるビルド時の抽出 | Nuxt クライアントプラグイン | 本体が文字列の Nitro HTML レスポンス。ストリーミング本体は変換しない | Nitro の HTML 処理とクライアントランタイム |

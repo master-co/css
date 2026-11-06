@@ -30,7 +30,7 @@ Master CSS 開始為新標記或已轉換的標記生成規則時，繼續載入
 
 預設來源探索已足以應付多數專案。只有在遷移需要明確掃描邊界，或 class 未以完整字串出現在原始碼時，才新增 `@source`、`@source not`、`@safelist` 或 `@blocklist`。
 
-大量轉換檔案前，先依[渲染模式](/guide/rendering-modes)決定專案使用靜態、執行階段或漸進式渲染。
+大量轉換檔案前，先依[渲染模式](/guide/rendering-modes)決定專案使用靜態、執行階段、預先渲染或漸進式渲染。
 
 ---
 
@@ -180,7 +180,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
 
 ## 相關參考 \{#useful-references\}
 - [安裝](/guide/installation)：將 Master CSS 加入專案。
-- [渲染模式](/guide/rendering-modes)：選擇靜態、執行階段或漸進式渲染。
+- [渲染模式](/guide/rendering-modes)：選擇靜態、執行階段、預先渲染或漸進式渲染。
 - [樣式宣告](/reference/rules/declarations)：class 語法。
 - [主題 token](/guide/theme)：`@theme` token；[變數與模式](/reference/rules/modes)：模式；[條件](/reference/rules/conditions)：查詢語法。
 - [CSS 指令](/reference#directives)：`@reference`、`@source`、`@safelist` 與 `@blocklist`。

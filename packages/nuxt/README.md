@@ -69,9 +69,14 @@ Import the default stylesheet from a global Vue style block:
 </style>
 ```
 
-The default `static` mode generates CSS from source files without injecting the browser runtime. Choose `progressive` to combine Nitro server rendering with browser runtime hydration across Nuxt SSR, SSG, ISR, and Hybrid rendering strategies. The runtime downloads its engine and the runtime program only when a page introduces a class that was not pre-rendered.
+| `mode` | Where Master CSS generates utility rules |
+| --- | --- |
+| `static` (default) | Scans source and writes the rules to a stylesheet. |
+| `runtime` | Generates rules in the browser for classes as they appear. |
+| `prerender` | Uses Nitro to put rules for classes in the rendered HTML into `style#master-css`. |
+| `progressive` | Uses Nitro for initial CSS and starts the browser engine when a class outside the page manifest appears. |
 
-In `mode: 'runtime'`, the module publishes a hashed runtime program asset and preloads it with `<link rel="preload" as="fetch">` from the Nuxt document head when it also injects the client runtime plugin. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected.
+In `mode: 'runtime'`, the module publishes a hashed runtime program asset and preloads it with `<link rel="preload" as="fetch">` from the Nuxt document head when it also injects the client runtime plugin. To omit the browser runtime, choose `static` or `prerender`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected.
 
 ## Options
 
@@ -92,7 +97,7 @@ Default options:
 | Option | Default | Description |
 | --- | --- | --- |
 | `enabled` | `true` | Enables the module. |
-| `mode` | `'static'` | Selects static, pre-render, runtime, or progressive rendering. |
+| `mode` | `'static'` | Selects `static`, `prerender`, `runtime`, or `progressive` rendering. |
 | `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
 | `runtime` | `{ enabled: false }` | Enabled by runtime/progressive modes; optional FOUC protection. Explicit enabled values must agree with the mode. |
 

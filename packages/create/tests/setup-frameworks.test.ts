@@ -703,8 +703,8 @@ export default async function configure(phase) {
       {
         framework: 'astro' as const,
         file: 'astro.config.mjs',
-        expected: "masterCSS({ mode: 'pre-render' })",
-        mode: 'pre-render' as const
+        expected: "masterCSS({ mode: 'prerender' })",
+        mode: 'prerender' as const
       },
       {
         framework: 'rspack' as const,
@@ -721,8 +721,8 @@ export default async function configure(phase) {
       {
         framework: 'webpack' as const,
         file: 'webpack.config.mjs',
-        expected: "new MasterCSSPlugin({ mode: 'pre-render' })",
-        mode: 'pre-render' as const
+        expected: "new MasterCSSPlugin({ mode: 'prerender' })",
+        mode: 'prerender' as const
       }
     ]
 

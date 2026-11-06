@@ -28,4 +28,4 @@ bun run dev
 
 Open the URL printed by Next.js. From this directory, run `bun run build`, then `bun run start` to inspect the production server. Run `bun run lint` to check the example.
 
-See the [Next.js installation guide](https://rc.css.master.co/guide/installation/nextjs).
+Next.js also supports `runtime`, `prerender`, and `progressive`. The adapter renders CSS into HTML produced during the build in `prerender` and `progressive`. See the [Next.js installation guide](https://rc.css.master.co/guide/installation/nextjs).

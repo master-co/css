@@ -8,7 +8,7 @@ import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 import { missedWatcherEvents as noExternalEvents } from '../missed-watcher-helper'
 
-const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
+const modes = ["static", 'runtime', 'prerender', 'progressive'] as const
 const manifestURL = '/@id/__x00__virtual:master-css-manifest'
 function fixture() {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-manifest-startup-'))), root = join(parent, 'app'), external = join(parent, 'external')
@@ -48,7 +48,7 @@ test.each(modes)('BH-0004 manifest bootstrap reports HTTP errors and recovers wi
     await expect.poll(async () => (await response(server!)).status, { timeout: watchDeadline }).toBe(200)
     const manifest = await response(server, manifestURL)
     expect(manifest.status).toBe(200);expect(manifest.text).toContain('"--card"');expect(manifest.text).toContain('7rem')
-    if (mode === 'pre-render' || mode === 'progressive') expect((await response(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
+    if (mode === 'prerender' || mode === 'progressive') expect((await response(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
     expect(events).toEqual([])
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }
 })
@@ -77,15 +77,15 @@ test.each(['client', 'ssr', 'server'] as const)('BH-0004 manifest bootstrap reco
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }
 })
 
-test.each(['pre-render', 'progressive'] as const)('BH-0004 invalid manifest after good render never serves the old renderer in %s', async mode => {
+test.each(['prerender', 'progressive'] as const)('BH-0004 invalid manifest after good render never serves the old renderer in %s', async mode => {
   const f = fixture();let server: ViteDevServer | undefined
   try {
     f.write()
     server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] }, watch: { ignored: ['**/*'] } } })
     await server.listen();expect((await response(server)).text).toContain('@media (width>=7rem){.card{padding:1rem}}')
-    const plugin = server.config.plugins.find(p => p.name === 'master-css:pre-render')!
+    const plugin = server.config.plugins.find(p => p.name === 'master-css:prerender')!
     const hook = plugin.handleHotUpdate
-    if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
+    if (typeof hook !== 'function') throw new Error('Expected prerender HMR hook')
     f.write('.paint{@contents;} .paint{@contents;}')
     await expect(hook.call({} as never, { file: f.dependency, server } as never)).rejects.toThrow('@contents is only valid inside @mixin')
     const failed = await response(server)

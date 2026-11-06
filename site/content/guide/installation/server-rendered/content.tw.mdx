@@ -307,6 +307,7 @@ export default defineConfig({
 | --- | --- | --- |
 | 靜態 | 所有宿主 | 執行階段無額外動作 |
 | 執行階段 | PHP、Rails、WordPress、ASP.NET Core、Blazor、Express | `mode: 'runtime'`、執行階段進入點與模組指令碼 |
+| 預先渲染 | Express | 伺服器渲染首次回應 CSS，無須瀏覽器執行階段 |
 | 漸進式 | Express | 伺服器渲染首次回應 CSS；執行階段處理後續類別 |
 
 <DocumentDisclosure title="在瀏覽器產生新類別">
@@ -459,5 +460,7 @@ server.on('close', () => renderer.dispose())
 首次回應包含 `style#master-css` 與小型 hydration 紀錄；伺服器 manifest 會留在伺服器上。本範例使用預設集 manifest 渲染，與 `src/master.css` 的預設集一致。若加入專案 token 或 utility，也必須為伺服器編譯專案 manifest，否則初始 CSS 將與瀏覽器定義不一致。
 
 停用 JavaScript 時，段落就應已有樣式。重新啟用 JavaScript、重新載入，再從主控台加入 `underline`；它應立即套用，無須新的伺服器回應。
+
+若要使用預先渲染，請保留 Express 的伺服器渲染步驟。將 `hydrationManifest: false` 傳入 `renderHTML()`，並移除 `src/master.ts` 中的 Master CSS 執行階段啟動程式。確認回應原始碼含有 `style#master-css`。
 
 </DocumentDisclosure>

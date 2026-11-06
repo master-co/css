@@ -95,10 +95,10 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 | 模式 | 類別來源 | 初始 CSS | 瀏覽器中的 Master CSS |
 | --- | --- | --- | --- |
-| [靜態](#static-rendering) | 原始檔中的完整字串 | 生成的樣式表 | 不需要執行階段或引擎 |
-| [預先渲染](#pre-rendering--ssg-ssr) | 渲染完成的頁面 HTML | 隨該頁面傳遞的規則 | 不需要執行階段或引擎 |
-| [執行階段](#runtime-rendering) | 已連接的 DOM 元素 | 執行階段啟動後生成規則 | 執行階段與引擎 |
-| [漸進式](#progressive-rendering) | 渲染完成的 HTML，接著是後續 DOM 變更 | 隨該頁面傳遞的規則 | 執行階段追蹤使用情況；引擎可延後到出現未涵蓋類別時才啟動 |
+| [靜態](#static-rendering) (`static`) | 原始檔中的完整字串 | 生成的樣式表 | 不需要執行階段或引擎 |
+| [預先渲染](#pre-rendering--ssg-ssr) (`prerender`) | 渲染完成的頁面 HTML | 隨該頁面傳遞的規則 | 不需要執行階段或引擎 |
+| [執行階段](#runtime-rendering) (`runtime`) | 已連接的 DOM 元素 | 執行階段啟動後生成規則 | 執行階段與引擎 |
+| [漸進式](#progressive-rendering) (`progressive`) | 渲染完成的 HTML，接著是後續 DOM 變更 | 隨該頁面傳遞的規則 | 執行階段追蹤使用情況；引擎可延後到出現未涵蓋類別時才啟動 |
 
 互動式應用程式也能使用靜態 CSS。切換已知類別、修改 CSS 變數及使用原生選擇器，都不需要執行階段引擎。完整類別名稱在建置後才首次出現時，才需要考慮執行階段生成。
 
@@ -299,12 +299,12 @@ manifest 帶有資源順序，以及頁面樣式表已輸出的全域資源，�
 
 ## 整合支援 \{#integration-support\}
 
-這些官方轉接器預設使用靜態渲染。建置階段尚未知的類別，需明確選擇執行階段生成。`pre-render` 從 HTML 生成 CSS，不需要用戶端執行階段；`progressive` 則結合 HTML 渲染與支援後續類別的執行階段。各轉接器能處理的 HTML 取決於主框架：
+這些官方轉接器預設使用靜態渲染。建置階段尚未知的類別，需明確選擇執行階段生成。`prerender` 從 HTML 生成 CSS，不需要用戶端執行階段；`progressive` 則結合 HTML 渲染與支援後續類別的執行階段。各轉接器能處理的 HTML 取決於主框架：
 
-| 轉接器 | 靜態 | 執行階段 | `pre-render` 與伺服器 HTML | `progressive` |
+| 轉接器 | 靜態 | 執行階段 | `prerender` 與伺服器 HTML | `progressive` |
 | --- | --- | --- | --- | --- |
 | [Vite](/guide/installation/vite) | 建置階段擷取 | 透過 Vite HTML 流程注入 | Vite 掛鉤處理的 HTML；自訂 SSR 需要伺服器整合 | Vite HTML 渲染加上執行階段；自訂 SSR 需自行渲染 HTML |
-| [Webpack](/guide/installation/webpack) | 建置階段擷取 | 注入編譯的 HTML 資產 | HTML 主機必須呼叫 `@master/css-server`；外掛沒有請求時伺服器掛鉤 | 提供執行階段傳遞；主機提供渲染後 HTML 與 hydration 資料 |
+| [Webpack](/guide/installation/webpack) | 建置階段擷取 | 注入編譯的 HTML 資產 | 掃描原始碼並生成樣式表。HTML 主機可呼叫 `@master/css-server` 從渲染完成的 HTML 生成 CSS | 提供執行階段傳遞；主機提供渲染後 HTML 與 hydration 資料 |
 | [Next.js](/guide/installation/nextjs) | 建置階段擷取 | 用戶端 instrumentation | 建置後處理 HTML 輸出；不轉換請求時動態 SSR | 建置渲染 HTML 加上執行階段；動態 SSR 不會自動注入伺服器 CSS |
 | [Astro](/guide/installation/astro) | 透過 Vite 在建置階段擷取 | 注入頁面指令碼 | Astro 中介軟體處理預先渲染頁面與伺服器 HTML 回應 | 中介軟體渲染加上執行階段 |
 | [Nuxt](/guide/installation/nuxtjs) | 透過 Vite 在建置階段擷取 | Nuxt 用戶端外掛 | 內容主體為字串的 Nitro HTML 回應；不轉換串流主體 | Nitro HTML 渲染加上用戶端執行階段 |

@@ -115,7 +115,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
     expect(css).not.toContain('#master-css-slot')
   })
 
-  test.each(['progressive', 'pre-render'] as const)('%s mode emits preset base CSS for the root Master CSS import', async (mode) => {
+  test.each(['progressive', 'prerender'] as const)('%s mode emits preset base CSS for the root Master CSS import', async (mode) => {
     const css = await buildCSSFixture({
       appClass: '(display:block)',
       plugins: [

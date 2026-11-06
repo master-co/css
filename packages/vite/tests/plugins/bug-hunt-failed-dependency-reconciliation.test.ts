@@ -7,7 +7,7 @@ import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
+const modes = ["static", 'runtime', 'prerender', 'progressive'] as const
 function fixture(resource = false) {
   const parent = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-failed-reconcile-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)

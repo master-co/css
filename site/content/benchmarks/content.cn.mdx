@@ -148,7 +148,7 @@ Master CSS 文档页面结合两种 CSS。每页的 `style#master-css` 主体保
 ---
 
 ## 技术附录 \{#current-results\}
-这些测试组介绍上述结果背后的成本：生产命令、Chromium 对 CSS 规模的反应，以及每种 Master CSS 渲染模式在浏览器中发送与执行的内容。选择渲染模式或诊断构建时间时，可以阅读这些数据。
+这些测试组介绍上述结果背后的成本：生产命令、Chromium 对 CSS 规模的反应，以及受测的 Master CSS 渲染模式在浏览器中发送与执行的内容。选择渲染模式或诊断构建时间时，可以阅读这些数据。
 
 ### 核心假设 \{#core-hypothesis\}
 交付方面的问题是：加载较少 CSS 规则所节省的浏览器工作，能否抵消运行时生成规则的成本。请比较完整页面生命周期：初始加载、后续交互与长时间会话清理。
@@ -259,7 +259,7 @@ Tailwind CSS 不是等效运行时实现的比较对象。在面向运行时的�
 ### Master CSS 交付模式 \{#master-css-delivery-modes\}
 回答的问题：各交付模式会产生多少初始负载、本地 Chromium 加载成本、运行时启动成本、程序加载，以及何种渐进式采用行为？
 
-测试组在静态测试用例集合中比较 Master CSS 静态、运行时、渐进式，以及 Tailwind CSS 静态浏览器对照变体。
+测试组在静态测试用例集合中比较 Master CSS 静态、运行时、渐进式，以及 Tailwind CSS 静态浏览器对照变体。测试没有单独测量 `prerender` 模式。
 
 <figure>
   <BenchmarkChart chart={MasterDeliveryModesSummary} />

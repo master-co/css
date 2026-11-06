@@ -89,6 +89,7 @@ node .output/server/index.mjs
 | --- | --- | --- |
 | 靜態 | 無 | 掃描原始碼後產生的樣式表 |
 | 執行階段 | `--mode runtime` | 瀏覽器執行階段，不提供伺服器端的初始頁面 CSS |
+| 預先渲染 | `--mode prerender` | CSS 隨內容主體為字串的 Nitro HTML 回應傳遞，無須瀏覽器執行階段 |
 | 漸進式 | `--mode progressive` | Nitro 提供首次回應 CSS，再交由執行階段接手 |
 
 <DocumentDisclosure title="在瀏覽器產生新類別">
@@ -116,5 +117,7 @@ npm create @master/css@VERSION -- --framework nuxt --mode progressive --yes
 漸進式模式會為字串形式的 Nitro HTML 回應本文加入首次回應 CSS；串流本文不會轉換。先停用 JavaScript 檢查初始樣式，再依上述方式測試頁面 manifest 中未包含的後續類別。
 
 也請在目標目錄測試複製後的部署產物：只在原地建置，無法證明所有 manifest 與程式路徑都可移轉。若複製後的伺服器回報原專案 `node_modules/.master-css/manifest/` 下的 `ENOENT` 路徑錯誤，代表它仍依賴建置機器上的 manifest，尚無法獨立部署。若靜態或執行階段模式能滿足應用程式的傳遞需求，請改用其中一種，並在移動輸出後再次驗證。
+
+在同一指令中使用 `--mode prerender`，即可傳遞 Nitro 渲染的 CSS，無須 Master CSS 瀏覽器執行階段。確認回應原始碼含有 `style#master-css`，並依上述方式驗證部署產物。
 
 </DocumentDisclosure>

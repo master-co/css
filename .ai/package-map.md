@@ -51,7 +51,7 @@ than loading every crate:
 | `@master/eslint-plugin-css` | `.` | ESLint visitors, reports, fixer adaptation, and config implementation |
 | `@master/eslint-config-css` | `.` | Deliberate thin official flat-config preset over the matching plugin version |
 | `@master/css-vite` | `.` | Vite rendering modes and plugin orchestration; runtime bootstrap is private |
-| `@master/css-webpack` | `.` | Webpack static/runtime integration |
+| `@master/css-webpack` | `.` | Webpack stylesheet delivery and browser runtime integration |
 | `@master/css-next` | `.`, `./adapter` | Next.js build and client instrumentation integration |
 | `@master/css-astro` | `.`, `./middleware` | Astro integration |
 | `@master/css-nuxt` | `.` | Nuxt module |

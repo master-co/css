@@ -95,10 +95,10 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 | 모드 | 클래스 출처 | 초기 CSS | 브라우저의 Master CSS |
 | --- | --- | --- | --- |
-| [정적](#static-rendering) | 소스 파일의 완전한 문자열 | 생성된 스타일시트 | 런타임과 엔진 없음 |
-| [사전](#pre-rendering--ssg-ssr) | 렌더링된 페이지 HTML | 페이지와 함께 전달되는 규칙 | 런타임과 엔진 없음 |
-| [런타임](#runtime-rendering) | 연결된 DOM 요소 | 런타임 시작 후 생성되는 규칙 | 런타임과 엔진 |
-| [점진적](#progressive-rendering) | 렌더링된 HTML과 이후 DOM 변경 | 페이지와 함께 전달되는 규칙 | 런타임이 사용을 추적하고 미포함 클래스가 나타날 때까지 엔진을 지연 가능 |
+| [정적](#static-rendering) (`static`) | 소스 파일의 완전한 문자열 | 생성된 스타일시트 | 런타임과 엔진 없음 |
+| [사전 렌더링](#pre-rendering--ssg-ssr) (`prerender`) | 렌더링된 페이지 HTML | 페이지와 함께 전달되는 규칙 | 런타임과 엔진 없음 |
+| [런타임](#runtime-rendering) (`runtime`) | 연결된 DOM 요소 | 런타임 시작 후 생성되는 규칙 | 런타임과 엔진 |
+| [점진적](#progressive-rendering) (`progressive`) | 렌더링된 HTML과 이후 DOM 변경 | 페이지와 함께 전달되는 규칙 | 런타임이 사용을 추적하고 미포함 클래스가 나타날 때까지 엔진을 지연 가능 |
 
 대화형 앱도 정적 CSS를 사용할 수 있습니다. 알려진 클래스 전환, CSS 변수 변경, 네이티브 선택자 사용에는 런타임 엔진이 필요하지 않습니다. 완전한 클래스 이름이 빌드 후 처음 알려질 때 런타임 생성을 고려해야 합니다.
 
@@ -299,12 +299,12 @@ renderer.dispose()
 
 ## 통합 지원 \{#integration-support\}
 
-다음 공식 어댑터의 기본값은 정적 렌더링입니다. 빌드 시점에 알 수 없는 클래스에는 런타임 생성을 명시적으로 선택합니다. `pre-render`는 클라이언트 런타임 없이 HTML에서 CSS를 생성하고 `progressive`는 HTML 렌더링과 후속 클래스용 런타임을 결합합니다. 어댑터가 처리할 수 있는 HTML은 호스트에 따라 다릅니다:
+다음 공식 어댑터의 기본값은 정적 렌더링입니다. 빌드 시점에 알 수 없는 클래스에는 런타임 생성을 명시적으로 선택합니다. `prerender`는 클라이언트 런타임 없이 HTML에서 CSS를 생성하고 `progressive`는 HTML 렌더링과 후속 클래스용 런타임을 결합합니다. 어댑터가 처리할 수 있는 HTML은 호스트에 따라 다릅니다:
 
-| 어댑터 | 정적 | 런타임 | `pre-render`와 서버 HTML | `progressive` |
+| 어댑터 | 정적 | 런타임 | `prerender`와 서버 HTML | `progressive` |
 | --- | --- | --- | --- | --- |
 | [Vite](/guide/installation/vite) | 빌드 시점 추출 | Vite HTML 파이프라인으로 삽입 | Vite 훅이 처리하는 HTML. 사용자 지정 SSR에는 서버 통합 필요 | Vite HTML 렌더링과 런타임. 사용자 지정 SSR은 자체 HTML 렌더링 필요 |
-| [Webpack](/guide/installation/webpack) | 빌드 시점 추출 | 컴파일 HTML 에셋에 삽입 | HTML 호스트가 `@master/css-server`를 호출해야 하며 플러그인에는 요청 시점 서버 훅이 없음 | 런타임 전달 제공. 호스트가 렌더링된 HTML과 hydration 데이터 제공 |
+| [Webpack](/guide/installation/webpack) | 빌드 시점 추출 | 컴파일 HTML 에셋에 삽입 | 소스 스캔으로 스타일시트 생성. HTML 호스트는 `@master/css-server`를 호출해 렌더링된 HTML에서 CSS를 생성할 수 있음 | 런타임 전달 제공. 호스트가 렌더링된 HTML과 hydration 데이터 제공 |
 | [Next.js](/guide/installation/nextjs) | 빌드 시점 추출 | 클라이언트 instrumentation | 빌드 후 HTML 출력 처리. 요청 시점 동적 SSR은 변환하지 않음 | 빌드 렌더링 HTML과 런타임. 동적 SSR은 서버 CSS 자동 삽입 없음 |
 | [Astro](/guide/installation/astro) | Vite를 통한 빌드 시점 추출 | 페이지 스크립트 삽입 | Astro 미들웨어가 사전 렌더링 페이지와 서버 HTML 응답 처리 | 미들웨어 렌더링과 런타임 |
 | [Nuxt](/guide/installation/nuxtjs) | Vite를 통한 빌드 시점 추출 | Nuxt 클라이언트 플러그인 | 본문이 문자열인 Nitro HTML 응답. 스트리밍 본문은 변환하지 않음 | Nitro HTML 렌더링과 클라이언트 런타임 |

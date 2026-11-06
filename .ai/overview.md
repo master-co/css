@@ -17,9 +17,9 @@ The same syntax can express declarations, selectors, native conditions, scoped v
 Master CSS is not just a utility preset. It is a CSS language engine plus framework packages:
 
 - Manifest-driven rule generation
-- Runtime rendering in the browser
-- Server pre-rendering
-- Static extraction
+- Four rendering modes: `static` extracts class names from source, `runtime` generates
+  CSS in the browser, `prerender` generates CSS from rendered HTML, and `progressive`
+  combines rendered HTML with browser generation.
 - Framework integrations
 - Language service and syntax highlighting
 - ESLint validation and class ordering
@@ -36,7 +36,7 @@ Compared with Tailwind:
 
 - Native declarations are parenthesized heads with full property names, such as `(font-size:1.5rem)` and `(background:blue):hover@sm`; common fixed values use short utilities such as `flex`, `hidden` and `items-center`.
 - Selectors and conditions are first-class syntax suffixes.
-- Runtime and progressive rendering are supported in addition to static rendering.
+- Rendered HTML and browser class changes can also supply class names for CSS generation.
 - CSS entries define theme tokens, native scoped overrides, custom media, utilities, native mixins and managed keyframes. Native component rules use `@layer components`. Mixin contents provide reusable wrappers without a variant registry.
 
 Compared with CSS-in-JS:

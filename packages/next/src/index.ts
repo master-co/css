@@ -677,7 +677,7 @@ export function withMasterCSS<T extends NextConfig>(
   nextConfig: T,
   options: MasterCSSNextOptions & ({ enabled: false } | { mode: 'runtime' })
 ): T
-export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'progressive' | 'pre-render' }): WithAdapterPath<T>
+export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'progressive' | 'prerender' }): WithAdapterPath<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'static' }): Promise<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: MasterCSSNextOptions & { mode?: 'static' }): Promise<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: MasterCSSNextOptions): T | WithAdapterPath<T> | Promise<T>

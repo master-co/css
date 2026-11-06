@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-astro` adapts Master CSS to Astro. It wraps `@master/css-vite`, injects runtime code for runtime and progressive modes, and registers Astro middleware for pre-render and progressive server rendering.
+`@master/css-astro` adapts Master CSS to Astro. It wraps `@master/css-vite`, injects runtime code for runtime and progressive modes, and registers Astro middleware for `prerender` and `progressive` server rendering.
 
 ## Owns
 
@@ -15,7 +15,7 @@
 - Vite mode semantics; keep behavior aligned with `@master/css-vite`.
 - Core runtime behavior, CSS generation, scanning, or server rendering.
 - Astro source extraction implementation; `@master/css-tooling/source` owns it.
-- Duplicate Vite HTML pre-render behavior unless duplicate style injection is handled.
+- Vite's HTML prerender plugin, which would duplicate style injection.
 
 ## Astro Build Contracts
 
@@ -42,7 +42,7 @@
 ## Risk Areas
 
 - Runtime script injection can duplicate Vite runtime injection.
-- Progressive and pre-render modes depend on Astro middleware seeing HTML before it is sent or written.
+- Progressive and `prerender` modes depend on Astro middleware seeing HTML before it is sent or written.
 - Tests are sparse, so integration behavior needs focused coverage or example validation.
 
 ## Safe Changes
@@ -53,7 +53,7 @@
 
 ## Dangerous Changes
 
-- Re-enabling Vite HTML pre-render plugin for Astro progressive/pre-render without duplicate-style handling.
+- Re-enabling Vite's HTML prerender plugin for Astro `progressive` and `prerender` without duplicate-style handling.
 - Changing runtime, scanner, server, or CSS generation behavior in this package.
 - Diverging mode defaults from `@master/css-vite`.
 

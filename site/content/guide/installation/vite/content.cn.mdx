@@ -147,12 +147,18 @@ npm run build
 ---
 
 ## 选择其他渲染模式 \{#rendering-modes\}
-默认使用静态模式，无需 Master CSS 启动代码。切换模式时，请保留 CSS 入口：
+默认使用静态模式，无需 Master CSS 启动代码。切换模式时，请保留 CSS 入口。
 
-| 框架 | 安装程序选项 | 运行时启动方式 |
+| 模式 | 安装程序选项 | CSS 交付方式 |
 | --- | --- | --- |
-| Vite、React、Vue | `--mode runtime` | 由 Vite 插件注入 `index.html` |
-| React Router、TanStack Start | `--mode runtime` | 根路由中仅在浏览器执行的导入 |
+| `static` | 无 | 扫描源代码后生成的样式表 |
+| `runtime` | `--mode runtime` | 浏览器运行时 |
+| `prerender` | `--mode prerender` | 从 Vite 处理的 HTML 生成 CSS |
+| `progressive` | `--mode progressive` | 从 Vite 处理的 HTML 生成 CSS，并加入浏览器运行时 |
+
+预渲染和渐进式模式只能为 Vite 处理的 HTML 中已有的类生成初始 CSS。空的应用挂载点不包含稍后才挂载的组件类。React Router、TanStack Start 等自行渲染 HTML 的宿主必须由服务器调用 [HTML 渲染器](/guide/rendering-modes#pre-rendering--ssg-ssr) 生成初始 CSS。
+
+如果 Vite 的 HTML 入口包含初始标记，请用 `--mode prerender` 或 `--mode progressive` 运行安装程序，构建应用，并检查响应源码是否包含 `style#master-css`。在渐进式模式下，还要检查浏览器是否为稍后添加的类生成规则。
 
 <DocumentDisclosure title="在浏览器中生成新类名">
 

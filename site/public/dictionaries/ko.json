@@ -166,7 +166,7 @@
   "Session steps": "세션 단계",
   "Set up the MCP server": "MCP 서버 설정",
   "Shapes and masks": "도형과 마스크",
-  "Ship static CSS by default, pre-render it into HTML or generate it in the browser. Your classes stay the same.": "기본적으로 정적 CSS를 전달합니다. HTML에 사전 렌더링하거나 브라우저에서 생성할 수도 있습니다. 사용하는 클래스는 같습니다.",
+  "Choose static, runtime, prerender, or progressive delivery. Your classes stay the same.": "정적, 런타임, 사전 렌더링, 점진적 전달 중에서 선택하세요. 클래스 작성법은 같습니다.",
   "Sizing": "크기",
   "Spacing": "간격",
   "Start with one class string,": "하나의 클래스 문자열에서 시작해,",

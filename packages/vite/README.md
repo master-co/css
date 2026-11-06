@@ -76,6 +76,15 @@ During development, `runtime` and `progressive` modes load the injected runtime
 under Vite's resolved `base`, including nested HTML pages. The `runtime` mode
 preload uses the same URL. Relative or empty bases follow Vite's development normalization.
 
+## Rendering modes
+
+| `mode` | Where Master CSS generates utility rules |
+| --- | --- |
+| `static` (default) | Scans source and writes the rules to a stylesheet. |
+| `runtime` | Generates rules in the browser for classes as they appear. |
+| `prerender` | Writes rules for classes in Vite's HTML into `style#master-css`. |
+| `progressive` | Writes initial rules into Vite's HTML and starts the browser engine when a class outside the page manifest appears. |
+
 ## Client types
 Add the client type reference when TypeScript source files import Master CSS virtual manifest, emittedGlobals, or generated CSS modules:
 
@@ -219,7 +228,7 @@ local imports whose descendants retain external imports. The browser applies the
 original layer, supports, and media conditions to the delivered child stylesheets.
 Development entries serve retained child CSS and resources under the configured
 base. Loading an entry normally and through SSR `?inline` shares its source identity.
-In pre-render mode, changing the project manifest reloads the page to refresh
+In `prerender` mode, changing the project manifest reloads the page to refresh
 server-rendered rules; progressive mode applies the update through its runtime.
 Native-only CSS edits do not require a manifest reload.
 Editing a retained development CSS child or an image resource updates connected
@@ -341,9 +350,9 @@ Pass the `options` object to `masterCSS(options)`.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `true` | Enables the integration. Use `false` to disable it. |
-| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render'` | `'static'` | Integration rendering mode. |
+| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'prerender'` | `'static'` | Integration rendering mode. |
 | `scanner` | `MasterCSSScannerConfiguration` | `{}` | Class usage scanning configuration. |
-| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | Mode-dependent | Enabled for runtime and progressive modes; disabled for static and pre-render modes. |
+| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | Mode-dependent | Enabled for runtime and progressive modes; disabled for static and `prerender` modes. |
 | `pruneNativeCSS` | `boolean` | `false` | Opt into pruning native CSS in project-owned sources. |
 
 See the [Vite installation guide](https://css.master.co/guide/installation/vite) for a full project setup.

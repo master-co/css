@@ -188,6 +188,10 @@ HTML プラグインは、スタイルシートのリンクと必要なランタ
 | --- | --- | --- |
 | 静的 | `mode: 'static'` | なし |
 | ランタイム | `mode: 'runtime'` | `--mode runtime` |
+| 事前レンダリング | `mode: 'prerender'` | `--mode prerender` |
+| プログレッシブ | `mode: 'progressive'` | `--mode progressive` |
+
+Webpack プラグインでは `prerender` と `progressive` も指定できます。Webpack 単体での `prerender` は、`static` と同じくソースの走査で CSS を生成します。`progressive` ではプラグインがブラウザーランタイムを供給します。どちらのモードでも、レンダリング済みの文書から初期 CSS を生成するには、HTML を配信するホストで[サーバーレンダラー](/guide/rendering-modes#pre-rendering--ssg-ssr)を呼び出します。`progressive` ではハイドレーションデータも供給します。
 
 <DocumentDisclosure title="ブラウザーで新しいクラスを生成する">
 

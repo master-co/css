@@ -28,4 +28,4 @@ bun run dev
 
 Open the URL printed by Vite. From this directory, run `bun run build` to generate `dist/`, then `bun run preview` to inspect the production build.
 
-See the [Vite installation guide](https://rc.css.master.co/guide/installation/vite).
+Vite also supports `runtime`, `prerender`, and `progressive`. See the [Vite installation guide](https://rc.css.master.co/guide/installation/vite) to choose a mode based on where class names first appear.

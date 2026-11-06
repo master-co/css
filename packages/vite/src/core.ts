@@ -91,13 +91,13 @@ function createPlugins(options: ResolvedMasterCSSVitePluginOptions, emittedGloba
     case 'static':
       break
     case 'progressive':
-      plugins.push(PreRenderPlugin(options, context))
+      plugins.push(PrerenderPlugin(options, context))
       if (options.injectRuntime) {
         plugins.push(...InjectRuntimePlugins(options))
       }
       break
-    case 'pre-render':
-      plugins.push(PreRenderPlugin(options, context))
+    case 'prerender':
+      plugins.push(PrerenderPlugin(options, context))
       break
   }
 
@@ -180,13 +180,13 @@ function AvoidFOUCPlugin(options: ResolvedMasterCSSVitePluginOptions, context: M
   )
 }
 
-function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
+function PrerenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
-      name: 'master-css:pre-render',
+      name: 'master-css:prerender',
       enforce: 'pre'
     },
-    async () => (await import('./plugins/pre-render')).default(options, context),
+    async () => (await import('./plugins/prerender')).default(options, context),
     [
       'configResolved',
       'buildStart',
