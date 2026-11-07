@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { readPublicEnv } from '../utils/public-env.js'
 import { organizationRedirects } from './organization-redirects'
 import { renderSitemap } from './sitemap'
+import { stabilizeIslandIds } from './stable-island-ids'
 import { locales } from '@master/internal-site/common/locales.js'
 
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
@@ -13,12 +14,21 @@ const publicEnv = readPublicEnv({ input: '.generated/public-env.json' })
 Object.assign(process.env, publicEnv)
 process.chdir(siteDir)
 
+await writeStableIslandIds()
 await generateSitemap()
 await generateStaticSocialImages({ siteDir, outDir, origin: publicEnv.PUBLIC_URL, logo: new URL('../public/images/css-logotype@light.png', import.meta.url), locales })
 await writeHeaders()
 await writeRedirects()
 await validateHydrationManifestReferences()
 await validateInlineScripts()
+
+async function writeStableIslandIds() {
+    for (const file of (await listFiles(outDir)).filter(file => file.endsWith('.html'))) {
+        const html = await readFile(file, 'utf8')
+        const stable = stabilizeIslandIds(html)
+        if (stable !== html) await writeFile(file, stable, 'utf8')
+    }
+}
 
 async function generateSitemap() {
     const baseUrl = publicEnv.PUBLIC_URL.replace(/\/$/, '')

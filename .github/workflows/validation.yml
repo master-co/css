@@ -272,7 +272,7 @@ jobs:
           bun run --filter site test:css-contract
           node --test site/scripts/verify-release-site.test.mjs
           node --import tsx --test site/utils/release-code-export.test.ts site/utils/agent-guide-data.test.ts site/utils/agent-content.test.ts
-          for check in test:home test:image-loader test:public-env test:llms test:docs-examples test:mdx-imports test:syntax test:reference test:atomic-classes test:lint-cache; do
+          for check in test:home test:image-loader test:island-ids test:public-env test:llms test:docs-examples test:mdx-imports test:syntax test:reference test:atomic-classes test:lint-cache; do
             bun run --filter site "$check"
           done
           bun run --filter site lint:full

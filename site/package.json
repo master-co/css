@@ -19,6 +19,7 @@
         "preview:cloudflare-pages": "bun run build:cloudflare-pages && bun --bun wrangler pages dev site/out --cwd ..",
         "test:home": "node --import tsx --test content/components/home-content.test.ts",
         "test:image-loader": "bun test utils/cloudflare-image-loader.test.ts",
+        "test:island-ids": "bun test scripts/stable-island-ids.test.ts",
         "test:public-env": "bun test utils/public-env.test.ts",
         "test:llms": "node --import tsx --test scripts/generate-llms-txt-test-cli.ts",
         "test:docs-examples": "node --import tsx --test scripts/validate-doc-examples.test.ts",
