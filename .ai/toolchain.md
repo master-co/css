@@ -51,7 +51,7 @@ also explicitly use Node:
   Bun differs in data-URL module imports, native TypedArray references, source maps,
   filesystem globs, and `module.stripTypeScriptTypes`. Build and task orchestration
   still run through Bun; these suites exercise their supported Node hosts.
-- semantic-release, npm publication/provenance, VSCE/Open VSX, and native consumer smoke.
+- The release (`scripts/release.mjs` with Aronrepo), npm publication/provenance, VSCE/Open VSX, and native consumer smoke.
 - Benchmarks intentionally measuring Node hosts and Node-specific profiling tools.
 
 Do not globally alias `node` to Bun. Package scripts select Bun explicitly;

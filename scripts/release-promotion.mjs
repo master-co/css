@@ -3,13 +3,10 @@ import { createHash } from 'node:crypto'
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { execa } from 'execa'
-import { getChannel, readPackage } from '@aronrepo/semantic-release-pnpm'
+import { getChannel, readPackage } from './release-manifest.mjs'
 import { assertNpmOidcEnvironment, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 import { verifyRegistryConsumer } from './release-registry-consumer.mjs'
 import { assertReleaseProvenanceProof, verifyReleaseProvenance } from './release-registry-provenance.mjs'
-// semantic-release writes channel Git notes before addChannel. Use the installed
-// release selector in verifyConditions to block that path before those writes.
-import getReleaseToAdd from 'semantic-release/lib/get-release-to-add.js'
 
 const digest = bytes => `sha512-${createHash('sha512').update(bytes).digest('base64')}`
 const statePath = context => resolve(context.cwd ?? process.cwd(), context.env?.MASTER_CSS_RELEASE_STATE ?? 'release-artifacts/promotion-state.json')
@@ -224,7 +221,7 @@ async function initialize(config, context, fetchMetadata) {
   assert.match(revision(context), /^[a-f0-9]{40}$/)
   const channel = getChannel(context.nextRelease.channel)
   const packages = []
-  const { packedManifest, validatePackedArchive } = await import('./semantic-release-workspace.mjs')
+  const { packedManifest, validatePackedArchive } = await import('./release-workspace.mjs')
   const entries = await cohort(config, context)
   const names = new Set(entries.map(entry => entry.pkg.name))
   for (const { pkg } of entries) {
@@ -289,7 +286,7 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   assert.ok(item, 'Package is outside the release cohort')
   const bytes = await readFile(archive)
   assert.equal(digest(bytes), item.integrity, 'Prepared archive differs from release state')
-  const { validatePackedArchive } = await import('./semantic-release-workspace.mjs')
+  const { validatePackedArchive } = await import('./release-workspace.mjs')
   validatePackedArchive(bytes, pkg.name, state.version, state.revision)
   const expected = { ...item, gitHead: state.revision }
   const existing = await readRegistryVersion(pkg.name, state.version, fetchMetadata)
@@ -310,7 +307,7 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   }
   assert.equal(item.staged, false, `Previously staged candidate disappeared: ${pkg.name}`)
   if (deferVerification) {
-    const { packedManifest } = await import('./semantic-release-workspace.mjs')
+    const { packedManifest } = await import('./release-workspace.mjs')
     const { publishedDependencies } = await import('./release-readiness.mjs')
     const cohortNames = new Set(state.packages.map(entry => entry.name))
     await verifyUploads(state, new Set(publishedDependencies(packedManifest(bytes), cohortNames)), context, fetchMetadata, wait)
@@ -382,16 +379,13 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
   provenanceProbe = verifyReleaseProvenance, wait = pause } = {}) {
   async function verifyConditions(_config, context) {
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_PROMOTE')
-    if (context.branch && getReleaseToAdd(context)) {
-      throw new Error('Automatic addChannel is disabled before semantic-release writes Git notes; use the explicit archived-state recovery entrypoint')
-    }
   }
   async function verifyRelease(config, context) {
-    // semantic-release creates its Git tag before publish. Reject known immutable
-    // collisions before that point; interrupted releases use release-recover.
+    // scripts/release.mjs creates the Git tag before npm publication. Reject known
+    // immutable collisions before that point; interrupted releases use release-recover.
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_PROMOTE')
-    assert.notEqual(context.env?.MASTER_CSS_RELEASE_RECOVERY, '1', 'Use release-recover.mjs instead of semantic-release for recovery')
+    assert.notEqual(context.env?.MASTER_CSS_RELEASE_RECOVERY, '1', 'Use release-recover.mjs instead of scripts/release.mjs for recovery')
     const { version } = context.nextRelease
     for (const { pkg } of await cohort(config, context)) {
       assert.equal(pkg.publishConfig?.provenance, true, `Formal release requires signed npm provenance: ${pkg.name}`)
@@ -404,7 +398,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
   async function promote(config, context) {
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_PROMOTE')
     const state = await load(context)
-    assert.ok(state, 'Promotion/addChannel requires the archived release state and its original checksums')
+    assert.ok(state, 'Promotion requires the archived release state and its original checksums')
     assertIdentity(state, context)
     await assertCohort(state, config, context, true)
     const channel = getChannel(context.nextRelease.channel)
@@ -421,7 +415,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     }
     // Run against actual public registry versions in an isolated host consumer.
     // A failed install, wrong lock identity or failed native/Wasm/CLI/PHP smoke
-    // aborts before any formal tag write, including during recovery/addChannel.
+    // aborts before any formal tag write, including during recovery.
     state.consumerProof = await consumerProbe(state, context)
     assert.equal(state.consumerProof.version, state.version, 'Consumer proof version differs')
     assert.equal(state.consumerProof.revision, state.revision, 'Consumer proof revision differs')
@@ -453,8 +447,5 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
     await save(context, state)
     return { name: `Verified npm cohort (@${channel})`, channel }
   }
-  return { verifyConditions, verifyRelease, publish: promote, addChannel: promote }
+  return { verifyConditions, verifyRelease, publish: promote }
 }
-
-const promotion = createReleasePromotion()
-export const { verifyConditions, verifyRelease, publish, addChannel } = promotion

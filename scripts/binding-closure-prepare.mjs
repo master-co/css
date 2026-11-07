@@ -6,7 +6,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { readWorkspacePackages, releaseClosure, stageSnapshot } from './site-toolchain-snapshot.mjs'
-import { createWorkspaceRelease, packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest, validatePackedArchive } from './release-workspace.mjs'
 
 const targetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
 const fields = ['dependencies', 'optionalDependencies', 'peerDependencies']

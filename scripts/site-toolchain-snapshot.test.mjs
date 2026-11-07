@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { execa } from 'execa'
-import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest } from './release-workspace.mjs'
 import { createSnapshot, releaseClosure, snapshotManifest, snapshotVersion, stageSnapshot } from './site-toolchain-snapshot.mjs'
 
 const revision = 'f'.repeat(40)

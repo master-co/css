@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 import { registryConsumerEnvironment, registryConsumerSource } from './release-registry-consumer.mjs'
 import { readWorkspacePackages, stageSnapshot } from './site-toolchain-snapshot.mjs'
-import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest } from './release-workspace.mjs'
 import { inspectArchives } from './release-readiness.mjs'
 
 const nativePattern = /^@master\/css-binding-(?:darwin|linux|win32)-/

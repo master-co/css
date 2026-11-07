@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { test } from 'node:test'
 import { execa } from 'execa'
-import { createWorkspaceRelease, packedManifest, validatePackedArchive, validatePackedManifest } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest, validatePackedArchive, validatePackedManifest } from './release-workspace.mjs'
 import { assertNpmOidcEnvironment, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 
 const githubEnv = {
@@ -90,7 +90,6 @@ test('release versions all workspaces before packing and publishes verified tarb
     assert.equal(publish.args[publish.args.indexOf('--tag') + 1], 'candidate-1.2.3')
     assert.equal(packedManifest(await readFile(publish.args[1])).gitHead, revision)
     assert.equal(packedManifest(await readFile(publish.args[1])).dependencies['@fixture/b'], '1.2.3')
-    await plugin.addChannel(config, context)
     assert.ok(!calls.some(call => call.command === 'npm' && call.args[0] === 'dist-tag'))
     assert.ok(calls.every(call => call.command !== 'pnpm'))
     assert.deepEqual(calls.filter(call => call.command === 'npm').map(call => call.args[0]), ['publish'])
@@ -201,7 +200,6 @@ test('OIDC command failure propagates without retrying credentials or requiring 
     assert.deepEqual(calls, [], 'reject local publication before even packing')
     await plugin.verifyConditions(config, context)
     await assert.rejects(plugin.publish(config, context), error => error === failure)
-    assert.equal(await plugin.addChannel(config, context), false)
     assert.deepEqual(calls, ['pm', 'publish'])
     for (const session of sessions) await assert.rejects(stat(session), { code: 'ENOENT' })
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }

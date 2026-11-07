@@ -11,8 +11,8 @@ import { setTimeout as pause } from 'node:timers/promises'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 import { readWorkspacePackages, stageSnapshot } from './site-toolchain-snapshot.mjs'
-import { createWorkspaceRelease, packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
-import { readPublishedPackage, readRegistryTags } from './semantic-release-promotion.mjs'
+import { createWorkspaceRelease, packedManifest, validatePackedArchive } from './release-workspace.mjs'
+import { readPublishedPackage, readRegistryTags } from './release-promotion.mjs'
 import { assertNpmOidcEnvironment, npmRegistry } from './npm-oidc.mjs'
 
 const repository = 'master-co/css', repositoryId = 434642460

@@ -1,20 +1,4 @@
 #!/usr/bin/env sh
 
-bun --bun commitlint --edit "$1" || {
-    cat <<'EOF'
-
-Master CSS commit messages must follow Aronrepo conventional commits:
-  Type(Target): Summary
-
-Examples:
-  Fix(Core): Parse escaped selectors
-  Docs(Site): Update box shadow reference
-  Test(CLI): Cover extract watch mode
-
-Types:
-  Bump, Feat, New, Perf, Add, Update, Improve, Fix, Deprecate, Drop, Docs, Upgrade, Revert, Example, Test, Refactor, Chore, Misc
-
-Use PascalCase types, optional scopes, sentence case, and no trailing period.
-EOF
-    exit 1
-}
+# Prints the problem and a suggested header; `bun x aronrepo policy` lists every type.
+bun x aronrepo check --edit "$1"
