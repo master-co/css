@@ -2,7 +2,7 @@
 // tag and notes from the commits (the same resolver as `aronrepo check` and
 // `aronrepo explain`); this repository's workspace and promotion modules stage,
 // verify and promote the npm cohort; Aronrepo then creates the GitHub release.
-import { mkdir, writeFile } from 'node:fs/promises'
+import { appendFile, mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import semver from 'semver'
@@ -72,6 +72,7 @@ async function resume(environment, plan, roots, fetchMetadata) {
 
 export async function release({
   dryRun = false,
+  githubOutput,
   branch,
   cwd = process.cwd(),
   env = process.env,
@@ -92,6 +93,8 @@ export async function release({
   }
   const roots = releasePackageRoots(cwd)
   if (dryRun) {
+    // Later workflow steps, such as the editor version gate, run only for an actual release.
+    if (githubOutput) await appendFile(githubOutput, `release=${plan.release || ''}\nversion=${plan.version ?? ''}\ntag=${plan.tag ?? ''}\n`)
     log(plan.version
       ? `\nDry run: would release ${plan.tag} of ${roots.length} packages on ${plan.channel.distTag}.\n\n${plan.notes}`
       : '\nDry run: no release.')
@@ -150,10 +153,12 @@ export async function release({
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   // `--dry-run` prints the plan and notes without verifying, packing or writing anything;
+  // `--github-output` also writes `release`, `version` and `tag` to $GITHUB_OUTPUT;
   // `--branch <name>` plans as that release branch, such as `main` from a feature branch.
   const branchIndex = process.argv.indexOf('--branch')
   release({
     dryRun: process.argv.includes('--dry-run'),
+    ...(process.argv.includes('--github-output') ? { githubOutput: process.env.GITHUB_OUTPUT } : {}),
     ...(branchIndex > 0 ? { branch: process.argv[branchIndex + 1] } : {})
   }).catch(error => {
     console.error(error instanceof Error ? error.stack ?? error.message : error)

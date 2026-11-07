@@ -32,9 +32,13 @@ test('release publishes only the same-run artifacts whose bytes and all sixteen 
   const release = workflow('release'), editor = workflow('editor-verification')
   assert.equal(release.jobs.release.needs, 'validation')
   assert.equal(release.jobs.validation.with.release_build, true)
+  const plan = release.jobs.release.steps.findIndex(step => step.run === 'node scripts/release.mjs --dry-run --github-output')
   const availability = release.jobs.release.steps.findIndex(step => step.run?.includes('verify-store-availability.mjs'))
   const npm = release.jobs.release.steps.findIndex(step => step.run === 'bun run release')
-  assert.ok(availability >= 0 && availability < npm)
+  assert.ok(plan >= 0 && plan < availability && availability < npm)
+  // Only a planned release needs unused editor versions; a no-release push must not fail on them.
+  assert.equal(release.jobs.release.steps[plan].id, 'plan')
+  assert.match(release.jobs.release.steps[availability].if, /steps\.plan\.outputs\.version != ''/)
   const steps = release.jobs['publish-editors'].steps
   const downloads = steps.filter(step => step.uses?.startsWith('actions/download-artifact@'))
   assert.equal(downloads.length, 2)
