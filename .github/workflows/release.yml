@@ -83,8 +83,12 @@ jobs:
           test "$(npm --version)" = 11.21.0
           bun run check:release
           node --test scripts/release.test.mjs scripts/release-workspace.test.mjs scripts/release-promotion.test.mjs scripts/release-registry-provenance.test.mjs
+      # A push without release commits, or a rerun on a tagged commit, publishes no editor.
+      - name: Plan the release
+        id: plan
+        run: node scripts/release.mjs --dry-run --github-output
       - name: Require unused editor versions before publishing npm
-        if: ${{ needs.validation.outputs.vscode_release_affected == 'true' }}
+        if: ${{ needs.validation.outputs.vscode_release_affected == 'true' && steps.plan.outputs.version != '' }}
         run: node packages/vscode/scripts/verify-store-availability.mjs
       - run: bun run release
         env:

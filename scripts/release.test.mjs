@@ -147,3 +147,19 @@ test('releases nothing for non-release commits, and resumes the GitHub release o
   assert.deepEqual(promoted.uploads, ['release-notes-v1.0.1.md'])
   assert.deepEqual(promoted.steps, ['github v1.0.1'])
 })
+
+test('a dry run writes the plan for later workflow steps without releasing', async () => {
+  const { cwd, env, commit } = createRepo()
+  const output = path.join(cwd, 'github-output')
+  const harness = createHarness(cwd, env)
+  const quiet = await release({ ...harness.options, dryRun: true, githubOutput: output, env: { ...env, GITHUB_REF_NAME: 'main' } })
+  assert.equal(quiet.status, 'dry-run')
+  assert.equal(readFileSync(output, 'utf8'), 'release=\nversion=\ntag=\n')
+
+  commit('Fix(A): Repair the cache', { 'packages/a/index.js': 'export {}' })
+  writeFileSync(output, '')
+  await release({ ...harness.options, dryRun: true, githubOutput: output, env: { ...env, GITHUB_REF_NAME: 'main' } })
+  assert.equal(readFileSync(output, 'utf8'), 'release=patch\nversion=1.0.1\ntag=v1.0.1\n')
+  assert.deepEqual(harness.steps, [])
+  assert.deepEqual(harness.releases, [])
+})
