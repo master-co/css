@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { execa } from 'execa'
 import { getChannel, readPackage } from '@aronrepo/semantic-release-pnpm'
@@ -345,6 +345,39 @@ export async function stagePackage(config, context, pkg, archive, executeNpm, fe
   return state.candidateTag
 }
 
+// npm CLI drops a failed OIDC token exchange silently and sends the request
+// unauthenticated, so the only symptom is E401. A rejected request writes no tag,
+// so a fresh exchange may retry it; the exchange's own log lines explain a
+// persistent refusal (missing "Allow npm dist-tag" or a non-matching publisher).
+export const distTagRetryDelays = [15_000, 30_000, 60_000]
+async function oidcLog(cwd) {
+  const dir = join(cwd, 'cache', '_logs')
+  const files = await readdir(dir).catch(() => [])
+  const lines = []
+  for (const file of files.sort()) {
+    for (const line of (await readFile(join(dir, file), 'utf8').catch(() => '')).split('\n')) {
+      if (/\boidc\b|oidc\/token\/exchange|id-token/i.test(line)) lines.push(line.replace(/^\d+\s+/, ''))
+    }
+  }
+  return lines.join('\n')
+}
+
+async function addDistTag(run, env, spec, tag, wait) {
+  for (let attempt = 0; ; attempt++) {
+    const session = await createNpmOidcSession(env)
+    try {
+      const { cleanup, ...options } = session
+      await run('npm', ['dist-tag', 'add', spec, tag, '--registry', npmRegistry, '--fetch-retries=0'], options)
+      return
+    } catch (error) {
+      const log = await oidcLog(session.cwd)
+      if (log) console.error(`npm OIDC log for dist-tag ${spec} ${tag} (attempt ${attempt + 1}):\n${log}`)
+      if (!/\bE401\b/.test(`${error.stderr ?? ''}${error.message ?? ''}`) || attempt >= distTagRetryDelays.length) throw error
+      await wait(distTagRetryDelays[attempt])
+    } finally { await session.cleanup() }
+  }
+}
+
 export function createReleasePromotion({ run = execa, fetchMetadata = fetch, consumerProbe = verifyRegistryConsumer,
   provenanceProbe = verifyReleaseProvenance, wait = pause } = {}) {
   async function verifyConditions(_config, context) {
@@ -409,11 +442,7 @@ export function createReleasePromotion({ run = execa, fetchMetadata = fetch, con
       promotion.pending = pkg.name
       state.events.push({ operation: 'promotion-start', name: pkg.name, channel, at: new Date().toISOString() })
       await save(context, state)
-      const session = await createNpmOidcSession(context.env)
-      try {
-        const { cleanup, ...options } = session
-        await run('npm', ['dist-tag', 'add', `${pkg.name}@${state.version}`, channel, '--registry', npmRegistry, '--fetch-retries=0'], options)
-      } finally { await session.cleanup() }
+      await addDistTag(run, context.env, `${pkg.name}@${state.version}`, channel, wait)
       await confirmRegistryTag(pkg.name, channel, state.version, promotion.baseline[pkg.name], fetchMetadata, wait)
       promotion.promoted.push(pkg.name)
       promotion.pending = null

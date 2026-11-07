@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import test from 'node:test'
 import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
-import { createReleasePromotion, readInstallableVersion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './semantic-release-promotion.mjs'
+import { createReleasePromotion, distTagRetryDelays, readInstallableVersion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './semantic-release-promotion.mjs'
 import { recoverRelease } from './release-recover.mjs'
 import { registryConsumerEnvironment, verifyRegistryLock } from './release-registry-consumer.mjs'
 
@@ -27,7 +27,7 @@ async function fixture(t, { dependent = false } = {}) {
     MASTER_CSS_RELEASE_STAGE: '1', MASTER_CSS_RELEASE_PROMOTE: '1' }, nextRelease: { version: '2.0.0', channel: 'rc', gitHead: revision } }
   const registry = new Map(), calls = [], waits = []
   const controls = { failUpload: null, failAfterUpload: null, failTag: null, failAfterTag: null, failConsumer: false, failProvenance: false, wrongProof: false,
-    afterTagReads: [], autoLatest: false, forbiddenTags: null, scanOnUpload: false, scanning: new Set(), rejectScan: null }
+    afterTagReads: [], autoLatest: false, forbiddenTags: null, scanOnUpload: false, scanning: new Set(), rejectScan: null, unauthorizedTags: new Map() }
   const pendingTagReads = new Map()
   for (const letter of ['a', 'b']) {
     const root = join(cwd, 'packages', letter)
@@ -85,6 +85,14 @@ async function fixture(t, { dependent = false } = {}) {
         assert.deepEqual(args.slice(0, 2), ['dist-tag', 'add'])
         const split = args[2].lastIndexOf('@'), name = args[2].slice(0, split), version = args[2].slice(split + 1)
         if (controls.failTag === name) throw new Error('fixture tag interruption')
+        if (controls.unauthorizedTags.get(name) > 0) {
+          // Model npm CLI: a refused OIDC exchange is only logged, then the PUT goes out unauthenticated.
+          controls.unauthorizedTags.set(name, controls.unauthorizedTags.get(name) - 1)
+          await mkdir(join(options.cwd, 'cache', '_logs'), { recursive: true })
+          await writeFile(join(options.cwd, 'cache', '_logs', 'debug-0.log'),
+            '12 verbose oidc Failed token exchange request with body message: fixture refusal\n13 verbose cli other\n')
+          throw Object.assign(new Error('Command failed: npm dist-tag add'), { stderr: 'npm error code E401\nnpm error 401 Unauthorized' })
+        }
         registry.get(name)['dist-tags'][args[3]] = version
         if (name === '@fixture/a' && controls.afterTagReads.length) pendingTagReads.set(name, [...controls.afterTagReads])
         if (controls.failAfterTag === name) throw new Error('fixture lost tag response')
@@ -240,6 +248,35 @@ test('partial promotion records interruption and recovers a successful command w
   await f.promotion.publish(f.config, f.context)
   assert.equal((await f.state()).channels.rc.complete, true)
   assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 2, 'No duplicate writes when registry confirms recorded pending operation')
+})
+
+test('an unauthenticated tag write is retried with a fresh OIDC exchange and logs why the exchange failed', async t => {
+  const f = await fixture(t)
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  f.controls.unauthorizedTags.set('@fixture/a', 1)
+  const errors = []
+  t.mock.method(console, 'error', message => errors.push(message))
+  await f.promotion.publish(f.config, f.context)
+  assert.equal((await f.state()).channels.rc.complete, true)
+  assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 3)
+  assert.ok(f.waits.includes(distTagRetryDelays[0]))
+  assert.match(errors.join('\n'), /oidc Failed token exchange request with body message: fixture refusal/)
+  assert.doesNotMatch(errors.join('\n'), /verbose cli other/)
+})
+
+test('a persistent E401 stops after bounded retries; other tag failures are never retried', async t => {
+  const f = await fixture(t)
+  await f.prepare(); await f.stage('a'); await f.stage('b')
+  t.mock.method(console, 'error', () => {})
+  f.controls.unauthorizedTags.set('@fixture/a', Infinity)
+  await assert.rejects(f.promotion.publish(f.config, f.context), /E401|dist-tag add/)
+  assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, distTagRetryDelays.length + 1)
+  assert.equal(f.registry.get('@fixture/a')['dist-tags'].rc, '1.0.0')
+  const g = await fixture(t)
+  await g.prepare(); await g.stage('a'); await g.stage('b')
+  g.controls.failTag = '@fixture/a'
+  await assert.rejects(g.promotion.publish(g.config, g.context), /tag interruption/)
+  assert.equal(g.calls.filter(args => args[0] === 'dist-tag').length, 1)
 })
 
 test('wrong immutable bytes or missing provenance blocks every formal tag write', async t => {
