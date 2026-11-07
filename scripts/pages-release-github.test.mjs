@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import { advancePointer, completedPagesCheck, downloadManifest, downloadPublicBytes, publishManifest, verifyLiveIdentity, waitForPages } from './pages-release-github.mjs'
 import { identityPath, inventoryDigest, jsonBytes, manifestName, manifestUrl, sha256 } from './pages-site-manifest.mjs'
 
-const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
+const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
   channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
   origin: 'https://css.master.co', imageTransformations: false }
 const files = [{ path: 'index.html', size: 10, sha256: 'a'.repeat(64) }, { path: identityPath, size: 20, sha256: 'b'.repeat(64) }]

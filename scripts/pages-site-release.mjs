@@ -10,7 +10,9 @@ const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignor
 const remote = `https://github.com/${repository}.git`
 const manifestFile = 'release-artifacts/site.manifest.json'
 
-export function selectExactTag(refs, revision, channel) {
+const tagPatterns = { main: /^v(\d+)\.(\d+)\.(\d+)$/, rc: /^v(\d+)\.(\d+)\.(\d+)-rc\.(\d+)$/ }
+
+function tagTargets(refs) {
   const tags = new Map()
   for (const line of refs.trim().split('\n')) {
     const match = line.match(/^([a-f0-9]{40})\trefs\/tags\/(v[^\s]+?)(\^\{\})?$/)
@@ -18,24 +20,77 @@ export function selectExactTag(refs, revision, channel) {
     const previous = tags.get(match[2]) ?? {}
     tags.set(match[2], { ...previous, [match[3] ? 'peeled' : 'object']: match[1] })
   }
-  const pattern = channel === 'main' ? /^v\d+\.\d+\.\d+$/ : /^v\d+\.\d+\.\d+-rc\.\d+$/
-  const matches = [...tags].filter(([tag, target]) => pattern.test(tag) && (target.peeled ?? target.object) === revision)
+  return new Map([...tags].map(([tag, target]) => [tag, target.peeled ?? target.object]))
+}
+
+/** The highest release tag of a channel, compared numerically. */
+export function newestTag(tags, channel) {
+  const pattern = tagPatterns[channel]
+  assert.ok(pattern, 'Only main and rc can deliver the site')
+  const parts = tag => tag.match(pattern).slice(1).map(Number)
+  return tags.filter(tag => pattern.test(tag)).sort((a, b) => {
+    const [x, y] = [parts(a), parts(b)]
+    return x.map((value, index) => y[index] - value).find(Boolean) ?? 0
+  })[0]
+}
+
+export function selectExactTag(refs, revision, channel) {
+  const matches = [...tagTargets(refs)].filter(([tag, target]) => tagPatterns[channel]?.test(tag) && target === revision)
   assert.equal(matches.length, 1, 'Require exactly one actual release tag on this exact source commit; never use the latest remote tag')
   return matches[0][0]
 }
 
+/**
+ * The release a Pages source documents: the release tagged on that exact commit, or for a
+ * site-only commit the channel's newest release, whose published manifest names this commit.
+ */
+export function selectReleaseTag(refs, revision, channel) {
+  const targets = tagTargets(refs)
+  const exact = [...targets].filter(([tag, target]) => tagPatterns[channel]?.test(tag) && target === revision)
+  assert.ok(exact.length <= 1, 'Require at most one actual release tag on this exact source commit')
+  if (exact.length) return { tag: exact[0][0], releaseRevision: revision }
+  const tag = newestTag([...targets.keys()], channel)
+  assert.ok(tag, 'A published release on this channel is required')
+  return { tag, releaseRevision: targets.get(tag) }
+}
+
+/**
+ * Decides whether a push delivers the site. A release delivers with its own version. Without
+ * one, the site still delivers when no release path changed since the channel's newest
+ * release: its workspace packages are then exactly what users install. Otherwise the site
+ * waits for the release of those changes, so it never documents unpublished behavior.
+ */
+export function planDelivery({ released, version, channel, reachableTags, releasePathChanges }) {
+  if (released) {
+    assert.match(version ?? '', /^\d+\.\d+\.\d+(-rc\.\d+)?$/, 'A release delivers with its actual version')
+    return { deliver: true, kind: 'release', version }
+  }
+  const tag = newestTag(reachableTags, channel)
+  if (!tag) return { deliver: false, reason: `No ${channel} release precedes this commit.` }
+  const changes = releasePathChanges(tag)
+  if (changes.length) {
+    const listed = changes.slice(0, 10).join(', ') + (changes.length > 10 ? `, and ${changes.length - 10} more` : '')
+    return { deliver: false, reason: `Unreleased package changes since ${tag} (${listed}); the site deploys with their release.` }
+  }
+  return { deliver: true, kind: 'site', version: tag.slice(1) }
+}
+
 export function ciMetadata(env = process.env, runGit = git) {
   assert.equal(env.GITHUB_REPOSITORY, repository)
-  assert.equal(env.GITHUB_EVENT_NAME, 'push', 'Site delivery belongs to an actual release push')
-  assert.equal(runGit(['rev-parse', 'HEAD']), env.GITHUB_SHA, 'Checkout differs from the release source')
+  assert.equal(env.GITHUB_EVENT_NAME, 'push', 'Site delivery belongs to a push of its channel branch')
+  assert.equal(runGit(['rev-parse', 'HEAD']), env.GITHUB_SHA, 'Checkout differs from the site source')
+  assert.ok(['release', 'site'].includes(env.SITE_DELIVERY), 'Plan the delivery before building the site')
   const channel = env.GITHUB_REF_NAME
-  const metadata = releaseMetadata({ repository, revision: env.GITHUB_SHA, version: env.PUBLIC_VERSION,
-    tag: `v${env.PUBLIC_VERSION}`, channel, deliveryBranch: channels[channel]?.deliveryBranch,
+  const tag = `v${env.PUBLIC_VERSION}`
+  const releaseRevision = runGit(['rev-parse', '--verify', `refs/tags/${tag}^{commit}`])
+  const metadata = releaseMetadata({ repository, revision: env.GITHUB_SHA, releaseRevision, version: env.PUBLIC_VERSION,
+    tag, channel, deliveryBranch: channels[channel]?.deliveryBranch,
     project: env.PAGES_PROJECT, subdomain: env.PAGES_SUBDOMAIN, origin: env.PUBLIC_URL, imageTransformations: false })
   assert.equal(env.PUBLIC_COMMIT_REF, channel)
   assert.equal(env.MASTER_CSS_IMAGE_TRANSFORMATIONS, 'false')
   assert.ok(['bootstrap', 'production'].includes(env.PAGES_RELEASE_MODE), 'Choose an explicit bootstrap or production delivery mode')
-  assert.equal(runGit(['rev-parse', '--verify', `refs/tags/${metadata.tag}^{commit}`]), metadata.revision, 'Actual release tag differs from this source')
+  if (env.SITE_DELIVERY === 'release') assert.equal(releaseRevision, metadata.revision, 'Actual release tag differs from this source')
+  else assert.notEqual(releaseRevision, metadata.revision, 'A tagged release commit delivers through its release')
   return metadata
 }
 
@@ -45,8 +100,8 @@ export function hostedMetadata(env = process.env, runGit = git) {
   assert.ok(channel, 'Pages must build a release-success delivery branch')
   assert.match(env.CF_PAGES_COMMIT_SHA ?? '', /^[a-f0-9]{40}$/)
   assert.equal(runGit(['rev-parse', 'HEAD']), env.CF_PAGES_COMMIT_SHA, 'Cloudflare source identity differs')
-  const tag = selectExactTag(runGit(['ls-remote', '--tags', remote, 'v*']), env.CF_PAGES_COMMIT_SHA, channel)
-  const metadata = releaseMetadata({ repository, revision: env.CF_PAGES_COMMIT_SHA, version: tag.slice(1), tag, channel,
+  const { tag, releaseRevision } = selectReleaseTag(runGit(['ls-remote', '--tags', remote, 'v*']), env.CF_PAGES_COMMIT_SHA, channel)
+  const metadata = releaseMetadata({ repository, revision: env.CF_PAGES_COMMIT_SHA, releaseRevision, version: tag.slice(1), tag, channel,
     deliveryBranch: env.CF_PAGES_BRANCH, project: env.MASTER_CSS_PAGES_PROJECT,
     subdomain: env.MASTER_CSS_PAGES_SUBDOMAIN, origin: channels[channel].origin, imageTransformations: false })
   for (const [name, expected] of Object.entries({ PUBLIC_COMMIT_REF: channel, PUBLIC_VERSION: metadata.version,
@@ -78,12 +133,12 @@ async function publicCohort(root = '.') {
 
 export function registryFromState(state, metadata, names) {
   assert.equal(state.schemaVersion, 1)
-  assert.equal(state.revision, metadata.revision)
+  assert.equal(state.revision, metadata.releaseRevision)
   assert.equal(state.version, metadata.version)
   const channel = metadata.channel === 'main' ? 'latest' : 'rc'
   assert.equal(state.channels?.[channel]?.complete, true, 'The whole public cohort must be promoted first')
   assert.deepEqual([...state.channels[channel].promoted].sort(), names)
-  assert.equal(state.consumerProof?.revision, metadata.revision)
+  assert.equal(state.consumerProof?.revision, metadata.releaseRevision)
   assert.equal(state.consumerProof?.version, metadata.version)
   assert.equal(state.consumerProof?.smoke?.native, 'native')
   for (const key of ['nativeWasmParity', 'stackedConditions', 'publicPHPSource', 'cliHelp']) assert.equal(state.consumerProof?.smoke?.[key], true)
@@ -106,18 +161,73 @@ export async function verifyPublicRegistry(registry, metadata, fetchApi = fetch)
       const value = await response.json()
       assert.equal(value.name, pkg.name)
       assert.equal(value.version, metadata.version)
-      assert.equal(value.gitHead, metadata.revision, `Published package source differs: ${pkg.name}`)
+      assert.equal(value.gitHead, metadata.releaseRevision, `Published package source differs: ${pkg.name}`)
       assert.equal(value.dist?.integrity, pkg.integrity, `Published archive differs: ${pkg.name}`)
       if (pkg.provenance) assert.ok(value.dist?.attestations?.url, `Published provenance is missing: ${pkg.name}`)
     }))
   }
 }
 
+/**
+ * Registry evidence for a site-only delivery, read from npm itself: every public package of
+ * the documented release, built from its tagged source and still the channel's dist-tag.
+ */
+export async function registryFromNpm(metadata, names, fetchApi = fetch) {
+  const url = 'https://registry.npmjs.org/'
+  const channel = metadata.channel === 'main' ? 'latest' : 'rc'
+  const read = async address => {
+    const response = await fetchApi(address, { headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(15_000) })
+    assert.equal(response.status, 200, `Published registry metadata is unavailable: ${address}`)
+    return response.json()
+  }
+  const packages = []
+  for (let offset = 0; offset < names.length; offset += 6) {
+    packages.push(...await Promise.all(names.slice(offset, offset + 6).map(async name => {
+      const tags = await read(`${url}-/package/${encodeURIComponent(name)}/dist-tags`)
+      assert.equal(tags[channel], metadata.version, `The ${channel} dist-tag moved past the documented release: ${name}`)
+      const value = await read(`${url}${encodeURIComponent(name)}/${encodeURIComponent(metadata.version)}`)
+      assert.equal(value.gitHead, metadata.releaseRevision, `Published package source differs: ${name}`)
+      return { name, version: metadata.version, integrity: value.dist?.integrity, provenance: Boolean(value.dist?.attestations?.url) }
+    })))
+  }
+  const registry = { url, channel, packages: packages.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0) }
+  validateRegistryEvidence(registry, metadata)
+  assert.deepEqual(registry.packages.map(pkg => pkg.name), names, 'Site release must retain the complete public source cohort')
+  return registry
+}
+
 async function ciRegistry(metadata) {
-  const state = JSON.parse(await readFile('release-artifacts/npm/promotion-state.json', 'utf8'))
-  const registry = registryFromState(state, metadata, await publicCohort())
+  const names = await publicCohort()
+  const registry = process.env.SITE_DELIVERY === 'release'
+    ? registryFromState(JSON.parse(await readFile('release-artifacts/npm/promotion-state.json', 'utf8')), metadata, names)
+    : await registryFromNpm(metadata, names)
   await verifyPublicRegistry(registry, metadata)
   return registry
+}
+
+async function writeGitHubFile(name, lines) {
+  const file = process.env[name]
+  assert.ok(file, `${name} is required`)
+  await writeFile(file, lines.map(line => `${line}\n`).join(''), { flag: 'a' })
+}
+
+async function plan() {
+  const channel = process.env.GITHUB_REF_NAME
+  assert.ok(Object.hasOwn(channels, channel), 'Only main and rc can deliver the site')
+  // aronrepo is installed by then; the hosted builder never plans, so it stays a lazy import.
+  const { loadProjectPolicy, getDiffFiles, getVersionTags } = await import('aronrepo/node')
+  const cwd = process.cwd()
+  const { isReleasePath } = await loadProjectPolicy(cwd)
+  assert.ok(isReleasePath, 'Release paths decide whether site-only commits can deliver')
+  const result = planDelivery({ released: process.env.RELEASED === 'true', version: process.env.RELEASE_VERSION, channel,
+    reachableTags: getVersionTags(cwd, 'HEAD'), releasePathChanges: tag => getDiffFiles(cwd, tag, 'HEAD').filter(isReleasePath) })
+  await writeGitHubFile('GITHUB_OUTPUT', [`deliver=${result.deliver}`])
+  if (!result.deliver) {
+    console.log(`::notice title=Site delivery deferred::${result.reason}`)
+    return
+  }
+  await writeGitHubFile('GITHUB_ENV', [`PUBLIC_VERSION=${result.version}`, `SITE_DELIVERY=${result.kind}`])
+  console.log(`Delivering the site with ${result.kind === 'release' ? 'its release' : 'the unchanged packages of'} v${result.version}.`)
 }
 
 async function cleanBuildCache() {
@@ -199,7 +309,7 @@ async function main(command, directory) {
     const localBytes = await readFile(directory)
     const manifest = JSON.parse(localBytes)
     const metadata = validateManifest(manifest)
-    assert.equal(selectExactTag(git(['ls-remote', '--tags', remote, 'v*']), metadata.revision, metadata.channel), metadata.tag)
+    assert.equal(tagTargets(git(['ls-remote', '--tags', remote, 'v*'])).get(metadata.tag), metadata.releaseRevision, 'The documented release tag moved')
     const downloaded = await downloadManifest(metadata)
     assert.ok(downloaded.bytes.equals(localBytes), 'Retained manifest differs from its public release asset')
     await verifyPublicRegistry(manifest.registry, metadata)
@@ -237,6 +347,7 @@ async function main(command, directory) {
     console.log(JSON.stringify(proof))
     return
   }
+  if (command === 'plan') return plan()
   const metadata = ciMetadata()
   if (command === 'preflight') {
     await ciRegistry(metadata)
@@ -249,7 +360,7 @@ async function main(command, directory) {
     await writeFile(manifestFile, jsonBytes(manifest))
     console.log(`Verified ${manifest.files.length} exact output files for ${metadata.tag} at ${metadata.revision}.`)
   } else if (command === 'deliver') await deliver(metadata)
-  else throw new Error('Expected preflight, identity, manifest, deliver, canonical, hosted-prepare or hosted-verify')
+  else throw new Error('Expected plan, preflight, identity, manifest, deliver, canonical, hosted-prepare or hosted-verify')
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

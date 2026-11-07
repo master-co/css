@@ -5,11 +5,11 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { test } from 'node:test'
-import { ciMetadata, hostedMetadata, registryFromState, selectExactTag, verifyPublicRegistry } from './pages-site-release.mjs'
+import { ciMetadata, hostedMetadata, newestTag, planDelivery, registryFromNpm, registryFromState, selectExactTag, selectReleaseTag, verifyPublicRegistry } from './pages-site-release.mjs'
 import { createManifest, inventoryDigest, jsonBytes, manifestName, manifestUrl, outputInventory, prepareIdentity, sha256 } from './pages-site-manifest.mjs'
 
 const revision = 'a'.repeat(40)
-const metadata = { repository: 'master-co/css', revision, version: '2.0.0', tag: 'v2.0.0', channel: 'main',
+const metadata = { repository: 'master-co/css', revision, releaseRevision: revision, version: '2.0.0', tag: 'v2.0.0', channel: 'main',
   deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
   origin: 'https://css.master.co', imageTransformations: false }
 const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [
@@ -18,7 +18,7 @@ const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packag
 const ci = { GITHUB_REPOSITORY: metadata.repository, GITHUB_EVENT_NAME: 'push', GITHUB_SHA: revision,
   GITHUB_REF_NAME: 'main', PUBLIC_COMMIT_REF: 'main', PUBLIC_VERSION: '2.0.0', PUBLIC_URL: metadata.origin,
   MASTER_CSS_IMAGE_TRANSFORMATIONS: 'false', PAGES_PROJECT: metadata.project, PAGES_SUBDOMAIN: metadata.subdomain,
-  PAGES_RELEASE_MODE: 'bootstrap' }
+  PAGES_RELEASE_MODE: 'bootstrap', SITE_DELIVERY: 'release' }
 const cf = { CF_PAGES: '1', CF_PAGES_BRANCH: metadata.deliveryBranch, CF_PAGES_COMMIT_SHA: revision,
   CF_PAGES_URL: `https://12345678.${metadata.subdomain}`, MASTER_CSS_PAGES_PROJECT: metadata.project,
   MASTER_CSS_PAGES_SUBDOMAIN: metadata.subdomain }
@@ -43,6 +43,43 @@ test('CI binds actual release source/tag/version and an explicit delivery mode',
     { PAGES_RELEASE_MODE: undefined }, { PAGES_RELEASE_MODE: 'maybe' }
   ]) assert.throws(() => ciMetadata({ ...ci, ...wrong }, runGit))
   assert.throws(() => ciMetadata(ci, args => args[0] === 'rev-parse' && args.includes('--verify') ? 'f'.repeat(40) : revision))
+  assert.throws(() => ciMetadata({ ...ci, SITE_DELIVERY: undefined }, runGit), /Plan the delivery/)
+})
+
+test('CI binds a site-only commit to the unchanged packages of the release it documents', () => {
+  const site = 'c'.repeat(40)
+  const git = args => args.includes('--verify') ? revision : site
+  assert.deepEqual(ciMetadata({ ...ci, GITHUB_SHA: site, SITE_DELIVERY: 'site' }, git), { ...metadata, revision: site })
+  assert.throws(() => ciMetadata({ ...ci, SITE_DELIVERY: 'site' }, runGit), /tagged release commit/)
+  assert.throws(() => ciMetadata({ ...ci, GITHUB_SHA: site, SITE_DELIVERY: 'release' }, git), /release tag differs/)
+})
+
+test('a push delivers the site with its release, or alone when no package source changed since the newest release', () => {
+  const tags = ['v1.37.8', 'v2.0.0-rc.3', 'v2.0.2', 'v2.0.10', 'v2.0.9']
+  assert.equal(newestTag(tags, 'main'), 'v2.0.10')
+  assert.equal(newestTag(tags, 'rc'), 'v2.0.0-rc.3')
+  assert.equal(newestTag(['v2.0.0-rc.1'], 'main'), undefined)
+  assert.deepEqual(planDelivery({ released: true, version: '2.0.11', channel: 'main' }), { deliver: true, kind: 'release', version: '2.0.11' })
+  assert.throws(() => planDelivery({ released: true, version: '', channel: 'main' }))
+  const unchanged = planDelivery({ released: false, channel: 'main', reachableTags: tags, releasePathChanges: tag => {
+    assert.equal(tag, 'v2.0.10')
+    return []
+  } })
+  assert.deepEqual(unchanged, { deliver: true, kind: 'site', version: '2.0.10' })
+  const pending = planDelivery({ released: false, channel: 'main', reachableTags: tags, releasePathChanges: () => ['packages/css/src/index.ts'] })
+  assert.equal(pending.deliver, false)
+  assert.match(pending.reason, /Unreleased package changes since v2\.0\.10 \(packages\/css\/src\/index\.ts\)/)
+  assert.equal(planDelivery({ released: false, channel: 'main', reachableTags: [], releasePathChanges: () => [] }).deliver, false)
+})
+
+test('Cloudflare resolves a site-only commit to the newest release of its channel', () => {
+  const site = 'c'.repeat(40)
+  assert.deepEqual(selectReleaseTag(refs, revision, 'main'), { tag: 'v2.0.0', releaseRevision: revision })
+  assert.deepEqual(selectReleaseTag(refs, site, 'main'), { tag: 'v9.0.0', releaseRevision: 'b'.repeat(40) })
+  const annotated = `${'d'.repeat(40)}\trefs/tags/v9.0.0\n${'b'.repeat(40)}\trefs/tags/v9.0.0^{}\n`
+  assert.deepEqual(selectReleaseTag(annotated, site, 'main'), { tag: 'v9.0.0', releaseRevision: 'b'.repeat(40) })
+  assert.throws(() => selectReleaseTag(refs, site, 'rc'), /published release/)
+  assert.throws(() => selectReleaseTag(refs + `${revision}\trefs/tags/v2.0.1\n`, revision, 'main'))
 })
 
 test('Cloudflare maps the delivery ref to a logical channel and verifies its actual deployment host', () => {
@@ -57,7 +94,8 @@ test('Cloudflare maps the delivery ref to a logical channel and verifies its act
     { MASTER_CSS_PAGES_PROJECT: '' }, { MASTER_CSS_PAGES_SUBDOMAIN: '' }
   ]) assert.throws(() => hostedMetadata({ ...cf, ...wrong }, runGit))
   assert.throws(() => hostedMetadata(cf, args => args[0] === 'ls-remote' ? refs : 'f'.repeat(40)))
-  assert.throws(() => hostedMetadata(cf, args => args[0] === 'ls-remote' ? `${'b'.repeat(40)}\trefs/tags/v9.0.0` : revision))
+  assert.deepEqual(hostedMetadata(cf, args => args[0] === 'ls-remote' ? `${'b'.repeat(40)}\trefs/tags/v9.0.0` : revision),
+    { ...metadata, releaseRevision: 'b'.repeat(40), version: '9.0.0', tag: 'v9.0.0' }, 'A site-only commit documents the newest release')
 })
 
 test('only a complete promoted registry cohort with the real registry consumer proof can authorize the manifest', () => {
@@ -92,6 +130,23 @@ test('public registry verification reads exact versions and rejects absent, wron
     { ...published, dist: { ...published.dist, integrity: 'sha512-Yg==' } },
     { ...published, dist: { integrity: published.dist.integrity } }
   ]) await assert.rejects(verifyPublicRegistry(registry, metadata, async () => new Response(JSON.stringify(wrong))))
+})
+
+test('site-only registry evidence comes from npm: the documented version, its tagged source and the current dist-tag', async () => {
+  const site = { ...metadata, revision: 'c'.repeat(40) }
+  const published = { name: '@master/css', version: '2.0.0', gitHead: revision, dist: { integrity: 'sha512-YQ==', attestations: { url: 'https://registry.npmjs.org/attestation' } } }
+  const npm = ({ tags = { latest: '2.0.0' }, version = published } = {}) => async (url, options) => {
+    assert.equal(options.redirect, 'error')
+    assert.ok(!options.headers.Authorization)
+    if (url === 'https://registry.npmjs.org/-/package/%40master%2Fcss/dist-tags') return new Response(JSON.stringify(tags))
+    assert.equal(url, 'https://registry.npmjs.org/%40master%2Fcss/2.0.0')
+    return new Response(JSON.stringify(version))
+  }
+  assert.deepEqual(await registryFromNpm(site, ['@master/css'], npm()), registry)
+  await assert.rejects(registryFromNpm(site, ['@master/css'], npm({ tags: { latest: '2.0.1' } })), /dist-tag moved/)
+  await assert.rejects(registryFromNpm(site, ['@master/css'], npm({ version: { ...published, gitHead: site.revision } })), /source differs/)
+  await assert.rejects(registryFromNpm(site, ['@master/css', '@master/css-cli'], npm()))
+  await assert.rejects(registryFromNpm(site, ['@master/css'], async () => new Response('{}', { status: 404 })))
 })
 
 test('the real hosted shell command fails before installing tools when release identity is absent', async t => {

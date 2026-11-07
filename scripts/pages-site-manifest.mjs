@@ -11,12 +11,15 @@ export const channels = {
 }
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 export const jsonBytes = value => Buffer.from(JSON.stringify(value, null, 2) + '\n')
-const metadataKeys = ['repository', 'revision', 'version', 'tag', 'channel', 'deliveryBranch', 'project', 'subdomain', 'origin', 'imageTransformations']
+const metadataKeys = ['repository', 'revision', 'releaseRevision', 'version', 'tag', 'channel', 'deliveryBranch', 'project', 'subdomain', 'origin', 'imageTransformations']
 
 export function releaseMetadata(input) {
   const result = Object.fromEntries(metadataKeys.map(key => [key, input[key]]))
   assert.equal(result.repository, repository, 'Only the first-party release repository is supported')
-  assert.match(result.revision ?? '', /^[a-f0-9]{40}$/, 'An exact release revision is required')
+  assert.match(result.revision ?? '', /^[a-f0-9]{40}$/, 'An exact site source revision is required')
+  // The site documents the packages of one published release. A release push builds that
+  // release commit itself; a later site-only commit keeps its unchanged package sources.
+  assert.match(result.releaseRevision ?? '', /^[a-f0-9]{40}$/, 'The exact source revision of the documented release is required')
   assert.ok(Object.hasOwn(channels, result.channel), 'Only main and rc can deliver the site')
   assert.match(result.version ?? '', result.channel === 'main' ? /^\d+\.\d+\.\d+$/ : /^\d+\.\d+\.\d+-rc\.\d+$/, 'Version must match the logical release channel')
   assert.equal(result.tag, `v${result.version}`, 'The exact published version tag is required')

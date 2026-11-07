@@ -71,13 +71,21 @@ assert.equal(notesReceipt.with['retention-days'], 90, 'Keep notes for the same r
 const site = releaseWorkflow.jobs['deploy-site']
 assert.deepEqual(site.needs, ['validation', 'release', 'publish-editors'], 'Site delivery must follow validation, npm promotion and editor publication')
 for (const condition of [`needs.validation.result == 'success'`, `needs.release.result == 'success'`,
-  `needs.release.outputs.released == 'true'`, `needs.publish-editors.result == 'success'`,
+  `needs.release.outputs.released != 'true'`, `needs.publish-editors.result == 'success'`,
   `needs.validation.outputs.vscode_release_affected != 'true'`, `needs.publish-editors.result == 'skipped'`]) {
   assert.ok(site.if.includes(condition), `Site delivery is missing a release gate: ${condition}`)
 }
 assert.equal(releaseWorkflow.concurrency['cancel-in-progress'], false, 'Keep the release serialized while Pages builds')
 assert.deepEqual(site.permissions, { contents: 'write', checks: 'read' })
-assert.equal(site.env.PUBLIC_VERSION, '${{ needs.release.outputs.version }}')
+assert.equal(site.env.PUBLIC_VERSION, undefined, 'The delivery plan sets the documented version, with or without a release')
+const planStep = site.steps.find(step => step.id === 'plan')
+assert.equal(planStep?.run, 'node scripts/pages-site-release.mjs plan')
+assert.equal(planStep.env.RELEASED, '${{ needs.release.outputs.released }}')
+assert.equal(planStep.env.RELEASE_VERSION, '${{ needs.release.outputs.version }}')
+assert.doesNotMatch(site.if, /released == 'true'/, 'Site-only pushes deliver without a package release; a release still waits for its editors')
+for (const step of site.steps.slice(site.steps.indexOf(planStep) + 1)) {
+  assert.match(step.if ?? '', /steps\.plan\.outputs\.deliver == 'true'/, `Only a planned delivery may run: ${step.name}`)
+}
 assert.equal(site.env.PUBLIC_COMMIT_REF, '${{ github.ref_name }}')
 assert.equal(site.env.MASTER_CSS_IMAGE_TRANSFORMATIONS, 'false')
 for (const suffix of ['PROJECT', 'SUBDOMAIN', 'MODE']) {
@@ -89,7 +97,7 @@ for (const suffix of ['PROJECT', 'SUBDOMAIN', 'MODE']) {
 assert.equal(site.steps.find(step => step.uses === 'actions/download-artifact@v7').with.name, '${{ needs.release.outputs.artifact_name }}', 'Site retries must use the owning release attempt artifact')
 const siteRuns = site.steps.map(step => step.run ?? '').join('\n')
 assert.doesNotMatch(JSON.stringify(site), /CLOUDFLARE_API_TOKEN|CLOUDFLARE_ACCOUNT_ID|wrangler pages deploy/, 'Git App delivery must not use Cloudflare credentials or upload commands')
-const order = ['pages-site-release.mjs preflight', 'bun run build:site', 'pages-site-release.mjs identity',
+const order = ['pages-site-release.mjs plan', 'pages-site-release.mjs preflight', 'bun run build:site', 'pages-site-release.mjs identity',
   'verify-release-site.mjs', 'pages-site-release.mjs manifest', 'pages-site-release.mjs deliver']
 let position = -1
 for (const command of order) {
@@ -101,7 +109,7 @@ const delivery = site.steps.find(step => step.run === 'node scripts/pages-site-r
 assert.equal(delivery.env.GITHUB_TOKEN, '${{ secrets.GITHUB_TOKEN }}')
 assert.equal(site.steps.filter(step => step.env?.GITHUB_TOKEN).length, 1, 'Do not expose the repository write token during site dependency builds')
 const receipt = site.steps.find(step => step.uses === 'actions/upload-artifact@v7' && step.with.path === 'release-artifacts/site-delivery.json')
-assert.equal(receipt?.if, '${{ always() }}', 'Keep recovery receipts when a delivery step fails after an external write')
+assert.equal(receipt?.if, '${{ always() && steps.plan.outputs.deliver == \'true\' }}', 'Keep recovery receipts when a delivery step fails after an external write')
 assert.equal(receipt.with.name, 'site-delivery-${{ github.sha }}-${{ github.run_attempt }}', 'Retain each owning workflow attempt independently')
 const hosted = readFileSync(new URL('./build-site-hosted.sh', import.meta.url), 'utf8')
 assert.ok(hosted.indexOf('hosted-prepare') < hosted.indexOf('bun install --frozen-lockfile'))

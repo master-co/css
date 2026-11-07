@@ -15,7 +15,13 @@ The site reads `PUBLIC_COMMIT_REF`, `PUBLIC_VERSION` and `PUBLIC_URL`. Set them 
 
 `PUBLIC_VERSION=2.0.0` is suitable for a local stable-metadata rehearsal only. It does not prove that version exists in npm. A release job must obtain the real version from its release result and bind the checked-out commit, build report, artifact digest and uploaded deployment to the same revision. Do not use a branch-head deploy hook to claim exact-commit deployment.
 
-The release workflow uses the existing Cloudflare GitHub App. A normal push to `main` or `rc` cannot deploy the site. Only after required validation, the complete actual npm release and any required editor publication succeed does the workflow build the exact source, run browser verification, publish a public output manifest and advance the corresponding delivery ref to that same commit. It never creates a delivery commit or force-updates a ref.
+The release workflow uses the existing Cloudflare GitHub App. The site does not wait for a package release. After required validation succeeds, `deploy-site` plans the delivery (`node scripts/pages-site-release.mjs plan`):
+
+- A release push delivers with its own version, after the complete actual npm release and any required editor publication succeed.
+- A push without a release delivers when no release path (`aronrepo.config.js`) changed since the channel's newest release tag. The site then documents that release: its workspace packages are exactly what users install. Registry evidence comes from npm itself (that version, its tagged `gitHead`, and the channel dist-tag still pointing at it), and the manifest is attached to that existing release as `site-<channel>-<site revision>.manifest.json`.
+- A push with unreleased package changes defers the site to their release, so the site never documents behavior users cannot install yet. The job logs a notice naming the changed paths.
+
+Either way the workflow builds the exact source, runs browser verification, publishes the public output manifest and advances the corresponding delivery ref to that same commit. It never creates a delivery commit or force-updates a ref. The manifest and public identity record both `revision` (the site source) and `releaseRevision` (the documented release's tagged source); they are equal for a release push.
 
 | Logical release channel | Pages production Git branch | Canonical origin |
 | --- | --- | --- |
@@ -49,7 +55,7 @@ For each Pages Git source, use the matching production delivery branch, disable 
 | `MASTER_CSS_PAGES_SUBDOMAIN` | That project's actual `pages.dev` subdomain |
 | `MASTER_CSS_IMAGE_TRANSFORMATIONS` | `false`, identical to release CI |
 
-Leave `PUBLIC_VERSION` unset in hosting settings. The helper resolves the unique actual release tag that points to `CF_PAGES_COMMIT_SHA`; it never falls back to the latest remote tag. It maps `CF_PAGES_BRANCH` to the logical channel and sets the canonical origin. Any explicit `PUBLIC_VERSION`, `PUBLIC_COMMIT_REF` or `PUBLIC_URL` must agree. `git HEAD`, the exact release tag, Pages commit SHA, delivery branch, configured project and actual immutable Pages URL must all match the manifest.
+Leave `PUBLIC_VERSION` unset in hosting settings. The helper resolves the unique actual release tag that points to `CF_PAGES_COMMIT_SHA`; for a site-only commit it uses the channel's newest release tag, whose release must already carry the manifest CI published for this exact commit. It maps `CF_PAGES_BRANCH` to the logical channel and sets the canonical origin. Any explicit `PUBLIC_VERSION`, `PUBLIC_COMMIT_REF` or `PUBLIC_URL` must agree. `git HEAD`, the exact release tag, Pages commit SHA, delivery branch, configured project and actual immutable Pages URL must all match the manifest.
 
 Current Cloudflare documentation says Direct Upload projects cannot switch to Git integration. An empty project's dashboard may present a newer **Connect** path; inspect it without saving or deploying before deciding whether attachment is supported. A button alone is not successful source attachment. Do not delete/recreate the empty stable project automatically. Keep both automatic build controls held until the source, guarded build command, release handoff and owner prerequisites are ready. [Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/), [Direct Upload limitation](https://developers.cloudflare.com/pages/get-started/direct-upload/)
 

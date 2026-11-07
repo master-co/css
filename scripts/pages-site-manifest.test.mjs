@@ -5,7 +5,7 @@ import path from 'node:path'
 import { test } from 'node:test'
 import { createManifest, identityPath, inventoryDigest, jsonBytes, manifestName, outputInventory, prepareIdentity, releaseMetadata, validateManifest, verifyOutput } from './pages-site-manifest.mjs'
 
-const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
+const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
   channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
   origin: 'https://css.master.co', imageTransformations: false }
 const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [

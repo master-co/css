@@ -125,7 +125,10 @@ jobs:
       - validation
       - release
       - publish-editors
-    if: ${{ always() && github.event_name == 'push' && needs.validation.result == 'success' && needs.release.result == 'success' && needs.release.outputs.released == 'true' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.site_affected == 'true' && (needs.publish-editors.result == 'success' || (needs.validation.outputs.vscode_release_affected != 'true' && needs.publish-editors.result == 'skipped')) }}
+    # The site deploys on its own, not only with a release. `plan` delivers a release with its
+    # version, and a site-only push with the channel's newest release when no release path
+    # changed since; unreleased package changes defer the site to their release.
+    if: ${{ always() && github.event_name == 'push' && needs.validation.result == 'success' && needs.release.result == 'success' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.site_affected == 'true' && (needs.release.outputs.released != 'true' || needs.publish-editors.result == 'success' || (needs.validation.outputs.vscode_release_affected != 'true' && needs.publish-editors.result == 'skipped')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 75
     permissions:
@@ -133,7 +136,6 @@ jobs:
       checks: read
     env:
       PUBLIC_COMMIT_REF: ${{ github.ref_name }}
-      PUBLIC_VERSION: ${{ needs.release.outputs.version }}
       PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
       MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
       PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
@@ -150,15 +152,25 @@ jobs:
           turbo-cache-scope: build
       - name: Test the non-deploying Pages release contracts
         run: node --test scripts/pages-site-manifest.test.mjs scripts/pages-site-release.test.mjs scripts/pages-release-github.test.mjs
+      # Sets PUBLIC_VERSION and SITE_DELIVERY for the following steps when the site delivers.
+      - name: Plan the site delivery for this push
+        id: plan
+        run: node scripts/pages-site-release.mjs plan
+        env:
+          RELEASED: ${{ needs.release.outputs.released }}
+          RELEASE_VERSION: ${{ needs.release.outputs.version }}
       - name: Download the completed npm cohort evidence from its owning attempt
+        if: ${{ steps.plan.outputs.deliver == 'true' && needs.release.outputs.released == 'true' }}
         uses: actions/download-artifact@v7
         with:
           name: ${{ needs.release.outputs.artifact_name }}
           path: release-artifacts/npm
       - name: Require the actual source tag and complete public registry cohort
+        if: ${{ steps.plan.outputs.deliver == 'true' }}
         run: node scripts/pages-site-release.mjs preflight
       # The external Git builder must reproduce these final, browser-tested bytes.
       - name: Build and verify the exact site revision
+        if: ${{ steps.plan.outputs.deliver == 'true' }}
         run: |
           bun run build:site
           bun run --filter site test:css-contract
@@ -169,6 +181,7 @@ jobs:
           node site/scripts/verify-release-site.mjs --out site/out --origin "$PUBLIC_URL" --report site/test-results/release-site.json
           node scripts/pages-site-release.mjs manifest
       - name: Retain the verified site output
+        if: ${{ steps.plan.outputs.deliver == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: site-release-${{ github.sha }}
@@ -179,11 +192,12 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Create the immutable public manifest and advance the exact Pages Git ref
+        if: ${{ steps.plan.outputs.deliver == 'true' }}
         run: node scripts/pages-site-release.mjs deliver
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Retain exact Git deployment and canonical verification results
-        if: ${{ always() }}
+        if: ${{ always() && steps.plan.outputs.deliver == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: site-delivery-${{ github.sha }}-${{ github.run_attempt }}
