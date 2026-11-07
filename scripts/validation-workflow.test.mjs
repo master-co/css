@@ -126,3 +126,20 @@ test('cache pruning is skipped for pull requests and never fails validation', ()
   const failed = prune({ caches: [[1, 'Linux-X64-bun-1.4.4-turbo-build-main-2'], [2, 'Linux-X64-bun-1.4.4-turbo-build-main-1']], listFailure: true })
   assert.deepEqual(failed.deleted, [])
 })
+
+test('jobs that leave Wasm to Turbo install the pinned toolchain once before any Turbo task', () => {
+  const turbo = JSON.parse(readFileSync(new URL('../turbo.json', import.meta.url), 'utf8'))
+  // binding-wasm-* bundle their generated ../artifacts modules, so a build that
+  // could start before its own build:artifacts fails to resolve them.
+  assert.ok(turbo.tasks.build.dependsOn.includes('build:artifacts'))
+  for (const job of ['quality_linux', 'e2e_linux', 'compat_windows', 'compat_macos']) {
+    const steps = workflow.jobs[job].steps
+    assert.equal(steps.some(step => step.run === 'bun run build:rust:wasm'), false, job)
+    // Parallel build:artifacts tasks race rustup's first component download on a
+    // fresh runner ("could not rename 'downloaded' file"), so one install precedes them.
+    const install = steps.findIndex(step => step.run === 'rustup toolchain install --no-self-update')
+    const firstTurbo = steps.findIndex(step => /\bbun run (build|test|e2e|turbo)\b(?!:)|\bturbo run\b/.test(step.run ?? '') && !/--dry/.test(step.run ?? ''))
+    assert.ok(install >= 0, job)
+    assert.ok(firstTurbo > install, `${job} runs Turbo before installing the toolchain`)
+  }
+})
