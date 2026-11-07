@@ -1,7 +1,6 @@
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { validRange } from 'semver'
 
 function packagePath(cwd, pkgRoot) {
   return path.join(pkgRoot ? path.resolve(cwd, pkgRoot) : cwd, 'package.json')
@@ -24,10 +23,9 @@ export async function readPackage(cwd, pkgRoot) {
   return pkg
 }
 
-/** The npm dist-tag of a semantic-release channel: `latest` by default, `release-<range>` for maintenance ranges. */
+/** The npm dist-tag of a release channel: `latest` for main, otherwise the channel itself, such as `rc` or `site`. */
 export function getChannel(channel) {
-  if (!channel) return 'latest'
-  return validRange(channel) ? `release-${channel}` : channel
+  return channel || 'latest'
 }
 
 /** Writes the release version into a workspace manifest and its npm-shrinkwrap.json, if any. */
