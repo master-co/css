@@ -42,12 +42,12 @@ The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro 
 - Island props are serialized into every page's HTML. Pass islands only the fields they render; `define()` metadata carries a repository-relative `sourcePath`, never a machine path.
 - Public build values are `import.meta.env.PUBLIC_*`, resolved by `utils/public-env.js`. Server bundles keep source `import.meta.url` values (`@master/internal-site/astro/source-url.ts`).
 - `prepare-app` projects committed benchmark reports into per-suite `.generated/benchmarks/` display data before loading the content generators. Page rendering, search and Markdown share these synchronous aggregates; source timestamps use a separate small index. Import the generated data rather than raw benchmark reports in presentation modules, and rerun `prepare-app` after updating a committed report.
-- SVG imports are Astro SVG components (optimized with the site's SVGO config) usable from `.astro` and MDX; Svelte components import SVG markup with `?raw`. Bitmap imports are Astro image metadata rendered with `@master/internal-site/components/Image.svelte`. Raw text imports use `?raw`; Node scripts load these through `scripts/bundler-imports.ts`. Icons come from `@tabler/icons-svelte-runes` by deep import (`@tabler/icons-svelte-runes/icons/<name>`).
+- SVG imports are Astro SVG components (optimized with the site's SVGO config) usable from `.astro` and MDX; Svelte components import SVG markup with `?raw`. Bitmap imports render with `@master/internal-site/components/Image.svelte`; production builds resolve them to deterministic AVIF candidates (`src`, `width`, `height`, `srcset`) through `@master/internal-site`, and development keeps Astro's original image metadata. Raw text imports use `?raw`; Node scripts load these through `scripts/bundler-imports.ts`. Icons come from `@tabler/icons-svelte-runes` by deep import (`@tabler/icons-svelte-runes/icons/<name>`).
 
 ## Local translations
 
 - Complete editions live beside their source: `content.mdx` and `content.{ja,tw,ko,cn}.mdx`. Canonical metadata, authors, dates, categories and ordering stay in `metadata.ts`; translated titles, summaries, figure copy and example descriptions belong in localized MDX frontmatter.
-- `@master/internal-site` owns discovery, localized modules and metadata, link localization and the read-only production review gate. `i18n/resources.ts` adds product UI and Reference prose; every published edition needs an explicit independently reviewed record in `i18n/reviews.json`. English metadata and imported prose participate in source fingerprints. Builds never refresh review records.
+- `@master/internal-site` owns discovery, localized modules and metadata, link localization and the read-only production review gate. `i18n/resources.ts` adds product UI and Reference prose; every published edition needs an explicit independently reviewed record in `i18n/reviews.json`. English metadata and imported prose participate in source fingerprints; shared `@master/internal-site` components, its compiled `dist/` and type-only imports do not. Builds never refresh review records.
 - Missing or stale translations must fail production. Development may omit incomplete routes, but must not publish English body fallback under a translated URL. Keep drafts outside public output and preserve stable source anchors.
 - Short interface and homepage copy uses local dictionaries through `t()`. Shared shell copy stays in the Master repository. Remove obsolete article prose keys only after their consumers have moved to local MDX.
 - Code, comments and sample UI remain English. English diagram and social artwork stays shared; localize its surrounding text, alt text, captions and social metadata. `figureCopy()` and `demoCopy()` make HTML/search/Markdown consume the same article-owned prose without duplicating executable data.
@@ -311,7 +311,7 @@ import Image from '@master/internal-site/components/Image.svelte'
 import articleImage from '~/site/assets/images/view-transitions/article-aurora.jpg'
 ```
 
-Set an appropriate `sizes` value for responsive images; Cloudflare builds add resized sources.
+Set an appropriate `sizes` value for responsive images, or a display `width` for a fixed-size image; the build adds AVIF sources at smaller widths. Import public bitmaps too (`~/site/public/...`, `@master/internal-site/assets/...`): a URL string ships the original file.
 
 ## Validation
 
