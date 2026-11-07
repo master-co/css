@@ -81,14 +81,14 @@ Commits and PR titles follow the generated Aronrepo policy below, enforced by `a
 
 Release mode: **explicit**. Only the repository owner decides minor and major versions, with `Bump(Minor)` and `Bump(Major)` commits.
 
-Commit headers and PR titles use `Type(Scope): Summary` or `Type: Summary`: a PascalCase type, an optional scope for the package or area, and a sentence-case summary without a trailing period.
+Commit headers and PR titles use `Type(Scope): Summary` or `Type: Summary`: a type from the table, an optional scope for the package or area, and a summary without a trailing period. Types and scopes match without case (`fix` is `Fix`); this repository writes them as the table does.
 
 | Type | Release | Use for |
 | --- | --- | --- |
 | `Bump(Major)` | major | Release a major version. Only the repository owner decides it. |
 | `Bump(Minor)` | minor | Release a minor version. Only the repository owner decides it. |
 | `Bump(Patch)` | patch | Release a patch version without another release commit. |
-| `Add` | patch | A new capability: a new API, export, option, command, or package. |
+| `Feat` | patch | A new capability: a new API, export, option, command, or package. |
 | `Improve` | patch | A better existing capability without new API: behavior, output, messages, or defaults. |
 | `Perf` | patch | Faster or lighter published code with the same behavior. |
 | `Fix` | patch | A bug fix in published behavior. |
@@ -107,7 +107,7 @@ Commit headers and PR titles use `Type(Scope): Summary` or `Type: Summary`: a Pa
 | `Refactor` | none | Code changes that keep published behavior. |
 | `Chore` | none | Maintenance: development dependencies, lockfiles, metadata, agent guidance, and unpublished workspaces. |
 
-Legacy types are rejected: `Feat` (use `Add`), `New` (use `Add`), `Update` (use `Improve`), `Misc` (use `Chore`).
+Legacy types are rejected: `Add` (use `Feat`), `New` (use `Feat`), `Update` (use `Improve`), `Misc` (use `Chore`).
 
 ### Release decisions belong to the owner
 
@@ -118,7 +118,7 @@ Legacy types are rejected: `Feat` (use `Add`), `New` (use `Add`), `Update` (use 
 ### Choosing a type
 
 - Use a release type only when the commit changes files that ship in a published package (release paths) and affects published behavior, public API, release behavior, or published README content. Otherwise use a non-release type.
-- Pick the type that describes the change: a new capability is `Add`, a better existing capability is `Improve`, a bug fix is `Fix`, and a runtime dependency change is `Upgrade`.
+- Pick the type that describes the change: a new capability is `Feat`, a better existing capability is `Improve`, a bug fix is `Fix`, and a runtime dependency change is `Upgrade`.
 - A commit that changes no release path must use a non-release type (`Chore`, `Refactor`, `Style`, `Test`, `Docs`, `Build`, `CI`, `Benchmark`, `Example`), even when it fixes or speeds up something.
 - Split unrelated changes so each commit carries its own release level.
 
