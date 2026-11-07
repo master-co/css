@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { delimiter, join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { test } from 'node:test'
 import { execa } from 'execa'
@@ -151,8 +151,11 @@ test('real npm config loading ignores project, user, global and environment cred
       ...githubEnv, NPM_TOKEN: 'fixture-token', NODE_AUTH_TOKEN: 'fixture-node-token',
       NPM_ID_TOKEN: 'fixture-supplied-identity', npm_config_userconfig: poison,
       NPM_CONFIG_GLOBALCONFIG: poison, NPM_CONFIG_REGISTRY: 'https://example.test',
-      'npm_config_//registry.npmjs.org/:_authToken': 'fixture-env-token'
+      'npm_config_//registry.npmjs.org/:_authToken': 'fixture-env-token',
+      PATH: ['/repo/node_modules/.bin', '/repo/site/node_modules/.bin/', process.env.PATH].join(delimiter)
     })
+    // The verified global npm must not be shadowed by a package-local npm.
+    assert.deepEqual(session.env.PATH.split(delimiter).filter(dir => /node_modules[\\/]\.bin/.test(dir)), [])
     const { cleanup, ...options } = session
     const child = await execa(process.execPath, ['-e', 'console.log(JSON.stringify({token:process.env.NPM_TOKEN,nodeToken:process.env.NODE_AUTH_TOKEN,identity:process.env.NPM_ID_TOKEN,oidc:!!process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}))'], options)
     assert.deepEqual(JSON.parse(child.stdout), { oidc: true })
