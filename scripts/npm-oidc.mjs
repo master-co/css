@@ -1,6 +1,6 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { delimiter, join } from 'node:path'
 
 export const npmRegistry = 'https://registry.npmjs.org/'
 const provenanceRepository = 'https://github.com/master-co/css'
@@ -39,6 +39,11 @@ export function assertNpmProvenanceRepository(pkg, packageRoot) {
   }
 }
 
+// Package scripts put node_modules/.bin first on PATH, where semantic-release's own
+// npm dependency (11.19) publishes with OIDC but sends dist-tag writes unauthenticated.
+const withoutLocalBins = (path = '') => path.split(delimiter)
+  .filter(dir => !/[\\/]node_modules[\\/]\.bin[\\/]?$/.test(dir)).join(delimiter)
+
 /** npm 11.21+ handles fresh, operation-scoped OIDC authentication itself. */
 export async function createNpmOidcSession(env) {
   assertNpmOidcEnvironment(env)
@@ -54,6 +59,7 @@ export async function createNpmOidcSession(env) {
       cwd,
       env: {
         ...cleanEnv,
+        ...(cleanEnv.PATH === undefined ? {} : { PATH: withoutLocalBins(cleanEnv.PATH) }),
         NPM_CONFIG_USERCONFIG: userconfig,
         NPM_CONFIG_GLOBALCONFIG: globalconfig,
         NPM_CONFIG_CACHE: join(cwd, 'cache'),
