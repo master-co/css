@@ -5,7 +5,7 @@ import Link from '@master/internal-site/components/Link.svelte'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import CopyCommand from './CopyCommand.svelte'
 import CTACanvas from './CTACanvas.svelte'
-import { homeSections, installCommand } from './home-content'
+import { homeSections, installPrompt } from './home-content'
 
 /** The close: one gold point opens into a field of silk and stone threads below a centered invitation, under the section's own lamp. */
 const { t } = siteOf(Astro)
@@ -21,7 +21,7 @@ const { t } = siteOf(Astro)
           {t('Get started')}
           <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
         </Link>
-        <CopyCommand client:idle={{ timeout: 500 }} command={installCommand(import.meta.env.PUBLIC_VERSION)} wrap />
+        <CopyCommand client:idle={{ timeout: 500 }} command={installPrompt(import.meta.env.PUBLIC_VERSION, import.meta.env.PUBLIC_URL)} label={t('Set up with your AI agent')} copyLabel={t('Copy setup prompt')} wrap />
       </div>
       <div class="home-cta-field" aria-hidden="true">
         {/* Hydrates as early as the canvas's own observer would start the field. */}

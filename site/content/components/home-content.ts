@@ -1,5 +1,6 @@
 import colorNames from '@master/internal-site/data/color-names'
 import { COLOR_LEVELS } from '@master/internal-site/data/color-palette'
+import { agentPrompt, resolveAgentPrompt } from '../../utils/agent-guide-data'
 
 export type DeliveryModeId = 'static' | 'prerender' | 'runtime'
 
@@ -58,9 +59,9 @@ export const homeSections = {
   getStarted: 'get-started'
 } as const
 
-export function installCommand(version: string) {
-  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error('The install command requires an exact public version')
-  return `npm create @master/css@${version}`
+/** The setup prompt the homepage copies: the installation guide's text, which names no release so it stays current. */
+export function installPrompt(version: string, docsURL: string) {
+  return resolveAgentPrompt(agentPrompt('install'), { version, docsURL }).text
 }
 
 /** Real classes, linted by the tests, that the MCP floor is written in. */

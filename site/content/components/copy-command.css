@@ -14,9 +14,19 @@
     font-size: 0.875rem;
     color: var(--home-text);
   }
-  .home-command > code {
+  .home-command > :is(code, .home-command-label) {
     flex: auto;
     text-align: left;
+  }
+
+  /* A label names what the button copies; it reads as interface text, not a command. */
+  .home-command-label {
+    font-family: var(--font-family-sans);
+  }
+
+  .home-command-icon {
+    flex: none;
+    color: var(--home-text-quiet);
   }
 
   .home-command-copy {

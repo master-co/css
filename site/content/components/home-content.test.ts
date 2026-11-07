@@ -23,7 +23,7 @@ import './agents-content.test'
 import './editor-content.test'
 // The Workflow section checks its integrations, monorepo swatches, route samples and impact graph against the packages.
 import './workflow-content.test'
-import { installCommand, agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
+import { installPrompt, agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })
 const recommendedConfig: Linter.Config[] = [...masterCSS, {
@@ -175,7 +175,11 @@ test('homepage page CSS sizes come from the committed snapshot', () => {
   }
 })
 
-test('homepage installation uses the exact stable or prerelease public version', () => {
-  for (const version of ['2.0.0', '2.0.0-rc.89']) assert.equal(installCommand(version), `npm create @master/css@${version}`)
-  for (const version of ['', 'rc', 'latest']) assert.throws(() => installCommand(version))
+test('homepage setup prompt names no release, so a copied prompt stays current', () => {
+  for (const version of ['2.0.0', '2.0.0-rc.89']) {
+    const prompt = installPrompt(version, 'https://css.master.co')
+    assert.ok(prompt.includes('npm create @master/css@latest -- --yes --dry-run'))
+    assert.ok(!prompt.includes(version) && !prompt.includes('VERSION'))
+  }
+  for (const version of ['', 'rc', 'latest']) assert.throws(() => installPrompt(version, 'https://css.master.co'))
 })

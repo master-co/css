@@ -3,6 +3,7 @@ import StepSection from '@master/internal-site/components/StepSection.astro'
 import Step from '@master/internal-site/components/Step.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import AgentPrompt from '~/site/components/AgentPrompt.astro'
 import InstallationGuides from '~/site/components/InstallationGuides.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import InstallationIllustration from './components/InstallationIllustration.astro'
@@ -21,6 +22,12 @@ Use an integration for an existing app. Static rendering is the default: the bui
 <InstallationGuides />
 
 The four rendering modes are `static`, `prerender`, `runtime`, and `progressive`. See [rendering support by integration](/guide/rendering-modes#integration-support) for the options available to your framework.
+
+### Set up with an AI agent \{#set-up-with-an-ai-agent\}
+
+A coding agent can run this setup for you. Paste the prompt below into the agent from the app's root directory. It inspects the project and asks you for the rendering mode and setup scope before changing files, then runs the installer, registers the MCP server and checks the first style in the browser.
+
+<AgentPrompt name="install" />
 
 ### Before you start \{#installation\}
 

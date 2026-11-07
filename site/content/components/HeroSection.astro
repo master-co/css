@@ -6,7 +6,7 @@ import { siteOf } from '@master/internal-site/astro/site-context'
 import CopyCommand from './CopyCommand.svelte'
 import HeroCanvas from '@master/internal-site/home/HeroCanvas.svelte'
 import HomeAction from '@master/internal-site/home/HomeAction.astro'
-import { homeSections, installCommand } from './home-content'
+import { homeSections, installPrompt } from './home-content'
 
 /** A cut-stone title, a stone action and liquid-glass controls share one lamp over a sculpted gold field. */
 const { t } = siteOf(Astro)
@@ -27,7 +27,7 @@ const { t } = siteOf(Astro)
         {t('Get started')}
         <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
       </HomeAction>
-      <CopyCommand client:idle={{ timeout: 500 }} command={installCommand(import.meta.env.PUBLIC_VERSION)} wrap />
+      <CopyCommand client:idle={{ timeout: 500 }} command={installPrompt(import.meta.env.PUBLIC_VERSION, import.meta.env.PUBLIC_URL)} label={t('Set up with your AI agent')} copyLabel={t('Copy setup prompt')} wrap />
     </div>
   </div>
 </section>

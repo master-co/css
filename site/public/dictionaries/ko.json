@@ -477,5 +477,7 @@
   "Runtime mutation work": "런타임 변경 작업",
   "Prerendering": "사전 렌더링",
   "Generate CSS from each rendered page’s HTML and deliver it with that page, with no runtime in the browser.": "렌더링된 각 페이지의 HTML에서 CSS를 생성해 그 페이지와 함께 전달합니다. 브라우저 런타임은 필요하지 않습니다.",
-  "Choose static, prerender, or runtime delivery. Your classes stay the same.": "정적, 사전 렌더링, 런타임 전달 중에서 선택하세요. 클래스 작성법은 같습니다."
+  "Choose static, prerender, or runtime delivery. Your classes stay the same.": "정적, 사전 렌더링, 런타임 전달 중에서 선택하세요. 클래스 작성법은 같습니다.",
+  "Set up with your AI agent": "AI 에이전트로 설정하기",
+  "Copy setup prompt": "설정 프롬프트 복사"
 }

@@ -913,5 +913,7 @@
   "Choose static, prerender, or runtime delivery. Your classes stay the same.": "可選擇靜態、預先渲染或執行階段傳遞，class 寫法維持相同。",
   "Prerender": "預先渲染",
   "Read the classes in the rendered page HTML.": "讀取渲染完成的頁面 HTML 中使用的 class。",
-  "Embed the matching rules in the page.": "把對應的規則嵌入頁面。"
+  "Embed the matching rules in the page.": "把對應的規則嵌入頁面。",
+  "Set up with your AI agent": "用 AI agent 設定",
+  "Copy setup prompt": "複製設定提示詞"
 }

@@ -11,6 +11,11 @@ for (const version of ['2.0.0', '2.0.0-rc.89']) for (const docsURL of ['https://
     assert.ok(resolveAgentPrompt(agentPrompt('context'), options).text.includes(`Documentation: ${docsURL}\n`))
     assert.ok(resolveAgentPrompt(agentPrompt('rules'), options).text.includes(`Read ${docsURL} and`))
     assert.ok(agentPrompt('setup').text.includes('@master/css-mcp@VERSION'))
+    const install = resolveAgentPrompt(agentPrompt('install'), options).text
+    assert.ok(install.includes('npm create @master/css@latest -- --yes --dry-run'))
+    assert.ok(install.includes('npx @master/css-mcp --root'))
+    assert.ok(install.includes(`See ${docsURL}/guide/rendering-modes.`))
+    assert.ok(!install.includes(version) && !install.includes('VERSION'))
   })
 }
 

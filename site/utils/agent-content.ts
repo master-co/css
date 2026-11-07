@@ -15,16 +15,21 @@ export function agentFixMarkdown(example = agentFixExample) {
   return `${example.title}\n\n${example.sourceLabel}:\n\n\`\`\`html\n${example.source}\n\`\`\`\n\n${example.resultLabel}:\n\n\`\`\`html\n${example.result}\n\`\`\``
 }
 
+/** One prompt's portable Markdown, with the page edition's localized title and this release's version and docs origin. */
+export function agentPromptExport(name: string, frontmatter: Record<string, unknown>, locale: string) {
+  const { PUBLIC_VERSION: version, PUBLIC_URL: docsURL } = readPublicEnv()
+  return agentPromptMarkdown(name, resolveAgentPrompt(demoCopy(frontmatter, locale, `AgentPrompt:${name}`, agentPrompt(name)), { version, docsURL }))
+}
+
 export async function agentGuideContent(siteRoot: string, slug: string, locale = 'en') {
   if (!agentGuideSlugs.includes(slug as typeof agentGuideSlugs[number])) throw new Error(`Unsupported agent guide: ${slug}`)
   const file = await localizedContentFile(siteRoot, `content/guide/${slug}/content.mdx`, locale)
   const { frontmatter } = await readLocalizedDocument({ sourceFile: file, locale })
-  const { PUBLIC_VERSION: version, PUBLIC_URL: docsURL } = readPublicEnv()
   const result = await extractReferenceMdx(file, [], [], {
     overview: 'include',
     component(name, attributes) {
       if (name === 'AIIllustration') return aiIllustrationMarkdown()
-      if (name === 'AgentPrompt') return agentPromptMarkdown(String(attributes.name), resolveAgentPrompt(demoCopy(frontmatter, locale, `AgentPrompt:${attributes.name}`, agentPrompt(String(attributes.name))), { version, docsURL }))
+      if (name === 'AgentPrompt') return agentPromptExport(String(attributes.name), frontmatter, locale)
       if (name === 'AgentOptions') return agentOptionsMarkdown(String(attributes.name), demoCopy(frontmatter, locale, `AgentOptions:${attributes.name}`, agentOptionGroup(String(attributes.name))))
       if (name === 'AgentWorkflow') return previewWorkflowMarkdown(demoCopy(frontmatter, locale, 'AgentWorkflow', previewWorkflow))
       if (name === 'AgentFixExample') return agentFixMarkdown(demoCopy(frontmatter, locale, 'AgentFixExample', agentFixExample))

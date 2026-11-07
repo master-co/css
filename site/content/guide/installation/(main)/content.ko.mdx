@@ -28,6 +28,11 @@
       "alt": "소스의 p-md를 p-lg로 바꾸면 컴파일된 안쪽 여백이 바뀌고 브라우저의 상자가 눈에 띄게 커집니다.",
       "caption": "설치 성공은 첫 단계일 뿐입니다. 클래스 변경으로 발견, 생성, 스타일시트 전달을 함께 확인할 수 있습니다."
     }
+  },
+  "demos": {
+    "AgentPrompt:install": {
+      "title": "Master CSS 설정하기"
+    }
   }
 }
 ---
@@ -37,6 +42,7 @@ import StepSection from '@master/internal-site/components/StepSection.astro'
 import Step from '@master/internal-site/components/Step.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import AgentPrompt from '~/site/components/AgentPrompt.astro'
 import InstallationGuides from '~/site/components/InstallationGuides.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import InstallationIllustration from './components/InstallationIllustration.astro'
@@ -55,6 +61,12 @@ import dark from '~/site/assets/images/integrations/installation/cover-dark.webp
 <InstallationGuides />
 
 렌더링 모드는 `static`, `prerender`, `runtime`, `progressive` 네 가지입니다. 프레임워크에서 사용할 수 있는 옵션은 [통합별 렌더링 지원](/guide/rendering-modes#integration-support)을 참고하세요.
+
+### AI 에이전트로 설정하기 \{#set-up-with-an-ai-agent\}
+
+코딩 에이전트가 이 설정을 대신 진행할 수 있습니다. 앱 루트 디렉터리에서 에이전트를 열고 아래 프롬프트를 붙여 넣으세요. 에이전트는 프로젝트를 살펴보고 파일을 변경하기 전에 렌더링 모드와 설정 범위를 묻습니다. 그런 다음 설치 프로그램을 실행하고 MCP 서버를 등록한 뒤 첫 스타일을 브라우저에서 확인합니다.
+
+<AgentPrompt name="install" />
 
 ### 시작하기 전에 \{#installation\}
 

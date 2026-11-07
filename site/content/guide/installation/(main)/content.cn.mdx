@@ -28,6 +28,11 @@
       "alt": "源代码从 p-md 改为 p-lg，编译后的内边距随之变化，浏览器中的方框明显变大。",
       "caption": "安装成功只是第一步。修改类名可以同时检查类名发现、CSS 生成和样式表交付。"
     }
+  },
+  "demos": {
+    "AgentPrompt:install": {
+      "title": "设置 Master CSS"
+    }
   }
 }
 ---
@@ -37,6 +42,7 @@ import StepSection from '@master/internal-site/components/StepSection.astro'
 import Step from '@master/internal-site/components/Step.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import AgentPrompt from '~/site/components/AgentPrompt.astro'
 import InstallationGuides from '~/site/components/InstallationGuides.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import InstallationIllustration from './components/InstallationIllustration.astro'
@@ -55,6 +61,12 @@ import dark from '~/site/assets/images/integrations/installation/cover-dark.webp
 <InstallationGuides />
 
 四种渲染模式是 `static`、`prerender`、`runtime` 和 `progressive`。请参阅[各集成的渲染支持](/guide/rendering-modes#integration-support)，了解框架提供的选项。
+
+### 交给 AI 代理设置 \{#set-up-with-an-ai-agent\}
+
+编程代理可以替你完成这套设置。在应用根目录打开代理，粘贴下方提示词。代理会先检查项目，并在修改文件前询问你要使用的渲染模式与设置范围，然后运行安装程序、注册 MCP 服务器，并在浏览器中确认第一个样式。
+
+<AgentPrompt name="install" />
 
 ### 开始之前 \{#installation\}
 

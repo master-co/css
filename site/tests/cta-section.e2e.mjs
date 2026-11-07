@@ -6,9 +6,10 @@ import { chromium, webkit } from '@playwright/test'
 const browserName = process.env.MASTER_CTA_BROWSER ?? 'chromium'
 const url = process.env.MASTER_CTA_URL ?? 'http://localhost:3000'
 const full = process.env.MASTER_CTA_MATRIX === 'full'
-const expectedVersion = process.env.MASTER_CTA_VERSION ?? '2.0.0'
-assert.match(expectedVersion, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/)
-const expectedInstallCommand = `npm create @master/css@${expectedVersion}`
+const setupLabels = { en: 'Set up with your AI agent', tw: '用 AI agent 設定' }
+const setupPromptStart = 'You are working in an existing web application.'
+// The copied prompt names no release, so a pasted prompt stays current.
+const isSetupPrompt = text => typeof text === 'string' && text.startsWith(setupPromptStart) && text.includes('npm create @master/css@latest') && !/@master\/[\w-]+@\d/.test(text)
 let browser
 before(async () => { browser = await ({ chromium, webkit })[browserName].launch() })
 after(async () => { await browser?.close() })
@@ -68,10 +69,10 @@ for (const width of full ? [320, 390, 768, 1024, 1440, 1920] : [390, 1440]) {
         assert.ok((await title.textContent()).includes(locale === 'tw' ? '一套設計系統' : 'design system.'))
         const link = section.getByRole('link')
         assert.equal(await link.getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/introduction`)
-        const code = section.locator('code')
-        assert.equal(await code.textContent(), expectedInstallCommand)
+        const code = section.locator('.home-command-label')
+        assert.equal(await code.textContent(), setupLabels[locale])
         const geometry = await section.evaluate(element => {
-          const elements = [...element.querySelectorAll('h2, a, code, button')]
+          const elements = [...element.querySelectorAll('h2, a, .home-command-label, button')]
           return {
             overflow: document.documentElement.scrollWidth > innerWidth,
             clipped: elements.some(child => {
@@ -163,8 +164,8 @@ test(`${browserName}: no JavaScript still exposes the invitation and localized g
     const section = page.locator('.home-cta')
     assert.equal(await section.getByRole('heading', { level: 2 }).isVisible(), true)
     assert.equal(await section.getByRole('link').getAttribute('href'), '/tw/guide/introduction')
-    assert.equal(await section.locator('code').textContent(), expectedInstallCommand)
-    assert.equal(await section.evaluate(el => el.querySelector('code').scrollWidth > el.querySelector('code').clientWidth), false)
+    assert.equal(await section.locator('.home-command-label').textContent(), setupLabels.tw)
+    assert.equal(await section.evaluate(el => el.querySelector('.home-command-label').scrollWidth > el.querySelector('.home-command-label').clientWidth), false)
   } finally { await context.close() }
 })
 
@@ -184,7 +185,8 @@ test(`${browserName}: keyboard focus and clipboard feedback preserve the action 
     assert.equal(await copy.evaluate(el => getComputedStyle(el).outlineStyle), 'solid')
     const width = (await section.locator('.home-command').boundingBox()).width
     await page.keyboard.press('Enter')
-    await page.waitForFunction(expected => window.copiedCommand === expected, expectedInstallCommand)
+    await page.waitForFunction(start => window.copiedCommand?.startsWith(start), setupPromptStart)
+    assert.ok(isSetupPrompt(await page.evaluate(() => window.copiedCommand)))
     assert.equal(await copy.getAttribute('aria-label'), 'Copied')
     assert.equal((await section.locator('.home-command').boundingBox()).width, width)
     await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error('Clipboard unavailable') } })
@@ -195,12 +197,12 @@ test(`${browserName}: keyboard focus and clipboard feedback preserve the action 
   } finally { await context.close() }
 })
 
-test(`${browserName}: enlarged text wraps the complete command on a phone`, { timeout: 30000 }, async () => {
+test(`${browserName}: enlarged text wraps the complete label on a phone`, { timeout: 30000 }, async () => {
   const { context, page } = await open({ width: 320, motion: 'reduce' })
   try {
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })
     const result = await page.locator('.home-cta').evaluate(section => {
-      const code = section.querySelector('code')
+      const code = section.querySelector('.home-command-label')
       const range = document.createRange()
       range.selectNodeContents(code)
       return {
@@ -210,7 +212,7 @@ test(`${browserName}: enlarged text wraps the complete command on a phone`, { ti
         copyVisible: section.querySelector('button').getBoundingClientRect().right <= innerWidth
       }
     })
-    assert.equal(result.text, expectedInstallCommand)
+    assert.equal(result.text, setupLabels.en)
     assert.equal(result.clipped, false)
     assert.equal(result.outside, false)
     assert.equal(result.copyVisible, true)
@@ -287,7 +289,8 @@ test(`${browserName}: unavailable Canvas preserves the content and working clipb
     assert.equal(await section.getByRole('heading', { level: 2 }).isVisible(), true)
     assert.equal(await section.getByRole('link').getAttribute('href'), '/guide/introduction')
     await section.getByRole('button').click()
-    await page.waitForFunction(expected => window.copiedCommand === expected, expectedInstallCommand)
+    await page.waitForFunction(start => window.copiedCommand?.startsWith(start), setupPromptStart)
+    assert.ok(isSetupPrompt(await page.evaluate(() => window.copiedCommand)))
     assert.equal(await paints(page), 0)
     assert.deepEqual(errors, [])
   } finally { await context.close() }

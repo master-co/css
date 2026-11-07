@@ -28,6 +28,11 @@
       "alt": "ソースの p-md を p-lg に変更すると、コンパイルされたパディングが変わり、ブラウザーのボックスが目に見えて大きくなる。",
       "caption": "インストールの成功は最初の一歩です。クラスの変更で、検出、生成、スタイルシート配信をまとめて確認できます。"
     }
+  },
+  "demos": {
+    "AgentPrompt:install": {
+      "title": "Master CSS をセットアップする"
+    }
   }
 }
 ---
@@ -37,6 +42,7 @@ import StepSection from '@master/internal-site/components/StepSection.astro'
 import Step from '@master/internal-site/components/Step.astro'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import DemoConfiguredExample from '@master/internal-site/demo/DemoConfiguredExample.astro'
+import AgentPrompt from '~/site/components/AgentPrompt.astro'
 import InstallationGuides from '~/site/components/InstallationGuides.astro'
 import InstallationPreview from '@master/internal-site/demo/DemoInstallation.astro'
 import InstallationIllustration from './components/InstallationIllustration.astro'
@@ -55,6 +61,12 @@ import dark from '~/site/assets/images/integrations/installation/cover-dark.webp
 <InstallationGuides />
 
 レンダリングモードは `static`、`prerender`、`runtime`、`progressive` の 4 種類です。フレームワークで利用できるオプションは、[インテグレーションごとのレンダリング対応](/guide/rendering-modes#integration-support)を参照してください。
+
+### AI エージェントでセットアップする \{#set-up-with-an-ai-agent\}
+
+このセットアップはコーディングエージェントに任せられます。アプリのルートディレクトリーでエージェントを開き、次のプロンプトを貼り付けます。エージェントはプロジェクトを調べ、ファイルを変更する前にレンダリングモードと設定範囲を確認します。その後インストーラーを実行し、MCP サーバーを登録して、最初のスタイルをブラウザーで確かめます。
+
+<AgentPrompt name="install" />
 
 ### 始める前に \{#installation\}
 

@@ -477,5 +477,7 @@
   "Runtime mutation work": "运行时变化处理工作",
   "Prerendering": "预渲染",
   "Generate CSS from each rendered page’s HTML and deliver it with that page, with no runtime in the browser.": "从每个渲染完成页面的 HTML 生成 CSS，随该页面一起交付，浏览器中无需运行时。",
-  "Choose static, prerender, or runtime delivery. Your classes stay the same.": "可选择静态、预渲染或运行时交付，类的写法保持不变。"
+  "Choose static, prerender, or runtime delivery. Your classes stay the same.": "可选择静态、预渲染或运行时交付，类的写法保持不变。",
+  "Set up with your AI agent": "用 AI 智能体设置",
+  "Copy setup prompt": "复制设置提示词"
 }
