@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, readFile, rename, rm, symlink, writeFile } from 'node:f
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
-import { createManifest, identityPath, inventoryDigest, jsonBytes, manifestName, outputInventory, prepareIdentity, releaseMetadata, validateManifest, verifyOutput } from './pages-site-manifest.mjs'
+import { checkVerifiedOutput, createManifest, identityPath, inventoryDigest, jsonBytes, manifestName, outputInventory, prepareIdentity, releaseMetadata, validateManifest, verifyOutput } from './pages-site-manifest.mjs'
 
 const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
   channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
@@ -67,6 +67,18 @@ test('browser proof must identify these exact final bytes and all three engines'
     { ...report, profiles: [{ engine: 'chromium' }] }, { ...report, sourceStatus: [' M site/content/page.astro'] },
     { ...report, sourceStatus: ['?? site/unreviewed.mdx'] }
   ]) await assert.rejects(createManifest(out, metadata, jsonBytes(wrong), registry))
+})
+
+test('a validation build is reusable only with the identity and proof of this exact delivery', async t => {
+  const { out, report } = await fixture(t)
+  assert.equal((await checkVerifiedOutput(out, metadata, jsonBytes(report))).metadata.version, metadata.version)
+  // Another release, project or origin writes another identity, so the same bytes cannot be reused.
+  for (const other of [{ ...metadata, version: '2.0.1', tag: 'v2.0.1' }, { ...metadata, project: 'other' }]) {
+    await assert.rejects(checkVerifiedOutput(out, other, jsonBytes(report)), /identity/)
+  }
+  await assert.rejects(checkVerifiedOutput(out, metadata, jsonBytes({ ...report, sourceStatus: [' M site/content/page.astro'] })))
+  await writeFile(path.join(out, 'assets/a.css'), 'a{color:blue}')
+  await assert.rejects(checkVerifiedOutput(out, metadata, jsonBytes(report)), /final output/)
 })
 
 test('manifest identity, registry integrity and exact path inventory fail closed', async t => {

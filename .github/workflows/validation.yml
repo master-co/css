@@ -18,6 +18,10 @@ on:
         description: Whether to build every package before validation and warm the release cache.
         type: boolean
         default: false
+      site_delivery:
+        description: Whether this push of main or rc may deliver the site, so a site-only delivery is built and browser-verified here with its public identity for deploy-site to reuse.
+        type: boolean
+        default: false
     outputs:
       site_affected:
         description: Whether the site build is affected by this change.
@@ -257,11 +261,38 @@ jobs:
         run: |
           bun run build
           bun run check:artifacts
+      # A site-only push delivers with the newest release, which is known before the release job,
+      # so validation builds and verifies the exact delivery that deploy-site would otherwise repeat.
+      # Sets PUBLIC_VERSION and SITE_DELIVERY for the following steps when the site delivers.
+      - name: Plan a site-only delivery for this push
+        id: site_plan
+        # Delivery evidence only: deploy-site rebuilds when it is missing or wrong.
+        continue-on-error: true
+        if: ${{ inputs.site_delivery && steps.consumers.outputs.site_affected == 'true' }}
+        env:
+          RELEASED: "false"
+        run: node scripts/pages-site-release.mjs plan
+      - name: Require the source tag and public registry cohort of the delivery
+        # Delivery evidence only: deploy-site rebuilds when it is missing or wrong.
+        continue-on-error: true
+        if: ${{ steps.site_plan.outputs.deliver == 'true' }}
+        env:
+          PUBLIC_COMMIT_REF: ${{ github.ref_name }}
+          PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
+          MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
+          PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+          PAGES_SUBDOMAIN: ${{ vars[format('CLOUDFLARE_PAGES_{0}_SUBDOMAIN', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+          PAGES_RELEASE_MODE: ${{ vars[format('CLOUDFLARE_PAGES_{0}_MODE', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+        run: node scripts/pages-site-release.mjs preflight
       - name: Build and verify site
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}
         shell: bash
         env:
           RELEASE_BUILD: ${{ inputs.release_build }}
+          # Empty unless this build is the delivery, so other builds keep their resolved values.
+          PUBLIC_COMMIT_REF: ${{ steps.site_plan.outputs.deliver == 'true' && github.ref_name || '' }}
+          PUBLIC_URL: ${{ steps.site_plan.outputs.deliver == 'true' && (github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co') || '' }}
+          MASTER_CSS_IMAGE_TRANSFORMATIONS: ${{ steps.site_plan.outputs.deliver == 'true' && 'false' || '' }}
         run: |
           set -euo pipefail
           if [ "$RELEASE_BUILD" != true ]; then
@@ -277,6 +308,19 @@ jobs:
           done
           bun run --filter site lint:full
           bun run --filter site type-check
+      # The browser proof must cover the final output, including the public identity.
+      - name: Write the public identity of the delivered site
+        # Delivery evidence only: deploy-site rebuilds when it is missing or wrong.
+        continue-on-error: true
+        if: ${{ steps.site_plan.outputs.deliver == 'true' }}
+        env:
+          PUBLIC_COMMIT_REF: ${{ github.ref_name }}
+          PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
+          MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
+          PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+          PAGES_SUBDOMAIN: ${{ vars[format('CLOUDFLARE_PAGES_{0}_SUBDOMAIN', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+          PAGES_RELEASE_MODE: ${{ vars[format('CLOUDFLARE_PAGES_{0}_MODE', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+        run: node scripts/pages-site-release.mjs identity
       - name: Verify built site in Chromium, Firefox and WebKit
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}
         shell: bash

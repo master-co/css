@@ -141,7 +141,12 @@ export async function verifyOutput(directory, manifest, expected) {
   return { revision: metadata.revision, version: metadata.version, files: files.length, buildDigest: inventoryDigest(files) }
 }
 
-export async function createManifest(directory, input, reportBytes, registry) {
+/**
+ * Whether a browser report proves these exact final bytes for this delivery: its revision and
+ * origin, no failures, every engine, a clean source tree, and a digest that covers the public
+ * identity of this metadata. Validation proves a site-only delivery this way before release.
+ */
+export async function checkVerifiedOutput(directory, input, reportBytes) {
   const metadata = releaseMetadata(input)
   const report = JSON.parse(reportBytes)
   assert.equal(report.revision, metadata.revision)
@@ -149,6 +154,15 @@ export async function createManifest(directory, input, reportBytes, registry) {
   assert.deepEqual(report.failures, [], 'Browser verification must succeed before publishing its manifest')
   const files = await outputInventory(directory)
   assert.equal(report.buildDigest, inventoryDigest(files), 'Browser proof must cover the final output including its public identity')
+  const payload = files.filter(file => file.path !== identityPath)
+  assert.ok((await readFile(path.join(directory, identityPath))).equals(identityBytes(metadata, inventoryDigest(payload))), 'Public site identity differs from this delivery')
+  assert.deepEqual([...new Set((report.profiles ?? []).map(profile => profile.engine))].sort(), ['chromium', 'firefox', 'webkit'], 'Browser proof must cover every engine')
+  assert.ok(Array.isArray(report.sourceStatus) && report.sourceStatus.every(line => line === '?? site/.cache/'), 'Release proof contains an unexpected source change')
+  return { metadata, report, files }
+}
+
+export async function createManifest(directory, input, reportBytes, registry) {
+  const { metadata, report, files } = await checkVerifiedOutput(directory, input, reportBytes)
   const profilesByEngine = {}
   for (const profile of report.profiles ?? []) profilesByEngine[profile.engine] = (profilesByEngine[profile.engine] ?? 0) + 1
   const manifest = { schemaVersion: 1, ...metadata, registry, files, buildDigest: inventoryDigest(files), verification: {

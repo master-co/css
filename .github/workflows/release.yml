@@ -46,6 +46,7 @@ jobs:
       head_sha: ${{ github.sha }}
       full: true
       release_build: true
+      site_delivery: ${{ github.ref_name == 'main' || github.ref_name == 'rc' }}
 
   release:
     if: ${{ github.event_name == 'push' }}
@@ -168,9 +169,22 @@ jobs:
       - name: Require the actual source tag and complete public registry cohort
         if: ${{ steps.plan.outputs.deliver == 'true' }}
         run: node scripts/pages-site-release.mjs preflight
+      # Validation already built and browser-verified a site-only delivery with its identity.
+      - name: Download the site that validation verified for this delivery
+        if: ${{ steps.plan.outputs.deliver == 'true' && env.SITE_DELIVERY == 'site' }}
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          name: site-validation-${{ github.sha }}
+          path: site
+      # Reuses it only when its report proves these exact bytes and identity; otherwise rebuilds.
+      - name: Reuse the verified validation site when it is this exact delivery
+        id: reuse
+        if: ${{ steps.plan.outputs.deliver == 'true' }}
+        run: node scripts/pages-site-release.mjs reuse
       # The external Git builder must reproduce these final, browser-tested bytes.
       - name: Build and verify the exact site revision
-        if: ${{ steps.plan.outputs.deliver == 'true' }}
+        if: ${{ steps.plan.outputs.deliver == 'true' && steps.reuse.outputs.reused != 'true' }}
         run: |
           bun run build:site
           bun run --filter site test:css-contract
@@ -179,7 +193,9 @@ jobs:
           node scripts/pages-site-release.mjs identity
           bun run playwright install --with-deps chromium firefox webkit
           node site/scripts/verify-release-site.mjs --out site/out --origin "$PUBLIC_URL" --report site/test-results/release-site.json
-          node scripts/pages-site-release.mjs manifest
+      - name: Create the output manifest from the browser proof
+        if: ${{ steps.plan.outputs.deliver == 'true' }}
+        run: node scripts/pages-site-release.mjs manifest
       - name: Retain the verified site output
         if: ${{ steps.plan.outputs.deliver == 'true' }}
         uses: actions/upload-artifact@v7

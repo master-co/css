@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { channels, createManifest, jsonBytes, manifestName, manifestUrl, prepareIdentity, releaseMetadata, repository, sha256, validateManifest, validateRegistryEvidence, verifyOutput } from './pages-site-manifest.mjs'
+import { channels, checkVerifiedOutput, createManifest, jsonBytes, manifestName, manifestUrl, prepareIdentity, releaseMetadata, repository, sha256, validateManifest, validateRegistryEvidence, verifyOutput } from './pages-site-manifest.mjs'
 import { advancePointer, downloadManifest, publishManifest, verifyLiveIdentity, waitForPages } from './pages-release-github.mjs'
 
 const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 30_000 }).trim()
@@ -230,6 +230,28 @@ async function plan() {
   console.log(`Delivering the site with ${result.kind === 'release' ? 'its release' : 'the unchanged packages of'} v${result.version}.`)
 }
 
+/**
+ * A site-only delivery reuses the output that validation built and browser-verified with this
+ * delivery's identity. Any difference rebuilds: the report must prove these exact final bytes.
+ */
+async function reuse() {
+  const metadata = ciMetadata()
+  const report = 'site/test-results/release-site.json'
+  let reused = false
+  if (process.env.SITE_DELIVERY !== 'site') console.log(`A release delivery builds with its own version, ${metadata.tag}.`)
+  else {
+    try {
+      await checkVerifiedOutput('site/out', metadata, await readFile(report))
+      reused = true
+      console.log(`Reusing the validation build browser-verified for ${metadata.tag} at ${metadata.revision}.`)
+    } catch (error) {
+      console.log(`::notice title=Site rebuilds::The validation build cannot be reused: ${error.message.split('\n')[0]}`)
+    }
+  }
+  if (!reused) await Promise.all([rm('site/out', { recursive: true, force: true }), rm(report, { force: true })])
+  await writeGitHubFile('GITHUB_OUTPUT', [`reused=${reused}`])
+}
+
 async function cleanBuildCache() {
   // This generated, untracked cache otherwise changes Reference sourceState on
   // a repeated build. Its contents are recreated and disclosed by the report.
@@ -348,6 +370,7 @@ async function main(command, directory) {
     return
   }
   if (command === 'plan') return plan()
+  if (command === 'reuse') return reuse()
   const metadata = ciMetadata()
   if (command === 'preflight') {
     await ciRegistry(metadata)
@@ -360,7 +383,7 @@ async function main(command, directory) {
     await writeFile(manifestFile, jsonBytes(manifest))
     console.log(`Verified ${manifest.files.length} exact output files for ${metadata.tag} at ${metadata.revision}.`)
   } else if (command === 'deliver') await deliver(metadata)
-  else throw new Error('Expected plan, preflight, identity, manifest, deliver, canonical, hosted-prepare or hosted-verify')
+  else throw new Error('Expected plan, reuse, preflight, identity, manifest, deliver, canonical, hosted-prepare or hosted-verify')
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
