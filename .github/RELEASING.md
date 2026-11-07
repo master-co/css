@@ -171,11 +171,11 @@ After the stable npm release, set `VERSION` to the exact released
 Run the [package's client check](../packages/mcp/README.md#mcp-client-config) in
 an empty workspace on Node.js 24, pinning the npm command to that version.
 
-Validate with `mcp-publisher validate server.json`. A `master-co` GitHub
-organization owner can authenticate with `mcp-publisher login github` and run
-`mcp-publisher publish` from the repository root. The registry also supports
-`mcp-publisher login github-oidc` in a workflow in this repository with
-`id-token: write`. See the [official publishing guide](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/quickstart.mdx).
+Dispatch `mcp-registry.yml` on `main` with that version. It sets both versions in
+`server.json`, checks the npm `mcpName`, validates, publishes with
+`mcp-publisher login github-oidc` and verifies the public listing. The interactive
+`mcp-publisher login github` flow cannot read organization roles, so it is refused
+for the `io.github.master-co` namespace. See the [official publishing guide](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/quickstart.mdx).
 
 Verify `server.packages` in the public response contains `@master/css-mcp` at
 `$VERSION` with `stdio` transport:

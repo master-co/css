@@ -1,0 +1,75 @@
+name: MCP Registry
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact released @master/css-mcp version to list
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp-registry
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # The io.github.master-co namespace needs an organization credential; GitHub OIDC
+    # proves this repository without a personal token (see .github/RELEASING.md).
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      VERSION: ${{ inputs.version }}
+      PUBLISHER_VERSION: v1.8.8
+      PUBLISHER_SHA256: 09f1fa70ee146b640584274a1a6b2b8a0310b05d4321fa9224e6df6a016d67f4
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install the pinned MCP publisher
+        run: |
+          curl -fsSL -o mcp-publisher.tar.gz "https://github.com/modelcontextprotocol/registry/releases/download/${PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz"
+          echo "${PUBLISHER_SHA256}  mcp-publisher.tar.gz" | sha256sum -c -
+          tar -xzf mcp-publisher.tar.gz mcp-publisher
+      - name: List the exact released npm package
+        run: |
+          set -euo pipefail
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Expected a stable version, got $VERSION" >&2; exit 1; }
+          name=$(node -p "require('./server.json').name")
+          test "$(npm view "@master/css-mcp@$VERSION" mcpName)" = "$name"
+          node -e '
+            const fs = require("fs"), version = process.env.VERSION
+            const server = JSON.parse(fs.readFileSync("server.json", "utf8"))
+            server.version = version
+            for (const pkg of server.packages) pkg.version = version
+            fs.writeFileSync("server.json", JSON.stringify(server, null, 2) + "\n")
+          '
+          ./mcp-publisher validate server.json
+      - name: Publish with GitHub OIDC
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
+      - name: Verify the public listing
+        run: |
+          set -euo pipefail
+          name=$(node -p "encodeURIComponent(require('./server.json').name)")
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors \
+            "https://registry.modelcontextprotocol.io/v0.1/servers/${name}/versions/${VERSION}" > listing.json
+          node -e '
+            const listing = require("./listing.json"), server = listing.server ?? listing
+            const pkg = server.packages.find(p => p.identifier === "@master/css-mcp")
+            if (server.version !== process.env.VERSION || pkg?.version !== process.env.VERSION || pkg.transport?.type !== "stdio") {
+              console.error(JSON.stringify(server, null, 2)); process.exit(1)
+            }
+            console.log(`Listed ${server.name}@${server.version} with stdio @master/css-mcp@${pkg.version}`)
+          '
