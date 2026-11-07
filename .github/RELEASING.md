@@ -79,7 +79,10 @@ Before authorizing publication, retain:
 release branch. [Aronrepo](https://github.com/1aron/aronrepo/tree/main/packages/aronrepo)
 decides the version, tag and notes from the commits since the channel's last
 `v*` tag with this repository's `explicit` policy, the same rules as the commit
-hook, the PR title check and `bun x aronrepo explain`. The script then runs
+hook, the PR title check, the pushed-commit check (`commit-check.yml`) and
+`bun x aronrepo explain`. Only commits that change the release paths in
+`aronrepo.config.js` (every package, the Rust crates and the build
+configuration that compiles them) release a version. The script then runs
 workspace publication, the cohort promotion next, and GitHub release creation
 last, with the assets in `aronrepo.config.js`. The workspace module publishes
 dependencies before their dependents, including optional and peer dependencies

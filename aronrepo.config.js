@@ -3,6 +3,22 @@ export default {
   release: {
     // Only the owner raises minor and major versions, with Bump(Minor) and Bump(Major) commits.
     mode: 'explicit',
+    // Files whose changes ship to npm, so only their commits may use a release type.
+    // Derived paths would cover public packages only, but the Rust crates compile into the
+    // binding packages and the private internal and engine-js workspaces are bundled into them.
+    paths: {
+      include: [
+        'packages/**',
+        '!packages/*/playground/**',
+        'crates/**',
+        '!crates/xtask/**',
+        '!crates/**/tests.rs',
+        'Cargo.toml',
+        'Cargo.lock',
+        'rust-toolchain.toml',
+        'shared/tsdown-package.config.ts'
+      ]
+    },
     // scripts/release.mjs attaches these to the GitHub release after npm promotion.
     assets: [
       { path: 'release-artifacts/release-notes.md', name: 'release-notes-{tag}.md', label: 'Complete release notes' },

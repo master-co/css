@@ -1,0 +1,38 @@
+name: Check pushed commits
+on:
+  push:
+    branches: [main, alpha, beta, rc, canary]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    # The commit hook and the PR title check already apply this policy; a direct push can skip
+    # both (--no-verify, rebuilt or web-edited commits), so check every pushed commit again here.
+    # It reports without gating the release, which resolves such a commit to no release anyway.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # Only aronrepo runs here, so skip husky and every package postinstall.
+      - uses: ./.github/actions/setup-bun
+        with:
+          turbo-cache: "false"
+          ignore-scripts: "true"
+      - name: Check every pushed commit against the release policy
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          # A new branch has no previous tip, and a force push may drop it; check the head commit then.
+          if [[ "$BEFORE" =~ ^0+$ ]] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            from="${AFTER}~1"
+          else
+            from="$BEFORE"
+          fi
+          bun x aronrepo check --from "$from" --to "$AFTER"
