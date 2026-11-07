@@ -1,5 +1,6 @@
 {
   "name": "master-css-eslint-legacy-example",
+  "private": true,
   "type": "module",
   "scripts": {
     "lint": "bun --bun eslint \"*.html\""
