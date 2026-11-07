@@ -87,7 +87,7 @@
     "@playwright/test": "1.64.1",
     "@types/edit-json-file": "^1.7.4",
     "@types/node": "^24.19.2",
-    "aronrepo": "^4.0.1",
+    "aronrepo": "^4.0.2",
     "concurrently": "^10.0.6",
     "cross-env": "^10.1.0",
     "edit-json-file": "^1.8.1",
