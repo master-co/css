@@ -109,6 +109,7 @@
   import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check'
   import IconTerminal2 from '@tabler/icons-svelte-runes/icons/terminal-2'
   import Image from '@master/internal-site/components/Image.svelte'
+  import aronImage from '@master/internal-site/assets/images/authors/aron.jpg'
   import { getSite } from '@master/internal-site/site'
   import AgentsOrbit from './AgentsFigures.svelte'
   import type { HomeCodeWindowProblem } from './home-content'
@@ -342,7 +343,7 @@
 
 <!-- Claude speaks on the left; Aron's messages and portrait sit on the right. -->
 {#snippet message(text: string, speaker: 'agent' | 'user')}
-  <div class={['home-agent-message', ({ agent: 'home-agent-message-agent', user: 'home-agent-message-user' })[speaker]]}><span aria-hidden="true" class="home-agent-avatar">{#if speaker === 'agent'}{@html claudeAvatar}{:else}<Image alt="" height={24} src="/images/authors/aron.jpg" width={24} />{/if}</span><p>{#each streamParts(text) as { part, word }, key (key)}{#if word === undefined}{part}{:else}<span class="home-agent-word" style:--home-agent-word={word}>{part}</span>{/if}{/each}</p></div>
+  <div class={['home-agent-message', ({ agent: 'home-agent-message-agent', user: 'home-agent-message-user' })[speaker]]}><span aria-hidden="true" class="home-agent-avatar">{#if speaker === 'agent'}{@html claudeAvatar}{:else}<Image alt="" height={24} src={aronImage} width={24} />{/if}</span><p>{#each streamParts(text) as { part, word }, key (key)}{#if word === undefined}{part}{:else}<span class="home-agent-word" style:--home-agent-word={word}>{part}</span>{/if}{/each}</p></div>
 {/snippet}
 
 <!-- The agent styles the card with its own edit tool; the MCP server never writes without a preview. -->
