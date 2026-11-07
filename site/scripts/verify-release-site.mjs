@@ -14,6 +14,8 @@ const out = path.resolve(argument('--out', 'site/out'))
 const origin = new URL(argument('--origin', 'https://css.master.co')).origin
 const reportPath = path.resolve(argument('--report', 'site/test-results/release-site/report.json'))
 const engines = argument('--browsers', 'chromium,firefox,webkit').split(',')
+const concurrency = Number(argument('--concurrency', '2'))
+assert.ok(Number.isInteger(concurrency) && concurrency > 0, '--concurrency is a positive integer of pages per engine')
 const report = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), origin, out, pages: 0, localLinks: 0, profiles: [], noJavaScript: [], failures: [] }
 report.sourceStatus = execFileSync('git', ['status', '--porcelain=v1', '--untracked-files=normal'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean)
 const files = directory => readdirSync(directory, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(path.join(directory, entry.name)) : [path.join(directory, entry.name)])
@@ -53,10 +55,18 @@ const findFile = pathname => {
   if (file !== out && !file.startsWith(out + path.sep)) return undefined
   return [file, file + '.html', path.join(file, 'index.html')].find(candidate => existsSync(candidate) && statSync(candidate).isFile())
 }
-// Engines run concurrently; order their entries by --browsers for a stable report.
+// Engines and their pages run concurrently; order entries by --browsers and then
+// by their place in the profile matrix for a stable report.
 const byEngine = (a, b) => engines.indexOf(a.engine) - engines.indexOf(b.engine)
+let sortReport = () => { report.profiles.sort(byEngine); report.noJavaScript.sort(byEngine) }
+const pool = async (items, run) => {
+  let next = 0
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (next < items.length) await run(items[next++])
+  }))
+}
 const save = () => {
-  report.profiles.sort(byEngine); report.noJavaScript.sort(byEngine)
+  sortReport()
   mkdirSync(path.dirname(reportPath), { recursive: true }); writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
 }
 const check = async (name, operation) => {
@@ -160,14 +170,23 @@ if (!process.argv.includes('--static-only')) {
     ...edition, route: edition.prefix + suffix || '/'
   })))
   routes.push(...['/guide/migration', '/guide/language-service'].map(route => ({ ...editions[0], route })))
+  const profiles = routes.flatMap(route => [390, 1280].flatMap(width => ['light', 'dark'].map(scheme => ({ ...route, width, scheme }))))
+  const profileIndex = ({ route, width, scheme }) => profiles.findIndex(profile => profile.route === route && profile.width === width && profile.scheme === scheme)
+  const editionIndex = ({ language }) => editions.findIndex(edition => edition.language === language)
+  sortReport = () => {
+    report.profiles.sort((a, b) => byEngine(a, b) || profileIndex(a) - profileIndex(b))
+    report.noJavaScript.sort((a, b) => byEngine(a, b) || editionIndex(a) - editionIndex(b))
+  }
   try {
     // Each engine has its own browser process and checks; running them together
-    // takes the slowest engine's time instead of the sum of all three.
+    // takes the slowest engine's time instead of the sum of all three. Every
+    // profile has its own context, so a few also run at once within an engine:
+    // most of a profile's time is spent waiting for network idle, fonts and axe.
     await Promise.all(engines.map(engine => check(`${engine}: launch and profiles`, async () => {
       assert.ok({ chromium, firefox, webkit }[engine], `unknown browser ${engine}`)
       const browser = await ({ chromium, firefox, webkit })[engine].launch()
       try {
-        for (const { route, language, search } of routes) for (const width of [390, 1280]) for (const scheme of ['light', 'dark']) await check(`${engine} ${route} ${width} ${scheme}`, async () => {
+        await pool(profiles, ({ route, language, search, width, scheme }) => check(`${engine} ${route} ${width} ${scheme}`, async () => {
           const context = await browser.newContext({ viewport: { width, height: 1000 }, colorScheme: scheme, reducedMotion: 'reduce' })
           try {
             const page = await context.newPage()
@@ -197,8 +216,8 @@ if (!process.argv.includes('--static-only')) {
             assert.deepEqual(errors, [])
             report.profiles.push({ engine, route, width, scheme, axeRules: audit.passes.length, incomplete: audit.incomplete.map(({ id }) => id) })
           } finally { await context.close(); save() }
-        })
-        for (const { prefix, language } of editions) await check(`${engine}: ${language} no-JavaScript reading`, async () => {
+        }))
+        await pool(editions, ({ prefix, language }) => check(`${engine}: ${language} no-JavaScript reading`, async () => {
           const page = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } })
           try {
             assert.equal((await page.goto(base + prefix + '/guide/installation')).status(), 200)
@@ -209,7 +228,7 @@ if (!process.argv.includes('--static-only')) {
             if (language === 'en') assert.ok(article.includes('Installation'))
             report.noJavaScript.push({ engine, language, route: prefix + '/guide/installation' })
           } finally { await page.close() }
-        })
+        }))
       } finally { await browser.close() }
     })))
   } finally { await new Promise(resolve => server.close(resolve)) }
