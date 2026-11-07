@@ -133,7 +133,8 @@ export async function advancePointer(metadata, { token, fetchApi = fetch, onWrit
 export function completedPagesCheck(checks, { metadata, startedAt }) {
   const found = checks.filter(check => check.head_sha === metadata.revision
     && check.app?.slug === 'cloudflare-workers-and-pages'
-    && check.name === 'Cloudflare Pages'
+    // Cloudflare renamed the check from `Cloudflare Pages` to `Cloudflare Pages: <project>`.
+    && [`Cloudflare Pages`, `Cloudflare Pages: ${metadata.project}`].includes(check.name)
     && Date.parse(check.started_at ?? check.created_at) >= Date.parse(startedAt) - 1000)
   // The App uses one check name across projects. Identify the project from its
   // dashboard route, including Cloudflare's observed ?to=/... route form.

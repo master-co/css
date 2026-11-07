@@ -130,7 +130,7 @@ test('initial creation and already-selected source remain distinct from force or
 })
 
 const deploymentId = '12345678-1234-1234-1234-123456789abc'
-const check = { id: 42, head_sha: metadata.revision, app: { slug: 'cloudflare-workers-and-pages' }, name: 'Cloudflare Pages',
+const check = { id: 42, head_sha: metadata.revision, app: { slug: 'cloudflare-workers-and-pages' }, name: `Cloudflare Pages: ${metadata.project}`,
   started_at: createdAt, status: 'completed', conclusion: 'success', external_id: deploymentId,
   details_url: `https://dash.cloudflare.com/?to=/fixture-account/pages/view/${metadata.project}/${deploymentId}` }
 
@@ -138,9 +138,10 @@ test('the watcher identifies the actual Cloudflare App, project route and exact 
   const proof = completedPagesCheck([check], { metadata, startedAt: createdAt })
   assert.equal(proof.deploymentUrl, `https://12345678.${metadata.subdomain}`)
   assert.ok(!JSON.stringify(proof).includes(deploymentId))
+  assert.equal(completedPagesCheck([{ ...check, name: 'Cloudflare Pages' }], { metadata, startedAt: createdAt }).checkRunId, 42)
   for (const wrong of [
     { ...check, head_sha: 'f'.repeat(40) }, { ...check, app: { slug: 'github-actions' } },
-    { ...check, name: 'Workers Builds: fixture' }, { ...check, started_at: '2025-01-01T00:00:00Z' },
+    { ...check, name: 'Workers Builds: fixture' }, { ...check, name: 'Cloudflare Pages: other-project' }, { ...check, started_at: '2025-01-01T00:00:00Z' },
     { ...check, details_url: check.details_url.replace('/fixture/', '/other-project/') },
     { ...check, details_url: check.details_url.replace('dash.cloudflare.com', 'untrusted.example') }
   ]) assert.equal(completedPagesCheck([wrong], { metadata, startedAt: createdAt }), null)
