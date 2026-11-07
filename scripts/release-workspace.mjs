@@ -4,9 +4,9 @@ import { resolve, join } from 'node:path'
 import { gunzipSync } from 'node:zlib'
 import { execa } from 'execa'
 // Reuse manifest/version helpers only; npm CLI owns OIDC authentication.
-import { readPackage, writeReleaseVersion } from '@aronrepo/semantic-release-pnpm'
+import { readPackage, writeReleaseVersion } from './release-manifest.mjs'
 import { assertNpmOidcEnvironment, assertNpmProvenanceRepository, assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
-import { assertReleaseFlag, recoveryArchive, stagePackage } from './semantic-release-promotion.mjs'
+import { assertReleaseFlag, recoveryArchive, stagePackage } from './release-promotion.mjs'
 
 function* packedEntries(archive) {
   const tar = gunzipSync(archive)
@@ -131,25 +131,15 @@ export function createWorkspaceRelease({ run = execa, fetchMetadata = fetch, wai
     assertReleaseFlag(context, 'MASTER_CSS_RELEASE_STAGE')
     const key = `${cwd}:${config.pkgRoot}:${context.nextRelease.version}`
     if (!tarballs.has(key)) await prepare(config, context)
-    // The promotion plugin verifies every remaining upload before any formal tag write.
+    // The promotion module verifies every remaining upload before any formal tag write.
     const channel = await stagePackage(config, context, pkg, tarballs.get(key), executeNpm, fetchMetadata, { deferVerification: true, wait })
     return { name: `npm package (@${channel} dist-tag)`, channel, url: `https://www.npmjs.com/package/${pkg.name}/v/${context.nextRelease.version}` }
-  }
-
-  async function addChannel(config, context) {
-    const pkg = await readPackage(context.cwd ?? process.cwd(), config.pkgRoot)
-    if (pkg.private || config.npmPublish === false) return false
-    // The final promotion plugin verifies the entire archived cohort before moving
-    // any formal channel. Individual packages must never promote themselves.
-    return false
   }
 
   async function cleanup() {
     versions.clear()
     tarballs.clear()
   }
-  return { verifyConditions, prepare, publish, addChannel, success: cleanup, fail: cleanup }
+  // Packages never promote themselves; the promotion module verifies the entire cohort first.
+  return { verifyConditions, prepare, publish, success: cleanup, fail: cleanup }
 }
-
-const release = createWorkspaceRelease()
-export const { verifyConditions, prepare, publish, addChannel, success, fail } = release

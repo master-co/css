@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { YAML } from 'bun'
-import config from '../release.config.js'
 import { assertNpmProvenanceRepository, assertNpmPublishConfig } from './npm-oidc.mjs'
+import { releasePackageRoots } from './release-order.mjs'
 
-const WORKSPACE_RELEASE_PLUGIN = './scripts/semantic-release-workspace.mjs'
 const expectedFirstPackages = [
   'packages/binding-darwin-arm64',
   'packages/binding-darwin-x64',
@@ -20,9 +19,7 @@ const expectedFirstPackages = [
   'packages/binding-wasm-tooling'
 ]
 
-const packageRoots = config.plugins
-  .filter((plugin) => Array.isArray(plugin) && plugin[0] === WORKSPACE_RELEASE_PLUGIN)
-  .map((plugin) => plugin[1]?.pkgRoot)
+const packageRoots = releasePackageRoots()
 
 const manifests = packageRoots.map(root => JSON.parse(readFileSync(new URL(`../${root}/package.json`, import.meta.url))))
 const positions = new Map(manifests.map(({ name }, index) => [name, index]))
@@ -44,11 +41,9 @@ assert.deepEqual(
 )
 assert.equal(new Set(packageRoots).size, packageRoots.length, 'Release package roots must be unique.')
 assert.ok(packageRoots.length > expectedFirstPackages.length, 'Release config must include public wrapper packages.')
-assert.equal(
-  config.plugins.at(-1)?.[0],
-  '@semantic-release/github',
-  'GitHub release assets must publish only after all npm packages succeed.'
-)
+const releaseScript = readFileSync(new URL('./release.mjs', import.meta.url), 'utf8')
+assert.ok(releaseScript.lastIndexOf('promotion.publish(') < releaseScript.lastIndexOf('publishGitHubRelease('),
+  'GitHub release assets must publish only after all npm packages succeed.')
 
 for (const [index, manifest] of manifests.entries()) {
   assertNpmPublishConfig(manifest)

@@ -5,8 +5,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import test from 'node:test'
-import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
-import { createReleasePromotion, distTagRetryDelays, readInstallableVersion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './semantic-release-promotion.mjs'
+import { createWorkspaceRelease, packedManifest } from './release-workspace.mjs'
+import { createReleasePromotion, distTagRetryDelays, readInstallableVersion, readPublishedPackage, readRegistryTags, readRegistryVersion } from './release-promotion.mjs'
 import { recoverRelease } from './release-recover.mjs'
 import { registryConsumerEnvironment, verifyRegistryLock } from './release-registry-consumer.mjs'
 
@@ -121,7 +121,7 @@ async function fixture(t, { dependent = false } = {}) {
   return { cwd, config, context, registry, calls, waits, controls, workspace, promotion, prepare, stage, state, run, fetchMetadata, provenanceProbe }
 }
 
-test('all archives stage without formal tags; full verified cohort promotes before addChannel', async t => {
+test('all archives stage without formal tags; the full verified cohort promotes on every channel', async t => {
   const f = await fixture(t)
   await f.prepare()
   await f.stage('a')
@@ -132,7 +132,7 @@ test('all archives stage without formal tags; full verified cohort promotes befo
   await f.promotion.publish(f.config, f.context)
   assert.equal((await f.state()).channels.rc.complete, true)
   f.context.nextRelease.channel = undefined
-  await f.promotion.addChannel(f.config, f.context)
+  await f.promotion.publish(f.config, f.context)
   for (const data of f.registry.values()) assert.equal(data['dist-tags'].latest, '2.0.0')
   assert.deepEqual(f.calls.filter(args => args[0] === 'publish').map(args => args[args.indexOf('--tag') + 1]), ['candidate-2.0.0', 'candidate-2.0.0'])
 })
@@ -319,9 +319,9 @@ test('an unrelated observed tag after a successful write stops before touching a
   assert.equal(f.calls.filter(args => args[0] === 'dist-tag').length, 1)
 })
 
-test('addChannel without state, mismatched revision/cohort and modified archive fail closed', async t => {
+test('promotion without state, mismatched revision/cohort and modified archive fail closed', async t => {
   const f = await fixture(t)
-  await assert.rejects(f.promotion.addChannel(f.config, f.context), /requires the archived/)
+  await assert.rejects(f.promotion.publish(f.config, f.context), /requires the archived/)
   await f.prepare(); await f.stage('a'); await f.stage('b')
   f.context.nextRelease.gitHead = 'b'.repeat(40)
   await assert.rejects(f.promotion.publish(f.config, f.context), /revision differs/)
@@ -436,19 +436,7 @@ test('only exact-version HTTP 404 is treated as absence, and tags come from the 
 })
 
 
-test('automatic semantic-release addChannel is rejected before Git-note mutation', async t => {
-  const f = await fixture(t)
-  const branch = { name: 'main', type: 'release', tags: [
-    { version: '2.0.0', gitTag: 'v2.0.0', channels: ['next'] },
-    { version: '1.0.0', gitTag: 'v1.0.0', channels: [null] }
-  ] }
-  await assert.rejects(f.promotion.verifyConditions(f.config, { ...f.context, branch,
-    branches: [branch, { name: 'next', channel: 'next', type: 'release' }], options: { tagFormat: 'v${version}' }
-  }), /disabled before semantic-release writes Git notes/)
-  assert.equal(f.calls.length, 0)
-})
-
-test('explicit recovery resumes immutable archives independently of semantic-release Git tags', async t => {
+test('explicit recovery resumes immutable archives independently of Git tags', async t => {
   const f = await fixture(t)
   await f.prepare(); await f.stage('a')
   f.context.env.MASTER_CSS_RELEASE_RECOVERY = '1'
@@ -485,7 +473,7 @@ test('public registry consumer strips release credentials and rejects nonregistr
   assert.throws(() => verifyRegistryLock(lock, state), /version differs/)
 })
 
-test('known registry version collisions fail verifyRelease before semantic-release creates its Git tag', async t => {
+test('known registry version collisions fail verifyRelease before the release creates its Git tag', async t => {
   const f = await fixture(t)
   await f.promotion.verifyRelease(f.config, f.context)
   f.registry.get('@fixture/a').versions['2.0.0'] = { name: '@fixture/a', version: '2.0.0' }
@@ -503,22 +491,10 @@ test('Git tagging requires a readable package tag map and stops if any tag alrea
   assert.deepEqual(f.calls, [])
 })
 
-test('configured release uploads the public dependency graph before cohort promotion and GitHub', async () => {
-  const { default: config } = await import('../release.config.js')
+test('the release uploads the public dependency graph in dependency-depth order', async () => {
+  const { releasePackageRoots } = await import('./release-order.mjs')
   const { publishedDependencies } = await import('./release-readiness.mjs')
-  const workspace = './scripts/semantic-release-workspace.mjs'
-  const promotion = './scripts/semantic-release-promotion.mjs'
-  const positions = config.plugins.map((plugin, index) => [Array.isArray(plugin) ? plugin[0] : plugin, index])
-  const promoteAt = positions.find(([name]) => name === promotion)[1]
-  assert.ok(positions.filter(([name]) => name === workspace).every(([, index]) => index < promoteAt))
-  assert.deepEqual(positions.slice(0, 4).map(([name]) => name), [
-    '@semantic-release/commit-analyzer', '@semantic-release/release-notes-generator',
-    './scripts/semantic-release-major-guard.mjs', './scripts/semantic-release-notes.mjs'
-  ])
-  assert.equal(config.plugins.at(-2)[0], promotion)
-  assert.equal(config.plugins.at(-1)[0], '@semantic-release/github')
-
-  const packageRoots = config.plugins.filter(plugin => Array.isArray(plugin) && plugin[0] === workspace).map(plugin => plugin[1].pkgRoot)
+  const packageRoots = releasePackageRoots()
   const packages = await Promise.all(packageRoots.map(async root => JSON.parse(await readFile(new URL(`../${root}/package.json`, import.meta.url)))))
   const order = new Map(packages.map(({ name }, index) => [name, index]))
   assert.equal(order.size, 34)

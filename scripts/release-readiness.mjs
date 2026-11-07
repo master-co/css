@@ -4,7 +4,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { readWorkspacePackages } from './site-toolchain-snapshot.mjs'
-import { packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
+import { packedManifest, validatePackedArchive } from './release-workspace.mjs'
 
 const registry = 'https://registry.npmjs.org/'
 const integrity = bytes => `sha512-${createHash('sha512').update(bytes).digest('base64')}`

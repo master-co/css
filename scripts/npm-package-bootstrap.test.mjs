@@ -118,7 +118,7 @@ test('real standard release preparation packs exactly the six allowed names at a
     for (const p of f.prepared.packages) {
       assert.match(p.integrity, /^sha512-/)
       assert.equal(p.provenance, true)
-      const { packedManifest } = await import('./semantic-release-workspace.mjs')
+      const { packedManifest } = await import('./release-workspace.mjs')
       const manifest = packedManifest(await readFile(join(f.output, p.file)))
       assert.equal(manifest.version, request.version)
       assert.equal(manifest.gitHead, revision)

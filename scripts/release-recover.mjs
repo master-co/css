@@ -4,13 +4,13 @@ import { readFile } from 'node:fs/promises'
 import { dirname, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
-import { createReleasePromotion, stagePackage, assertReleaseFlag } from './semantic-release-promotion.mjs'
-import { packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
+import { createReleasePromotion, stagePackage, assertReleaseFlag } from './release-promotion.mjs'
+import { packedManifest, validatePackedArchive } from './release-workspace.mjs'
 import { readWorkspacePackages, releaseClosure } from './site-toolchain-snapshot.mjs'
 import { dependencyOrder, publishedDependencies } from './release-readiness.mjs'
 import { assertNpmPublishConfig, createNpmOidcSession, npmRegistry } from './npm-oidc.mjs'
 
-/** Explicit recovery only: no semantic-release version selection, Git writes or deployment. */
+/** Explicit recovery only: no version selection, Git writes or deployment. */
 export async function recoverRelease({ root, stateFile, channel, scope = 'workspace', environment = process.env,
   run = execa, fetchMetadata = fetch, consumerProbe, provenanceProbe }) {
   const context = { cwd: root, env: { ...environment, MASTER_CSS_RELEASE_STATE: resolve(stateFile) } }

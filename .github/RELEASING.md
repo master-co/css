@@ -25,7 +25,7 @@ Run these commands with the actual candidate values and a fresh output directory
 node scripts/release-readiness.mjs inventory --version "$VERSION" --output "$EVIDENCE/before.json"
 node scripts/release-readiness.mjs inspect --archives "$ARCHIVES" --version "$VERSION" --revision "$REVISION" --output "$EVIDENCE/candidate.json"
 node scripts/release-readiness.mjs rehearse --candidate "$EVIDENCE/candidate.json" --before "$EVIDENCE/before.json" --output "$EVIDENCE/rehearsal.json"
-node --test scripts/release-readiness.test.mjs scripts/semantic-release-workspace.test.mjs scripts/semantic-release-promotion.test.mjs
+node --test scripts/release-readiness.test.mjs scripts/release-workspace.test.mjs scripts/release-promotion.test.mjs
 ```
 
 `inspect` rejects missing or duplicate packages, unresolved workspace protocols,
@@ -75,10 +75,15 @@ Before authorizing publication, retain:
 
 ## Normal publication sequence
 
-The semantic-release configuration runs workspace publication first, the cohort
-promotion plugin next, and GitHub release creation last. The workspace plugins
-publish dependencies before their dependents, including optional and peer
-dependencies pinned to this cohort. Publication requires both explicit workflow flags:
+`bun run release` (`scripts/release.mjs`) releases the checked-out commit of a
+release branch. [Aronrepo](https://github.com/1aron/aronrepo/tree/main/packages/aronrepo)
+decides the version, tag and notes from the commits since the channel's last
+`v*` tag with this repository's `explicit` policy, the same rules as the commit
+hook, the PR title check and `bun x aronrepo explain`. The script then runs
+workspace publication, the cohort promotion next, and GitHub release creation
+last, with the assets in `aronrepo.config.js`. The workspace module publishes
+dependencies before their dependents, including optional and peer dependencies
+pinned to this cohort. Publication requires both explicit workflow flags:
 
 ```text
 MASTER_CSS_RELEASE_STAGE=1
@@ -87,11 +92,13 @@ MASTER_CSS_RELEASE_STATE=release-artifacts/promotion-state.json
 ```
 
 These flags are guards, not a replacement for authorization. Both are required by
-the normal semantic-release invocation; setting only one is not a supported
+the normal release invocation; setting only one is not a supported
 stage-only release workflow. Use one release concurrency group and prevent an
 operator or another workflow from writing the same tags concurrently.
 
-1. `prepare` versions all workspaces before packing. Before the first npm write,
+1. `prepare` versions all workspaces before packing, then the script pushes the
+   version tag, so an interrupted npm phase never selects the same commit again.
+   Before the first npm write,
    record the source revision, full archive cohort and SHA-512 values, target
    channel baselines, workflow run identity and an empty operation log.
 2. Publish each archive under `candidate-<exact-version>`. Record an upload attempt
@@ -120,8 +127,9 @@ operator or another workflow from writing the same tags concurrently.
    operation first, and verifying the tag afterward. npm has no multi-package
    transaction or atomic compare-and-swap. Readers can observe a partially moved
    channel during promotion, but every candidate dependency already exists.
-5. Only after all promotions succeed may semantic-release create the GitHub
-   release. Keep editor publication and deployment held until their separate
+5. Only after all promotions succeed may the release create the GitHub
+   release. A rerun on the tagged commit creates a missing GitHub release only when
+   every package's channel already points to the version. Keep editor publication and deployment held until their separate
    validation and authorization gates are met. A completed npm phase does not
    prove those downstream phases succeeded.
 
@@ -214,9 +222,9 @@ tags. It does not execute upload, promotion, rollback or deletion commands.
 An explicitly authorized recovery run sets `MASTER_CSS_RELEASE_RECOVERY=1` in
 addition to the normal guards, restores the archived state and archives, and uses
 the same candidate revision/version. `prepare` can reuse verified archived bytes,
-but do not resume by rerunning semantic-release: it creates a Git tag before npm
-publication and may then select no new release on a retry. The explicit recovery
-entrypoint bypasses semantic-release's version selection and Git writes:
+but do not resume by rerunning `bun run release`: it creates the Git tag before
+npm publication and then selects no new release on a retry. The explicit recovery
+entrypoint bypasses version selection and Git writes:
 
 ```sh
 # MUTATING: only in a separately authorized OIDC recovery workflow, never as a check.
@@ -229,13 +237,11 @@ so the original temporary preparation workspace is not needed. Archive paths in
 state are relative to the state file and remain portable when the whole evidence
 directory is restored. It verifies all archived bytes, stages only missing
 versions, reruns the registry host consumer and resumes recorded promotion steps.
-It never creates/deletes Git tags or notes, creates a GitHub release, publishes an
-editor extension, or deploys a site. Reconcile those downstream states separately. In particular, a channel recovered
-outside semantic-release does not update its Git notes: the next normal release
-remains blocked by the pending channel until an operator verifies completed npm
-promotion and explicitly reconciles the semantic-release channel note, preserving
-its existing channels. Do not delete/recreate release tags or alter notes merely
-to silence that guard.
+It never creates/deletes Git tags, creates a GitHub release, publishes an
+editor extension, or deploys a site. Reconcile those downstream states separately.
+After a recovery completes npm promotion, rerunning the original Release job
+creates the missing GitHub release from the tag. Do not delete/recreate release
+tags to make a release run again.
 
 The `Release` workflow now has an explicit manual npm-only recovery mode. It uses
 `release.yml`, preserving the configured npm Trusted Publisher workflow identity.
@@ -280,10 +286,9 @@ where the channel was previously absent, remove only that channel. Re-read befor
 each authorized write and stop on interference. This is an operator procedure,
 not automatic rollback; published versions remain immutable and available.
 
-Automatic semantic-release `addChannel` is blocked in `verifyConditions`, before
-semantic-release writes channel notes to Git. Use the explicit recovery entrypoint
-for a channel change with archived evidence. The promotion implementation's
-`addChannel` also requires the archived release state and package archives for the
+There is no automatic channel promotion of an existing version. Use the explicit
+recovery entrypoint for a channel change with archived evidence. Promotion
+requires the archived release state and package archives for the
 same version/revision and validates the entire registry cohort. It does not
 reconstruct old release evidence from the current checkout. Missing archived
 evidence fails closed; automatic channel promotion without that evidence is not

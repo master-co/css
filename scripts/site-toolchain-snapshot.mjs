@@ -4,9 +4,9 @@ import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
-import { createWorkspaceRelease, packedManifest } from './semantic-release-workspace.mjs'
+import { createWorkspaceRelease, packedManifest } from './release-workspace.mjs'
 import { assertNpmOidcEnvironment } from './npm-oidc.mjs'
-import { createReleasePromotion, assertReleaseFlag } from './semantic-release-promotion.mjs'
+import { createReleasePromotion, assertReleaseFlag } from './release-promotion.mjs'
 
 export const siteToolchainRoots = ['@master/css-astro', '@master/css-language-service', '@master/eslint-config-css']
 const dependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies']

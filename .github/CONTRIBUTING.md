@@ -66,7 +66,7 @@ bun run type-check
 ```
 
 ## Commit Checking
-Follow the [Aronrepo conventional commits](https://github.com/1aron/aronrepo/tree/main/packages/conventional-commits). Commit headers use `Type(Scope): Summary`, with PascalCase types, optional scopes, sentence case, and no trailing period.
+Follow the [Aronrepo commit policy](https://github.com/1aron/aronrepo/tree/main/packages/aronrepo) in [AGENTS.md](../AGENTS.md#commit-and-release-policy). Commit headers use `Type(Scope): Summary`, with PascalCase types, optional scopes, sentence case, and no trailing period. `bun x aronrepo policy` lists which types release, and `bun x aronrepo explain` shows what the next release would be.
 ```bash
 bun run commit-check
 ```

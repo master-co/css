@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import test from 'node:test'
 import { cleanEnvironment, installedLocations, verifyInstalledLock, verifyRevision } from './binding-closure-consumer.mjs'
 import { prepareClosure } from './binding-closure-prepare.mjs'
-import { packedManifest, validatePackedArchive } from './semantic-release-workspace.mjs'
+import { packedManifest, validatePackedArchive } from './release-workspace.mjs'
 
 test('consumer removes native and npm environment overrides', () => {
   const env = cleanEnvironment({ PATH: '/bin', MASTER_CSS_NATIVE_BINDING_PATH: '/checkout/addon',

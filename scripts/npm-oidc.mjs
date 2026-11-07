@@ -39,8 +39,8 @@ export function assertNpmProvenanceRepository(pkg, packageRoot) {
   }
 }
 
-// Package scripts put node_modules/.bin first on PATH, where semantic-release's own
-// npm dependency (11.19) publishes with OIDC but sends dist-tag writes unauthenticated.
+// Package scripts put node_modules/.bin first on PATH, where a dependency's own npm
+// (such as 11.19) publishes with OIDC but sends dist-tag writes unauthenticated.
 const withoutLocalBins = (path = '') => path.split(delimiter)
   .filter(dir => !/[\\/]node_modules[\\/]\.bin[\\/]?$/.test(dir)).join(delimiter)
 

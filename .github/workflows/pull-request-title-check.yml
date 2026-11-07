@@ -21,12 +21,20 @@ jobs:
       # pull_request_target runs base-branch code; keep the token out of the checkout.
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
-      # Only commitlint runs here, so skip husky and every package postinstall.
+      # Fetch the PR commits as data only; no PR code is installed or run.
+      - run: git fetch --no-tags origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/pull/head"
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+      # Only aronrepo runs here, so skip husky and every package postinstall.
       - uses: ./.github/actions/setup-bun
         with:
           turbo-cache: "false"
           ignore-scripts: "true"
-      - run: printf '%s\n' "$PR_TITLE" | bun run commitlint
+      # A squash merge turns the title into the commit header, so it must release what the PR diff ships.
+      - run: bun x aronrepo check --title "$PR_TITLE" --base "$BASE_SHA" --head "$HEAD_SHA"
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
