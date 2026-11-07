@@ -13,7 +13,7 @@
     "postinstall": "bun scripts/isolate-tooling-typescript.mjs && bun --bun husky install",
     "build": "bun scripts/storage-retention.mjs --apply --auto && bun run build:rust:wasm && bun ./node_modules/turbo/bin/turbo run build --filter=\"./packages/*\"",
     "build:rust:native": "cargo xtask build-native --release",
-    "build:rust:wasm": "cargo xtask build-wasm all",
+    "build:rust:wasm": "bun ./node_modules/turbo/bin/turbo run build:artifacts --filter=\"./packages/binding-wasm-*\" --concurrency=1",
     "build:site": "bun scripts/storage-retention.mjs --apply --auto && bun run build && bun run --filter site build",
     "build:site:cloudflare-pages": "bash scripts/build-site-hosted.sh",
     "build:examples": "bun ./node_modules/turbo/bin/turbo run build --filter=\"./examples/*\"",

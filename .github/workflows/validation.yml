@@ -267,8 +267,8 @@ jobs:
           if [ "$RELEASE_BUILD" != true ]; then
             bun run build
           fi
+          # The site build already runs audit:i18n before rendering pages.
           bun run --filter site build
-          bun run --filter site audit:i18n
           bun run --filter site test:css-contract
           node --test site/scripts/verify-release-site.test.mjs
           node --import tsx --test site/utils/release-code-export.test.ts site/utils/agent-guide-data.test.ts site/utils/agent-content.test.ts
