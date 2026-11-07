@@ -137,40 +137,15 @@ Non-release defaults:
 
 Only changes to these files can release a version:
 
-- `packages/astro/**`
-- `packages/binding/**`
-- `packages/binding-darwin-arm64/**`
-- `packages/binding-darwin-x64/**`
-- `packages/binding-linux-arm64-gnu/**`
-- `packages/binding-linux-arm64-musl/**`
-- `packages/binding-linux-x64-gnu/**`
-- `packages/binding-linux-x64-musl/**`
-- `packages/binding-wasm-compiler/**`
-- `packages/binding-wasm-engine/**`
-- `packages/binding-wasm-tooling/**`
-- `packages/binding-win32-arm64-msvc/**`
-- `packages/binding-win32-x64-msvc/**`
-- `packages/cli/**`
-- `packages/compiler/**`
-- `packages/create/**`
-- `packages/css/**`
-- `packages/css-sv/**`
-- `packages/eslint-config/**`
-- `packages/eslint-plugin/**`
-- `packages/language-server/**`
-- `packages/language-service/**`
-- `packages/mcp/**`
-- `packages/next/**`
-- `packages/nuxt/**`
-- `packages/preset/**`
-- `packages/runtime/**`
-- `packages/schema/**`
-- `packages/server/**`
-- `packages/svelte/**`
-- `packages/tooling/**`
-- `packages/vite/**`
-- `packages/vscode/**`
-- `packages/webpack/**`
+- `packages/**`
+- `!packages/*/playground/**`
+- `crates/**`
+- `!crates/xtask/**`
+- `!crates/**/tests.rs`
+- `Cargo.toml`
+- `Cargo.lock`
+- `rust-toolchain.toml`
+- `shared/tsdown-package.config.ts`
 
 Excluding: `**/tests/**`, `**/test/**`, `**/__tests__/**`, `**/*.{test,spec}.*`, `**/*.test-d.*`, `**/__snapshots__/**`, `**/__fixtures__/**`, `**/__mocks__/**`, `**/fixtures/**`, `**/benchmarks/**`, `**/examples/**`, `**/CHANGELOG.md`, `.github/**`, `.husky/**`.
 
