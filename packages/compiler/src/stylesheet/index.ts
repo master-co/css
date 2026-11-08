@@ -20,6 +20,7 @@ import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { hasStylesheetResourceReferences, renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
 import { createToolingSessionSync } from '@master/css-tooling/node'
+import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { extname, resolve } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 import {
@@ -539,21 +540,50 @@ function getStylesheetOptionClasses(
   return filterCSSExtractionCandidates([...classes], options.blocklist)
 }
 
+/** Default-discovery candidates outside a root's `@source not` files; caller-supplied classes have no files to exclude. */
+function getDiscoveredClasses(scanner: ScannerState, directives: StylesheetSource['directives'], baseClasses: readonly string[], scanned: boolean) {
+  if (!scanned || !directives.exclude.length || !scanner.sources) return baseClasses
+  const policy = new SourcePolicy(scanner.cwd, { exclude: directives.exclude })
+  const classes = new Set<string>(scanner.options.safelist || [])
+  for (const { source, candidates } of scanner.sources) {
+    if (policy.accepts(source, true)) for (const className of candidates) classes.add(className)
+  }
+  return filterCSSExtractionCandidates([...classes], scanner.options.blocklist)
+}
+
+/** The usage set a root prunes native CSS against: its explicit sources, or default discovery without its excluded files. */
 function getStyleSourceClasses(
   scanner: ScannerState,
   styleSource: StylesheetSource,
   baseClasses: readonly string[],
-  projectDir?: string
+  projectDir?: string,
+  scanned = true
 ) {
   if (!hasStylesheetDirectives(styleSource.directives)) return baseClasses
   const scopedOptions = mergeStylesheetSourceOptions({ ...scanner.options, exclude: scanner.customOptions ? scanner.customOptions.exclude : scanner.options.exclude }, styleSource.directives)
-  const classes = hasStylesheetSourceDirectives(styleSource.directives)
+  const classes = styleSource.directives.include.length
     ? getStylesheetOptionClasses(scopedOptions, scanner.css.manifest, projectDir)
     : [
-      ...baseClasses,
+      ...getDiscoveredClasses(scanner, styleSource.directives, baseClasses, scanned),
       ...(styleSource.directives.safelist || [])
     ]
   return filterCSSExtractionCandidates([...new Set(classes)], scopedOptions.blocklist)
+}
+
+/** The classes a root generates: default discovery and its explicit sources, narrowed by its `@source not` and `@blocklist`. */
+function getStyleGeneratedClasses(
+  scanner: ScannerState,
+  styleSource: StylesheetSource,
+  baseClasses: readonly string[],
+  projectDir?: string,
+  scanned = true
+) {
+  if (!hasStylesheetDirectives(styleSource.directives)) return baseClasses
+  const scopedOptions = mergeStylesheetSourceOptions({ ...scanner.options, exclude: scanner.customOptions ? scanner.customOptions.exclude : scanner.options.exclude }, styleSource.directives)
+  return filterCSSExtractionCandidates([...new Set([
+    ...getDiscoveredClasses(scanner, styleSource.directives, baseClasses, scanned),
+    ...getStyleSourceClasses(scanner, styleSource, baseClasses, projectDir, scanned)
+  ])], scopedOptions.blocklist)
 }
 
 
@@ -618,12 +648,14 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     ...compileOptions
   } = options
   const classes = compileOptions.classes ?? getScannerClasses(scanner)
+  const scanned = !compileOptions.classes
   if (compileOptions.delivery || (stylesheetSources?.size && [...stylesheetSources.values()].every(source => source.graph))) {
     const inlineImports = !compileOptions.delivery
     return composeDeliveredStylesheets(stylesheetSources ?? new Map(), {
       ...compileOptions, delivery: compileOptions.delivery ?? defaultCollectionDelivery(compileOptions.projectDir ?? scanner.cwd, compileOptions),
       manifest: planOption, includeGeneratedCSS, includeNativeCSS, includeMasterBaseCSS
-    }, classes, source => getStyleSourceClasses(scanner, source, classes, compileOptions.projectDir ?? scanner.cwd), inlineImports)
+    }, classes, source => getStyleSourceClasses(scanner, source, classes, compileOptions.projectDir ?? scanner.cwd, scanned), inlineImports,
+    source => getStyleGeneratedClasses(scanner, source, classes, compileOptions.projectDir ?? scanner.cwd, scanned))
   }
 
   if (!planOption && !compileOptions.classes && !stylesheetSources?.size) {
@@ -642,7 +674,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         references: styleSource.references,
         pruneNativeCSS: styleSource.pruneNativeCSS,
         classes: styleSource.pruneNativeCSS
-          ? getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)
+          ? getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd, scanned)
           : undefined
       }))
   )
@@ -673,13 +705,10 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         .filter(Boolean)
       : [])
   ]
-  const generatedClasses = new Set(classes)
-  if (includeGeneratedCSS) {
-    for (const styleSource of stylesheetSources?.values() || []) {
-      if (!hasStylesheetDirectives(styleSource.directives)) continue
-      for (const className of getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)) {
-        generatedClasses.add(className)
-      }
+  const generatedClasses = new Set(stylesheetSources?.size ? [] : classes)
+  for (const styleSource of stylesheetSources?.values() || []) {
+    for (const className of getStyleGeneratedClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd, scanned)) {
+      generatedClasses.add(className)
     }
   }
   const renderedCSS = renderCompiledManifestCSS({

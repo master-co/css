@@ -133,6 +133,83 @@ describe('stylesheet CSS directives', () => {
     expect(css).not.toContain('.text\\:center')
   })
 
+  it('subtracts source not files and blocklisted classes from default discovery', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+    await scanner.scan('app/a/page.tsx', '<div class="(display:block) fg-red"></div>')
+    await scanner.scan('app/legacy/button.tsx', '<div class="(margin:0)"></div>')
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
+      @import "@master/css";
+      @source not './legacy/**';
+      @blocklist 'fg-red';
+    `, { baseManifest: scanner.css.manifest })
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
+      projectDir: root
+    })
+
+    expect(css).toContain(".\\(display\\:block\\){display:block}")
+    expect(css).not.toContain('margin:0')
+    expect(css).not.toContain('.fg-red')
+  })
+
+  it('applies only the blocklist to caller-supplied classes', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+    await scanner.scan('app/legacy/button.tsx', '<div class="(margin:0)"></div>')
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
+      @import "@master/css";
+      @source not './legacy/**';
+      @blocklist 'fg-red';
+    `, { baseManifest: scanner.css.manifest })
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
+      classes: ['(display:block)', '(padding:0)', 'fg-red'],
+      projectDir: root
+    })
+
+    expect(css).toContain(".\\(padding\\:0\\){padding:0}")
+    expect(css).not.toContain('margin:0')
+    expect(css).not.toContain('.fg-red')
+  })
+
+  it('keeps the default discovery scope for a pruned root that only excludes sources', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+    await scanner.scan('app/a/page.tsx', '<div class="card"></div>')
+    await scanner.scan('app/legacy/page.tsx', '<div class="legacy"></div>')
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/entry.css'), `
+      @import "@master/css";
+      @source not './legacy/**';
+      @prune native;
+      .card { color: red; }
+      .legacy { color: blue; }
+    `, { baseManifest: scanner.css.manifest })
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: scanner.css.manifest,
+      includeGeneratedCSS: false,
+      projectDir: root
+    })
+
+    expect(css).toContain('.card')
+    expect(css).not.toContain('.legacy')
+  })
+
   it('uses stylesheet-local source directives for a pruned CSS root', async () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/a/page.tsx'), '<div class="card"></div>')

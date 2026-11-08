@@ -253,11 +253,13 @@ export function composeDeliveredStylesheets(
   options: CompileStylesheetOptions & { manifest?: MasterCSSManifest, includeGeneratedCSS?: boolean, includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean },
   classes: readonly string[],
   styleClasses: (source: StylesheetSource) => readonly string[],
-  inlineImports = false
+  inlineImports = false,
+  generationClasses: (source: StylesheetSource) => readonly string[] = styleClasses
 ): Required<CreateExtractedCSSResult> {
   const entry = '\0master-css-output'
   const graph: PreparedCSSImportGraph = { entry, files: { [entry]: '' }, edges: [] }
-  const generatedClasses = new Set(classes)
+  // Each root narrows its own scope; default discovery applies through roots without source policy.
+  const generatedClasses = new Set(sources.size ? [] : classes)
   const owners: Record<string, string> = {}
   const classesByStylesheet: Record<string, string[] | null> = {}
   const nativeStylesheets: string[] = []
@@ -295,7 +297,7 @@ export function composeDeliveredStylesheets(
     graph.edges.push({ from: entry, specifier, resolved: variant(id) }, ...source.graph.edges.map(edge => ({
       ...edge, from: variant(edge.from), resolved: variant(edge.resolved)
     })))
-    for (const className of scopedClasses) generatedClasses.add(className)
+    for (const className of generationClasses(source)) generatedClasses.add(className)
   }
   const delivery = options.delivery!
   const result = compileGraph(graph, {

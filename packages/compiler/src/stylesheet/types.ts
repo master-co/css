@@ -125,6 +125,8 @@ export interface ScannerState {
   validClasses: ScannerClassState
   usedNativeClasses: ScannerClassState
   nativeClassNames: ScannerClassState
+  /** Per-source candidates, which let a root subtract its `@source not` files from default discovery. */
+  sources?: readonly { readonly source: string, readonly candidates: readonly string[] }[]
   registerNativeClasses?: (owner: string, classNames: string[]) => boolean
   emit?: (event: 'change') => unknown
 }

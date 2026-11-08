@@ -233,6 +233,25 @@ describe('lint command', () => {
     }
   })
 
+  it('subtracts stylesheet source exclusions and blocklists from default discovery', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-policy-'))
+    try {
+      fs.mkdirSync(resolve(cwd, 'legacy'))
+      fs.writeFileSync(resolve(cwd, 'index.css'), `@import "@master/css";
+@source not "./legacy/**";
+@blocklist "fg-red";
+`)
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="(display:block) fg-red"></div>')
+      fs.writeFileSync(resolve(cwd, 'legacy/old.html'), '<div class="(margin:0)"></div>')
+      const output = runCLI(['generate', '--no-export'], { cwd })
+      expect(output).toContain(".\\(display\\:block\\){display:block}")
+      expect(output).not.toContain('.fg-red')
+      expect(output).not.toContain(".\\(margin\\:0\\)")
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
   it('uses the scanner source policy for default files while honoring explicit paths', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-sources-'))
     try {
