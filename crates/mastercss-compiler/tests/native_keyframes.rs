@@ -343,3 +343,33 @@ fn identical_text_in_different_sources_has_independent_identity() {
     assert_ne!(a.id, b.id);
     assert_eq!(a.id, compile("first.css").id);
 }
+
+#[test]
+fn escaped_quotes_in_selectors_do_not_open_strings_in_containers() {
+    // Utility frameworks escape quotes in generated class names, such as `[class*='size-']`.
+    let source = concat!(
+        "@layer utilities { .a\\[class\\*\\=\\'size-\\'\\] svg:not([class*='size-']) { width: 1rem } }\n",
+        "@media print { .b\\\"c { color: blue } }\n",
+        "@supports (display: grid) { @keyframes fade { to { opacity: 1 } } }\n",
+    );
+    let parsed = compile_css_directives(source, &Default::default()).unwrap();
+    assert!(
+        parsed
+            .native_css
+            .contains(".a\\[class\\*\\=\\'size-\\'\\] svg:not([class*=\"size-\"])"),
+        "{}",
+        parsed.native_css
+    );
+    assert!(
+        parsed.native_css.contains(".b\\\"c"),
+        "{}",
+        parsed.native_css
+    );
+    let definitions = parsed.manifest_input.keyframes.as_deref().unwrap();
+    assert_eq!(definitions.len(), 1);
+    assert_eq!(definitions[0].containers.len(), 1);
+    assert_eq!(
+        definitions[0].containers[0].prelude,
+        "@supports (display: grid)"
+    );
+}

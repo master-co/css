@@ -54,19 +54,25 @@ pub(crate) fn next_char_end(value: &str, index: usize) -> usize {
             .unwrap_or_default()
 }
 
+/// The end of a CSS escape: the backslash and the code point it escapes.
+pub(crate) fn css_escape_end(value: &str, start: usize) -> usize {
+    let next = next_char_end(value, start);
+    if next < value.len() {
+        next_char_end(value, next)
+    } else {
+        next
+    }
+}
+
 pub(crate) fn css_quote_end(value: &str, start: usize, quote: char) -> usize {
     let mut index = start + quote.len_utf8();
     while index < value.len() {
         let character = value[index..].chars().next().unwrap_or_default();
-        let next = next_char_end(value, index);
         if character == '\\' {
-            index = if next < value.len() {
-                next_char_end(value, next)
-            } else {
-                next
-            };
+            index = css_escape_end(value, index);
             continue;
         }
+        let next = next_char_end(value, index);
         index = next;
         if character == quote {
             return index;

@@ -1,7 +1,7 @@
 use super::{
     CompilerError, CssDirectiveSourceReference, ErrorCode, PrinterOptions, Selector,
     SourceLocation, SourceLocationRange, SourceRange, ToCss, byte_to_utf16_offset, css_comment_end,
-    css_quote_end, next_char_end, ranged_directive_diagnostic,
+    css_escape_end, css_quote_end, next_char_end, ranged_directive_diagnostic,
 };
 
 pub(crate) fn source_location(source: &str, byte_offset: usize) -> Option<SourceLocation> {
@@ -18,6 +18,10 @@ pub(crate) fn selector_end_byte(source: &str, start: usize) -> Option<usize> {
     let mut parenthesis_depth = 0_u32;
     while index < source.len() {
         let character = source[index..].chars().next()?;
+        if character == '\\' {
+            index = css_escape_end(source, index);
+            continue;
+        }
         if matches!(character, '\'' | '"') {
             index = css_quote_end(source, index, character);
             continue;

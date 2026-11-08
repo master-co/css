@@ -1,10 +1,17 @@
-use super::{CompilerError, PrinterOptions, ToCss, css_comment_end, css_quote_end, next_char_end};
+use super::{
+    CompilerError, PrinterOptions, ToCss, css_comment_end, css_escape_end, css_quote_end,
+    next_char_end,
+};
 
 pub(crate) fn css_block_end(source: &str, open: usize, limit: usize) -> Option<usize> {
     let mut index = open + 1;
     let mut depth = 1_u32;
     while index < limit {
         let character = source[index..].chars().next()?;
+        if character == '\\' {
+            index = css_escape_end(source, index);
+            continue;
+        }
         if matches!(character, '\'' | '"') {
             index = css_quote_end(source, index, character);
             continue;
@@ -38,6 +45,10 @@ pub(crate) fn css_statement_delimiter(
     let mut square = 0_u32;
     while index < limit {
         let character = source[index..].chars().next()?;
+        if character == '\\' {
+            index = css_escape_end(source, index);
+            continue;
+        }
         if matches!(character, '\'' | '"') {
             index = css_quote_end(source, index, character);
             continue;

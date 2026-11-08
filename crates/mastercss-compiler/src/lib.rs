@@ -693,8 +693,8 @@ pub(crate) use native_style::{
 };
 pub(crate) use pattern::{css_block_end, css_statement_delimiter, minified_css};
 pub(crate) use syntax::{
-    css_comment_end, css_quote_end, declaration_name, directive_error, next_char_end,
-    ranged_directive_diagnostic,
+    css_comment_end, css_escape_end, css_quote_end, declaration_name, directive_error,
+    next_char_end, ranged_directive_diagnostic,
 };
 pub(crate) use theme::lower_theme_rule;
 
