@@ -9,7 +9,9 @@ const full = process.env.MASTER_HERO_MATRIX === 'full'
 const setupLabels = { en: 'Set up with your AI agent', tw: '用 AI agent 設定' }
 const setupPromptStart = 'You are working in an existing web application.'
 // The copied prompt names no release, so a pasted prompt stays current.
-const isSetupPrompt = text => typeof text === 'string' && text.startsWith(setupPromptStart) && text.includes('npm create @master/css@latest') && !/@master\/[\w-]+@\d/.test(text)
+// Output reaches the display's density up to nine million pixels and steps down at runtime on a slow GPU.
+const outputBudget = 9_000_000
+const isSetupPrompt =text => typeof text === 'string' && text.startsWith(setupPromptStart) && text.includes('npm create @master/css@latest') && !/@master\/[\w-]+@\d/.test(text)
 let browser
 before(async () => { browser = await ({ chromium, webkit })[browserName].launch({ args: browserName === 'chromium' && process.env.MASTER_HERO_GPU === 'metal' ? ['--use-angle=metal'] : [] }) })
 after(async () => { await browser?.close() })
@@ -99,6 +101,12 @@ async function open({ width = 1440, height = 900, scheme = 'light', locale = 'en
       }
       return uniform.call(this, location, value)
     }
+    // window.heroLensless hands the copy pass empty lenses, so a test can compare the glass with and without refraction.
+    const uniform4v = prototype.uniform4fv
+    prototype.uniform4fv = function (location, values) {
+      if (hero(this) && window.heroLensless && names.get(location) === 'lenses') values = new Float32Array(values.length)
+      return uniform4v.call(this, location, values)
+    }
     if (titleProbe) {
       const uniform4 = prototype.uniform4f
       prototype.uniform4f = function (location, ...values) {
@@ -178,7 +186,7 @@ for (const width of full ? [320, 390, 768, 1440, 1920] : [390, 1440]) {
         const state = await geometry(section)
         assert.equal(state.overflow, false)
         assert.deepEqual(state.clipped, [], 'all content fits the actual inner content edges')
-        assert.ok(state.canvasPixels <= 3_000_000)
+        assert.ok(state.canvasPixels <= outputBudget)
         assert.ok(state.action.height >= 52)
         assert.ok(state.copyHeight >= 44)
         assert.equal(await section.locator('p').count(), 0, 'the hero has no description paragraph')
@@ -329,7 +337,7 @@ test(`${browserName}: resizing, theme and font changes update the measured surfa
       await page.setViewportSize({ width, height: 900 })
       await settled(page)
       assert.deepEqual((await geometry(section)).clipped, [])
-      assert.ok((await geometry(section)).canvasPixels <= 3_000_000)
+      assert.ok((await geometry(section)).canvasPixels <= outputBudget)
     }
     assert.ok((await metrics(page)).uploads > before.uploads)
     assert.deepEqual(errors, [])
@@ -338,7 +346,7 @@ test(`${browserName}: resizing, theme and font changes update the measured surfa
 
 test(`${browserName}: very large retina viewports respect the hard output budget`, async () => {
   const { context, section } = await open({ width: 3840, height: 2160, density: 2 })
-  try { assert.ok((await geometry(section)).canvasPixels <= 3_000_000) } finally { await context.close() }
+  try { assert.ok((await geometry(section)).canvasPixels <= outputBudget) } finally { await context.close() }
 })
 
 test(`${browserName}: context loss restores native paint before rebuilding every glass layer`, async t => {
@@ -426,7 +434,7 @@ test(`${browserName}: forced colors falls back and can return to resized glass`,
   } finally { await context.close() }
 })
 
-for (const scheme of ['light', 'dark']) test(`${browserName} ${scheme}: frosted components stay flat and retain contrast over a bright crest`, async () => {
+for (const scheme of ['light', 'dark']) test(`${browserName} ${scheme}: stone and glass controls retain contrast over a bright crest`, async () => {
   const { context, page, section } = await open({ scheme })
   try {
     await section.evaluate(element => {
@@ -459,29 +467,28 @@ for (const scheme of ['light', 'dark']) test(`${browserName} ${scheme}: frosted 
         probe.fillRect(0, 0, 1, 1)
         const foreground = luminance([...probe.getImageData(0, 0, 1, 1).data].slice(0, 3))
         const background = luminance([...pixels.getImageData(x, y, 1, 1).data].slice(0, 3))
-        return { selector, contrast: (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05), shadow: material.boxShadow, backdrop: material.backdropFilter }
+        return { selector, contrast: (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05), backdrop: material.backdropFilter }
       })
     }, screenshot)
     assert.ok(samples.every(item => item.contrast >= 4.5), JSON.stringify(samples))
-    assert.ok(samples.every(item => !item.shadow.includes('inset')), 'no nested bevel is drawn inside a component')
-    assert.ok(samples.every(item => item.selector === '.home-action-primary' ? item.backdrop === 'none' : item.backdrop.includes('blur(')), 'the main action is solid while secondary components retain their frosted backdrop')
+    assert.ok(samples.every(item => item.selector === '.home-action-primary' ? item.backdrop === 'none' : item.backdrop.includes('blur(')), 'the main action is solid stone while secondary controls keep a glass backdrop')
     const action = section.locator('.home-action-primary')
     const bounds = await action.boundingBox()
-    const flatPrimary = async () => {
+    // Stone and glass carry inset rims and a pressed inner shadow by design; the action stays solid and still.
+    const solidPrimary = async () => {
       const state = await geometry(section)
       assert.equal(state.actionBackground[3], 255)
       assert.ok(scheme === 'light' ? state.actionBackground[0] < 80 : state.actionBackground[0] > 200)
-      assert.equal(await action.evaluate(element => getComputedStyle(element).boxShadow.includes('inset')), false, 'interaction never reintroduces an inner bevel')
       assert.deepEqual(await action.boundingBox(), bounds)
     }
     await action.hover()
-    await flatPrimary()
+    await solidPrimary()
     await action.evaluate(element => element.addEventListener('click', event => event.preventDefault(), { once: true }))
     await page.mouse.down()
-    await flatPrimary()
+    await solidPrimary()
     await page.mouse.up()
     await action.focus()
-    await flatPrimary()
+    await solidPrimary()
   } finally { await context.close() }
 })
 
@@ -522,58 +529,49 @@ for (const width of [390, 1440]) for (const scheme of ['light', 'dark']) test(`$
         let minimum = Infinity
         let cores = 0
         const mask = probe.mask
+        // The rounded bevel mirrors the gold beside it by design, so a core starts past it: no glyph edge
+        // within the shader's clamp(fontSize × 4%, 1.6, 3.6) CSS px, in mask pixels.
+        const fontSize = parseFloat(getComputedStyle(document.querySelector('.home-hero h1')).fontSize)
+        const reach = Math.ceil(Math.min(Math.max(fontSize * 0.04, 1.6), 3.6) * mask.width / width)
         for (let y = 0; y < title.height; y++) for (let x = 0; x < title.width; x++) {
           const mx = Math.floor(((x + 0.5) * rect.width / title.width - left) * mask.width / width)
           const my = Math.floor(((y + 0.5) * rect.height / title.height - top) * mask.height / height)
-          if (mx < 1 || my < 1 || mx >= mask.width - 1 || my >= mask.height - 1) continue
+          if (mx < reach || my < reach || mx >= mask.width - reach || my >= mask.height - reach) continue
           const core = my * mask.width + mx
-          if ([core, core - 1, core + 1, core - mask.width, core + mask.width].some(index => mask.pixels[index * 4 + 3] < 250)) continue
+          // A disc, not a cross, so the bevel inside a curve, met diagonally, is excluded too.
+          let inside = true
+          for (let dy = -reach; inside && dy <= reach; dy++) for (let dx = -reach; inside && dx <= reach; dx++) {
+            if (dx * dx + dy * dy <= reach * reach) inside = mask.pixels[(core + dy * mask.width + dx) * 4 + 3] >= 250
+          }
+          if (!inside) continue
           const index = (y * title.width + x) * 4
           const before = luminance(background.data, index)
           const after = luminance(title.data, index)
           minimum = Math.min(minimum, (Math.max(before, after) + 0.05) / (Math.min(before, after) + 0.05))
           cores++
         }
-        return { minimum, cores, minimumAlpha }
+        return { minimum, cores, minimumAlpha, reach }
       })
-      assert.ok(sample.cores > 1000, 'the actual glyph mask supplies enough interior samples')
+      assert.ok(sample.cores > 1000, `the actual glyph mask supplies enough interior samples: ${JSON.stringify({ phase, ...sample })}`)
       assert.equal(sample.minimumAlpha, 255, 'title antialiasing preserves the opaque scene beneath it')
       assert.ok(sample.minimum >= 3, JSON.stringify({ phase, ...sample }))
     }
   } finally { await context.close() }
 })
 
-test(`${browserName}: the frosted surface visibly blurs a real WebGL backdrop`, async t => {
+test(`${browserName}: the canvas refracts the silk beneath the glass, which keeps only a light blur`, async () => {
   const { context, page, section } = await open()
   try {
     await settled(page)
-    await section.locator('canvas').evaluate(canvas => {
-      const gl = canvas.getContext('webgl')
-      const program = gl.createProgram()
-      for (const [type, source] of [[gl.VERTEX_SHADER, 'attribute vec2 position; void main(){gl_Position=vec4(position,0.0,1.0);}'], [gl.FRAGMENT_SHADER, 'precision highp float; void main(){float c=mix(0.15,0.85,step(0.5,fract(gl_FragCoord.x/8.0)));gl_FragColor=vec4(vec3(c),1.0);}']]) {
-        const shader = gl.createShader(type)
-        gl.shaderSource(shader, source)
-        gl.compileShader(shader)
-        gl.attachShader(program, shader)
-      }
-      gl.bindAttribLocation(program, 0, 'position')
-      gl.linkProgram(program)
-      const draw = gl.drawArrays.bind(gl)
-      gl.drawArrays = (...args) => {
-        if (gl.getParameter(gl.FRAMEBUFFER_BINDING)) {
-          const current = gl.getParameter(gl.CURRENT_PROGRAM)
-          gl.useProgram(program)
-          draw(...args)
-          gl.useProgram(current)
-        } else draw(...args)
-      }
-    })
-    await page.emulateMedia({ reducedMotion: 'no-preference' })
-    await page.waitForTimeout(200)
-    const action = section.locator('.home-command')
-    const roughness = async locator => {
-      const screenshot = (await locator.screenshot()).toString('base64')
-      return page.evaluate(async data => {
+    const command = section.locator('.home-command')
+    assert.equal(await section.getAttribute('data-lens-ready'), '')
+    assert.match(await command.evaluate(element => getComputedStyle(element).backdropFilter), /blur\(1px\)/, 'refraction keeps the bending visible under a 1px blur')
+    const box = await command.boundingBox()
+    // The same strip of silk clear of every control: it must not change when the lenses go away.
+    const silk = { x: (await page.evaluate(() => innerWidth)) - 240, y: box.y, width: 200, height: box.height }
+    const capture = async () => ({ glass: await page.screenshot({ clip: box }), silk: await page.screenshot({ clip: silk }) })
+    const difference = (a, b) => page.evaluate(async ([a, b]) => {
+      const read = async data => {
         const image = new Image()
         image.src = `data:image/png;base64,${data}`
         await image.decode()
@@ -582,26 +580,28 @@ test(`${browserName}: the frosted surface visibly blurs a real WebGL backdrop`, 
         canvas.height = image.naturalHeight
         const pixels = canvas.getContext('2d', { willReadFrequently: true })
         pixels.drawImage(image, 0, 0)
-        const values = []
-        for (let x = 35; x < canvas.width - 35; x++) values.push(pixels.getImageData(x, 7, 1, 1).data[0])
-        return values.slice(1).reduce((sum, value, index) => sum + Math.abs(value - values[index]), 0) / (values.length - 1)
-      }, screenshot)
-    }
-    const blurred = await roughness(action)
-    await page.addStyleTag({ content: '.home-hero .home-hero-actions .home-command { backdrop-filter:none !important; }' })
-    const clear = await roughness(action)
-    if (blurred >= 2 || clear <= blurred + 3) {
-      const probe = await context.newPage()
-      await probe.setContent('<style>body{margin:0;min-height:200px;background:repeating-linear-gradient(90deg,#262626 0 4px,#d9d9d9 4px 8px)}#glass{position:absolute;left:20px;top:50px;width:200px;height:80px;background:rgba(255,255,255,.7);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}</style><div id="glass"></div>')
-      const isolatedBlur = await roughness(probe.locator('#glass'))
-      await probe.addStyleTag({ content: '#glass{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}' })
-      const isolatedClear = await roughness(probe.locator('#glass'))
-      if (isolatedBlur >= isolatedClear * 0.8) {
-        t.skip('This browser snapshot environment does not rasterize backdrop blur, also confirmed in an isolated CSS probe')
-        return
+        return pixels.getImageData(0, 0, canvas.width, canvas.height).data
       }
-    }
-    assert.ok(blurred < 2, JSON.stringify({ blurred, clear }))
-    assert.ok(clear > blurred + 3, JSON.stringify({ blurred, clear }))
+      const [first, second] = await Promise.all([read(a), read(b)])
+      let sum = 0
+      for (let index = 0; index < first.length; index += 4) for (let channel = 0; channel < 3; channel++) sum += Math.abs(first[index + channel] - second[index + channel])
+      return sum / (first.length / 4 * 3)
+    }, [a.toString('base64'), b.toString('base64')])
+    const refracted = await capture()
+    await page.evaluate(() => { window.heroLensless = true; dispatchEvent(new Event('resize')) })
+    await settled(page)
+    const plain = await capture()
+    const glass = await difference(refracted.glass, plain.glass)
+    const clear = await difference(refracted.silk, plain.silk)
+    assert.ok(glass > 0.5, JSON.stringify({ glass, clear }))
+    assert.ok(clear < 0.25, JSON.stringify({ glass, clear }))
+  } finally { await context.close() }
+})
+
+test(`${browserName}: without the canvas the glass keeps its frosted blur`, async () => {
+  const { context, section } = await open({ blocked: true })
+  try {
+    assert.equal(await section.getAttribute('data-lens-ready'), null)
+    assert.match(await section.locator('.home-command').evaluate(element => getComputedStyle(element).backdropFilter), /blur\(6px\)/)
   } finally { await context.close() }
 })
