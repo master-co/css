@@ -1,4 +1,6 @@
 import type { IllustrationImages } from '@master/internal-site/components/document-types.ts'
+import modesLight from '../assets/images/rendering-modes/modes-light.png'
+import modesDark from '../assets/images/rendering-modes/modes-dark.png'
 import runtimeLight from '../assets/images/rendering-modes/runtime-light.png'
 import runtimeDark from '../assets/images/rendering-modes/runtime-dark.png'
 import progressiveLight from '../assets/images/rendering-modes/progressive-light.png'
@@ -20,6 +22,7 @@ import viteCoverageLight from '../assets/images/rendering-modes/vite-coverage-li
 import viteCoverageDark from '../assets/images/rendering-modes/vite-coverage-dark.png'
 
 export const deliveryIllustrationImages = {
+  modes: { light: modesLight, dark: modesDark },
   'vite-coverage': { light: viteCoverageLight, dark: viteCoverageDark },
   scanning: { light: scanningLight, dark: scanningDark },
   pruning: { light: pruningLight, dark: pruningDark },

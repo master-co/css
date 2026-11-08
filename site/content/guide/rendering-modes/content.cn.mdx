@@ -16,6 +16,29 @@
     }
   },
   "demos": {
+    "DeliveryFlow:modes": {
+      "title": "各模式在哪里生成 CSS",
+      "alt": "静态与预渲染在浏览器之前生成 CSS；运行时在浏览器引擎中生成；渐进式先交付页面 CSS，遇到缺失的类名时才加载引擎。",
+      "caption": "各模式的差异在于类名从哪里来，以及浏览器是否需要引擎。",
+      "steps": [
+        {
+          "title": "静态",
+          "description": "构建时扫描源文件中的完整类名字符串并输出样式表。浏览器加载它时不需要 Master CSS 运行时或引擎。"
+        },
+        {
+          "title": "预渲染",
+          "description": "构建或服务器处理渲染后的页面 HTML，并将其规则随该页面交付。浏览器不加载运行时或引擎。"
+        },
+        {
+          "title": "运行时",
+          "description": "浏览器引擎读取已连接 DOM 元素上的类名，并在运行时启动后生成规则。"
+        },
+        {
+          "title": "渐进式",
+          "description": "渲染后的页面 HTML 提供初始 CSS。默认只有在已连接类名不在该页面中时，才会加载浏览器引擎。"
+        }
+      ]
+    },
     "DeliveryFlow:runtime": {
       "title": "运行时交付",
       "alt": "已连接 DOM 的类名使用情况经过浏览器引擎，转为原生样式表规则。",
@@ -87,6 +110,8 @@ import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro
 import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## 概览 [sr-only] \{#overview\}
+<DeliveryFlow name="modes" />
+
 根据应用何时能够确定完整类名来选择渲染模式。名称能在源代码中找到时，先使用静态渲染。预渲染从完成的页面 HTML 生成 CSS；运行时渲染处理浏览器中创建的新类名；渐进式渲染则结合页面 CSS 与运行时支持。
 
 请先完成框架的[安装指南](/guide/installation)。官方集成会加载 CSS 入口并配置所选模式；下方示例说明各模式的行为与验证方式。框架支持及可供处理的 HTML 取决于所用集成。

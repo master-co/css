@@ -16,6 +16,29 @@
     }
   },
   "demos": {
+    "DeliveryFlow:modes": {
+      "title": "各模式在哪裡生成 CSS",
+      "alt": "靜態與預先渲染在瀏覽器之前生成 CSS；執行階段在瀏覽器引擎中生成；漸進式先傳遞頁面 CSS，遇到未涵蓋的類別時才載入引擎。",
+      "caption": "各模式的差異在於類別名稱從哪裡來，以及瀏覽器是否需要引擎。",
+      "steps": [
+        {
+          "title": "靜態",
+          "description": "建置時掃描原始檔中的完整類別字串並輸出樣式表。瀏覽器載入它時不需要 Master CSS runtime 或引擎。"
+        },
+        {
+          "title": "預先渲染",
+          "description": "建置或伺服器處理渲染後的頁面 HTML，並將其規則隨該頁面傳遞。瀏覽器不載入 runtime 或引擎。"
+        },
+        {
+          "title": "執行階段",
+          "description": "瀏覽器引擎讀取已連接 DOM 元素上的類別名稱，並在 runtime 啟動後生成規則。"
+        },
+        {
+          "title": "漸進式",
+          "description": "渲染後的頁面 HTML 提供初始 CSS。預設只有在已連接類別不在該頁面中時，才會載入瀏覽器引擎。"
+        }
+      ]
+    },
     "DeliveryFlow:runtime": {
       "title": "執行階段傳遞",
       "alt": "已連接 DOM 的類別使用情況經過瀏覽器引擎，轉成原生樣式表規則。",
@@ -87,6 +110,8 @@ import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro
 import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## 概覽 [sr-only] \{#overview\}
+<DeliveryFlow name="modes" />
+
 依應用程式何時得知完整類別名稱，選擇渲染模式。名稱能在原始碼中取得時，先使用靜態渲染。預先渲染會從完成的頁面 HTML 生成 CSS；執行階段渲染處理瀏覽器中建立的新類別；漸進式渲染則結合頁面 CSS 與執行階段支援。
 
 請先完成框架的[安裝指南](/guide/installation)。官方整合會載入 CSS 進入點並設定所選模式；下方範例說明各模式的行為與驗證方式。框架支援及可供處理的 HTML，取決於使用的整合。

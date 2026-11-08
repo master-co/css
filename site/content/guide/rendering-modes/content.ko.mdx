@@ -16,6 +16,29 @@
     }
   },
   "demos": {
+    "DeliveryFlow:modes": {
+      "title": "각 모드가 CSS를 생성하는 위치",
+      "alt": "정적 렌더링과 사전 렌더링은 브라우저 이전에 CSS를 생성하고, 런타임은 브라우저 엔진에서 생성합니다. 점진적 렌더링은 먼저 페이지 CSS를 전달하고 미포함 클래스가 있을 때 엔진을 불러옵니다.",
+      "caption": "모드의 차이는 클래스 이름이 어디에서 오는지, 그리고 브라우저에 엔진이 필요한지에 있습니다.",
+      "steps": [
+        {
+          "title": "정적",
+          "description": "빌드가 소스 파일의 완전한 클래스 문자열을 스캔해 스타일시트를 출력합니다. 브라우저는 Master CSS 런타임이나 엔진 없이 이를 불러옵니다."
+        },
+        {
+          "title": "사전 렌더링",
+          "description": "빌드나 서버가 렌더링된 페이지 HTML을 처리하고 그 규칙을 해당 페이지와 함께 전달합니다. 브라우저는 런타임이나 엔진을 불러오지 않습니다."
+        },
+        {
+          "title": "런타임",
+          "description": "브라우저 엔진이 연결된 DOM 요소의 클래스 이름을 읽고 런타임이 시작된 뒤 규칙을 생성합니다."
+        },
+        {
+          "title": "점진적",
+          "description": "렌더링된 페이지 HTML이 초기 CSS를 제공합니다. 기본적으로 연결된 클래스가 해당 페이지에 없을 때만 브라우저 엔진을 불러옵니다."
+        }
+      ]
+    },
     "DeliveryFlow:runtime": {
       "title": "런타임 전달",
       "alt": "연결된 DOM의 클래스 사용 정보가 브라우저 엔진을 거쳐 네이티브 스타일시트 규칙이 됩니다.",
@@ -87,6 +110,8 @@ import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro
 import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## 개요 [sr-only] \{#overview\}
+<DeliveryFlow name="modes" />
+
 앱이 완전한 클래스 이름을 언제 알 수 있는지에 따라 렌더링 모드를 선택하세요. 이름이 소스에 보이면 정적 렌더링으로 시작하세요. 완성된 페이지 HTML에서 CSS를 생성하려면 사전 렌더링을, 브라우저에서 만들어지는 새 클래스에는 런타임 렌더링을, 페이지 CSS와 런타임 지원을 결합하려면 점진적 렌더링을 사용하세요.
 
 먼저 프레임워크의 [설치 가이드](/guide/installation)를 완료하세요. 공식 통합이 CSS 진입점을 로드하고 선택한 모드를 구성합니다. 아래 예제는 각 모드의 동작과 검증 방법을 설명합니다. 프레임워크 지원과 처리할 수 있는 HTML은 해당 통합에 따라 다릅니다.

@@ -1,4 +1,14 @@
 export const deliveryFlows = {
+  modes: {
+    title: 'Where each mode generates CSS',
+    steps: [
+      { title: 'Static', description: 'The build scans complete class strings in source files and emits a stylesheet. The browser loads it without a Master CSS runtime or engine.' },
+      { title: 'Prerender', description: 'The build or server processes rendered page HTML and delivers its rules with that page. The browser loads no runtime or engine.' },
+      { title: 'Runtime', description: 'The browser engine reads class names on connected DOM elements and generates their rules after runtime startup.' },
+      { title: 'Progressive', description: 'Rendered page HTML supplies the initial CSS. By default, the browser engine loads only when a connected class is missing from that page.' }
+    ],
+    caption: 'Each mode differs in where class names come from and whether the browser needs the engine.'
+  },
   'vite-coverage': {
     title: 'One app, three sets of classes',
     steps: [
@@ -85,6 +95,10 @@ export type DeliveryFlowName = keyof typeof deliveryFlows
 
 /** Short figure labels and alternatives share the delivery content owner. */
 export const deliveryIllustrations = {
+  modes: {
+    alt: 'Static and prerender generate CSS before the browser; runtime generates it in the browser engine; progressive delivers page CSS first and loads the engine for a missing class.',
+    labels: { build: 'Build / server', browser: 'Browser', static: 'Static', prerender: 'Prerender', runtime: 'Runtime', progressive: 'Progressive', source: 'Source files', prerenderHTML: 'Page HTML', progressiveHTML: 'Page HTML', stylesheet: 'Stylesheet', prerenderCSS: 'Page CSS', progressiveCSS: 'Page CSS', dom: 'Connected DOM', runtimeEngine: 'Engine', progressiveEngine: 'Engine', missing: 'missing class' }
+  },
   'vite-coverage': {
     alt: 'Static mode sees both source variants, prerender mode sees neither in the empty HTML mount point, and runtime mode sees the connected blue button.',
     labels: { static: 'Static', prerender: 'Prerender', runtime: 'Runtime', source: 'Source', html: 'Build HTML', dom: 'Connected DOM', blue: "'bg-blue'", neutral: "'bg-neutral'", mount: '<div id="app">', mountEnd: '</div>', button: '<button', buttonClass: 'class="bg-blue">', buttonEnd: '</button>', css: 'Generated rules', blueRule: '.bg-blue', neutralRule: '.bg-neutral', empty: 'No button rules', sourceResult: 'Both states covered', htmlResult: 'No button in HTML', domResult: 'Current state covered' }
