@@ -237,20 +237,20 @@
     },
     "guide/installation/(main)/content.mdx": {
       "tw": {
-        "sourceHash": "93e3e153e66625a3b48a6a09a9738f0bc7ca4ae01236b46e5687440779d8c0f3",
-        "translationHash": "1a611dc71c4dea12a545dc0b723a328a5d7673ba9a53d116a020ba01bd39e94e"
+        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
+        "translationHash": "f218338ddbbfca9a986bf2a36055b65bcc34940e00d87700a491d42a288aa9d4"
       },
       "ja": {
-        "sourceHash": "93e3e153e66625a3b48a6a09a9738f0bc7ca4ae01236b46e5687440779d8c0f3",
-        "translationHash": "a2319c5456c5ec4058d6a46b79b17b67b0b0e7e648971bff5ac3be16e9f34d20"
+        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
+        "translationHash": "1aeb141411ff8f1ad271e2147e36941ede90fb9d9d0a5e08057673f731966888"
       },
       "ko": {
-        "sourceHash": "93e3e153e66625a3b48a6a09a9738f0bc7ca4ae01236b46e5687440779d8c0f3",
-        "translationHash": "b768025256c0168585d8c14624ccd80844d0fc30ca74b215c26cedb064a05e61"
+        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
+        "translationHash": "75237aac7b2ea886562e0ea3a0ae1617622115ee3bbcd90f12bd1f4965ce07ea"
       },
       "cn": {
-        "sourceHash": "93e3e153e66625a3b48a6a09a9738f0bc7ca4ae01236b46e5687440779d8c0f3",
-        "translationHash": "fde2b9423a5d8350d011a1f1c6e21935ed7f6b416c739544bd140e9b1ce5422d"
+        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
+        "translationHash": "29d306baff1e4c84b1b097dc33b7c177d676abda33ea6385e3cdd89e0cf45470"
       }
     },
     "guide/installation/angular/content.mdx": {

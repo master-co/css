@@ -1,4 +1,9 @@
 import { markdownTree } from '@master/internal-site/utils/markdown-tree'
+import { agentPrompt } from '../utils/agent-guide-data'
+
+// The installation agent prompt asks whether to move existing styling to Master CSS
+// and delegates the conversion itself to the Migration Guide.
+const installPromptStart = agentPrompt('install').text.split('\n')[0]
 
 // Editorial policy, not a class parser. Current API declarations and ordinary
 // DOM/CSS diffs remain valid; this list records the retired teaching material.
@@ -15,7 +20,7 @@ export function documentationHygieneIssues(markdown: string, navigation = false,
     if (node.type === 'link' && /\/guide\/migration(?:[\/#.]|$)/.test(node.url)) issues.push(`Migration link: ${node.url}`)
     if (typeof node.value === 'string' && retiredSyntax.test(node.value)) issues.push(`Retired syntax: ${node.value.slice(0, 180)}`)
     if (node.type === 'text' && !catalog && history.test(node.value)) issues.push(`Historical teaching: ${node.value.slice(0, 180)}`)
-    if ((node.type === 'text' || node.type === 'code') && !catalog && externalConversion.test(node.value)) issues.push(`External conversion tutorial: ${node.value.slice(0, 180)}`)
+    if ((node.type === 'text' || (node.type === 'code' && !node.value.startsWith(installPromptStart))) && !catalog && externalConversion.test(node.value)) issues.push(`External conversion tutorial: ${node.value.slice(0, 180)}`)
     node.children?.forEach((child: any) => visit(child, catalog))
   }
   visit(markdownTree(markdown))
