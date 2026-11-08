@@ -25,7 +25,7 @@ Tailwind CSS v4와 Master CSS는 모두 클래스 이름과 CSS 지시문으로 
 
 | 계약 | 보존 또는 교체 대상 |
 | --- | --- |
-| 컴파일러 입력 | Tailwind 지시문은 Tailwind 컴파일러에 두고 생성한 일반 CSS를 Master 진입점에 가져옵니다. |
+| 컴파일러 입력 | Tailwind 지시문은 Tailwind 컴파일러에 두고 생성한 일반 CSS를 Master 진입점 다음에 로드합니다. |
 | 테마와 변형 | Master 클래스를 선택하기 전에 실제 토큰 값과 조건을 해석합니다. |
 | Preflight, 플러그인, 전역 CSS | 아직 바꾸지 않은 화면에 필요한 규칙을 유지합니다. |
 | 클래스 처리 | Tailwind 전용 병합과 조각 조립을 명시적인 클래스 맵으로 바꿉니다. |
@@ -40,14 +40,21 @@ Tailwind CSS v4와 Master CSS는 모두 클래스 이름과 CSS 지시문으로 
 ---
 
 ## Tailwind와 함께 Master CSS 설치 \{#install-master-css-beside-tailwind\}
-Tailwind 진입점은 계속 Tailwind 컴파일러가 처리합니다. 일반 CSS로 컴파일한 뒤 Master CSS 진입점과 함께 읽습니다. 두 시스템은 `@theme`, `@utility`, `@apply`라는 이름을 서로 다른 계약으로 사용하므로 처리되지 않은 Tailwind 정의를 Master CSS 컴파일러로 넘기지 마세요.
+Tailwind 진입점은 계속 Tailwind 컴파일러가 처리합니다. 일반 CSS로 컴파일한 뒤 그 결과를 Master CSS 진입점 다음에 로드합니다. 두 시스템은 `@theme`, `@utility`, `@apply`라는 이름을 서로 다른 계약으로 사용하므로 처리되지 않은 Tailwind 정의를 Master CSS 컴파일러로 넘기지 마세요.
 
 ```css name=app.css
-@import "./legacy-tailwind.generated.css";
+@layer properties, theme, base, defaults, components, utilities;
 @import "@master/css";
 ```
 
-이 진입점을 컴파일하기 전에 기존 Tailwind 빌드가 `legacy-tailwind.generated.css`를 생성하도록 유지합니다. 두 시스템이 같은 클래스 이름을 정의할 수 있으므로 공존 중에는 캐스케이드 레이어, 리셋, 중복 이름을 비교하세요.
+```ts name=main.ts
+import './app.css'
+import './legacy-tailwind.generated.css'
+```
+
+기존 Tailwind 빌드가 `legacy-tailwind.generated.css`를 생성하도록 유지합니다. 레이어 순서를 먼저 선언하세요. Tailwind 출력은 `defaults` 없이 `properties`와 자체 레이어를 선언하며, 뒤쪽 문에서 처음 등장한 레이어는 순서의 맨 끝으로 갑니다. 이 문이 없으면 `defaults`가 `utilities`보다 우선합니다.
+
+두 시스템은 `text-sm`처럼 같은 클래스 이름에 대한 규칙을 `utilities` 레이어에 각각 생성할 수 있고, 일부 같은 테마 변수도 정의합니다. Tailwind 출력을 나중에 로드하면 변환하지 않은 마크업에서 Tailwind의 규칙과 값이 계속 적용됩니다. 공존 중에는 리셋과 중복 이름을 비교하세요. [shadcn/ui에서 마이그레이션](/guide/migration/shadcn-ui#load-master-css-beside-the-shadcn-ui-build)에서 중복 이름을 나열하고 문서 타이포그래피를 그대로 유지하는 방법을 설명합니다.
 
 대부분의 통합에는 여기서 Master CSS 소스 지시문이 필요하지 않습니다. 통합이나 CLI 스캐너가 일반 앱 파일을 찾으므로 기본 범위 밖에 있는 변환 마크업에만 `@source`를 추가합니다.
 
@@ -448,7 +455,7 @@ Tailwind `@source inline()`은 인라인 문자열과 중괄호 확장으로 클
 ## Tailwind 제거 \{#remove-tailwind\}
 변환한 경로가 빌드되고 의도한 디자인과 시각적으로 일치한 뒤에만 Tailwind를 제거합니다.
 
-1. 앱 진입점에서 생성 Tailwind CSS import를 제거하고 별도의 Tailwind 빌드 입력을 폐기합니다.
+1. 앱 루트에서 생성 Tailwind CSS import를 제거하고 별도의 Tailwind 빌드 입력을 폐기합니다.
 2. 대체된 Tailwind 전용 `@theme`, `@utility`, `@custom-variant`, `@variant`, `@apply`, `@source inline()`, `@plugin` 사용을 제거합니다.
 3. 어떤 스타일시트도 Tailwind를 가져오지 않을 때 패키지와 PostCSS 또는 Vite 통합 코드를 제거합니다.
 4. 프로젝트 전체 검증을 실행합니다.

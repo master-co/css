@@ -4,12 +4,15 @@ import brands from '@master/internal-site/data/brands'
 import Link from '@master/internal-site/components/Link.svelte'
 import { migrationGuides } from '../utils/migration-guides'
 import { siteOf } from '@master/internal-site/astro/site-context'
+import shadcn from '../assets/brands/shadcn-ui.svg'
 const { t } = siteOf(Astro)
+/** Marks the shared brand registry does not carry yet. */
+const localBrands: Record<string, { src: any, className?: string }> = { 'shadcn-ui': { src: shadcn } }
 ---
 
 <nav aria-label={t('Migration guides')} class="ui-logos">
   {migrationGuides.map(guide => {
-    const { src: Logo, className } = brands[guide.brand]
+    const { src: Logo, className } = localBrands[guide.brand] ?? brands[guide.brand]
     return <Link href={`/guide/migration/${guide.slug}`}>
       <Logo class={className} width={20} height={20} aria-hidden="true" />
       <span>{t(guide.title)}</span>

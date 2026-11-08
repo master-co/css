@@ -1,4 +1,5 @@
 import { tailwindIllustrationMarkdown } from '../content/guide/migration/tailwindcss/illustration'
+import { shadcnIllustrationMarkdown } from '../content/guide/migration/shadcn-ui/illustration'
 import { sassIllustrationMarkdown } from '../content/guide/migration/sass/illustration'
 import { materialUIIllustrationMarkdown } from '../content/guide/migration/material-ui/illustration'
 import { bootstrapIllustrationMarkdown } from '../content/guide/migration/bootstrap/illustration'
@@ -10,7 +11,7 @@ import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { migrationIllustrationMarkdown } from '../content/guide/migration/illustration'
 import { translateSite } from './translations'
 
-export const migrationGuideSlugs = ['css', 'css-in-js', 'tailwindcss', 'bootstrap', 'material-ui', 'sass', ''] as const
+export const migrationGuideSlugs = ['css', 'css-in-js', 'tailwindcss', 'shadcn-ui', 'bootstrap', 'material-ui', 'sass', ''] as const
 
 /** Keep comparison prose and complete code in both search and portable exports. */
 export async function migrationGuideContent(siteRoot: string, slug: string, locale = 'en') {
@@ -19,6 +20,7 @@ export async function migrationGuideContent(siteRoot: string, slug: string, loca
     overview: 'include',
     component(name) {
       if (name === 'TailwindIllustration') return tailwindIllustrationMarkdown()
+      if (name === 'ShadcnIllustration') return shadcnIllustrationMarkdown()
       if (name === 'SassIllustration') return sassIllustrationMarkdown()
       if (name === 'MaterialUIIllustration') return materialUIIllustrationMarkdown()
       if (name === 'BootstrapIllustration') return bootstrapIllustrationMarkdown()

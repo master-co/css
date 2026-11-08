@@ -675,6 +675,7 @@
   "Development tools": "開發工具",
   "Getting Started": "開始使用",
   "Global and local selectors, shared tokens and class forwarding.": "全域與局部選擇器、共用 token 與 class 轉送。",
+  "Copied components, shared theme variables and layered overrides.": "複製進專案的元件、共用主題變數與分層覆寫。",
   "Grid geometry, vendor cascade and JavaScript components.": "網格配置、第三方階層串接與 JavaScript 元件。",
   "Server-rendered apps": "伺服器渲染應用程式",
   "Styled wrappers, variants and runtime values.": "樣式包裝元件、變體與執行階段值。",
@@ -915,5 +916,6 @@
   "Read the classes in the rendered page HTML.": "讀取渲染完成的頁面 HTML 中使用的 class。",
   "Embed the matching rules in the page.": "把對應的規則嵌入頁面。",
   "Set up with your AI agent": "用 AI agent 設定",
-  "Copy setup prompt": "複製設定提示詞"
+  "Copy setup prompt": "複製設定提示詞",
+  "shadcn/ui": "shadcn/ui"
 }

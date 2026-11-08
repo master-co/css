@@ -226,6 +226,7 @@
   "Development tools": "開発ツール",
   "Getting Started": "はじめに",
   "Global and local selectors, shared tokens and class forwarding.": "グローバル／ローカルのセレクター、共通トークン、クラスの転送。",
+  "Copied components, shared theme variables and layered overrides.": "コピーしたコンポーネント、共有テーマ変数、レイヤーによる上書き。",
   "Grid geometry, vendor cascade and JavaScript components.": "グリッド構成、ベンダーのカスケード、JavaScript コンポーネント。",
   "Server-rendered apps": "サーバー描画アプリ",
   "Styled wrappers, variants and runtime values.": "スタイルラッパー、派生形、実行時の値。",
@@ -479,5 +480,6 @@
   "Generate CSS from each rendered page’s HTML and deliver it with that page, with no runtime in the browser.": "レンダリング済みの各ページの HTML から CSS を生成し、そのページとともに配信します。ブラウザーにランタイムは不要です。",
   "Choose static, prerender, or runtime delivery. Your classes stay the same.": "静的、事前レンダリング、ランタイムから配信方法を選べます。クラスの書き方は同じです。",
   "Set up with your AI agent": "AI エージェントでセットアップ",
-  "Copy setup prompt": "セットアップ用プロンプトをコピー"
+  "Copy setup prompt": "セットアップ用プロンプトをコピー",
+  "shadcn/ui": "shadcn/ui"
 }

@@ -1,6 +1,7 @@
 /** Shared navigation and portable content; brand artwork stays in the existing registry. */
 export const migrationGuides = [
   { slug: 'tailwindcss', brand: 'tailwindcss', title: 'Tailwind CSS', description: 'Utilities, variants, theme tokens and separate build inputs.' },
+  { slug: 'shadcn-ui', brand: 'shadcn-ui', title: 'shadcn/ui', description: 'Copied components, shared theme variables and layered overrides.' },
   { slug: 'css', brand: 'css', title: 'CSS and CSS Modules', description: 'Global and local selectors, shared tokens and class forwarding.' },
   { slug: 'css-in-js', brand: 'styled-components', title: 'CSS-in-JS', description: 'Styled wrappers, variants and runtime values.' },
   { slug: 'material-ui', brand: 'mui', title: 'Material UI', description: 'App-owned sx styles, resolved values and retained widgets.' },

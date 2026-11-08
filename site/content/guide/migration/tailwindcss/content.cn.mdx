@@ -25,7 +25,7 @@ Tailwind CSS v4 与 Master CSS 都从类名和 CSS 指令生成 CSS，但不能�
 
 | 契约 | 保留或替换的部分 |
 | --- | --- |
-| 编译器输入 | Tailwind 指令交给 Tailwind 编译器；将生成的普通 CSS 导入 Master 入口。 |
+| 编译器输入 | Tailwind 指令交给 Tailwind 编译器；在 Master 入口之后加载其生成的普通 CSS。 |
 | 主题和变体 | 选择 Master 类之前，先解析实际令牌值和条件。 |
 | Preflight、插件和全局 CSS | 保留未转换页面仍需的规则。 |
 | 类处理 | 将 Tailwind 专用合并和片段拼接替换为明确的类映射。 |
@@ -40,14 +40,21 @@ Tailwind CSS v4 与 Master CSS 都从类名和 CSS 指令生成 CSS，但不能�
 ---
 
 ## 在 Tailwind 旁安装 Master CSS \{#install-master-css-beside-tailwind\}
-Tailwind 入口继续由 Tailwind 编译器负责。先编译成普通 CSS，再与 Master CSS 入口一起加载。两个系统都使用 `@theme`、`@utility`、`@apply` 等名称，但契约不同；不要将未处理的 Tailwind 定义交给 Master CSS 编译器。
+Tailwind 入口继续由 Tailwind 编译器负责。先编译成普通 CSS，再在 Master CSS 入口之后加载。两个系统都使用 `@theme`、`@utility`、`@apply` 等名称，但契约不同；不要将未处理的 Tailwind 定义交给 Master CSS 编译器。
 
 ```css name=app.css
-@import "./legacy-tailwind.generated.css";
+@layer properties, theme, base, defaults, components, utilities;
 @import "@master/css";
 ```
 
-在此入口编译前，确保原 Tailwind 构建先生成 `legacy-tailwind.generated.css`。两者可能定义同名类，共存时请比较层叠层、重置和重叠名称。
+```ts name=main.ts
+import './app.css'
+import './legacy-tailwind.generated.css'
+```
+
+保持原 Tailwind 构建继续生成 `legacy-tailwind.generated.css`。先声明层顺序：Tailwind 的输出会声明 `properties` 及其自身的层，但不含 `defaults`；而在后续语句中才首次出现的层会排到顺序末尾。没有这条语句，`defaults` 的优先级就会高于 `utilities`。
+
+两个系统都可能在 `utilities` 层为同一个类名（如 `text-sm`）生成规则，也都定义了部分相同的主题变量。后加载 Tailwind 的输出，能让其规则和值继续作用于未转换的标记。共存期间请比较重置和重叠名称；[从 shadcn/ui 迁移](/guide/migration/shadcn-ui#load-master-css-beside-the-shadcn-ui-build)介绍了如何列出重叠名称，并保持文档排版不变。
 
 多数集成此处不需要 Master CSS 源指令。集成或 CLI 扫描器会发现普通应用文件；仅对默认范围以外的已迁移标记添加 `@source`。
 
@@ -448,7 +455,7 @@ Tailwind `@source inline()` 能从内联字符串和大括号展开生成类。M
 ## 删除 Tailwind \{#remove-tailwind\}
 仅在转换后的路径构建成功、视觉符合预期设计后删除 Tailwind。
 
-1. 从应用入口移除生成的 Tailwind CSS 导入，再停用单独的 Tailwind 构建输入。
+1. 从应用根模块移除生成的 Tailwind CSS 导入，再停用单独的 Tailwind 构建输入。
 2. 删除已替代的 Tailwind 专用 `@theme`、`@utility`、`@custom-variant`、`@variant`、`@apply`、`@source inline()`、`@plugin` 用法。
 3. 所有样式表都不再导入 Tailwind 时，移除 Tailwind 包及 PostCSS 或 Vite 集成代码。
 4. 运行项目完整验证。

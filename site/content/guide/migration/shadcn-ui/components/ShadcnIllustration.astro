@@ -1,0 +1,14 @@
+---
+import { documentCopyOf, siteOf } from '@master/internal-site/astro/site-context.ts'
+import { figureCopy } from '~/site/utils/figure-copy'
+import DocumentIllustration from '@master/internal-site/components/DocumentIllustration.astro'
+import light from '../../../../../assets/images/migration-shadcn-ui/layer-override-light.png'
+import dark from '../../../../../assets/images/migration-shadcn-ui/layer-override-dark.png'
+import { shadcnIllustration as sourceFigure } from '../illustration'
+const figure = figureCopy(documentCopyOf(Astro), siteOf(Astro).locale, 'ShadcnIllustration', sourceFigure)
+
+---
+
+<DocumentIllustration title={figure.title} alt={figure.alt} images={{ light, dark }} caption={figure.caption}>
+  <ol>{figure.description.map(item => <li><strong>{item.title}.</strong> {item.text}</li>)}</ol>
+</DocumentIllustration>

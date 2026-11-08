@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { compileTypeScript, formatTypeScriptDiagnostics } from '../../scripts/typescript-api.mjs'
 
 const require = createRequire(import.meta.url)
-export const vendorMigrationSlugs = ['bootstrap', 'material-ui', 'sass', ''] as const
+export const vendorMigrationSlugs = ['bootstrap', 'material-ui', 'sass', 'shadcn-ui', ''] as const
 export const migrationSlugs = ['css', 'css-in-js', 'tailwindcss'] as const
 
 export function migrationSource(slug: string) {

@@ -25,7 +25,7 @@ Tailwind CSS v4 と Master CSS はどちらもクラス名や CSS ディレク�
 
 | 契約 | 維持または置換するもの |
 | --- | --- |
-| コンパイラーの入力 | Tailwind のディレクティブは Tailwind で処理し、生成した通常の CSS を Master のエントリーに読み込みます。 |
+| コンパイラーの入力 | Tailwind のディレクティブは Tailwind で処理し、生成した通常の CSS を Master のエントリーの後に読み込みます。 |
 | テーマと派生形 | Master のクラスを選ぶ前に実際のトークン値と条件を解決します。 |
 | Preflight、プラグイン、グローバル CSS | 未変更の画面が必要とするルールを残します。 |
 | クラス処理 | Tailwind 専用の結合や断片の組み立てを、明示的なクラスマップに置き換えます。 |
@@ -40,14 +40,21 @@ Tailwind CSS v4 と Master CSS はどちらもクラス名や CSS ディレク�
 ---
 
 ## Tailwind と並べて Master CSS を導入する \{#install-master-css-beside-tailwind\}
-Tailwind のエントリーは引き続き Tailwind のコンパイラーで処理します。通常の CSS にコンパイルしてから、Master CSS のエントリーと一緒に読み込みます。両者の `@theme`、`@utility`、`@apply` は契約が異なるため、未処理の Tailwind 定義を Master CSS に渡さないでください。
+Tailwind のエントリーは引き続き Tailwind のコンパイラーで処理します。通常の CSS にコンパイルしてから、Master CSS のエントリーの後に読み込みます。両者の `@theme`、`@utility`、`@apply` は契約が異なるため、未処理の Tailwind 定義を Master CSS に渡さないでください。
 
 ```css name=app.css
-@import "./legacy-tailwind.generated.css";
+@layer properties, theme, base, defaults, components, utilities;
 @import "@master/css";
 ```
 
-このエントリーのコンパイル前に、既存の Tailwind ビルドで `legacy-tailwind.generated.css` を生成します。同名のクラスを定義できるため、併用中はカスケードレイヤー、リセット、名前の重複を比較します。
+```ts name=main.ts
+import './app.css'
+import './legacy-tailwind.generated.css'
+```
+
+既存の Tailwind ビルドで引き続き `legacy-tailwind.generated.css` を生成します。最初にレイヤー順を宣言します。Tailwind の出力は `properties` と独自のレイヤーを宣言しますが、`defaults` は含みません。後の文で初めて現れたレイヤーは順序の末尾に置かれます。この文がないと、`defaults` が `utilities` より優先されます。
+
+両者は `text-sm` など同じクラス名のルールを `utilities` レイヤーに生成でき、一部の同じテーマ変数も定義します。Tailwind の出力を後に読み込むと、未変換のマークアップでは Tailwind のルールと値が有効なまま保たれます。併用中はリセットと名前の重複を比較します。重複する名前を一覧する方法と、ドキュメントの文字組みを変えずに保つ方法は [shadcn/ui からの移行](/guide/migration/shadcn-ui#load-master-css-beside-the-shadcn-ui-build)で示しています。
 
 多くの連携では、ここで Master CSS のソースディレクティブは不要です。連携や CLI が通常のアプリファイルを探索するため、既定範囲外の変換対象だけに `@source` を追加します。
 
@@ -448,7 +455,7 @@ Tailwind の `@source inline()` はインライン文字列や波括弧展開か
 ## Tailwind を削除する \{#remove-tailwind\}
 変換済みの経路がビルドでき、意図した見た目に一致してから削除します。
 
-1. 生成 Tailwind CSS のインポートをアプリのエントリーから削除し、専用の Tailwind ビルド入力を廃止します。
+1. 生成 Tailwind CSS のインポートをアプリのルートから削除し、専用の Tailwind ビルド入力を廃止します。
 2. 置換済みの Tailwind 専用 `@theme`、`@utility`、`@custom-variant`、`@variant`、`@apply`、`@source inline()`、`@plugin` を削除します。
 3. どのスタイルシートも Tailwind をインポートしなくなってから、パッケージと PostCSS／Vite の連携コードを削除します。
 4. プロジェクトの検証一式を実行します。

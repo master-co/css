@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md; homepage version visibility reviewed in header-version-qa-2026-11-04.md; canonical multilingual split-bundle measurements in local-i18n-style-qa-2026-11-05.md; public0.2.1 tree icon media exclusion measured in tree-icon-height-qa-2026-11-05.md; homepage segmented-control selectors in segmented-control-order-qa-2026-11-05.md; @master/internal-site 0.2.3 adds 392–398 gzip bytes, 350–357 Brotli bytes, and 150 inline CSS bytes on document routes without new stylesheet requests",
+  "reference": "style-delivery-qa-2026-11-03.md; homepage ceilings tightened by home-refactor-qa-2026-11-03.md; table-wrapper deltas measured in Master site/tests/document-table-qa-2026-11-03.md; homepage version visibility reviewed in header-version-qa-2026-11-04.md; canonical multilingual split-bundle measurements in local-i18n-style-qa-2026-11-05.md; public0.2.1 tree icon media exclusion measured in tree-icon-height-qa-2026-11-05.md; homepage segmented-control selectors in segmented-control-order-qa-2026-11-05.md; @master/internal-site 0.2.3 adds 392–398 gzip bytes, 350–357 Brotli bytes, and 150 inline CSS bytes on document routes without new stylesheet requests; shadcn/ui migration guide routes in migration-shadcn-ui-qa-2026-11-08.md",
   "routes": {
     "/404": {
       "files": 9,
@@ -234,6 +234,13 @@
       "inlineBytes": 2055
     },
     "/guide/migration/sass": {
+      "files": 22,
+      "depth": 1,
+      "gzip": 32339,
+      "brotli": 27436,
+      "inlineBytes": 2055
+    },
+    "/guide/migration/shadcn-ui": {
       "files": 22,
       "depth": 1,
       "gzip": 32339,

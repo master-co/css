@@ -1,0 +1,396 @@
+---
+title: "shadcn/ui からの移行"
+description: "プリミティブが動作を担い、テーマ変数を共有したまま、呼び出し側の上書きをカスケードレイヤーで解決しながら、shadcn/ui のコンポーネントを Master CSS に移します。"
+figures: {"ShadcnIllustration": {"title": "上書きはレイヤーに任せる", "alt": "変換した Button は data-slot=\"button\" を出力し、呼び出し側の px-lg クラスを受け取ります。data-slot 属性により padding-inline: 1rem を持つ components レイヤーのルールが選択され、px-lg は padding-inline: 1.5rem を持つ utilities レイヤーのルールを生成します。両方のルールが一致し、utilities のルールが優先されます。", "caption": "両方のルールがスタイルシートに残り、どちらもボタンに一致します。レイヤー順では utilities が components の後に来るため、コンポーネントのクラスを削除しなくても呼び出し側のパディングが適用されます。", "description": [{"title": "コンポーネントの既定値", "text": "Button 自身のスタイルは @layer components 内で [data-slot=button] を選択し、padding-inline: 1rem を設定します。"}, {"title": "呼び出し側の調整", "text": "呼び出し側は className で px-lg を渡します。Master CSS はそれを padding-inline: 1.5rem として @layer utilities に生成します。"}, {"title": "レイヤー順", "text": "utilities は components の後に来るため、ルート文字サイズ 16px ではボタンの計算値は 24px になります。文字列からクラスは削除されません。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ShadcnIllustration from './components/ShadcnIllustration.astro'
+
+shadcn/ui はコンポーネントのソースをプロジェクトにコピーします。各コンポーネントは Tailwind CSS のクラス、`cva` の派生形、`tailwind-merge` を基にした `cn()` ヘルパー、`:root` と `.dark` のテーマ変数、そして Radix UI、Base UI、React Aria のいずれかのプリミティブを組み合わせています。Master CSS がスタイルを引き継いでも、プリミティブはフォーカス管理、キーボード操作、ARIA 属性、状態を引き続き担います。
+
+Master CSS は Tailwind のクラス構文を読まないため、コンポーネントはそのまま再利用せずに書き直します。未変換のコンポーネントは引き続き Tailwind でビルドし、一度に一つずつ変換して、最後のコンポーネントの後に Tailwind を削除します。このガイドは shadcn/ui 固有の部分を扱います。ユーティリティ、派生形、テーマ値全般は [Tailwind CSS からの移行](/guide/migration/tailwindcss)で説明しています。
+
+---
+
+## 移行方針 \{#migration-strategy\}
+
+基準状態、作業単位、削除の確認には[共通の移行手順](/guide/migration#migration-strategy)を使います。shadcn/ui のコンポーネントは次の部分で構成されます。
+
+<DocumentComparison>
+
+| 部分 | 移行または維持 |
+| --- | --- |
+| Radix UI、Base UI、React Aria のプリミティブ | 維持します。フォーカス、キーボード操作、ARIA、スタイルが選択する状態属性を管理します。 |
+| `:root` と `.dark` のテーマ変数 | 変数を残し、`@theme inline` で Master CSS のトークンに対応付けます。 |
+| `cva` の基本クラスと派生形 | コンポーネントの `data-*` 属性で選択し、`@layer components` に移します。 |
+| `cn()` と `tailwind-merge` | 呼び出し側の上書きはカスケードレイヤーで解決します。`cn()` でクラスを削除する必要はなくなります。 |
+| `tw-animate-css` のクラス | プリミティブの開閉状態で選択するネイティブのキーフレームに置き換えます。 |
+| shadcn CLI で追加したコンポーネント | 新しい出力は、変換するまで未変換の Tailwind ソースとして扱います。 |
+
+</DocumentComparison>
+
+最初のコンポーネントには Button が適しています。その派生形、サイズ、状態はほかのコンポーネントのパターンの大半を網羅しており、ほかのコンポーネントからも再利用されます。
+
+---
+
+## shadcn/ui のビルドと並べて Master CSS を読み込む \{#load-master-css-beside-the-shadcn-ui-build\}
+
+shadcn/ui のスタイルシートは Tailwind のエントリーとして残し、通常の CSS にビルドします。`@theme`、`@custom-variant`、`@apply` などの Tailwind ディレクティブを Master CSS でコンパイルしないでください。両者はこれらの名前の一部を異なる契約で使います。
+
+変換済みのコンポーネントはすべて Tailwind のスキャン対象から除外します。
+
+```css name=src/shadcn-tailwind.css
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@source not "./components/ui/button.tsx";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  /* …the rest of the shadcn/ui color and radius mappings */
+}
+```
+
+Master CSS のエントリーを作成し、何よりも先にレイヤー順を宣言します。
+
+```css name=src/app.css
+@layer properties, theme, base, defaults, components, utilities;
+@import "@master/css";
+@import "./components/ui/button.css";
+```
+
+この文は最初に置く必要があります。Tailwind の出力は `properties` と `theme, base, components, utilities` を宣言しますが、`defaults` は含みません。後の文で初めて現れたレイヤーは順序の末尾に置かれます。この文がないと `defaults` が `utilities` より優先され、古い Safari と Firefox 向けの Tailwind の `properties` フォールバックも `utilities` より優先されます。
+
+Tailwind の出力は、アプリのルートで Master CSS のエントリーの後にインポートします。
+
+```tsx name=src/main.tsx
+import './app.css'
+import './shadcn-tailwind.generated.css'
+```
+
+Master CSS は未変換のコンポーネントを含むすべてのアプリケーションファイルをスキャンします。`text-sm`、`shadow-xs`、`inline-flex` など Tailwind のクラス名を認識すると、同じ `utilities` レイヤーにその名前の独自ルールを生成します。両者は `--text-sm--line-height` など一部の同じテーマ変数も定義します。Tailwind の出力を後に読み込むと Tailwind のルールと変数が優先されるため、未変換のコンポーネントは見た目を保ちます。Tailwind を削除するまでは、それらの名前を使う変換済みの要素も Tailwind の値を受け取ります。コンポーネント内で Master CSS が認識する名前を一覧するには、`npx master-css inspect src/components/ui/card.tsx` を実行して `scanner.classes.valid` を確認します。
+
+最後に、Master CSS の基本スタイルを Tailwind の Preflight と比較します。Master CSS は `body` に `font-family` と `line-height: 1.2` を設定し、Preflight は `html` にフォントと `line-height: 1.5` を設定します。両方を読み込んでいる間、既存のドキュメントの文字組みを保つには、`body` にそれらを継承させます。
+
+```css name=src/app.css
+@layer defaults {
+  body {
+    font-family: inherit;
+    line-height: inherit;
+  }
+}
+```
+
+Tailwind を削除するときにこのルールも削除し、ドキュメントの文字組みを意図的に選んでください。
+
+---
+
+## テーマ変数を対応付ける \{#map-the-theme-variables\}
+
+shadcn/ui のスタイルシートの `:root` と `.dark` ブロックを、変更せずに Master CSS のエントリーへ移します。これで両方のコンパイラーが同じ変数を読みます。shadcn/ui が Tailwind に渡すものと同じ `@theme inline` ブロックで、変数を Master CSS のトークンに対応付けます。
+
+```css name=src/app.css
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+}
+```
+
+これで `bg-primary`、`fg-primary-foreground`、`b-input`、`r-md` などのクラスは、それぞれ `var(--primary)`、`var(--primary-foreground)`、`var(--input)`、`calc(var(--radius) * 0.8)` を生成します。色の不透明度は通常どおり機能し、`bg-primary/.9` は変数に透明度を混ぜます。
+
+`inline` 修飾子は残してください。これがないと、Master CSS は `:root` に `--color-primary: var(--primary)` を定義し、ブラウザーはそこで `var(--primary)` を一度だけ解決します。すると入れ子の要素の `.dark` クラスは `--primary` を変えても、`--color-primary` は変えません。インライントークンは各宣言に `var(--primary)` を置くため、最も近い `.dark` 祖先が適用されます。
+
+この例の角丸トークンは、プリセットの `sm`、`md`、`lg` の角丸を置き換えます。`card`、`popover`、`muted`、`chart-*`、`sidebar-*` など残りの shadcn/ui 変数も同じ方法で対応付けます。shadcn/ui の `@layer base` ルールも、ネイティブ CSS として Master CSS のエントリーに移します。
+
+```css name=src/app.css
+@layer defaults {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+```
+
+---
+
+## コンポーネントの既定値を `@layer components` に移す \{#move-component-defaults-into-layer-components\}
+
+shadcn/ui のコンポーネントは呼び出し側による調整を受け付けます。`<Button className="px-6">` は `px-6` を `cn()` に渡し、`tailwind-merge` が Button 自身の `px-4` を文字列から削除します。Master CSS はクラス文字列をマージしません。代わりに、コンポーネント自身のスタイルを `@layer components` に置きます。呼び出し側のユーティリティはレイヤー順で後に来る `@layer utilities` に生成されるため、何も削除せずに適用されます。
+
+<ShadcnIllustration />
+
+Radix UI の Button はすでに `data-slot`、`data-variant`、`data-size` を出力しています。コンポーネントの隣に置くネイティブのスタイルシートで、これらの属性を選択します。次のルールは Button の基本スタイル、既定のサイズ、`default` と `outline` の派生形を再現します。
+
+```css name=src/components/ui/button.css
+@layer components {
+  [data-slot="button"] {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: calc(var(--radius) * 0.8);
+    font-size: 0.875rem;
+    line-height: calc(1.25 / 0.875);
+    font-weight: 500;
+    white-space: nowrap;
+    outline: none;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:focus-visible {
+      border-color: var(--ring);
+      outline: 3px solid color-mix(in oklab, var(--ring) 50%, transparent);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--destructive);
+      outline-color: color-mix(in oklab, var(--destructive) 20%, transparent);
+
+      .dark & {
+        outline-color: color-mix(in oklab, var(--destructive) 40%, transparent);
+      }
+    }
+
+    &:disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+  }
+
+  [data-slot="button"][data-size="default"] {
+    height: 2.25rem;
+    padding: 0.5rem 1rem;
+
+    &:has(> svg) {
+      padding-inline: 0.75rem;
+    }
+  }
+
+  [data-slot="button"][data-variant="default"] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in oklab, var(--primary) 90%, transparent);
+      }
+    }
+  }
+
+  [data-slot="button"][data-variant="outline"] {
+    border-width: 1px;
+    border-style: solid;
+    background-color: var(--background);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+
+    .dark & {
+      border-color: var(--input);
+      background-color: color-mix(in oklab, var(--input) 30%, transparent);
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: color-mix(in oklab, var(--input) 50%, transparent);
+        }
+      }
+    }
+  }
+}
+```
+
+ほかのサイズと派生形も同じパターンに従います。outline 派生形は境界線の幅とスタイルだけを設定します。色は `defaults` の `*` ルールから来るため、フォーカスと `aria-invalid` の色で置き換えられます。フォーカスリングは Tailwind の `box-shadow` による ring ではなく `outline` を使うため、派生形の影と組み合わせる必要はありません。
+
+コンポーネントに `cva` と `cn()` は不要になります。属性を出力し、`className` をほかの props と一緒に渡します。
+
+```tsx name=src/components/ui/button.tsx
+import * as React from 'react'
+import { Slot } from 'radix-ui'
+
+type ButtonProps = React.ComponentProps<'button'> & {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  size?: 'default' | 'xs' | 'sm' | 'lg' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-lg'
+  asChild?: boolean
+}
+
+export function Button({ variant = 'default', size = 'default', asChild = false, ...props }: ButtonProps) {
+  const Comp = asChild ? Slot.Root : 'button'
+  return <Comp data-slot="button" data-variant={variant} data-size={size} {...props} />
+}
+```
+
+呼び出し側は Master CSS のクラスで Button を調整します。クラスの順序は問いません。
+
+```tsx
+<Button variant="outline" className="px-lg r-lg">
+  Edit profile
+</Button>
+```
+
+`px-lg` と `r-lg` がコンポーネントのパディングと角丸より優先され、派生形の境界線と色は残ります。呼び出し側はクラスを省いてもコンポーネントの宣言を削除できないため、スタイルを削除またはリセットする代替には、コンポーネントに派生形、サイズ、属性を用意してください。
+
+一部のコンポーネントは `data-slot` だけを出力します。たとえば Base UI の Button は派生形を出力しません。スタイルに必要な属性を追加してください。コンポーネントのソースは変更してかまいません。ほかのコンポーネントは `buttonVariants()` を呼び出し、リンクやトリガーをボタンとしてスタイルします。それらの要素には代わりに `data-slot="button"` と、対応する `data-variant`、`data-size` を出力します。
+
+コンポーネントがまだ条件付きのクラスを結合する箇所では、`cn()` を単なる `clsx` の呼び出しとして残せます。コード lint と言語サービスは、既定で `cn()` 呼び出し内のクラスを検査します。
+
+---
+
+## shadcn/ui の派生形を変換する \{#translate-shadcn-ui-variants\}
+
+コンポーネントのスタイルシート内では、shadcn/ui の派生形をネイティブのセレクターや条件として書きます。マークアップでは、対応する Master CSS の接尾辞を使います。セレクターの列はコンポーネントの CSS を示し、クラスの列は同じ内容をマークアップで示します。
+
+| shadcn/ui のパターン | コンポーネントの CSS | Master CSS のクラス |
+| --- | --- | --- |
+| `data-[state=open]:bg-accent` | `&[data-state="open"]` | `bg-accent[data-state=open]` |
+| `data-open:bg-accent`（Base UI） | `&[data-open]` | `bg-accent[data-open]` |
+| `aria-invalid:border-destructive` | `&[aria-invalid="true"]` | `b-destructive[aria-invalid=true]` |
+| `has-[>svg]:px-3` | `&:has(> svg)` | `(padding-inline:.75rem):has(>svg)` |
+| `[&_svg]:pointer-events-none` | `& svg` | `(pointer-events:none)_svg` |
+| `*:[a]:underline` | `& > a` | `underline>a` |
+| `hover:bg-primary/90` | `@media (hover: hover) { &:hover }` | `bg-primary/.9:hover@media(hover:hover)` |
+| `focus-visible:ring-[3px] ring-ring/50` | `outline` を使う `&:focus-visible` | `outline(3):focus-visible outline-solid:focus-visible outline-ring/.5:focus-visible` |
+| `dark:bg-input/30` | `.dark &` | `bg-input/.3@apply(--manual-dark)` |
+| `group-data-[collapsible=icon]:hidden` | `[data-collapsible="icon"] &` | `hidden@apply(--sidebar-icon)` |
+| `sm:max-w-lg` | `@media (width >= 40rem)` | `(max-width:32rem)@tailwind-sm` |
+| `size-4` | `width: 1rem; height: 1rem` | `w(16) h(16)` |
+
+`@apply(...)` と `@tailwind-sm` の接尾辞には、Master CSS のエントリーでの定義が必要です。
+
+```css name=src/app.css
+@mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
+@mixin --sidebar-icon { [data-collapsible="icon"] & { @contents; } }
+@custom-media --tailwind-sm (width >= 40rem);
+```
+
+Tailwind の `sm` は 40rem から始まり、Master CSS のプリセットの `@sm` は異なる幅から始まります。名前付き条件で元の境界を維持します。Master CSS には `group-*` や `peer-*` の派生形はありません。`--sidebar-icon` のようなセレクター mixin は、`group` クラスなしで祖先の属性を直接判定します。
+
+---
+
+## tw-animate-css のアニメーションを置き換える \{#replace-tw-animate-css-animations\}
+
+ダイアログ、ポップオーバー、メニュー、シートは、`data-[state=open]:animate-in` や `data-[state=closed]:zoom-out-95` などの `tw-animate-css` クラスでアニメーションします。同じ状態属性で選択するネイティブのキーフレームに置き換えます。
+
+```css name=src/components/ui/dialog.css
+@keyframes dialog-overlay-in { from { opacity: 0; } }
+@keyframes dialog-overlay-out { to { opacity: 0; } }
+@keyframes dialog-content-in { from { opacity: 0; scale: 0.95; } }
+@keyframes dialog-content-out { to { opacity: 0; scale: 0.95; } }
+
+@layer components {
+  [data-slot="dialog-overlay"] {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background-color: rgb(0 0 0 / 0.5);
+
+    &[data-state="open"] { animation: dialog-overlay-in 150ms; }
+    &[data-state="closed"] { animation: dialog-overlay-out 150ms; }
+  }
+
+  [data-slot="dialog-content"] {
+    &[data-state="open"] { animation: dialog-content-in 200ms; }
+    &[data-state="closed"] { animation: dialog-content-out 200ms; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot="dialog-overlay"],
+    [data-slot="dialog-content"] {
+      animation-duration: 1ms;
+    }
+  }
+}
+```
+
+閉じるアニメーションは動作の一部です。Radix UI は、`data-state="closed"` によって開始したアニメーションが終わるまで、閉じつつある要素をマウントしたままにします。Base UI も同様に要素のアニメーションを待ちます。終了アニメーションがないと、要素はすぐに消えます。Base UI のコンポーネントは `data-state` の代わりに `[data-open]` と `[data-closed]` を選択します。
+
+キーフレーム名はコンポーネント固有にしてください。Master CSS はネイティブのキーフレームを書いたとおりに残し、名前を変更しません。
+
+---
+
+## shadcn CLI の出力をレビュー可能に保つ \{#keep-the-shadcn-cli-output-reviewable\}
+
+`npx shadcn add` は移行中も引き続き使えます。新しいコンポーネントを Tailwind 構文で書き出し、Tailwind のスタイルシートのパスを `components.json` から読みます。`tailwind.css` を `src/shadcn-tailwind.css` に向け、CLI が追加するテーマ変数が Tailwind のエントリーに入るようにします。既存の変数と同様に、それらを Master CSS のエントリーに移します。
+
+新しいコンポーネントは未変換のソースです。Tailwind がビルドし、変換済みのコンポーネントと並んで動作し続けます。変換済みのコンポーネントを再度追加すると、上書きを承認した場合にファイルが Tailwind 版に置き換わります。その変更を差分としてレビューし、意図した違いを移植して、変換を維持します。
+
+---
+
+## 検証して Tailwind を削除する \{#validate-and-remove-tailwind\}
+
+変換した各コンポーネントを、変換前のバージョンと比較します。
+
+- ライトとダークのテーマ、各派生形とサイズ、ホバー、focus-visible、無効、`aria-invalid` の状態を比較します。
+- キーボードとポインターでダイアログ、メニュー、ポップオーバーを開閉します。フォーカスが移動して戻ること、終了アニメーションが完了することを確認します。
+- 呼び出し側から `className` による調整を渡し、コンポーネントのほかの宣言が残ることを確認します。
+- 両者が生成するクラス名を使う要素は、ブラウザーの開発者ツールで計算値を確認します。
+
+最後のコンポーネントを変換したら、アプリのルートから Tailwind のインポートを削除し、続いて `src/shadcn-tailwind.css`、`@source not` のリスト、Tailwind のパッケージを削除します。`tw-animate-css`、`tailwind-merge`、`class-variance-authority` は、どのコンポーネントもインポートしなくなったら削除します。併用の手順で追加した `body` の継承ルールを削除し、Preflight がリセットを提供しなくなるため、ページを再確認します。残りの手順は [Tailwind を削除する](/guide/migration/tailwindcss#remove-tailwind)に従います。
+
+---
+
+## 関連資料 \{#useful-references\}
+
+- [Tailwind CSS からの移行](/guide/migration/tailwindcss)：ユーティリティ、派生形、テーマ値。
+- [カスケードレイヤー](/guide/cascade-layers)：コンポーネントの上書きを解決するレイヤー順。
+- [テーマトークン](/guide/theme)：`@theme` と `inline` 修飾子。
+- [スタイルの再利用](/guide/reusing-styles)：コンポーネントクラス、ユーティリティ、mixin の使い分け。
+- [コードの lint](/guide/code-linting)：`cn()`、`clsx()`、`cva()` 呼び出し内のクラスの検査。
+- shadcn/ui の[テーマ設定](https://ui.shadcn.com/docs/theming)と [`components.json`](https://ui.shadcn.com/docs/components-json)：このガイドで維持する変数と CLI 設定。

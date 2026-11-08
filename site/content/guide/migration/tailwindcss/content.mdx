@@ -34,7 +34,7 @@ Use the [shared migration workflow](/guide/migration#migration-strategy) for coe
 
 | Contract | What to preserve or replace |
 | --- | --- |
-| Compiler input | Keep Tailwind directives with Tailwind’s compiler; import ordinary generated CSS into the Master entry. |
+| Compiler input | Keep Tailwind directives with Tailwind’s compiler; load its ordinary generated CSS after the Master entry. |
 | Theme and variants | Resolve actual token values and conditions before choosing Master classes. |
 | Preflight, plugins and global CSS | Retain the rules that untouched screens still need. |
 | Class processing | Replace Tailwind-specific merging and fragment assembly with deliberate class maps. |
@@ -49,14 +49,21 @@ Avoid global search-and-replace. The two systems have different resets, scales, 
 ---
 
 ## Install Master CSS beside Tailwind \{#install-master-css-beside-tailwind\}
-Keep Tailwind’s compiler responsible for its own entry. Compile that entry to ordinary CSS, then load the result beside the Master CSS entry. Both systems use directive names such as `@theme`, `@utility` and `@apply` with different contracts; do not pass unprocessed Tailwind definitions through the Master CSS compiler.
+Keep Tailwind’s compiler responsible for its own entry. Compile that entry to ordinary CSS, then load the result after the Master CSS entry. Both systems use directive names such as `@theme`, `@utility` and `@apply` with different contracts; do not pass unprocessed Tailwind definitions through the Master CSS compiler.
 
 ```css name=app.css
-@import "./legacy-tailwind.generated.css";
+@layer properties, theme, base, defaults, components, utilities;
 @import "@master/css";
 ```
 
-Keep the existing Tailwind build producing `legacy-tailwind.generated.css` before this entry is compiled. Both systems can define the same class name; compare cascade layers, resets and overlapping names during coexistence.
+```ts name=main.ts
+import './app.css'
+import './legacy-tailwind.generated.css'
+```
+
+Keep the existing Tailwind build producing `legacy-tailwind.generated.css`. Declare the layer order first: Tailwind’s output declares `properties` and its own layers without `defaults`, and a layer that first appears in a later statement goes to the end of the order. Without the statement, `defaults` would outrank `utilities`.
+
+Both systems can generate a rule for the same class name, such as `text-sm`, in the `utilities` layer, and both define some of the same theme variables. Loading Tailwind’s output later keeps its rules and values in effect for unconverted markup. Compare resets and overlapping names during coexistence; [Migrating from shadcn/ui](/guide/migration/shadcn-ui#load-master-css-beside-the-shadcn-ui-build) shows how to list overlapping names and keep the document typography unchanged.
 
 For most integrations, no Master CSS source directive is needed here. The integration or CLI scanner discovers ordinary app files; add `@source` only for migrated markup outside that default scope.
 
@@ -457,7 +464,7 @@ After a batch passes checks, remove only the Tailwind utilities that are no long
 ## Remove Tailwind \{#remove-tailwind\}
 Remove Tailwind only after the converted paths build and visually match the intended design.
 
-1. Remove the generated Tailwind CSS import from the app entry, then retire its separate Tailwind build input.
+1. Remove the generated Tailwind CSS import from the app root, then retire its separate Tailwind build input.
 2. Remove Tailwind-specific `@theme`, `@utility`, `@custom-variant`, `@variant`, `@apply`, `@source inline()`, and `@plugin` usage that has been replaced.
 3. Remove Tailwind packages and PostCSS or Vite integration code when no stylesheet imports Tailwind.
 4. Run the full project validation suite.

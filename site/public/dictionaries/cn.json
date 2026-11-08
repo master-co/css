@@ -226,6 +226,7 @@
   "Development tools": "开发工具",
   "Getting Started": "快速开始",
   "Global and local selectors, shared tokens and class forwarding.": "全局与局部选择器、共享令牌和类转发。",
+  "Copied components, shared theme variables and layered overrides.": "复制到项目中的组件、共享主题变量和分层覆盖。",
   "Grid geometry, vendor cascade and JavaScript components.": "网格布局、第三方层叠和 JavaScript 组件。",
   "Server-rendered apps": "服务端渲染应用",
   "Styled wrappers, variants and runtime values.": "样式包装组件、变体与运行时值。",
@@ -479,5 +480,6 @@
   "Generate CSS from each rendered page’s HTML and deliver it with that page, with no runtime in the browser.": "从每个渲染完成页面的 HTML 生成 CSS，随该页面一起交付，浏览器中无需运行时。",
   "Choose static, prerender, or runtime delivery. Your classes stay the same.": "可选择静态、预渲染或运行时交付，类的写法保持不变。",
   "Set up with your AI agent": "用 AI 智能体设置",
-  "Copy setup prompt": "复制设置提示词"
+  "Copy setup prompt": "复制设置提示词",
+  "shadcn/ui": "shadcn/ui"
 }

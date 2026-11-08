@@ -25,7 +25,7 @@ Tailwind CSS v4 與 Master CSS 都會從 class 名稱與 CSS 指令生成 CSS，
 
 | 契約 | 應保留或替換的部分 |
 | --- | --- |
-| 編譯器輸入 | Tailwind 指令交由 Tailwind 編譯器處理；將生成的一般 CSS 匯入 Master 進入點。 |
+| 編譯器輸入 | Tailwind 指令交由 Tailwind 編譯器處理；在 Master 進入點之後載入它生成的一般 CSS。 |
 | 主題與變體 | 選擇 Master class 前，先解析實際 token 值與條件。 |
 | Preflight、外掛與全域 CSS | 保留未轉換畫面仍需要的規則。 |
 | class 處理 | 將 Tailwind 專用合併與片段組合，改為明確的 class 對照表。 |
@@ -40,14 +40,21 @@ Tailwind CSS v4 與 Master CSS 都會從 class 名稱與 CSS 指令生成 CSS，
 ---
 
 ## 在 Tailwind 旁安裝 Master CSS \{#install-master-css-beside-tailwind\}
-Tailwind 進入點繼續由 Tailwind 編譯器負責。先將它編譯成一般 CSS，再與 Master CSS 進入點一同載入。兩者都使用 `@theme`、`@utility` 與 `@apply` 等名稱，但契約不同；不要將未處理的 Tailwind 定義交給 Master CSS 編譯器。
+Tailwind 進入點繼續由 Tailwind 編譯器負責。先將它編譯成一般 CSS，再於 Master CSS 進入點之後載入結果。兩者都使用 `@theme`、`@utility` 與 `@apply` 等名稱，但契約不同；不要將未處理的 Tailwind 定義交給 Master CSS 編譯器。
 
 ```css name=app.css
-@import "./legacy-tailwind.generated.css";
+@layer properties, theme, base, defaults, components, utilities;
 @import "@master/css";
 ```
 
-在此進入點編譯前，確保既有 Tailwind 建置先產生 `legacy-tailwind.generated.css`。兩個系統可能定義相同 class 名稱；並存期間請比較串接層、重設樣式與重疊名稱。
+```ts name=main.ts
+import './app.css'
+import './legacy-tailwind.generated.css'
+```
+
+讓既有 Tailwind 建置繼續產生 `legacy-tailwind.generated.css`。先宣告串接層順序：Tailwind 的輸出會宣告 `properties` 與它自己的串接層，但不含 `defaults`；在較後的陳述式中才首次出現的串接層，會排到順序的最後。少了這條陳述式，`defaults` 會優先於 `utilities`。
+
+兩個系統都可能在 `utilities` 層為同一個 class 名稱生成規則，例如 `text-sm`，也都定義了部分相同的主題變數。較晚載入 Tailwind 的輸出，可讓它的規則與值對未轉換的標記維持有效。並存期間請比較重設樣式與重疊名稱；[從 shadcn/ui 遷移](/guide/migration/shadcn-ui#load-master-css-beside-the-shadcn-ui-build)說明如何列出重疊名稱，並維持文件的文字排版不變。
 
 多數整合在此不需要 Master CSS 來源指令。整合或 CLI 掃描器會探索一般應用程式檔案；只有遷移標記在預設範圍外時，才新增 `@source`。
 
@@ -448,7 +455,7 @@ Tailwind `@source inline()` 可從內嵌字串與大括號展開生成 class。M
 ## 移除 Tailwind \{#remove-tailwind\}
 只有轉換後路徑建置成功、視覺也符合設計後，才移除 Tailwind。
 
-1. 從應用程式進入點移除生成的 Tailwind CSS 匯入，再停用獨立 Tailwind 建置輸入。
+1. 從應用程式根模組移除生成的 Tailwind CSS 匯入，再停用獨立 Tailwind 建置輸入。
 2. 移除已被取代的 Tailwind 專用 `@theme`、`@utility`、`@custom-variant`、`@variant`、`@apply`、`@source inline()` 與 `@plugin` 用法。
 3. 所有樣式表都不再匯入 Tailwind 後，移除 Tailwind 套件與 PostCSS 或 Vite 整合程式碼。
 4. 執行專案完整驗證。

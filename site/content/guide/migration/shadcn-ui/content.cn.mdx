@@ -1,0 +1,396 @@
+---
+title: "从 shadcn/ui 迁移"
+description: "将 shadcn/ui 组件迁移到 Master CSS：原语继续负责行为，主题变量保持共享，调用方的覆盖由层叠层解析。"
+figures: {"ShadcnIllustration": {"title": "让层决定覆盖", "alt": "转换后的 Button 渲染 data-slot=\"button\"，并接收调用方的 px-lg 类。data-slot 属性选中 components 层中设置 padding-inline: 1rem 的规则；px-lg 在 utilities 层生成设置 padding-inline: 1.5rem 的规则。两条规则都匹配，utilities 层的规则胜出。", "caption": "两条规则都保留在样式表中，也都匹配该按钮。层顺序中 utilities 位于 components 之后，因此无需移除组件的类，调用方的内边距即可生效。", "description": [{"title": "组件默认值", "text": "Button 自身的样式在 @layer components 中选中 [data-slot=button]，并设置 padding-inline: 1rem。"}, {"title": "调用方调整", "text": "调用方通过 className 传入 px-lg。Master CSS 在 @layer utilities 中生成它，值为 padding-inline: 1.5rem。"}, {"title": "层顺序", "text": "utilities 位于 components 之后，因此根字号为 16px 时，按钮的计算值为 24px。类字符串中没有任何类被移除。"}]}}
+---
+import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
+import ShadcnIllustration from './components/ShadcnIllustration.astro'
+
+shadcn/ui 会将组件源码复制到项目中。每个组件都结合了 Tailwind CSS 类、`cva` 变体、基于 `tailwind-merge` 的 `cn()` 辅助函数、`:root` 和 `.dark` 中的主题变量，以及来自 Radix UI、Base UI 或 React Aria 的原语。Master CSS 可以接管样式，而原语继续负责焦点管理、键盘处理、ARIA 属性和状态。
+
+Master CSS 不读取 Tailwind 类语法，因此组件需要改写，而不是原样复用。尚未转换的组件继续由 Tailwind 构建；每次转换一个组件，转换完最后一个后再移除 Tailwind。本指南介绍 shadcn/ui 特有的部分；工具类、变体和主题值的一般迁移方法见[从 Tailwind CSS 迁移](/guide/migration/tailwindcss)。
+
+---
+
+## 迁移策略 \{#migration-strategy\}
+
+按照[共用迁移流程](/guide/migration#migration-strategy)处理基线、分批和移除检查。shadcn/ui 组件包含以下部分：
+
+<DocumentComparison>
+
+| 部分 | 迁移或保留 |
+| --- | --- |
+| Radix UI、Base UI 或 React Aria 原语 | 保留。它负责焦点、键盘行为、ARIA，以及样式所选中的状态属性。 |
+| `:root` 和 `.dark` 中的主题变量 | 保留这些变量，并用 `@theme inline` 将其映射为 Master CSS 令牌。 |
+| `cva` 基础类和变体 | 移入 `@layer components`，通过组件的 `data-*` 属性选中。 |
+| `cn()` 和 `tailwind-merge` | 由层叠层解析调用方的覆盖；`cn()` 不再需要移除类。 |
+| `tw-animate-css` 类 | 替换为按原语打开和关闭状态选中的原生关键帧。 |
+| shadcn CLI 添加的组件 | 在转换之前，将新输出视为未转换的 Tailwind 源码。 |
+
+</DocumentComparison>
+
+Button 适合作为第一个组件。它的变体、尺寸和状态涵盖了其他组件中的大部分模式，而且其他组件也会复用它。
+
+---
+
+## 在 shadcn/ui 构建旁加载 Master CSS \{#load-master-css-beside-the-shadcn-ui-build\}
+
+保留 shadcn/ui 样式表作为 Tailwind 的入口，并将其构建为普通 CSS。Master CSS 不应编译 `@theme`、`@custom-variant` 或 `@apply` 等 Tailwind 指令；两个系统都使用其中部分名称，但契约不同。
+
+将每个已转换的组件排除在 Tailwind 的扫描范围之外：
+
+```css name=src/shadcn-tailwind.css
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@source not "./components/ui/button.tsx";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  /* …the rest of the shadcn/ui color and radius mappings */
+}
+```
+
+创建 Master CSS 入口，并在其他所有内容之前声明层顺序：
+
+```css name=src/app.css
+@layer properties, theme, base, defaults, components, utilities;
+@import "@master/css";
+@import "./components/ui/button.css";
+```
+
+这条语句必须放在最前面。Tailwind 的输出会声明 `properties` 以及 `theme, base, components, utilities`，但不含 `defaults`。在后续语句中才首次出现的层会排到顺序末尾。没有这条语句，`defaults` 的优先级会高于 `utilities`，Tailwind 为旧版 Safari 和 Firefox 提供的 `properties` 回退方案也会如此。
+
+在 Master CSS 入口之后，从应用根模块导入 Tailwind 的输出：
+
+```tsx name=src/main.tsx
+import './app.css'
+import './shadcn-tailwind.generated.css'
+```
+
+Master CSS 会扫描所有应用文件，包括未转换的组件。只要识别出 Tailwind 类名，如 `text-sm`、`shadow-xs` 或 `inline-flex`，它就会在同一个 `utilities` 层中为该名称生成自己的规则。两个系统还定义了部分相同的主题变量，如 `--text-sm--line-height`。后加载 Tailwind 的输出会让 Tailwind 的规则和变量优先，因此未转换的组件保持原有外观。在移除 Tailwind 之前，使用其中某个名称的已转换元素也会得到 Tailwind 的值。要列出 Master CSS 在某个组件中识别出的名称，运行 `npx master-css inspect src/components/ui/card.tsx` 并查看 `scanner.classes.valid`。
+
+最后，比较 Master CSS 基础样式与 Tailwind 的 Preflight。Master CSS 在 `body` 上设置 `font-family` 和 `line-height: 1.2`，而 Preflight 在 `html` 上设置字体和 `line-height: 1.5`。两者同时加载时，若要保持现有的文档排版，让 `body` 继承这些值：
+
+```css name=src/app.css
+@layer defaults {
+  body {
+    font-family: inherit;
+    line-height: inherit;
+  }
+}
+```
+
+移除 Tailwind 时删除这条规则，并有意识地确定文档排版。
+
+---
+
+## 映射主题变量 \{#map-the-theme-variables\}
+
+将 shadcn/ui 样式表中的 `:root` 和 `.dark` 块原样移入 Master CSS 入口。这样两个编译器读取的是同一组变量。再用 shadcn/ui 提供给 Tailwind 的同一个 `@theme inline` 块，将它们映射为 Master CSS 令牌：
+
+```css name=src/app.css
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+}
+```
+
+现在，`bg-primary`、`fg-primary-foreground`、`b-input` 和 `r-md` 等类会生成 `var(--primary)`、`var(--primary-foreground)`、`var(--input)` 和 `calc(var(--radius) * 0.8)`。颜色不透明度照常可用：`bg-primary/.9` 会将该变量与透明色混合。
+
+保留 `inline` 修饰符。没有它，Master CSS 会在 `:root` 上定义 `--color-primary: var(--primary)`，浏览器在那里只解析一次 `var(--primary)`。这样一来，嵌套元素上的 `.dark` 类会改变 `--primary`，却不会改变 `--color-primary`。内联令牌会将 `var(--primary)` 放入每条声明，因此最近的 `.dark` 祖先会生效。
+
+示例中的圆角令牌会替换预设的 `sm`、`md` 和 `lg` 圆角。其余 shadcn/ui 变量，如 `card`、`popover`、`muted`、`chart-*` 和 `sidebar-*`，也按相同方式映射。shadcn/ui 的 `@layer base` 规则同样以原生 CSS 的形式移入 Master CSS 入口：
+
+```css name=src/app.css
+@layer defaults {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+```
+
+---
+
+## 将组件默认样式移入 `@layer components` \{#move-component-defaults-into-layer-components\}
+
+shadcn/ui 组件允许调用方进行调整：`<Button className="px-6">` 将 `px-6` 传给 `cn()`，`tailwind-merge` 再从字符串中移除 Button 自身的 `px-4`。Master CSS 不合并类字符串，请改为将组件自身的样式放入 `@layer components`。调用方的工具类在 `@layer utilities` 中生成，该层在层顺序中位于其后，因此无需移除任何内容即可生效。
+
+<ShadcnIllustration />
+
+Radix UI 版 Button 已经渲染 `data-slot`、`data-variant` 和 `data-size`。在组件旁的原生样式表中选中这些属性。以下规则重现了 Button 的基础样式、默认尺寸，以及 `default` 和 `outline` 变体：
+
+```css name=src/components/ui/button.css
+@layer components {
+  [data-slot="button"] {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: calc(var(--radius) * 0.8);
+    font-size: 0.875rem;
+    line-height: calc(1.25 / 0.875);
+    font-weight: 500;
+    white-space: nowrap;
+    outline: none;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:focus-visible {
+      border-color: var(--ring);
+      outline: 3px solid color-mix(in oklab, var(--ring) 50%, transparent);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--destructive);
+      outline-color: color-mix(in oklab, var(--destructive) 20%, transparent);
+
+      .dark & {
+        outline-color: color-mix(in oklab, var(--destructive) 40%, transparent);
+      }
+    }
+
+    &:disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+  }
+
+  [data-slot="button"][data-size="default"] {
+    height: 2.25rem;
+    padding: 0.5rem 1rem;
+
+    &:has(> svg) {
+      padding-inline: 0.75rem;
+    }
+  }
+
+  [data-slot="button"][data-variant="default"] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in oklab, var(--primary) 90%, transparent);
+      }
+    }
+  }
+
+  [data-slot="button"][data-variant="outline"] {
+    border-width: 1px;
+    border-style: solid;
+    background-color: var(--background);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+
+    .dark & {
+      border-color: var(--input);
+      background-color: color-mix(in oklab, var(--input) 30%, transparent);
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: color-mix(in oklab, var(--input) 50%, transparent);
+        }
+      }
+    }
+  }
+}
+```
+
+其他尺寸和变体遵循相同模式。outline 变体只设置边框宽度和样式；边框颜色来自 `defaults` 中的 `*` 规则，因此焦点和 `aria-invalid` 的颜色可以替换它。焦点环使用 `outline`，而不是 Tailwind 基于 `box-shadow` 的 ring，因此无需与变体的阴影组合。
+
+组件不再需要 `cva` 或 `cn()`。它渲染自身的属性，并将 `className` 与其他 props 一起透传：
+
+```tsx name=src/components/ui/button.tsx
+import * as React from 'react'
+import { Slot } from 'radix-ui'
+
+type ButtonProps = React.ComponentProps<'button'> & {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  size?: 'default' | 'xs' | 'sm' | 'lg' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-lg'
+  asChild?: boolean
+}
+
+export function Button({ variant = 'default', size = 'default', asChild = false, ...props }: ButtonProps) {
+  const Comp = asChild ? Slot.Root : 'button'
+  return <Comp data-slot="button" data-variant={variant} data-size={size} {...props} />
+}
+```
+
+调用方用 Master CSS 类调整 Button，顺序不限：
+
+```tsx
+<Button variant="outline" className="px-lg r-lg">
+  Edit profile
+</Button>
+```
+
+`px-lg` 和 `r-lg` 会覆盖组件的内边距和圆角；变体的边框和颜色保持不变。调用方无法通过省略某个类来移除组件声明；若某种替代形式需要移除或重置组件样式，请为组件提供相应的变体、尺寸或属性。
+
+有些组件只渲染 `data-slot`。例如，Base UI 版 Button 不会渲染其变体。请添加样式所需的属性；组件源码归你所有，可以自行修改。另一些组件调用 `buttonVariants()`，将链接或触发器设置为按钮样式。请改为在这些元素上渲染 `data-slot="button"` 以及对应的 `data-variant` 和 `data-size`。
+
+组件仍需拼接条件类时，`cn()` 可以保留为普通的 `clsx` 调用。代码检查和语言服务默认会检查 `cn()` 调用中的类。
+
+---
+
+## 转换 shadcn/ui 变体 \{#translate-shadcn-ui-variants\}
+
+在组件样式表中，将 shadcn/ui 变体写成原生选择器或条件。在标记中，使用对应的 Master CSS 后缀。选择器一列展示组件 CSS；类一列展示同一意图在标记中的写法。
+
+| shadcn/ui 模式 | 组件 CSS | Master CSS 类 |
+| --- | --- | --- |
+| `data-[state=open]:bg-accent` | `&[data-state="open"]` | `bg-accent[data-state=open]` |
+| `data-open:bg-accent`（Base UI） | `&[data-open]` | `bg-accent[data-open]` |
+| `aria-invalid:border-destructive` | `&[aria-invalid="true"]` | `b-destructive[aria-invalid=true]` |
+| `has-[>svg]:px-3` | `&:has(> svg)` | `(padding-inline:.75rem):has(>svg)` |
+| `[&_svg]:pointer-events-none` | `& svg` | `(pointer-events:none)_svg` |
+| `*:[a]:underline` | `& > a` | `underline>a` |
+| `hover:bg-primary/90` | `@media (hover: hover) { &:hover }` | `bg-primary/.9:hover@media(hover:hover)` |
+| `focus-visible:ring-[3px] ring-ring/50` | `&:focus-visible` 配合 `outline` | `outline(3):focus-visible outline-solid:focus-visible outline-ring/.5:focus-visible` |
+| `dark:bg-input/30` | `.dark &` | `bg-input/.3@apply(--manual-dark)` |
+| `group-data-[collapsible=icon]:hidden` | `[data-collapsible="icon"] &` | `hidden@apply(--sidebar-icon)` |
+| `sm:max-w-lg` | `@media (width >= 40rem)` | `(max-width:32rem)@tailwind-sm` |
+| `size-4` | `width: 1rem; height: 1rem` | `w(16) h(16)` |
+
+`@apply(...)` 和 `@tailwind-sm` 后缀需要在 Master CSS 入口中定义：
+
+```css name=src/app.css
+@mixin --manual-dark { &:where(.dark, .dark *) { @contents; } }
+@mixin --sidebar-icon { [data-collapsible="icon"] & { @contents; } }
+@custom-media --tailwind-sm (width >= 40rem);
+```
+
+Tailwind 的 `sm` 从 40rem 开始；Master CSS 预设的 `@sm` 从另一个宽度开始。请用具名条件保留原阈值。Master CSS 没有 `group-*` 或 `peer-*` 变体：`--sidebar-icon` 这类选择器混入直接检测祖先的属性，无需 `group` 类。
+
+---
+
+## 替换 tw-animate-css 动画 \{#replace-tw-animate-css-animations\}
+
+对话框、弹出层、菜单和侧边面板通过 `data-[state=open]:animate-in`、`data-[state=closed]:zoom-out-95` 等 `tw-animate-css` 类实现动画。请将它们替换为按相同状态属性选中的原生关键帧：
+
+```css name=src/components/ui/dialog.css
+@keyframes dialog-overlay-in { from { opacity: 0; } }
+@keyframes dialog-overlay-out { to { opacity: 0; } }
+@keyframes dialog-content-in { from { opacity: 0; scale: 0.95; } }
+@keyframes dialog-content-out { to { opacity: 0; scale: 0.95; } }
+
+@layer components {
+  [data-slot="dialog-overlay"] {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background-color: rgb(0 0 0 / 0.5);
+
+    &[data-state="open"] { animation: dialog-overlay-in 150ms; }
+    &[data-state="closed"] { animation: dialog-overlay-out 150ms; }
+  }
+
+  [data-slot="dialog-content"] {
+    &[data-state="open"] { animation: dialog-content-in 200ms; }
+    &[data-state="closed"] { animation: dialog-content-out 200ms; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot="dialog-overlay"],
+    [data-slot="dialog-content"] {
+      animation-duration: 1ms;
+    }
+  }
+}
+```
+
+关闭动画是行为的一部分。Radix UI 会让正在关闭的元素保持挂载，直到 `data-state="closed"` 启动的动画结束；Base UI 也以同样的方式等待元素的动画。没有退出动画时，元素会立即消失。Base UI 组件选中的是 `[data-open]` 和 `[data-closed]`，而不是 `data-state`。
+
+关键帧名称应专属于所在组件：Master CSS 会按原样保留原生关键帧，不会重命名。
+
+---
+
+## 让 shadcn CLI 输出便于审查 \{#keep-the-shadcn-cli-output-reviewable\}
+
+迁移期间，`npx shadcn add` 仍可正常使用。它以 Tailwind 语法写入新组件，并从 `components.json` 读取 Tailwind 样式表的路径。将 `tailwind.css` 指向 `src/shadcn-tailwind.css`，让 CLI 添加的主题变量进入 Tailwind 的入口；再像处理现有变量一样，将它们移到 Master CSS 入口。
+
+新组件属于未转换的源码：由 Tailwind 构建，并能与已转换的组件并存运行。再次添加已转换过的组件时，如果接受覆盖，你的文件会被替换为 Tailwind 版本。请以 diff 形式审查该变更，移植预期的差异，并保留你的转换结果。
+
+---
+
+## 验证并移除 Tailwind \{#validate-and-remove-tailwind\}
+
+将每个转换后的组件与起始版本进行对照检查：
+
+- 比较明暗主题、每个变体和尺寸，以及悬停、focus-visible、禁用和 `aria-invalid` 状态。
+- 用键盘和指针打开、关闭对话框、菜单和弹出层。确认焦点会移入并返回，且退出动画能够播放完成。
+- 从调用方传入 `className` 调整，确认组件的其他声明仍然保留。
+- 对于使用了两个系统都会生成的类名的元素，在浏览器 DevTools 中检查计算值。
+
+最后一个组件转换完成后，从应用根模块移除 Tailwind 导入，再移除 `src/shadcn-tailwind.css`、`@source not` 列表和 Tailwind 软件包。当没有组件再导入 `tw-animate-css`、`tailwind-merge` 和 `class-variance-authority` 时，将它们移除。删除共存步骤中的 `body` 继承规则，并重新检查页面，因为 Preflight 不再为页面提供重置。其余步骤请按照[删除 Tailwind](/guide/migration/tailwindcss#remove-tailwind)操作。
+
+---
+
+## 相关参考 \{#useful-references\}
+
+- [从 Tailwind CSS 迁移](/guide/migration/tailwindcss)：工具类、变体和主题值。
+- [层叠层](/guide/cascade-layers)：解析组件覆盖所依据的层顺序。
+- [主题令牌](/guide/theme)：`@theme` 和 `inline` 修饰符。
+- [复用样式](/guide/reusing-styles)：在组件类、工具类和混入之间做选择。
+- [代码检查](/guide/code-linting)：检查 `cn()`、`clsx()` 和 `cva()` 调用中的类。
+- shadcn/ui [主题](https://ui.shadcn.com/docs/theming)和 [`components.json`](https://ui.shadcn.com/docs/components-json)：本指南保留的变量和 CLI 配置。
