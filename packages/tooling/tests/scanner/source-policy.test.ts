@@ -43,3 +43,40 @@ test('workspace and nested ignores, explicit inputs and output boundaries use on
     expect(policy.accepts('src/a.ts')).toBe(false)
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
+
+test('the nearest repository owns ignores, and a worktree .git file is one', () => {
+  const root = mkdtempSync(join(tmpdir(), 'master-nested-source-policy-'))
+  try {
+    mkdirSync(join(root, '.git'))
+    writeFileSync(join(root, '.gitignore'), '/*\n')
+    const project = join(root, 'projects/app')
+    mkdirSync(join(project, 'src'), { recursive: true })
+    writeFileSync(join(project, '.git'), 'gitdir: ../../.git/worktrees/app\n')
+    writeFileSync(join(project, '.gitignore'), 'dist-local/\n')
+    const policy = new SourcePolicy(project)
+    expect(policy.root).toBe(project)
+    expect(policy.accepts('src/a.ts')).toBe(true)
+    expect(policy.accepts('dist-local/a.ts')).toBe(false)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
+test('a project inside a directory its repository ignores keeps its own sources', () => {
+  const root = mkdtempSync(join(tmpdir(), 'master-ignored-copy-source-policy-'))
+  try {
+    mkdirSync(join(root, '.git'))
+    writeFileSync(join(root, '.gitignore'), '.local/\n')
+    // A verification copy of a workspace, without Git metadata.
+    const copy = join(root, '.local/copy')
+    const project = join(copy, 'apps/web')
+    mkdirSync(join(project, 'src'), { recursive: true })
+    writeFileSync(join(copy, 'package.json'), JSON.stringify({ private: true, workspaces: ['apps/*'] }))
+    writeFileSync(join(copy, '.gitignore'), 'generated/\n')
+    const policy = new SourcePolicy(project)
+    expect(policy.root).toBe(copy)
+    expect(policy.accepts('src/a.svelte')).toBe(true)
+    expect(policy.accepts('generated/a.ts')).toBe(false)
+    // The same layout outside an ignored directory still shares the repository's ignores.
+    mkdirSync(join(root, 'apps/web'), { recursive: true })
+    expect(new SourcePolicy(join(root, 'apps/web')).root).toBe(root)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})

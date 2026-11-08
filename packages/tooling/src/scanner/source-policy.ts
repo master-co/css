@@ -21,18 +21,36 @@ function isWorkspace(directory: string) {
   } catch { return false }
 }
 
-/** Shared Node input boundary. No global Git configuration or ignore file is read. */
+/**
+ * Shared Node input boundary. No global Git configuration or ignore file is read.
+ *
+ * Ignore files apply from the nearest repository (`.git`, a directory or a worktree
+ * file) or, without one, the outermost workspace root. A project its repository
+ * ignores, such as a verification copy in an ignored directory or a checkout under a
+ * home-directory repository that ignores everything, is its own root.
+ */
 export class SourcePolicy {
   readonly dependencies = new Set<string>()
   readonly root: string
   private readonly cache = new Map<string, { identity: string, matcher: Ignore }>()
   constructor(readonly projectDir: string, readonly options: SourcePolicyOptions = {}) {
-    this.root = resolve(projectDir)
-    for (let directory = resolve(projectDir); ; directory = dirname(directory)) {
-      if (existsSync(resolve(directory, '.git')) || isWorkspace(directory)) this.root = directory
+    const project = resolve(projectDir)
+    const workspaces: string[] = []
+    let repository: string | undefined
+    for (let directory = project; ; directory = dirname(directory)) {
+      if (existsSync(resolve(directory, '.git'))) { repository = directory; break }
+      if (isWorkspace(directory)) workspaces.push(directory)
       const parent = dirname(directory)
       if (parent === directory) break
     }
+    let root = repository ?? workspaces.at(-1) ?? project
+    if (root !== project && this.ignored(root, project, true)) {
+      // The repository excludes the project: use the outermost workspace whose own
+      // ignore files keep it, or the project itself.
+      const outer = root
+      root = workspaces.findLast(workspace => workspace !== outer && !this.ignored(workspace, project, true)) ?? project
+    }
+    this.root = root
   }
 
   accepts(source: string, explicit = false): boolean {
@@ -44,16 +62,21 @@ export class SourcePolicy {
     if (this.options.exclude?.some(matches)) return false
     if (explicit) return true
     if (automaticExcludes.some(matches)) return false
+    return !this.ignored(this.root, file, false)
+  }
+
+  /** Whether the ignore files from `root` down to `target` exclude it or a directory above it. */
+  private ignored(root: string, target: string, isDirectory: boolean): boolean {
     const directories: string[] = []
-    for (let directory = dirname(file); inside(this.root, directory); directory = dirname(directory)) {
+    for (let directory = isDirectory ? target : dirname(target); inside(root, directory); directory = dirname(directory)) {
       directories.unshift(directory)
-      if (directory === this.root) break
+      if (directory === root) break
     }
     const rules: { directory: string, matcher: Ignore }[] = []
-    const ignored = (target: string, directory: boolean) => {
+    const ignored = (path: string, directory: boolean) => {
       let result = false
       for (const rule of rules) {
-        const name = posix(relative(rule.directory, target)) + (directory ? '/' : '')
+        const name = posix(relative(rule.directory, path)) + (directory ? '/' : '')
         const match = rule.matcher.test(name)
         if (match.ignored) result = true
         if (match.unignored) result = false
@@ -61,7 +84,8 @@ export class SourcePolicy {
       return result
     }
     for (const directory of directories) {
-      if (directory !== this.root && ignored(directory, true)) return false
+      if (directory !== root && ignored(directory, true)) return true
+      if (isDirectory && directory === target) return false
       const filename = resolve(directory, '.gitignore')
       this.dependencies.add(filename)
       try {
@@ -78,6 +102,6 @@ export class SourcePolicy {
         this.cache.delete(filename)
       }
     }
-    return !ignored(file, false)
+    return !isDirectory && ignored(target, false)
   }
 }
