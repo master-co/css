@@ -118,11 +118,11 @@ Master CSS 색상 유틸리티와 매니페스트 색상은 VS Code 색상 장�
 {
   "masterCSS.classAttributes": ["ui"],
   "masterCSS.classDeclarations": ["classes", "styles"],
-  "masterCSS.classFunctions": ["cn"]
+  "masterCSS.classFunctions": ["cx"]
 }
 ```
 
-예를 들어 이제 `cn("p-card")`도 클래스 자동 완성을 받습니다. 언어 서비스 배열은 내장 클래스 소스를 **확장**하므로 `clsx`도 계속 작동합니다. ESLint 소스 설정은 기본값을 **대체**합니다. 프로젝트 규칙을 도입할 때는 두 도구를 모두 설정하세요.
+예를 들어 이제 `cx("p-card")`도 클래스 자동 완성을 받습니다. 언어 서비스 배열은 내장 클래스 소스를 **확장**하므로 `clsx`도 계속 작동합니다. ESLint 소스 설정은 기본값을 **대체**합니다. 프로젝트 규칙을 도입할 때는 두 도구를 모두 설정하세요.
 
 <DocumentDisclosure title="사용 가능한 VS Code 설정">
 
@@ -156,7 +156,7 @@ Master CSS 색상 유틸리티와 매니페스트 색상은 VS Code 색상 장�
 
 <DocumentOptionEntry name="masterCSS.classFunctions">
 
-기본값: `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+기본값: `clsx`, `cn`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
 
 문자열 인수에 클래스 문자열이 들어 있는 호출 대상입니다. `styled`는 `styled.button` 같은 멤버 형태도 지원합니다.
 

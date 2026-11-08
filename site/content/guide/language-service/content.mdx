@@ -112,11 +112,11 @@ Built-in sources include `class` and `className`, framework bindings, common hel
 {
   "masterCSS.classAttributes": ["ui"],
   "masterCSS.classDeclarations": ["classes", "styles"],
-  "masterCSS.classFunctions": ["cn"]
+  "masterCSS.classFunctions": ["cx"]
 }
 ```
 
-For example, `cn("p-card")` now receives class completion. Language-service arrays **extend** the built-in class sources, so `clsx` still works. ESLint source settings **replace** their defaults instead; configure both tools when introducing a project convention.
+For example, `cx("p-card")` now receives class completion. Language-service arrays **extend** the built-in class sources, so `clsx` still works. ESLint source settings **replace** their defaults instead; configure both tools when introducing a project convention.
 
 <DocumentDisclosure title="Available VS Code settings">
 
@@ -150,7 +150,7 @@ Bound attributes such as `:class`, `v-bind:class`, `[ngClass]` and `class:list`.
 
 <DocumentOptionEntry name="masterCSS.classFunctions">
 
-Default: `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+Default: `clsx`, `cn`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
 
 Callees whose string arguments contain class strings; `styled` also accepts member forms such as `styled.button`.
 

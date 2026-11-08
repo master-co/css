@@ -118,11 +118,11 @@ Master CSS の色ユーティリティとマニフェストの色は、VS Code �
 {
   "masterCSS.classAttributes": ["ui"],
   "masterCSS.classDeclarations": ["classes", "styles"],
-  "masterCSS.classFunctions": ["cn"]
+  "masterCSS.classFunctions": ["cx"]
 }
 ```
 
-たとえば `cn("p-card")` でも補完が使えます。言語サービスの配列は組み込みソースを**拡張**するので、`clsx` も使えます。一方、ESLint の設定は既定値を**置き換え**ます。独自の規約を加えたら両方を設定してください。
+たとえば `cx("p-card")` でも補完が使えます。言語サービスの配列は組み込みソースを**拡張**するので、`clsx` も使えます。一方、ESLint の設定は既定値を**置き換え**ます。独自の規約を加えたら両方を設定してください。
 
 <DocumentDisclosure title="利用できる VS Code 設定">
 
@@ -156,7 +156,7 @@ Master CSS の色ユーティリティとマニフェストの色は、VS Code �
 
 <DocumentOptionEntry name="masterCSS.classFunctions">
 
-既定値：`clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+既定値：`clsx`, `cn`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
 
 文字列引数がクラス文字列である呼び出し先。`styled` は `styled.button` などのメンバー形式にも対応します。
 

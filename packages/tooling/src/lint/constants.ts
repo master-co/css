@@ -2,6 +2,7 @@ export const defaultClassLintSettings = Object.freeze({
   classAttributes: Object.freeze(['class', 'className']),
   classFunctions: Object.freeze([
     'clsx',
+    'cn',
     'cva',
     'ctl',
     'cv',

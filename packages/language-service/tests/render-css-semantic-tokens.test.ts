@@ -294,6 +294,13 @@ test.concurrent('shares class position detection with semantic token spans', () 
   ])
 })
 
+test.concurrent('detects classes in the cn helper by default', () => {
+  const doc = createDoc('tsx', "const x = cn(\"fg-red\", props.className)")
+  const languageService = new CSSLanguageService()
+
+  expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual(['fg-red'])
+})
+
 test.concurrent('renders active semantic tokens for the class context at a position', () => {
   const content = "<div className=\"fg-red sr-only:hover\"></div>"
   const doc = createDoc('tsx', content)

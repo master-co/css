@@ -124,6 +124,7 @@ Default class binding and function detection:
   },
   "masterCSS.classFunctions": [
     "clsx",
+    "cn",
     "cva",
     "ctl",
     "cv",
@@ -169,7 +170,7 @@ Recognize project-specific class containers:
     "clsx",
     "cva",
     "tw",
-    "cn"
+    "cx"
   ]
 }
 ```

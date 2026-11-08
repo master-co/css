@@ -36,5 +36,10 @@ jsxTester.run('class matching react', rule, {
       errors: [{ messageId: 'invalidClass' },
 { messageId: 'invalidClass' }],
     },
+    {
+      code: 'const className = cn("(text-decoration:1)", props.className)',
+      errors: [{ messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }],
+    },
   ]
 })

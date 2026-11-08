@@ -161,6 +161,7 @@
           },
           "default": [
             "clsx",
+            "cn",
             "cva",
             "ctl",
             "cv",

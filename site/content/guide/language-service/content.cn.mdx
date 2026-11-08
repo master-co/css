@@ -118,11 +118,11 @@ Master CSS 颜色工具类与 manifest 颜色使用 VS Code 颜色装饰与取�
 {
   "masterCSS.classAttributes": ["ui"],
   "masterCSS.classDeclarations": ["classes", "styles"],
-  "masterCSS.classFunctions": ["cn"]
+  "masterCSS.classFunctions": ["cx"]
 }
 ```
 
-例如，现在 `cn("p-card")` 也会有 class 补全。语言服务数组会**扩展**内置 class 来源，因此 `clsx` 仍可使用。ESLint 来源设置则会**替换**默认值；引入项目约定时，请同时设置两项工具。
+例如，现在 `cx("p-card")` 也会有 class 补全。语言服务数组会**扩展**内置 class 来源，因此 `clsx` 仍可使用。ESLint 来源设置则会**替换**默认值；引入项目约定时，请同时设置两项工具。
 
 <DocumentDisclosure title="可用的 VS Code 设置">
 
@@ -156,7 +156,7 @@ Master CSS 颜色工具类与 manifest 颜色使用 VS Code 颜色装饰与取�
 
 <DocumentOptionEntry name="masterCSS.classFunctions">
 
-默认：`clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
+默认：`clsx`, `cn`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace`.
 
 字符串参数包含 class 字符串的被调用对象；`styled` 也支持 `styled.button` 这类成员形式。
 

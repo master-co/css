@@ -22,7 +22,7 @@ export const toolingOptions = {
     label: 'ESLint class source settings',
     options: [
       { name: 'classAttributes', defaultValue: 'class, className', description: 'Markup attributes containing class strings.' },
-      { name: 'classFunctions', defaultValue: 'clsx, cva, ctl, cv, class, classnames, classVariant, styled, classList.add/remove/toggle/replace', description: 'Class helper calls and tagged templates. The styled pattern also accepts member forms such as styled.button.' },
+      { name: 'classFunctions', defaultValue: 'clsx, cn, cva, ctl, cv, class, classnames, classVariant, styled, classList.add/remove/toggle/replace', description: 'Class helper calls and tagged templates. The styled pattern also accepts member forms such as styled.button.' },
       { name: 'classDeclarations', defaultValue: '[]', description: 'Additional variable or object-property names containing class strings.' },
       { name: 'ignoredKeys', defaultValue: 'compoundVariants, defaultVariants', description: 'Object keys skipped while visiting variant configuration objects.' }
     ]
@@ -41,7 +41,7 @@ export const toolingOptions = {
       { name: 'masterCSS.includedLanguages', description: 'Language IDs that receive the service’s features. Defaults include the web, framework, and content languages listed above.' },
       { name: 'masterCSS.classAttributes', defaultValue: 'class, className', description: 'Quoted markup attributes containing class lists.' },
       { name: 'masterCSS.classAttributeBindings', description: 'Defaults recognize JSX and template bindings, including :class, v-bind:class, [class], [className], [ngClass], and class:list.' },
-      { name: 'masterCSS.classFunctions', defaultValue: 'clsx, cva, ctl, cv, class, classnames, classVariant, styled, classList.add/remove/toggle/replace', description: 'Helpers and tagged templates whose strings contain classes, including styled member forms.' },
+      { name: 'masterCSS.classFunctions', defaultValue: 'clsx, cn, cva, ctl, cv, class, classnames, classVariant, styled, classList.add/remove/toggle/replace', description: 'Helpers and tagged templates whose strings contain classes, including styled member forms.' },
       { name: 'masterCSS.classDeclarations', defaultValue: '[]', description: 'Additional variable or property names containing class strings.' },
       { name: 'masterCSS.exclude', defaultValue: '**/.git/**, **/node_modules/**, **/.hg/**', description: 'Paths excluded from language-service features.' }
     ]
