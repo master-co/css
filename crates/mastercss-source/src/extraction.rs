@@ -37,15 +37,17 @@ fn extract(input: &SourceExtractionInputIr) -> SourceExtractionIr {
         output: &mut output,
         seen: HashSet::new(),
     };
+    let path = input.source.split('?').next().unwrap_or(&input.source);
+    let extension = Path::new(path)
+        .extension()
+        .and_then(|s| s.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    // Single-file components: script blocks are JavaScript, not template text.
+    let component =
+        input.kind == SourceExtractorKind::Auto && matches!(extension.as_str(), "svelte" | "vue");
     let kind = if input.kind == SourceExtractorKind::Auto {
-        let path = input.source.split('?').next().unwrap_or(&input.source);
-        match Path::new(path)
-            .extension()
-            .and_then(|s| s.to_str())
-            .unwrap_or_default()
-            .to_ascii_lowercase()
-            .as_str()
-        {
+        match extension.as_str() {
             "md" | "markdown" => SourceExtractorKind::Markdown,
             "mdx" => SourceExtractorKind::Mdx,
             "js" | "jsx" | "cjs" | "mjs" | "ts" | "tsx" | "cts" | "mts" => SourceExtractorKind::Oxc,
@@ -57,6 +59,7 @@ fn extract(input: &SourceExtractionInputIr) -> SourceExtractionIr {
         input.kind
     };
     let result = match kind {
+        _ if component => collector.component(&extension),
         SourceExtractorKind::Oxc => collector.javascript(&input.content, 0, 0, "javascript"),
         SourceExtractorKind::Html => collector.html(&input.content, 0),
         SourceExtractorKind::Markdown | SourceExtractorKind::Mdx => {
@@ -85,6 +88,55 @@ fn extract(input: &SourceExtractionInputIr) -> SourceExtractionIr {
 }
 
 impl Collector<'_> {
+    /// Svelte and Vue components: each JavaScript block through Oxc like a module,
+    /// styles skipped, and the template, whose syntax is not HTML, as text.
+    fn component(&mut self, extension: &str) -> ExtractionResult {
+        let input = self.input;
+        let content = input.content.as_str();
+        let mut cursor = 0;
+        for block in crate::component_blocks::blocks(content) {
+            self.template_text(cursor..block.range.start);
+            if let Some((body, language)) = block.script {
+                use crate::component_blocks::ScriptLanguage;
+                let source_type = match language {
+                    ScriptLanguage::JavaScript => SourceType::mjs(),
+                    ScriptLanguage::TypeScript => SourceType::ts(),
+                    ScriptLanguage::Jsx => SourceType::jsx(),
+                    ScriptLanguage::Tsx => SourceType::tsx(),
+                };
+                self.javascript_as(
+                    &content[body.clone()],
+                    body.start,
+                    0,
+                    if extension == "vue" {
+                        "vue-script"
+                    } else {
+                        "svelte-script"
+                    },
+                    Some(source_type),
+                )?;
+            }
+            cursor = block.range.end;
+        }
+        self.template_text(cursor..content.len());
+        Ok(())
+    }
+
+    fn template_text(&mut self, range: Range<usize>) {
+        if range.is_empty() {
+            return;
+        }
+        let input = self.input;
+        self.add(
+            &input.content[range.clone()],
+            range,
+            "raw",
+            "template",
+            true,
+            None,
+        );
+    }
+
     fn astro(&mut self) -> ExtractionResult {
         let input = self.input;
         let (frontmatter, markup) = extract_astro_frontmatter(&input.content);
@@ -223,8 +275,21 @@ impl Collector<'_> {
         prefix: usize,
         content_kind: &str,
     ) -> ExtractionResult {
+        self.javascript_as(source, offset, prefix, content_kind, None)
+    }
+
+    fn javascript_as(
+        &mut self,
+        source: &str,
+        offset: usize,
+        prefix: usize,
+        content_kind: &str,
+        source_type: Option<SourceType>,
+    ) -> ExtractionResult {
         let allocator = Allocator::default();
-        let source_type = if prefix == 0 && content_kind == "javascript" {
+        let source_type = if let Some(source_type) = source_type {
+            source_type
+        } else if prefix == 0 && content_kind == "javascript" {
             SourceType::from_path(&self.input.source).unwrap_or(SourceType::tsx())
         } else if content_kind == "astro-frontmatter" {
             SourceType::ts()
@@ -622,6 +687,72 @@ mod tests {
             .unwrap()
             .join()
             .unwrap();
+    }
+
+    #[test]
+    fn component_scripts_are_javascript_not_template_text() {
+        let svelte = r#"<script lang="ts">
+  const count = hidden.length, active = grid.current
+  const tone: string = open ? 'block' : 'inline'
+  const sum = a.block+b
+</script>
+<div class="hidden p-md">{count}</div>
+<style>.card > .title { color: red }</style>
+<script type="application/ld+json">{"@context": "https://schema.org"}</script>
+"#;
+        let result = extract("Card.svelte", svelte);
+        assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+        for candidate in ["block", "inline", "hidden", "p-md"] {
+            assert!(
+                result.candidates.iter().any(|c| c == candidate),
+                "{candidate}: {:?}",
+                result.candidates
+            );
+        }
+        for candidate in [
+            "hidden.length,",
+            "grid.current",
+            "a.block+b",
+            ".card",
+            "color:",
+        ] {
+            assert!(
+                !result.candidates.iter().any(|c| c == candidate),
+                "{candidate}: {:?}",
+                result.candidates
+            );
+        }
+        let block = result
+            .occurrences
+            .iter()
+            .find(|occurrence| occurrence.candidate == "block")
+            .unwrap();
+        assert_eq!(block.extractor, "oxc");
+        assert_eq!(
+            &svelte[block.range.start as usize..block.range.end as usize],
+            "block"
+        );
+
+        let vue = r#"<template>
+  <div class="flex" :class="{ active: isActive }"></div>
+</template>
+<script setup lang="ts">
+const props = defineProps<{ size: string }>()
+const width = grid.current + 'px'
+const tone = 'fg-red'
+</script>
+"#;
+        let result = extract("Card.vue", vue);
+        assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+        assert!(result.candidates.iter().any(|c| c == "flex"));
+        assert!(result.candidates.iter().any(|c| c == "fg-red"));
+        assert!(!result.candidates.iter().any(|c| c == "grid.current"));
+        assert!(!result.candidates.iter().any(|c| c == "defineProps<{"));
+
+        // An invalid script is a parse error, as for other JavaScript sources.
+        let result = extract("Broken.svelte", "<script>const x = 'p:1px' +</script>");
+        assert!(result.candidates.is_empty());
+        assert_eq!(result.diagnostics[0].code, ErrorCode::SourceParseError);
     }
 
     #[test]

@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod component_blocks;
 mod extraction;
 pub use extraction::{SourceOccurrenceIr, extract_source_result};
 mod html_attribute;
