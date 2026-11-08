@@ -5,11 +5,36 @@ export const promoVideo = {
   watchUrl: 'https://youtu.be/lQLEHN-AiBw'
 } as const
 
-/** The privacy-enhanced player starts playing as soon as a reader asks for it. */
-export function promoEmbedUrl({ autoplay = true }: { autoplay?: boolean } = {}) {
+export const promoPlayerOrigin = 'https://www.youtube-nocookie.com'
+
+/**
+ * The privacy-enhanced player starts playing as soon as a reader asks for it. With an `origin`, it also reports its
+ * state to that page through `postMessage`, without loading YouTube's IFrame API script.
+ */
+export function promoEmbedUrl({ autoplay = true, origin }: { autoplay?: boolean, origin?: string } = {}) {
   const params = new URLSearchParams({ rel: '0', playsinline: '1' })
   if (autoplay) params.set('autoplay', '1')
-  return `https://www.youtube-nocookie.com/embed/${promoVideo.id}?${params}`
+  if (origin) {
+    params.set('enablejsapi', '1')
+    params.set('origin', origin)
+  }
+  return `${promoPlayerOrigin}/embed/${promoVideo.id}?${params}`
+}
+
+/** YouTube's player state for a video that played to its end. */
+const endedState = 0
+
+/** Whether a message from the player says the video ended; it reports state changes and periodic info. */
+export function isPromoEndedMessage(data: unknown) {
+  let message: any
+  try {
+    message = typeof data === 'string' ? JSON.parse(data) : data
+  } catch {
+    return false
+  }
+  if (message?.event === 'onStateChange') return message.info === endedState
+  if (message?.event === 'infoDelivery') return message.info?.playerState === endedState
+  return false
 }
 
 /** A plain click plays here; a modified click keeps the link's own behavior, such as a new tab. */
