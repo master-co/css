@@ -55,6 +55,15 @@ export function validSelectorStructure(source: string) {
       if (tokens[index + 1]?.kind !== IDENT) return false
     } else if ('<;{}@'.includes(token.value)) {
       return false
+    } else if ('>+~'.includes(token.value)) {
+      // A combinator joins two compounds, so one must follow it: `&+` and `&>` are never selectors.
+      const next = tokens[index + 1]
+      if (!next || (next.kind === DELIM && ',)>+~'.includes(next.value))) return false
+    } else if (token.value === '*') {
+      // The universal selector starts a compound: `&*` is not one.
+      const previous = tokens[index - 1]
+      if (previous && previous.end === token.start && previous.kind !== FUNCTION
+        && !(previous.kind === DELIM && '(,>+~|'.includes(previous.value))) return false
     } else if (token.value === ':') {
       // A pseudo selector names an identifier or function: `:1|1|auto` never is one.
       const previous = tokens[index - 1]
@@ -152,7 +161,8 @@ function isDescendantUnderscore(source: string, tokens: ReturnType<typeof tokeni
 
 /** The template of a selector suffix, `&` before each top-level branch. */
 export function selectorTokenToTemplate(selectorToken: string) {
-  return splitTopLevel(replaceSelectorUnderscores(selectorToken), ',').map((group) => `&${group}`).join(',')
+  // An empty branch stays empty, so `a.b,` is an empty list item rather than the bare class.
+  return splitTopLevel(replaceSelectorUnderscores(selectorToken), ',').map((group) => trim(group) ? `&${group}` : '').join(',')
 }
 
 const STATE_PRIORITIES: Record<string, number> = { hover: 1, focus: 2, 'focus-visible': 2, active: 3, disabled: 4 }

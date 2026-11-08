@@ -382,3 +382,32 @@ fn mixin_numbers_are_checked_on_their_digits() {
     }
 }
 
+#[test]
+fn rejects_selector_suffixes_that_are_not_selectors() {
+    let manifest = r#"{"version":6,"languageVersion":18,"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"hidden","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"none"}]}]}]}"#;
+    // Code such as `hidden.length,`, `a.block+b` or `x.block*2` reads as a class to a
+    // text scanner. A trailing combinator, a universal selector inside a compound
+    // or an empty selector-list item is never a selector, so nothing is generated.
+    for class_name in [
+        "block+",
+        "block>",
+        "block~",
+        "block*",
+        "hidden.length,",
+        "hidden,.a",
+        "block:hover,",
+        "(display:block)+",
+    ] {
+        let mut engine = EngineSession::create(manifest).unwrap();
+        engine.ensure_class_rules([class_name]).unwrap();
+        assert_eq!(engine.css_text(), "", "{class_name}");
+    }
+    let mut engine = EngineSession::create(manifest).unwrap();
+    engine
+        .ensure_class_rules(["block+div", "block>*", "hidden.a,.b", "block_*"])
+        .unwrap();
+    assert_eq!(
+        engine.css_text(),
+        "@layer utilities{.block\\+div+div{display:block}.block\\>\\*>*{display:block}.block_\\* *{display:block}.hidden\\.a\\,\\.b.a,.hidden\\.a\\,\\.b.b{display:none}}"
+    );
+}

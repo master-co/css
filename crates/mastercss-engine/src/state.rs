@@ -361,9 +361,17 @@ pub(crate) fn replace_selector_underscores(source: &str) -> String {
 }
 
 pub(crate) fn suffix_to_template(suffix: &str) -> String {
+    // An empty branch stays empty, so `a.b,` is an empty list item rather than
+    // the bare class, and the structure check rejects it.
     split_top_level(suffix, ',')
         .into_iter()
-        .map(|group| concat_text!("&", group))
+        .map(|group| {
+            if group.trim().is_empty() {
+                String::new()
+            } else {
+                concat_text!("&", group)
+            }
+        })
         .collect::<Vec<_>>()
         .join(",")
 }

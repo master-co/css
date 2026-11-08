@@ -77,6 +77,28 @@ pub fn valid_selector_structure(source: &str) -> bool {
                 return false;
             }
             CssSyntaxKind::Delim('<' | ';' | '{' | '}' | '@') => return false,
+            // A combinator joins two compounds, so one must follow it: `&+` and
+            // `&>` are never selectors (`a.b+c` in code reads as a class).
+            CssSyntaxKind::Delim('>' | '+' | '~')
+                if matches!(
+                    tokens.get(index + 1).map(|token| &token.kind),
+                    None | Some(CssSyntaxKind::Delim(',' | ')' | '>' | '+' | '~'))
+                ) =>
+            {
+                return false;
+            }
+            // The universal selector starts a compound: `&*` is not one.
+            CssSyntaxKind::Delim('*')
+                if index > 0
+                    && tokens[index - 1].bytes.end == token.bytes.start
+                    && !matches!(
+                        tokens[index - 1].kind,
+                        CssSyntaxKind::Function(_)
+                            | CssSyntaxKind::Delim('(' | ',' | '>' | '+' | '~' | '|')
+                    ) =>
+            {
+                return false;
+            }
             // A pseudo-class or pseudo-element names an identifier or function, so
             // `:1|1|auto` is never a selector (it was a declaration value).
             CssSyntaxKind::Delim(':') => {
@@ -301,6 +323,39 @@ mod structure_tests {
             assert!(valid_selector_structure(selector), "{selector}");
         }
         for selector in ["&:1|1|auto", "&:", "&:::before", "&:'a'", "&:(x)"] {
+            assert!(!valid_selector_structure(selector), "{selector}");
+        }
+    }
+
+    #[test]
+    fn combinators_join_compounds_and_universal_starts_one() {
+        for selector in [
+            "&>*",
+            "& *",
+            "&+div",
+            "&~.a",
+            "&:has(>img)",
+            "&:has(+ .a)",
+            "&:nth-child(2n + 1)",
+            "&:is(*)",
+            "&,*",
+            "& *|a",
+            "&[a~=b]",
+            "&[a*=b]",
+        ] {
+            assert!(valid_selector_structure(selector), "{selector}");
+        }
+        for selector in [
+            "&+",
+            "&>",
+            "& ~",
+            "&*",
+            ".a*",
+            "&>,&",
+            "&:has(a>)",
+            "&>+a",
+            "&.a,",
+        ] {
             assert!(!valid_selector_structure(selector), "{selector}");
         }
     }
