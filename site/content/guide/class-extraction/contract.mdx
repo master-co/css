@@ -71,7 +71,7 @@ Automatic discovery respects project and ancestor workspace `.gitignore` files, 
 
 Use these exceptions for shared workspace source, external content or a scoped pruning root. Their relative-path rules and supported forms belong to [Scanning directives](/reference/directives/scanning).
 
-Framework integrations prefer original MDX, Vue and Svelte source to scanning compiled display strings a second time. Extraction reads the `<script>` blocks of Vue and Svelte component files as JavaScript, so only string and template literals there contribute candidates, as in other JavaScript sources; property access such as `items.length` is not a class. `<style>` blocks are not class sources. An extractor's language kind matters: intentional plain-text input can use `kind: 'raw'`, but that is not a fallback for a source that failed to parse.
+Framework integrations prefer original MDX, Vue and Svelte source to scanning compiled display strings a second time. Extraction reads the `<script>` blocks of Vue and Svelte component files as JavaScript, so only string and template literals there contribute candidates, as in other JavaScript sources; property access such as `items.length` is not a class. Only a component's own top-level `<script>` tags start a script block; `<script>` written in a template expression or attribute value is template text. A script block that does not parse as JavaScript or TypeScript is read as text instead, leaving the syntax error to the framework's compiler. `<style>` blocks are not class sources. An extractor's language kind matters: intentional plain-text input can use `kind: 'raw'`, but that is not a fallback for a source that failed to parse.
 
 ## Markdown and MDX \{#markdown-and-mdx\}
 

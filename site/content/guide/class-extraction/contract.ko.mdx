@@ -71,7 +71,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 이 예외는 공유 워크스페이스 소스, 외부 콘텐츠, 범위가 지정된 가지치기 루트에 사용합니다. 상대 경로 규칙과 지원 형식은 [스캔 지시문](/reference/directives/scanning)을 참고하세요.
 
-프레임워크 통합은 컴파일된 표시 문자열을 다시 스캔하기보다 원본 MDX, Vue, Svelte 소스를 우선합니다. Vue와 Svelte 컴포넌트 파일의 `<script>` 블록은 JavaScript로 읽으므로, 다른 JavaScript 소스와 마찬가지로 문자열과 템플릿 리터럴만 후보를 제공합니다. `items.length` 같은 속성 접근은 클래스가 아닙니다. `<style>` 블록은 클래스 소스가 아닙니다. 추출기의 언어 종류는 중요합니다. 의도적인 일반 텍스트 입력에는 `kind: 'raw'`를 사용할 수 있지만 파싱에 실패한 소스의 폴백으로 사용해서는 안 됩니다.
+프레임워크 통합은 컴파일된 표시 문자열을 다시 스캔하기보다 원본 MDX, Vue, Svelte 소스를 우선합니다. Vue와 Svelte 컴포넌트 파일의 `<script>` 블록은 JavaScript로 읽으므로, 다른 JavaScript 소스와 마찬가지로 문자열과 템플릿 리터럴만 후보를 제공합니다. `items.length` 같은 속성 접근은 클래스가 아닙니다. script 블록을 시작하는 것은 컴포넌트 자체의 최상위 `<script>` 태그뿐입니다. 템플릿 표현식이나 속성 값에 쓰인 `<script>`는 템플릿 텍스트입니다. JavaScript나 TypeScript로 파싱할 수 없는 script 블록은 대신 텍스트로 읽고, 구문 오류 보고는 프레임워크 컴파일러에 맡깁니다. `<style>` 블록은 클래스 소스가 아닙니다. 추출기의 언어 종류는 중요합니다. 의도적인 일반 텍스트 입력에는 `kind: 'raw'`를 사용할 수 있지만 파싱에 실패한 소스의 폴백으로 사용해서는 안 됩니다.
 
 ## Markdown과 MDX \{#markdown-and-mdx\}
 

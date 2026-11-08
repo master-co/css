@@ -71,7 +71,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 这些例外适用于共享工作区源文件、外部内容或限定范围的裁剪根目录。相对路径规则与支持的形式见[扫描指令](/reference/directives/scanning)。
 
-框架集成优先使用原始 MDX、Vue 和 Svelte 源文件，而不是再次扫描已编译的显示字符串。Vue 和 Svelte 组件文件的 `<script>` 块按 JavaScript 读取，因此与其他 JavaScript 源文件一样，只有字符串和模板字面量会提供候选项；`items.length` 这类属性访问不是类名。`<style>` 块不是类名来源。提取器的语言类型很重要：有意提供纯文本输入时可以使用 `kind: 'raw'`，但它不是源文件解析失败时的回退方案。
+框架集成优先使用原始 MDX、Vue 和 Svelte 源文件，而不是再次扫描已编译的显示字符串。Vue 和 Svelte 组件文件的 `<script>` 块按 JavaScript 读取，因此与其他 JavaScript 源文件一样，只有字符串和模板字面量会提供候选项；`items.length` 这类属性访问不是类名。只有组件自身顶层的 `<script>` 标签才会开启一个 script 块；写在模板表达式或属性值中的 `<script>` 是模板文本。无法按 JavaScript 或 TypeScript 解析的 script 块会改为按文本读取，语法错误交给框架的编译器报告。`<style>` 块不是类名来源。提取器的语言类型很重要：有意提供纯文本输入时可以使用 `kind: 'raw'`，但它不是源文件解析失败时的回退方案。
 
 ## Markdown 与 MDX \{#markdown-and-mdx\}
 

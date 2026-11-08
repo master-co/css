@@ -88,23 +88,29 @@ fn extract(input: &SourceExtractionInputIr) -> SourceExtractionIr {
 }
 
 impl Collector<'_> {
-    /// Svelte and Vue components: each JavaScript block through Oxc like a module,
-    /// styles skipped, and the template, whose syntax is not HTML, as text.
+    /// Svelte and Vue components: each JavaScript block through Oxc like a module (or as
+    /// text when it does not parse), styles skipped, and the template, whose syntax is not
+    /// HTML, as text.
     fn component(&mut self, extension: &str) -> ExtractionResult {
         let input = self.input;
         let content = input.content.as_str();
         let mut cursor = 0;
-        for block in crate::component_blocks::blocks(content) {
+        use crate::component_blocks::{ScriptLanguage, Template};
+        let template = if extension == "vue" {
+            Template::Vue
+        } else {
+            Template::Svelte
+        };
+        for block in crate::component_blocks::blocks(content, template) {
             self.template_text(cursor..block.range.start);
             if let Some((body, language)) = block.script {
-                use crate::component_blocks::ScriptLanguage;
                 let source_type = match language {
                     ScriptLanguage::JavaScript => SourceType::mjs(),
                     ScriptLanguage::TypeScript => SourceType::ts(),
                     ScriptLanguage::Jsx => SourceType::jsx(),
                     ScriptLanguage::Tsx => SourceType::tsx(),
                 };
-                self.javascript_as(
+                let parsed = self.javascript_as(
                     &content[body.clone()],
                     body.start,
                     0,
@@ -114,7 +120,13 @@ impl Collector<'_> {
                         "svelte-script"
                     },
                     Some(source_type),
-                )?;
+                );
+                // The framework compiler reports its own script errors. Read a script that
+                // does not parse as text, as before script blocks were parsed, instead of
+                // failing the build over a block this reader may have cut wrongly.
+                if parsed.is_err() {
+                    self.template_text(body);
+                }
             }
             cursor = block.range.end;
         }
@@ -749,10 +761,56 @@ const tone = 'fg-red'
         assert!(!result.candidates.iter().any(|c| c == "grid.current"));
         assert!(!result.candidates.iter().any(|c| c == "defineProps<{"));
 
-        // An invalid script is a parse error, as for other JavaScript sources.
+        // A script that does not parse is read as text; the framework reports the error.
         let result = extract("Broken.svelte", "<script>const x = 'p:1px' +</script>");
-        assert!(result.candidates.is_empty());
-        assert_eq!(result.diagnostics[0].code, ErrorCode::SourceParseError);
+        assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+        assert!(result.candidates.iter().any(|c| c == "p:1px"));
+    }
+
+    #[test]
+    fn component_script_tags_in_template_expressions_are_text() {
+        let svelte = r#"<script lang="ts">
+  const x = "a";
+</script>
+<div class="mb-lg">{@html '<script>' + x + '</scr' + 'ipt>'}</div>
+<p title="<script>" class="mt-xl">{`<script>${x}`}</p>
+<button onclick={() => count > 1 && go('<script>')} class="p-md">{x}</button>
+<!-- <script> -->
+<span class="hidden">好辦 { { a: '}', b: "中文" }.a } 中文</span>
+<script context="module">export const tone = 'fg-red'</script>
+"#;
+        let result = extract("Page.svelte", svelte);
+        assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+        for candidate in ["mb-lg", "mt-xl", "p-md", "hidden", "fg-red"] {
+            assert!(
+                result.candidates.iter().any(|c| c == candidate),
+                "{candidate}: {:?}",
+                result.candidates
+            );
+        }
+        let tone = result
+            .occurrences
+            .iter()
+            .find(|occurrence| occurrence.candidate == "fg-red")
+            .unwrap();
+        assert_eq!(tone.extractor, "oxc");
+
+        let vue = r#"<template>
+  <div class="mb-lg" :title="'<script>'">中文 {{ '<script>' + x }} 中文</div>
+</template>
+<script setup lang="ts">
+const tone = 'fg-red'
+</script>
+"#;
+        let result = extract("Card.vue", vue);
+        assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+        assert!(result.candidates.iter().any(|c| c == "mb-lg"));
+        let tone = result
+            .occurrences
+            .iter()
+            .find(|occurrence| occurrence.candidate == "fg-red")
+            .unwrap();
+        assert_eq!(tone.extractor, "oxc");
     }
 
     #[test]

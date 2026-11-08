@@ -71,7 +71,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 這些例外適用於共用工作區來源、外部內容，或指定範圍的修剪根目錄。相對路徑規則與支援形式請見[掃描指令](/reference/directives/scanning)。
 
-框架整合優先使用原始 MDX、Vue 與 Svelte 來源，不會再掃描一次已編譯的顯示字串。Vue 與 Svelte 元件檔的 `<script>` 區塊會當作 JavaScript 讀取，因此和其他 JavaScript 來源一樣，只有字串與樣板字面值會提供候選項；`items.length` 這類屬性存取不是 class。`<style>` 區塊不是 class 來源。擷取器的語言種類很重要：刻意提供純文字輸入時可以使用 `kind: 'raw'`，但它不是來源解析失敗時的備援方式。
+框架整合優先使用原始 MDX、Vue 與 Svelte 來源，不會再掃描一次已編譯的顯示字串。Vue 與 Svelte 元件檔的 `<script>` 區塊會當作 JavaScript 讀取，因此和其他 JavaScript 來源一樣，只有字串與樣板字面值會提供候選項；`items.length` 這類屬性存取不是 class。只有元件本身頂層的 `<script>` 標籤會開啟一個 script 區塊；寫在範本運算式或屬性值裡的 `<script>` 是範本文字。無法以 JavaScript 或 TypeScript 解析的 script 區塊會改以文字讀取，語法錯誤留給框架的編譯器回報。`<style>` 區塊不是 class 來源。擷取器的語言種類很重要：刻意提供純文字輸入時可以使用 `kind: 'raw'`，但它不是來源解析失敗時的備援方式。
 
 ## Markdown 與 MDX \{#markdown-and-mdx\}
 
