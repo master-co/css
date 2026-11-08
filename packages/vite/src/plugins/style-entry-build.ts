@@ -10,6 +10,7 @@ import { getScanner } from '../utils/scanner-context'
 import { removeGraphOnlyStylesheetEntries } from '../utils/build-import-resolver'
 import { prepareBuildStylesheet } from '../utils/build-stylesheet-delivery'
 import { clearLocalStylesheets, localStylesheets } from '../utils/local-stylesheet'
+import { createCSSFinalizer, type CSSFinalizer } from '../utils/finalize-css'
 
 function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
   let replaced = false
@@ -26,11 +27,37 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
   let renderedCSS: string | undefined
   let extracted: Awaited<ReturnType<typeof getExtractedCSSResult>> | undefined
   let compiler: ReturnType<typeof createCompilerSync> | undefined
+  let finalizer: CSSFinalizer | undefined
+  const finalized = new Map<string, string>()
+  const warnings = new Set<string>()
+  // Spliced CSS never passed through Vite's CSS pipeline; give it the same
+  // lowering and minification before any name is derived from its bytes.
+  const finalize = (css: string, filename: string) => {
+    if (!finalizer) return css
+    let result = finalized.get(css)
+    if (result === undefined) {
+      const output = finalizer(css, filename)
+      for (const warning of output.warnings) warnings.add(warning)
+      finalized.set(css, result = output.css)
+    }
+    return result
+  }
   const prepared = new Map<string, ReturnType<typeof prepareBuildStylesheet>>()
-  const prepare = (source: string) => {
+  const prepare = (source: string, filename: string) => {
     if (!compiler || !extracted) return
-    if (!prepared.has(source)) prepared.set(source, prepareBuildStylesheet(compiler, source, getScanner(context).slotCSSRule, extracted, [...localStylesheets(context).values()]))
+    if (!prepared.has(source)) {
+      const graph = prepareBuildStylesheet(compiler, source, getScanner(context).slotCSSRule, extracted, [...localStylesheets(context).values()])
+      prepared.set(source, graph && {
+        ...graph,
+        source: finalize(graph.source, filename),
+        assets: graph.assets.map(asset => ({ ...asset, css: finalize(asset.css, asset.href) }))
+      })
+    }
     return prepared.get(source)
+  }
+  const splice = (source: string, filename: string, realCSS: string) => {
+    const result = replaceSlotCSSRule(source, getScanner(context).slotCSSRule, realCSS)
+    return result.replaced ? { source: finalize(result.source, filename), replaced: true } : result
   }
   return {
     name: 'master-css:style-entry:build',
@@ -44,7 +71,10 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
       renderedCSS = extracted.css
       compiler?.dispose()
       compiler = extracted.stylesheets || localStylesheets(context).size ? createCompilerSync() : undefined
+      const config = this?.environment?.config ?? context.config
+      finalizer = config?.command === 'build' ? createCSSFinalizer(config) : undefined
       prepared.clear()
+      finalized.clear()
     },
     outputOptions(options) {
       const assetFileNames = options.assetFileNames
@@ -52,10 +82,11 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
         ...options,
         assetFileNames(asset) {
           const cssAsset = (asset.names ?? [asset.name]).some(name => name?.endsWith('.css'))
-          const graph = cssAsset && typeof asset.source === 'string' ? prepare(asset.source) : undefined
+          const filename = asset.names?.[0] ?? asset.name ?? 'style.css'
+          const graph = cssAsset && typeof asset.source === 'string' ? prepare(asset.source, filename) : undefined
           const result = graph ? { source: graph.source, replaced: true }
             : cssAsset && renderedCSS !== undefined && typeof asset.source === 'string' && !extracted?.stylesheets
-              ? replaceSlotCSSRule(asset.source, getScanner(context).slotCSSRule, renderedCSS)
+              ? splice(asset.source, filename, renderedCSS)
             : undefined
           const pattern = typeof assetFileNames === 'function'
             ? assetFileNames(result?.replaced ? { ...asset, source: result.source } : asset)
@@ -80,7 +111,7 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
         if (chunk.type === 'asset') {
           // @ts-expect-error rollup OutputAsset.source is string|Uint8Array
           const oldSource = String(bundle[eachCssFileName]['source'])
-          const graph = prepare(oldSource)
+          const graph = prepare(oldSource, eachCssFileName)
           if (graph) {
             chunk.source = graph.source
             replacedAny = true
@@ -99,7 +130,7 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
             continue
           }
           if (extracted?.stylesheets) continue
-          const result = replaceSlotCSSRule(oldSource, slotCSSRule, realCSS)
+          const result = splice(oldSource, eachCssFileName, realCSS)
           if (result.source !== oldSource) {
             // @ts-expect-error see above
             bundle[eachCssFileName]['source'] = result.source
@@ -109,6 +140,8 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
           }
         }
       }
+      for (const warning of warnings) this.warn(warning)
+      warnings.clear()
       // The placeholder was emitted by a managed CSS import but no CSS
       // chunk in the final bundle still contained it. A downstream CSS
       // plugin or minifier likely rewrote or dropped the internal slot.
@@ -123,7 +156,7 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
         )
       }
     },
-    closeBundle() { compiler?.dispose(); compiler = undefined; prepared.clear(); clearLocalStylesheets(context) },
-    renderError() { compiler?.dispose(); compiler = undefined; prepared.clear() }
+    closeBundle() { compiler?.dispose(); compiler = undefined; prepared.clear(); finalized.clear(); clearLocalStylesheets(context) },
+    renderError() { compiler?.dispose(); compiler = undefined; prepared.clear(); finalized.clear() }
   }
 }

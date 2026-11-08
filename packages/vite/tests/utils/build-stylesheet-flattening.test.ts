@@ -12,7 +12,7 @@ async function buildCSS(files: Record<string, string>) {
       mkdirSync(dirname(join(root, file)), { recursive: true })
       writeFileSync(join(root, file), source)
     }
-    const result = await build({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static' }), build: { write: false } })
+    const result = await build({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static' }), build: { write: false, cssMinify: false } })
     if (Array.isArray(result) || 'on' in result) throw new Error('Expected one build output')
     return new Map(result.output.filter(asset => asset.type === 'asset').map(asset => [asset.fileName, String(asset.source)]))
   } finally { rmSync(root, { recursive: true, force: true }) }
