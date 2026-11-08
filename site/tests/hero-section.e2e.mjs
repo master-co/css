@@ -163,7 +163,8 @@ async function geometry(section) {
     const actionStyle = getComputedStyle(element.querySelector('.home-action-primary'))
     return {
       overflow: document.documentElement.scrollWidth > innerWidth,
-      clipped: [...element.querySelectorAll('h1, p, a, .home-command-label, button, .home-command')].map(child => {
+      // Only what is laid out: the film dialog's close button has no box until the dialog opens.
+      clipped: [...element.querySelectorAll('h1, p, a, .home-command-label, button, .home-command')].filter(child => child.getClientRects().length).map(child => {
         const box = child.getBoundingClientRect()
         return { tag: child.tagName, className: child.className, left: box.left, right: box.right, scroll: child.scrollWidth, client: child.clientWidth }
       }).filter(child => child.left < left - 1 || child.right > right + 1 || child.scroll > child.client + 1),

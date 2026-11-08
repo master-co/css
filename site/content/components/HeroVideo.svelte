@@ -30,9 +30,9 @@
   }
 </script>
 
-<a class="home-command home-hero-video" href={promoVideo.watchUrl} onclick={show}>
-  <IconPlayerPlayFilled aria-hidden="true" class="home-command-icon" size={14} />
-  <span class="home-command-label">{t('Watch the film')}</span>
+<a class="home-hero-video" href={promoVideo.watchUrl} onclick={show}>
+  <span aria-hidden="true" class="home-hero-video-disc"><IconPlayerPlayFilled size={14} /></span>
+  {t('Watch the film')}
 </a>
 
 <dialog aria-label={promoVideo.title} bind:this={dialog} class="promo-dialog" onclick={dismiss} onclose={() => { open = false }}>
