@@ -262,3 +262,53 @@ fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
     let context = crate::manifest::reference_context(base.clone(), Some(&base));
     assert_eq!(context, base);
 }
+
+#[test]
+fn initial_removes_a_token_and_its_earlier_definitions() {
+    let source = "@theme{--color-brand:red;--color-muted:gray}@theme{--color-brand:initial}.page{color:var(--color-brand)}";
+    let (_, manifest) = compile(source);
+    let text = manifest.to_string();
+    assert!(!text.contains("color-brand"), "{text}");
+    assert!(!text.contains("initial"), "{text}");
+    let mut engine = EngineSession::create(&text).unwrap();
+    engine.ensure_class_rules(["bg-brand", "bg-muted"]).unwrap();
+    let css = engine.css_text();
+    assert!(!css.contains("--color-brand"), "{css}");
+    assert!(
+        css.contains(".bg-muted{background-color:var(--color-muted)}"),
+        "{css}"
+    );
+
+    // A later definition declares the name again.
+    let (_, manifest) =
+        compile("@theme{--color-brand:red}@theme{--color-brand:INITIAL}@theme{--color-brand:blue}");
+    assert_eq!(
+        manifest["variables"]["color"][0]["values"],
+        serde_json::json!([{"path":[":root,:host"],"value":"blue"}])
+    );
+    assert_eq!(
+        manifest["theme"],
+        serde_json::json!([{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"blue"}]}])
+    );
+}
+
+#[test]
+fn initial_removes_base_manifest_tokens() {
+    let base = compile("@theme{--duration-fast:150ms;--duration-slow:300ms}").1;
+    let result = compile_css_directives(
+        "@theme{--duration-fast:initial}.x{transition-duration:var(--duration-fast)}",
+        &CompileNativeCssOptions::default(),
+    )
+    .unwrap();
+    let manifest = compile_manifest_input(
+        &result.manifest_input,
+        &CompileManifestOptions {
+            base_manifest: Some(base),
+        },
+    )
+    .unwrap()
+    .manifest;
+    let text = manifest.to_string();
+    assert!(!text.contains("duration-fast"), "{text}");
+    assert!(text.contains("duration-slow"), "{text}");
+}

@@ -184,6 +184,23 @@ pub(crate) fn compile_manifest(
     input: &CssDirectiveManifestInput,
     base: Option<&MasterCssManifest>,
 ) -> Result<MasterCssManifest, CompilerError> {
+    // `--name: initial` removes the token from this theme and from the base.
+    let (theme, removed) = input
+        .theme
+        .as_deref()
+        .map(super::token_removal::apply)
+        .unwrap_or_default();
+    let (removal_input, removal_base);
+    let (input, base) = if removed.is_empty() {
+        (input, base)
+    } else {
+        removal_input = CssDirectiveManifestInput {
+            theme: (!theme.is_empty()).then_some(theme),
+            ..input.clone()
+        };
+        removal_base = base.map(|base| super::token_removal::base_without(base, &removed));
+        (&removal_input, removal_base.as_ref())
+    };
     let registry = crate::custom_media::resolve(input, base)?;
     let fragment = MasterCssManifest {
         theme: input

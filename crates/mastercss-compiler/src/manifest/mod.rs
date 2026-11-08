@@ -61,6 +61,7 @@ pub struct CompileDefaultPresetResult {
 
 mod normalize;
 mod preset;
+mod token_removal;
 mod variables;
 
 pub use normalize::{
