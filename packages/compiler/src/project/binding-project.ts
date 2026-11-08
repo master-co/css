@@ -12,8 +12,10 @@ import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { prepareCSSImportGraph } from '../node-imports'
 import type { MasterCSSProjectSourceGraph } from './options'
 
+// Package specifiers resolve as the build delivery resolves them, so editor, lint
+// and MCP manifests see the definitions a shared workspace stylesheet supplies.
 function prepareManifestGraph(entry: string, projectDir: string, onDependency?: (file: string) => void) {
-  const graph = prepareCSSImportGraph(entry, undefined, { projectDir, onDependency }, analyzeCSSDependencies)
+  const graph = prepareCSSImportGraph(entry, undefined, { projectDir, onDependency, resolveNodePackageImports: true }, analyzeCSSDependencies)
   const pending = Object.keys(graph.files)
   const visited = new Set<string>()
   while (pending.length) {
@@ -22,7 +24,7 @@ function prepareManifestGraph(entry: string, projectDir: string, onDependency?: 
     visited.add(file)
     for (const reference of compileCSS(graph.files[file], { from: file }).references || []) {
       const target = resolveCSSReferenceFile(reference, { root: projectDir })
-      const referenced = prepareCSSImportGraph(target, undefined, { projectDir, onDependency }, analyzeCSSDependencies)
+      const referenced = prepareCSSImportGraph(target, undefined, { projectDir, onDependency, resolveNodePackageImports: true }, analyzeCSSDependencies)
       graph.edges.push({ from: file, specifier: reference.source, resolved: referenced.entry }, ...referenced.edges)
       Object.assign(graph.files, referenced.files)
       Object.assign(graph.resourceOwners ??= {}, referenced.resourceOwners)

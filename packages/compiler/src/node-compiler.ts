@@ -589,7 +589,7 @@ export function compileCSSManifest(source: string, options: CompileCSSManifestSo
 function compileCSSManifestFileInternal(file: string, options: CompileCSSManifestInternalOptions = {}): CompileCSSManifestResult {
   const absoluteFile = isAbsolute(file) ? file : resolve(options.root || '', file)
   const graph = prepareCSSImportGraph(absoluteFile, undefined, {
-    projectDir: options.root, onDependency: options.onDependency
+    projectDir: options.root, onDependency: options.onDependency, resolveNodePackageImports: true
   }, analyzeCSSDependencies)
   return compileCSSManifestGraph(graph, {
     ...options, preserveNativeCSS: options.preserveNativeCSS ?? true,
