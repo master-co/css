@@ -50,6 +50,14 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="https://youtu.be/lQLEHN-AiBw">
+    <img alt="Watch the Master CSS 2.0 film on YouTube" src="https://i.ytimg.com/vi/lQLEHN-AiBw/maxresdefault.jpg" width="100%">
+  </a>
+  <br>
+  <sub>▶ <a href="https://youtu.be/lQLEHN-AiBw">Watch the Master CSS 2.0 film</a></sub>
+</p>
+
 </div>
 
 ## Getting started
