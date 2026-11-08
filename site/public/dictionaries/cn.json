@@ -481,5 +481,7 @@
   "Choose static, prerender, or runtime delivery. Your classes stay the same.": "可选择静态、预渲染或运行时交付，类的写法保持不变。",
   "Set up with your AI agent": "用 AI 智能体设置",
   "Copy setup prompt": "复制设置提示词",
-  "shadcn/ui": "shadcn/ui"
+  "shadcn/ui": "shadcn/ui",
+  "Watch the film": "观看视频",
+  "Close video": "关闭视频"
 }

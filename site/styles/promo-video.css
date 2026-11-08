@@ -1,0 +1,156 @@
+/* The film: a 16:9 poster on the media corner that becomes the player in place; the hero opens it in a dialog. */
+@layer components {
+  .promo-video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    margin-block: var(--line, var(--ui-space-xl));
+    overflow: hidden;
+    border-radius: var(--ui-radius-xl);
+    background-color: oklch(14% 0.004 70);
+    box-shadow: 0 0 0 1px var(--ui-line-contour);
+  }
+
+  .promo-video-poster,
+  .promo-video-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .promo-video-poster {
+    display: grid;
+    place-items: center;
+    color: white;
+
+    & img {
+      outline: 0;
+      transition: scale 600ms var(--ui-ease-out, ease), filter 300ms ease;
+    }
+
+    &:hover img {
+      scale: 1.015;
+      filter: brightness(1.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ui-surface-ink);
+      outline-offset: -4px;
+      border-radius: inherit;
+    }
+  }
+
+  /* One clear-glass disc over the dark poster, below the wordmark so it never covers it. */
+  .promo-video-play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-top: 32%;
+    border-radius: 999px;
+    background-color: rgb(255 255 255 / 0.12);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), 0 0 0 1px rgb(255 255 255 / 0.14), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+    backdrop-filter: blur(8px);
+    transition: background-color 200ms ease, scale 200ms ease;
+
+    & svg {
+      translate: 1px 0;
+    }
+  }
+
+  .promo-video-poster:is(:hover, :focus-visible) .promo-video-play {
+    background-color: rgb(255 255 255 / 0.2);
+    scale: 1.06;
+  }
+
+  /* The hero's film control is clear glass like the setup prompt beside it, but reads as one centered label. */
+  .home-hero .home-hero-actions .home-hero-video {
+    display: inline-flex;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 0 1.375rem 0 1.125rem;
+    font-family: var(--font-family-sans);
+    text-decoration: none;
+    cursor: pointer;
+
+    & > .home-command-label {
+      flex: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 4px;
+    }
+  }
+
+  /* The hero's dialog: the player alone on a dark scrim, closed by its button, Escape or a click outside. */
+  .promo-dialog {
+    width: min(64rem, calc(100vw - 2rem));
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+
+    &::backdrop {
+      background-color: oklch(8% 0.004 70 / 0.82);
+      backdrop-filter: blur(8px);
+    }
+
+    &[open] {
+      animation: promo-dialog-in 260ms var(--ui-ease-out, ease) both;
+    }
+
+    & .promo-video {
+      margin: 0;
+      box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 32px 80px -24px rgb(0 0 0 / 0.8);
+    }
+  }
+
+  .promo-dialog-close {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.75rem);
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    color: rgb(255 255 255 / 0.8);
+    background-color: rgb(255 255 255 / 0.1);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 0 0 1px rgb(255 255 255 / 0.1);
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease;
+
+    &:hover {
+      color: white;
+      background-color: rgb(255 255 255 / 0.18);
+    }
+
+    &:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+  }
+
+  @keyframes promo-dialog-in {
+    from {
+      opacity: 0;
+      scale: 0.97;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .promo-dialog[open] {
+      animation: none;
+    }
+
+    .promo-video-poster img,
+    .promo-video-play {
+      transition: none;
+    }
+  }
+}

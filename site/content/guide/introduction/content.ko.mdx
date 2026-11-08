@@ -8,6 +8,9 @@ import Overview from './components/Overview.mdx'
 import IntroductionIllustration from './components/IntroductionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import PromoVideo from '~/site/components/PromoVideo.svelte'
+
+<PromoVideo client:idle={{ timeout: 500 }} />
 
 Master CSS는 마크업에서 인터페이스 스타일을 지정하고 CSS에서 공통 스타일을 정의하는 CSS 프레임워크입니다. 요소를 만드는 곳에 클래스를 작성하고, 프로젝트 전체에서 공유할 값과 패턴은 스타일시트에 두세요. Master가 해당 클래스에 필요한 CSS를 생성합니다.
 

@@ -4,6 +4,7 @@ import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
 import Link from '@master/internal-site/components/Link.svelte'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import CopyCommand from './CopyCommand.svelte'
+import HeroVideo from './HeroVideo.svelte'
 import HeroCanvas from '@master/internal-site/home/HeroCanvas.svelte'
 import HomeAction from '@master/internal-site/home/HomeAction.astro'
 import { homeSections, installPrompt } from './home-content'
@@ -28,6 +29,7 @@ const { t } = siteOf(Astro)
         <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
       </HomeAction>
       <CopyCommand client:idle={{ timeout: 500 }} command={installPrompt(import.meta.env.PUBLIC_VERSION, import.meta.env.PUBLIC_URL)} label={t('Set up with your AI agent')} copyLabel={t('Copy setup prompt')} wrap />
+      <HeroVideo client:idle={{ timeout: 500 }} />
     </div>
   </div>
 </section>

@@ -8,6 +8,9 @@ import Overview from './components/Overview.mdx'
 import IntroductionIllustration from './components/IntroductionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import PromoVideo from '~/site/components/PromoVideo.svelte'
+
+<PromoVideo client:idle={{ timeout: 500 }} />
 
 Master CSS は、マークアップでインターフェースのスタイルを指定し、CSS で共通スタイルを定義するための CSS フレームワークです。要素を作る場所にクラスを書き、プロジェクト全体で共有する値やパターンはスタイルシートに置きます。Master が、そのクラスに必要な CSS を生成します。
 

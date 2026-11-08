@@ -3,6 +3,9 @@ import Overview from './components/Overview.mdx'
 import IntroductionIllustration from './components/IntroductionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import PromoVideo from '~/site/components/PromoVideo.svelte'
+
+<PromoVideo client:idle={{ timeout: 500 }} />
 
 Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS. Write classes where you build an element; use your stylesheet for the values and patterns that belong to the wider project. Master generates the CSS those classes need.
 

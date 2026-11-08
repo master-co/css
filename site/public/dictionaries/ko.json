@@ -481,5 +481,7 @@
   "Choose static, prerender, or runtime delivery. Your classes stay the same.": "정적, 사전 렌더링, 런타임 전달 중에서 선택하세요. 클래스 작성법은 같습니다.",
   "Set up with your AI agent": "AI 에이전트로 설정하기",
   "Copy setup prompt": "설정 프롬프트 복사",
-  "shadcn/ui": "shadcn/ui"
+  "shadcn/ui": "shadcn/ui",
+  "Watch the film": "영상 보기",
+  "Close video": "영상 닫기"
 }

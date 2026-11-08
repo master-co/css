@@ -8,6 +8,9 @@ import Overview from './components/Overview.mdx'
 import IntroductionIllustration from './components/IntroductionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
+import PromoVideo from '~/site/components/PromoVideo.svelte'
+
+<PromoVideo client:idle={{ timeout: 500 }} />
 
 Master CSS 是 CSS 框架，讓你在標記中設定介面樣式，並以 CSS 定義共用樣式。建立元素時，直接在該處撰寫 class；整個專案共用的值與模式，則放在樣式表中。Master 會生成這些 class 所需的 CSS。
 
