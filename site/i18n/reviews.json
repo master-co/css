@@ -93,20 +93,20 @@
     },
     "guide/class-extraction/contract.mdx": {
       "tw": {
-        "sourceHash": "3dbbb67118738d70b952ca11177b9d14c232e17385d6f4f575074fc3c818ce42",
-        "translationHash": "8afa54655cb4ac369147ca65fdf20f135a34285142405c004aad2bf8652ed555"
+        "sourceHash": "1ca2b6c580529e4cd770f72dbaa683849a1e575e18aa187b14b00385968941e5",
+        "translationHash": "c042ff290d0f442d13094acc0beb782df9dd27d5c91eeb209e318c5f0fe21711"
       },
       "ja": {
-        "sourceHash": "3dbbb67118738d70b952ca11177b9d14c232e17385d6f4f575074fc3c818ce42",
-        "translationHash": "59a454ae3d12a77be204d6ac0e82e77541bfc36f46cf21058c3b2c043eae8b88"
+        "sourceHash": "1ca2b6c580529e4cd770f72dbaa683849a1e575e18aa187b14b00385968941e5",
+        "translationHash": "d1f59bc9da9fbbf426e1f10f953b8c0931dd21e6a160385ff19d032077de2b98"
       },
       "ko": {
-        "sourceHash": "3dbbb67118738d70b952ca11177b9d14c232e17385d6f4f575074fc3c818ce42",
-        "translationHash": "5d3836c2a394551066ea1d977a97cbc9744daf9004e2b1e74286df15f723882b"
+        "sourceHash": "1ca2b6c580529e4cd770f72dbaa683849a1e575e18aa187b14b00385968941e5",
+        "translationHash": "8f033f2dbad5ad534f8c12b6a6ff468510128d52e281b768381490e74ec2e98a"
       },
       "cn": {
-        "sourceHash": "3dbbb67118738d70b952ca11177b9d14c232e17385d6f4f575074fc3c818ce42",
-        "translationHash": "7ff4ac9a4436c1b4dfe907218ab9790cc2e95590876b7768b305e0d65b6ec238"
+        "sourceHash": "1ca2b6c580529e4cd770f72dbaa683849a1e575e18aa187b14b00385968941e5",
+        "translationHash": "ff80eaf89967729e4a34c7fd3db76ff4fef2ec575442a1a54e814dcb884f695f"
       }
     },
     "guide/code-linting/content.mdx": {
@@ -201,20 +201,20 @@
     },
     "guide/directives/contract.mdx": {
       "tw": {
-        "sourceHash": "1013cbf752d02c8e80424c548f7d2cda9c3e3de8bc9da94cc84ce07cf99c7021",
-        "translationHash": "2cf41d0583b4742fa8d7cfc05fe81ced16385f34c1c5613303e9a253e1a88f6f"
+        "sourceHash": "0b0e50e5d9930a00dbecade6ef8e6cb2b83c798a5798e50bf99dbc598f445b91",
+        "translationHash": "6e086d75eb25e26940fd732d50e67312819b8077e017328b4a504b49a8ae1f7d"
       },
       "ja": {
-        "sourceHash": "1013cbf752d02c8e80424c548f7d2cda9c3e3de8bc9da94cc84ce07cf99c7021",
-        "translationHash": "2a9e4c144f9c505b4c0352b3204b215ff32f29edf270ccd158cecaedc879563c"
+        "sourceHash": "0b0e50e5d9930a00dbecade6ef8e6cb2b83c798a5798e50bf99dbc598f445b91",
+        "translationHash": "64d477dd092267934844de564f08094e116c87e95d838e2547e1f52ff392039b"
       },
       "ko": {
-        "sourceHash": "1013cbf752d02c8e80424c548f7d2cda9c3e3de8bc9da94cc84ce07cf99c7021",
-        "translationHash": "dd17a584d9c17bffd54720ba401a18a3ecc87a756b95b6cc6fa168552f436cea"
+        "sourceHash": "0b0e50e5d9930a00dbecade6ef8e6cb2b83c798a5798e50bf99dbc598f445b91",
+        "translationHash": "c7a4c11948a331aa88bdd48fc06a716989950a7827efdc0a6286a335b31dc950"
       },
       "cn": {
-        "sourceHash": "1013cbf752d02c8e80424c548f7d2cda9c3e3de8bc9da94cc84ce07cf99c7021",
-        "translationHash": "59db6b0ddb532f370f2141ccfddc8d6c389a7992e0387ea3b3c3afe78bb7ba01"
+        "sourceHash": "0b0e50e5d9930a00dbecade6ef8e6cb2b83c798a5798e50bf99dbc598f445b91",
+        "translationHash": "c94b519a454150079f406ed45057e895695c34852c1fc025653ef6f1d2045bb8"
       }
     },
     "guide/global-styles/content.mdx": {
@@ -615,20 +615,20 @@
     },
     "guide/migration/tailwindcss/content.mdx": {
       "tw": {
-        "sourceHash": "60da22ad34889c9a7eb40b57633668d21d9e93299da1c08bf0eb877d061cc8dd",
-        "translationHash": "75d8ea391a161d3ec3df1cc808f2864467ba38a1832844debfa8756c846ef737"
+        "sourceHash": "ab82f0322340c0f03879539f4002e311689a69803b66f342be93c6253ee8f9af",
+        "translationHash": "022d7f9a0403aafc2bc9868ba509cb810eee3a18dee572c35203948ee0afa127"
       },
       "ja": {
-        "sourceHash": "60da22ad34889c9a7eb40b57633668d21d9e93299da1c08bf0eb877d061cc8dd",
-        "translationHash": "4dea628405bd81d521589ce64b47ee86a490c27e45c1246318e73ca31bf62356"
+        "sourceHash": "ab82f0322340c0f03879539f4002e311689a69803b66f342be93c6253ee8f9af",
+        "translationHash": "322675fd91c4c941c60ac9842c89e0bba868e3b6efdd3d5c088374741141b577"
       },
       "ko": {
-        "sourceHash": "60da22ad34889c9a7eb40b57633668d21d9e93299da1c08bf0eb877d061cc8dd",
-        "translationHash": "bdf43f88e955a97d497d171fe3af91cc2682a1476b9ab218309815476b61bf27"
+        "sourceHash": "ab82f0322340c0f03879539f4002e311689a69803b66f342be93c6253ee8f9af",
+        "translationHash": "4e3ec57c1c4ebaf47e226932508fd9ea67784476bbc755df10301ecc39713caa"
       },
       "cn": {
-        "sourceHash": "60da22ad34889c9a7eb40b57633668d21d9e93299da1c08bf0eb877d061cc8dd",
-        "translationHash": "964963e7c4ae090965a40a871eb6c10946bc80bd1d746aa9691def07a8681b42"
+        "sourceHash": "ab82f0322340c0f03879539f4002e311689a69803b66f342be93c6253ee8f9af",
+        "translationHash": "1b3077c61e8c246e2171aa4ed778ed9844464cec8a06d83087a36bc917b1ba2b"
       }
     },
     "guide/monorepo/content.mdx": {

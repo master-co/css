@@ -62,7 +62,7 @@ A compiler match, CSS syntax validation, CSS value validation and browser suppor
 
 Build integrations and CLI flows discover common source-like project files, including HTML, JavaScript, TypeScript, JSX, TSX, supported framework sources, Markdown, MDX and PHP. Ordinary application files do not need a broad `@source` directive.
 
-Automatic discovery respects project and ancestor workspace `.gitignore` files, not global Git ignores. Dependencies, declaration files, binary files, VCS data and generated output are excluded. Master output and the current bundler output are not scan inputs; Next.js uses its configured `distDir`.
+Automatic discovery respects project and ancestor workspace `.gitignore` files, not global Git ignores. Ignore files apply from the nearest repository root, which may be a worktree, or, without one, from the workspace root. A project that its repository itself ignores, such as a copy in an ignored directory, applies only its own ignore files. Dependencies, declaration files, binary files, VCS data and generated output are excluded. Master output and the current bundler output are not scan inputs; Next.js uses its configured `distDir`.
 
 | Directive | Effect on discovery |
 | --- | --- |
@@ -71,7 +71,7 @@ Automatic discovery respects project and ancestor workspace `.gitignore` files, 
 
 Use these exceptions for shared workspace source, external content or a scoped pruning root. Their relative-path rules and supported forms belong to [Scanning directives](/reference/directives/scanning).
 
-Framework integrations prefer original MDX, Vue and Svelte source to scanning compiled display strings a second time. An extractor's language kind matters: intentional plain-text input can use `kind: 'raw'`, but that is not a fallback for a source that failed to parse.
+Framework integrations prefer original MDX, Vue and Svelte source to scanning compiled display strings a second time. Extraction reads the `<script>` blocks of Vue and Svelte component files as JavaScript, so only string and template literals there contribute candidates, as in other JavaScript sources; property access such as `items.length` is not a class. `<style>` blocks are not class sources. An extractor's language kind matters: intentional plain-text input can use `kind: 'raw'`, but that is not a fallback for a source that failed to parse.
 
 ## Markdown and MDX \{#markdown-and-mdx\}
 

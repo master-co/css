@@ -149,6 +149,17 @@ Master CSS は名前空間でトークンを解決します。`--color-brand` �
 
 Tailwind と Master CSS の既定テーマは異なります。独自の製品トークンを先に変換し、既定のパレットや尺度の置換を意図的に確認します。
 
+Master CSS のプリセットには、`--duration-fast` のように Tailwind の既定テーマにないトークンもあります。ネイティブ CSS がそうした名前を独自の変数として読むと、Master CSS はプリセットの値を `:root, :host` に配信するため、プロジェクトのスコープ外の要素に以前はなかった値が加わります。その名前がプロジェクトのものであれば、プリセットのトークンを削除してください。
+
+```css name=app.css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+[トークンの削除](/reference/directives/theme#theme-removal)を参照してください。
+
 ---
 
 ## ユーティリティを変換する \{#translate-utilities\}
@@ -486,6 +497,7 @@ Tailwind の `@source inline()` はインライン文字列や波括弧展開か
 | Tailwind `prefix(...)` | クラス接頭辞モードはありません。 | Master CSS 構文を直接使い、アプリのルートに範囲を絞る場合はネイティブセレクターを使います。 |
 | `@source inline()` の波括弧展開による safelist | 対応する波括弧展開ディレクティブはありません。 | 明示的な `@safelist` と完全なクラス文字列を使います。 |
 | Tailwind Preflight の厳密な再現 | 基本スタイルは Tailwind Preflight ではありません。 | UI を比較し、リセットの細部に依存する箇所にネイティブ CSS を追加します。 |
+| Tailwind の `@property` フォールバック | Tailwind は、プロジェクトが記述したものも含め、最上位の各 `@property` の初期値を `@supports` で保護した `@layer properties` ルールに追加し、`@property` 非対応のブラウザーに備えます。Master CSS は `@property` を記述どおりに保持します。 | ビルド対象にそうしたブラウザーが含まれる場合は、同じ初期値をネイティブで宣言します。継承するプロパティなら `@layer base { :root { --content-gutter: 24px; } }` のように書きます。 |
 | typography や forms など公式プラグインの出力 | Tailwind プラグイン CSS を自動再現しません。 | 一時的にプラグイン CSS を残すか、製品専用のコンポーネントやユーティリティを書きます。 |
 | Tailwind `container` の意味 | ネイティブの `container-type` でクエリー境界を作ります。 | ページのラッパーに `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`、祖先のクエリーコンテナーに `container-inline` を使います。 |
 | Tailwind の ring モデル | 同じ ring ユーティリティ群はありません。 | `(outline:*)`、`(outline-offset:*)`、`(box-shadow:*)`、独自ユーティリティを使います。 |

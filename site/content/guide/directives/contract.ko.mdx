@@ -158,6 +158,19 @@ Vite, Next.js, Webpack은 로컬 스타일시트, CSS Modules, SFC 스타일에 
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
+### 토큰 제거 \{#theme-removal\}
+값이 `initial`인 테마 선언은 토큰을 선언하지 않고 제거합니다. 프리셋과 기본 manifest의 토큰을 포함해 해당 이름의 이전 정의가 모두 버려지며, 이전 값도 `initial`도 전달되지 않습니다. 유틸리티도 제거된 키를 더 이상 해석하지 않습니다. 이후 같은 이름을 다시 선언하면 토큰이 다시 정의됩니다.
+
+```css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+/* The project's own variable, unrelated to the preset token of the same name */
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+제거하지 않으면 네이티브 `var(--duration-fast)` 참조 때문에 프리셋의 `--duration-fast`가 `:root, :host`에 유지되어 `.panel` 밖의 요소에 원래 없던 값이 생깁니다. 네이티브 CSS가 그 이름을 다른 용도로 쓴다면 토큰을 제거하고, 프로젝트가 여전히 프리셋 기본값을 원한다면 토큰을 유지한 채 네이티브로 재정의하세요.
+
 ## 쿼리 정의 \{#query-definitions\}
 재사용할 조건에 한 번 이름을 붙이고 네이티브 CSS나 클래스 접미사에서 사용합니다. 미디어 이름은 뷰포트나 기기 조건을, 컨테이너 이름은 사용 위치에서 선택한 컨테이너에 대해 검사할 조건을 나타냅니다. 정의는 최상위이며 무조건적이어야 합니다.
 
@@ -574,7 +587,7 @@ body { margin: 0; }
 <ReferenceIllustration id="pruning-selector-branches" />
 
 ### manifest 참조 \{#manifest-references\}
-유지된 네이티브 규칙이 `var(--*)`를 읽거나 manifest 애니메이션 이름을 지정하면 프로젝트 진입점 그래프의 해당 테마 변수와 키프레임을 유지합니다. 제거된 규칙은 아무 리소스도 유지하지 않습니다.
+유지된 네이티브 규칙이 `var(--*)`를 읽거나 manifest 애니메이션 이름을 지정하면 프로젝트 진입점 그래프의 해당 테마 변수와 키프레임을 유지합니다. 제거된 규칙은 아무 리소스도 유지하지 않습니다. [제거된 토큰](#theme-removal)은 테마 변수가 아니므로 그 이름을 읽어도 아무것도 유지하지 않습니다.
 
 ```css
 @prune native;

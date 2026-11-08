@@ -158,6 +158,19 @@ token 會輸出於 `@layer theme` 中的 `:root, :host`。編譯器保留宣告�
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
+### 移除 token \{#theme-removal\}
+值為 `initial` 的主題宣告會移除該 token，而不是宣告它。該名稱先前的所有定義都會丟棄，包括預設集與基底 manifest 的 token；先前的值與 `initial` 都不會交付。utility 也不再解析被移除的鍵。之後再次宣告同名 token，會重新定義它。
+
+```css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+/* The project's own variable, unrelated to the preset token of the same name */
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+若沒有移除，原生的 `var(--duration-fast)` 參照會在 `:root, :host` 保留預設集的 `--duration-fast`，讓 `.panel` 以外的元素多出原本沒有的值。原生 CSS 把這個名稱用在其他用途時，請移除 token；專案仍想使用預設集的預設值時，則保留 token 並以原生方式覆寫。
+
 ## 查詢定義 \{#query-definitions\}
 替可重複使用的條件命名一次，便可用於原生 CSS 或 class 後綴。media 名稱描述檢視區或裝置條件；container 名稱描述在使用處選定的容器上檢查的條件。定義必須位於頂層且不帶條件。
 
@@ -574,7 +587,7 @@ body { margin: 0; }
 <ReferenceIllustration id="pruning-selector-branches" />
 
 ### manifest 參照 \{#manifest-references\}
-保留的原生規則若讀取 `var(--*)` 或指定 manifest 動畫名稱，會保留專案入口圖中相符的主題變數與關鍵影格。被移除的規則不會保留任何資源。
+保留的原生規則若讀取 `var(--*)` 或指定 manifest 動畫名稱，會保留專案入口圖中相符的主題變數與關鍵影格。被移除的規則不會保留任何資源。[被移除的 token](#theme-removal) 不是主題變數，因此讀取它的名稱不會保留任何東西。
 
 ```css
 @prune native;

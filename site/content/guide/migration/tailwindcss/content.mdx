@@ -158,6 +158,17 @@ Put explicit `.light` and `.dark` selectors outside `@theme` for a manual theme 
 
 Tailwind's default theme and Master CSS's default theme are not the same. Convert custom product tokens first, then review default palette and scale replacements intentionally.
 
+The Master CSS preset also defines tokens that Tailwind's default theme does not, such as `--duration-fast`. When native CSS reads one of those names for its own variable, Master CSS delivers the preset value at `:root, :host`, so elements outside the project's scope gain a value they did not have before. Remove the preset token when the name belongs to the project:
+
+```css name=app.css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+See [Removing tokens](/reference/directives/theme#theme-removal).
+
 ---
 
 ## Translate utilities \{#translate-utilities\}
@@ -495,6 +506,7 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind `prefix(...)` | Master CSS has no class-prefix mode. | Use Master CSS syntax directly; use native selectors to scope styles to an app root. |
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
 | Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
+| Tailwind `@property` fallbacks | Tailwind adds an `@supports`-guarded `@layer properties` rule with each top-level `@property` initial value, including project-authored ones, for browsers without `@property`. Master CSS keeps `@property` as written. | When the build targets such browsers, declare the same initial value natively, for example `@layer base { :root { --content-gutter: 24px; } }` for an inherited property. |
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
 | Tailwind `container` utility semantics | Master CSS uses native `container-type` declarations for a query boundary. | Use `w-full (max-width:72rem) mx-auto (padding-inline:1rem)` for page wrappers and `container-inline` for an ancestor query container. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `(outline:*)`, `(outline-offset:*)`, `(box-shadow:*)`, or custom utilities. |

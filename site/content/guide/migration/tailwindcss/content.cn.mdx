@@ -149,6 +149,17 @@ Master CSS 按命名空间解析令牌名。`--color-brand` 可供 `bg-brand`、
 
 Tailwind 与 Master CSS 默认主题不同。先转换自定义产品令牌，再有计划地检查默认调色板和刻度的替换。
 
+Master CSS 预设还定义了 Tailwind 默认主题没有的令牌，例如 `--duration-fast`。原生 CSS 把这类名称当作自己的变量读取时，Master CSS 会在 `:root, :host` 交付预设的值，使项目作用域以外的元素多出原本没有的值。如果该名称属于项目，请移除预设令牌：
+
+```css name=app.css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+请参阅[移除令牌](/reference/directives/theme#theme-removal)。
+
 ---
 
 ## 转换工具类 \{#translate-utilities\}
@@ -486,6 +497,7 @@ Tailwind `@source inline()` 能从内联字符串和大括号展开生成类。M
 | Tailwind `prefix(...)` | 没有类前缀模式。 | 直接使用 Master CSS 语法；使用原生选择器限定到应用根节点。 |
 | `@source inline()` 大括号展开 safelist | 没有对等的大括号展开指令。 | 使用明确的 `@safelist` 条目和完整类字符串。 |
 | 完全相同的 Tailwind Preflight | 基础样式不是 Tailwind Preflight。 | 比较 UI，针对依赖 Tailwind 重置细节的部分添加原生 CSS。 |
+| Tailwind 的 `@property` 回退 | Tailwind 会添加一条由 `@supports` 保护的 `@layer properties` 规则，写入每个顶层 `@property`（包括项目自行编写的）的初始值，供不支持 `@property` 的浏览器使用。Master CSS 则按原样保留 `@property`。 | 构建目标包含这类浏览器时，用原生方式声明相同的初始值，例如可继承的属性使用 `@layer base { :root { --content-gutter: 24px; } }`。 |
 | typography、forms 等官方插件输出 | 不自动重建 Tailwind 插件 CSS。 | 暂留插件 CSS，或编写产品专用组件和工具类。 |
 | Tailwind `container` 工具类语义 | 以原生 `container-type` 声明建立查询边界。 | 页面包装层使用 `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`，祖先查询容器使用 `container-inline`。 |
 | Tailwind ring 工具类模型 | 没有相同的 ring 工具类家族。 | 使用 `(outline:*)`、`(outline-offset:*)`、`(box-shadow:*)` 或自定义工具类。 |

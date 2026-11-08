@@ -149,6 +149,17 @@ Master CSS는 네임스페이스에 따라 토큰 이름을 해석합니다. `--
 
 Tailwind와 Master CSS의 기본 테마는 다릅니다. 사용자 정의 제품 토큰을 먼저 변환한 뒤 기본 팔레트와 스케일 대체를 의도적으로 검토하세요.
 
+Master CSS 프리셋에는 `--duration-fast`처럼 Tailwind 기본 테마에 없는 토큰도 있습니다. 네이티브 CSS가 이런 이름을 자체 변수로 읽으면 Master CSS가 프리셋 값을 `:root, :host`에 전달하므로, 프로젝트 범위 밖의 요소에 원래 없던 값이 생깁니다. 그 이름이 프로젝트의 것이라면 프리셋 토큰을 제거하세요.
+
+```css name=app.css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+[토큰 제거](/reference/directives/theme#theme-removal)를 참고하세요.
+
 ---
 
 ## 유틸리티 변환 \{#translate-utilities\}
@@ -486,6 +497,7 @@ Tailwind `@source inline()`은 인라인 문자열과 중괄호 확장으로 클
 | Tailwind `prefix(...)` | 클래스 접두사 모드가 없습니다. | Master CSS 구문을 직접 쓰고 앱 루트로 범위를 제한하려면 네이티브 선택자를 사용합니다. |
 | `@source inline()` 중괄호 확장 safelist | 대응하는 중괄호 확장 지시문이 없습니다. | 명시적인 `@safelist` 항목과 완전한 클래스 문자열을 사용합니다. |
 | 정확히 같은 Tailwind Preflight | 기본 스타일은 Tailwind Preflight가 아닙니다. | UI를 비교하고 리셋 세부 사항에 의존하는 곳에 네이티브 CSS를 추가합니다. |
+| Tailwind `@property` 폴백 | Tailwind는 프로젝트가 직접 작성한 것을 포함해 최상위 `@property`마다 초기값을 `@supports`로 보호한 `@layer properties` 규칙에 추가해 `@property`를 지원하지 않는 브라우저에 대비합니다. Master CSS는 `@property`를 작성한 그대로 유지합니다. | 빌드 대상에 그런 브라우저가 포함되면 같은 초기값을 네이티브로 선언합니다. 상속되는 속성이라면 `@layer base { :root { --content-gutter: 24px; } }`처럼 작성합니다. |
 | typography, forms 등 공식 플러그인 출력 | Tailwind 플러그인 CSS를 자동 재현하지 않습니다. | 플러그인 CSS를 임시 유지하거나 제품 전용 컴포넌트와 유틸리티를 작성합니다. |
 | Tailwind `container` 유틸리티 의미 | 네이티브 `container-type`으로 쿼리 경계를 만듭니다. | 페이지 래퍼에는 `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`, 조상 쿼리 컨테이너에는 `container-inline`을 사용합니다. |
 | Tailwind ring 유틸리티 모델 | 같은 ring 유틸리티 계열이 없습니다. | `(outline:*)`, `(outline-offset:*)`, `(box-shadow:*)` 또는 사용자 정의 유틸리티를 사용합니다. |

@@ -158,6 +158,19 @@ Vite、Next.js、Webpack はローカルスタイルシート、CSS Modules、SF
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
+### トークンの削除 \{#theme-removal\}
+値が `initial` のテーマ宣言は、トークンを宣言するのではなく削除します。その名前の以前の定義は、プリセットやベース manifest のトークンも含めてすべて破棄され、以前の値も `initial` も配信されません。削除したキーはユーティリティでも解決されなくなります。後で同じ名前を宣言すると、トークンは再び定義されます。
+
+```css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+/* The project's own variable, unrelated to the preset token of the same name */
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+削除しない場合、ネイティブの `var(--duration-fast)` 参照によってプリセットの `--duration-fast` が `:root, :host` に保持され、`.panel` の外側の要素に以前はなかった値が加わります。ネイティブ CSS がその名前を別の用途に使っている場合はトークンを削除し、プリセットの既定値を使い続けたい場合はトークンを残してネイティブで上書きしてください。
+
 ## クエリ定義 \{#query-definitions\}
 再利用する条件に一度名前を付け、ネイティブ CSS やクラスの接尾辞で使います。メディア名はビューポートやデバイスの条件、コンテナー名は使用箇所で選んだコンテナーに対する条件を表します。定義は最上位かつ無条件でなければなりません。
 
@@ -574,7 +587,7 @@ body { margin: 0; }
 <ReferenceIllustration id="pruning-selector-branches" />
 
 ### manifest の参照 \{#manifest-references\}
-保持されたネイティブ規則が `var(--*)` を読むか manifest のアニメーションを指定すると、プロジェクトのエントリーグラフ内の対応するテーマ変数とキーフレームを保持します。除去した規則は何も保持しません。
+保持されたネイティブ規則が `var(--*)` を読むか manifest のアニメーションを指定すると、プロジェクトのエントリーグラフ内の対応するテーマ変数とキーフレームを保持します。除去した規則は何も保持しません。[削除したトークン](#theme-removal)はテーマ変数ではないため、その名前を読んでも何も保持しません。
 
 ```css
 @prune native;

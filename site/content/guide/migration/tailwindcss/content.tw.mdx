@@ -149,6 +149,17 @@ Master CSS 依命名空間解析 token 名稱。`--color-brand` 可用於 `bg-br
 
 Tailwind 與 Master CSS 的預設主題不同。先轉換自訂產品 token，再有意識地檢查預設色盤與刻度的替換。
 
+Master CSS 預設集也定義了 Tailwind 預設主題沒有的 token，例如 `--duration-fast`。原生 CSS 把這類名稱當作自己的變數讀取時，Master CSS 會在 `:root, :host` 交付預設集的值，讓專案作用範圍以外的元素多出原本沒有的值。若這個名稱屬於專案，請移除預設集的 token：
+
+```css name=app.css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+請見[移除 token](/reference/directives/theme#theme-removal)。
+
 ---
 
 ## 轉換 utility \{#translate-utilities\}
@@ -486,6 +497,7 @@ Tailwind `@source inline()` 可從內嵌字串與大括號展開生成 class。M
 | Tailwind `prefix(...)` | 沒有 class 前綴模式。 | 直接使用 Master CSS 語法；需要限定應用程式根節點範圍時，使用原生選擇器。 |
 | Tailwind `@source inline()` 大括號展開 safelist | 沒有對等的大括號展開指令。 | 使用明確 `@safelist` 項目與完整 class 字串。 |
 | 完全相同的 Tailwind Preflight | 基礎樣式並非 Tailwind Preflight。 | 比較介面；專案依賴 Tailwind 重設細節時，補上原生 CSS。 |
+| Tailwind 的 `@property` 備援 | Tailwind 會加上一條以 `@supports` 防護的 `@layer properties` 規則，納入每個頂層 `@property`（包括專案自己撰寫的）的初始值，供不支援 `@property` 的瀏覽器使用。Master CSS 則原樣保留 `@property`。 | 建置目標包含這類瀏覽器時，以原生方式宣告相同的初始值，例如可繼承的屬性用 `@layer base { :root { --content-gutter: 24px; } }`。 |
 | typography、forms 等官方外掛輸出 | 不會自動重建 Tailwind 外掛 CSS。 | 暫時保留外掛 CSS，或撰寫產品專用元件與 utility。 |
 | Tailwind `container` utility 語意 | 使用原生 `container-type` 宣告建立查詢邊界。 | 頁面包裝層使用 `w-full (max-width:72rem) mx-auto (padding-inline:1rem)`，祖先查詢容器使用 `container-inline`。 |
 | Tailwind ring utility 模型 | 沒有相同的 ring utility 家族。 | 使用 `(outline:*)`、`(outline-offset:*)`、`(box-shadow:*)` 或自訂 utility。 |

@@ -158,6 +158,19 @@ Vite、Next.js 和 Webpack 为本地样式表、CSS Modules 与 SFC 样式提供
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
+### 移除令牌 \{#theme-removal\}
+值为 `initial` 的主题声明会移除该令牌，而不是声明它。该名称此前的所有定义都会被丢弃，包括预设和基础 manifest 中的令牌；之前的值与 `initial` 都不会被交付。工具类也不再解析被移除的键。之后再次声明同名令牌，会重新定义它。
+
+```css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+/* The project's own variable, unrelated to the preset token of the same name */
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+如果不移除，原生的 `var(--duration-fast)` 引用会在 `:root, :host` 保留预设的 `--duration-fast`，使 `.panel` 以外的元素多出原本没有的值。原生 CSS 将该名称用于其他用途时，请移除令牌；项目仍希望使用预设的默认值时，则保留令牌并通过原生方式覆盖。
+
 ## 查询定义 \{#query-definitions\}
 为可复用条件命名一次，即可用于原生 CSS 或类后缀。媒体名称描述视口或设备条件；容器名称描述在使用处选定容器上检查的条件。定义必须位于顶层且不带条件。
 
@@ -574,7 +587,7 @@ body { margin: 0; }
 <ReferenceIllustration id="pruning-selector-branches" />
 
 ### manifest 引用 \{#manifest-references\}
-保留的原生规则若读取 `var(--*)` 或指定 manifest 动画名称，会保留项目入口图中对应的主题变量和关键帧。被移除规则不保留任何资源。
+保留的原生规则若读取 `var(--*)` 或指定 manifest 动画名称，会保留项目入口图中对应的主题变量和关键帧。被移除规则不保留任何资源。[被移除的令牌](#theme-removal)不是主题变量，因此读取它的名称不会保留任何内容。
 
 ```css
 @prune native;

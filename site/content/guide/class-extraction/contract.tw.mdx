@@ -62,7 +62,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 建置整合與 CLI 流程會探索常見的專案原始檔，包括 HTML、JavaScript、TypeScript、JSX、TSX、支援的框架原始碼、Markdown、MDX 與 PHP。一般應用程式檔案不需要廣泛的 `@source` 指令。
 
-自動探索遵循專案與上層工作區的 `.gitignore`，不使用 Git 全域忽略設定。相依套件、宣告檔、二進位檔、版本控制資料與生成輸出會排除。Master 輸出與目前打包器的輸出都不是掃描輸入；Next.js 使用其設定的 `distDir`。
+自動探索遵循專案與上層工作區的 `.gitignore`，不使用 Git 全域忽略設定。忽略檔從最近的儲存庫根目錄（也可以是 worktree）開始套用；沒有儲存庫時，從工作區根目錄開始。若專案本身就被所屬儲存庫忽略，例如放在被忽略目錄裡的副本，則只套用專案自己的忽略檔。相依套件、宣告檔、二進位檔、版本控制資料與生成輸出會排除。Master 輸出與目前打包器的輸出都不是掃描輸入；Next.js 使用其設定的 `distDir`。
 
 | 指令 | 對探索的影響 |
 | --- | --- |
@@ -71,7 +71,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 這些例外適用於共用工作區來源、外部內容，或指定範圍的修剪根目錄。相對路徑規則與支援形式請見[掃描指令](/reference/directives/scanning)。
 
-框架整合優先使用原始 MDX、Vue 與 Svelte 來源，不會再掃描一次已編譯的顯示字串。擷取器的語言種類很重要：刻意提供純文字輸入時可以使用 `kind: 'raw'`，但它不是來源解析失敗時的備援方式。
+框架整合優先使用原始 MDX、Vue 與 Svelte 來源，不會再掃描一次已編譯的顯示字串。Vue 與 Svelte 元件檔的 `<script>` 區塊會當作 JavaScript 讀取，因此和其他 JavaScript 來源一樣，只有字串與樣板字面值會提供候選項；`items.length` 這類屬性存取不是 class。`<style>` 區塊不是 class 來源。擷取器的語言種類很重要：刻意提供純文字輸入時可以使用 `kind: 'raw'`，但它不是來源解析失敗時的備援方式。
 
 ## Markdown 與 MDX \{#markdown-and-mdx\}
 

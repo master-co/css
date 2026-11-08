@@ -168,6 +168,19 @@ The preset uses native `light-dark()` for adaptive colors and shadows. Both vari
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
+### Removing tokens \{#theme-removal\}
+A theme declaration whose value is `initial` removes the token instead of declaring it. Every earlier definition of that name is dropped, including preset tokens and those of a base manifest, and neither the earlier value nor `initial` is delivered. Utilities no longer resolve the removed key. A later declaration of the same name defines the token again.
+
+```css
+@import "@master/css";
+@theme { --duration-fast: initial; }
+
+/* The project's own variable, unrelated to the preset token of the same name */
+.panel { --duration-fast: 120ms; transition-duration: var(--duration-fast); }
+```
+
+Without the removal, the native `var(--duration-fast)` reference would retain the preset's `--duration-fast` at `:root, :host`, giving elements outside `.panel` a value they did not have before. Remove a token when native CSS uses its name for something else; keep it and override it natively when the project still wants the preset default.
+
 ## Query definitions \{#query-definitions\}
 Name a reusable condition once, then use it in native CSS or a class suffix. Media names describe viewport or device conditions; container names describe a condition tested against a container selected at the use site. Definitions must be top-level and unconditional.
 
@@ -612,7 +625,8 @@ empty by pruning are removed.
 ### Manifest references \{#manifest-references\}
 A kept native rule that reads `var(--*)` or names a manifest animation retains the
 matching theme variables and keyframes from the project entry graph. A removed
-rule keeps nothing alive.
+rule keeps nothing alive. A [removed token](#theme-removal) is not a theme
+variable, so reading its name retains nothing.
 
 ```css
 @prune native;

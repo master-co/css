@@ -62,7 +62,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 构建集成与 CLI 流程会发现常见的项目源文件，包括 HTML、JavaScript、TypeScript、JSX、TSX、受支持的框架源代码、Markdown、MDX 和 PHP。普通应用文件不需要宽泛的 `@source` 指令。
 
-自动发现遵循项目与祖先工作区的 `.gitignore`，不使用 Git 全局忽略设置。依赖包、声明文件、二进制文件、版本控制数据和生成输出会被排除。Master 输出与当前打包器输出都不是扫描输入；Next.js 使用其配置的 `distDir`。
+自动发现遵循项目与祖先工作区的 `.gitignore`，不使用 Git 全局忽略设置。忽略文件从最近的仓库根目录（也可以是 worktree）开始生效；没有仓库时，从工作区根目录开始。如果项目本身就被所属仓库忽略，例如放在被忽略目录中的副本，则只应用项目自身的忽略文件。依赖包、声明文件、二进制文件、版本控制数据和生成输出会被排除。Master 输出与当前打包器输出都不是扫描输入；Next.js 使用其配置的 `distDir`。
 
 | 指令 | 对发现的影响 |
 | --- | --- |
@@ -71,7 +71,7 @@ const className = `px-md r-md ${tones.destructive}`
 
 这些例外适用于共享工作区源文件、外部内容或限定范围的裁剪根目录。相对路径规则与支持的形式见[扫描指令](/reference/directives/scanning)。
 
-框架集成优先使用原始 MDX、Vue 和 Svelte 源文件，而不是再次扫描已编译的显示字符串。提取器的语言类型很重要：有意提供纯文本输入时可以使用 `kind: 'raw'`，但它不是源文件解析失败时的回退方案。
+框架集成优先使用原始 MDX、Vue 和 Svelte 源文件，而不是再次扫描已编译的显示字符串。Vue 和 Svelte 组件文件的 `<script>` 块按 JavaScript 读取，因此与其他 JavaScript 源文件一样，只有字符串和模板字面量会提供候选项；`items.length` 这类属性访问不是类名。`<style>` 块不是类名来源。提取器的语言类型很重要：有意提供纯文本输入时可以使用 `kind: 'raw'`，但它不是源文件解析失败时的回退方案。
 
 ## Markdown 与 MDX \{#markdown-and-mdx\}
 
