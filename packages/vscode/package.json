@@ -13,7 +13,7 @@
     "vsce": "node ../../node_modules/@vscode/vsce/vsce",
     "release": "node scripts/release.js"
   },
-  "version": "2.0.37",
+  "version": "2.0.38",
   "description": "Master CSS for Visual Studio Code",
   "displayName": "Master CSS",
   "author": "Aoyue Design LLC.",
