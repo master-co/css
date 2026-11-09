@@ -10,6 +10,13 @@
 </p>
 
 <p align="center">
+  <a aria-label="Star Master CSS on GitHub" href="https://github.com/master-co/css">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/stars/master-co/css?color=212022&labelColor=212022&label=star&style=for-the-badge&logo=github&logoColor=fff">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/stars/master-co/css?color=f6f7f8&labelColor=f6f7f8&label=star&style=for-the-badge&logo=github&logoColor=%23000">
+      <img alt="GitHub stars" src="https://img.shields.io/github/stars/master-co/css?color=f6f7f8&labelColor=f6f7f8&label=star&style=for-the-badge&logo=github">
+    </picture>
+  </a>
   <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=212022&label=&style=for-the-badge&logo=github&logoColor=fff">
