@@ -115,9 +115,20 @@ fn nested_functions_and_strings_keep_component_values() {
         .unwrap();
     assert_eq!(
         result.classes,
-        ["(width:calc(100%|-|2rem))", "(content:'a;b:c')"]
+        ["(width:calc(100%_-_2rem))", "(content:'a;b:c')"]
     );
     assert!(result.css.contains("calc(100% - 2rem)"));
+    let underscores = lint
+        .suggest_classes("animation: slide_in  1s; content: 'a_b'; width: var(--gap_x);")
+        .unwrap();
+    assert_eq!(
+        underscores.classes,
+        [
+            "(animation:slide\\_in_1s)",
+            "(content:'a_b')",
+            "(width:var(--gap_x))"
+        ]
+    );
     assert!(result.css.contains("'a;b:c'"));
 }
 

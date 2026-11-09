@@ -524,7 +524,14 @@ describe('raw value policy', () => {
     })).toEqual([
       { className: "(margin:var(--spacing-md)|17px)", key: 'margin', value: '17px', properties: ['margin'] },
       { className: "(margin:calc(1rem+1px)|18px)", key: 'margin', value: '18px', properties: ['margin'] },
-      { className: "(margin:19px|20px)", key: 'margin', value: '19px|20px', properties: ['margin'] }
+      { className: "(margin:19px|20px)", key: 'margin', value: '19px_20px', properties: ['margin'] }
+    ])
+    expect(findUnapprovedRawValueClasses(["(margin:var(--spacing-md)_17px)", "(margin:19px_20px)", "(margin:calc(1rem_+_1px)_18px)"], css, {
+      allowedPatterns: ['^calc\\(']
+    })).toEqual([
+      { className: "(margin:var(--spacing-md)_17px)", key: 'margin', value: '17px', properties: ['margin'] },
+      { className: "(margin:19px_20px)", key: 'margin', value: '19px_20px', properties: ['margin'] },
+      { className: "(margin:calc(1rem_+_1px)_18px)", key: 'margin', value: '18px', properties: ['margin'] }
     ])
   })
 
@@ -538,9 +545,18 @@ describe('raw value policy', () => {
 
 describe('canonical class suggestions', () => {
   test('preserves literal multi-value declarations', () => {
-    expect(suggestCanonicalClassName("(margin:1rem|1.5rem)", css)).toBeUndefined()
-    expect(suggestCanonicalClassName("(padding:.5rem|1rem)", css)).toBeUndefined()
-    expect(suggestCanonicalClassName('(r:.25rem|.375rem)', css)).toBeUndefined()
+    expect(suggestCanonicalClassName("(margin:1rem_1.5rem)", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("(padding:.5rem_1rem)", css)).toBeUndefined()
+    expect(suggestCanonicalClassName('(r:.25rem_.375rem)', css)).toBeUndefined()
+  })
+
+  test('respells deprecated pipe spaces as underscores', () => {
+    expect(suggestCanonicalClassName("(margin:1rem|1.5rem)", css)).toBe('(margin:1rem_1.5rem)')
+    expect(suggestCanonicalClassName("(margin:1rem|1.5rem)@dark@sm", css)).toBe('(margin:1rem_1.5rem)@dark@sm')
+    expect(suggestCanonicalClassName("(grid-template-columns:1fr|auto)@container(card|width>=28rem)", css))
+      .toBe('(grid-template-columns:1fr_auto)@container(card_width>=28rem)')
+    expect(suggestCanonicalClassName("(content:'a|b')", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("underline:is(.a|.b)", css)).toBeUndefined()
   })
 
   test('preserves explicit variable references and their priority', () => {
@@ -575,7 +591,7 @@ describe('canonical class suggestions', () => {
     expect(suggestCanonicalClassName("(margin:var(--spacing-md))@dark@sm", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
-    expect(suggestCanonicalClassName("(margin:1rem|1.5rem)@dark@sm", css, {
+    expect(suggestCanonicalClassName("(margin:1rem_1.5rem)@dark@sm", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
   })
@@ -598,7 +614,7 @@ describe('canonical class suggestions', () => {
   })
 
   test('does not suggest partial multi-value or unknown variable tokens', () => {
-    expect(suggestCanonicalClassName("(margin:1rem|1.125rem)", css)).toBeUndefined()
+    expect(suggestCanonicalClassName("(margin:1rem_1.125rem)", css)).toBeUndefined()
     expect(suggestCanonicalClassName("(margin:var(--spacing-unknown))", css)).toBeUndefined()
   })
 
@@ -626,7 +642,7 @@ describe('canonical class suggestions', () => {
     expect(suggestCanonicalClassName("(margin:var(--spacing-md))", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
-    expect(suggestCanonicalClassName("(margin:1rem|1.5rem)", css, {
+    expect(suggestCanonicalClassName("(margin:1rem_1.5rem)", css, {
       ...defaultCanonicalClassNameOptions,
     })).toBeUndefined()
     expect(suggestCanonicalClassName("(display:block)@dark@sm", css, {

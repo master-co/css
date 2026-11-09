@@ -1,9 +1,10 @@
 use super::{
     CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalGroupEntry,
-    CompositionRecipe, EngineError, HashSet, LintSession, RawValueCandidateIr, UtilityLayerName,
-    canonical_class_parts, collect_rule_declarations, has_same_canonical_rule_shape,
-    matching_composition_recipe, merge_group_declarations, normalize_composition_declarations,
-    push_canonical_candidate, rules_declaration_signature, split_top_level,
+    CompositionRecipe, EngineError, GeneratedRuleIr, HashSet, LintSession, RawValueCandidateIr,
+    UtilityLayerName, canonical_class_parts, collect_rule_declarations,
+    has_same_canonical_rule_shape, matching_composition_recipe, merge_group_declarations,
+    normalize_composition_declarations, push_canonical_candidate, rules_declaration_signature,
+    split_top_level,
 };
 
 impl LintSession {
@@ -126,6 +127,8 @@ impl LintSession {
         class_name: &str,
         options: &CanonicalClassNameOptions,
     ) -> Result<Option<String>, EngineError> {
+        let spelled = self.underscore_spelling(class_name)?;
+        let class_name = spelled.as_deref().unwrap_or(class_name);
         let source = self.engine.inspect(class_name)?;
         if source.rules.is_empty() {
             return Ok(None);
@@ -179,7 +182,52 @@ impl LintSession {
                 return Ok(Some(candidate.class_name));
             }
         }
-        Ok(None)
+        Ok(spelled)
+    }
+
+    /// The class with `_` for each deprecated `|` space, keeping only replacements that
+    /// leave every generated rule identical apart from the class selector. A `|` in a
+    /// selector, string or URL is literal and stays.
+    pub(crate) fn underscore_spelling(
+        &self,
+        class_name: &str,
+    ) -> Result<Option<String>, EngineError> {
+        let pipes = unprotected_pipes(class_name);
+        if pipes.is_empty() {
+            return Ok(None);
+        }
+        let source = self.engine.inspect(class_name)?.rules;
+        if source.is_empty() {
+            return Ok(None);
+        }
+        let respell = |positions: &[usize]| {
+            let mut bytes = class_name.as_bytes().to_vec();
+            for position in positions {
+                bytes[*position] = b'_';
+            }
+            String::from_utf8(bytes).expect("ASCII replacements keep UTF-8")
+        };
+        let same = |candidate: &str| -> Result<bool, EngineError> {
+            let rules = self.engine.inspect(candidate)?.rules;
+            Ok(same_rules_apart_from_class(
+                class_name, &source, candidate, &rules,
+            ))
+        };
+        let all = respell(&pipes);
+        if same(&all)? {
+            return Ok(Some(all));
+        }
+        let mut accepted = Vec::new();
+        for position in pipes {
+            if same(&respell(&[position]))? {
+                accepted.push(position);
+            }
+        }
+        if accepted.is_empty() {
+            return Ok(None);
+        }
+        let partial = respell(&accepted);
+        Ok(same(&partial)?.then_some(partial))
     }
 
     /// Classes whose selector reaches another element, with that remote selector part.
@@ -226,7 +274,22 @@ impl LintSession {
             if !self.engine.has_named_tokens_for_key(key) {
                 continue;
             }
-            let segments = split_top_level(&source[head.value.clone()], '|')
+            // Mark each `_` space like a `|` space; decoding keeps byte offsets.
+            let value = &source[head.value.clone()];
+            let decoded = mastercss_lexer::decode_native_value(value);
+            let value = value
+                .bytes()
+                .zip(decoded.bytes())
+                .map(|(byte, decoded)| {
+                    if byte == b'_' && decoded == b' ' {
+                        b'|'
+                    } else {
+                        byte
+                    }
+                })
+                .collect::<Vec<_>>();
+            let value = String::from_utf8(value).expect("ASCII replacements keep UTF-8");
+            let segments = split_top_level(&value, '|')
                 .into_iter()
                 .filter(|segment| !(segment.starts_with("var(--") && segment.ends_with(')')))
                 .map(str::to_owned)
@@ -256,4 +319,56 @@ impl LintSession {
     pub fn dispose(&mut self) {
         self.engine.dispose();
     }
+}
+
+/// Byte offsets of each `|` outside strings, comments and escapes.
+fn unprotected_pipes(class_name: &str) -> Vec<usize> {
+    let bytes = class_name.as_bytes();
+    let mut pipes = Vec::new();
+    let mut quote = None;
+    let mut index = 0;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        if let Some(current) = quote {
+            if byte == b'\\' {
+                index += 1;
+            } else if byte == current {
+                quote = None;
+            }
+        } else if byte == b'\\' {
+            index += 1;
+        } else if byte == b'"' || byte == b'\'' {
+            quote = Some(byte);
+        } else if bytes[index..].starts_with(b"/*") {
+            index = class_name[index + 2..]
+                .find("*/")
+                .map_or(bytes.len(), |offset| index + 2 + offset + 1);
+        } else if byte == b'|' {
+            pipes.push(index);
+        }
+        index += 1;
+    }
+    pipes
+}
+
+/// Whether two spellings generate the same rules, apart from their class selectors.
+fn same_rules_apart_from_class(
+    source_class: &str,
+    source: &[GeneratedRuleIr],
+    candidate_class: &str,
+    candidate: &[GeneratedRuleIr],
+) -> bool {
+    let source_selector = mastercss_lexer::css_escape(source_class);
+    let candidate_selector = mastercss_lexer::css_escape(candidate_class);
+    source.len() == candidate.len()
+        && source.iter().zip(candidate).all(|(source, candidate)| {
+            source.layer == candidate.layer
+                && source.utility_type == candidate.utility_type
+                && source.sort_tier == candidate.sort_tier
+                && source.priority == candidate.priority
+                && source.variable_names == candidate.variable_names
+                && source.keyframe_names == candidate.keyframe_names
+                && source.text.replace(&source_selector, "\0")
+                    == candidate.text.replace(&candidate_selector, "\0")
+        })
 }

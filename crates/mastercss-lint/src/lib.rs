@@ -253,7 +253,7 @@ impl RawValuePolicy {
             })
             .map(String::as_str)
             .collect::<Vec<_>>()
-            .join("|");
+            .join("_");
         (!value.is_empty()).then_some(value)
     }
 

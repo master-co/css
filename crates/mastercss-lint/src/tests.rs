@@ -235,6 +235,48 @@ fn suggests_canonical_classes_from_engine_facts() {
 }
 
 #[test]
+fn respells_deprecated_pipe_spaces_with_underscores() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    let class_names = [
+        "(margin:0|auto)",
+        "(grid-template-columns:1fr|auto)@container(card|width>=28rem)",
+        "(background:url(a|b.png)|no-repeat)",
+        "(content:'a|b')",
+        "underline:is(.a|.b)",
+        "(margin:0_auto)",
+        "(margin:0_|auto)",
+    ]
+    .map(str::to_owned);
+    let result = session
+        .canonical_class_names(&class_names, None, &CanonicalClassNameOptions::default())
+        .unwrap();
+    let suggestions = result
+        .suggestions
+        .iter()
+        .map(|suggestion| {
+            (
+                suggestion.class_name.as_str(),
+                suggestion.recommended.as_str(),
+            )
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        suggestions,
+        [
+            ("(margin:0|auto)", "(margin:0_auto)"),
+            (
+                "(grid-template-columns:1fr|auto)@container(card|width>=28rem)",
+                "(grid-template-columns:1fr_auto)@container(card_width>=28rem)"
+            ),
+            (
+                "(background:url(a|b.png)|no-repeat)",
+                "(background:url(a|b.png)_no-repeat)"
+            ),
+        ]
+    );
+}
+
+#[test]
 fn suggests_canonical_composition_groups_from_engine_facts() {
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let cases = [

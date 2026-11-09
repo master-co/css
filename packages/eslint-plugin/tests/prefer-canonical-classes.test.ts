@@ -91,7 +91,7 @@ jsxTester.run('prefer canonical classes', rule, {
             code: "<div class=\"(margin:var(--spacing-md))\">Explicit variable references are preserved</div>",
         },
 {
-            code: "<div class=\"(margin:1rem|1.5rem)\">Literal multi-values are preserved</div>",
+            code: "<div class=\"(margin:1rem_1.5rem)\">Literal multi-values are preserved</div>",
         },
 {
             code: `<div class="w-md h-md">Composition utilities disabled</div>`,
@@ -120,7 +120,7 @@ code: `<div class="(display:block) (align-items:center)">Static utilities</div>`
 code: `<div class="(font-size:16px) (font-size:1rem) (r:.375rem)">Variables</div>`
 },
 {
-code: "<div class=\"(margin:1rem|1.5rem) (padding:.5rem|1rem) (r:.25rem|.375rem)\">Multi-value tokens</div>"
+code: "<div class=\"(margin:1rem_1.5rem) (padding:.5rem_1rem) (r:.25rem_.375rem)\">Multi-value tokens</div>"
 },
 {
 code: "<div class=\"(margin:var(--spacing-md)) (r:var(--radius-md)) (color:var(--color-red-60))\">Variable references</div>"
@@ -162,7 +162,7 @@ code: `<div class="margin-md@dark@sm">Unknown token names have no autofix, with 
 code: "<div class=\"(margin:var(--spacing-md))@dark@sm\">Explicit variable references are preserved preserves condition nesting</div>"
 },
 {
-code: "<div class=\"(margin:1rem|1.5rem)@dark@sm\">Literal multi-values are preserved preserves condition nesting</div>"
+code: "<div class=\"(margin:1rem_1.5rem)@dark@sm\">Literal multi-values are preserved preserves condition nesting</div>"
 },
 {
 code: `<div class="mt-md@dark@sm mb-md@dark@sm">Axis composition with condition order</div>`
@@ -174,8 +174,18 @@ code: `clsx('(display:block)@dark@sm (font-size:16px)@dark@sm')`
 code: 'ctl(`(display:block):hover@dark@sm`)'
 }
 , { code: 'ctl(`(padding-left:1rem) (padding-right:1rem)`)' }
+, { code: `<div class="(content:'a|b') underline:is(.a|.b)">Literal pipes stay</div>` }
 ],
-    invalid: []
+    invalid: [
+        {
+            code: `<div class="(margin:1rem|1.5rem) grid-cols(2)@container(card|width>=40rem)">Deprecated pipes</div>`,
+            output: `<div class="(margin:1rem_1.5rem) grid-cols(2)@container(card_width>=40rem)">Deprecated pipes</div>`,
+            errors: [
+                { messageId: 'preferClass', data: { message: 'Use canonical class "(margin:1rem_1.5rem)" instead of "(margin:1rem|1.5rem)". Writing spaces as | is deprecated; write them as _.' } },
+                { messageId: 'preferClass', data: { message: 'Use canonical class "grid-cols(2)@container(card_width>=40rem)" instead of "grid-cols(2)@container(card|width>=40rem)". Writing spaces as | is deprecated; write them as _.' } }
+            ]
+        }
+    ]
 
 })
 

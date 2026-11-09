@@ -645,10 +645,16 @@ fn find_class_range(items: &[ClassListItem], token: &str) -> Option<SourceRange>
 }
 
 fn canonical_message(actual: &str, recommended: &str) -> String {
+    let pipes = |class: &str| class.matches('|').count();
     format!(
-        "Use canonical class \"{}\" instead of \"{}\".",
+        "Use canonical class \"{}\" instead of \"{}\".{}",
         recommended.replace('`', "\\`"),
-        actual.replace('`', "\\`")
+        actual.replace('`', "\\`"),
+        if pipes(recommended) < pipes(actual) {
+            " Writing spaces as | is deprecated; write them as _."
+        } else {
+            ""
+        }
     )
 }
 

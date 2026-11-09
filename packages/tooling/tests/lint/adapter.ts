@@ -254,7 +254,7 @@ export function findUnapprovedRawValueClasses(
       return {
         className: candidate.className,
         key: candidate.key,
-        value: segments.join('|'),
+        value: segments.join('_'),
         properties: [...candidate.properties]
       }
     })

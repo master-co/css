@@ -144,11 +144,60 @@ fn group(property: &str) -> &str {
     }
 }
 
+/// A CSS value as a class value: each whitespace run becomes one `_`, and an authored
+/// underscore the class would read as a space is escaped. The engine verifies the result.
 fn encoded(value: &str) -> String {
-    value
-        .chars()
-        .map(|c| if c.is_ascii_whitespace() { '|' } else { c })
-        .collect()
+    let mut output = String::with_capacity(value.len());
+    let mut authored = Vec::new();
+    let mut quote = None;
+    let mut characters = value.chars().peekable();
+    while let Some(character) = characters.next() {
+        if let Some(current) = quote {
+            output.push(character);
+            if character == current {
+                quote = None;
+            } else if character == '\\'
+                && let Some(next) = characters.next()
+            {
+                output.push(next);
+            }
+            continue;
+        }
+        match character {
+            '\'' | '"' => {
+                quote = Some(character);
+                output.push(character);
+            }
+            '\\' => {
+                output.push(character);
+                if let Some(next) = characters.next() {
+                    output.push(next);
+                }
+            }
+            '_' => {
+                authored.push(output.len());
+                output.push('_');
+            }
+            _ if character.is_ascii_whitespace() => {
+                while characters.next_if(char::is_ascii_whitespace).is_some() {}
+                output.push('_');
+            }
+            _ => output.push(character),
+        }
+    }
+    // Decoding replaces bytes in place, so offsets line up with `output`.
+    let decoded = mastercss_lexer::decode_native_value(&output);
+    let mut result = String::with_capacity(output.len() + authored.len());
+    let mut copied = 0;
+    for index in authored {
+        if decoded.as_bytes()[index] == b' ' {
+            result.push_str(&output[copied..index]);
+            result.push('\\');
+            copied = index;
+        }
+    }
+    result.push_str(&output[copied..]);
+    result
 }
 
 fn numeric_argument(value: &str) -> Option<&str> {
