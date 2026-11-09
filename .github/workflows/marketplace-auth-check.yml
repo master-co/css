@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "26"
       - name: Validate the existing Azure identity configuration
         shell: bash
         env:
@@ -70,7 +70,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "26"
       - name: Install the release-matched Open VSX CLI in isolated tools
         shell: bash
         run: npm install --prefix "$RUNNER_TEMP/open-vsx-auth-tools" --ignore-scripts --no-audit --no-fund ovsx@1.0.2

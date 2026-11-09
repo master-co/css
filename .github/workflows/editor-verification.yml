@@ -132,7 +132,7 @@ jobs:
           path: candidate-vsix
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "26"
       - name: Install isolated official VS Code testing tools
         if: ${{ !matrix.musl }}
         shell: bash

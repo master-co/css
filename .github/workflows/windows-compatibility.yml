@@ -123,7 +123,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "26"
       - name: Install the pinned watcher in isolated tools
         shell: bash
         run: npm install --prefix "$RUNNER_TEMP/watch-gap-tools" --ignore-scripts --no-audit --no-fund chokidar@5.0.0

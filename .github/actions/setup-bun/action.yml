@@ -3,7 +3,7 @@ description: Configure Bun and Node.js, then install dependencies.
 inputs:
   node-version:
     description: Node.js version to install.
-    default: "24"
+    default: "26"
   install:
     description: Whether to install workspace dependencies.
     default: "true"
