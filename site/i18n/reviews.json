@@ -453,19 +453,19 @@
     },
     "guide/introduction/content.mdx": {
       "tw": {
-        "sourceHash": "9aa85dd63a427b92ec48f571a50ed2fb61adf654dc9533f5d01420b9cd53630b",
+        "sourceHash": "2491b7c4462bfec468700fbe72d7acb8535323412a74b633aef0cb587b5ff33f",
         "translationHash": "16daf09cdc148a3b58201d6be15b74c4a7de0e92e7522a79c23142653000878f"
       },
       "ja": {
-        "sourceHash": "9aa85dd63a427b92ec48f571a50ed2fb61adf654dc9533f5d01420b9cd53630b",
+        "sourceHash": "2491b7c4462bfec468700fbe72d7acb8535323412a74b633aef0cb587b5ff33f",
         "translationHash": "62ad34ac62c7578e28674699840fb18bb4ac474ad88ff3fe7115ad164efb4616"
       },
       "ko": {
-        "sourceHash": "9aa85dd63a427b92ec48f571a50ed2fb61adf654dc9533f5d01420b9cd53630b",
+        "sourceHash": "2491b7c4462bfec468700fbe72d7acb8535323412a74b633aef0cb587b5ff33f",
         "translationHash": "02c0b3a8639f4d6449af84e2ba1199784baed7cd7298eae2c9fc7c2a4dff3fb4"
       },
       "cn": {
-        "sourceHash": "9aa85dd63a427b92ec48f571a50ed2fb61adf654dc9533f5d01420b9cd53630b",
+        "sourceHash": "2491b7c4462bfec468700fbe72d7acb8535323412a74b633aef0cb587b5ff33f",
         "translationHash": "016c962a50834651c6c89f5ee8dec94c6dcdace9c5ee77ec961a9627dcc5541e"
       }
     },

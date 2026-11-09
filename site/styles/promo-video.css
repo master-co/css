@@ -136,7 +136,9 @@
     }
 
     &[open] {
-      animation: promo-dialog-in 260ms var(--ui-ease-out, ease) both;
+      /* A var() in the shorthand could name an animation, which retains every keyframe. */
+      animation: promo-dialog-in 260ms both;
+      animation-timing-function: var(--ui-ease-out, ease);
     }
 
     & .promo-video {
