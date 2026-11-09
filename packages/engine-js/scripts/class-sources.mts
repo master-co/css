@@ -119,7 +119,13 @@ const DECLARATIONS = [
   'width:clamp(1px,2px+3px,4px)', 'top:1', 'margin-top:2', 'font-weight:600', '--x:1', 'aspect-ratio:16/9',
   'flex:1|1|auto', 'grid-template-columns:[start]|1fr|[end]', 'animation-name:slide_in', 'content:\')\'', '--payload:a:b@c_foo',
   'background-image:url(/a{b.svg)', 'background:url(/a]b/*c|d.png)', '--x:{a;b}', '--x:', 'color:red!important', 'color:red|!|IMPORTANT',
-  'color:red!/**/\\69mportant', 'content:\'!important\'', '--x:var(--y,!important)', '--x:!important', 'unknown-prop:1', 'color:red/*a)b*/'
+  'color:red!/**/\\69mportant', 'content:\'!important\'', '--x:var(--y,!important)', '--x:!important', 'unknown-prop:1', 'color:red/*a)b*/',
+  // `_` spaces, literal `__` and `\_`, protected `var()` names, and their edges around `!important`.
+  'padding:1rem_2rem', 'border:1px_solid_var(--color-red-60)', 'transition:opacity_300ms_ease_100ms', 'flex:1_1_auto',
+  'grid-template-columns:[start]_1fr_[end]', 'animation-name:slide\\_in', 'animation-name:slide__in', 'color:red_!important',
+  'color:red_!_IMPORTANT', 'color:red!\\_important', '--x:var(--a_b,1px_solid)', 'background:url(/a_b.png)_no-repeat',
+  'width:calc(100%_-_var(--gap_x))', 'transition:--angle_1s', '--x:_a_', 'margin:0_|auto', 'font-family:a\\5f_b',
+  'color:rgb(30_60_90/80%)', 'content:\'a_b\'_\'c|d\''
 ]
 /** Native declaration heads; the bare legacy spelling is kept as input both engines must reject alike. */
 const NATIVE_DECLARATIONS = DECLARATIONS.map((declaration) => `(${declaration})`)
@@ -220,8 +226,8 @@ const PROPERTIES = [
 const UNITS = ['', 'px', 'rem', 'em', '%', 'vw', 'deg', 'ms', 's', 'x', 'fr', 'e', 'e3', 'E-2px']
 const IDENTS = ['auto', 'none', 'red', 'solid', 'inherit', 'sans-serif', 'currentColor', 'max-content', '-webkit-box', 'a_b', 'x\\:y', '✓']
 const VARIABLES = ['var(--color-red-60)', 'var(--spacing-md)', 'var(--spacing-md,1px)', 'var(--unknown)', 'var(--color-red-60,var(--spacing-md))', 'VAR(--spacing-md)', 'v\\61r(--spacing-md)', 'var(  --spacing-md  )']
-const STRINGS = ['"a"', "'a_b'", '"x|y"', "'it\\'s'", '"\\2014"', '"😀"', '"a\\\nb"', "'unclosed", '"(|)"']
-const OTHERS = ['#fff', '#0000', 'url(a.png)', 'url("x|y")', 'url(a(b)', '/*c*/', '\\2014', '!important', '1/2', 'calc(1px', ')', '{a}', 'a;b', '[x]']
+const STRINGS = ['"a"', "'a_b'", '"x|y"', '"_"', "'it\\'s'", '"\\2014"', '"😀"', '"a\\\nb"', "'unclosed", '"(|)"']
+const OTHERS = ['#fff', '#0000', 'url(a.png)', 'url("x|y")', 'url(a_b)', 'var(--a_b)', 'VAR(--a_b,_c)', '\\_', 'a__b', '_', 'url(a(b)', '/*c*/', '\\2014', '!important', '1/2', 'calc(1px', ')', '{a}', 'a;b', '[x]']
 
 /** Grammar-driven native declarations: math, functions, references, strings, escapes and separators. */
 export function valueClasses(count: number, seed: number) {
@@ -241,7 +247,7 @@ export function valueClasses(count: number, seed: number) {
   }
   const expression = (depth: number): string => {
     let text = atom(depth)
-    for (let terms = Math.floor(random() * 4); terms > 0; terms--) text += pick(['+', '-', '*', '/', ',', '|', ' ', '|+|', '-', '- ', ', ']) + atom(depth)
+    for (let terms = Math.floor(random() * 4); terms > 0; terms--) text += pick(['+', '-', '*', '/', ',', '|', ' ', '|+|', '-', '- ', ', ', '_', '_+_', '__', '_|']) + atom(depth)
     return text
   }
   const classes = new Set<string>()
@@ -372,7 +378,9 @@ export function themeEngineCases(): EngineCase[] {
   }
   const containers = ['@container(--md)', '@container(card|--md)', '@container(--max-md)', '@container(card|--max-md)', '@container(--compact)',
     '@container(card|--both)', '@container(--both)', '@container(--px)', '@container(--missing)', '@container(card|--missing)', '@container(--md)@container(--px)',
-    '@container(width>=28rem)', '@container(--md)@media(width>=40rem)', '@container(--md)@layer(components)', '@container(card|--md):hover']
+    '@container(width>=28rem)', '@container(--md)@media(width>=40rem)', '@container(--md)@layer(components)', '@container(card|--md):hover',
+    '@container(card_--md)', '@container(card_--max-md)', '@container(card_--missing)', '@container(card_--md):hover',
+    '@container(card_width>=28rem)', '@container(my\\_card_width>=28rem)', '@container(card_(width>=28rem))']
   const containerClasses = ['fg-red', 'gap-md', '(color:red)'].flatMap((base) => containers.map((condition) => base + condition))
   const containerSteps: EngineCaseStep[] = [
     { op: 'ensure', classes: containerClasses },
@@ -407,7 +415,7 @@ export function noiseClasses(count: number, seed: number) {
   return classes
 }
 
-const STATE_BASES = ['(color:red)', 'fg-red-60', 'm-md', 'flex', '-m-md', '(width:calc(1px+2px))', 'col-gap-md', 'bg-blue-50/.5', '(content:"a_b")', '(opacity:.5)', '(font:12px|sans)', 'items-center', '(background-image:url(/a{b.svg))']
+const STATE_BASES = ['(color:red)', 'fg-red-60', 'm-md', 'flex', '-m-md', '(width:calc(1px+2px))', 'col-gap-md', 'bg-blue-50/.5', '(content:"a_b")', '(opacity:.5)', '(font:12px|sans)', '(font:12px_sans)', 'items-center', '(background-image:url(/a{b.svg))']
 const SELECTORS = [
   ':hover', ':focus', ':focus-visible', ':active', ':disabled', ':hover:focus', '::before', '::after', '::placeholder', ':first-child',
   ':nth-child(2n+1)', ':nth-child(2n+1_of_.item)', ':nth-last-child(odd_of_li_a)', ':not(.disabled)', ':not(:hover)', ':is(_h1,_h2)',
@@ -421,8 +429,8 @@ const CONDITIONS = [
   '@media(width=40rem)', '@media(hover)', '@media(orientation:landscape)', '@media(resolution>=2x)', '@media(aspect-ratio>16/9)',
   '@media(prefers-color-scheme:dark)', '@media(print)', '@media(screen)', '@media(width>=-0px)', '@media(width>=1e3px)', '@media(--sm)',
   '@media(--dark)', '@media(--unknown)', '@media((--sm)|and|(--dark))', '@media(not|(--sm))', '@media(--sm)', '@media((width>=40rem)|and|(hover))',
-  '@supports(display:grid)', '@supports(display:grid)', '@supports(--x:1)', '@container(width>=30rem)', '@container(card|width>=30rem)',
-  '@container(style(--x))', '@container(card|style(--density))', '@container(--md)', '@container(card|--max-sm)', '@container(--unknown)', '@starting-style', '@layer(base)', '@layer(defaults)', '@layer(components)',
+  '@supports(display:grid)', '@supports(display:grid)', '@supports(--x:1)', '@container(width>=30rem)', '@container(card|width>=30rem)', '@container(card_width>=30rem)', '@media(--sm_and_--dark)', '@media(not_(--sm))',
+  '@container(style(--x))', '@container(card|style(--density))', '@container(card_style(--density_mode))', '@container(--md)', '@container(card|--max-sm)', '@container(--unknown)', '@starting-style', '@layer(base)', '@layer(defaults)', '@layer(components)',
   '@layer(utilities)', '@layer(other)', '@print', '@media(height<=600px)', '@media(width<64rem)', '@media(width>=40em)', '@media()', '@'
 ]
 

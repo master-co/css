@@ -478,10 +478,15 @@ pub(crate) fn scan_color_value(
             }
             continue;
         }
+        if mastercss_lexer::is_space_underscore(value, cursor) {
+            cursor += 1;
+            continue;
+        }
         if character.is_ascii_alphabetic() || matches!(character, '-' | '_' | '$') {
             let start = cursor;
             cursor += character.len_utf8();
             while cursor < value.len()
+                && !mastercss_lexer::is_space_underscore(value, cursor)
                 && value[cursor..]
                     .chars()
                     .next()
@@ -504,7 +509,7 @@ pub(crate) fn scan_color_value(
                     tokens.push(EngineColorToken {
                         start: utf16_len(&class_name[..value_offset + start]),
                         end: utf16_len(&class_name[..value_offset + end]),
-                        value: value[start..end].replace('|', " "),
+                        value: mastercss_lexer::decode_native_value(&value[start..end]),
                         alpha: None,
                     });
                 } else if identifier == "var" {

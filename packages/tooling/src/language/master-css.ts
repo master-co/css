@@ -7,7 +7,8 @@ export function matchesLanguageServiceNativeDeclaration({ property }: { property
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']
 export const QUERY_COMPARISON_OPERATORS = ['>', '<', '=']
 export const QUERY_LOGICAL_OPERATORS = ['&']
-export const DELIMITER_SIGN = '|'
+/** The value space a class writes; `|` is the deprecated spelling. */
+export const DELIMITER_SIGN = '_'
 export const SEPARATOR_SIGN = ','
 export const AT_SIGN = '@'
 export const CLASS_ATTRIBUTES = ['class', 'className']

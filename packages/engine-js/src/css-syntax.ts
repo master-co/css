@@ -34,7 +34,7 @@ export interface Statement {
 }
 
 const isNewline = (unit: number) => unit === 0x0a || unit === 0x0d || unit === 0x0c
-const isHex = (unit: number) => isAsciiDigit(unit) || (unit >= 0x61 && unit <= 0x66) || (unit >= 0x41 && unit <= 0x46)
+export const isHex = (unit: number) => isAsciiDigit(unit) || (unit >= 0x61 && unit <= 0x66) || (unit >= 0x41 && unit <= 0x46)
 const isLetter = (unit: number) => (unit >= 0x61 && unit <= 0x7a) || (unit >= 0x41 && unit <= 0x5a)
 const isNameStart = (unit: number) => isLetter(unit) || unit === 0x5f || unit >= 0x80
 export const isCssWhitespace = (unit: number) => unit === 0x20 || unit === 0x09 || unit === 0x0a || unit === 0x0d || unit === 0x0c

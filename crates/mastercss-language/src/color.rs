@@ -257,7 +257,7 @@ fn parse_expression(
         }));
     }
     Ok(Some(LanguageColorExpressionIr::Literal {
-        value: value.replace('|', " "),
+        value: mastercss_lexer::decode_native_value(value),
         alpha,
     }))
 }
@@ -296,7 +296,7 @@ pub(crate) fn color_source_format(
         return Ok(None);
     };
     let resolved = engine.resolve_color_token(token, None)?;
-    let normalized = resolved.as_deref().unwrap_or(token).replace('|', " ");
+    let normalized = mastercss_lexer::decode_native_value(resolved.as_deref().unwrap_or(token));
     let token = normalized.trim();
     if is_dynamic_color(token) {
         return Ok(None);

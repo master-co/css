@@ -21,6 +21,7 @@ pub use utility_name::valid_utility_name;
 
 mod query;
 mod selector;
+mod spaces;
 pub use query::{
     NativeQuery, canonical_native_content, decode_native_content, legacy_query, native_content,
     native_query_structure, parse_native_query, query_requires_css,
@@ -30,6 +31,7 @@ pub use selector::{
     selector_class_names, split_selector_list, valid_mode_name, valid_mode_selector,
     valid_selector_structure,
 };
+pub use spaces::single_underscore as is_space_underscore;
 
 use mastercss_schema::{LEXER_BATCH_VERSION, SourceRange};
 use serde::{Deserialize, Serialize};

@@ -37,6 +37,10 @@ fn heads_separate_names_declarations_and_suffixes_structurally() {
         r".flex\:hover:hover{display:flex}"
     );
     assert_eq!(
+        rule(&engine, "(flex:1_1_auto):hover"),
+        r".\(flex\:1_1_auto\)\:hover:hover{flex:1 1 auto}"
+    );
+    assert_eq!(
         rule(&engine, "(flex:1|1|auto):hover"),
         r".\(flex\:1\|1\|auto\)\:hover:hover{flex:1 1 auto}"
     );
@@ -56,14 +60,31 @@ fn heads_separate_names_declarations_and_suffixes_structurally() {
         ("(color:red):unknown-state", ":unknown-state", "color:red"),
         ("(unknown-property:1)", "", "unknown-property:1"),
         (
+            "(grid-template-columns:[start]_1fr_[end])",
+            "",
+            "grid-template-columns:[start] 1fr [end]",
+        ),
+        (
             "(grid-template-columns:[start]|1fr|[end])",
             "",
             "grid-template-columns:[start] 1fr [end]",
         ),
-        ("(animation-name:slide_in)", "", "animation-name:slide_in"),
+        (
+            r"(animation-name:slide\_in)",
+            "",
+            r"animation-name:slide\_in",
+        ),
+        ("(animation-name:slide__in)", "", "animation-name:slide__in"),
+        (
+            "(border:1px_solid_var(--line_color))",
+            "",
+            "border:1px solid var(--line_color)",
+        ),
         ("(content:')')::before", "::before", "content:')'"),
         ("(content:'a|b')", "", "content:'a|b'"),
-        ("(--payload:a:b@c_foo)", "", "--payload:a:b@c_foo"),
+        ("(content:'a_b')", "", "content:'a_b'"),
+        (r"(--payload:a:b@c\_foo)", "", r"--payload:a:b@c\_foo"),
+        ("(--payload:a:b@c_foo)", "", "--payload:a:b@c foo"),
         ("(--x:{a;b})", "", "--x:{a;b}"),
         ("(--x:)", "", "--x:"),
         (

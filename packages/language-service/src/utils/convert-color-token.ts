@@ -30,5 +30,5 @@ export function convertColorInFormat(
         .toString({ format: 'css', precision: 4, inGamut: false })
   return token
     .replace(' / ', '/')
-    .replaceAll(' ', '|')
+    .replaceAll(' ', '_')
 }

@@ -2513,6 +2513,11 @@
         },
         {
           "op": "inspectContains",
+          "className": "(flex:1_1_auto):hover",
+          "expectedRuleContains": ".\\(flex\\:1_1_auto\\)\\:hover:hover{flex:1 1 auto}"
+        },
+        {
+          "op": "inspectContains",
           "className": "flex:hover",
           "expectedRuleContains": ".flex\\:hover:hover{display:flex}"
         },
@@ -2538,8 +2543,8 @@
         },
         {
           "op": "inspectContains",
-          "className": "(animation-name:slide_in)",
-          "expectedRuleContains": "{animation-name:slide_in}"
+          "className": "(animation-name:slide\\_in)",
+          "expectedRuleContains": "{animation-name:slide\\_in}"
         },
         {
           "op": "inspectContains",
@@ -2549,7 +2554,7 @@
         {
           "op": "inspectContains",
           "className": "(--payload:a:b@c_foo)",
-          "expectedRuleContains": "{--payload:a:b@c_foo}"
+          "expectedRuleContains": "{--payload:a:b@c foo}"
         },
         {
           "op": "inspectContains",

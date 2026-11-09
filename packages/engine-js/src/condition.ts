@@ -45,7 +45,8 @@ export function legacyQuery(token: string): string | undefined {
   if (!parts) return
   const [kind, body] = parts
   const open = body.indexOf('(')
-  if (open < 0 || !(open === 0 || body.slice(0, open).endsWith('|')) || !body.endsWith(')')) return
+  const name = body.slice(0, open)
+  if (open < 0 || !(open === 0 || name.endsWith('_') || name.endsWith('|')) || !body.endsWith(')')) return
   let depth = 0
   for (let index = open; index < body.length; index++) {
     if (body[index] === '(') depth++

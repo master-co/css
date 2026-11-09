@@ -1,7 +1,7 @@
 // Utility matching: which registered utilities a class names and with what value, as
 // the engine's named.rs, utility.rs and utility_matching.rs select them. Token
 // variables resolve on demand instead of from a precomputed table.
-import { hasTopLevelValueSeparator, isClassSuffixStart, isMatchStateBoundary, isQuote, parseFunctionalClass, splitDynamicValueState } from './class-syntax'
+import { decodeNativeValue, hasTopLevelValueSeparator, isClassSuffixStart, isMatchStateBoundary, parseFunctionalClass, splitDynamicValueState } from './class-syntax'
 import { leadingFunctionName } from './css-syntax'
 import { expandUtility, type ExpandedRule } from './mixin'
 import { cssEscape } from './program'
@@ -123,29 +123,8 @@ function matchUtility(className: string, utility: Utility, program: Program, typ
   }
 }
 
-/** Master `|` separators outside strings become spaces; nothing else changes. */
-function normalizeUnmanagedValue(value: string) {
-  let output = ''
-  let copied = 0
-  let quote = 0
-  let escaped = false
-  for (let index = 0; index < value.length; index++) {
-    const unit = value.charCodeAt(index)
-    if (escaped) {
-      escaped = false
-    } else if (unit === 0x5c) {
-      escaped = true
-    } else if (quote) {
-      if (unit === quote) quote = 0
-    } else if (isQuote(unit)) {
-      quote = unit
-    } else if (unit === 0x7c) {
-      output += `${value.slice(copied, index)} `
-      copied = index + 1
-    }
-  }
-  return output + value.slice(copied)
-}
+/** A function argument with Master's `_` (and deprecated `|`) spaces decoded, as `normalize_unmanaged_value` reads it. */
+const normalizeUnmanagedValue = decodeNativeValue
 
 /**
  * The registered recipe, arguments and state token a function class calls; null when

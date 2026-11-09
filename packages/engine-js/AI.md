@@ -11,7 +11,7 @@ The browser engine: it executes compiled runtime programs (Rust still compiles m
 `createEngineSession` executes everything browsers ask of the Rust session: ensure, delete, execution state, snapshot, keyframe definitions, emitted globals and refresh:
 
 - `src/css-syntax.ts`: the CSS tokenizer and statement walker of `mastercss-lexer`.
-- `src/class-syntax.ts`: `(property:value)` declaration heads (CSS strings, comments, escapes, URL tokens and `!important`), native content, value, state and functional-class boundaries.
+- `src/class-syntax.ts`: `(property:value)` declaration heads (CSS strings, comments, escapes, URL tokens and `!important`), native content, value, state and functional-class boundaries, and the `_` value spaces (with the deprecated `|`) of `crates/mastercss-lexer/src/spaces.rs`.
 - `src/value.ts`: math normalization, `var()` references, inline theme tokens, `!important`, decimal opacity.
 - `src/utility.ts`: static and token matching; token variables resolve on demand (an alias, then `namespace-key` per `~namespace`; invalid keys and keys with `_` have none).
 - `src/selector.ts`: selector templates (descendant `_`, nesting `&`), their structure check and state priority.

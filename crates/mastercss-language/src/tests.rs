@@ -466,6 +466,28 @@ fn raw_value_semantics_mark_only_explicit_variable_references() {
 }
 
 #[test]
+fn raw_value_semantics_split_underscore_spaces() {
+    let value = "1px_solid_var(--line_color)_my\\_name_a__b";
+    let mut tokens = Vec::new();
+    push_value_semantic_tokens(&mut tokens, value, 0);
+    let views = token_views(value, &tokens);
+    for (text, kind) in [
+        ("solid", "enumMember"),
+        ("--line_color", "variable"),
+        ("my\\_name", "enumMember"),
+        ("a__b", "enumMember"),
+        ("_", "operator"),
+    ] {
+        assert!(
+            views
+                .iter()
+                .any(|(view, view_kind, _)| view == text && view_kind == kind),
+            "{text}: {views:?}"
+        );
+    }
+}
+
+#[test]
 fn named_tokens_keep_their_full_name_and_split_only_opacity() {
     let session = LanguageSession::create(include_str!(
         "../../../packages/preset/src/default-manifest.json"

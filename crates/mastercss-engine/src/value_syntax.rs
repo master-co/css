@@ -15,7 +15,9 @@ pub(crate) fn valid_class_structure(class_name: &str) -> bool {
     }
 }
 
+/// A function argument with Master spaces decoded and each word normalized.
 pub(crate) fn normalize_unmanaged_value(value: &str) -> String {
+    let value = mastercss_lexer::decode_native_value(value);
     let mut output = String::with_capacity(value.len());
     let mut token = String::new();
     let mut quote = None;
@@ -57,9 +59,6 @@ pub(crate) fn normalize_unmanaged_value(value: &str) -> String {
             flush(&mut token, &mut output);
             quote = Some(character);
             output.push(character);
-        } else if character == '|' {
-            flush(&mut token, &mut output);
-            output.push(' ');
         } else if character.is_ascii_whitespace() || matches!(character, '(' | ')' | ',' | '/') {
             flush(&mut token, &mut output);
             output.push(character);

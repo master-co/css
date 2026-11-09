@@ -146,7 +146,13 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
                 return Err("Invalid escape in a native declaration");
             }
             _ if starts_identifier(&source[cursor..]) => {
+                let ident_start = cursor;
                 let ident = name(source, &mut cursor);
+                let raw = &source[ident_start..cursor];
+                // A lone `_` is an encoded space, like `|` and whitespace.
+                if raw == "_" {
+                    continue;
+                }
                 if source[cursor..].starts_with('(') {
                     cursor += 1;
                     if ident.eq_ignore_ascii_case("url")
@@ -163,13 +169,24 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
                         items.push(Item::Other);
                     }
                 } else if top {
-                    items.push(if ident.eq_ignore_ascii_case("important") {
+                    // `red_!_important` spells the spaces around `!` as `_`.
+                    let word = if crate::spaces::single_underscore(source, ident_start) {
+                        &ident[1..]
+                    } else {
+                        ident.as_ref()
+                    };
+                    items.push(if word.eq_ignore_ascii_case("important") {
                         Item::Important
                     } else {
                         Item::Other
                     });
                 }
-                component_end = cursor;
+                // An encoded space never ends a component: `red_!important` is `red`.
+                component_end = if crate::spaces::single_underscore(source, cursor - 1) {
+                    cursor - 1
+                } else {
+                    cursor
+                };
                 continue;
             }
             // A block is a component of its own: `a!important{}` is not important.
@@ -230,7 +247,7 @@ fn finish(close: usize, items: &[Item]) -> ValueScan {
     }
 }
 
-fn skip_string(source: &str, start: usize) -> Result<usize, &'static str> {
+pub(crate) fn skip_string(source: &str, start: usize) -> Result<usize, &'static str> {
     let quote = source.as_bytes()[start];
     let mut cursor = start + 1;
     while let Some(character) = source[cursor..].chars().next() {
@@ -254,7 +271,7 @@ fn skip_string(source: &str, start: usize) -> Result<usize, &'static str> {
 /// An unquoted `url(` token is opaque: brackets, braces, slashes and pipes are URL text.
 /// It follows the CSS URL token: only CSS whitespace before `)` and non-printable code
 /// points end it badly; other Unicode, including U+00A0 and U+0085, is URL text.
-fn skip_url(source: &str, start: usize) -> Result<usize, &'static str> {
+pub(crate) fn skip_url(source: &str, start: usize) -> Result<usize, &'static str> {
     let mut cursor = start;
     while let Some(character) = source[cursor..].chars().next() {
         match character {
@@ -337,6 +354,13 @@ pub fn native_head_cursor(source: &str, cursor: usize) -> Option<NativeHeadCurso
             let mut end = index;
             let ident = name(source, &mut end);
             if end >= cursor {
+                // An encoded `_` space inside the name run starts the next component.
+                if let Some(space) = (index..cursor)
+                    .rev()
+                    .find(|position| crate::spaces::single_underscore(source, *position))
+                {
+                    component = space + 1;
+                }
                 break;
             }
             if !source[end..].starts_with('(') {
@@ -369,6 +393,8 @@ pub fn native_head_cursor(source: &str, cursor: usize) -> Option<NativeHeadCurso
     while let Some(character) = source[end..].chars().next() {
         if character == '\\' && starts_identifier(&source[end..]) {
             name(source, &mut end);
+        } else if crate::spaces::single_underscore(source, end) {
+            break;
         } else if component_character(character) {
             end += character.len_utf8();
         } else {
@@ -439,38 +465,10 @@ fn step(source: &str, index: usize, stack: &mut Vec<char>) -> Option<usize> {
     })
 }
 
-/// Decodes Master's `|` value spaces outside strings, comments, escapes and URL tokens.
+/// Decodes Master's value spaces, `_` and the deprecated `|`, outside strings,
+/// comments, escapes, URL tokens and the `--name` that opens a `var()`.
 pub fn decode_native_value(value: &str) -> String {
-    let mut output = String::with_capacity(value.len());
-    let mut cursor = 0;
-    while let Some(character) = value[cursor..].chars().next() {
-        let start = cursor;
-        match character {
-            '"' | '\'' => cursor = skip_string(value, cursor).unwrap_or(value.len()),
-            '/' if value[cursor..].starts_with("/*") => {
-                cursor = value[cursor + 2..]
-                    .find("*/")
-                    .map_or(value.len(), |offset| cursor + 2 + offset + 2);
-            }
-            _ if starts_identifier(&value[cursor..]) => {
-                let ident = name(value, &mut cursor);
-                if ident.eq_ignore_ascii_case("url")
-                    && value[cursor..].starts_with('(')
-                    && !value[cursor + 1..].starts_with(['"', '\''])
-                {
-                    cursor = skip_url(value, cursor + 1).unwrap_or(value.len());
-                }
-            }
-            '|' => {
-                output.push(' ');
-                cursor += 1;
-                continue;
-            }
-            _ => cursor += character.len_utf8(),
-        }
-        output.push_str(&value[start..cursor]);
-    }
-    output
+    crate::spaces::decode(value, crate::spaces::DashedNames::Variables)
 }
 
 #[cfg(test)]
@@ -561,6 +559,21 @@ mod tests {
             ),
             ("(color:red!important)", ("color", "red", true, "")),
             ("(color:red|!|IMPORTANT)!", ("color", "red", true, "!")),
+            ("(color:red_!important)", ("color", "red", true, "")),
+            ("(color:red_!_IMPORTANT)!", ("color", "red", true, "!")),
+            (
+                "(color:red!\\_important)",
+                ("color", "red!\\_important", false, ""),
+            ),
+            (
+                "(flex:1_1_auto):hover",
+                ("flex", "1_1_auto", false, ":hover"),
+            ),
+            (
+                "(font-family:foo\\_!important)",
+                ("font-family", "foo\\_", true, ""),
+            ),
+            ("(--x:a__!important)", ("--x", "a__", true, "")),
             ("(color:red!/**/\\69mportant)", ("color", "red", true, "")),
             (
                 "(content:'!important')",
@@ -626,6 +639,8 @@ mod tests {
             "(--:block)",
             "(width:)",
             "(width:|)",
+            "(width:_)",
+            "(width:_|_)",
             "(width:/**/)",
             "(width:!important)",
             "(color:{red})",
@@ -654,6 +669,11 @@ mod tests {
     #[test]
     fn decodes_value_spaces_outside_protected_text() {
         assert_eq!(decode_native_value("1|1|auto"), "1 1 auto");
+        assert_eq!(decode_native_value("1_1_auto"), "1 1 auto");
+        assert_eq!(
+            decode_native_value(r#"a_"b_c"_d\_e/*_*/_url(x_y)_var(--a_b)"#),
+            r#"a "b_c" d\_e/*_*/ url(x_y) var(--a_b)"#
+        );
         assert_eq!(
             decode_native_value(r#"a|"b|c"|d\|e/*|*/|url(x|y)|url('p|q')"#),
             r#"a "b|c" d\|e/*|*/ url(x|y) url('p|q')"#
@@ -690,6 +710,38 @@ mod tests {
             Some(Value {
                 property: 1..5,
                 component: 10..14,
+                closed: true
+            })
+        );
+        assert_eq!(
+            at("(flex:1_1_au¦to)"),
+            Some(Value {
+                property: 1..5,
+                component: 10..14,
+                closed: true
+            })
+        );
+        assert_eq!(
+            at("(border:1px_so¦"),
+            Some(Value {
+                property: 1..7,
+                component: 12..14,
+                closed: false
+            })
+        );
+        assert_eq!(
+            at("(border:1px_¦"),
+            Some(Value {
+                property: 1..7,
+                component: 12..12,
+                closed: false
+            })
+        );
+        assert_eq!(
+            at("(border:so¦lid_red)"),
+            Some(Value {
+                property: 1..7,
+                component: 8..13,
                 closed: true
             })
         );

@@ -250,7 +250,7 @@ test('CSS color-mix() function', async () => {
 })
 
 test('click to switch color spaces', async () => {
-  const target = 'color(display-p3|.2|.4|.6/.5)'
+  const target = 'color(display-p3_.2_.4_.6/.5)'
   const content = `<div class='(color:${target})'></div>`
   const doc = createDoc('html', content)
   const languageService = createLanguageService()
@@ -259,7 +259,7 @@ test('click to switch color spaces', async () => {
   if (!color) throw new Error('Expected a rendered display-p3 color.')
   const presentations = languageService.editSyntaxColors(doc, color.color, color.range) ?? []
   expect(presentations.map(({ label }) => label)).toEqual([
-    expect.stringMatching(/^color\(display-p3\|/u),
+    expect.stringMatching(/^color\(display-p3_/u),
     expect.stringMatching(/^#[\da-f]{8}$/u),
     expect.stringMatching(/^rgb\(/u),
     expect.stringMatching(/^hsl\(/u),
@@ -270,6 +270,8 @@ test('click to switch color spaces', async () => {
 
 test('convert any color spaces to RGB and hint correctly', async () => {
   for (const target of [
+    'rgb(0_0_0)',
+    'oklch(0%_0_0)',
     'rgb(0|0|0)',
     'hsl(0|0%|0%)',
     'hwb(0|0%|100%)',

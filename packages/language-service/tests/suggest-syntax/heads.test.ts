@@ -79,6 +79,8 @@ describe('declaration head values', () => {
   })
 
   test('replaces only the component after a space or comma delimiter', () => {
+    const spaced = complete('(border:1px_so')
+    expect(spaced.find('solid').textEdit).toEqual({ range: spaced.range('<div class="(border:1px_'.length), newText: 'solid)' })
     const border = complete('(border:1px|so')
     expect(border.find('solid').textEdit).toEqual({ range: border.range('<div class="(border:1px|'.length), newText: 'solid)' })
     const shadow = complete('(box-shadow:1px|1px|2px|black,')
@@ -98,6 +100,7 @@ describe('declaration head values', () => {
     }
     expect(apply('(display:bl', 'ock):hover', 'block')).toBe('<div class="(display:block):hover"></div>')
     expect(apply('(display:inl', 'ine-blo', 'inline-block')).toBe('<div class="(display:inline-block)"></div>')
+    expect(apply('(border:1px_so', 'lid_red)', 'dashed')).toBe('<div class="(border:1px_dashed_red)"></div>')
     expect(apply('(border:1px|so', 'lid|red)', 'dashed')).toBe('<div class="(border:1px|dashed|red)"></div>')
     expect(apply('(disp', 'lay:block)', '(display:')).toBe('<div class="(display:block)"></div>')
   })

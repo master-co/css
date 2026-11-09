@@ -107,10 +107,29 @@ pub(crate) fn push_semantic_token(
     });
 }
 
+/// The end of a value word; an encoded `_` space ends it and `\_` stays in it.
 pub(crate) fn value_identifier_end(value: &str, start: usize) -> usize {
     let mut end = start;
+    while let Some(character) = value[end..].chars().next() {
+        if character == '\\' && end > start {
+            end += 1;
+            end += value[end..].chars().next().map_or(0, char::len_utf8);
+        } else if (character.is_alphanumeric() || matches!(character, '_' | '-' | '.'))
+            && !mastercss_lexer::is_space_underscore(value, end)
+        {
+            end += character.len_utf8();
+        } else {
+            break;
+        }
+    }
+    end
+}
+
+/// The end of a `--name`, whose underscores are literal where the name is protected.
+fn dashed_name_end(value: &str, start: usize) -> usize {
+    let mut end = start;
     for character in value[start..].chars() {
-        if character.is_alphanumeric() || matches!(character, '_' | '-' | '.') {
+        if character.is_alphanumeric() || matches!(character, '_' | '-') {
             end += character.len_utf8();
         } else {
             break;
@@ -243,6 +262,11 @@ pub(crate) fn push_value_semantic_tokens(
             byte_index = unit_end;
             continue;
         }
+        if mastercss_lexer::is_space_underscore(value, byte_index) {
+            push_semantic_token(tokens, start, start + 1, "operator", &["valueSeparator"]);
+            byte_index += 1;
+            continue;
+        }
         if character.is_alphabetic()
             || character == '_'
             || (character == '-'
@@ -251,7 +275,19 @@ pub(crate) fn push_value_semantic_tokens(
                     .nth(1)
                     .is_some_and(|next| next.is_ascii_digit()))
         {
-            let end = value_identifier_end(value, byte_index);
+            // The `--name` that opens a `var()` keeps its underscores.
+            let variable = suffix.starts_with("--")
+                && value[..byte_index]
+                    .trim_end_matches(|character: char| {
+                        character.is_whitespace() || character == '|'
+                    })
+                    .to_ascii_lowercase()
+                    .ends_with("var(");
+            let end = if variable {
+                dashed_name_end(value, byte_index)
+            } else {
+                value_identifier_end(value, byte_index)
+            };
             let name = &value[byte_index..end];
             if value[end..].starts_with('(') {
                 push_semantic_token(
@@ -305,18 +341,7 @@ pub(crate) fn push_value_semantic_tokens(
                     tokens,
                     start,
                     offset + utf16_len(&value[..end]),
-                    if name.starts_with("--")
-                        && value[..byte_index]
-                            .trim_end_matches(|character: char| {
-                                character.is_whitespace() || character == '|'
-                            })
-                            .to_ascii_lowercase()
-                            .ends_with("var(")
-                    {
-                        "variable"
-                    } else {
-                        "enumMember"
-                    },
+                    if variable { "variable" } else { "enumMember" },
                     &[],
                 );
                 byte_index = end;
@@ -436,7 +461,9 @@ pub(crate) fn push_query_semantic_tokens(
         let suffix = &query[byte_index..];
         let character = suffix.chars().next().unwrap_or_default();
         let start = offset + utf16_len(&query[..byte_index]);
-        if matches!(character, '(' | ')' | ':' | ',' | '|') {
+        if matches!(character, '(' | ')' | ':' | ',' | '|')
+            || mastercss_lexer::is_space_underscore(query, byte_index)
+        {
             push_semantic_token(
                 tokens,
                 start,
@@ -460,8 +487,13 @@ pub(crate) fn push_query_semantic_tokens(
             );
             expect_property = character == '&';
             byte_index = end;
-        } else if character.is_alphanumeric() || matches!(character, '-' | '.') {
-            let end = value_identifier_end(query, byte_index);
+        } else if character.is_alphanumeric() || matches!(character, '-' | '.' | '_') {
+            // Every `--name` in a query keeps its underscores.
+            let end = if query[byte_index..].starts_with("--") {
+                dashed_name_end(query, byte_index)
+            } else {
+                value_identifier_end(query, byte_index)
+            };
             // A name before a comparison or a `:` is the feature being tested, in any query.
             let feature = query[end..].trim_start().starts_with(['<', '>', '=', ':']);
             push_query_value_token(

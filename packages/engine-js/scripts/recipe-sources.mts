@@ -141,7 +141,7 @@ const APPLY_HEADS = [
   '(color:red!important)', '(background-image:url(/a{b.svg))', '(content:\'@apply(--x)\')', 'color:red'
 ]
 const APPLY_CALLS = [
-  '@apply(--hocus)', '@apply(--dark)', '@apply(--wide)', '@apply(--motion)', '@apply(--pad(2px))', '@apply(--pad)', '@apply(--pad())', '@apply(--pad(1px|2px))',
+  '@apply(--hocus)', '@apply(--dark)', '@apply(--wide)', '@apply(--motion)', '@apply(--pad(2px))', '@apply(--pad)', '@apply(--pad())', '@apply(--pad(1px|2px))', '@apply(--pad(1px_2px))', '@apply(--pad(var(--a_b)_2px))',
   '@apply(--roomy)', '@apply(--gap(3))', '@apply(--gap(x))', '@apply(--gap(0))', '@apply(--size("sm"))', '@apply(--size(sm))', '@apply(--anim(spin))', '@apply(--anim(inherit))',
   '@apply(--fade(.2))', '@apply(--card)', '@apply(--nest)', '@apply(--sandwich)', '@apply(--kids)', '@apply(--before)', '@apply(--spin)', '@apply(--dyn)', '@apply(--theme)',
   '@apply(--nope)', '@apply(hocus)', '@apply()', '@apply(--hocus', '@apply(--pad(2px)more)', '@apply(--hocus|x)', '@apply(--pad(var(--n)))', '@apply(--pad(attr(x)))',

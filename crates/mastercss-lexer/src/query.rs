@@ -1,5 +1,6 @@
 //! Native query boundaries. CSS grammar/support validation belongs to tooling;
-//! this lexer only decodes Master whitespace outside strings and escapes.
+//! this lexer only decodes Master spaces (`_`, and the deprecated `|`) outside strings,
+//! comments, escapes, URL tokens and `--name`s.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NativeQuery {
@@ -8,14 +9,15 @@ pub struct NativeQuery {
 }
 
 pub fn native_content(source: &str) -> Option<String> {
-    content(source, false)
+    content(source)
 }
 
 pub fn decode_native_content(source: &str) -> Option<String> {
-    content(source, true)
+    native_content(source)
+        .map(|content| crate::spaces::decode(&content, crate::spaces::DashedNames::All))
 }
 
-fn content(source: &str, decode: bool) -> Option<String> {
+fn content(source: &str) -> Option<String> {
     let mut result = String::with_capacity(source.len());
     let mut stack = Vec::new();
     let mut quote = None;
@@ -67,11 +69,7 @@ fn content(source: &str, decode: bool) -> Option<String> {
             '{' | '}' | ';' if stack.is_empty() => return None,
             _ => {}
         }
-        result.push(if decode && character == '|' {
-            ' '
-        } else {
-            character
-        });
+        result.push(character);
     }
     (stack.is_empty() && quote.is_none() && !escaped && !comment).then_some(result)
 }
@@ -99,7 +97,7 @@ pub fn native_query_structure(source: &str) -> bool {
 }
 
 /// A class query names one condition without the native group parentheses: `media(width>=50rem)`,
-/// `media(print)`, `supports(display:grid)`, `container(card|width>=40rem)`. The prelude is the
+/// `media(print)`, `supports(display:grid)`, `container(card_width>=40rem)`. The prelude is the
 /// native query the engine emits, with those parentheses restored.
 pub fn parse_native_query(token: &str) -> Option<NativeQuery> {
     let (kind, body) = query_parts(token)?;
@@ -125,7 +123,7 @@ pub fn query_requires_css(token: &str) -> bool {
 pub fn legacy_query(token: &str) -> Option<String> {
     let (kind, body) = query_parts(token)?;
     let open = body.find('(')?;
-    if !(open == 0 || body[..open].ends_with('|')) || !body.ends_with(')') {
+    if !(open == 0 || body[..open].ends_with(['_', '|'])) || !body.ends_with(')') {
         return None;
     }
     let mut depth = 0_usize;
@@ -360,6 +358,16 @@ mod tests {
                 "style(--density:compact)",
             ),
             ("container(card|style(--density))", "card style(--density)"),
+            ("container(card_width>=40rem)", "card (width>=40rem)"),
+            ("container(card_style(--density))", "card style(--density)"),
+            (
+                "container(my\\_card_width>=40rem)",
+                "my\\_card (width>=40rem)",
+            ),
+            (
+                "container(style(--density_mode:compact))",
+                "style(--density_mode:compact)",
+            ),
         ] {
             assert_eq!(
                 parse_native_query(source)
@@ -384,6 +392,10 @@ mod tests {
                 "container(card|(width>=40rem))",
                 "container(card|width>=40rem)",
             ),
+            (
+                "container(card_(width>=40rem))",
+                "container(card_width>=40rem)",
+            ),
         ] {
             assert!(parse_native_query(source).is_none(), "{source}");
             assert!(!query_requires_css(source), "{source}");
@@ -395,6 +407,8 @@ mod tests {
     fn complex_queries_require_css() {
         for source in [
             "media(screen|and|width>=50rem)",
+            "media(screen_and_width>=50rem)",
+            "media(not_hover)",
             "media(screen|and|(width>=50rem))",
             "media(not|hover)",
             "media(print,screen)",
@@ -425,6 +439,10 @@ mod tests {
         assert_eq!(
             decode_native_content(r#"a|"b|c"|d\|e/*|*/"#).as_deref(),
             Some(r#"a "b|c" d\|e/*|*/"#)
+        );
+        assert_eq!(
+            decode_native_content(r#"a_"b_c"_d\_e/*_*/_--x_y"#).as_deref(),
+            Some(r#"a "b_c" d\_e/*_*/ --x_y"#)
         );
         assert_ne!(
             canonical_native_content(".a .b"),

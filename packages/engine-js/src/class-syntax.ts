@@ -1,7 +1,7 @@
 // Master class structure: native content, value and state boundaries, and functional
 // class heads, as crates/mastercss-lexer and the engine's utility.rs and state.rs read
 // them. Every scan skips escapes, quotes and nested brackets.
-import { DELIM, FUNCTION, readName, startsIdentifier, tokenize } from './css-syntax'
+import { DELIM, FUNCTION, isHex, isNameCodePoint, readName, startsIdentifier, tokenize } from './css-syntax'
 import { isAsciiCase, isAsciiDigit, isAsciiWhitespace, trim } from './text'
 
 /** The deepest bracket nesting a class may carry, as `MAX_CLASS_NESTING` in crates/mastercss-lexer. */
@@ -11,13 +11,8 @@ const isOpen = (unit: number) => unit === 0x28 || unit === 0x5b || unit === 0x7b
 const isClose = (unit: number) => unit === 0x29 || unit === 0x5d || unit === 0x7d
 export const isQuote = (unit: number) => unit === 0x22 || unit === 0x27
 
-/**
- * Balanced native content outside strings, escapes and comments, or undefined. With
- * `decode`, Master's `|` separators become spaces.
- */
-function content(source: string, decode: boolean) {
-  let result = ''
-  let copied = 0
+/** Balanced native content outside strings, escapes and comments, or undefined. */
+export function nativeContent(source: string) {
   const stack: number[] = []
   let quote = 0
   let escaped = false
@@ -48,16 +43,16 @@ function content(source: string, decode: boolean) {
       if (stack.pop() !== 0x5b) return
     } else if ((unit === 0x7b || unit === 0x7d || unit === 0x3b) && !stack.length) {
       return
-    } else if (decode && unit === 0x7c) {
-      result += `${source.slice(copied, index)} `
-      copied = index + 1
     }
   }
-  return !stack.length && !quote && !escaped && !comment ? result + source.slice(copied) : undefined
+  return !stack.length && !quote && !escaped && !comment ? source : undefined
 }
 
-export const nativeContent = (source: string) => content(source, false)
-export const decodeNativeContent = (source: string) => content(source, true)
+/** Balanced native content with Master's `_` (and deprecated `|`) spaces decoded; every `--name` keeps its underscores. */
+export function decodeNativeContent(source: string) {
+  const content = nativeContent(source)
+  return content === undefined ? undefined : decodeSpaces(content, true)
+}
 
 /** The characters that may begin a class suffix after a complete head. */
 export const isClassSuffixStart = (character: string) => '!*>+~:[@_.#'.includes(character)
@@ -151,8 +146,11 @@ function scanValue(source: string, start: number, custom: boolean): [close: numb
       continue
     }
     if (startsIdentifier(source, cursor)) {
+      const identStart = cursor
       const [end, ident] = readName(source, cursor)
       cursor = end
+      // A lone `_` is an encoded space, like `|` and whitespace.
+      if (end - identStart === 1 && source.charCodeAt(identStart) === 0x5f) continue
       if (source.charCodeAt(cursor) === 0x28) {
         cursor++
         if (isAsciiCase(ident, 'url') && !isQuote(source.charCodeAt(cursor))) {
@@ -164,9 +162,12 @@ function scanValue(source: string, start: number, custom: boolean): [close: numb
         }
         if (top) items.push(OTHER_ITEM)
       } else if (top) {
-        items.push(isAsciiCase(ident, 'important') ? IMPORTANT_ITEM : OTHER_ITEM)
+        // `red_!_important` spells the spaces around `!` as `_`.
+        const word = isSpaceUnderscore(source, identStart) ? ident.slice(1) : ident
+        items.push(isAsciiCase(word, 'important') ? IMPORTANT_ITEM : OTHER_ITEM)
       }
-      componentEnd = cursor
+      // An encoded space never ends a component: `red_!important` is `red`.
+      componentEnd = isSpaceUnderscore(source, cursor - 1) ? cursor - 1 : cursor
       continue
     }
     if (unit === 0x7c || isAsciiWhitespace(unit)) {
@@ -211,35 +212,91 @@ export function parseNativeDeclaration(source: string): NativeDeclarationHead | 
   return { property, value: [start, valueEnd], important, suffixStart }
 }
 
-/** Decodes Master's `|` value spaces outside strings, comments, escapes and URL tokens. */
-export function decodeNativeValue(value: string) {
+// Master value spaces, as crates/mastercss-lexer/src/spaces.rs decodes them: `_`, and the
+// deprecated `|`, outside strings, comments, escapes, unquoted URL tokens and protected
+// `--name`s; an underscore next to another underscore is literal.
+
+/** Whether the underscore at `index` encodes a space by position alone: unescaped, with no underscore beside it. */
+export function isSpaceUnderscore(source: string, index: number) {
+  if (source.charCodeAt(index) !== 0x5f || source.charCodeAt(index - 1) === 0x5f || source.charCodeAt(index + 1) === 0x5f) return false
+  let slashes = 0
+  for (let cursor = index - 1; cursor >= 0 && source.charCodeAt(cursor) === 0x5c; cursor--) slashes++
+  return slashes % 2 === 0
+}
+
+/**
+ * Decodes `_` and `|` spaces outside protected text. The `--name` that opens a `var()`
+ * keeps its underscores; `allDashed` extends that to every `--name`, for queries and
+ * `@apply` calls.
+ */
+export function decodeSpaces(source: string, allDashed: boolean) {
   let output = ''
   let cursor = 0
-  while (cursor < value.length) {
+  // 0 outside a name run, 1 in a run whose underscores are spaces, 2 in a literal run.
+  let run = 0
+  let variable = false
+  while (cursor < source.length) {
     const start = cursor
-    const unit = value.charCodeAt(cursor)
+    const unit = source.charCodeAt(cursor)
     if (isQuote(unit)) {
-      cursor = skipString(value, cursor) ?? value.length
-    } else if (unit === 0x2f && value.charCodeAt(cursor + 1) === 0x2a) {
-      const end = value.indexOf('*/', cursor + 2)
-      cursor = end < 0 ? value.length : end + 2
-    } else if (startsIdentifier(value, cursor)) {
-      const [end, ident] = readName(value, cursor)
-      cursor = end
-      if (isAsciiCase(ident, 'url') && value.charCodeAt(cursor) === 0x28 && !isQuote(value.charCodeAt(cursor + 1))) {
-        cursor = skipUrl(value, cursor + 1) ?? value.length
-      }
-    } else if (unit === 0x7c) {
+      cursor = skipString(source, cursor) ?? source.length
+      run = 0
+    } else if (unit === 0x2f && source.charCodeAt(cursor + 1) === 0x2a) {
+      const end = source.indexOf('*/', cursor + 2)
+      cursor = end < 0 ? source.length : end + 2
+      run = 0
+    } else if (unit === 0x7c || (unit === 0x5f && run !== 2 && isSpaceUnderscore(source, cursor))) {
       output += ' '
       cursor++
+      run = 0
+      variable = false
       continue
+    } else if (!run && startsIdentifier(source, cursor)) {
+      const [end, ident] = readName(source, cursor)
+      const call = source.charCodeAt(end) === 0x28
+      if (call && isAsciiCase(ident, 'url') && !isQuote(source.charCodeAt(end + 1))) {
+        cursor = skipUrl(source, end + 1) ?? source.length
+        variable = false
+        output += source.slice(start, cursor)
+        continue
+      }
+      if (call && isAsciiCase(ident, 'var')) {
+        cursor = end + 1
+        variable = true
+        output += source.slice(start, cursor)
+        continue
+      }
+      run = ident.startsWith('--') && (allDashed || variable) ? 2 : 1
+      cursor = escapeOrCharacterEnd(source, cursor)
+    } else if (unit === 0x5c || isNameCodePoint(unit)) {
+      if (!run) run = 1
+      cursor = escapeOrCharacterEnd(source, cursor)
     } else {
       cursor++
+      run = 0
     }
-    output += value.slice(start, cursor)
+    variable = false
+    output += source.slice(start, cursor)
   }
   return output
 }
+
+/** The end of the escape or code point at `cursor`. */
+function escapeOrCharacterEnd(source: string, cursor: number) {
+  if (source.charCodeAt(cursor) !== 0x5c) return cursor + 1
+  let end = cursor + 1
+  if (end >= source.length) return end
+  if (!isHex(source.charCodeAt(end))) return end + (source.codePointAt(end)! > 0xffff ? 2 : 1)
+  const digits = end
+  while (end - digits < 6 && isHex(source.charCodeAt(end))) end++
+  const next = source.charCodeAt(end)
+  if (next === 0x0d && source.charCodeAt(end + 1) === 0x0a) end += 2
+  else if (next === 0x20 || next === 0x09 || next === 0x0a || next === 0x0c || next === 0x0d) end++
+  return end
+}
+
+/** Decodes Master's `_` (and deprecated `|`) value spaces outside strings, comments, escapes, URL tokens and the `--name` that opens a `var()`. */
+export const decodeNativeValue = (value: string) => decodeSpaces(value, false)
 
 /** Whether a class has a complete head and a structurally balanced suffix. */
 export function validClassStructure(className: string) {
