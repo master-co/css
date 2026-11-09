@@ -58,17 +58,17 @@ Fixed utilities such as `items-center` and `text-center` cover common declaratio
 
 ### Keep spaces inside one class \{#keep-spaces-inside-one-class\}
 
-HTML separates classes at whitespace. Outside quoted strings, write `|` where a CSS value needs a space, keeping commas, slashes and parentheses in place:
+HTML separates classes at whitespace. Outside quoted strings, write `_` where a CSS value needs a space, the same character a selector uses for a descendant space. Keep commas, slashes and parentheses in place:
 
 ```html
-<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
-  <span class="(content:'New|collection')::before"></span>
+<div class="(transform:translate(0,1rem)) (color:rgb(30_60_90/80%))">
+  <span class="(content:'New_collection')::before"></span>
 </div>
 ```
 
-<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30_60_90/80%))', "(content:'New_collection')::before"]} />
 
-The color becomes `rgb(30 60 90 / 80%)`. Inside the quoted content string, the pipe stays literal: the text is `New|collection`. Master CSS also normalizes operator spacing in expressions such as `calc(100%-2rem)`; the browser evaluates the expression. See [Declarations and values](/reference/rules/declarations) for native declaration boundaries, quoted values and escaping.
+The color becomes `rgb(30 60 90 / 80%)`. Inside the quoted content string, the underscore stays literal: the text is `New_collection`. Elsewhere in a value, escape an underscore that belongs to a name, as in `slide\_in`. Master CSS also normalizes operator spacing in expressions such as `calc(100%-2rem)`; the browser evaluates the expression. See [Declarations and values](/reference/rules/declarations) for native declaration boundaries, quoted values and escaping.
 
 <GuideStudy id="pipes-and-quotes" />
 
@@ -184,7 +184,7 @@ Several conditions nest from left to right, so every wrapper must match. See [Co
 
 ### Follow a component's available space \{#follow-a-components-available-space\}
 
-A card in a sidebar has less room than a card in the main content area, even at the same viewport width. Give its parent `container-inline`, then put a container condition on the card's layout class. The final example uses `(container-name:card)` to name that parent and `@container(card|width>=28rem)` to query it.
+A card in a sidebar has less room than a card in the main content area, even at the same viewport width. Give its parent `container-inline`, then put a container condition on the card's layout class. The final example uses `(container-name:card)` to name that parent and `@container(card_width>=28rem)` to query it.
 
 The parent establishes the container; the child changes layout. The `28rem` threshold is an explicit query value, separate from sizing tokens such as `--container-md`. [Responsive design](/guide/responsive-design#based-on-container-sizes) develops this distinction with named and nested containers.
 
@@ -197,12 +197,12 @@ This card combines the decisions above. It starts in one column; when its named 
   title="A guide card that fits its space"
   source=""
   html={`<section class="container-inline (container-name:card)">
-  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr_auto)@container(card_width>=28rem) p-lg@container(card_width>=28rem)">
     <div>
       <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
       <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
     </div>
-    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card_width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
       Read the guide <span aria-hidden="true">→</span>
     </a>
   </article>

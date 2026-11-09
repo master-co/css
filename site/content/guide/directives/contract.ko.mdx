@@ -211,7 +211,7 @@ Master CSS는 컴파일 시 `@custom-container` 정의를 확장하며 브라우
 @container card (--md) { .title { font-size: 1.25rem; } }
 ```
 
-이름은 `--`로 시작합니다. CSS 참조는 선택적인 컨테이너 이름 뒤에 `(--name)`을 사용하며 예로 `@container card not (--md)`가 있습니다. 마크업도 컨테이너 쿼리 안에서 같은 참조를 사용합니다. `@container(--md)`는 가장 가까운 컨테이너를, `@container(card|--md)`는 명명된 컨테이너를 측정합니다. 네이티브 CSS, 유틸리티와 믹스인 정의, 마크업은 같은 레지스트리를 공유합니다.
+이름은 `--`로 시작합니다. CSS 참조는 선택적인 컨테이너 이름 뒤에 `(--name)`을 사용하며 예로 `@container card not (--md)`가 있습니다. 마크업도 컨테이너 쿼리 안에서 같은 참조를 사용합니다. `@container(--md)`는 가장 가까운 컨테이너를, `@container(card_--md)`는 명명된 컨테이너를 측정합니다. 네이티브 CSS, 유틸리티와 믹스인 정의, 마크업은 같은 레지스트리를 공유합니다.
 
 정의는 크기와 스타일 쿼리, `not`, `and`, `or`, 전방 참조를 포함한 다른 사용자 정의 컨테이너 참조 등 모든 컨테이너 조건이 될 수 있습니다. 확장은 참조 조건을 치환하며 이미 하나의 그룹이거나 전체 조건이 아니면 괄호로 감쌉니다. 따라서 `@container card (--dense)`는 `@container card (width >= 28rem) and style(--density: compact)`를 출력합니다. 컨테이너 조건은 항상 하나의 전치부에 들어가며 확장은 분기를 추가하지 않습니다. 컴파일러는 일반 컨테이너 쿼리를 출력하고 각 확장 조건을 manifest의 `customContainers`에 저장합니다.
 

@@ -1,7 +1,7 @@
 ---
 title: "구문 튜토리얼"
 description: "Master CSS 클래스를 읽고 조합하며 상호작용 상태와 조건을 추가하고 가용 공간에 반응하는 가이드 카드를 만드세요."
-figures: {"SyntaxIllustration":{"title":"스타일, 선택자, 조건 읽기","alt":"완전한 클래스 fg-blue-60:hover@sm에 세 범위가 표시되어 있습니다. fg-blue-60은 스타일, :hover는 선택자, @sm은 조건입니다.","caption":"뷰포트가 sm과 일치할 때만 호버된 요소에 색상이 적용됩니다. 두 접미사는 모두 이 클래스에 속합니다.","description":[{"title":"스타일","text":"fg-blue-60은 color를 var(--color-blue-60)으로 설정합니다."},{"title":"선택자","text":":hover는 클래스를 가진 요소에 마우스를 올렸을 때 일치합니다."},{"title":"조건","text":"@sm은 규칙을 프리셋의 이름 있는 sm 미디어 쿼리로 감쌉니다. 선택자와 조건이 모두 일치해야 이 클래스가 적용됩니다."}]},"GuideStudy:pipes-and-quotes":{"title":"따옴표 안에서 의미가 달라지는 파이프","alt":"두 리터럴 입력이 각 출력에 대응합니다. rgb(30|60|90)은 rgb(30 60 90)이 되고 따옴표 문자열 New|collection은 파이프를 유지합니다.","caption":"공백 디코딩은 따옴표 문자열 밖에 적용됩니다. 출력 문자열은 여전히 하나의 리터럴 값입니다."},"GuideStudy:conditions-intersection":{"title":"두 조건이 모두 일치해야 합니다","alt":"2×2 행렬에서 뷰포트가 sm과 일치하고 display:grid를 지원하는 교집합만 강조합니다.","caption":"grid@sm@supports(display:grid)는 어느 한 조건만으로 선언을 활성화하지 않습니다."}}
+figures: {"SyntaxIllustration":{"title":"스타일, 선택자, 조건 읽기","alt":"완전한 클래스 fg-blue-60:hover@sm에 세 범위가 표시되어 있습니다. fg-blue-60은 스타일, :hover는 선택자, @sm은 조건입니다.","caption":"뷰포트가 sm과 일치할 때만 호버된 요소에 색상이 적용됩니다. 두 접미사는 모두 이 클래스에 속합니다.","description":[{"title":"스타일","text":"fg-blue-60은 color를 var(--color-blue-60)으로 설정합니다."},{"title":"선택자","text":":hover는 클래스를 가진 요소에 마우스를 올렸을 때 일치합니다."},{"title":"조건","text":"@sm은 규칙을 프리셋의 이름 있는 sm 미디어 쿼리로 감쌉니다. 선택자와 조건이 모두 일치해야 이 클래스가 적용됩니다."}]},"GuideStudy:pipes-and-quotes":{"title":"따옴표 안에서 의미가 달라지는 밑줄","alt":"두 리터럴 입력이 각 출력에 대응합니다. rgb(30_60_90)은 rgb(30 60 90)이 되고 따옴표 문자열 New_collection은 밑줄을 유지합니다.","caption":"공백 디코딩은 따옴표 문자열 밖에 적용됩니다. 출력 문자열은 여전히 하나의 리터럴 값입니다."},"GuideStudy:conditions-intersection":{"title":"두 조건이 모두 일치해야 합니다","alt":"2×2 행렬에서 뷰포트가 sm과 일치하고 display:grid를 지원하는 교집합만 강조합니다.","caption":"grid@sm@supports(display:grid)는 어느 한 조건만으로 선언을 활성화하지 않습니다."}}
 ---
 
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
@@ -64,17 +64,17 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 ### 하나의 클래스 안에 공백 유지 \{#keep-spaces-inside-one-class\}
 
-HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서 CSS 값에 공백이 필요하면 `|`를 쓰고 쉼표, 슬래시, 괄호는 그대로 유지하세요.
+HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서 CSS 값에 공백이 필요하면 선택자에서 하위 요소를 연결하는 공백과 같은 문자인 `_`를 쓰고 쉼표, 슬래시, 괄호는 그대로 유지하세요.
 
 ```html
-<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
-  <span class="(content:'New|collection')::before"></span>
+<div class="(transform:translate(0,1rem)) (color:rgb(30_60_90/80%))">
+  <span class="(content:'New_collection')::before"></span>
 </div>
 ```
 
-<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30_60_90/80%))', "(content:'New_collection')::before"]} />
 
-색상은 `rgb(30 60 90 / 80%)`가 됩니다. 따옴표로 감싼 content 문자열 안의 파이프는 그대로 유지되어 텍스트는 `New|collection`입니다. Master CSS는 `calc(100%-2rem)` 같은 식의 연산자 간격도 정규화하며 계산은 브라우저가 수행합니다. 네이티브 선언 경계, 따옴표 값, 이스케이프는 [선언과 값](/reference/rules/declarations)을 참고하세요.
+색상은 `rgb(30 60 90 / 80%)`가 됩니다. 따옴표로 감싼 content 문자열 안의 밑줄은 그대로 유지되어 텍스트는 `New_collection`입니다. 값의 다른 위치에서 이름에 속한 밑줄은 `slide\_in`처럼 이스케이프하세요. Master CSS는 `calc(100%-2rem)` 같은 식의 연산자 간격도 정규화하며 계산은 브라우저가 수행합니다. 네이티브 선언 경계, 따옴표 값, 이스케이프는 [선언과 값](/reference/rules/declarations)을 참고하세요.
 
 <GuideStudy id="pipes-and-quotes" />
 
@@ -190,7 +190,7 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
 
 ### 컴포넌트의 가용 공간 따르기 \{#follow-a-components-available-space\}
 
-같은 뷰포트 너비에서도 사이드바 카드는 주 콘텐츠 영역의 카드보다 공간이 좁습니다. 부모에 `container-inline`을 추가하고 카드의 레이아웃 클래스에 컨테이너 조건을 붙이세요. 마지막 예제는 `(container-name:card)`로 부모에 이름을 지정하고 `@container(card|width>=28rem)`로 조회합니다.
+같은 뷰포트 너비에서도 사이드바 카드는 주 콘텐츠 영역의 카드보다 공간이 좁습니다. 부모에 `container-inline`을 추가하고 카드의 레이아웃 클래스에 컨테이너 조건을 붙이세요. 마지막 예제는 `(container-name:card)`로 부모에 이름을 지정하고 `@container(card_width>=28rem)`로 조회합니다.
 
 부모가 컨테이너를 만들고 자식이 레이아웃을 바꿉니다. `28rem` 임계값은 `--container-md` 같은 크기 토큰과 별개의 명시적 쿼리 값입니다. [반응형 디자인](/guide/responsive-design#based-on-container-sizes)에서 이름 있는 컨테이너와 중첩 컨테이너로 차이를 설명합니다.
 
@@ -203,12 +203,12 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
   title="공간에 맞는 가이드 카드"
   source=""
   html={`<section class="container-inline (container-name:card)">
-  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr_auto)@container(card_width>=28rem) p-lg@container(card_width>=28rem)">
     <div>
       <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
       <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
     </div>
-    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card_width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
       Read the guide <span aria-hidden="true">→</span>
     </a>
   </article>

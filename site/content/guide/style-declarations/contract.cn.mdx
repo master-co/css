@@ -49,10 +49,10 @@ import FixedUtilities from '~/site/reference/FixedUtilities.astro'
 | 类 | 值的边界 |
 | --- | --- |
 | `(width:calc(1px+(2px*3)))` | 嵌套括号属于计算式 |
-| `(grid-template-columns:[start]\|1fr\|[end])` | 方括号包住 Grid 线名称 |
+| `(grid-template-columns:[start]_1fr_[end])` | 方括号包住 Grid 线名称 |
 | `(background-image:url(/a{b.svg))` | 大括号属于无引号 URL 令牌 |
 
-<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]_1fr_[end])', '(background-image:url(/a{b.svg))']} />
 
 值内仍适用 CSS 转义规则。无引号 URL 若含括号，请改用带引号 URL 或 CSS 转义，保持令牌合法。
 
@@ -87,17 +87,19 @@ Master CSS 输出特定兼容声明，例如在 `backdrop-filter` 旁添加 `-we
 
 ### 空白、字符串与下划线 \{#value-encoding\}
 
-即使值包含 CSS 引号，HTML 空白仍分隔类。类值内无引号的 `|` 编码一个空格；引号字符串内的竖线则保持字面含义。逗号和斜线等 CSS 标点应保留原位。
+即使值包含 CSS 引号，HTML 空白仍分隔类。类值内无引号的 `_` 编码一个空格，与选择器之间的用法相同；引号字符串或 `url()` 内的下划线则保持字面含义。逗号和斜线等 CSS 标点应保留原位。
 
 ```html
-<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+<div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
-<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+<Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
 
-颜色值变为 `rgb(30 60 90 / 80%)`，content 字符串则保留为 `'a|b'`。CSS 字符串中需要实际空格时，请使用 `\000020` 这类 CSS 转义：`(content:'New\000020collection')::before` 产生“New collection”。六位转义可避免 HTML 类中出现终止空格。
+颜色值变为 `rgb(30 60 90 / 80%)`，content 字符串则保留为 `'a_b'`。CSS 字符串中需要实际空格时，请使用 `\000020` 这类 CSS 转义：`(content:'New\000020collection')::before` 产生“New collection”。六位转义可避免 HTML 类中出现终止空格。
 
-原生头部内的下划线是字面字符，例如 `slide_in`。头部结束后，`_` 开始后代选择器：`(color:red)_a` 指向后代链接。已注册工具类名称不能包含 `_`，但含下划线的令牌键仍可通过 `var(--name)` 引用。
+属于名称的下划线请转义：`(animation-name:slide\_in)` 输出 `slide\_in`，即 `slide_in` 的 CSS 转义。相邻的两个下划线保持字面含义，例如 `card__title`；`var()` 内开头的自定义属性也保留名称，例如 `var(--brand_primary)`。头部结束后，`_` 开始后代选择器：`(color:red)_a` 指向后代链接。已注册工具类名称不能包含 `_`，但含下划线的令牌键仍可通过 `var(--name)` 引用。
+
+Master CSS 2.0 原先用 `|` 表示这些空格。这种写法仍可使用但已弃用；[`prefer-canonical-classes`](/guide/code-linting) 规则会将其改写为 `_`。
 
 ### 函数与显式变量 \{#functions\}
 
@@ -126,7 +128,7 @@ CSS 函数仍是原生属性的值。Master CSS 规范化 `calc(100%-2rem)` 中�
 | `(rotate:30deg)` | 显式角度 |
 | `(animation-duration:200ms)` | 显式时间；`.2s` 表达相同时长 |
 | `(opacity:.5)` | 无单位数值 |
-| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | 以每个 CSS 像素的点数指定原生图像分辨率 |
+| `(background-image:image-set(url(a.png)_1x,url(b.png)_2x))` | 以每个 CSS 像素的点数指定原生图像分辨率 |
 
 属性是否接受数字、长度、百分比或其他类型，由 [CSS 值与单位](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units)规则决定。`p(12)` 则不同：预设函数会显式将参数乘以 `1px`。
 

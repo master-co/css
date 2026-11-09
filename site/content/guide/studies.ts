@@ -1,16 +1,16 @@
 /** Shared lessons for the authored Guide figures; light and dark are one figure. */
 export const guideStudies = {
   "pipes-and-quotes": {
-    "title": "A pipe changes meaning inside quotes",
-    "alt": "Two literal inputs map to outputs. rgb(30|60|90) becomes rgb(30 60 90); the quoted string New|collection retains its pipe.",
+    "title": "An underscore changes meaning inside quotes",
+    "alt": "Two literal inputs map to outputs. rgb(30_60_90) becomes rgb(30 60 90); the quoted string New_collection retains its underscore.",
     "caption": "Whitespace decoding applies outside quoted strings. The output string is still one literal value.",
     "labels": [
       "Outside quotes",
-      "rgb(30|60|90)",
+      "rgb(30_60_90)",
       "rgb(30 60 90)",
       "Inside quotes",
-      "'New|collection'",
-      "'New|collection'"
+      "'New_collection'",
+      "'New_collection'"
     ],
     "kind": "pairs"
   },
@@ -162,7 +162,7 @@ export const guideStudies = {
       "article \u00b7 named container",
       "card \u00b7 nearer container",
       "Child",
-      "@container(article|width>=48rem)",
+      "@container(article_width>=48rem)",
       "Query the named ancestor"
     ],
     "kind": "nested"

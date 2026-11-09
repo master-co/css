@@ -49,10 +49,10 @@ Other CSS constructs keep their own boundaries inside the head:
 | Class | Value boundary |
 | --- | --- |
 | `(width:calc(1px+(2px*3)))` | Nested parentheses belong to the calculation |
-| `(grid-template-columns:[start]\|1fr\|[end])` | Brackets enclose grid line names |
+| `(grid-template-columns:[start]_1fr_[end])` | Brackets enclose grid line names |
 | `(background-image:url(/a{b.svg))` | The brace belongs to the unquoted URL token |
 
-<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]_1fr_[end])', '(background-image:url(/a{b.svg))']} />
 
 CSS escaping still applies inside a value. For an unquoted URL containing parentheses, use a quoted URL or CSS escapes so the token remains valid.
 
@@ -87,17 +87,19 @@ Master CSS emits selected compatibility declarations, such as `-webkit-backdrop-
 
 ### Spaces, strings and underscores \{#value-encoding\}
 
-HTML whitespace separates classes, even when the value contains CSS quotes. Within a class value, an unquoted `|` encodes a space. Inside a quoted string, the pipe remains literal. Keep CSS punctuation such as commas and slashes in place.
+HTML whitespace separates classes, even when the value contains CSS quotes. Within a class value, an unquoted `_` encodes a space, as it does between selectors. Inside a quoted string or a `url()`, the underscore remains literal. Keep CSS punctuation such as commas and slashes in place.
 
 ```html
-<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+<div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
-<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+<Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
 
-The color value becomes `rgb(30 60 90 / 80%)`; the content string stays `'a|b'`. For an actual space in a CSS string, use a CSS escape such as `\000020`: `(content:'New\000020collection')::before` produces “New collection”. The six-digit escape avoids a terminating space in the HTML class.
+The color value becomes `rgb(30 60 90 / 80%)`; the content string stays `'a_b'`. For an actual space in a CSS string, use a CSS escape such as `\000020`: `(content:'New\000020collection')::before` produces “New collection”. The six-digit escape avoids a terminating space in the HTML class.
 
-An underscore inside the native head is literal, as in `slide_in`. After the head closes, `_` starts a descendant selector: `(color:red)_a` targets descendant links. Registered utility names cannot contain `_`; a token key containing it can still be referenced through `var(--name)`.
+Escape an underscore that belongs to a name: `(animation-name:slide\_in)` emits `slide\_in`, the CSS escape of `slide_in`. Two adjacent underscores stay literal, as in `card__title`, and the custom property that opens a `var()` keeps its name, as in `var(--brand_primary)`. After the head closes, `_` starts a descendant selector: `(color:red)_a` targets descendant links. Registered utility names cannot contain `_`; a token key containing it can still be referenced through `var(--name)`.
+
+Master CSS 2.0 wrote these spaces as `|`. That spelling still works but is deprecated; the [`prefer-canonical-classes`](/guide/code-linting) rule rewrites it to `_`.
 
 ### Functions and explicit variables \{#functions\}
 
@@ -126,7 +128,7 @@ Native declarations preserve units. They do not convert `rem` to pixels or infer
 | `(rotate:30deg)` | Explicit angle |
 | `(animation-duration:200ms)` | Explicit time; `.2s` expresses the same duration |
 | `(opacity:.5)` | Unitless number |
-| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | Native image resolution in dots per CSS pixel |
+| `(background-image:image-set(url(a.png)_1x,url(b.png)_2x))` | Native image resolution in dots per CSS pixel |
 
 Whether a property accepts a number, length, percentage or other type is a [CSS values and units](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units) rule. `p(12)` is different: the preset function explicitly multiplies its argument by `1px`.
 

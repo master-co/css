@@ -136,17 +136,17 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 ## 指定明確軌道 \{#add-explicit-tracks-only-when-needed\}
 
-需要固定或混合軌道時，寫出原生 `grid-template-columns` 值。使用 `|` 分隔軌道，產生 CSS 時會轉為空格：
+需要固定或混合軌道時，寫出原生 `grid-template-columns` 值。使用 `_` 分隔軌道，產生 CSS 時會轉為空格：
 
 ```html
-<!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) -->
-<section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
+<!-- @MARK (grid-template-columns:4.5rem_minmax(0,1fr)) -->
+<section class="grid (grid-template-columns:4.5rem_minmax(0,1fr)) gap-md">
   <nav>…</nav>
   <main class="min-w(0)">…</main>
 </section>
 ```
 
-<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
+<Class2CSS classes={['(grid-template-columns:4.5rem_minmax(0,1fr))', 'min-w(0)']} />
 
 `min-w(0)` 讓主要區域可縮小至內容寬度以下。一般內容維持等寬欄與跨欄設定；應用程式外殼與分割面板再使用明確軌道。
 

@@ -23,13 +23,13 @@ Append conditions after the utility and any [selector suffix](/reference/rules/s
 | Media range | `@media(width>=40rem)` | `@media (width>=40rem)` |
 | Supports declaration | `@supports(display:grid)` | `@supports (display:grid)` |
 | Container size | `@container(width>=40rem)` | `@container (width>=40rem)` |
-| Named container | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
-| Custom container condition | `@container(card\|--md)` | Resolves `@custom-container --md` for `card` |
+| Named container | `@container(card_width>=40rem)` | `@container card (width>=40rem)` |
+| Custom container condition | `@container(card_--md)` | Resolves `@custom-container --md` for `card` |
 | Container style | `@container(style(--density:compact))` | `@container style(--density:compact)` |
 
 <Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
 
-`|` encodes whitespace outside strings, comments and CSS escapes. It separates the container name from its condition in `@container(card|width>=40rem)`. Quoted strings and escapes retain their literal content. The encoding belongs to classes; write ordinary whitespace in CSS definitions.
+`_` encodes whitespace outside strings, comments and CSS escapes, as it does in values. It separates the container name from its condition in `@container(card_width>=40rem)`. Quoted strings, escapes and names that begin with `--` keep their underscores; write `\_` for one in a container name. The deprecated `|` still encodes whitespace. The encoding belongs to classes; write ordinary whitespace in CSS definitions.
 
 <a id="simple-queries-in-classes"></a>
 
@@ -123,14 +123,14 @@ Size queries measure an eligible ancestor query container. Establish that contai
 
 ```html
 <aside class="(container-name:card) container-inline">
-  <div class="grid-cols(2)@container(card|width>=40rem)">
+  <div class="grid-cols(2)@container(card_width>=40rem)">
     <div>First item</div>
     <div>Second item</div>
   </div>
 </aside>
 ```
 
-<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
 The recipe sets both `display: grid` and two equal columns while the condition matches. Below the threshold, it supplies neither declaration, so these two block children stay stacked in normal flow. The container's own width is established by its surrounding layout.
 
@@ -148,7 +148,7 @@ Native [container queries](https://www.w3.org/TR/css-conditional-5/#container-qu
 
 ### Named container conditions \{#named-container-conditions\}
 
-`@container(--md)` resolves `@custom-container --md`; `@container(card|--md)` applies the same condition to the eligible container named `card`. The definition supplies a condition, not a container name.
+`@container(--md)` resolves `@custom-container --md`; `@container(card_--md)` applies the same condition to the eligible container named `card`. The definition supplies a condition, not a container name.
 
 The preset's `container.css` registers thirteen component widths and a `max-` complement for each. These are independent of viewport breakpoints: `@container(--md)` is `28rem`, while `@md` is `64rem`.
 
@@ -156,7 +156,7 @@ See [Named conditions](/reference/rules/named-conditions#container-widths) for t
 
 Each `--max-*` name is the negation of its minimum-width condition. For example, `--max-md` is `not (--md)`. As with media conditions, definitions compiled together follow an override of the referenced name; [already-expanded manifest definitions](#compiled-condition-definitions) do not re-expand when a fragment replaces only that name.
 
-<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+<Class2CSS classes={['grid-cols(2)@container(card_--md)', 'hidden@container(--max-sm)']} />
 
 Define or replace names with [`@custom-container`](/reference/directives/queries#custom-container). An undefined name is an error.
 
@@ -169,8 +169,8 @@ Class queries deliberately accept a smaller grammar than native CSS. Define medi
 | Rejected class form | Reason | Accepted alternative |
 | --- | --- | --- |
 | `@media((width>=50rem))` | Extra group parentheses | `@media(width>=50rem)` |
-| `@media(screen\|and\|(width>=50rem))` | Compound query | A named `@custom-media` |
-| `@media(not\|print)` | Negated query | A named `@custom-media` |
+| `@media(screen_and_(width>=50rem))` | Compound query | A named `@custom-media` |
+| `@media(not_print)` | Negated query | A named `@custom-media` |
 | `@media(screen,print)` | Query list | A named `@custom-media` |
 | `@supports(selector([lang\|=en]))` | Selector support test | An `@mixin` with native `@supports` |
 

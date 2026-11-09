@@ -23,13 +23,13 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 | 媒體範圍 | `@media(width>=40rem)` | `@media (width>=40rem)` |
 | Supports 宣告 | `@supports(display:grid)` | `@supports (display:grid)` |
 | 容器尺寸 | `@container(width>=40rem)` | `@container (width>=40rem)` |
-| 具名容器 | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
-| 自訂容器條件 | `@container(card\|--md)` | 為 `card` 解析 `@custom-container --md` |
+| 具名容器 | `@container(card_width>=40rem)` | `@container card (width>=40rem)` |
+| 自訂容器條件 | `@container(card_--md)` | 為 `card` 解析 `@custom-container --md` |
 | 容器樣式 | `@container(style(--density:compact))` | `@container style(--density:compact)` |
 
 <Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
 
-`|` 會編碼字串、註解與 CSS 跳脫之外的空白。在 `@container(card|width>=40rem)` 中，它分隔容器名稱與條件。引號字串與跳脫會保留字面內容。這種編碼用於 class，CSS 定義中應寫一般空白。
+`_` 會編碼字串、註解與 CSS 跳脫之外的空白，與值中的用法相同。在 `@container(card_width>=40rem)` 中，它分隔容器名稱與條件。引號字串、跳脫與以 `--` 開頭的名稱會保留底線；容器名稱中的底線請寫成 `\_`。已棄用的 `|` 仍會編碼空白。這種編碼用於 class，CSS 定義中應寫一般空白。
 
 <a id="simple-queries-in-classes"></a>
 
@@ -123,14 +123,14 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 ```html
 <aside class="(container-name:card) container-inline">
-  <div class="grid-cols(2)@container(card|width>=40rem)">
+  <div class="grid-cols(2)@container(card_width>=40rem)">
     <div>First item</div>
     <div>Second item</div>
   </div>
 </aside>
 ```
 
-<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
 條件相符時，組合樣式同時設定 `display: grid` 與兩個等寬欄。低於門檻時，兩個宣告都不會提供，因此這兩個區塊子元素仍以一般流向垂直堆疊。容器自身寬度由周圍版面配置決定。
 
@@ -148,7 +148,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 ### 具名容器條件 \{#named-container-conditions\}
 
-`@container(--md)` 解析 `@custom-container --md`；`@container(card|--md)` 則將同一條件套用到名為 `card` 的合格容器。定義提供的是條件，不是容器名稱。
+`@container(--md)` 解析 `@custom-container --md`；`@container(card_--md)` 則將同一條件套用到名為 `card` 的合格容器。定義提供的是條件，不是容器名稱。
 
 預設的 `container.css` 註冊十三個元件寬度，以及各自的 `max-` 互補條件。它們與檢視區斷點各自獨立：`@container(--md)` 是 `28rem`，`@md` 則是 `64rem`。
 
@@ -156,7 +156,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 每個 `--max-*` 名稱都是對應最小寬度條件的否定，例如 `--max-md` 是 `not (--md)`。與媒體條件相同，一起編譯的定義會跟隨被參照名稱的覆寫；[已展開的 manifest 定義](#compiled-condition-definitions)則不會在片段只替換該名稱時重新展開。
 
-<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+<Class2CSS classes={['grid-cols(2)@container(card_--md)', 'hidden@container(--max-sm)']} />
 
 用 [`@custom-container`](/reference/directives/queries#custom-container) 定義或替換名稱。未定義名稱會報錯。
 
@@ -169,8 +169,8 @@ class 查詢刻意只接受比原生 CSS 更小的文法。媒體查詢清單、
 | 拒絕的 class 形式 | 原因 | 可用替代形式 |
 | --- | --- | --- |
 | `@media((width>=50rem))` | 多餘的群組括號 | `@media(width>=50rem)` |
-| `@media(screen\|and\|(width>=50rem))` | 複合查詢 | 具名 `@custom-media` |
-| `@media(not\|print)` | 否定查詢 | 具名 `@custom-media` |
+| `@media(screen_and_(width>=50rem))` | 複合查詢 | 具名 `@custom-media` |
+| `@media(not_print)` | 否定查詢 | 具名 `@custom-media` |
 | `@media(screen,print)` | 查詢清單 | 具名 `@custom-media` |
 | `@supports(selector([lang\|=en]))` | 選擇器支援測試 | 包含原生 `@supports` 的 `@mixin` |
 

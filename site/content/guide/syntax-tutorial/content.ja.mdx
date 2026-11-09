@@ -1,7 +1,7 @@
 ---
 title: "構文チュートリアル"
 description: "Master CSS のクラスを読み、組み合わせ、操作状態や条件を加え、利用可能な空間に応答するガイドカードを作ります。"
-figures: {"SyntaxIllustration":{"title":"スタイル、セレクター、条件を読む","alt":"完全なクラス fg-blue-60:hover@sm の3区間を括弧で示します。fg-blue-60 はスタイル、:hover はセレクター、@sm は条件です。","caption":"ビューポートが sm に一致する間だけ、ホバーした要素に色が適用されます。どちらの接尾辞もこのクラスに属します。","description":[{"title":"スタイル","text":"fg-blue-60 は color を var(--color-blue-60) に設定します。"},{"title":"セレクター","text":":hover はクラスを持つ要素のホバー時に一致します。"},{"title":"条件","text":"@sm はルールをプリセットの名前付き sm メディアクエリーで囲みます。セレクターと条件が両方一致すると適用されます。"}]},"GuideStudy:pipes-and-quotes":{"title":"パイプは引用符内で意味が変わる","alt":"2つのリテラル入力と出力を対応付けています。rgb(30|60|90) は rgb(30 60 90) になり、引用文字列 New|collection はパイプを保ちます。","caption":"空白の復元は引用文字列の外で行います。出力の文字列は1つのリテラル値のままです。"},"GuideStudy:conditions-intersection":{"title":"両方の条件が一致する必要がある","alt":"2行2列の表で、ビューポートが sm に一致し、display:grid に対応する交差部分だけを強調しています。","caption":"grid@sm@supports(display:grid) は、片方の条件だけでは宣言を有効にしません。"}}
+figures: {"SyntaxIllustration":{"title":"スタイル、セレクター、条件を読む","alt":"完全なクラス fg-blue-60:hover@sm の3区間を括弧で示します。fg-blue-60 はスタイル、:hover はセレクター、@sm は条件です。","caption":"ビューポートが sm に一致する間だけ、ホバーした要素に色が適用されます。どちらの接尾辞もこのクラスに属します。","description":[{"title":"スタイル","text":"fg-blue-60 は color を var(--color-blue-60) に設定します。"},{"title":"セレクター","text":":hover はクラスを持つ要素のホバー時に一致します。"},{"title":"条件","text":"@sm はルールをプリセットの名前付き sm メディアクエリーで囲みます。セレクターと条件が両方一致すると適用されます。"}]},"GuideStudy:pipes-and-quotes":{"title":"アンダースコアは引用符内で意味が変わる","alt":"2つのリテラル入力と出力を対応付けています。rgb(30_60_90) は rgb(30 60 90) になり、引用文字列 New_collection はアンダースコアを保ちます。","caption":"空白の復元は引用文字列の外で行います。出力の文字列は1つのリテラル値のままです。"},"GuideStudy:conditions-intersection":{"title":"両方の条件が一致する必要がある","alt":"2行2列の表で、ビューポートが sm に一致し、display:grid に対応する交差部分だけを強調しています。","caption":"grid@sm@supports(display:grid) は、片方の条件だけでは宣言を有効にしません。"}}
 ---
 
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
@@ -64,17 +64,17 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 ### 1つのクラス内で空白を表す \{#keep-spaces-inside-one-class\}
 
-HTML は空白でクラスを区切ります。引用符付き文字列の外では、CSS 値に必要な空白を `|` で表し、カンマ、スラッシュ、括弧はそのまま残します。
+HTML は空白でクラスを区切ります。引用符付き文字列の外では、CSS 値に必要な空白を、セレクターで子孫の空白を表すのと同じ `_` で表します。カンマ、スラッシュ、括弧はそのまま残します。
 
 ```html
-<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
-  <span class="(content:'New|collection')::before"></span>
+<div class="(transform:translate(0,1rem)) (color:rgb(30_60_90/80%))">
+  <span class="(content:'New_collection')::before"></span>
 </div>
 ```
 
-<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30_60_90/80%))', "(content:'New_collection')::before"]} />
 
-色は `rgb(30 60 90 / 80%)` になります。引用符内の content 文字列ではパイプはそのまま残り、文字は `New|collection` です。Master CSS は `calc(100%-2rem)` などの演算子の空白も正規化し、計算はブラウザーが行います。ネイティブ宣言の境界、引用値、エスケープは[宣言と値](/reference/rules/declarations)を参照してください。
+色は `rgb(30 60 90 / 80%)` になります。引用符内の content 文字列ではアンダースコアはそのまま残り、文字は `New_collection` です。値のほかの位置で名前の一部になるアンダースコアは、`slide\_in` のようにエスケープします。Master CSS は `calc(100%-2rem)` などの演算子の空白も正規化し、計算はブラウザーが行います。ネイティブ宣言の境界、引用値、エスケープは[宣言と値](/reference/rules/declarations)を参照してください。
 
 <GuideStudy id="pipes-and-quotes" />
 
@@ -190,7 +190,7 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
 
 ### コンポーネントが使える空間に合わせる \{#follow-a-components-available-space\}
 
-同じビューポート幅でも、サイドバーのカードはメイン領域のカードより狭くなります。親に `container-inline` を付け、カードのレイアウトクラスにコンテナー条件を加えます。最後の例は `(container-name:card)` で親に名前を付け、`@container(card|width>=28rem)` で問い合わせます。
+同じビューポート幅でも、サイドバーのカードはメイン領域のカードより狭くなります。親に `container-inline` を付け、カードのレイアウトクラスにコンテナー条件を加えます。最後の例は `(container-name:card)` で親に名前を付け、`@container(card_width>=28rem)` で問い合わせます。
 
 親がコンテナーを作り、子がレイアウトを変えます。`28rem` は明示的なクエリー値で、`--container-md` などのサイズトークンとは別です。[レスポンシブデザイン](/guide/responsive-design#based-on-container-sizes)では、名前付きと入れ子のコンテナーでこの違いを詳しく扱います。
 
@@ -203,12 +203,12 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
   title="空間に収まるガイドカード"
   source=""
   html={`<section class="container-inline (container-name:card)">
-  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr_auto)@container(card_width>=28rem) p-lg@container(card_width>=28rem)">
     <div>
       <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
       <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
     </div>
-    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card_width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
       Read the guide <span aria-hidden="true">→</span>
     </a>
   </article>

@@ -51,7 +51,7 @@ export function namedConditionsSheet(locale = 'en'): NamedConditionsSheet {
       html: '<div class="grid-cols(1) grid-cols(3)@md gap-xs">\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Notes</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Drafts</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Archive</div>\n</div>',
     }, name => name.startsWith('grid-cols')),
     customize: sheetExample('customize', 'Independent named conditions', {
-      html: '<aside class="(container-name:card) container-inline">\n  <div class="grid-cols(1) grid-cols(2)@container(card|--wide-card)">Card content</div>\n</aside>\n<div class="grid-cols(1) grid-cols(3)@tablet">Page content</div>',
+      html: '<aside class="(container-name:card) container-inline">\n  <div class="grid-cols(1) grid-cols(2)@container(card_--wide-card)">Card content</div>\n</aside>\n<div class="grid-cols(1) grid-cols(3)@tablet">Page content</div>',
     }, () => true, '@custom-media --tablet (width >= 48rem);\n@custom-container --wide-card (width >= 30rem);') as NamedConditionsSheet['customize'],
   }
 }

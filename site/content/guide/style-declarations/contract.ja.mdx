@@ -49,10 +49,10 @@ import FixedUtilities from '~/site/reference/FixedUtilities.astro'
 | クラス | 値の境界 |
 | --- | --- |
 | `(width:calc(1px+(2px*3)))` | 入れ子の括弧は計算式に属する |
-| `(grid-template-columns:[start]\|1fr\|[end])` | 角括弧は Grid のライン名を囲む |
+| `(grid-template-columns:[start]_1fr_[end])` | 角括弧は Grid のライン名を囲む |
 | `(background-image:url(/a{b.svg))` | 波括弧は引用符なしの URL トークンに属する |
 
-<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]_1fr_[end])', '(background-image:url(/a{b.svg))']} />
 
 値の内部にも CSS エスケープが適用されます。引用符なしの URL に括弧がある場合は、引用符で囲むか CSS エスケープを使い、トークンを有効に保ちます。
 
@@ -87,17 +87,19 @@ Master CSS は、`backdrop-filter` とともに `-webkit-backdrop-filter` を出
 
 ### 空白・文字列・アンダースコア \{#value-encoding\}
 
-値に CSS の引用符があっても、HTML の空白はクラスを区切ります。クラスの値内で、引用符の外の `|` は空白を表し、引用符付き文字列内ではリテラルのままです。カンマやスラッシュなどの CSS 記号はそのまま残します。
+値に CSS の引用符があっても、HTML の空白はクラスを区切ります。クラスの値内で、引用符の外の `_` はセレクター間と同じく空白を表し、引用符付き文字列や `url()` 内ではリテラルのままです。カンマやスラッシュなどの CSS 記号はそのまま残します。
 
 ```html
-<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+<div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
-<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+<Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
 
-色の値は `rgb(30 60 90 / 80%)` になり、content の文字列は `'a|b'` のままです。CSS 文字列の中に実際の空白が必要なら、`\000020` などの CSS エスケープを使います。`(content:'New\000020collection')::before` は「New collection」を生成します。6 桁のエスケープなら、HTML のクラス内に終端の空白を入れずに済みます。
+色の値は `rgb(30 60 90 / 80%)` になり、content の文字列は `'a_b'` のままです。CSS 文字列の中に実際の空白が必要なら、`\000020` などの CSS エスケープを使います。`(content:'New\000020collection')::before` は「New collection」を生成します。6 桁のエスケープなら、HTML のクラス内に終端の空白を入れずに済みます。
 
-ネイティブの先頭部分内のアンダースコアは、`slide_in` のようにリテラルです。閉じた後の `_` は子孫セレクターを開始し、`(color:red)_a` は子孫リンクを対象にします。登録済みユーティリティ名に `_` は使えませんが、含むトークンキーは `var(--name)` で参照できます。
+名前の一部になるアンダースコアはエスケープします。`(animation-name:slide\_in)` は `slide_in` の CSS エスケープである `slide\_in` を出力します。隣り合う 2 つのアンダースコアは `card__title` のようにリテラルのままで、`var()` の先頭のカスタムプロパティも `var(--brand_primary)` のように名前を保ちます。閉じた後の `_` は子孫セレクターを開始し、`(color:red)_a` は子孫リンクを対象にします。登録済みユーティリティ名に `_` は使えませんが、含むトークンキーは `var(--name)` で参照できます。
+
+Master CSS 2.0 ではこれらの空白を `|` で書いていました。この書き方は引き続き使えますが非推奨です。[`prefer-canonical-classes`](/guide/code-linting) ルールが `_` に書き換えます。
 
 ### 関数と明示的な変数 \{#functions\}
 
@@ -126,7 +128,7 @@ CSS 関数はネイティブプロパティの値のままです。Master CSS �
 | `(rotate:30deg)` | 明示的な角度 |
 | `(animation-duration:200ms)` | 明示的な時間。`.2s` も同じ長さを表す |
 | `(opacity:.5)` | 単位なしの数値 |
-| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | CSS ピクセル当たりのドット数によるネイティブ画像の解像度 |
+| `(background-image:image-set(url(a.png)_1x,url(b.png)_2x))` | CSS ピクセル当たりのドット数によるネイティブ画像の解像度 |
 
 プロパティが数値、長さ、パーセント値などのどの型を受け付けるかは、[CSS の値と単位](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units)の規則で決まります。`p(12)` は異なり、プリセットの関数が引数に `1px` を明示的に掛けます。
 

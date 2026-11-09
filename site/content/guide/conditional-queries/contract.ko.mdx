@@ -23,13 +23,13 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 | 미디어 범위 | `@media(width>=40rem)` | `@media (width>=40rem)` |
 | Supports 선언 | `@supports(display:grid)` | `@supports (display:grid)` |
 | 컨테이너 크기 | `@container(width>=40rem)` | `@container (width>=40rem)` |
-| 이름이 있는 컨테이너 | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
-| 사용자 지정 컨테이너 조건 | `@container(card\|--md)` | `card`에 대해 `@custom-container --md` 해석 |
+| 이름이 있는 컨테이너 | `@container(card_width>=40rem)` | `@container card (width>=40rem)` |
+| 사용자 지정 컨테이너 조건 | `@container(card_--md)` | `card`에 대해 `@custom-container --md` 해석 |
 | 컨테이너 스타일 | `@container(style(--density:compact))` | `@container style(--density:compact)` |
 
 <Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
 
-`|`는 문자열, 주석, CSS 이스케이프 밖의 공백을 인코딩합니다. `@container(card|width>=40rem)`에서는 컨테이너 이름과 조건을 구분합니다. 따옴표 문자열과 이스케이프는 리터럴 내용을 유지합니다. 이 인코딩은 클래스용이므로 CSS 정의에는 일반 공백을 작성하세요.
+`_`는 값에서와 같이 문자열, 주석, CSS 이스케이프 밖의 공백을 인코딩합니다. `@container(card_width>=40rem)`에서는 컨테이너 이름과 조건을 구분합니다. 따옴표 문자열, 이스케이프, `--`로 시작하는 이름은 밑줄을 유지합니다. 컨테이너 이름에 밑줄을 넣으려면 `\_`로 작성하세요. 더 이상 권장되지 않는 `|`도 여전히 공백을 인코딩합니다. 이 인코딩은 클래스용이므로 CSS 정의에는 일반 공백을 작성하세요.
 
 <a id="simple-queries-in-classes"></a>
 
@@ -123,14 +123,14 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 ```html
 <aside class="(container-name:card) container-inline">
-  <div class="grid-cols(2)@container(card|width>=40rem)">
+  <div class="grid-cols(2)@container(card_width>=40rem)">
     <div>First item</div>
     <div>Second item</div>
   </div>
 </aside>
 ```
 
-<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
 조건이 일치하면 조합 스타일은 `display: grid`와 같은 너비의 두 열을 설정합니다. 임계값 미만에서는 두 선언 모두 제공하지 않으므로 두 블록 자식은 일반 흐름에서 세로로 쌓입니다. 컨테이너 자체 너비는 주변 레이아웃에 의해 정해집니다.
 
@@ -148,7 +148,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 ### 이름이 있는 컨테이너 조건 \{#named-container-conditions\}
 
-`@container(--md)`는 `@custom-container --md`를 해석합니다. `@container(card|--md)`는 같은 조건을 이름이 `card`인 적격 컨테이너에 적용합니다. 정의는 조건을 제공할 뿐 컨테이너 이름을 제공하지 않습니다.
+`@container(--md)`는 `@custom-container --md`를 해석합니다. `@container(card_--md)`는 같은 조건을 이름이 `card`인 적격 컨테이너에 적용합니다. 정의는 조건을 제공할 뿐 컨테이너 이름을 제공하지 않습니다.
 
 프리셋 `container.css`는 컴포넌트 너비 열세 개와 각각의 `max-` 상보 조건을 등록합니다. 뷰포트 중단점과 독립적이므로 `@container(--md)`는 `28rem`이고 `@md`는 `64rem`입니다.
 
@@ -156,7 +156,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 각 `--max-*` 이름은 대응하는 최소 너비 조건의 부정입니다. 예를 들어 `--max-md`는 `not (--md)`입니다. 미디어 조건과 마찬가지로 함께 컴파일한 정의는 참조 이름의 덮어쓰기를 따르지만, [이미 확장된 manifest 정의](#compiled-condition-definitions)는 설정 조각이 그 이름만 바꿔도 다시 확장되지 않습니다.
 
-<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+<Class2CSS classes={['grid-cols(2)@container(card_--md)', 'hidden@container(--max-sm)']} />
 
 이름을 정의하거나 바꾸려면 [`@custom-container`](/reference/directives/queries#custom-container)를 사용하세요. 정의되지 않은 이름은 오류입니다.
 
@@ -169,8 +169,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 | 거부되는 클래스 형식 | 이유 | 허용되는 대안 |
 | --- | --- | --- |
 | `@media((width>=50rem))` | 추가 그룹 괄호 | `@media(width>=50rem)` |
-| `@media(screen\|and\|(width>=50rem))` | 복합 쿼리 | 이름이 있는 `@custom-media` |
-| `@media(not\|print)` | 부정 쿼리 | 이름이 있는 `@custom-media` |
+| `@media(screen_and_(width>=50rem))` | 복합 쿼리 | 이름이 있는 `@custom-media` |
+| `@media(not_print)` | 부정 쿼리 | 이름이 있는 `@custom-media` |
 | `@media(screen,print)` | 쿼리 목록 | 이름이 있는 `@custom-media` |
 | `@supports(selector([lang\|=en]))` | 선택자 지원 검사 | 네이티브 `@supports`를 포함한 `@mixin` |
 

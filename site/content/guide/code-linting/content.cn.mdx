@@ -102,6 +102,8 @@ inline-flex px-md <!-- [!code ++] -->
 
 此规则不会用当前值相同的 token 替换字面值、不会换算单位，也不会重新排列原始条件。语义 token 应有意识地选择；团队要求使用时，可采用下方原始值策略。
 
+生成的每条规则都不变时，此规则会将已弃用的 `|` 空格改写为 `_`，例如将 `(margin:0|auto)` 改为 `(margin:0_auto)`。选择器、字符串或 URL 中的 `|` 是字面字符，保持不变。
+
 ### 禁止冲突 class \{#no-conflicting-classes\}
 `@master/css/no-conflicting-classes` 报告在相同变体范围中，输出相同声明属性的 class。
 

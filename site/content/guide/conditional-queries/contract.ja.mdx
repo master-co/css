@@ -23,13 +23,13 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 | メディアの範囲 | `@media(width>=40rem)` | `@media (width>=40rem)` |
 | Supports 宣言 | `@supports(display:grid)` | `@supports (display:grid)` |
 | コンテナーサイズ | `@container(width>=40rem)` | `@container (width>=40rem)` |
-| 名前付きコンテナー | `@container(card\|width>=40rem)` | `@container card (width>=40rem)` |
-| 独自のコンテナー条件 | `@container(card\|--md)` | `card` に対して `@custom-container --md` を解決 |
+| 名前付きコンテナー | `@container(card_width>=40rem)` | `@container card (width>=40rem)` |
+| 独自のコンテナー条件 | `@container(card_--md)` | `card` に対して `@custom-container --md` を解決 |
 | コンテナースタイル | `@container(style(--density:compact))` | `@container style(--density:compact)` |
 
 <Class2CSS classes={['hidden@media(print)', 'hidden@media(pointer:coarse)', 'grid@supports(display:grid)']} />
 
-`|` は、文字列、コメント、CSS エスケープの外の空白を表します。`@container(card|width>=40rem)` ではコンテナー名と条件を区切ります。引用符付き文字列とエスケープはリテラルの内容を保ちます。このエンコードはクラス用であり、CSS 定義には通常の空白を書きます。
+`_` は、値と同じく文字列、コメント、CSS エスケープの外の空白を表します。`@container(card_width>=40rem)` ではコンテナー名と条件を区切ります。引用符付き文字列、エスケープ、`--` で始まる名前はアンダースコアを保ちます。コンテナー名のアンダースコアは `\_` と書きます。非推奨の `|` も引き続き空白を表します。このエンコードはクラス用であり、CSS 定義には通常の空白を書きます。
 
 <a id="simple-queries-in-classes"></a>
 
@@ -123,14 +123,14 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 ```html
 <aside class="(container-name:card) container-inline">
-  <div class="grid-cols(2)@container(card|width>=40rem)">
+  <div class="grid-cols(2)@container(card_width>=40rem)">
     <div>First item</div>
     <div>Second item</div>
   </div>
 </aside>
 ```
 
-<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']} />
+<Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
 条件が一致すると、組み合わせスタイルは `display: grid` と等幅の 2 列を設定します。しきい値未満ではどちらの宣言も提供しないため、2 つのブロック子要素は通常フローで縦に並びます。コンテナー自身の幅は周囲のレイアウトが決めます。
 
@@ -148,7 +148,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 ### 名前付きコンテナー条件 \{#named-container-conditions\}
 
-`@container(--md)` は `@custom-container --md` を解決し、`@container(card|--md)` は同じ条件を名前が `card` の適格なコンテナーに適用します。定義が提供するのは条件であり、コンテナー名ではありません。
+`@container(--md)` は `@custom-container --md` を解決し、`@container(card_--md)` は同じ条件を名前が `card` の適格なコンテナーに適用します。定義が提供するのは条件であり、コンテナー名ではありません。
 
 プリセットの `container.css` は 13 個のコンポーネント幅と、それぞれの `max-` の補集合を登録します。ビューポートのブレークポイントとは独立しており、`@container(--md)` は `28rem`、`@md` は `64rem` です。
 
@@ -156,7 +156,7 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 各 `--max-*` は、対応する最小幅条件の否定です。たとえば `--max-md` は `not (--md)` です。メディア条件と同様に、一緒にコンパイルした定義は参照先の上書きに従いますが、[展開済み manifest の定義](#compiled-condition-definitions)は、フラグメントが参照先の名前だけを置き換えても再展開されません。
 
-<Class2CSS classes={['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']} />
+<Class2CSS classes={['grid-cols(2)@container(card_--md)', 'hidden@container(--max-sm)']} />
 
 名前の定義や置き換えには [`@custom-container`](/reference/directives/queries#custom-container) を使います。未定義の名前はエラーです。
 
@@ -169,8 +169,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 | 拒否されるクラス形式 | 理由 | 利用できる代替形式 |
 | --- | --- | --- |
 | `@media((width>=50rem))` | 余分なグループ化の括弧 | `@media(width>=50rem)` |
-| `@media(screen\|and\|(width>=50rem))` | 複合クエリー | 名前付き `@custom-media` |
-| `@media(not\|print)` | 否定クエリー | 名前付き `@custom-media` |
+| `@media(screen_and_(width>=50rem))` | 複合クエリー | 名前付き `@custom-media` |
+| `@media(not_print)` | 否定クエリー | 名前付き `@custom-media` |
 | `@media(screen,print)` | クエリーリスト | 名前付き `@custom-media` |
 | `@supports(selector([lang\|=en]))` | セレクターの対応検査 | ネイティブの `@supports` を含む `@mixin` |
 

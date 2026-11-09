@@ -395,9 +395,10 @@ test('Syntax tutorial preserves its learning path, executable examples and searc
   assert.match(conditionalColor, /@media/)
   assert.match(conditionalColor, /:hover\{color:var\(--color-blue-60\)/)
   assert.match(used('(max-width:32rem)').css, /max-width:32rem/)
-  assert.match(used("(content:'New|collection')::before").css, /content:'New\|collection'/)
+  assert.match(used("(content:'New_collection')::before").css, /content:'New_collection'/)
+  assert.match(used('(color:rgb(30_60_90/80%))').css, /color:rgb\(30 60 90\/80%\)/)
   assert.match(used('grid@sm@supports(display:grid)').css, /@media[^{}]+\{@supports \(display:grid\)/)
-  const container = used('(grid-template-columns:1fr|auto)@container(card|width>=28rem)').css
+  const container = used('(grid-template-columns:1fr_auto)@container(card_width>=28rem)').css
   assert.match(container, /container-name:card/)
   assert.match(container, /container-type:inline-size/)
   assert.match(container, /@container card/)

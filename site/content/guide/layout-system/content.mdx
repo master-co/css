@@ -130,17 +130,17 @@ Use `col-gap-*` and `row-gap-*` when the two axes need different spacing tokens.
 
 ## Add explicit tracks \{#add-explicit-tracks-only-when-needed\}
 
-For fixed or mixed tracks, write the native `grid-template-columns` value. Separate its tracks with `|`, which becomes a space in the generated CSS:
+For fixed or mixed tracks, write the native `grid-template-columns` value. Separate its tracks with `_`, which becomes a space in the generated CSS:
 
 ```html
-<!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) -->
-<section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
+<!-- @MARK (grid-template-columns:4.5rem_minmax(0,1fr)) -->
+<section class="grid (grid-template-columns:4.5rem_minmax(0,1fr)) gap-md">
   <nav>…</nav>
   <main class="min-w(0)">…</main>
 </section>
 ```
 
-<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
+<Class2CSS classes={['(grid-template-columns:4.5rem_minmax(0,1fr))', 'min-w(0)']} />
 
 `min-w(0)` lets the main region shrink below the width of its content. Keep equal columns and spans for ordinary content; use explicit tracks for app shells and split panes.
 

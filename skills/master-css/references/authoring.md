@@ -25,9 +25,12 @@ exist. Native declarations require parentheses and full CSS property names.
 
 Selectors follow the head (`bg-brand:hover`); conditions follow as suffixes
 (`grid-cols(3)@md`). Query `custom-media` before assuming a breakpoint's threshold.
-Whitespace in a native value is encoded as `|` outside strings/escapes. Do not
-rewrite quoted strings or CSS escapes with a blanket replacement. Keep those in
-native CSS when their class encoding is uncertain.
+Whitespace in a native value or query is encoded as `_` outside strings, `url()`
+and escapes, as in `(border:1px_solid_red)`; write `\_` for an underscore that
+belongs to a name (`slide\_in`). `var(--brand_primary)` keeps its name and `__`
+stays literal. `|` is the deprecated 2.0 spelling; do not write it in new classes.
+Do not rewrite quoted strings or CSS escapes with a blanket replacement. Keep those
+in native CSS when their class encoding is uncertain.
 
 ## Ask for class suggestions
 

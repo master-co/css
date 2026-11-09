@@ -49,10 +49,10 @@ class 以已註冊的 utility 或原生宣告開頭，後面可加選擇器、�
 | Class | 值的邊界 |
 | --- | --- |
 | `(width:calc(1px+(2px*3)))` | 巢狀括號屬於計算式 |
-| `(grid-template-columns:[start]\|1fr\|[end])` | 方括號包住 Grid 線名稱 |
+| `(grid-template-columns:[start]_1fr_[end])` | 方括號包住 Grid 線名稱 |
 | `(background-image:url(/a{b.svg))` | 大括號屬於未加引號的 URL token |
 
-<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']} />
+<Class2CSS classes={["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]_1fr_[end])', '(background-image:url(/a{b.svg))']} />
 
 值內仍適用 CSS 跳脫規則。未加引號的 URL 若含括號，請改用引號 URL 或 CSS 跳脫，維持 token 合法。
 
@@ -87,17 +87,19 @@ Master CSS 會輸出特定相容宣告，例如在 `backdrop-filter` 旁加入 `
 
 ### 空白、字串與底線 \{#value-encoding\}
 
-即使值包含 CSS 引號，HTML 空白仍會分隔 class。class 值內未加引號的 `|` 會編碼一個空白；引號字串內的管線符號則維持原樣。逗號與斜線等 CSS 標點應保留在原位。
+即使值包含 CSS 引號，HTML 空白仍會分隔 class。class 值內未加引號的 `_` 會編碼一個空白，與選擇器之間的用法相同；引號字串或 `url()` 內的底線則維持原樣。逗號與斜線等 CSS 標點應保留在原位。
 
 ```html
-<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
+<div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
-<Class2CSS classes={['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']} />
+<Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
 
-色彩值會成為 `rgb(30 60 90 / 80%)`，content 字串則保留為 `'a|b'`。CSS 字串中需要真正空白時，請使用 `\000020` 這類 CSS 跳脫：`(content:'New\000020collection')::before` 會產生「New collection」。六位數跳脫可避免 HTML class 中出現終止空白。
+色彩值會成為 `rgb(30 60 90 / 80%)`，content 字串則保留為 `'a_b'`。CSS 字串中需要真正空白時，請使用 `\000020` 這類 CSS 跳脫：`(content:'New\000020collection')::before` 會產生「New collection」。六位數跳脫可避免 HTML class 中出現終止空白。
 
-原生開頭內的底線是字面字元，例如 `slide_in`。開頭結束後，`_` 會開始後代選擇器：`(color:red)_a` 指向後代連結。已註冊 utility 名稱不能包含 `_`，但含底線的 token 鍵仍可透過 `var(--name)` 參照。
+屬於名稱的底線請加上跳脫：`(animation-name:slide\_in)` 會輸出 `slide\_in`，也就是 `slide_in` 的 CSS 跳脫。相鄰的兩個底線仍是字面字元，例如 `card__title`；`var()` 內開頭的自訂屬性也會保留名稱，例如 `var(--brand_primary)`。開頭結束後，`_` 會開始後代選擇器：`(color:red)_a` 指向後代連結。已註冊 utility 名稱不能包含 `_`，但含底線的 token 鍵仍可透過 `var(--name)` 參照。
+
+Master CSS 2.0 原先以 `|` 表示這些空白。這種寫法仍可使用但已棄用；[`prefer-canonical-classes`](/guide/code-linting) 規則會將它改寫為 `_`。
 
 ### 函式與明確變數 \{#functions\}
 
@@ -126,7 +128,7 @@ CSS 函式仍是原生屬性的值。Master CSS 會正規化 `calc(100%-2rem)` �
 | `(rotate:30deg)` | 明確指定的角度 |
 | `(animation-duration:200ms)` | 明確指定的時間；`.2s` 表達相同時長 |
 | `(opacity:.5)` | 無單位數值 |
-| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | 以每個 CSS 像素的點數指定原生影像解析度 |
+| `(background-image:image-set(url(a.png)_1x,url(b.png)_2x))` | 以每個 CSS 像素的點數指定原生影像解析度 |
 
 屬性是否接受數字、長度、百分比或其他型別，由 [CSS 值與單位](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units)規則決定。`p(12)` 則不同：預設集的函式會明確將引數乘以 `1px`。
 

@@ -1,7 +1,7 @@
 ---
 title: "语法教程"
 description: "读懂并组合 Master CSS class，加入交互状态与条件，建立随可用空间调整的指南卡片。"
-figures: {"SyntaxIllustration":{"title":"读懂样式、选择器与条件","alt":"完整 class fg-blue-60:hover@sm 用括号标出三个范围：fg-blue-60 是样式，:hover 是选择器，@sm 是条件。","caption":"只有视口符合 sm 时，颜色才应用到悬停的元素。两个后缀都只属于这个 class。","description":[{"title":"样式","text":"fg-blue-60 将 color 设为 var(--color-blue-60)。"},{"title":"选择器","text":":hover 在悬停时匹配持有 class 的元素。"},{"title":"条件","text":"@sm 将规则包在预设具名 sm 媒体查询内。选择器与条件都匹配时，此 class 才会应用。"}]},"GuideStudy:pipes-and-quotes":{"title":"竖线在引号内有不同含义","alt":"两个字面输入对应各自输出。rgb(30|60|90) 变成 rgb(30 60 90)；引号字符串 New|collection 保留竖线。","caption":"空白解码只作用于引号字符串之外。输出字符串仍是一个字面值。"},"GuideStudy:conditions-intersection":{"title":"两个条件都必须匹配","alt":"二乘二矩阵只高亮视口符合 sm 且支持 display:grid 的交集。","caption":"对于 grid@sm@supports(display:grid)，单独符合任一条件都不会启用声明。"}}
+figures: {"SyntaxIllustration":{"title":"读懂样式、选择器与条件","alt":"完整 class fg-blue-60:hover@sm 用括号标出三个范围：fg-blue-60 是样式，:hover 是选择器，@sm 是条件。","caption":"只有视口符合 sm 时，颜色才应用到悬停的元素。两个后缀都只属于这个 class。","description":[{"title":"样式","text":"fg-blue-60 将 color 设为 var(--color-blue-60)。"},{"title":"选择器","text":":hover 在悬停时匹配持有 class 的元素。"},{"title":"条件","text":"@sm 将规则包在预设具名 sm 媒体查询内。选择器与条件都匹配时，此 class 才会应用。"}]},"GuideStudy:pipes-and-quotes":{"title":"下划线在引号内有不同含义","alt":"两个字面输入对应各自输出。rgb(30_60_90) 变成 rgb(30 60 90)；引号字符串 New_collection 保留下划线。","caption":"空白解码只作用于引号字符串之外。输出字符串仍是一个字面值。"},"GuideStudy:conditions-intersection":{"title":"两个条件都必须匹配","alt":"二乘二矩阵只高亮视口符合 sm 且支持 display:grid 的交集。","caption":"对于 grid@sm@supports(display:grid)，单独符合任一条件都不会启用声明。"}}
 ---
 
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
@@ -64,17 +64,17 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 ### 在单个 class 中保留空格 \{#keep-spaces-inside-one-class\}
 
-HTML 用空白分隔 class。在引号字符串之外，CSS 值需要空格时请写成 `|`，逗号、斜线与括号则原样保留：
+HTML 用空白分隔 class。在引号字符串之外，CSS 值需要空格时请写成 `_`，与选择器表示后代空白的字符相同。逗号、斜线与括号则原样保留：
 
 ```html
-<div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
-  <span class="(content:'New|collection')::before"></span>
+<div class="(transform:translate(0,1rem)) (color:rgb(30_60_90/80%))">
+  <span class="(content:'New_collection')::before"></span>
 </div>
 ```
 
-<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]} />
+<Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30_60_90/80%))', "(content:'New_collection')::before"]} />
 
-颜色会变成 `rgb(30 60 90 / 80%)`。在引号包住的 content 字符串内，竖线保留字面含义：文本为 `New|collection`。Master CSS 也会规范化 `calc(100%-2rem)` 这类表达式的运算符间距，表达式则由浏览器计算。原生声明边界、引号值与转义方式请见[声明与值](/reference/rules/declarations)。
+颜色会变成 `rgb(30 60 90 / 80%)`。在引号包住的 content 字符串内，下划线保留字面含义：文本为 `New_collection`。值的其他位置若有属于名称的下划线，请转义，例如 `slide\_in`。Master CSS 也会规范化 `calc(100%-2rem)` 这类表达式的运算符间距，表达式则由浏览器计算。原生声明边界、引号值与转义方式请见[声明与值](/reference/rules/declarations)。
 
 <GuideStudy id="pipes-and-quotes" />
 
@@ -190,7 +190,7 @@ Hover 后缀只属于 `bg-surface-inset:hover`，不会让相邻 class 一起带
 
 ### 跟随组件可用空间 \{#follow-a-components-available-space\}
 
-即使视口宽度相同，侧栏卡片也比主内容区卡片的空间小。在父元素加上 `container-inline`，再为卡片布局 class 加上容器条件。最后的示例用 `(container-name:card)` 为父元素命名，并用 `@container(card|width>=28rem)` 查询。
+即使视口宽度相同，侧栏卡片也比主内容区卡片的空间小。在父元素加上 `container-inline`，再为卡片布局 class 加上容器条件。最后的示例用 `(container-name:card)` 为父元素命名，并用 `@container(card_width>=28rem)` 查询。
 
 父元素建立容器，子元素改变布局。`28rem` 阈值是显式的查询值，与 `--container-md` 这类尺寸 token 分开。[响应式设计](/guide/responsive-design#based-on-container-sizes)通过具名与嵌套容器，进一步说明两者差异。
 
@@ -203,12 +203,12 @@ Hover 后缀只属于 `bg-surface-inset:hover`，不会让相邻 class 一起带
   title="适应可用空间的指南卡片"
   source=""
   html={`<section class="container-inline (container-name:card)">
-  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr_auto)@container(card_width>=28rem) p-lg@container(card_width>=28rem)">
     <div>
       <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
       <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
     </div>
-    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card_width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
       Read the guide <span aria-hidden="true">→</span>
     </a>
   </article>

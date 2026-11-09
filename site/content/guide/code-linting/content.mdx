@@ -96,6 +96,8 @@ These classes remain unchanged:
 
 The rule does not replace a literal with a token that currently has the same value, convert units, or reorder the authored conditions. Choose semantic tokens deliberately, and use the raw-value policy below when the team requires them.
 
+The rule does rewrite the deprecated `|` space to `_`, as in `(margin:0|auto)` to `(margin:0_auto)`, when every generated rule stays the same. A `|` in a selector, string or URL is literal and stays.
+
 ### No conflicting classes \{#no-conflicting-classes\}
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 

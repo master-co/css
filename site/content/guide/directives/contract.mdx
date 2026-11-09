@@ -221,7 +221,7 @@ Master CSS expands `@custom-container` definitions during compilation; browsers 
 @container card (--md) { .title { font-size: 1.25rem; } }
 ```
 
-Names begin with `--`. CSS references use `(--name)` after an optional container name, such as `@container card not (--md)`. Markup uses the same reference inside the container query: `@container(--md)` measures the nearest container and `@container(card|--md)` a named one. Native CSS, utility and mixin definitions, and markup share one registry.
+Names begin with `--`. CSS references use `(--name)` after an optional container name, such as `@container card not (--md)`. Markup uses the same reference inside the container query: `@container(--md)` measures the nearest container and `@container(card_--md)` a named one. Native CSS, utility and mixin definitions, and markup share one registry.
 
 A definition is any container condition: size and style queries, `not`, `and`, `or`, and references to other custom containers, including forward references. Expansion substitutes the referenced condition, parenthesized unless it is already one group or the whole condition, so `@container card (--dense)` emits `@container card (width >= 28rem) and style(--density: compact)`. A container condition always fits one prelude; expansion never adds branches. The compiler emits ordinary container queries and stores each expanded condition in the manifest's `customContainers`.
 

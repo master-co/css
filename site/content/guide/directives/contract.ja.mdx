@@ -211,7 +211,7 @@ Master CSS はコンパイル時に `@custom-container` 定義を展開し、ブ
 @container card (--md) { .title { font-size: 1.25rem; } }
 ```
 
-名前は `--` で始まります。CSS の参照は任意のコンテナー名の後に `(--name)` を置き、`@container card not (--md)` のように書きます。マークアップもクエリ内で同じ参照を使い、`@container(--md)` は最も近いコンテナー、`@container(card|--md)` は名前付きコンテナーを測ります。ネイティブ CSS、ユーティリティと ミックスイン の定義、マークアップは同じ登録情報を共有します。
+名前は `--` で始まります。CSS の参照は任意のコンテナー名の後に `(--name)` を置き、`@container card not (--md)` のように書きます。マークアップもクエリ内で同じ参照を使い、`@container(--md)` は最も近いコンテナー、`@container(card_--md)` は名前付きコンテナーを測ります。ネイティブ CSS、ユーティリティと ミックスイン の定義、マークアップは同じ登録情報を共有します。
 
 定義にはサイズ・スタイルクエリ、`not`、`and`、`or`、前方参照を含む他の独自コンテナーの参照など、任意のコンテナー条件を使えます。展開時は参照条件を代入し、すでに 1 グループか条件全体でなければ括弧で囲みます。そのため `@container card (--dense)` は `@container card (width >= 28rem) and style(--density: compact)` を出力します。コンテナー条件は常に 1 つの前置部に収まり、展開で分岐は増えません。コンパイラーは通常のコンテナークエリを出力し、各展開条件を manifest の `customContainers` に保存します。
 

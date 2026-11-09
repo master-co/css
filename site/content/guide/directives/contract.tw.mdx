@@ -211,7 +211,7 @@ Master CSS 在編譯時展開 `@custom-container` 定義；瀏覽器接收一般
 @container card (--md) { .title { font-size: 1.25rem; } }
 ```
 
-名稱以 `--` 開頭。CSS 參照在選填容器名稱後使用 `(--name)`，例如 `@container card not (--md)`。標記在容器查詢內使用相同參照：`@container(--md)` 測量最近的容器，`@container(card|--md)` 則測量具名容器。原生 CSS、utility 與 mixin 定義，以及標記共用同一註冊表。
+名稱以 `--` 開頭。CSS 參照在選填容器名稱後使用 `(--name)`，例如 `@container card not (--md)`。標記在容器查詢內使用相同參照：`@container(--md)` 測量最近的容器，`@container(card_--md)` 則測量具名容器。原生 CSS、utility 與 mixin 定義，以及標記共用同一註冊表。
 
 定義可以是任何容器條件：尺寸與樣式查詢、`not`、`and`、`or`，以及其他自訂容器的參照，包含向前參照。展開時代入被參照條件；除非原本已是一個群組或完整條件，否則會加上括號，因此 `@container card (--dense)` 輸出 `@container card (width >= 28rem) and style(--density: compact)`。容器條件始終可放在單一規則前置部分，展開絕不增加分支。編譯器輸出一般容器查詢，並將各展開條件存入 manifest 的 `customContainers`。
 

@@ -136,17 +136,17 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 ## 指定显式轨道 \{#add-explicit-tracks-only-when-needed\}
 
-需要固定或混合轨道时，写出原生 `grid-template-columns` 值。使用 `|` 分隔轨道，生成 CSS 时会转为空格：
+需要固定或混合轨道时，写出原生 `grid-template-columns` 值。使用 `_` 分隔轨道，生成 CSS 时会转为空格：
 
 ```html
-<!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) -->
-<section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
+<!-- @MARK (grid-template-columns:4.5rem_minmax(0,1fr)) -->
+<section class="grid (grid-template-columns:4.5rem_minmax(0,1fr)) gap-md">
   <nav>…</nav>
   <main class="min-w(0)">…</main>
 </section>
 ```
 
-<Class2CSS classes={['(grid-template-columns:4.5rem|minmax(0,1fr))', 'min-w(0)']} />
+<Class2CSS classes={['(grid-template-columns:4.5rem_minmax(0,1fr))', 'min-w(0)']} />
 
 `min-w(0)` 让主要区域可缩小至内容宽度以下。普通内容保持等宽列与跨列设置；应用外壳与分割面板再使用显式轨道。
 
