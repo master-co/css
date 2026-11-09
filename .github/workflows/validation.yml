@@ -97,8 +97,8 @@ jobs:
             echo "range_valid=$range_valid"
           } >> "$GITHUB_OUTPUT"
 
-  # Editor delivery depends only on which inputs changed, so it is selected in
-  # its own short job. The editor evidence then builds in parallel with
+  # Editor delivery depends only on which inputs changed (for a release, since
+  # the editor the stores serve), so it is selected in its own short job. The editor evidence then builds in parallel with
   # quality-linux instead of waiting for the site verification to finish.
   editor_delivery:
     name: editor-delivery
@@ -117,21 +117,41 @@ jobs:
       - uses: ./.github/actions/setup-bun
         with:
           turbo-cache: "false"
+      # Only a push that plans an npm release publishes the editor.
+      - name: Plan the npm release
+        id: plan
+        if: ${{ inputs.release_build }}
+        run: node scripts/release.mjs --dry-run --github-output
       - name: Select editor delivery from actual input changes
         id: delivery
         shell: bash
         env:
           RANGE_VALID: ${{ needs.preflight.outputs.range_valid }}
+          RELEASE_BUILD: ${{ inputs.release_build }}
+          RELEASE_VERSION: ${{ steps.plan.outputs.version }}
         run: |
           set -euo pipefail
           vscode_release_affected=true
-          if [ "$RANGE_VALID" = true ]; then
-            vscode_release_affected=$(bun run turbo run build --filter=@master/css-vscode --affected --dry=json \
+          base=
+          if [ "$RELEASE_BUILD" != true ]; then
+            if [ "$RANGE_VALID" = true ]; then
+              base=$TURBO_SCM_BASE
+            fi
+          elif [ -z "$RELEASE_VERSION" ]; then
+            vscode_release_affected=false
+          else
+            # A release compares with the revision of the editor the stores serve, not
+            # with the previous push: that range drops the editor changes of a push whose
+            # release failed or planned none. An unproven revision delivers the editor.
+            base=$(node packages/vscode/scripts/published-editor-revision.mjs --head "$TURBO_SCM_HEAD")
+          fi
+          if [ -n "$base" ]; then
+            vscode_release_affected=$(TURBO_SCM_BASE="$base" bun run turbo run build --filter=@master/css-vscode --affected --dry=json \
               | jq -r 'any(.tasks[]; .taskId == "@master/css-vscode#build")')
             # Turbo's affected package selection does not include task inputs
             # outside package roots. These can change the bundled native payload
             # or JavaScript even when the editor's own files did not change.
-            changed_files=$(git diff --name-only "$TURBO_SCM_BASE...$TURBO_SCM_HEAD")
+            changed_files=$(git diff --name-only "$base...$TURBO_SCM_HEAD")
             while IFS= read -r file; do
               case "$file" in
                 crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml|.cargo/*|shared/*|scripts/build-rust-mdn-completion-registry.mjs|scripts/typescript-api.mjs|scripts/typescript-declarations.mjs|scripts/toolchain-policy.mjs|scripts/isolate-tooling-typescript.mjs)

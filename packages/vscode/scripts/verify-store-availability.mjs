@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
 import { TARGETS, packageDir } from './package-target-core.js'
 
-async function publicMarketplace(extensionId) {
+export async function publicMarketplace(extensionId) {
   const require = createRequire(join(packageDir, 'package.json'))
   const executable = join(dirname(require.resolve('@vscode/vsce/package.json')), 'vsce')
   const allowed = /^(?:PATH|PATHEXT|HOME|USERPROFILE|SYSTEMROOT|WINDIR|COMSPEC|TMPDIR|TMP|TEMP|SSL_CERT_FILE|SSL_CERT_DIR|NODE_EXTRA_CA_CERTS|HTTPS?_PROXY|NO_PROXY)$/i
