@@ -54,22 +54,23 @@ test('CI binds a site-only commit to the unchanged packages of the release it do
   assert.throws(() => ciMetadata({ ...ci, GITHUB_SHA: site, SITE_DELIVERY: 'release' }, git), /release tag differs/)
 })
 
-test('a push delivers the site with its release, or alone when no package source changed since the newest release', () => {
+test('every push delivers the site, with its own release or the newest one, unless a release is pending', () => {
   const tags = ['v1.37.8', 'v2.0.0-rc.3', 'v2.0.2', 'v2.0.10', 'v2.0.9']
   assert.equal(newestTag(tags, 'main'), 'v2.0.10')
   assert.equal(newestTag(tags, 'rc'), 'v2.0.0-rc.3')
   assert.equal(newestTag(['v2.0.0-rc.1'], 'main'), undefined)
   assert.deepEqual(planDelivery({ released: true, version: '2.0.11', channel: 'main' }), { deliver: true, kind: 'release', version: '2.0.11' })
   assert.throws(() => planDelivery({ released: true, version: '', channel: 'main' }))
-  const unchanged = planDelivery({ released: false, channel: 'main', reachableTags: tags, releasePathChanges: tag => {
+  // Commits that release nothing, even ones under package paths such as a README, deliver at once.
+  const unchanged = planDelivery({ released: false, channel: 'main', reachableTags: tags, pendingRelease: tag => {
     assert.equal(tag, 'v2.0.10')
-    return []
+    return false
   } })
   assert.deepEqual(unchanged, { deliver: true, kind: 'site', version: '2.0.10' })
-  const pending = planDelivery({ released: false, channel: 'main', reachableTags: tags, releasePathChanges: () => ['packages/css/src/index.ts'] })
+  const pending = planDelivery({ released: false, channel: 'main', reachableTags: tags, pendingRelease: () => 'patch' })
   assert.equal(pending.deliver, false)
-  assert.match(pending.reason, /Unreleased package changes since v2\.0\.10 \(packages\/css\/src\/index\.ts\)/)
-  assert.equal(planDelivery({ released: false, channel: 'main', reachableTags: [], releasePathChanges: () => [] }).deliver, false)
+  assert.match(pending.reason, /A patch release is pending since v2\.0\.10/)
+  assert.equal(planDelivery({ released: false, channel: 'main', reachableTags: [], pendingRelease: () => false }).deliver, false)
 })
 
 test('Cloudflare resolves a site-only commit to the newest release of its channel', () => {

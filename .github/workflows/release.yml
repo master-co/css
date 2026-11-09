@@ -132,8 +132,8 @@ jobs:
       - release
       - publish-editors
     # The site deploys on its own, not only with a release. `plan` delivers a release with its
-    # version, and a site-only push with the channel's newest release when no release path
-    # changed since; unreleased package changes defer the site to their release.
+    # version, and any other push with the channel's newest release, whatever it changed; only a
+    # pending release that failed to publish holds the site until it ships.
     if: ${{ always() && github.event_name == 'push' && needs.validation.result == 'success' && needs.release.result == 'success' && (github.ref_name == 'main' || github.ref_name == 'rc') && needs.validation.outputs.site_affected == 'true' && (needs.release.outputs.released != 'true' || needs.publish-editors.result == 'success' || (needs.validation.outputs.vscode_release_affected != 'true' && needs.publish-editors.result == 'skipped')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 75

@@ -55,22 +55,24 @@ export function selectReleaseTag(refs, revision, channel) {
 }
 
 /**
- * Decides whether a push delivers the site. A release delivers with its own version. Without
- * one, the site still delivers when no release path changed since the channel's newest
- * release: its workspace packages are then exactly what users install. Otherwise the site
- * waits for the release of those changes, so it never documents unpublished behavior.
+ * Decides whether a push delivers the site. A release delivers with its own version. Every
+ * other push delivers with the channel's newest release, whatever files it changed: the
+ * commit policy gives each shipped behavior change a releasing type, so commits that release
+ * nothing (documentation, package metadata, tests, refactors, CI) leave what users install
+ * unchanged. Only a pending release, whose commits are not yet published, holds the site
+ * until it ships, so the site never documents behavior users cannot install.
  */
-export function planDelivery({ released, version, channel, reachableTags, releasePathChanges }) {
+export function planDelivery({ released, version, channel, reachableTags, pendingRelease }) {
   if (released) {
     assert.match(version ?? '', /^\d+\.\d+\.\d+(-rc\.\d+)?$/, 'A release delivers with its actual version')
     return { deliver: true, kind: 'release', version }
   }
   const tag = newestTag(reachableTags, channel)
   if (!tag) return { deliver: false, reason: `No ${channel} release precedes this commit.` }
-  const changes = releasePathChanges(tag)
-  if (changes.length) {
-    const listed = changes.slice(0, 10).join(', ') + (changes.length > 10 ? `, and ${changes.length - 10} more` : '')
-    return { deliver: false, reason: `Unreleased package changes since ${tag} (${listed}); the site deploys with their release.` }
+  // aronrepo reports a release type, or `false` when the commits release nothing.
+  const pending = pendingRelease(tag)
+  if (pending) {
+    return { deliver: false, reason: `A ${pending} release is pending since ${tag} and not yet published; the site deploys with it.` }
   }
   return { deliver: true, kind: 'site', version: tag.slice(1) }
 }
@@ -215,12 +217,14 @@ async function plan() {
   const channel = process.env.GITHUB_REF_NAME
   assert.ok(Object.hasOwn(channels, channel), 'Only main and rc can deliver the site')
   // aronrepo is installed by then; the hosted builder never plans, so it stays a lazy import.
-  const { loadProjectPolicy, getDiffFiles, getVersionTags } = await import('aronrepo/node')
+  const { explainRange, getVersionTags } = await import('aronrepo/node')
   const cwd = process.cwd()
-  const { isReleasePath } = await loadProjectPolicy(cwd)
-  assert.ok(isReleasePath, 'Release paths decide whether site-only commits can deliver')
+  const reachableTags = getVersionTags(cwd, 'HEAD')
+  // The same release policy as the release job decides whether those commits still await a release.
+  const tag = newestTag(reachableTags, channel)
+  const pending = tag ? (await explainRange(cwd, tag, 'HEAD')).release : undefined
   const result = planDelivery({ released: process.env.RELEASED === 'true', version: process.env.RELEASE_VERSION, channel,
-    reachableTags: getVersionTags(cwd, 'HEAD'), releasePathChanges: tag => getDiffFiles(cwd, tag, 'HEAD').filter(isReleasePath) })
+    reachableTags, pendingRelease: () => pending })
   await writeGitHubFile('GITHUB_OUTPUT', [`deliver=${result.deliver}`])
   if (!result.deliver) {
     console.log(`::notice title=Site delivery deferred::${result.reason}`)
