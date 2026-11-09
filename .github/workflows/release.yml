@@ -320,6 +320,17 @@ jobs:
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
+  # Every stable release lists its @master/css-mcp version in the MCP Registry.
+  mcp-registry:
+    needs: release
+    if: ${{ github.event_name == 'push' && needs.release.outputs.released == 'true' && github.ref_name == 'main' }}
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/mcp-registry.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+
   npm-recovery:
     name: Recover the explicitly selected npm cohort
     if: ${{ github.event_name == 'workflow_dispatch' && github.ref_type == 'branch' && contains(fromJSON('["main","alpha","beta","rc","canary"]'), github.ref_name) }}

@@ -111,6 +111,20 @@ assert.equal(site.steps.filter(step => step.env?.GITHUB_TOKEN).length, 1, 'Do no
 const receipt = site.steps.find(step => step.uses === 'actions/upload-artifact@v7' && step.with.path === 'release-artifacts/site-delivery.json')
 assert.equal(receipt?.if, '${{ always() && steps.plan.outputs.deliver == \'true\' }}', 'Keep recovery receipts when a delivery step fails after an external write')
 assert.equal(receipt.with.name, 'site-delivery-${{ github.sha }}-${{ github.run_attempt }}', 'Retain each owning workflow attempt independently')
+const registry = releaseWorkflow.jobs['mcp-registry']
+assert.equal(registry?.uses, './.github/workflows/mcp-registry.yml', 'Every stable release lists its MCP server in the MCP Registry')
+assert.equal(registry.needs, 'release', 'List the MCP server only after npm promotion')
+for (const condition of [`github.event_name == 'push'`, `needs.release.outputs.released == 'true'`, `github.ref_name == 'main'`]) {
+  assert.ok(registry.if.includes(condition), `MCP Registry listing is missing a release gate: ${condition}`)
+}
+assert.deepEqual(registry.with, { version: '${{ needs.release.outputs.version }}' }, 'List the version npm actually released')
+assert.deepEqual(registry.permissions, { contents: 'read', 'id-token': 'write' })
+assert.equal(registry.secrets, undefined, 'GitHub OIDC lists the server without repository secrets')
+const registryWorkflow = YAML.parse(readFileSync(new URL('../.github/workflows/mcp-registry.yml', import.meta.url), 'utf8'))
+assert.equal(registryWorkflow.on.workflow_call.inputs.version.required, true)
+assert.ok('workflow_dispatch' in registryWorkflow.on, 'Keep the manual listing for a missed release')
+assert.equal(registryWorkflow.jobs.publish.if, "${{ github.ref == 'refs/heads/main' }}")
+assert.deepEqual(registryWorkflow.jobs.publish.permissions, { contents: 'read', 'id-token': 'write' })
 const hosted = readFileSync(new URL('./build-site-hosted.sh', import.meta.url), 'utf8')
 assert.ok(hosted.indexOf('hosted-prepare') < hosted.indexOf('bun install --frozen-lockfile'))
 assert.ok(hosted.indexOf('hosted-verify') > hosted.indexOf('bun run build:site'))
@@ -119,3 +133,4 @@ assert.doesNotMatch(hosted, /^\s*eval\b/m, 'Never evaluate downloaded release me
 process.stdout.write(`Validated ${packageRoots.length} release package(s) in dependency-safe order.\n`)
 process.stdout.write('Validated OIDC-only npm publication configuration in both workflows.\n')
 process.stdout.write('Validated gated, exact-output Pages Git delivery without Cloudflare credentials.\n')
+process.stdout.write('Validated the MCP Registry listing of every stable release.\n')

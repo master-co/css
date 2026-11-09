@@ -176,16 +176,19 @@ and [npm 11.21.0's implementation](https://github.com/npm/cli/blob/v11.21.0/lib/
 
 ## MCP Registry listing
 
-After the stable npm release, set `VERSION` to the exact released
-`@master/css-mcp` version and use it for both versions in `server.json`. Verify that
-`npm view "@master/css-mcp@$VERSION" mcpName` matches `server.json`'s `name`.
-Run the [package's client check](../packages/mcp/README.md#mcp-client-config) in
-an empty workspace on Node.js 24, pinning the npm command to that version.
+After every stable `main` release, the Release workflow's `mcp-registry` job calls
+`mcp-registry.yml` with the version npm released. It sets both versions in
+`server.json`, checks that `npm view "@master/css-mcp@$VERSION" mcpName` matches
+`server.json`'s `name`, validates, publishes with `mcp-publisher login github-oidc`
+and verifies the public listing. Prereleases from `rc` are not listed.
 
-Dispatch `mcp-registry.yml` on `main` with that version. It sets both versions in
-`server.json`, checks the npm `mcpName`, validates, publishes with
-`mcp-publisher login github-oidc` and verifies the public listing. The interactive
-`mcp-publisher login github` flow cannot read organization roles, so it is refused
+To list a release the job missed, dispatch `mcp-registry.yml` on `main` with its
+exact version (`gh workflow run mcp-registry.yml --ref main -f version=$VERSION`).
+For a manual check of the listed package, run the
+[package's client check](../packages/mcp/README.md#mcp-client-config) in an empty
+workspace on Node.js 24, pinning the npm command to that version.
+
+The interactive `mcp-publisher login github` flow cannot read organization roles, so it is refused
 for the `io.github.master-co` namespace. See the [official publishing guide](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/quickstart.mdx).
 
 Verify `server.packages` in the public response contains `@master/css-mcp` at

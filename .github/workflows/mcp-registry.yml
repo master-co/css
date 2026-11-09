@@ -1,5 +1,12 @@
 name: MCP Registry
 on:
+  # Release calls this after every stable release; dispatch it to list a missed one.
+  workflow_call:
+    inputs:
+      version:
+        description: Exact released @master/css-mcp version to list
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       version:
@@ -10,15 +17,14 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: mcp-registry
-  cancel-in-progress: false
-
 jobs:
   publish:
     # The io.github.master-co namespace needs an organization credential; GitHub OIDC
     # proves this repository without a personal token (see .github/RELEASING.md).
     if: ${{ github.ref == 'refs/heads/main' }}
+    concurrency:
+      group: mcp-registry
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
