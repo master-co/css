@@ -82,8 +82,8 @@ jobs:
       - name: Resolve the editor version
         id: editor
         env:
-          NPM_VERSION: ${{ steps.plan.outputs.version }}
-        run: node packages/vscode/scripts/editor-version.mjs --npm-version "$NPM_VERSION" --github-output
+          EDITOR_NPM_VERSION: ${{ steps.plan.outputs.version }}
+        run: node packages/vscode/scripts/editor-version.mjs --npm-version "$EDITOR_NPM_VERSION" --github-output
 
   package:
     name: Package both publisher identities without versioning or publishing

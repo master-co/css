@@ -45,11 +45,11 @@ test('the editor packages and checks the version of the npm release its revision
     assert.ok(stamped >= 0 && stamped < reads)
   }
   const gate = release.jobs.release.steps.find(step => step.run?.includes('verify-store-availability.mjs'))
-  assert.equal(gate.env.NPM_VERSION, '${{ steps.plan.outputs.version }}')
+  assert.equal(gate.env.EDITOR_NPM_VERSION, '${{ steps.plan.outputs.version }}')
   assert.match(gate.run, /verify-store-availability\.mjs --version "\$version"/)
   const steps = release.jobs['publish-editors'].steps
   const stamped = steps.findIndex(step => step.run?.includes('--stamp "$version"'))
-  assert.equal(steps[stamped].env.NPM_VERSION, '${{ needs.release.outputs.version }}')
+  assert.equal(steps[stamped].env.EDITOR_NPM_VERSION, '${{ needs.release.outputs.version }}')
   assert.ok(stamped < steps.findIndex(step => step.run?.includes('verify-editor-evidence.mjs')))
 })
 

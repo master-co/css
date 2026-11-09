@@ -91,10 +91,10 @@ jobs:
       - name: Require unused editor versions before publishing npm
         if: ${{ needs.validation.outputs.vscode_release_affected == 'true' && steps.plan.outputs.version != '' }}
         env:
-          NPM_VERSION: ${{ steps.plan.outputs.version }}
+          EDITOR_NPM_VERSION: ${{ steps.plan.outputs.version }}
         run: |
           set -euo pipefail
-          version=$(node packages/vscode/scripts/editor-version.mjs --npm-version "$NPM_VERSION")
+          version=$(node packages/vscode/scripts/editor-version.mjs --npm-version "$EDITOR_NPM_VERSION")
           node packages/vscode/scripts/verify-store-availability.mjs --version "$version"
       - run: bun run release
         env:
@@ -247,10 +247,10 @@ jobs:
       # The evidence check below then requires the tested VSIX to carry this version.
       - name: Use the editor version of the actual npm release
         env:
-          NPM_VERSION: ${{ needs.release.outputs.version }}
+          EDITOR_NPM_VERSION: ${{ needs.release.outputs.version }}
         run: |
           set -euo pipefail
-          version=$(node packages/vscode/scripts/editor-version.mjs --npm-version "$NPM_VERSION")
+          version=$(node packages/vscode/scripts/editor-version.mjs --npm-version "$EDITOR_NPM_VERSION")
           node packages/vscode/scripts/editor-version.mjs --stamp "$version"
       - name: Download the exact VSIX candidates verified in this release run
         uses: actions/download-artifact@v7
