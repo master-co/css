@@ -61,6 +61,27 @@
 - Check out our [homepage](https://css.master.co/).
 - Read the [installation guide](https://css.master.co/guide/installation) to set up Master CSS for an application.
 
+## MCP server
+
+This repository also contains the Master CSS [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server, published as [`@master/css-mcp`](https://www.npmjs.com/package/@master/css-mcp) and listed in the MCP Registry as `io.github.master-co/master-css`. Its source lives in [`packages/mcp`](https://github.com/master-co/css/tree/main/packages/mcp). It is built on the official [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) (`@modelcontextprotocol/sdk`) and runs over stdio.
+
+```json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@latest", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+- **Tools** — inspect, trace and suggest classes; render and compare generated CSS; audit setup, query the manifest and inspect CSS-first directives; lint files or buffers; preview fixes before `mastercss_apply_preview` writes them.
+- **Resources** — `mastercss://workspace/manifest`, `mastercss://workspace/entries` and `mastercss://workspace/packages`.
+- **Prompts** — `debug-missing-css`, `review-mastercss-classes` and `migrate-to-mastercss`.
+
+See the [MCP server README](https://github.com/master-co/css/blob/main/packages/mcp/README.md) for every tool and the [MCP guide](https://css.master.co/guide/ai-coding#connect-the-mcp-server) for client setup.
+
 ## Community
 
 - [Documentation](https://css.master.co/guide/installation) — Set up Master CSS and look up supported behavior.
