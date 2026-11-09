@@ -2,7 +2,7 @@
   "name": "@master/css-webpack",
   "type": "module",
   "engines": {
-    "node": "^24"
+    "node": ">=24"
   },
   "scripts": {
     "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",

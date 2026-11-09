@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
 
 Angular のビルダーを保持し、Master CSS CLI で読み込み可能なスタイルシートを生成します。開発中は両方の監視プロセスを動かしてください。Master CSS が生成 CSS を更新し、Angular がそれをインポートするアプリを配信します。
 
-この設定は、グローバルな `src/styles.css`、動作する `npm start` コマンド、対応する Node.js 24 がある、既存のブラウザーレンダリングの Angular アプリを前提とします。Angular の既定の[エミュレートされたカプセル化](https://angular.dev/guide/components/styling#viewencapsulationemulated)を使い、グローバルスタイルがコンポーネントのテンプレートに届くようにします。Shadow DOM コンポーネントでは、自身のシャドウルート内にスタイルが必要です。
+この設定は、グローバルな `src/styles.css`、動作する `npm start` コマンド、Node.js 24 以降がある、既存のブラウザーレンダリングの Angular アプリを前提とします。Angular の既定の[エミュレートされたカプセル化](https://angular.dev/guide/components/styling#viewencapsulationemulated)を使い、グローバルスタイルがコンポーネントのテンプレートに届くようにします。Shadow DOM コンポーネントでは、自身のシャドウルート内にスタイルが必要です。
 
 ## インストール \{#installation\}
 

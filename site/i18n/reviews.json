@@ -237,38 +237,38 @@
     },
     "guide/installation/(main)/content.mdx": {
       "tw": {
-        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
-        "translationHash": "f218338ddbbfca9a986bf2a36055b65bcc34940e00d87700a491d42a288aa9d4"
+        "sourceHash": "e5617f34eebb9f9434ad7d8c080995654d1bc99730bff1c5d48776c3d03acb6a",
+        "translationHash": "51e7582b2458a01a8b2475667ea9231c010f3c82ebf24792370508d7009e5d08"
       },
       "ja": {
-        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
-        "translationHash": "1aeb141411ff8f1ad271e2147e36941ede90fb9d9d0a5e08057673f731966888"
+        "sourceHash": "e5617f34eebb9f9434ad7d8c080995654d1bc99730bff1c5d48776c3d03acb6a",
+        "translationHash": "3edbe3631817ddd5a8f103690a128864c42646179244fc5824910f380e04afe7"
       },
       "ko": {
-        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
-        "translationHash": "75237aac7b2ea886562e0ea3a0ae1617622115ee3bbcd90f12bd1f4965ce07ea"
+        "sourceHash": "e5617f34eebb9f9434ad7d8c080995654d1bc99730bff1c5d48776c3d03acb6a",
+        "translationHash": "4e8f92b89a2f2d81f8ed29cafee338c6c40a0a1c656ae183971e944a534665dd"
       },
       "cn": {
-        "sourceHash": "e5cb7d049fd799388364b10c130bf7afefbd408b000424471779938a4be6a5b7",
-        "translationHash": "29d306baff1e4c84b1b097dc33b7c177d676abda33ea6385e3cdd89e0cf45470"
+        "sourceHash": "e5617f34eebb9f9434ad7d8c080995654d1bc99730bff1c5d48776c3d03acb6a",
+        "translationHash": "74c4c8c9f042a529d6ea110fd2789df2f5a3bfa9c275aaf4eb0bf3d36af025c8"
       }
     },
     "guide/installation/angular/content.mdx": {
       "tw": {
-        "sourceHash": "58f3ec3d69136587be0ef9a9dab5fa16c3dbef361cc083bb5873a928af555d0f",
-        "translationHash": "427af6c07f4e5ac329dfef0a625ee64b5111293deb82d130ce1a22b8e870f163"
+        "sourceHash": "fcaf5caffeb122530e9cbb62b17191b32298c7c4e68191a6219154b770f58515",
+        "translationHash": "b65484cb7dfdf4ecc8ec010d0c041bc6c4d4180b8009654c4c40fbdabb0361d8"
       },
       "ja": {
-        "sourceHash": "58f3ec3d69136587be0ef9a9dab5fa16c3dbef361cc083bb5873a928af555d0f",
-        "translationHash": "c2306d390b7558e251f7559735b1b2470688ac9ccba96ea4710a1a5a594b8702"
+        "sourceHash": "fcaf5caffeb122530e9cbb62b17191b32298c7c4e68191a6219154b770f58515",
+        "translationHash": "d443b658bce7f7ff79176fd6e3ddf118318f31ae285ed95b69b7284cf053a7b7"
       },
       "ko": {
-        "sourceHash": "58f3ec3d69136587be0ef9a9dab5fa16c3dbef361cc083bb5873a928af555d0f",
-        "translationHash": "da74d136ba13316f0e66dacecf3f03bf528d1f83829f6fa262122079ca6da999"
+        "sourceHash": "fcaf5caffeb122530e9cbb62b17191b32298c7c4e68191a6219154b770f58515",
+        "translationHash": "2a7a142b7aaa41c6e9aad11b2d04abba26a738f68b7a6e63fc14f819b13dbe8c"
       },
       "cn": {
-        "sourceHash": "58f3ec3d69136587be0ef9a9dab5fa16c3dbef361cc083bb5873a928af555d0f",
-        "translationHash": "b7a6012829691cd7643ca6abe2b1f954c14c59494c8782031b003e7d0a119cbc"
+        "sourceHash": "fcaf5caffeb122530e9cbb62b17191b32298c7c4e68191a6219154b770f58515",
+        "translationHash": "e0f0b69987b02e1b4858e65ff930442b6bf6bc6daf7f0f7927c8a5724d765cdb"
       }
     },
     "guide/installation/astro/content.mdx": {

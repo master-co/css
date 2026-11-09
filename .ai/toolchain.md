@@ -38,8 +38,11 @@ The local `sv/testing` patch installs temporary test workspaces with Bun.
 
 ## Node Exceptions
 
-Node 24 remains the consumer compatibility baseline. These development operations
-also explicitly use Node:
+Node 24 remains the consumer compatibility floor: every package declares
+`engines.node: ">=24"` with no upper bound, because pnpm and Yarn silently skip
+optional native bindings whose `engines` exclude the running Node. Development and
+CI default to Node 26 (`.nvmrc`); release consumer proofs pin Node 24 to keep the
+floor tested. These development operations also explicitly use Node:
 
 - TS7 synchronous API users: package/API contract checks, site preparation,
   Reference generation/tests, documentation example tests, translation audits,

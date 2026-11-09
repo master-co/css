@@ -18,7 +18,7 @@ import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
 
 保留 Angular 构建器，并使用 Master CSS CLI 生成它可以加载的样式表。开发时，请同时运行两个监听进程：Master CSS 更新生成的 CSS，Angular 则提供导入该 CSS 的应用。
 
-本配置假设你已有在浏览器中渲染的 Angular 应用，包含全局 `src/styles.css`、正常工作的 `npm start` 命令和受支持的 Node.js 24 版本。它使用 Angular 默认的[模拟封装](https://angular.dev/guide/components/styling#viewencapsulationemulated)，使全局样式能够作用于组件模板。Shadow DOM 组件则需要在自己的 shadow root 中放置样式。
+本配置假设你已有在浏览器中渲染的 Angular 应用，包含全局 `src/styles.css`、正常工作的 `npm start` 命令和 Node.js 24 或更高版本。它使用 Angular 默认的[模拟封装](https://angular.dev/guide/components/styling#viewencapsulationemulated)，使全局样式能够作用于组件模板。Shadow DOM 组件则需要在自己的 shadow root 中放置样式。
 
 ## 安装 \{#installation\}
 

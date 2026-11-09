@@ -29,7 +29,7 @@ exports.run = async () => {
     assert.equal(extension.extensionKind, vscode.ExtensionKind.Workspace)
     assert.equal(remote.uiKind, vscode.UIKind.Web)
     assert.ok(typeof remote.remoteName === 'string' && remote.remoteName.length > 0)
-    assert.equal(remote.node.split('.')[0], '24', 'The remote language server requires Node.js 24')
+    assert.ok(Number(remote.node.split('.')[0]) >= 24, 'The remote language server requires Node.js 24 or later')
     for (const key of ['platform', 'arch', 'musl']) assert.equal(remote[key], expected.remote[key])
   }
   await extension.activate()

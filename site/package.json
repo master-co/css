@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": "^24"
+        "node": ">=24"
     },
     "scripts": {
         "prepare-app": "node --import tsx ./prepare.ts",

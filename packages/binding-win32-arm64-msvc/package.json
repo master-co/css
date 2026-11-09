@@ -1,7 +1,7 @@
 {
   "name": "@master/css-binding-win32-arm64-msvc",
   "type": "commonjs",
-  "engines": { "node": "^24" },
+  "engines": { "node": ">=24" },
   "license": "MIT",
   "description": "Master CSS native binding for Windows ARM64.",
   "repository": {

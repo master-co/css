@@ -20,7 +20,7 @@ import { createEngine } from '@master/css'
 import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-assert.equal(process.versions.node.split('.')[0], '24')
+assert.ok(Number(process.versions.node.split('.')[0]) >= 24)
 const root = realpathSync(process.cwd())
 const { loadNativeBinding, resolveNativeTarget } = await import(pathToFileURL(join(root, 'node_modules/@master/css-binding/dist/native-loader.js')).href)
 const target = resolveNativeTarget()
@@ -82,7 +82,7 @@ export function verifyRegistryLock(lock, state) {
 
 /** Public reads only. No lifecycle scripts, workspace links, overrides or checkout fallback. */
 export async function verifyRegistryConsumer(state, context, { run = execa } = {}) {
-  assert.equal(process.versions.node.split('.')[0], '24', 'Registry consumer requires Node.js 24')
+  assert.ok(Number(process.versions.node.split('.')[0]) >= 24, 'Registry consumer requires Node.js 24 or later')
   const temporary = await mkdtemp(join(tmpdir(), 'master-registry-consumer-'))
   const cwd = join(temporary, 'consumer'), cache = join(temporary, 'cache')
   try {

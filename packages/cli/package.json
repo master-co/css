@@ -9,7 +9,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "^24"
+    "node": ">=24"
   },
   "license": "MIT",
   "description": "Master CSS CLI",

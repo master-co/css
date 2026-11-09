@@ -10,7 +10,7 @@ import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
 
 Keep Angular's builder and use the Master CSS CLI to generate a stylesheet it can load. During development, run both watchers: Master CSS updates the generated CSS, and Angular serves the app that imports it.
 
-This setup assumes an existing browser-rendered Angular app with a global `src/styles.css`, a working `npm start` command and a supported Node.js 24 release. It uses Angular's default [emulated encapsulation](https://angular.dev/guide/components/styling#viewencapsulationemulated), which allows global styles to reach component templates. Shadow DOM components need styles inside their own shadow roots.
+This setup assumes an existing browser-rendered Angular app with a global `src/styles.css`, a working `npm start` command and Node.js 24 or later. It uses Angular's default [emulated encapsulation](https://angular.dev/guide/components/styling#viewencapsulationemulated), which allows global styles to reach component templates. Shadow DOM components need styles inside their own shadow roots.
 
 ## Installation \{#installation\}
 

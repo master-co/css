@@ -4,7 +4,7 @@ Model Context Protocol server for Master CSS tooling. It lets AI clients inspect
 
 ## Installation
 
-Use Node.js 24.
+Use Node.js 24 or later.
 
 ```bash
 npm install -D @master/css-mcp

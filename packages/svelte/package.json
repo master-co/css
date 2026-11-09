@@ -2,7 +2,7 @@
   "name": "@master/css-svelte",
   "type": "module",
   "engines": {
-    "node": "^24"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "bun --bun vite dev",

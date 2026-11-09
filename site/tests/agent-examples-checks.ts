@@ -76,6 +76,6 @@ export async function verifyAgentMCPExamples() {
     assert.equal(formatted.formatted, '@safelist "background-color:transparent!";' )
     assert.equal(formatted.preview, undefined)
     const packageJSON = JSON.parse(readFileSync(new URL('../../packages/mcp/package.json', import.meta.url), 'utf8'))
-    assert.equal(packageJSON.engines.node, '^24')
+    assert.equal(packageJSON.engines.node, '>=24')
   } finally { await connection.close(); rmSync(root, { recursive: true, force: true }) }
 }

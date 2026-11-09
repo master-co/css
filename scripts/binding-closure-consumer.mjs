@@ -129,7 +129,7 @@ console.log(JSON.stringify({ targetPackage: target, detected, nativeTarget: load
 `
 
 export async function consumeClosure({ closure, target, proof }) {
-  assert.equal(process.versions.node.split('.')[0], '24', 'Candidate packages require Node.js 24')
+  assert.ok(Number(process.versions.node.split('.')[0]) >= 24, 'Candidate packages require Node.js 24 or later')
   const manifest = await readJSON(join(closure, 'closure.json'))
   assert.equal(manifest.schemaVersion, 1)
   verifyRevision(manifest, process.env.GITHUB_SHA)

@@ -27,7 +27,7 @@
     "directory": "packages/vscode"
   },
   "engines": {
-    "node": "^24",
+    "node": ">=24",
     "vscode": "^1.123.0"
   },
   "activationEvents": [

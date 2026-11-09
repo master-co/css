@@ -308,7 +308,7 @@ for (const { directory, manifest } of packages) {
     { access: 'public', provenance: true },
     `${manifest.name} must publish publicly with npm provenance.`
   )
-  assert.equal(manifest.engines?.node, '^24', `${manifest.name} must declare the Node 24 baseline.`)
+  assert.equal(manifest.engines?.node, '>=24', `${manifest.name} must declare the Node 24 minimum without an upper bound.`)
   assert.ok(Array.isArray(manifest.files) && manifest.files.length, `${manifest.name} must define a publish allowlist.`)
   assert.notEqual(manifest.exports, undefined, `${manifest.name} must define an explicit exports boundary.`)
 
