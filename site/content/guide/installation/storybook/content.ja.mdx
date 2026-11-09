@@ -66,6 +66,8 @@ HTTP サーバーで `storybook-static` を配信し、同じストーリーを�
 
 アプリにはスタイルが適用されるのにストーリーには適用されない場合、まず `preview.ts` の CSS インポートを確認し、次に Storybook のビルダーで Master CSS プラグインが実行されているか確認します。静的レンダリングでは、ストーリーのソースに完全なクラス文字列を記述してください。ストーリーのディレクトリーがアプリの走査対象外なら、`@source` に追加します。
 
+Master CSS を気に入っていただけたら、[GitHub でスターを付けて](https://github.com/master-co/css)、ほかの開発者が見つけやすくなるようご協力ください。
+
 ## 必要な場合だけ Vite インテグレーションを別途登録する \{#register-a-separate-vite-integration-when-needed\}
 Storybook の設定でアプリの Vite 設定を意図的に読み込まない場合は、`viteFinal` で Master CSS を登録します。次の内容を既存の設定に統合し、ストーリー glob、アドオン、フレームワークの設定を保持してください。アプリのプラグインがすでに読み込まれている場合は、この登録を省きます。
 

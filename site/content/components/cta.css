@@ -97,6 +97,37 @@
     }
   }
 
+  /* Supporting the project is a quiet, smaller glass pill below the two ways to start; it never competes with Get started. */
+  .home-cta-star {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-height: 2.25rem;
+    margin-top: var(--spacing-md);
+    padding: 0.375rem var(--spacing-md) 0.375rem 0.75rem;
+    border-radius: calc(infinity * 1px);
+    font-size: var(--home-caption);
+    line-height: 1.5;
+    color: var(--home-text);
+    text-decoration-line: none;
+    transition: color var(--home-quick) var(--home-ease);
+
+    & > svg {
+      flex: none;
+    }
+
+    &:hover {
+      color: var(--home-ink);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 3px;
+    }
+  }
+
   /* The canvas lamp reaches the title and controls as these properties; the defaults hang it above the actions. */
   .home-cta-title-finish,
   .home-cta-actions > * {

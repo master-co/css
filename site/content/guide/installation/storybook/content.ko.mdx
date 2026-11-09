@@ -66,6 +66,8 @@ HTTP 서버로 `storybook-static`을 제공하고 같은 스토리를 여세요.
 
 앱에는 스타일이 적용되지만 스토리에는 적용되지 않는다면 먼저 `preview.ts`의 CSS 가져오기를 확인하고, Storybook 빌더에서 Master CSS 플러그인이 실행되는지 확인하세요. 정적 렌더링에서는 스토리 소스에 완전한 클래스 문자열을 유지해야 합니다. 스토리 디렉터리가 애플리케이션의 스캔 범위 밖에 있다면 `@source`에 추가하세요.
 
+Master CSS가 마음에 드셨나요? [GitHub에서 스타를 눌러](https://github.com/master-co/css) 더 많은 개발자가 찾을 수 있도록 도와주세요.
+
 ## 필요할 때 별도의 Vite 통합 등록하기 \{#register-a-separate-vite-integration-when-needed\}
 Storybook 설정이 의도적으로 애플리케이션의 Vite 설정을 읽지 않는다면 `viteFinal`에서 Master CSS를 등록하세요. 다음 내용을 기존 설정에 병합하되 스토리 glob, 애드온, 프레임워크 설정은 유지합니다. 애플리케이션의 플러그인이 이미 로드되었다면 이 등록은 건너뛰세요.
 

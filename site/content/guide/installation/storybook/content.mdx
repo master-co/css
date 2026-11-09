@@ -58,6 +58,8 @@ Serve `storybook-static` with an HTTP server and open the same story. Inspect it
 
 If the app is styled but stories are not, first check the CSS import in `preview.ts`, then confirm the Master CSS plugin runs in Storybook’s builder. With static rendering, keep complete class strings in story source or add the story directory to `@source` when it lies outside the application’s scanned files.
 
+Enjoying Master CSS? [Star it on GitHub](https://github.com/master-co/css) to help other developers find it.
+
 ## Register a separate Vite integration when needed \{#register-a-separate-vite-integration-when-needed\}
 If your Storybook configuration deliberately does not load the application’s Vite configuration, register Master CSS in `viteFinal`. Merge this into your existing configuration, retaining its story globs, addons and framework settings. Skip this registration when the application plugin is already loaded.
 

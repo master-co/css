@@ -1,6 +1,7 @@
 ---
 import './cta.css'
 import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import IconBrandGithub from '@tabler/icons-svelte-runes/icons/brand-github'
 import Link from '@master/internal-site/components/Link.svelte'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import CopyCommand from './CopyCommand.svelte'
@@ -23,6 +24,11 @@ const { t } = siteOf(Astro)
         </Link>
         <CopyCommand client:idle={{ timeout: 500 }} command={installPrompt(import.meta.env.PUBLIC_VERSION, import.meta.env.PUBLIC_URL)} label={t('Set up with your AI agent')} copyLabel={t('Copy setup prompt')} wrap />
       </div>
+      {/* A quiet way to support the project, below and smaller than the two ways to start. */}
+      <Link class="home-cta-star home-glass" href="https://github.com/master-co/css">
+        <IconBrandGithub aria-hidden="true" size={16} stroke={1.75} />
+        {t('Star us on GitHub')}
+      </Link>
       <div class="home-cta-field" aria-hidden="true">
         {/* Hydrates as early as the canvas's own observer would start the field. */}
         <CTACanvas client:idle={{ timeout: 500 }} />

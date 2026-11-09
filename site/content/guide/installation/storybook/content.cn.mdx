@@ -66,6 +66,8 @@ npm run build-storybook
 
 如果应用有样式而 story 没有，请先检查 `preview.ts` 中的 CSS 导入，再确认 Master CSS 插件在 Storybook 构建器中运行。使用静态渲染时，请在 story 源代码中保留完整的类名字符串；如果 story 目录位于应用的扫描范围之外，请将其加入 `@source`。
 
+觉得 Master CSS 好用吗？[在 GitHub 上给它一颗星](https://github.com/master-co/css)，让更多开发者发现它。
+
 ## 需要时注册独立的 Vite 集成 \{#register-a-separate-vite-integration-when-needed\}
 如果 Storybook 配置有意不加载应用的 Vite 配置，请在 `viteFinal` 中注册 Master CSS。将以下内容合并到现有配置，保留 story glob、附加组件和框架设置。如果应用插件已经加载，请跳过此次注册。
 
