@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { advancePointer, completedPagesCheck, downloadManifest, downloadPublicBytes, publishManifest, verifyLiveIdentity, waitForPages } from './pages-release-github.mjs'
+import { advancePointer, completedPagesCheck, downloadManifest, downloadPublicBytes, publishManifest, verifyLiveIdentity, waitForLiveIdentity, waitForPages } from './pages-release-github.mjs'
 import { identityPath, inventoryDigest, jsonBytes, manifestName, manifestUrl, sha256 } from './pages-site-manifest.mjs'
 
 const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
@@ -186,6 +186,20 @@ test('immutable Pages identity requires its real noindex response header while c
     headers: { 'X-Robots-Tag': 'noarchive, NoINDEX, nofollow' }
   }), { requireNoindex: true })
   await verifyLiveIdentity(metadata.origin, metadata, manifest, async () => json(identity))
+})
+
+test('the canonical identity is polled until the custom domain serves the exact build', async () => {
+  let calls = 0
+  const waits = []
+  await waitForLiveIdentity(metadata.origin, metadata, manifest, {
+    fetchApi: async () => ++calls < 3 ? json({ ...identity, revision: 'f'.repeat(40) }) : json(identity),
+    wait: async ms => { waits.push(ms) }
+  })
+  assert.equal(calls, 3)
+  assert.deepEqual(waits, [15_000, 15_000])
+  await assert.rejects(waitForLiveIdentity(metadata.origin, metadata, manifest, {
+    fetchApi: async () => json({ ...identity, revision: 'f'.repeat(40) }), wait: async () => {}, timeout: 0
+  }), /identity differs/)
 })
 
 test('a skipped or missing Pages check cannot turn the aggregate delivery green', async () => {

@@ -4,7 +4,7 @@ import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promise
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { channels, checkVerifiedOutput, createManifest, jsonBytes, manifestName, manifestUrl, prepareIdentity, releaseMetadata, repository, sha256, validateManifest, validateRegistryEvidence, verifyOutput } from './pages-site-manifest.mjs'
-import { advancePointer, downloadManifest, publishManifest, verifyLiveIdentity, waitForPages } from './pages-release-github.mjs'
+import { advancePointer, downloadManifest, publishManifest, verifyLiveIdentity, waitForLiveIdentity, waitForPages } from './pages-release-github.mjs'
 
 const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 30_000 }).trim()
 const remote = `https://github.com/${repository}.git`
@@ -315,7 +315,9 @@ async function deliver(metadata) {
     await save('pages-verified', { pages: proof, immutablePagesVerified: true })
     if (attempt.mode === 'production') {
       await save('verify-canonical')
-      await verifyLiveIdentity(metadata.origin, metadata, manifest)
+      // Fixtures shorten the window; production waits up to ten minutes for the custom domain.
+      const timeout = process.env.PAGES_CANONICAL_TIMEOUT_MS ? Number(process.env.PAGES_CANONICAL_TIMEOUT_MS) : undefined
+      await waitForLiveIdentity(metadata.origin, metadata, manifest, { timeout })
       await save('canonical-verified', { canonicalVerified: true })
     }
     await save('complete', { status: 'success' })

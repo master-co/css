@@ -165,6 +165,23 @@ export async function verifyLiveIdentity(origin, metadata, manifest, fetchApi = 
     payloadDigest: inventoryDigest(manifest.files.filter(file => file.path !== identityPath)) }, 'The deployed Pages identity differs')
 }
 
+/**
+ * The custom domain can keep serving the previous build for a short while after Cloudflare
+ * reports the exact deployment, so the canonical identity is polled within a bounded window.
+ * Only the exact identity passes; the last mismatch is rethrown when the window closes.
+ */
+export async function waitForLiveIdentity(origin, metadata, manifest, { fetchApi = fetch, wait = delay, timeout = 10 * 60_000, interval = 15_000 } = {}) {
+  const deadline = performance.now() + timeout
+  for (;;) {
+    try {
+      return await verifyLiveIdentity(origin, metadata, manifest, fetchApi)
+    } catch (error) {
+      if (performance.now() >= deadline) throw error
+    }
+    await wait(Math.min(interval, Math.max(0, deadline - performance.now())))
+  }
+}
+
 export async function waitForPages(metadata, { token, startedAt, manifest, fetchApi = fetch, wait = delay, timeout = 45 * 60_000 } = {}) {
   validateManifest(manifest, metadata)
   assert.ok(Number.isFinite(Date.parse(startedAt)), 'Delivery start time is required')

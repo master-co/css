@@ -297,7 +297,7 @@ globalThis.fetch=async(address,options={})=>{
 `)
   return { root, async run(nextScenario = scenario, mode = 'bootstrap') {
     const env = { PATH: `${path.join(root, 'tools')}${path.delimiter}${process.env.PATH}`, ...ci, GITHUB_TOKEN: 'fixture-secret-token',
-      GITHUB_RUN_ID: '1234', GITHUB_RUN_ATTEMPT: '2', PAGES_RELEASE_MODE: mode, PAGES_FIXTURE_SCENARIO: nextScenario,
+      GITHUB_RUN_ID: '1234', GITHUB_RUN_ATTEMPT: '2', PAGES_RELEASE_MODE: mode, PAGES_FIXTURE_SCENARIO: nextScenario, PAGES_CANONICAL_TIMEOUT_MS: '0',
       NODE_OPTIONS: `--import=${pathToFileURL(path.join(root, 'fetch.mjs')).href}` }
     let output, code = 0
     try { output = execFileSync(process.execPath, ['scripts/pages-site-release.mjs', 'deliver'], { cwd: root, env, encoding: 'utf8', stdio: 'pipe', timeout: 10000 }) }
