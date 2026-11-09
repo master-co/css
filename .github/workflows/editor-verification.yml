@@ -58,9 +58,36 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  # The editor takes the version of the npm release this revision would publish
+  # (packages/vscode/scripts/editor-version.mjs); the release job and
+  # publish-editors derive it again from their own plan and released version.
+  version:
+    name: Resolve the editor version of this revision's release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.editor.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+        with:
+          ignore-scripts: "true"
+          turbo-cache: "false"
+      - name: Plan the npm release
+        id: plan
+        run: node scripts/release.mjs --dry-run --github-output
+      - name: Resolve the editor version
+        id: editor
+        env:
+          NPM_VERSION: ${{ steps.plan.outputs.version }}
+        run: node packages/vscode/scripts/editor-version.mjs --npm-version "$NPM_VERSION" --github-output
+
   package:
     name: Package both publisher identities without versioning or publishing
-    needs: native
+    needs: [native, version]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -71,6 +98,10 @@ jobs:
         with:
           all-platforms: "true"
           turbo-cache-scope: build
+      - name: Use the editor version of this revision's release
+        env:
+          EDITOR_VERSION: ${{ needs.version.outputs.version }}
+        run: node packages/vscode/scripts/editor-version.mjs --stamp "$EDITOR_VERSION"
       - uses: actions/download-artifact@v7
         with:
           pattern: editor-binding-*
@@ -207,7 +238,7 @@ jobs:
   required:
     name: Require every editor artifact proof
     if: ${{ always() }}
-    needs: [native, package, verify]
+    needs: [native, version, package, verify]
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -219,6 +250,10 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+      - name: Use the editor version of this revision's release
+        env:
+          EDITOR_VERSION: ${{ needs.version.outputs.version }}
+        run: node packages/vscode/scripts/editor-version.mjs --stamp "$EDITOR_VERSION"
       - uses: actions/download-artifact@v7
         with:
           pattern: editor-proof-*

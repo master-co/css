@@ -24,8 +24,33 @@ test('manual release-candidate validation remains read-only and requires the reu
   assert.equal(gate.with, undefined, 'No other revision can be substituted into the nested workflow')
   assert.deepEqual(editor.permissions, { contents: 'read' })
   assert.equal(editor.jobs.required.if, '${{ always() }}')
-  assert.deepEqual(editor.jobs.required.needs, ['native', 'package', 'verify'])
+  assert.deepEqual(editor.jobs.required.needs, ['native', 'version', 'package', 'verify'])
   assert.ok(editor.jobs.required.steps[0].run.includes('job.result !== "success"'))
+})
+
+test('the editor packages and checks the version of the npm release its revision would publish', () => {
+  const editor = workflow('editor-verification'), release = workflow('release')
+  const stamp = '--stamp "$EDITOR_VERSION"'
+  const version = editor.jobs.version.steps.map(step => step.run ?? '')
+  assert.deepEqual(editor.jobs.version.steps[0].with, { 'fetch-depth': 0, 'persist-credentials': false })
+  assert.ok(version.indexOf('node scripts/release.mjs --dry-run --github-output') < version.findIndex(run => run.includes('editor-version.mjs --npm-version')))
+  assert.equal(editor.jobs.version.outputs.version, '${{ steps.editor.outputs.version }}')
+  for (const name of ['package', 'required']) {
+    const steps = editor.jobs[name].steps
+    assert.ok(editor.jobs[name].needs.includes('version'))
+    const stamped = steps.findIndex(step => step.run?.includes(stamp))
+    assert.equal(steps[stamped].env.EDITOR_VERSION, '${{ needs.version.outputs.version }}')
+    // Every step that reads the source manifest's version runs after it is set.
+    const reads = steps.findIndex(step => /vscode:package|verify-vsix-archives|verify-editor-evidence/.test(step.run ?? ''))
+    assert.ok(stamped >= 0 && stamped < reads)
+  }
+  const gate = release.jobs.release.steps.find(step => step.run?.includes('verify-store-availability.mjs'))
+  assert.equal(gate.env.NPM_VERSION, '${{ steps.plan.outputs.version }}')
+  assert.match(gate.run, /verify-store-availability\.mjs --version "\$version"/)
+  const steps = release.jobs['publish-editors'].steps
+  const stamped = steps.findIndex(step => step.run?.includes('--stamp "$version"'))
+  assert.equal(steps[stamped].env.NPM_VERSION, '${{ needs.release.outputs.version }}')
+  assert.ok(stamped < steps.findIndex(step => step.run?.includes('verify-editor-evidence.mjs')))
 })
 
 test('release publishes only the same-run artifacts whose bytes and all sixteen host proofs passed the gate', () => {

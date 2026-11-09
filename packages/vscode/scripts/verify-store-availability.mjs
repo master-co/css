@@ -58,5 +58,8 @@ export async function verifyStoreAvailability(manifest, { marketplace = publicMa
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const manifest = JSON.parse(await readFile(join(packageDir, 'package.json'), 'utf8'))
+  // `--version` checks the version this release will package (editor-version.mjs).
+  const index = process.argv.indexOf('--version')
+  if (index >= 0) manifest.version = process.argv[index + 1]
   console.log(JSON.stringify(await verifyStoreAvailability(manifest), null, 2))
 }
