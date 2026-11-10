@@ -9,7 +9,8 @@ const roots: string[] = []
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })
 
 function project() {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-ignored-')))
+  // The native realpath expands Windows 8.3 temp names (RUNNER~1) like the lint does.
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-ignored-')))
   roots.push(root)
   mkdirSync(join(root, '.git'))
   writeFileSync(join(root, '.gitignore'), 'dist/\n')
