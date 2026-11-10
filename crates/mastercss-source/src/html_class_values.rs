@@ -3,6 +3,8 @@
 pub(super) enum Part<'a> {
     Class(&'a str),
     Script(&'a str),
+    /// The JavaScript expression of an Astro `class={...}` or `class:list={...}`.
+    Expression(&'a str),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -80,6 +82,7 @@ fn parts_with(source: &str, expressions: bool) -> Vec<Part<'_>> {
         let tag = &source[tag_start..cursor];
         let mut class = None;
         let mut encoding = None;
+        let mut script_type = None;
         let mut self_closing = false;
         let mut ended = false;
         while cursor < bytes.len() {
@@ -136,7 +139,7 @@ fn parts_with(source: &str, expressions: bool) -> Vec<Part<'_>> {
                     // `class={...}` and `class:list={...}` hold class strings in JavaScript.
                     if name.eq_ignore_ascii_case("class") || name.eq_ignore_ascii_case("class:list")
                     {
-                        values.push(Part::Script(expression));
+                        values.push(Part::Expression(expression));
                     }
                     continue;
                 }
@@ -164,7 +167,12 @@ fn parts_with(source: &str, expressions: bool) -> Vec<Part<'_>> {
             if encoding.is_none() && name.eq_ignore_ascii_case("encoding") {
                 encoding = Some(value);
             }
+            if script_type.is_none() && name.eq_ignore_ascii_case("type") {
+                script_type = Some(value);
+            }
         }
+        // JSON-LD, import maps and other data scripts are raw text but not code.
+        let code = crate::component_blocks::javascript_type(script_type);
         // EOF inside a start tag does not emit that tag or its attributes.
         if !ended {
             break;
@@ -228,7 +236,7 @@ fn parts_with(source: &str, expressions: bool) -> Vec<Part<'_>> {
             let mut scan = cursor;
             loop {
                 let Some(offset) = source[scan..].find("</") else {
-                    if tag.eq_ignore_ascii_case("script") {
+                    if code && tag.eq_ignore_ascii_case("script") {
                         values.push(Part::Script(&source[cursor..]));
                     }
                     return values;
@@ -243,7 +251,7 @@ fn parts_with(source: &str, expressions: bool) -> Vec<Part<'_>> {
                         .get(name_end)
                         .is_some_and(|b| space(*b) || matches!(b, b'/' | b'>'))
                 {
-                    if tag.eq_ignore_ascii_case("script") {
+                    if code && tag.eq_ignore_ascii_case("script") {
                         values.push(Part::Script(&source[cursor..start]));
                     }
                     cursor = start;

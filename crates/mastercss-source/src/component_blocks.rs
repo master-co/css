@@ -218,6 +218,24 @@ fn closing_tag(source: &str, from: usize, name: &str) -> Option<(usize, usize)> 
 }
 
 /// The language of a script block, or `None` for a data block such as JSON-LD.
+/// Whether a `<script type>` holds JavaScript or TypeScript. JSON-LD, import maps,
+/// shaders and other data scripts are not code.
+pub(super) fn javascript_type(kind: Option<&str>) -> bool {
+    let Some(kind) = kind.map(str::trim).filter(|kind| !kind.is_empty()) else {
+        return true;
+    };
+    [
+        "module",
+        "text/javascript",
+        "application/javascript",
+        "text/typescript",
+        "application/typescript",
+        "ts",
+    ]
+    .iter()
+    .any(|known| kind.eq_ignore_ascii_case(known))
+}
+
 fn script_language(attributes: &str) -> Option<ScriptLanguage> {
     let mut lang = None;
     let mut kind = None;
@@ -228,19 +246,7 @@ fn script_language(attributes: &str) -> Option<ScriptLanguage> {
             kind = Some(value);
         }
     }
-    if let Some(kind) = kind.map(str::trim)
-        && !kind.is_empty()
-        && ![
-            "module",
-            "text/javascript",
-            "application/javascript",
-            "text/typescript",
-            "application/typescript",
-            "ts",
-        ]
-        .iter()
-        .any(|known| kind.eq_ignore_ascii_case(known))
-    {
+    if !javascript_type(kind) {
         return None;
     }
     let lang = lang.or(kind).unwrap_or_default().trim();

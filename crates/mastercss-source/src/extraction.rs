@@ -102,7 +102,7 @@ impl Collector<'_> {
             Template::Svelte
         };
         for block in crate::component_blocks::blocks(content, template) {
-            self.template_text(cursor..block.range.start);
+            self.component_text(cursor..block.range.start, template);
             if let Some((body, language)) = block.script {
                 let source_type = match language {
                     ScriptLanguage::JavaScript => SourceType::mjs(),
@@ -130,8 +130,29 @@ impl Collector<'_> {
             }
             cursor = block.range.end;
         }
-        self.template_text(cursor..content.len());
+        self.component_text(cursor..content.len(), template);
         Ok(())
+    }
+
+    /// Template text of a component. A Svelte `class:name={on}` directive, or its
+    /// `class:name` shorthand, toggles the class `name`.
+    fn component_text(&mut self, range: Range<usize>, template: crate::component_blocks::Template) {
+        self.template_text(range.clone());
+        if template != crate::component_blocks::Template::Svelte {
+            return;
+        }
+        let input = self.input;
+        let names = crate::svelte_class_directive_names(&input.content[range.clone()]);
+        if !names.is_empty() {
+            self.add(
+                &input.content[range.clone()],
+                range,
+                "svelte",
+                "class-directive",
+                true,
+                Some(names),
+            );
+        }
     }
 
     fn template_text(&mut self, range: Range<usize>) {
@@ -156,10 +177,16 @@ impl Collector<'_> {
             return Err(("Unclosed Astro frontmatter".into(), 0..input.content.len()));
         }
         if !frontmatter.is_empty() {
-            self.javascript(frontmatter, 3, 0, "astro-frontmatter")?;
+            let start = frontmatter.as_ptr() as usize - input.content.as_ptr() as usize;
+            self.javascript(frontmatter, start, 0, "astro-frontmatter")?;
         }
         let offset = input.content.len() - markup.len();
-        self.html_parts(markup, offset, html_class_values::astro_parts(markup))?;
+        self.html_parts(
+            markup,
+            offset,
+            html_class_values::astro_parts(markup),
+            Some(SourceType::ts()),
+        )?;
         // Astro's existing template adapter supplies candidates. Mark enclosing
         // source spans when it cannot expose a precise original token span.
         self.add(
@@ -302,7 +329,7 @@ impl Collector<'_> {
         let source_type = if let Some(source_type) = source_type {
             source_type
         } else if prefix == 0 && content_kind == "javascript" {
-            SourceType::from_path(&self.input.source).unwrap_or(SourceType::tsx())
+            crate::script_source_type(&self.input.source).unwrap_or(SourceType::tsx())
         } else if content_kind == "astro-frontmatter" {
             SourceType::ts()
         } else {
@@ -387,14 +414,16 @@ impl Collector<'_> {
     }
 
     fn html(&mut self, source: &str, offset: usize) -> ExtractionResult {
-        self.html_parts(source, offset, html_class_values::parts(source))
+        self.html_parts(source, offset, html_class_values::parts(source), None)
     }
 
+    /// `script_type` overrides the source type of `<script>` bodies: Astro scripts are TypeScript.
     fn html_parts(
         &mut self,
         source: &str,
         offset: usize,
         parts: Vec<html_class_values::Part<'_>>,
+        script_type: Option<SourceType>,
     ) -> ExtractionResult {
         for part in parts {
             match part {
@@ -402,12 +431,23 @@ impl Collector<'_> {
                     let start = offset + (raw.as_ptr() as usize - source.as_ptr() as usize);
                     self.html_attribute(raw, start);
                 }
-                html_class_values::Part::Script(script) => self.javascript(
+                html_class_values::Part::Script(script) => self.javascript_as(
                     script,
                     offset + (script.as_ptr() as usize - source.as_ptr() as usize),
                     0,
                     "script",
+                    script_type,
                 )?,
+                html_class_values::Part::Expression(expression) => {
+                    // An expression such as `{ active: on }` is an object, not a block.
+                    // The template text still supplies its candidates if it does not parse.
+                    let _ = self.javascript(
+                        &format!("({expression})"),
+                        offset + (expression.as_ptr() as usize - source.as_ptr() as usize),
+                        1,
+                        "class-expression",
+                    );
+                }
             }
         }
         Ok(())

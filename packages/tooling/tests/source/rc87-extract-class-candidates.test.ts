@@ -18,8 +18,10 @@ test.concurrent('extracts class candidates from mixed source strings', () => {
 })
 
 test.concurrent('rejects grouped raw candidates and template placeholders', () => {
-  expect(extractClassCandidates('<div class="{fg-red;bg-blue}" data-id="${id}"></div>')).toEqual([])
-  expect(extractClassCandidates('<div class={`grid ${size}`}></div>')).toEqual(['grid'])
+  expect(extractClassCandidates('<div class="{fg-red;bg-blue}" data-id="${id}"></div>')).toEqual(['id'])
+  const candidates = extractClassCandidates('<div class={`grid ${on ? "p:2px" : size}`}></div>')
+  expect(candidates).toEqual(expect.arrayContaining(['grid', 'p:2px']))
+  expect(candidates.some(candidate => candidate.includes('${'))).toBe(false)
 })
 
 test.concurrent('keeps native custom property declarations without legacy dollar assignments', () => {

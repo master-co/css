@@ -64,6 +64,91 @@ fn astro_class_expressions_are_javascript_not_class_lists() {
     );
 }
 
+fn candidates(source: &str, content: &str) -> Vec<String> {
+    let result = extract(source, content);
+    assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+    result.candidates
+}
+
+fn assert_has(candidates: &[String], expected: &[&str]) {
+    for name in expected {
+        assert!(
+            candidates.iter().any(|candidate| candidate == name),
+            "{name} missing from {candidates:?}"
+        );
+    }
+}
+
+#[test]
+fn strings_inside_placeholders_stay_candidates() {
+    let found =
+        extract_class_candidates("<Island className={`p:1px ${a ? \"p:2px\" : \"p:3px\"}`} />");
+    assert_has(&found, &["p:1px", "p:2px", "p:3px"]);
+}
+
+#[test]
+fn astro_class_list_objects_are_expressions() {
+    let found = candidates(
+        "page.astro",
+        "<div class:list={{ \"p:1px\": a, open: b }} class=\"p:2px\"></div>\n",
+    );
+    assert_has(&found, &["p:1px", "p:2px"]);
+}
+
+#[test]
+fn data_scripts_are_not_parsed_as_code() {
+    for source in ["page.html", "page.astro"] {
+        let found = candidates(
+            source,
+            "<div class=\"p:1px\"></div><script type=\"application/ld+json\">{\"@context\": \"https://schema.org\"}</script><script type=\"importmap\">{\"imports\": {}}</script>\n",
+        );
+        assert_has(&found, &["p:1px"]);
+    }
+}
+
+#[test]
+fn astro_scripts_are_typescript() {
+    let found = candidates(
+        "page.astro",
+        "<div class=\"p:1px\"></div><script>const input = <HTMLInputElement>document.querySelector('#q'); input.className = 'p:2px'</script>\n",
+    );
+    assert_has(&found, &["p:1px", "p:2px"]);
+}
+
+#[test]
+fn javascript_files_may_hold_jsx() {
+    let found = candidates("page.js", "export const a = <div className=\"p:1px\" />\n");
+    assert_has(&found, &["p:1px"]);
+}
+
+#[test]
+fn astro_frontmatter_fences_follow_the_astro_compiler() {
+    for content in [
+        "---\nconst a = 'p:1px'\n---",
+        "--- \nconst a = 'p:1px'\n--- \n<div class=\"p:2px\"/>",
+        "\u{feff}---\nconst a = 'p:1px'\n---\r\n<div class=\"p:2px\"/>",
+        "---\nconst a = 'p:1px'\n---<div class=\"p:2px\"/>",
+        "---\nconst md = `\n---\ntitle: x\n---\n`\nconst a = 'p:1px'\n---\n<div class=\"p:2px\"/>",
+    ] {
+        let found = candidates("page.astro", content);
+        assert_has(&found, &["p:1px"]);
+        assert!(
+            !found.iter().any(|candidate| candidate == "const"),
+            "{content:?}: {found:?}"
+        );
+    }
+    assert!(candidates("empty.astro", "---\n---").is_empty());
+}
+
+#[test]
+fn svelte_class_directives_toggle_their_class() {
+    let found = candidates(
+        "toggle.svelte",
+        "<div class:hidden={!open} class:p:1px={a} class:block></div>\n",
+    );
+    assert_has(&found, &["hidden", "p:1px", "block"]);
+}
+
 #[test]
 fn quoted_astro_class_attributes_stay_class_lists() {
     let result = extract(

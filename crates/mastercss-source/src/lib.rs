@@ -163,10 +163,45 @@ pub fn extract_oxc_classes(source: &str, content: &str) -> Vec<String> {
     with_source_stack(content.len(), || parse_oxc_classes(source, content))
 }
 
-fn parse_oxc_classes(source: &str, content: &str) -> Vec<String> {
+/// The class names of Svelte `class:name={condition}` and `class:name` directives.
+pub(crate) fn svelte_class_directive_names(template: &str) -> Vec<String> {
+    let mut names = Vec::new();
+    for (index, _) in template.match_indices("class:") {
+        if !template[..index].ends_with(|character: char| character.is_whitespace()) {
+            continue;
+        }
+        let rest = &template[index + "class:".len()..];
+        let end = rest
+            .find(|character: char| {
+                character.is_whitespace()
+                    || matches!(character, '=' | '>' | '/' | '{' | '}' | '"' | '\'' | '`')
+            })
+            .unwrap_or(rest.len());
+        let name = &rest[..end];
+        if !name.is_empty() && !names.iter().any(|existing| existing == name) {
+            names.push(name.to_owned());
+        }
+    }
+    names
+}
+
+/// The source type of a script file. JavaScript files may hold JSX, as Next.js and
+/// Create React App components in `.js` files do.
+pub(crate) fn script_source_type(source: &str) -> Option<SourceType> {
     let normalized_source = source.split('?').next().unwrap_or(source);
-    let source_type = SourceType::from_path(Path::new(normalized_source))
-        .unwrap_or_else(|_| SourceType::unambiguous());
+    SourceType::from_path(Path::new(normalized_source))
+        .ok()
+        .map(|source_type| {
+            if source_type.is_javascript() {
+                source_type.with_jsx(true)
+            } else {
+                source_type
+            }
+        })
+}
+
+fn parse_oxc_classes(source: &str, content: &str) -> Vec<String> {
+    let source_type = script_source_type(source).unwrap_or_else(SourceType::unambiguous);
     let allocator = Allocator::default();
     let parsed = Parser::new(&allocator, content, source_type).parse();
     if !parsed.diagnostics.is_empty() {
@@ -193,6 +228,9 @@ pub fn extract_html_classes(source: &str, content: &str) -> Vec<String> {
             }
             html_class_values::Part::Script(script) => {
                 extract_oxc_classes(&format!("{source}.js"), script)
+            }
+            html_class_values::Part::Expression(expression) => {
+                extract_oxc_classes(&format!("{source}.js"), &format!("({expression})"))
             }
         };
         add_unique_candidates(&mut candidates, &mut seen, extracted);
@@ -228,21 +266,63 @@ pub fn extract_astro_classes(source: &str, content: &str) -> Vec<String> {
     candidates
 }
 
-fn extract_astro_frontmatter(content: &str) -> (&str, &str) {
-    let Some(rest) = content.strip_prefix("---") else {
+/// Split an Astro component into its frontmatter script and its markup, as Astro's
+/// compiler does: the fences may follow a BOM or blank lines and carry trailing spaces,
+/// the closing fence may end the file or precede markup on its own line, and a `---`
+/// inside a string, template literal or comment does not close the script.
+pub(crate) fn extract_astro_frontmatter(content: &str) -> (&str, &str) {
+    let open = content.len()
+        - content
+            .trim_start_matches(['\u{feff}', ' ', '\t', '\r', '\n'])
+            .len();
+    let Some(after) = content[open..].strip_prefix("---") else {
         return ("", content);
     };
-    let close = rest
-        .find("\n---\n")
-        .map(|index| (index, "\n---\n".len()))
-        .or_else(|| {
-            rest.find("\r\n---\r\n")
-                .map(|index| (index, "\r\n---\r\n".len()))
-        });
-    let Some((close, delimiter_len)) = close else {
+    let fence_end = after.trim_start_matches([' ', '\t']);
+    if !(fence_end.is_empty() || fence_end.starts_with('\n') || fence_end.starts_with("\r\n")) {
         return ("", content);
-    };
-    (&rest[..close], &rest[close + delimiter_len..])
+    }
+    let bytes = content.as_bytes();
+    let start = content.len() - fence_end.len();
+    let mut cursor = start;
+    while cursor < bytes.len() {
+        match bytes[cursor] {
+            b'\n' if content[cursor + 1..].starts_with("---") => {
+                let script = &content[start..cursor + 1];
+                let markup = &content[cursor + 4..];
+                return (script, markup);
+            }
+            quote @ (b'\'' | b'"') => {
+                cursor += 1;
+                while cursor < bytes.len()
+                    && !matches!(bytes[cursor], b'\n')
+                    && bytes[cursor] != quote
+                {
+                    cursor += if bytes[cursor] == b'\\' { 2 } else { 1 };
+                }
+            }
+            b'`' => {
+                cursor += 1;
+                while cursor < bytes.len() && bytes[cursor] != b'`' {
+                    cursor += if bytes[cursor] == b'\\' { 2 } else { 1 };
+                }
+            }
+            b'/' if bytes.get(cursor + 1) == Some(&b'/') => {
+                cursor = content[cursor..]
+                    .find('\n')
+                    .map_or(bytes.len(), |end| cursor + end)
+                    - 1;
+            }
+            b'/' if bytes.get(cursor + 1) == Some(&b'*') => {
+                cursor = content[cursor + 2..]
+                    .find("*/")
+                    .map_or(bytes.len(), |end| cursor + 2 + end + 1);
+            }
+            _ => {}
+        }
+        cursor += 1;
+    }
+    ("", content)
 }
 
 fn remove_tag_elements(source: &str, tag: &str, mut on_content: impl FnMut(&str)) -> String {
@@ -475,9 +555,10 @@ fn pre_exclude(content: &str) -> String {
         .join("\n")
 }
 
-/// Replace each `${...}` template-literal placeholder with a space. Its expression is
-/// code, never class text, so `class={`grid ${size}`}` in a component template yields
-/// `grid` rather than an invalid `${size}` candidate. An unclosed placeholder stays text.
+/// Replace the `${` and `}` delimiters of each template-literal placeholder with spaces,
+/// so `class={`grid ${size}`}` in a component template yields `grid` and `size` rather
+/// than an invalid `${size}` candidate, while strings inside the expression, as in
+/// `${on ? 'p:2px' : ''}`, remain candidates. An unclosed placeholder stays text.
 fn remove_template_placeholders(source: &str) -> String {
     let mut output = String::with_capacity(source.len());
     let mut rest = source;
@@ -500,6 +581,8 @@ fn remove_template_placeholders(source: &str) -> String {
             });
         let Some(end) = end else { break };
         output.push_str(&rest[..start]);
+        output.push(' ');
+        output.push_str(&remove_template_placeholders(&body[..end]));
         output.push(' ');
         rest = &body[end + 1..];
     }
@@ -843,7 +926,7 @@ mod tests {
             extract_class_candidates(
                 r#"<div class="{color:red;background:blue} (color:red;background:blue)" data-id="${id}"></div>"#
             ),
-            Vec::<String>::new()
+            vec!["id"]
         );
     }
 
