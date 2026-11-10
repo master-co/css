@@ -1,13 +1,13 @@
-@layer theme;
+@layer theme, base, defaults, components, utilities;
 
 @layer base {
   body {
+    line-height: 1.2;
+    text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.2;
   }
 
   a, button {
@@ -81,10 +81,10 @@
   }
 
   sub, sup {
-    vertical-align: baseline;
     font-size: 75%;
     line-height: 0;
     position: relative;
+    vertical-align: baseline;
   }
 
   sub {
@@ -119,16 +119,16 @@
     font: inherit;
     font-feature-settings: inherit;
     font-variation-settings: inherit;
-    color: inherit;
-    background-color: #0000;
+    font-size: 100%;
     margin: 0;
     padding: 0;
-    font-size: 100%;
+    color: inherit;
+    background-color: #0000;
   }
 
   *, :before, :after {
-    border-style: solid;
     border-width: 0;
+    border-style: solid;
   }
 
   body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {
@@ -161,8 +161,6 @@
     display: none;
   }
 }
-
-@layer defaults, components, utilities;
 
 
 @layer base {
