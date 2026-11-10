@@ -49,6 +49,33 @@ npx eslint . --fix
 
 排序、移除重复项与完全被覆盖的 class 可自动修复。命令完成后，无效值与设计策略警告仍可能需要决策。CI 保留不自动修复的命令，让失败保持可见。
 
+### 框架解析器 \{#framework-parsers\}
+在配置项匹配到其他文件之前，ESLint 只检查 `.js`、`.mjs` 与 `.cjs` 文件；模板文件还需要对应框架的解析器。缺少解析器时，`npx eslint .` 会直接通过，却没有检查这些文件中的 class。请为项目使用的每种文件类型加入配置项：
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+import * as astroParser from 'astro-eslint-parser'
+import tseslint from 'typescript-eslint'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: { parser: tseslint.parser }
+  },
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: { parser: tseslint.parser, extraFileExtensions: ['.astro'] }
+    }
+  }
+])
+```
+
+`.svelte` 使用 `svelte-eslint-parser`、`.vue` 使用 `vue-eslint-parser`、Angular 模板使用 `@angular-eslint/template-parser`，配置方式相同。`eslint-plugin-astro` 与 `eslint-plugin-vue` 等框架插件也会配置这些解析器。安装程序编辑的配置若没有项目源文件的解析器，会发出警告。
+
 ---
 
 ## Lint 规则 \{#linting-rules\}

@@ -49,6 +49,33 @@ npx eslint . --fix
 
 並べ替え、重複除去、完全に上書きされたクラスは自動修正できます。コマンド終了後も、無効値やデザインポリシーの警告には判断が必要な場合があります。CI には修正しないコマンドを残し、失敗を見える状態にします。
 
+### フレームワークのパーサー \{#framework-parsers\}
+設定項目がほかのファイルに一致するまで、ESLint は `.js`、`.mjs`、`.cjs` ファイルだけを検査します。テンプレートファイルには、そのフレームワークのパーサーも必要です。パーサーがないと、`npx eslint .` はそれらのファイルのクラスを検査しないまま成功します。プロジェクトで使う種類のファイルごとに設定項目を追加してください。
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+import * as astroParser from 'astro-eslint-parser'
+import tseslint from 'typescript-eslint'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: { parser: tseslint.parser }
+  },
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: { parser: tseslint.parser, extraFileExtensions: ['.astro'] }
+    }
+  }
+])
+```
+
+`.svelte` には `svelte-eslint-parser`、`.vue` には `vue-eslint-parser`、Angular テンプレートには `@angular-eslint/template-parser` を同じように使います。`eslint-plugin-astro` や `eslint-plugin-vue` などのフレームワーク用プラグインも、これらのパーサーを設定します。インストーラーは、編集する設定にプロジェクトのソースファイル用パーサーがない場合に警告します。
+
 ---
 
 ## lint ルール \{#linting-rules\}

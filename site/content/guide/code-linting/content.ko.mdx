@@ -49,6 +49,33 @@ npx eslint . --fix
 
 정렬, 중복 제거, 완전히 재정의된 클래스는 자동 수정할 수 있습니다. 명령이 끝나도 유효하지 않은 값이나 디자인 정책 경고는 판단이 필요할 수 있습니다. CI에는 수정하지 않는 명령을 유지해 실패가 드러나게 하세요.
 
+### 프레임워크 파서 \{#framework-parsers\}
+설정 항목이 다른 파일과 일치하기 전까지 ESLint는 `.js`, `.mjs`, `.cjs` 파일만 검사합니다. 템플릿 파일에는 해당 프레임워크의 파서도 필요합니다. 파서가 없으면 `npx eslint .`는 그 파일의 클래스를 검사하지 않은 채 통과합니다. 프로젝트에서 쓰는 파일 유형마다 설정 항목을 추가하세요.
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+import * as astroParser from 'astro-eslint-parser'
+import tseslint from 'typescript-eslint'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: { parser: tseslint.parser }
+  },
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: { parser: tseslint.parser, extraFileExtensions: ['.astro'] }
+    }
+  }
+])
+```
+
+`.svelte`에는 `svelte-eslint-parser`, `.vue`에는 `vue-eslint-parser`, Angular 템플릿에는 `@angular-eslint/template-parser`를 같은 방식으로 사용하세요. `eslint-plugin-astro`, `eslint-plugin-vue` 같은 프레임워크 플러그인도 이 파서를 설정합니다. 설치 프로그램은 편집하는 설정에 프로젝트 소스 파일용 파서가 없으면 경고합니다.
+
 ---
 
 ## 린팅 규칙 \{#linting-rules\}

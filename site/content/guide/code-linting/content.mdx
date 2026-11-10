@@ -43,6 +43,33 @@ npx eslint . --fix
 
 Sorting, duplicate removal and fully overridden classes can be fixed automatically. Invalid values and design-policy warnings can still require a decision after the command finishes. Keep the non-fixing command in CI so failures remain visible.
 
+### Framework parsers \{#framework-parsers\}
+ESLint checks only `.js`, `.mjs` and `.cjs` files until a config entry matches other files, and template files also need their framework's parser. Without one, `npx eslint .` passes without checking the classes in those files. Add an entry for each file type the project uses:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+import * as astroParser from 'astro-eslint-parser'
+import tseslint from 'typescript-eslint'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: { parser: tseslint.parser }
+  },
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: { parser: tseslint.parser, extraFileExtensions: ['.astro'] }
+    }
+  }
+])
+```
+
+Use `svelte-eslint-parser` for `.svelte`, `vue-eslint-parser` for `.vue` and `@angular-eslint/template-parser` for Angular templates the same way. Framework plugins such as `eslint-plugin-astro` and `eslint-plugin-vue` configure these parsers as well. Setup warns when the config it edits has no parser for the project's source files.
+
 ---
 
 ## Linting rules \{#linting-rules\}
