@@ -156,7 +156,18 @@ export function planMasterCSSSetup(options: MasterCSSSetupOptions = {}): MasterC
   if (eslint) {
     pushDependency(dependencies, MASTER_CSS_PACKAGES.eslintConfig, true, version)
     pushDependency(dependencies, 'eslint', true, '^9.0.0 || ^10.0.0')
-    files.push(planTextFile(root, 'eslint.config.js', addMasterCSSEslintConfig, CANONICAL_ESLINT_CONFIG, 'Add the Master CSS recommended ESLint flat config.'))
+    // ESLint loads the first config it finds in this order, so a new
+    // eslint.config.js would silently replace an existing .mjs or .ts config.
+    const eslintConfigPath = findExistingPath(root, ESLINT_CONFIG_FILES)
+    if (eslintConfigPath && /\.c[jt]s$/.test(eslintConfigPath)) {
+      warnings.push(`${eslintConfigPath} is a CommonJS ESLint config, which setup does not edit. Add the Master CSS recommended config to it manually; see ${CODE_LINTING_GUIDE}.`)
+    } else {
+      const path = eslintConfigPath ?? 'eslint.config.js'
+      const file = planTextFile(root, path, addMasterCSSEslintConfig, CANONICAL_ESLINT_CONFIG, 'Add the Master CSS recommended ESLint flat config.')
+      files.push(file)
+      const content = file.content ?? readFileSync(join(root, path), 'utf8')
+      warnings.push(...eslintParserWarnings(path, content, framework, packageJSON))
+    }
   }
 
   if (mcp) {
@@ -429,6 +440,30 @@ function applyDependencyChanges(root: string, dependencies: readonly MasterCSSSe
 function pushDependency(dependencies: MasterCSSSetupDependency[], name: string, dev: boolean, version: string) {
   if (dependencies.some((dependency) => dependency.name === name)) return
   dependencies.push({ name, dev, version })
+}
+
+const CODE_LINTING_GUIDE = 'https://css.master.co/guide/code-linting#framework-parsers'
+// ESLint's own lookup order for flat config files.
+const ESLINT_CONFIG_FILES = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts']
+// Without a config entry whose `files` match them, ESLint lints only .js, .mjs
+// and .cjs files, and these files also need their own parser.
+const ESLINT_SOURCE_PARSERS: readonly { files: string, parser: string, configured: RegExp, applies: (framework: MasterCSSSetupFramework, packageJSON: PackageJSON | undefined) => boolean }[] = [
+  { files: '.astro', parser: 'astro-eslint-parser', configured: /astro-eslint-parser|eslint-plugin-astro/, applies: framework => framework === 'astro' },
+  { files: '.vue', parser: 'vue-eslint-parser', configured: /vue-eslint-parser|eslint-plugin-vue|@nuxt\/eslint/, applies: framework => framework === 'vue' || framework === 'nuxt' },
+  { files: '.svelte', parser: 'svelte-eslint-parser', configured: /svelte-eslint-parser|eslint-plugin-svelte/, applies: framework => framework === 'svelte' },
+  { files: 'Angular template', parser: '@angular-eslint/template-parser', configured: /@angular-eslint\/template-parser|angular-eslint/, applies: framework => framework === 'angular' },
+  {
+    files: '.ts and .tsx',
+    parser: 'typescript-eslint',
+    configured: /typescript-eslint|@typescript-eslint\/parser|eslint-config-next|@nuxt\/eslint/,
+    applies: (_framework, packageJSON) => Boolean(packageJSON?.dependencies?.typescript || packageJSON?.devDependencies?.typescript)
+  }
+]
+
+function eslintParserWarnings(path: string, content: string, framework: MasterCSSSetupFramework, packageJSON: PackageJSON | undefined): string[] {
+  return ESLINT_SOURCE_PARSERS
+    .filter(source => source.applies(framework, packageJSON) && !source.configured.test(content))
+    .map(source => `${path} configures no parser for ${source.files} files, so \`eslint .\` skips their classes. Install ${source.parser} and add a config entry for those files; see ${CODE_LINTING_GUIDE}.`)
 }
 
 function firstExistingPath(root: string, paths: string[], fallback: string): string {
