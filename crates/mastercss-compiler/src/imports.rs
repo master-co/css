@@ -1,11 +1,11 @@
 use super::{
     CompileNativeCssOptions, CompileNativeCssResult, CompilerError, CssDirectiveBlocklistEntry,
     CssDirectiveExtractionPolicy, CssDirectiveReferenceStatement, CssImportGraphRequest,
-    CssImportProvider, HashSet, InspectCssDirective, InspectCssResult, MinifyOptions,
-    ParserOptions, PreparedCssImportProvider, PrinterOptions, ResolvedCssImportGraph,
+    CssImportProvider, HashSet, InspectCssDirective, InspectCssResult, ParserOptions,
+    PreparedCssImportProvider, PrinterOptions, ResolvedCssImportGraph,
     StandaloneCssDirectiveStatement, StyleSheet, filter_native_css_rules,
     find_css_directive_ranges, find_css_import_statements, parse_css_import_source,
-    remove_css_reference_statements, utf16_to_byte_offset,
+    remove_css_reference_statements, remove_empty_native_rules, utf16_to_byte_offset,
 };
 use crate::source_spans::MappedSource;
 use lightningcss::{rules::CssRule, traits::ToCss};
@@ -593,12 +593,7 @@ pub fn compile_native_css(
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
     }
 
-    stylesheet
-        .minify(MinifyOptions::default())
-        .map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: options.from.clone(),
-        })?;
+    remove_empty_native_rules(&mut stylesheet.rules.0);
     let css = stylesheet
         .to_css(PrinterOptions::default())
         .map_err(|error| CompilerError::Print {

@@ -33,7 +33,7 @@ use lightningcss::properties::Property;
 use lightningcss::rules::CssRule;
 use lightningcss::rules::style::StyleRule;
 use lightningcss::selector::{Component, Selector};
-use lightningcss::stylesheet::{MinifyOptions, ParserOptions, PrinterOptions, StyleSheet};
+use lightningcss::stylesheet::{ParserOptions, PrinterOptions, StyleSheet};
 use lightningcss::traits::{AtRuleParser, ToCss};
 use lightningcss::visit_types;
 use lightningcss::visitor::{Visit, VisitTypes, Visitor};
@@ -649,6 +649,53 @@ fn filter_native_css_rules<'i, R>(
             rule => Some(rule),
         })
         .collect()
+}
+
+/// Drop rules that print no declarations. Unlike lightningcss `minify`, this
+/// keeps every authored declaration: without browser targets, minification
+/// would merge vendor-prefixed pairs and progressive fallbacks such as
+/// `height:100vh;height:100dvh` into their last declaration. Layer blocks stay,
+/// even when empty, because they establish layer order.
+fn remove_empty_native_rules<R>(rules: &mut Vec<CssRule<'_, R>>) {
+    rules.retain_mut(|rule| match rule {
+        CssRule::Style(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.is_empty()
+        }
+        CssRule::Nesting(rule) => {
+            remove_empty_native_rules(&mut rule.style.rules.0);
+            !rule.style.is_empty()
+        }
+        CssRule::LayerBlock(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            true
+        }
+        CssRule::Media(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.rules.0.is_empty()
+        }
+        CssRule::Supports(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.rules.0.is_empty()
+        }
+        CssRule::MozDocument(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.rules.0.is_empty()
+        }
+        CssRule::Container(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.rules.0.is_empty()
+        }
+        CssRule::Scope(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.rules.0.is_empty()
+        }
+        CssRule::StartingStyle(rule) => {
+            remove_empty_native_rules(&mut rule.rules.0);
+            !rule.rules.0.is_empty()
+        }
+        _ => true,
+    });
 }
 
 mod compiled_stylesheet_graph;

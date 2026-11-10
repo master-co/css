@@ -1,10 +1,10 @@
 use super::{
     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssDirectiveManifestInput,
     CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashSet,
-    MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
-    ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
+    NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet, ThemeAtRule,
+    ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
     extraction_policy_from_statements, filter_native_css_rules, lower_theme_rule,
-    validate_contents_placement,
+    remove_empty_native_rules, validate_contents_placement,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
@@ -482,12 +482,7 @@ fn print_native_css(
     stylesheet: &mut StyleSheet<'_, ThemeAtRule>,
     filename: &str,
 ) -> Result<String, CompilerError> {
-    stylesheet
-        .minify(MinifyOptions::default())
-        .map_err(|error| CompilerError::Print {
-            message: error.to_string(),
-            filename: filename.into(),
-        })?;
+    remove_empty_native_rules(&mut stylesheet.rules.0);
     let css = stylesheet
         .to_css(PrinterOptions::default())
         .map_err(|error| CompilerError::Print {
