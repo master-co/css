@@ -19,6 +19,21 @@ function missing(error: unknown) {
   return (error as NodeJS.ErrnoException)?.code === 'ENOENT'
 }
 
+// Windows refuses to replace or open a file another process holds open, as when a
+// peer reads a register while its owner renames the next ticket over it.
+const SHARING = new Set(['EPERM', 'EACCES', 'EBUSY'])
+
+async function retrySharing<T>(operation: () => Promise<T>, deadline: number): Promise<T> {
+  while (true) {
+    try {
+      return await operation()
+    } catch (error) {
+      if (!SHARING.has((error as NodeJS.ErrnoException)?.code ?? '') || performance.now() >= deadline) throw error
+      await delay(5)
+    }
+  }
+}
+
 async function remove(file: string) {
   try { await unlink(file) } catch (error) { if (!missing(error)) throw error }
 }
@@ -33,7 +48,7 @@ function alive(pid: number) {
   }
 }
 
-async function tickets(directory: string) {
+async function tickets(directory: string, deadline: number) {
   const entries: { id: string, choosing: boolean, number: bigint }[] = []
   for (const id of await readdir(directory)) {
     const register = id.endsWith('.next') ? id.slice(0, -5) : id
@@ -49,7 +64,7 @@ async function tickets(directory: string) {
     }
     if (id !== register) continue
     let text: string
-    try { text = await readFile(file, 'utf8') } catch (error) {
+    try { text = await retrySharing(() => readFile(file, 'utf8'), deadline) } catch (error) {
       if (missing(error)) continue
       throw error
     }
@@ -71,7 +86,7 @@ export async function withPreviewWriteLock<T>(work: () => Promise<T>, options: {
   await mkdir(directory, { recursive: true, mode: 0o700 })
   const publish = async (value: Ticket) => {
     await writeFile(file + '.next', JSON.stringify(value), { mode: 0o600 })
-    await rename(file + '.next', file)
+    await retrySharing(() => rename(file + '.next', file), deadline)
   }
   try {
     // Lamport's bakery doorway: publish choosing BEFORE observing peers, then
@@ -79,12 +94,12 @@ export async function withPreviewWriteLock<T>(work: () => Promise<T>, options: {
     // register readable. New arrivals cannot overtake a published ticket.
     // Algorithm: https://lamport.azurewebsites.net/pubs/bakery.pdf
     await publish({ choosing: true, number: '0' })
-    const peers = await tickets(directory)
+    const peers = await tickets(directory, deadline)
     const number = peers.reduce((max, peer) => peer.number > max ? peer.number : max, 0n) + 1n
     await publish({ choosing: false, number: String(number) })
     while (true) {
       if (performance.now() >= deadline) throw new Error('Timed out waiting for another MCP preview apply.')
-      const waiting = (await tickets(directory)).some(peer => peer.id !== id
+      const waiting = (await tickets(directory, deadline)).some(peer => peer.id !== id
         && (peer.choosing || peer.number < number || (peer.number === number && peer.id < id)))
       if (!waiting) return await work()
       await delay(10)
