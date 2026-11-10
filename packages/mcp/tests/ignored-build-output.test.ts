@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, relative } from 'node:path'
+import { join, relative, sep } from 'node:path'
 import { afterEach, expect, it } from 'vitest'
 import MasterCSSMCPContext from '../src/context'
 import { lintProject } from '../src/lint'
@@ -23,18 +23,18 @@ function project() {
 it('lints sources without the ignored build output by default', async () => {
   const root = project()
   const report = await lintProject(new MasterCSSMCPContext({ root }), { context: 'preset' })
-  expect(report.coverage.checkedFiles.map(file => relative(root, file))).toEqual(['src/index.html'])
+  expect(report.coverage.checkedFiles.map(file => relative(root, file).split(sep).join('/'))).toEqual(['src/index.html'])
 })
 
 it('lints ES modules by default like the CLI', async () => {
   const root = project()
   writeFileSync(join(root, 'src/card.mjs'), 'export const card = "flex block"')
   const report = await lintProject(new MasterCSSMCPContext({ root }), { context: 'preset' })
-  expect(report.coverage.checkedFiles.map(file => relative(root, file)).sort()).toEqual(['src/card.mjs', 'src/index.html'])
+  expect(report.coverage.checkedFiles.map(file => relative(root, file).split(sep).join('/')).sort()).toEqual(['src/card.mjs', 'src/index.html'])
 })
 
 it('lints ignored files that explicit patterns select', async () => {
   const root = project()
   const report = await lintProject(new MasterCSSMCPContext({ root }), { context: 'preset', patterns: ['dist/**/*.html'] })
-  expect(report.coverage.checkedFiles.map(file => relative(root, file))).toEqual(['dist/index.html'])
+  expect(report.coverage.checkedFiles.map(file => relative(root, file).split(sep).join('/'))).toEqual(['dist/index.html'])
 })
