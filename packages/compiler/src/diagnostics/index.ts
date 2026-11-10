@@ -268,11 +268,14 @@ async function inspectProject(options: CreateMasterCSSInspectionReportOptions, c
       classes, source, resolvedSourcePaths[index], scans[index], firstSourceByClass
     ))
     const entry = pathToFileURL(path.join(cwd, 'master.snapshot.css')).href
-    const delivery = capture ? {
+    const delivery = {
       entryURL: entry,
       stylesheetURL: (file: string, variant?: string) => `${pathToFileURL(file).href}${variant ? `?variant=${encodeURIComponent(variant)}` : ''}`,
-      resourceURL: (file: string) => pathToFileURL(file).href
-    } : undefined
+      resourceURL: (file: string) => pathToFileURL(file).href,
+      // Inspection reads one stylesheet text. Inline what Rust can inline and
+      // keep resources such as fonts as file URLs, rather than failing on them.
+      ...(capture ? {} : { inlineImports: true })
+    }
     const cssResult = await createExtractedCSSResult({
       scanner,
       stylesheetSources,
@@ -336,7 +339,8 @@ async function inspectProject(options: CreateMasterCSSInspectionReportOptions, c
       stylesheets: stylesheetInspection,
       css: {
         included: Boolean(options.includeCss),
-        text: cssResult.css,
+        // Boundaries Rust must retain, such as remote imports, stay sidecars.
+        text: capture ? cssResult.css : [cssResult.css, ...(cssResult.stylesheets ?? []).map(asset => asset.css)].join('\n'),
         variables: Object.keys(cssResult.emittedGlobals.variables),
         keyframes: Object.keys(cssResult.emittedGlobals.keyframes)
       },
