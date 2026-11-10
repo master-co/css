@@ -39,6 +39,19 @@ describe('ProgramPreloadPlugin', () => {
     ])
   })
 
+  it('preloads the URL renderBuiltUrl gives the program, as the page requests it', () => {
+    const result = transform(
+      {
+        defaultProgramAssetReferenceId: 'master_css_program_ref',
+        defaultProgramAssetSource: program,
+        config: { base: '/app/', experimental: { renderBuiltUrl: (file: string, { hostType }: { hostType: string }) => hostType === 'html' ? `https://cdn.example.com/${file}` : undefined } }
+      },
+      '<html><head></head><body></body></html>',
+      { path: '/index.html', bundle }
+    )
+    expect(result.tags[0].attrs.href).toBe('https://cdn.example.com/assets/master-css-program.CzuVhIZV.bin')
+  })
+
   it('ignores a program asset with other bytes', () => {
     const result = transform(
       { defaultProgramAssetReferenceId: 'master_css_program_ref', defaultProgramAssetSource: new Uint8Array([1]), config: { base: '/' } },

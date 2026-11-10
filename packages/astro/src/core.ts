@@ -11,7 +11,7 @@ import {
   type ResolvedMasterCSSAstroIntegrationOptions
 } from './options'
 import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
-import { preloadAstroRuntimeAssets } from './runtime-preload'
+import { preloadAstroRuntimeAssets, type AstroAssetsPrefix } from './runtime-preload'
 import { describeOutputStylesheets } from './output-stylesheets'
 import { providePrerenderStylesheets } from './prerender-stylesheets'
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css-astro/middleware'
@@ -141,6 +141,7 @@ export function createMasterCSSAstroIntegration(
     }
   }
   let astroBase: string | undefined
+  let astroAssetsPrefix: AstroAssetsPrefix | undefined
   let buildOutput: 'static' | 'server' | undefined
   let getBuildOutput: (() => 'static' | 'server') | undefined
   let clientDir: URL | undefined
@@ -193,6 +194,7 @@ export function createMasterCSSAstroIntegration(
         // Another integration can still register an adapter and change the output.
         getBuildOutput = () => context.buildOutput
         astroBase = config.base
+        astroAssetsPrefix = config.build?.assetsPrefix as AstroAssetsPrefix | undefined
         buildOutput = output
         clientDir = output === 'static' ? config.outDir : config.build?.client
       },
@@ -206,7 +208,7 @@ export function createMasterCSSAstroIntegration(
       'astro:build:done': async ({ dir }) => {
         providePrerenderStylesheets(undefined)
         if (options.mode === 'runtime' && options.injectRuntime && buildOutput !== 'server') {
-          await preloadAstroRuntimeAssets(dir, astroBase)
+          await preloadAstroRuntimeAssets(dir, astroBase, astroAssetsPrefix)
         }
         switch (options.mode) {
           case 'progressive':

@@ -5,7 +5,7 @@ import {
 } from '../common'
 import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-internal/runtime-bootstrap'
 import type { MasterCSSVitePluginContext } from '../core'
-import { hasModulePreloadLink, toAssetHref } from '../utils/html'
+import { hasModulePreloadLink, toAssetHref, toBuiltAssetHref } from '../utils/html'
 
 interface OutputChunkLike {
   type: string
@@ -42,7 +42,7 @@ export default function RuntimePreloadPlugin(context: MasterCSSVitePluginContext
           ? findRuntimeChunkFileName(bundle)
           : undefined
         const href = fileName
-          ? toAssetHref(fileName, context.config?.base, htmlContext.path)
+          ? toBuiltAssetHref(context.config, fileName, htmlContext.path)
           : htmlContext.server
             ? toAssetHref(DEV_RUNTIME_ENTRY_ID, htmlContext.server.config?.base ?? context.config?.base, htmlContext.path)
             : undefined

@@ -30,6 +30,17 @@ export function escapeRegExp(source: string) {
   return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+/**
+ * The URL an HTML page loads a built file from, as Vite writes its own tags:
+ * `experimental.renderBuiltUrl` can move assets to a CDN, otherwise `base` applies.
+ */
+export function toBuiltAssetHref(config: { base?: string, experimental?: { renderBuiltUrl?: (filename: string, type: { hostId: string, hostType: 'js' | 'css' | 'html', type: 'asset' | 'public', ssr: boolean }) => string | { relative?: boolean, runtime?: string } | undefined } } | undefined, fileName: string, htmlPath?: string) {
+  const rendered = config?.experimental?.renderBuiltUrl?.(fileName.replace(/^\/+/, ''), { hostId: htmlPath ?? '', hostType: 'html', type: 'asset', ssr: false })
+  if (typeof rendered === 'string' && rendered) return rendered
+  if (rendered && typeof rendered === 'object' && rendered.relative) return toRelativeAssetHref(fileName.replace(/^\/+/, ''), htmlPath)
+  return toAssetHref(fileName, config?.base, htmlPath)
+}
+
 export function toAssetHref(fileName: string, base = '/', htmlPath?: string) {
   const normalizedFileName = fileName.replace(/^\/+/, '')
   if (base && base !== './') {

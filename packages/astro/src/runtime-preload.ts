@@ -17,9 +17,18 @@ function toPublicBase(base = '/') {
   return `${base || '/'}`.replace(/\/?$/, '/')
 }
 
-function toPublicAssetHref(root: string, file: string, base?: string) {
-  const outputPath = relative(root, file).split(sep).join('/')
-  return `${toPublicBase(base)}${outputPath.replace(/^\/+/, '')}`
+/** Astro's `build.assetsPrefix`: one origin, or one per file extension with a fallback. */
+export type AstroAssetsPrefix = string | ({ fallback: string } & Record<string, string>)
+
+// Link built assets the way Astro links its own scripts and stylesheets, so the
+// preload is the request the page makes.
+function toPublicAssetHref(root: string, file: string, base?: string, assetsPrefix?: AstroAssetsPrefix) {
+  const outputPath = relative(root, file).split(sep).join('/').replace(/^\/+/, '')
+  const prefix = typeof assetsPrefix === 'string'
+    ? assetsPrefix
+    : assetsPrefix && (assetsPrefix[file.slice(file.lastIndexOf('.') + 1)] || assetsPrefix.fallback)
+  if (prefix) return `${prefix.replace(/\/+$/, '')}/${outputPath}`
+  return `${toPublicBase(base)}${outputPath}`
 }
 
 function hasProgramPreloadLink(html: string, href: string) {
@@ -111,14 +120,14 @@ async function findRuntimePreloadAssets(files: string[]) {
   return { programFile }
 }
 
-export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string) {
+export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string, assetsPrefix?: AstroAssetsPrefix) {
   const root = toRootPath(dir)
   const files = await collectOutputFiles(root)
   const assets = await findRuntimePreloadAssets(files)
   if (!assets) return []
-  const programHref = toPublicAssetHref(root, assets.programFile, base)
+  const programHref = toPublicAssetHref(root, assets.programFile, base, assetsPrefix)
   const runtimeScriptHref = assets.runtimeScriptFile
-    ? toPublicAssetHref(root, assets.runtimeScriptFile, base)
+    ? toPublicAssetHref(root, assets.runtimeScriptFile, base, assetsPrefix)
     : undefined
   const updatedFiles: string[] = []
   for (const htmlFile of files.filter((file) => file.endsWith('.html'))) {

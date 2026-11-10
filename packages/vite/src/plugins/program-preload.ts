@@ -4,7 +4,7 @@ import {
   toProgramPreloadLinkAttrs
 } from '@master/css-internal/program-module'
 import type { MasterCSSVitePluginContext } from '../core'
-import { hasFetchPreloadLink, toAssetHref } from '../utils/html'
+import { hasFetchPreloadLink, toBuiltAssetHref } from '../utils/html'
 
 interface OutputAssetLike {
   type: string
@@ -45,7 +45,7 @@ export default function ProgramPreloadPlugin(context: MasterCSSVitePluginContext
         if (!context.defaultProgramAssetReferenceId || !htmlContext.bundle) return
         const fileName = findDefaultProgramAssetFileName(context, htmlContext.bundle as Record<string, OutputAssetLike>)
         if (!fileName) return
-        const href = toAssetHref(fileName, context.config?.base, htmlContext.path)
+        const href = toBuiltAssetHref(context.config, fileName, htmlContext.path)
         if (hasFetchPreloadLink(html, href)) return
         return {
           html,
