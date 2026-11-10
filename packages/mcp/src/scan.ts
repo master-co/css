@@ -33,7 +33,13 @@ export interface InspectClassOptions {
   className: string
 }
 
-export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns = DEFAULT_SOURCE_PATTERNS, ignore = DEFAULT_IGNORE_PATTERNS) {
+/**
+ * Resolve source files for a tool. Default patterns follow the source policy, which
+ * skips ignored build output such as `dist/`; only patterns the caller was given
+ * select ignored files explicitly.
+ */
+export async function resolveSourceFiles(context: MasterCSSMCPContext, explicitPatterns?: readonly string[], ignore = DEFAULT_IGNORE_PATTERNS, defaultPatterns: readonly string[] = DEFAULT_SOURCE_PATTERNS) {
+  const patterns = [...(explicitPatterns ?? defaultPatterns)]
   context.validateGlobPatterns(patterns)
   const sources = await fg(patterns, {
     cwd: context.root,
@@ -43,7 +49,7 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
     followSymbolicLinks: false
   })
   const policy = new SourcePolicy(context.root, { exclude: ignore })
-  return Promise.all(sources.filter(source => policy.accepts(source, patterns !== DEFAULT_SOURCE_PATTERNS)).map((source) => context.resolveExistingFile(source)))
+  return Promise.all(sources.filter(source => policy.accepts(source, explicitPatterns !== undefined)).map((source) => context.resolveExistingFile(source)))
 }
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {

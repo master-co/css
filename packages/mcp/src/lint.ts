@@ -40,8 +40,9 @@ async function loadLintState(context: MasterCSSMCPContext, options: LintProjectO
   const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   const files = await resolveSourceFiles(
     context,
-    options.patterns ?? DEFAULT_LINT_SOURCE_PATTERNS,
-    options.patterns ? [] : DEFAULT_IGNORE_PATTERNS
+    options.patterns,
+    options.patterns ? [] : DEFAULT_IGNORE_PATTERNS,
+    DEFAULT_LINT_SOURCE_PATTERNS
   )
   const inputs = await Promise.all(files.map(async (filePath) => ({
     filePath,

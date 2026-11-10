@@ -66,7 +66,7 @@ export async function previewDirectiveFormat(context: MasterCSSMCPContext, optio
       }
     }
 
-    const files = await resolveSourceFiles(context, options.patterns ?? DEFAULT_DIRECTIVE_FORMAT_PATTERNS)
+    const files = await resolveSourceFiles(context, options.patterns, undefined, DEFAULT_DIRECTIVE_FORMAT_PATTERNS)
     const formattedFiles = await Promise.all(files.map(async (filePath) => {
       const content = await readFile(filePath, 'utf8')
       return formatContent(service, filePath, content, options.range)
