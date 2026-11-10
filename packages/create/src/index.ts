@@ -34,6 +34,7 @@ import {
   createViteConfig,
   createWebpackConfig
 } from './transforms'
+import { ManualSetupStep } from './config-source'
 
 export type MasterCSSSetupFramework = 'none' | 'vite' | 'react' | 'react-router' | 'tanstack-start' | 'vue' | 'nextjs' | 'svelte' | 'nuxt' | 'astro' | 'webpack' | 'rspack' | 'rsbuild' | 'laravel' | 'lit' | 'angular'
 export type MasterCSSSetupFrameworkOption = MasterCSSSetupFramework | 'auto'
@@ -126,6 +127,7 @@ export function planMasterCSSSetup(options: MasterCSSSetupOptions = {}): MasterC
   const files: MasterCSSSetupFileChange[] = []
   const commands: MasterCSSSetupCommand[] = []
   const warnings: string[] = []
+  manualSteps = warnings
 
   if (framework === 'svelte') {
     commands.push({
@@ -240,17 +242,17 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
   switch (framework) {
     case 'vite':
       return [
-        planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
+        planTextFile(root, firstExistingPath(root, VITE_CONFIG_FILES, 'vite.config.js'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, firstExistingPath(root, ['src/style.css', 'src/index.css', 'src/main.css'], 'src/style.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the project CSS entry.')
       ]
     case 'react':
       return [
-        planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.js'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
+        planTextFile(root, firstExistingPath(root, VITE_CONFIG_FILES, 'vite.config.js'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, firstExistingPath(root, ['src/index.css', 'src/style.css'], 'src/index.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React project CSS entry.')
       ]
     case 'react-router': {
       const files: MasterCSSSetupFileChange[] = [
-        planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
+        planTextFile(root, firstExistingPath(root, VITE_CONFIG_FILES, 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, 'app/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the React Router app stylesheet entry.')
       ]
       const rootEntryPath = findExistingPath(root, ['app/root.tsx', 'app/root.jsx', 'app/root.ts', 'app/root.js'])
@@ -264,7 +266,7 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
     case 'tanstack-start': {
       const pluginMode = mode ?? 'static'
       const files: MasterCSSSetupFileChange[] = [
-        planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSTanStackStartVitePlugin(content, pluginMode), createViteConfig(pluginMode), `Register the Master CSS Vite plugin in ${pluginMode} mode.`),
+        planTextFile(root, firstExistingPath(root, VITE_CONFIG_FILES, 'vite.config.ts'), (content) => addMasterCSSTanStackStartVitePlugin(content, pluginMode), createViteConfig(pluginMode), `Register the Master CSS Vite plugin in ${pluginMode} mode.`),
         planTextFile(root, 'src/styles/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the TanStack Start stylesheet entry.')
       ]
       const rootEntryPath = findExistingPath(root, ['src/routes/__root.tsx', 'src/routes/__root.jsx', 'src/routes/__root.ts', 'src/routes/__root.js'])
@@ -277,13 +279,13 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
     }
     case 'vue':
       return [
-        planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
+        planTextFile(root, firstExistingPath(root, VITE_CONFIG_FILES, 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, firstExistingPath(root, ['src/assets/main.css', 'src/style.css', 'src/main.css'], 'src/assets/main.css'), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Vue project CSS entry.')
       ]
     case 'nextjs':
       return [
         planTextFile(root, firstExistingPath(root, ['next.config.ts', 'next.config.mjs', 'next.config.js'], 'next.config.js'), (content) => addMasterCSSNextConfig(content, mode), createNextConfig(mode), 'Register the Master CSS Next.js adapter.'),
-        planTextFile(root, 'app/globals.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Next.js global stylesheet entry.')
+        planTextFile(root, nextGlobalStylesheet(root), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Next.js global stylesheet entry.')
       ]
     case 'nuxt':
       return [
@@ -296,20 +298,20 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
         planTextFile(root, 'src/styles/global.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the Astro project CSS entry.')
       ]
     case 'laravel': {
-      const viteConfigPath = findExistingPath(root, ['vite.config.ts', 'vite.config.js'])
+      const viteConfigPath = findExistingPath(root, VITE_CONFIG_FILES)
       const files: MasterCSSSetupFileChange[] = [
         planTextFile(root, 'resources/css/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Laravel Vite CSS entry.')
       ]
       if (viteConfigPath) {
         files.unshift(planTextFile(root, viteConfigPath, addMasterCSSStaticVitePlugin, createStaticViteConfig(), 'Register the Master CSS Vite plugin in static mode.'))
       } else {
-        warnings.push('No vite.config.ts or vite.config.js was found. Add @master/css-vite to the Laravel Vite config manually after setup.')
+        warnings.push('No Vite config was found. Add @master/css-vite to the Laravel Vite config manually after setup.')
       }
       return files
     }
     case 'lit': {
       const files = [
-        planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
+        planTextFile(root, firstExistingPath(root, VITE_CONFIG_FILES, 'vite.config.ts'), (content) => addMasterCSSVitePlugin(content, mode), createViteConfig(mode), 'Register the Master CSS Vite plugin.'),
         planTextFile(root, 'src/index.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Lit project CSS entry.'),
         planTextFile(root, 'src/vite-env.d.ts', addViteClientTypes, `/// <reference types="vite/client" />
 /// <reference types="@master/css/client" />
@@ -326,10 +328,10 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
     case 'angular': {
       if (!mode || mode === 'static') return [
         planTextFile(root, 'master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the CLI source entry.'),
-        planTextFile(root, 'src/styles.css', addGeneratedStylesheetImport, addGeneratedStylesheetImport(''), 'Import the generated static CSS from Angular’s global stylesheet.')
+        planTextFile(root, angularGlobalStylesheet(root), addGeneratedStylesheetImport, addGeneratedStylesheetImport(''), 'Import the generated static CSS from Angular’s global stylesheet.')
       ]
       const files = [
-        planTextFile(root, 'src/styles.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Angular global stylesheet entry.')
+        planTextFile(root, angularGlobalStylesheet(root), addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Angular global stylesheet entry.')
       ]
       const mainPath = findExistingPath(root, ['src/main.ts'])
       if (mainPath) {
@@ -389,6 +391,9 @@ function dependenciesForFramework(framework: MasterCSSSetupFramework, version: s
   return dependencies
 }
 
+// Warnings of the plan being built; planning is synchronous.
+let manualSteps: string[] | undefined
+
 function planTextFile(
   root: string,
   path: string,
@@ -407,7 +412,15 @@ function planTextFile(
     }
   }
   const content = readFileSync(filePath, 'utf8')
-  const nextContent = transform(content)
+  let nextContent: string
+  try {
+    nextContent = transform(content)
+  } catch (error) {
+    // Leave a config setup cannot edit safely unchanged and tell the user what to add.
+    if (!(error instanceof ManualSetupStep)) throw error
+    manualSteps?.push(`${path}: ${error.message}`)
+    return { path, action: 'skip', reason, precondition: createFilePrecondition(filePath) }
+  }
   return {
     path,
     action: nextContent === content ? 'skip' : 'update',
@@ -442,7 +455,28 @@ function pushDependency(dependencies: MasterCSSSetupDependency[], name: string, 
   dependencies.push({ name, dev, version })
 }
 
-const CODE_LINTING_GUIDE = 'https://css.master.co/guide/code-linting#framework-parsers'
+// Vite's own lookup order: a new vite.config.ts would shadow an existing .mjs or .mts config.
+const VITE_CONFIG_FILES = ['vite.config.js', 'vite.config.mjs', 'vite.config.ts', 'vite.config.cjs', 'vite.config.mts', 'vite.config.cts']
+
+/**
+ * The Next.js global stylesheet of the project's router, which may live under `src/`.
+ * A new root `app/` would replace `src/app` as the App Router directory.
+ */
+function nextGlobalStylesheet(root: string) {
+  const app = findExistingPath(root, ['app', 'src/app'])
+  if (app) return `${app}/globals.css`
+  // The Pages Router template imports styles/globals.css from pages/_app.
+  const pages = findExistingPath(root, ['pages', 'src/pages'])
+  if (pages) return `${pages === 'src/pages' ? 'src/' : ''}styles/globals.css`
+  return 'app/globals.css'
+}
+
+/** Angular's global stylesheet; Sass and Less projects keep their own extension. */
+function angularGlobalStylesheet(root: string) {
+  return firstExistingPath(root, ['src/styles.css', 'src/styles.scss', 'src/styles.sass', 'src/styles.less'], 'src/styles.css')
+}
+
+const CODE_LINTING_GUIDE ='https://css.master.co/guide/code-linting#framework-parsers'
 // ESLint's own lookup order for flat config files.
 const ESLINT_CONFIG_FILES = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs', 'eslint.config.ts', 'eslint.config.mts', 'eslint.config.cts']
 // Without a config entry whose `files` match them, ESLint lints only .js, .mjs

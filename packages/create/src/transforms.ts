@@ -1,5 +1,18 @@
 import { CANONICAL_ESLINT_CONFIG } from './constants'
 import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
+import { ManualSetupStep, addToConfigArray, expressionEnd, isCommonJS, matchingBracket } from './config-source'
+
+export { ManualSetupStep } from './config-source'
+
+function assertModule(content: string, step: string) {
+  if (isCommonJS(content)) throw new ManualSetupStep(`This CommonJS config cannot take an ES import; ${step} manually.`)
+}
+
+function addConfigEntry(content: string, name: string, entry: string, step: string, options: { factories?: readonly string[], entryIndent: string, propertyIndent: string }) {
+  const updated = addToConfigArray(content, name, entry, options)
+  if (updated === undefined) throw new ManualSetupStep(`Setup could not find the exported config object; ${step} manually.`)
+  return updated
+}
 
 function formatMasterCSSCall(mode?: MasterCSSRenderingMode) {
   return mode ? `masterCSS({ mode: '${mode}' })` : 'masterCSS()'
@@ -86,51 +99,39 @@ export function addMasterCSSStaticVitePlugin(content: string) {
 export function addMasterCSSTanStackStartVitePlugin(content: string, mode: MasterCSSRenderingMode = 'static') {
   const pluginCall = formatMasterCSSCall(mode)
   if (content.includes('@master/css-vite')) return content
-  let next = addImport(content, "import masterCSS from '@master/css-vite'")
+  const step = `add ${pluginCall} from @master/css-vite to the Vite plugins`
+  assertModule(content, step)
+  const next = addImport(content, "import masterCSS from '@master/css-vite'")
   const tanStackStartPluginPattern = /^(\s*)tanstackStart\([^)]*\),?/m
   if (tanStackStartPluginPattern.test(next)) {
     return next.replace(tanStackStartPluginPattern, (match, indent: string) => {
       return `${match.endsWith(',') ? match : `${match},`}\n${indent}${pluginCall},`
     })
   }
-  if (/plugins\s*:\s*\[/.test(next)) {
-    return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n            ${pluginCall},`)
-  }
-  if (/defineConfig\(\s*\{/.test(next)) {
-    return replaceFirst(next, /defineConfig\(\s*\{/, `defineConfig({\n    plugins: [${pluginCall}],`)
-  }
-  return next
+  return addConfigEntry(next, 'plugins', pluginCall, step, { entryIndent: '            ', propertyIndent: '    ' })
+}
+
+function addWebpackCompatiblePlugin(content: string, mode: MasterCSSRenderingMode | undefined, bundler: string) {
+  if (content.includes('@master/css-webpack')) return content
+  const pluginCall = formatWebpackPluginCall(mode)
+  const step = `add ${pluginCall} from @master/css-webpack to the ${bundler} plugins`
+  assertModule(content, step)
+  const next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
+  return addConfigEntry(next, 'plugins', pluginCall, step, { entryIndent: '        ', propertyIndent: '    ' })
 }
 
 export function addMasterCSSRspackPlugin(content: string, mode?: MasterCSSRenderingMode) {
-  if (content.includes('@master/css-webpack')) return content
-  const pluginCall = formatWebpackPluginCall(mode)
-  let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
-  if (/plugins\s*:\s*\[/.test(next)) {
-    return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n        ${pluginCall},`)
-  }
-  if (/export\s+default\s+\{/.test(next)) {
-    return replaceFirst(next, /export\s+default\s+\{/, `export default {\n    plugins: [${pluginCall}],`)
-  }
-  return next
+  return addWebpackCompatiblePlugin(content, mode, 'Rspack')
 }
 
 export function addMasterCSSWebpackPlugin(content: string, mode?: MasterCSSRenderingMode) {
-  if (content.includes('@master/css-webpack')) return content
-  const pluginCall = formatWebpackPluginCall(mode)
-  let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
-  if (/plugins\s*:\s*\[/.test(next)) {
-    return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n        ${pluginCall},`)
-  }
-  if (/export\s+default\s+\{/.test(next)) {
-    return replaceFirst(next, /export\s+default\s+\{/, `export default {\n    plugins: [${pluginCall}],`)
-  }
-  return next
+  return addWebpackCompatiblePlugin(content, mode, 'Webpack')
 }
 
 export function addMasterCSSRsbuildPlugin(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-webpack')) return content
-  let next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
+  assertModule(content, 'register MasterCSSPlugin from @master/css-webpack in tools.rspack')
+  const next = addImport(content, "import MasterCSSPlugin from '@master/css-webpack'")
   const pluginCall = formatWebpackPluginCall(mode)
   const rspackSetupBody = `            config.plugins ||= []
       config.plugins.push(${pluginCall})
@@ -139,9 +140,16 @@ export function addMasterCSSRsbuildPlugin(content: string, mode?: MasterCSSRende
 ${rspackSetupBody}
     }`
 
-  if (/rspack\s*\(\s*config\s*\)\s*\{/.test(next)) {
-    return replaceFirst(next, /rspack\s*\(\s*config\s*\)\s*\{/, `rspack(config) {
-${rspackSetupBody}`)
+  // An existing hook keeps its own body and return: register the plugin first.
+  const hook = /\brspack\s*(?::\s*(?:function\s*)?)?\(\s*config\b[^)]*\)\s*(?:=>\s*)?\{/.exec(next)
+  if (hook) {
+    const at = hook.index + hook[0].length
+    return `${next.slice(0, at)}
+      config.plugins ||= []
+      config.plugins.push(${pluginCall})${next.slice(at)}`
+  }
+  if (/\brspack\s*:/.test(next)) {
+    throw new ManualSetupStep(`Setup cannot extend this tools.rspack form; push ${pluginCall} from @master/css-webpack onto the Rspack plugins manually.`)
   }
   if (/tools\s*:\s*\{/.test(next)) {
     return replaceFirst(next, /tools\s*:\s*\{/, `tools: {
@@ -159,19 +167,15 @@ ${rspackSetupBody}`)
     ${rspackSetup}
   },`)
   }
-  return next
+  throw new ManualSetupStep(`Setup could not find the exported config object; register ${pluginCall} from @master/css-webpack in tools.rspack manually.`)
 }
 
 function addMasterCSSVitePluginCall(content: string, pluginCall: string) {
   if (content.includes('@master/css-vite')) return content
-  let next = addImport(content, "import masterCSS from '@master/css-vite'")
-  if (/plugins\s*:\s*\[/.test(next)) {
-    return replaceFirst(next, /plugins\s*:\s*\[/, `plugins: [\n            ${pluginCall},`)
-  }
-  if (/defineConfig\(\s*\{/.test(next)) {
-    return replaceFirst(next, /defineConfig\(\s*\{/, `defineConfig({\n    plugins: [${pluginCall}],`)
-  }
-  return next
+  const step = `add ${pluginCall} from @master/css-vite to the Vite plugins`
+  assertModule(content, step)
+  const next = addImport(content, "import masterCSS from '@master/css-vite'")
+  return addConfigEntry(next, 'plugins', pluginCall, step, { entryIndent: '            ', propertyIndent: '    ' })
 }
 
 export function createViteConfig(mode?: MasterCSSRenderingMode) {
@@ -247,9 +251,19 @@ export default nextConfig
 
 export function addMasterCSSNextConfig(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-next')) return updateMasterCSSNextConfig(content, mode)
+  const step = `wrap the exported config object with ${formatNextCall('nextConfig', mode)} from @master/css-next`
+  assertModule(content, step)
   const next = addImport(content, "import withMasterCSS from '@master/css-next'")
-  if (/export\s+default\s+/.test(next)) {
-    return next.replace(/export\s+default\s+([^;\r\n]+)(;?)(\r?\n|$)/, `export default ${formatNextExport('$1', mode)}$2$3`)
+  const exported = /\bexport\s+default\s+/.exec(next)
+  if (exported) {
+    // The exported expression may span lines, such as an object literal.
+    const start = exported.index + exported[0].length
+    const expression = next.slice(start, expressionEnd(next, start)).trimEnd()
+    // withMasterCSS takes a config object, not a phase function.
+    if (/^(?:async\s+)?(?:function\b|\([^)]*\)\s*=>|[A-Za-z_$][\w$]*\s*=>)/.test(expression)) {
+      throw new ManualSetupStep(`Setup cannot wrap a config function; ${step} manually.`)
+    }
+    return `${next.slice(0, start)}${formatNextExport(expression, mode)}${next.slice(start + expression.length)}`
   }
   return `${next.trimEnd()}
 
@@ -284,22 +298,24 @@ function updateMasterCSSNextConfig(content: string, mode?: MasterCSSRenderingMod
   })
 }
 
+// `~~` is the project root; Nuxt 4 points `~` at the `app/` source directory.
+const NUXT_CSS_ENTRY = "'~~/assets/css/master.css'"
+
 export function addMasterCSSNuxtModule(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-nuxt')) return content
   const moduleEntry = formatNuxtModule(mode)
-  if (/modules\s*:\s*\[/.test(content)) {
-    return replaceFirst(content, /modules\s*:\s*\[/, `modules: [\n        ${moduleEntry},`)
-  }
-  if (/defineNuxtConfig\(\s*\{/.test(content)) {
-    return replaceFirst(content, /defineNuxtConfig\(\s*\{/, `defineNuxtConfig({\n    modules: [${moduleEntry}],`)
-  }
-  return content
+  const options = { factories: ['defineNuxtConfig'], entryIndent: '        ', propertyIndent: '    ' }
+  // The module does not load a stylesheet itself; the CSS entry must be listed.
+  const withCSS = content.includes('assets/css/master.css')
+    ? content
+    : addConfigEntry(content, 'css', NUXT_CSS_ENTRY, `add ${NUXT_CSS_ENTRY} to css and ${moduleEntry} to modules`, options)
+  return addConfigEntry(withCSS, 'modules', moduleEntry, `add ${moduleEntry} to modules`, options)
 }
 
 export function createNuxtConfig(mode?: MasterCSSRenderingMode) {
   return `export default defineNuxtConfig({
   modules: [${formatNuxtModule(mode)}],
-  css: ['~/assets/css/master.css']
+  css: [${NUXT_CSS_ENTRY}]
 })
 `
 }
@@ -307,14 +323,10 @@ export function createNuxtConfig(mode?: MasterCSSRenderingMode) {
 export function addMasterCSSAstroIntegration(content: string, mode?: MasterCSSRenderingMode) {
   if (content.includes('@master/css-astro')) return content
   const pluginCall = formatMasterCSSCall(mode)
-  let next = addImport(content, "import masterCSS from '@master/css-astro'")
-  if (/integrations\s*:\s*\[/.test(next)) {
-    return replaceFirst(next, /integrations\s*:\s*\[/, `integrations: [\n        ${pluginCall},`)
-  }
-  if (/defineConfig\(\s*\{/.test(next)) {
-    return replaceFirst(next, /defineConfig\(\s*\{/, `defineConfig({\n    integrations: [${pluginCall}],`)
-  }
-  return next
+  const step = `add ${pluginCall} from @master/css-astro to the integrations`
+  assertModule(content, step)
+  const next = addImport(content, "import masterCSS from '@master/css-astro'")
+  return addConfigEntry(next, 'integrations', pluginCall, step, { entryIndent: '        ', propertyIndent: '    ' })
 }
 
 export function createAstroConfig(mode?: MasterCSSRenderingMode) {
@@ -346,11 +358,13 @@ export function addViteClientTypes(content: string) {
 /** Preserve the component's own styles while adding build-generated shadow CSS. */
 export function addLitShadowStylesheet(content: string) {
   if (content.includes("import masterCSSStyles from './index.css?inline'")) return content
-  const ownStyles = /\bstatic\s+(?:get\s+)?styles\b/.test(content)
-  let next = content.replace(/(\bstatic\s+(?:get\s+)?)styles\b/, '$1masterCSSOriginalStyles')
+  const own = /\bstatic\s+(override\s+)?(get\s+)?styles\b/.exec(content)
+  // The renamed member overrides nothing; the new getter overrides LitElement.styles,
+  // which `noImplicitOverride` projects such as the Lit starter mark with `override`.
+  let next = own ? content.replace(own[0], `static ${own[2] ?? ''}masterCSSOriginalStyles`) : content
   next = addImport(next, "import { unsafeCSS } from 'lit'")
   next = addImport(next, "import masterCSSStyles from './index.css?inline'")
-  return next.replace(/(export\s+class\s+\w+[^\{]*\{)/, `$1\n  static get styles() { return [unsafeCSS(masterCSSStyles)${ownStyles ? ', this.masterCSSOriginalStyles' : ''}] }\n`)
+  return next.replace(/(export\s+class\s+\w+[^\{]*\{)/, `$1\n  static ${own?.[1] ?? ''}get styles() { return [unsafeCSS(masterCSSStyles)${own ? ', this.masterCSSOriginalStyles' : ''}] }\n`)
 }
 
 export function addGeneratedStylesheetImport(content: string) {
@@ -408,27 +422,23 @@ ${setup}`
 export function addMasterCSSEslintConfig(content: string) {
   if (content.includes('@master/eslint-config-css')) return content
   if (!content.trim()) return CANONICAL_ESLINT_CONFIG
-
-  let next = addImport(content, "import { defineConfig } from 'eslint/config'")
+  const step = 'spread masterCSS from @master/eslint-config-css into the exported flat config array'
+  assertModule(content, step)
+  const wrapped = /\bexport\s+default\s+defineConfig\(\s*\[/.exec(content)
+  const array = wrapped ? undefined : /\bexport\s+default\s+\[/.exec(content)
+  if (!wrapped && !array) throw new ManualSetupStep(`Setup could not find an exported flat config array; ${step} manually.`)
+  // Keep an existing `import { defineConfig, globalIgnores } from 'eslint/config'`.
+  let next = /\bimport\s*\{[^}]*\bdefineConfig\b[^}]*\}\s*from\s*['"]eslint\/config['"]/.test(content)
+    ? content
+    : addImport(content, "import { defineConfig } from 'eslint/config'")
   next = addImport(next, "import masterCSS from '@master/eslint-config-css'")
 
-  if (/export\s+default\s+defineConfig\(\s*\[/.test(next)) {
-    return replaceFirst(next, /export\s+default\s+defineConfig\(\s*\[/, 'export default defineConfig([\n  ...masterCSS,')
+  if (wrapped) {
+    return replaceFirst(next, /\bexport\s+default\s+defineConfig\(\s*\[/, 'export default defineConfig([\n  ...masterCSS,')
   }
-
-  if (/export\s+default\s+\[/.test(next)) {
-    next = replaceFirst(next, /export\s+default\s+\[/, 'export default defineConfig([\n  ...masterCSS,')
-    const closeIndex = next.lastIndexOf(']')
-    return closeIndex === -1
-      ? next
-      : `${next.slice(0, closeIndex + 1)})${next.slice(closeIndex + 1)}`
-  }
-
-  return `${next.trimEnd()}
-
-// Master CSS recommended config:
-// export default defineConfig([
-//     ...masterCSS
-// ])
-`
+  const open = /\bexport\s+default\s+\[/.exec(next)!
+  const bracket = open.index + open[0].length - 1
+  const close = matchingBracket(next, bracket)
+  if (close === undefined) throw new ManualSetupStep(`Setup could not read the exported flat config array; ${step} manually.`)
+  return `${next.slice(0, open.index)}export default defineConfig([\n  ...masterCSS,${next.slice(bracket + 1, close + 1)})${next.slice(close + 1)}`
 }
