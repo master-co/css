@@ -134,11 +134,19 @@ export default function InlineStylesheetPlugin(context: MasterCSSVitePluginConte
     },
     generateBundle(_options, bundle) {
       if (!this.environment.config.build.emitAssets) return
-      const entries = [...inlineStylesheets(context).values()]
-      const anchors = new Set(entries.filter(entry => used.has(entry.token) && entry.reference).map(entry => this.getFileName(entry.reference!)))
-      for (const entry of entries) {
+      const entries = [...inlineStylesheets(context)]
+      const anchors = new Set(entries.filter(([, entry]) => used.has(entry.token) && entry.reference).map(([, entry]) => this.getFileName(entry.reference!)))
+      for (const [id, entry] of entries) {
         if (used.has(entry.token)) {
-          for (const asset of pending.get(entry.token) ?? []) this.emitFile({ type: 'asset', ...asset })
+          const assets = pending.get(entry.token) ?? []
+          for (const asset of assets) this.emitFile({ type: 'asset', ...asset })
+          // Record the published files as assets of the chunks that inline the
+          // CSS, so Vite's manifest lists them and hosts such as Astro move
+          // server-environment assets into the client output.
+          for (const output of Object.values(bundle)) {
+            if (output.type !== 'chunk' || !output.viteMetadata || !output.moduleIds.includes(id)) continue
+            for (const asset of assets) output.viteMetadata.importedAssets.add(asset.fileName)
+          }
         } else if (entry.reference) {
           const fileName = this.getFileName(entry.reference)
           if (!anchors.has(fileName)) delete bundle[fileName]

@@ -1,0 +1,6 @@
+@import '@master/css';
+
+@font-face {
+  font-family: Inline;
+  src: url('../fonts/inline.woff2') format('woff2');
+}

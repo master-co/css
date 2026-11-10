@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin, Rollup } from 'vite'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { posix } from 'node:path'
@@ -21,6 +21,21 @@ function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string
     return realCSS + part
   }).join('')
   return { source: nextSource, replaced }
+}
+
+/**
+ * Record files the host stylesheet references as assets of its importers, the
+ * way Vite records `url()` assets. Vite's manifest lists them under `assets`,
+ * which hosts such as Astro read to move server-environment assets into the
+ * client output; a bare `emitFile` would stay behind and 404.
+ */
+function registerImportedAssets(bundle: Rollup.OutputBundle, cssFileName: string, fileNames: readonly string[]) {
+  if (!fileNames.length) return
+  for (const output of Object.values(bundle)) {
+    const metadata = output.viteMetadata
+    if (!metadata || (output.fileName !== cssFileName && !metadata.importedCss.has(cssFileName))) continue
+    for (const fileName of fileNames) metadata.importedAssets.add(fileName)
+  }
 }
 
 export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
@@ -115,6 +130,7 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
           if (graph) {
             chunk.source = graph.source
             replacedAny = true
+            const owned: string[] = []
             for (const asset of graph.assets) {
               const fileName = posix.join(posix.dirname(eachCssFileName), asset.href)
               // These are already-final CSS graph assets referenced by @import
@@ -122,11 +138,14 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
               // page ownership record, so avoid classifying them as new host
               // stylesheets merely by their asset name.
               this.emitFile({ type: 'asset', fileName, name: 'master-css-generated', source: asset.css })
+              owned.push(fileName)
             }
             for (const resource of graph.resources ?? []) {
               const fileName = posix.join(posix.dirname(eachCssFileName), resource.href)
               this.emitFile({ type: 'asset', fileName, source: readFileSync(resource.file) })
+              owned.push(fileName)
             }
+            registerImportedAssets(bundle, eachCssFileName, owned)
             continue
           }
           if (extracted?.stylesheets) continue

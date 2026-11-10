@@ -1,0 +1,11 @@
+@import '@master/css';
+@import './remote.css';
+
+@font-face {
+  font-family: Brand;
+  src: url('../fonts/brand.woff2') format('woff2');
+}
+
+body {
+  font-family: Brand, sans-serif;
+}
