@@ -16,7 +16,14 @@ export default function defineVisitors(
   const classAttributeRegex = new RegExp(`^(?:${settings.classAttributes.join('|')})$`)
   const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})$`)
   const classDeclarationsRegex = new RegExp(`^(?:${settings.classDeclarations.join('|')})$`)
-  const visitClassNode = withVisitClassNode(visitNode, context, tooling)
+  const ignoredKeysRegex = settings.ignoredKeys.length ? new RegExp(`^(?:${settings.ignoredKeys.join('|')})$`) : undefined
+  const visitClassNode = withVisitClassNode(visitNode, context, tooling, ignoredKeysRegex)
+  // Astro's `class:list` is a namespaced JSX attribute; it lists classes like `class`.
+  const isClassAttribute = (name: any) => {
+    if (typeof name?.name === 'string') return classAttributeRegex.test(name.name)
+    return name?.type === 'JSXNamespacedName' && name.namespace?.name === 'class' && name.name?.name === 'list'
+      && classAttributeRegex.test('class')
+  }
 
   const getStaticName = (node: any): string | undefined => {
     if (!node) return
@@ -26,7 +33,9 @@ export default function defineVisitors(
 
   const getMemberExpressionName = (node: any): string | undefined => {
     if (!node || node.type !== 'MemberExpression') return
+    // `element.classList.add` matches `classList.add` by its last two names.
     const objectName = getStaticName(node.object)
+      ?? (node.object?.type === 'MemberExpression' && !node.object.computed ? getStaticName(node.object.property) : undefined)
     const propertyName = getStaticName(node.property)
     if (!objectName || !propertyName) return
     return `${objectName}.${propertyName}`
@@ -74,16 +83,26 @@ export default function defineVisitors(
   const scriptVisitor: RuleListener = {
     CallExpression,
     JSXAttribute: function (node: any) {
-      if (!node.name || !classAttributeRegex.test(node.name.name)) return
+      if (!node.name || !isClassAttribute(node.name)) return
       if (node.value) {
         visitClassNode(node.value)
       }
     },
     SvelteAttribute: function (node: any) {
       if (!node.key?.name || !classAttributeRegex.test(node.key.name)) return
-      for (const eachValue of node.value) {
+      node.value.forEach((eachValue: any, index: number) => {
+        if (eachValue.type === 'SvelteMustacheTag') {
+          visitClassNode(eachValue.expression)
+          return
+        }
+        // Text touching `{expression}` is part of a class that only exists at runtime,
+        // as in `bg:{color}-50`: it is not a class list to sort, dedupe or validate.
+        const before = node.value[index - 1]
+        const after = node.value[index + 1]
+        if (before?.type === 'SvelteMustacheTag' && !/^\s/.test(eachValue.value)) return
+        if (after?.type === 'SvelteMustacheTag' && !/\s$/.test(eachValue.value)) return
         visitClassNode(eachValue)
-      }
+      })
     },
     TextAttribute: function (node: any) {
       if (!node.name || !classAttributeRegex.test(node.name)) return

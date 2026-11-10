@@ -6,7 +6,8 @@ import type { MasterCSSToolingSession } from '@master/css-tooling'
 export default function withVisitClassNode(
   visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void,
   context: RuleContext<any, any[]>,
-  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList' | 'decodeHTMLAttribute'>
+  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList' | 'decodeHTMLAttribute'>,
+  ignoredKeys?: RegExp
 ) {
   const visitNode = (node) => {
     if (!node) return
@@ -38,14 +39,18 @@ export default function withVisitClassNode(
           visitNode(prop)
         })
         return
-      case 'Property':
+      case 'Property': {
         if (node.shorthand) return
+        // Keys such as cva's compoundVariants and defaultVariants hold variant names, not classes.
+        const key = node.key?.type === 'Identifier' ? node.key.name : node.key?.value
+        if (ignoredKeys && typeof key === 'string' && ignoredKeys.test(key)) return
         if (node.value && ['Literal', 'ArrayExpression', 'ObjectExpression'].includes(node.value.type) && typeof node.value?.value !== 'boolean') {
           visitNode(node.value)
         } else if (node.key.type === 'Literal') {
           visitNode(node.key)
         }
         return
+      }
       default:
         const resolved = resolveClassNode(node, context, lintSession)
         if (!resolved) return
