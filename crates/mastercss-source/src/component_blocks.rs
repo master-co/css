@@ -104,7 +104,7 @@ pub(super) fn blocks(source: &str, template: Template) -> Vec<Block> {
 
 /// The index after the `close` that ends a template expression starting at `from`,
 /// skipping nested braces, strings, template literals and comments.
-fn expression_end(source: &str, from: usize, close: &str) -> Option<usize> {
+pub(super) fn expression_end(source: &str, from: usize, close: &str) -> Option<usize> {
     let bytes = source.as_bytes();
     let mut depth = 0usize;
     let mut cursor = from;

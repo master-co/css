@@ -159,7 +159,7 @@ impl Collector<'_> {
             self.javascript(frontmatter, 3, 0, "astro-frontmatter")?;
         }
         let offset = input.content.len() - markup.len();
-        self.html(markup, offset)?;
+        self.html_parts(markup, offset, html_class_values::astro_parts(markup))?;
         // Astro's existing template adapter supplies candidates. Mark enclosing
         // source spans when it cannot expose a precise original token span.
         self.add(
@@ -387,7 +387,16 @@ impl Collector<'_> {
     }
 
     fn html(&mut self, source: &str, offset: usize) -> ExtractionResult {
-        for part in html_class_values::parts(source) {
+        self.html_parts(source, offset, html_class_values::parts(source))
+    }
+
+    fn html_parts(
+        &mut self,
+        source: &str,
+        offset: usize,
+        parts: Vec<html_class_values::Part<'_>>,
+    ) -> ExtractionResult {
+        for part in parts {
             match part {
                 html_class_values::Part::Class(raw) => {
                     let start = offset + (raw.as_ptr() as usize - source.as_ptr() as usize);

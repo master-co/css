@@ -13,6 +13,16 @@ enum Namespace {
 }
 
 pub(super) fn parts(source: &str) -> Vec<Part<'_>> {
+    parts_with(source, false)
+}
+
+/// Astro templates write attribute values and spreads as `{expression}`, which may hold
+/// spaces, quotes and `>`. A class expression is JavaScript, not a class list.
+pub(super) fn astro_parts(source: &str) -> Vec<Part<'_>> {
+    parts_with(source, true)
+}
+
+fn parts_with(source: &str, expressions: bool) -> Vec<Part<'_>> {
     let bytes = source.as_bytes();
     let mut cursor = 0;
     let mut values = Vec::new();
@@ -82,6 +92,16 @@ pub(super) fn parts(source: &str) -> Vec<Part<'_>> {
                 ended = true;
                 break;
             }
+            // `{...props}` and `{name}` shorthands are expressions, not attribute names.
+            if expressions && bytes.get(cursor) == Some(&b'{') {
+                match crate::component_blocks::expression_end(source, cursor + 1, "}") {
+                    Some(end) => {
+                        cursor = end;
+                        continue;
+                    }
+                    None => break,
+                }
+            }
             let name_start = cursor;
             // An initial '=' is a parse error but is part of an attribute name.
             if bytes.get(cursor) == Some(&b'=') {
@@ -104,6 +124,21 @@ pub(super) fn parts(source: &str) -> Vec<Part<'_>> {
                 cursor += 1;
                 while bytes.get(cursor).is_some_and(|b| space(*b)) {
                     cursor += 1;
+                }
+                if expressions && bytes.get(cursor) == Some(&b'{') {
+                    let Some(end) =
+                        crate::component_blocks::expression_end(source, cursor + 1, "}")
+                    else {
+                        break;
+                    };
+                    let expression = &source[cursor + 1..end - 1];
+                    cursor = end;
+                    // `class={...}` and `class:list={...}` hold class strings in JavaScript.
+                    if name.eq_ignore_ascii_case("class") || name.eq_ignore_ascii_case("class:list")
+                    {
+                        values.push(Part::Script(expression));
+                    }
+                    continue;
                 }
                 if let Some(quote @ (b'\'' | b'"')) = bytes.get(cursor).copied() {
                     cursor += 1;

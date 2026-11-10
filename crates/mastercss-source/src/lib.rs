@@ -456,7 +456,8 @@ fn pre_exclude(content: &str) -> String {
     let without_blocks = remove_delimited(content, "/*", "*/");
     let without_html_comments = remove_delimited(&without_blocks, "<!--", "-->");
     let without_styles = remove_style_elements(&without_html_comments);
-    without_styles
+    let without_placeholders = remove_template_placeholders(&without_styles);
+    without_placeholders
         .lines()
         .map(|line| {
             let trimmed = line.trim_start();
@@ -472,6 +473,38 @@ fn pre_exclude(content: &str) -> String {
         })
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+/// Replace each `${...}` template-literal placeholder with a space. Its expression is
+/// code, never class text, so `class={`grid ${size}`}` in a component template yields
+/// `grid` rather than an invalid `${size}` candidate. An unclosed placeholder stays text.
+fn remove_template_placeholders(source: &str) -> String {
+    let mut output = String::with_capacity(source.len());
+    let mut rest = source;
+    while let Some(start) = rest.find("${") {
+        let body = &rest[start + 2..];
+        let mut depth = 0usize;
+        let end = body
+            .char_indices()
+            .find_map(|(index, character)| match character {
+                '{' => {
+                    depth += 1;
+                    None
+                }
+                '}' if depth == 0 => Some(index),
+                '}' => {
+                    depth -= 1;
+                    None
+                }
+                _ => None,
+            });
+        let Some(end) = end else { break };
+        output.push_str(&rest[..start]);
+        output.push(' ');
+        rest = &body[end + 1..];
+    }
+    output.push_str(rest);
+    output
 }
 
 fn remove_delimited(source: &str, open: &str, close: &str) -> String {
@@ -805,12 +838,12 @@ mod tests {
     }
 
     #[test]
-    fn excludes_groups_and_keeps_interpolation_candidates() {
+    fn excludes_groups_and_interpolation_placeholders() {
         assert_eq!(
             extract_class_candidates(
                 r#"<div class="{color:red;background:blue} (color:red;background:blue)" data-id="${id}"></div>"#
             ),
-            vec!["${id}"]
+            Vec::<String>::new()
         );
     }
 
