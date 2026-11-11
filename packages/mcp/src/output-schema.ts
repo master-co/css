@@ -4,6 +4,7 @@ import { lintFile, lintSummary, lintCoverage, formatFile, formatSummary, extract
 import { strings, diagnostic, metadata, inspection, envelopeMetadata, manifestResults, change, completion, classDiff, ruleDiff, range } from './semantic-schema'
 import { projectSnapshot, projectComparison } from './project-comparison-schema'
 import { designSystemReport } from './design-system-schema'
+import { contractList, contractGet, contractCheck } from './contract-schema'
 
 // Non-semantic host metadata is an explicitly JSON-valued dictionary.
 const object = z.record(z.string(), z.json())
@@ -32,7 +33,10 @@ const fields: Record<string, z.ZodRawShape> = {
   mastercss_inspect_directives: { context: metadata, manifest: object, directiveEntries: z.array(z.object({ name: z.string(), range, prelude: z.string(), hasBlock: z.boolean(), quotedStrings: z.number() }).passthrough()), dependencies: strings, css, summary: object },
   mastercss_manifest_query: { version: z.literal(6), manifest: metadata, results: manifestResults, summary: z.object({ total: z.number(), returned: z.number(), tokens: z.number(), mixins: z.number(), utilities: z.number(), customMedia: z.number(), customContainers: z.number(), families: z.number(), status: z.literal('ok') }) },
   mastercss_css_compare: { manifest: metadata, classes: classDiff, css: z.object({ changed: z.boolean(), before: css, after: css, bytesDelta: z.number(), diff: z.string() }), rules: ruleDiff, summary: object },
-  mastercss_suggest_syntax: { manifest: metadata, completions: z.array(completion), total: z.number() }
+  mastercss_suggest_syntax: { manifest: metadata, completions: z.array(completion), total: z.number() },
+  mastercss_contract_list: contractList,
+  mastercss_contract_get: contractGet,
+  mastercss_contract_check: contractCheck
 }
 
 export function toolOutputSchema(name: string) {

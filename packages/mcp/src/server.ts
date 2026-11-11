@@ -20,6 +20,7 @@ import { toolOutputSchema } from './output-schema'
 import { projectSnapshot } from './project-comparison-schema'
 import { designSystemOptions } from './design-system-schema'
 import { suggestClasses } from './suggest'
+import { checkContracts, getContract, listContracts, MAX_CHECK_CONTENT_LENGTH } from './contracts'
 
 class MasterCSSMCPServer {
   readonly #server: McpServer
@@ -476,6 +477,67 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       }
     },
     async (input) => executeTool(() => suggestSyntax(context, input))
+  )
+
+  server.registerTool(
+    'mastercss_contract_list',
+    {
+      title: 'List Design System Contracts',
+      description: 'List the component contracts that the workspace\'s design-system dependencies declare in "masterCSS.contracts", merged with the project\'s own. Filter by query, tier, or category. Returns an empty list with a note when nothing declares contracts.',
+      inputSchema: {
+        query: z.string().optional(),
+        tier: z.string().optional(),
+        category: z.string().optional()
+      },
+      outputSchema: toolOutputSchema('mastercss_contract_list'),
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      }
+    },
+    async (input) => executeTool(() => listContracts(context, input))
+  )
+
+  server.registerTool(
+    'mastercss_contract_get',
+    {
+      title: 'Get Design System Contract',
+      description: 'Return one full contract and its source by contract name or by any class name the contract defines. Read it before writing that component\'s markup.',
+      inputSchema: {
+        name: z.string().min(1)
+      },
+      outputSchema: toolOutputSchema('mastercss_contract_get'),
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      }
+    },
+    async (input) => executeTool(() => getContract(context, input))
+  )
+
+  server.registerTool(
+    'mastercss_contract_check',
+    {
+      title: 'Check Markup Against Contracts',
+      description: 'Check an in-memory source buffer or project files against the merged contracts with the checker module a design-system dependency, or the workspace package itself, declares in "masterCSS.check". Runs that package\'s code in a worker thread with a time and memory limit. Does not write files; reports when no library provides a checker.',
+      inputSchema: {
+        content: z.string().max(MAX_CHECK_CONTENT_LENGTH).optional(),
+        filePath: z.string().optional(),
+        patterns: z.array(z.string()).optional()
+      },
+      outputSchema: toolOutputSchema('mastercss_contract_check'),
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      }
+    },
+    async (input) => executeTool(() => checkContracts(context, input))
   )
 
   server.registerTool(

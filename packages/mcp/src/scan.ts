@@ -33,7 +33,7 @@ export interface InspectClassOptions {
   className: string
 }
 
-export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns = DEFAULT_SOURCE_PATTERNS, ignore = DEFAULT_IGNORE_PATTERNS) {
+export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns = DEFAULT_SOURCE_PATTERNS, ignore = DEFAULT_IGNORE_PATTERNS, explicit = patterns !== DEFAULT_SOURCE_PATTERNS) {
   context.validateGlobPatterns(patterns)
   const sources = await fg(patterns, {
     cwd: context.root,
@@ -43,7 +43,7 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
     followSymbolicLinks: false
   })
   const policy = new SourcePolicy(context.root, { exclude: ignore })
-  return Promise.all(sources.filter(source => policy.accepts(source, patterns !== DEFAULT_SOURCE_PATTERNS)).map((source) => context.resolveExistingFile(source)))
+  return Promise.all(sources.filter(source => policy.accepts(source, explicit)).map((source) => context.resolveExistingFile(source)))
 }
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {
