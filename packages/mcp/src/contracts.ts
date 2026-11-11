@@ -474,7 +474,8 @@ async function readCheckInputs(context: MasterCSSMCPContext, options: CheckContr
     return { inputs: [{ filePath: context.resolveVirtualPath(options.filePath || 'index.html'), content: options.content }], skippedFiles }
   }
   // Without patterns the search follows the project's ignore files, as a scan does.
-  const filePaths = await resolveSourceFiles(context, options.patterns, options.patterns ? [] : DEFAULT_IGNORE_PATTERNS, DEFAULT_CHECK_PATTERNS)
+  // Sorted, so a report lists files in the same order on every platform.
+  const filePaths = (await resolveSourceFiles(context, options.patterns, options.patterns ? [] : DEFAULT_IGNORE_PATTERNS, DEFAULT_CHECK_PATTERNS)).sort()
   if (filePaths.length > MAX_CHECK_FILES) {
     throw Object.assign(new Error(`The patterns match ${filePaths.length} files; a contract check reads at most ${MAX_CHECK_FILES}. Pass narrower patterns.`), { code: 'CONTRACT_CHECK_TOO_MANY_FILES' })
   }

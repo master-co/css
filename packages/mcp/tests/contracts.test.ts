@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { contractCheckerLimits } from '../src/contracts'
 import { createMasterCSSMCPServer } from '../src/server'
 
+// The native realpath expands Windows 8.3 temp names (RUNNER~1) as the server's file paths do.
 const tempDirs: string[] = []
 const closers: (() => Promise<void>)[] = []
 
@@ -68,7 +69,7 @@ export function check(source, contracts, options = {}) {
 
 /** A workspace with one library that ships contracts and a checker, a plain dependency, and its own contracts. */
 function createWorkspace() {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-')))
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-')))
   tempDirs.push(root)
   write(root, 'package.json', {
     name: 'app',
@@ -240,7 +241,7 @@ describe('design system contracts', () => {
   })
 
   it('returns an empty list, not an error, when nothing declares contracts', async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-none-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-none-')))
     tempDirs.push(root)
     const { data, call } = await connect(root)
     const list = await data('mastercss_contract_list')
@@ -255,7 +256,7 @@ describe('design system contracts', () => {
   })
 
   it('keeps lookups working when a library ships contracts without a checker', async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-plain-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-plain-')))
     tempDirs.push(root)
     write(root, 'package.json', { devDependencies: { '@scope/ui': '*' } })
     write(root, 'node_modules/@scope/ui/package.json', { name: '@scope/ui', masterCSS: { contracts: './contracts.json' } })
@@ -269,7 +270,7 @@ describe('design system contracts', () => {
   })
 
   it('never imports a checker or reads contracts from outside the declaring package', async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-escape-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-escape-')))
     tempDirs.push(root)
     write(root, 'package.json', { dependencies: { 'escaping-ui': '*' }, masterCSS: { contracts: '../outside/*.json' } })
     write(root, 'node_modules/escaping-ui/package.json', { name: 'escaping-ui', version: '1.0.0', type: 'module', masterCSS: { contracts: ['./contracts.json', '../../secrets.json'], check: '../../checker.js' } })
@@ -314,7 +315,7 @@ describe('design system contracts', () => {
   })
 
   it('finds the libraries of a monorepo root and its peer dependencies', async () => {
-    const repo = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-monorepo-')))
+    const repo = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-monorepo-')))
     tempDirs.push(repo)
     write(repo, 'package.json', { private: true, workspaces: ['apps/*'], peerDependencies: { 'fake-ui': '*' } })
     write(repo, 'node_modules/fake-ui/package.json', { name: 'fake-ui', version: '2.0.0', type: 'module', masterCSS: { contracts: './contracts.json', check: './check.js' } })
@@ -331,7 +332,7 @@ describe('design system contracts', () => {
   })
 
   it('checks a library in its own repository with the checker it declares', async () => {
-    const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-own-')))
+    const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-css-mcp-contracts-own-')))
     tempDirs.push(root)
     write(root, 'package.json', { name: '@scope/ui', version: '0.1.0', type: 'module', masterCSS: { contracts: './dist/contracts.json', check: './check/index.js' } })
     write(root, 'dist/contracts.json', { contracts: [button, dialog] })
