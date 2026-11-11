@@ -126,6 +126,28 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     },
     "lifecycle": text("tools/mcp", "editorial-mastercss_suggest_syntax-lifecycle")
   },
+  "mastercss_contract_list": {
+    "purpose": text("tools/mcp", "editorial-mastercss_contract_list-purpose"),
+    "example": {
+      "query": "button"
+    },
+    "lifecycle": text("tools/mcp", "editorial-mastercss_contract_list-lifecycle")
+  },
+  "mastercss_contract_get": {
+    "purpose": text("tools/mcp", "editorial-mastercss_contract_get-purpose"),
+    "example": {
+      "name": "btn-primary"
+    },
+    "lifecycle": text("tools/mcp", "editorial-mastercss_contract_get-lifecycle")
+  },
+  "mastercss_contract_check": {
+    "purpose": text("tools/mcp", "editorial-mastercss_contract_check-purpose"),
+    "example": {
+      "content": "<button class=\"btn-primary\">Save</button>",
+      "filePath": "src/button.html"
+    },
+    "lifecycle": text("tools/mcp", "editorial-mastercss_contract_check-lifecycle")
+  },
   "mastercss_preview_fixes": {
     "purpose": text("tools/mcp", "editorial-mastercss_preview_fixes-purpose"),
     "example": {

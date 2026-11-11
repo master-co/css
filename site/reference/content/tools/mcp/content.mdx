@@ -112,6 +112,30 @@ Request language-service completion candidates and hover information at a positi
 
 This operation does not write workspace files.
 
+## editorial-mastercss_contract_list-purpose \{#copy-editorial-mastercss_contract_list-purpose\}
+
+Find the component contracts of the design systems this workspace depends on, merged with the project's own. Filter with `query`, `tier` or `category`; every entry names its `source`. An empty list with a `note` means nothing declares contracts, not a failure.
+
+## editorial-mastercss_contract_list-lifecycle \{#copy-editorial-mastercss_contract_list-lifecycle\}
+
+This operation does not write workspace files or run package code.
+
+## editorial-mastercss_contract_get-purpose \{#copy-editorial-mastercss_contract_get-purpose\}
+
+Read one full contract before writing that component's markup: its classes and where they go, its states, public properties and smallest correct example. `name` is a contract name or any class a contract defines, so `btn-primary` returns the button contract. An unknown name is an error result that lists the closest contract and class names.
+
+## editorial-mastercss_contract_get-lifecycle \{#copy-editorial-mastercss_contract_get-lifecycle\}
+
+This operation does not write workspace files or run package code.
+
+## editorial-mastercss_contract_check-purpose \{#copy-editorial-mastercss_contract_check-purpose\}
+
+Check an unsaved buffer (`content`, with an optional `filePath` for messages) or project files (`patterns`) against the merged contracts. The diagnostics come from the checker a design-system dependency declares; `checkers` names each one that ran. `classValidation` and `strict` report whether the project manifest told the checker which other classes exist. `coverage.status` is `no-checker` or `no-contracts` when nothing ran, and zero diagnostics then verifies nothing.
+
+## editorial-mastercss_contract_check-lifecycle \{#copy-editorial-mastercss_contract_check-lifecycle\}
+
+This operation does not write workspace files. It runs code from the package that declares the checker, in a worker thread with a time and memory limit.
+
 ## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
 
 Prepare a reviewable diff for native lint fixes or generated CSS output. This request does not apply its changes.
@@ -251,6 +275,38 @@ Request a prompt through `prompts/get` in a connected client.
 ## body-20 \{#copy-body-20\}
 
 Use `tools/list` in the same connected server session for accepted arguments. On GitHub, read the [tool registrations](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts), [output schemas](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts), and [result envelope](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts). The [workflow guide](/guide/ai-coding#safe-write-previews) shows a complete preview and apply sequence. Source links follow the `rc` branch; the connected server describes your installed version.
+
+## body-21 \{#copy-body-21\}
+
+| What does a design-system component require? | [`contract_list`](#mastercss_contract_list), [`contract_get`](#mastercss_contract_get), [`contract_check`](#mastercss_contract_check) |
+
+## body-22 \{#copy-body-22\}
+
+## Contracts of a design system \{#contracts-of-a-design-system\}
+
+## body-23 \{#copy-body-23\}
+
+A design system built on Master CSS can describe each component in a contract: its classes and where they go, its states, public properties and smallest correct markup. A library declares its contracts in its own `package.json`:
+
+```json
+{
+  "name": "your-design-system",
+  "masterCSS": {
+    "contracts": "./dist/contracts.json",
+    "check": "./check/index.js"
+  }
+}
+```
+
+`contracts` is a path inside the package to a JSON file holding `{ "contracts": [...] }`. A contract is an object with a string `name` and a `classes` array; every other field belongs to the library. The optional `check` is a path inside the package to an ES module that exports `check(source, contracts, { knows, strict })` and returns diagnostics with `code`, `severity`, `message`, `line`, `column` and, when they apply, `className` and `contract`. [`@master/ui`](https://ui.master.co) is the first library that ships its contracts this way.
+
+## body-24 \{#copy-body-24\}
+
+The server reads `dependencies`, `devDependencies` and `peerDependencies` from the `package.json` in the workspace root, resolves each package from that root and keeps those that declare `masterCSS.contracts`. When none does, it reads the same fields of the monorepo root above: the nearest directory whose `package.json` lists `workspaces` or that holds a `pnpm-workspace.yaml`, without leaving the repository. A project adds contracts of its own with globs in the same field of its root `package.json`, such as `"masterCSS": { "contracts": "contracts/*.json" }`. A library in its own repository can also declare `masterCSS.check` there to check those contracts with its own checker. A project with a `master-ui.json` also contributes the JSON files of its `directory` (`ui` by default) and its `contracts` globs. A project contract replaces a library contract of the same `name`. Every contract in a result carries its `source`: the package and version, or the project file and the library contract it replaces.
+
+## body-25 \{#copy-body-25\}
+
+Only the checker that a declared dependency or the workspace's own `package.json` names is imported, and only from a path that stays inside that package; a project contract file is read as data and never executed. A checker is code from that package. The server runs it in a worker thread and stops it with `CONTRACT_CHECKER_FAILED` when one file takes longer than 10 seconds or the checker exceeds its memory limit. Each check loads the checker again, so an upgraded library takes effect without a restart. The checker receives `knows(className)`, which answers from the project manifest whether a class is a valid Master CSS class or a native class of the project's stylesheets, and `strict: true` only when that manifest loaded. Otherwise `knows` is omitted and `strict` is false. A checker reads markup as written; it does not establish run-time classes or browser behavior.
 
 ## title \{#copy-title\}
 

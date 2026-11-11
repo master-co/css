@@ -140,6 +140,36 @@
 
 此操作不写入工作区文件。
 
+## editorial-mastercss_contract_list-purpose \{#copy-editorial-mastercss_contract_list-purpose\}
+
+
+找出此工作区依赖的设计系统所提供的组件契约，并与项目自己的契约合并。可用 `query`、`tier` 或 `category` 筛选；每个条目都标明 `source`。列表为空并附带 `note`，表示没有任何包或项目声明契约，并非失败。
+
+## editorial-mastercss_contract_list-lifecycle \{#copy-editorial-mastercss_contract_list-lifecycle\}
+
+
+此操作不写入工作区文件，也不执行包代码。
+
+## editorial-mastercss_contract_get-purpose \{#copy-editorial-mastercss_contract_get-purpose\}
+
+
+编写组件标记前，先读取该组件的完整契约：它的类与放置位置、状态、公开属性，以及最小的正确示例。`name` 可以是契约名称，或任何契约定义的类，因此 `btn-primary` 会返回按钮契约。名称不存在时返回错误结果，并列出最接近的契约与类名称。
+
+## editorial-mastercss_contract_get-lifecycle \{#copy-editorial-mastercss_contract_get-lifecycle\}
+
+
+此操作不写入工作区文件，也不执行包代码。
+
+## editorial-mastercss_contract_check-purpose \{#copy-editorial-mastercss_contract_check-purpose\}
+
+
+按合并后的契约检查未保存的缓冲区（`content`，可附上用于消息的 `filePath`）或项目文件（`patterns`）。诊断来自所依赖设计系统声明的检查器；`checkers` 列出实际运行的每一个。`classValidation` 与 `strict` 报告项目 manifest 是否已告诉检查器还有哪些类存在。没有任何检查运行时，`coverage.status` 为 `no-checker` 或 `no-contracts`，此时即使零诊断，也没有验证任何内容。
+
+## editorial-mastercss_contract_check-lifecycle \{#copy-editorial-mastercss_contract_check-lifecycle\}
+
+
+此操作不写入工作区文件。它会在有时间与内存上限的 worker thread 中运行声明检查器的包所提供的代码。
+
 ## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
 
 
@@ -314,6 +344,43 @@ Markdown 与 MDX 提取将实际标记、代码与展示文本分开，返回原
 
 
 在同一已连接服务器会话使用 `tools/list` 查看可接受参数。GitHub 提供[工具注册](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)、[输出模式](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts)及[结果封装](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts)。[工作流指南](/guide/ai-coding#safe-write-previews)展示完整预览与应用顺序。源链接指向 `rc` 分支；已连接服务器描述的是你的安装版本。
+
+## body-21 \{#copy-body-21\}
+
+
+| 设计系统的组件有哪些要求？ | [`contract_list`](#mastercss_contract_list), [`contract_get`](#mastercss_contract_get), [`contract_check`](#mastercss_contract_check) |
+
+## body-22 \{#copy-body-22\}
+
+
+## 设计系统的契约 \{#contracts-of-a-design-system\}
+
+## body-23 \{#copy-body-23\}
+
+
+基于 Master CSS 构建的设计系统，可以用契约描述每个组件：它的类与放置位置、状态、公开属性，以及最小的正确标记。库在自己的 `package.json` 中声明契约：
+
+```json
+{
+  "name": "your-design-system",
+  "masterCSS": {
+    "contracts": "./dist/contracts.json",
+    "check": "./check/index.js"
+  }
+}
+```
+
+`contracts` 是包内的路径，指向内容为 `{ "contracts": [...] }` 的 JSON 文件。契约是带有字符串 `name` 与 `classes` 数组的对象；其他字段都由库自行定义。可选的 `check` 是包内的路径，指向一个 ES 模块；该模块导出 `check(source, contracts, { knows, strict })`，返回的诊断包含 `code`、`severity`、`message`、`line`、`column`，并在适用时包含 `className` 与 `contract`。[`@master/ui`](https://ui.master.co) 是第一个以这种方式提供契约的库。
+
+## body-24 \{#copy-body-24\}
+
+
+服务器读取工作区根目录 `package.json` 的 `dependencies`、`devDependencies` 与 `peerDependencies`，从该根目录解析每个包，并保留声明了 `masterCSS.contracts` 的包。如果都没有，服务器会改读上层 monorepo 根目录的相同字段：即最近一个 `package.json` 列出 `workspaces`、或包含 `pnpm-workspace.yaml` 的目录，且不会超出该代码仓库。项目可在根目录 `package.json` 的同一字段用 glob 加入自己的契约，例如 `"masterCSS": { "contracts": "contracts/*.json" }`。库在自己的代码仓库中，也可以在同一处声明 `masterCSS.check`，用自己的检查器检查这些契约。有 `master-ui.json` 的项目，还会加入其 `directory`（默认为 `ui`）内的 JSON 文件与其 `contracts` glob。项目契约会替换同 `name` 的库契约。结果中的每个契约都带有 `source`：包与版本，或项目文件及其替换的库契约。
+
+## body-25 \{#copy-body-25\}
+
+
+服务器只导入已声明依赖包或工作区自身 `package.json` 所指定的检查器，而且路径必须位于该包内；项目的契约文件只作为数据读取，绝不执行。检查器是该包提供的代码。服务器在 worker thread 中运行它；单个文件超过 10 秒，或检查器超出内存上限时，会停止它并报告 `CONTRACT_CHECKER_FAILED`。每次检查都会重新加载检查器，因此升级后的库无需重启即可生效。检查器会收到 `knows(className)`，它根据项目 manifest 回答某个类是否为有效的 Master CSS 类，或项目样式表定义的原生类；只有在 manifest 加载成功时才会收到 `strict: true`。否则不提供 `knows`，且 `strict` 为 false。检查器按照编写的标记判读，无法确认运行时生成的类或浏览器行为。
 
 ## title \{#copy-title\}
 

@@ -216,6 +216,26 @@ master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
 
 ---
 
+## 設計系統的契約 \{#contracts-of-a-design-system\}
+專案相依的設計系統若提供契約，例如 [`@master/ui`](https://ui.master.co)，同一個 MCP 伺服器也會提供這些契約。契約說明元件的 class 與放置位置、狀態、公開屬性，以及最小的正確標記。請代理在撰寫元件標記前先讀取契約，再檢查結果：
+
+1. `mastercss_contract_list` 找出元件；可用 `query`、`tier` 或 `category` 篩選。
+2. `mastercss_contract_get` 依契約名稱或其中任何 class 回傳完整契約，因此 `btn-primary` 會回傳按鈕契約。
+3. `mastercss_contract_check` 以函式庫提供的檢查器檢查未儲存的緩衝區或專案檔案。
+
+例如，缺少基礎 class 的按鈕：
+
+```json name=mastercss_contract_check
+{
+  "content": "<button class=\"btn-primary\">Save</button>",
+  "filePath": "src/button.html"
+}
+```
+
+使用 `@master/ui` 時，這會回報 `missing-base`，因為 `btn-primary` 修飾的是 `btn`。專案自有的元件把契約留在專案內；該契約會取代函式庫的同名契約，而每個結果都會標示 `source`。函式庫在 `package.json` 宣告契約與檢查器；該欄位與專案自有契約的說明請見[設計系統的契約](/reference/tools/mcp#contracts-of-a-design-system)。這項檢查依照撰寫的標記判讀，不能取代 lint，也不能取代檢視渲染結果。
+
+---
+
 ## 檢查共用變更的影響範圍 \{#review-the-second-change\}
 第一版看起來正確，不代表能看出下次編輯會影響什麼。修改 `--color-brand` 這類共用定義前，先儲存專案快照，編輯後再比較，即使標記沒有改變也一樣：
 

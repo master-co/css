@@ -13,6 +13,14 @@ export async function verifyToolContractExamples() {
   writeFileSync(file, source)
   writeFileSync(join(root, 'app.css'), `@import "@master/css";
 @theme { --color-brand: blue;  }`)
+  // A contract the project owns: the contract tools read it without any design-system dependency.
+  mkdirSync(join(root, 'contracts'))
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ private: true, masterCSS: { contracts: 'contracts/*.json' } }))
+  writeFileSync(join(root, 'contracts/button.json'), JSON.stringify({
+    name: 'button', title: 'Button', tier: 'component', category: 'Actions', description: 'A raised control.', use: 'An action in the page.', script: 'none',
+    classes: [{ name: 'btn', kind: 'root', description: 'The base button' }, { name: 'btn-primary', kind: 'modifier', of: 'btn', description: 'The main action' }],
+    example: '<button class="btn">Save</button>'
+  }))
   const connection = await connect(root)
   const reports: Record<string, any> = {}
   try {
@@ -48,6 +56,11 @@ export async function verifyToolContractExamples() {
       assert.equal(reports[name].summary.warnings, 1)
       assert.equal(reports[name].files[0].diagnostics[0].ruleId, 'sort-classes')
     }
+    assert.deepEqual(reports.contract_list.contracts.map((item: any) => [item.name, item.source.file]), [['button', 'contracts/button.json']])
+    assert.equal(reports.contract_get.matched, 'class')
+    assert.equal(reports.contract_get.contract.name, 'button')
+    assert.equal(reports.contract_check.coverage.status, 'no-checker')
+    assert.deepEqual(reports.contract_check.checkers, [])
     assert.equal(reports.suggest_syntax.completions.length, 5)
     assert.ok(reports.suggest_syntax.total > 5)
     assert.equal(reports.preview_directive_format.formatted, '@safelist "(background-color:transparent)!";' )

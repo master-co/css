@@ -77,12 +77,17 @@ export async function buildToolContracts(repo: string, locale = 'en'): Promise<R
     text('tools/mcp', 'body-7', locale),
     text('tools/mcp', 'body-8', locale),
     text('tools/mcp', 'body-9', locale),
+    text('tools/mcp', 'body-21', locale),
     text('tools/mcp', 'body-10', locale)].join('\n'),
     text('tools/mcp', 'body-11', locale),
     text('tools/mcp', 'body-12', locale),
     referenceIllustrationMarkdown('preview-file-identity', locale),
     text('tools/mcp', 'body-13', locale),
-    text('tools/mcp', 'body-14', locale))
+    text('tools/mcp', 'body-14', locale),
+    text('tools/mcp', 'body-22', locale),
+    text('tools/mcp', 'body-23', locale),
+    text('tools/mcp', 'body-24', locale),
+    text('tools/mcp', 'body-25', locale))
   for (const tool of tools) {
     const editorial = mcpEditorial[tool.name]
     if (!editorial) throw new Error(`Missing MCP guidance: ${tool.name}`)

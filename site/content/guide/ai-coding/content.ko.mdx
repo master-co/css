@@ -216,6 +216,26 @@ MCP가 연결되면 `mastercss_suggest_classes`는 같은 선언 블록을 받�
 
 ---
 
+## 디자인 시스템의 계약 \{#contracts-of-a-design-system\}
+프로젝트가 [`@master/ui`](https://ui.master.co)처럼 계약을 제공하는 디자인 시스템에 의존하면 같은 MCP 서버가 그 계약을 제공합니다. 계약은 컴포넌트의 클래스와 위치, 상태, 공개 속성, 가장 작은 올바른 마크업을 명시합니다. 에이전트에게 컴포넌트 마크업을 작성하기 전에 계약을 읽고, 그다음 결과를 검사하도록 요청하세요.
+
+1. `mastercss_contract_list`는 컴포넌트를 찾습니다. `query`, `tier`, `category`로 걸러낼 수 있습니다.
+2. `mastercss_contract_get`은 계약 이름이나 그 클래스 중 하나로 전체 계약을 반환하므로 `btn-primary`는 버튼 계약을 반환합니다.
+3. `mastercss_contract_check`는 라이브러리가 제공하는 검사기로 저장하지 않은 버퍼나 프로젝트 파일을 검사합니다.
+
+예를 들어 기본 클래스가 빠진 버튼입니다.
+
+```json name=mastercss_contract_check
+{
+  "content": "<button class=\"btn-primary\">Save</button>",
+  "filePath": "src/button.html"
+}
+```
+
+`@master/ui`에서는 `missing-base`를 보고합니다. `btn-primary`가 `btn`을 수식하기 때문입니다. 프로젝트가 소유한 컴포넌트는 계약을 프로젝트 안에 둡니다. 그 계약은 같은 이름의 라이브러리 계약을 대체하며 모든 결과는 `source`를 표시합니다. 라이브러리는 `package.json`에 계약과 검사기를 선언합니다. 이 필드와 프로젝트 소유 계약은 [디자인 시스템의 계약](/reference/tools/mcp#contracts-of-a-design-system)을 참고하세요. 이 검사는 작성된 마크업을 그대로 읽습니다. lint나 렌더링 결과 확인을 대신하지 않습니다.
+
+---
+
 ## 공유 변경의 영향 범위 확인 \{#review-the-second-change\}
 첫 초안이 올바르게 보여도 다음 편집이 무엇에 영향을 줄지는 알 수 없습니다. `--color-brand` 같은 공유 정의를 바꾸기 전에 프로젝트 스냅샷을 저장하고 마크업이 바뀌지 않아도 편집 후 비교하세요.
 
