@@ -140,6 +140,36 @@
 
 此操作不寫入工作區檔案。
 
+## editorial-mastercss_contract_list-purpose \{#copy-editorial-mastercss_contract_list-purpose\}
+
+
+找出此工作區相依的設計系統所提供的元件契約，並與專案自己的契約合併。可用 `query`、`tier` 或 `category` 篩選；每個項目都標示 `source`。清單為空並附帶 `note`，表示沒有任何套件或專案宣告契約，並非失敗。
+
+## editorial-mastercss_contract_list-lifecycle \{#copy-editorial-mastercss_contract_list-lifecycle\}
+
+
+此操作不寫入工作區檔案，也不執行套件程式碼。
+
+## editorial-mastercss_contract_get-purpose \{#copy-editorial-mastercss_contract_get-purpose\}
+
+
+撰寫元件標記前，先讀取該元件的完整契約：它的 class 與放置位置、狀態、公開屬性，以及最小的正確範例。`name` 可以是契約名稱，或任何契約定義的 class，因此 `btn-primary` 會回傳按鈕契約。名稱不存在時回傳錯誤結果，並列出最接近的契約與 class 名稱。
+
+## editorial-mastercss_contract_get-lifecycle \{#copy-editorial-mastercss_contract_get-lifecycle\}
+
+
+此操作不寫入工作區檔案，也不執行套件程式碼。
+
+## editorial-mastercss_contract_check-purpose \{#copy-editorial-mastercss_contract_check-purpose\}
+
+
+依合併後的契約檢查未儲存的緩衝區（`content`，可附上訊息用的 `filePath`）或專案檔案（`patterns`）。診斷來自相依設計系統所宣告的檢查器；`checkers` 列出實際執行的每一個。`classValidation` 與 `strict` 回報專案 manifest 是否已告訴檢查器還有哪些 class 存在。沒有任何檢查執行時，`coverage.status` 為 `no-checker` 或 `no-contracts`，此時即使零診斷，也沒有驗證任何內容。
+
+## editorial-mastercss_contract_check-lifecycle \{#copy-editorial-mastercss_contract_check-lifecycle\}
+
+
+此操作不寫入工作區檔案。它會在有時間與記憶體上限的 worker thread 中，執行宣告檢查器的套件所提供的程式碼。
+
 ## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
 
 
@@ -314,6 +344,43 @@ Markdown 與 MDX 擷取會將實際標記、程式碼與展示文字分開，回
 
 
 在同一已連線伺服器工作階段使用 `tools/list`，查看可接受引數。GitHub 提供[工具註冊](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)、[輸出結構描述](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts)與[結果封套](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts)。[工作流程指南](/guide/ai-coding#safe-write-previews)展示完整預覽與套用順序。來源連結指向 `rc` 分支；已連線伺服器描述的是你的安裝版本。
+
+## body-21 \{#copy-body-21\}
+
+
+| 設計系統的元件有哪些要求？ | [`contract_list`](#mastercss_contract_list), [`contract_get`](#mastercss_contract_get), [`contract_check`](#mastercss_contract_check) |
+
+## body-22 \{#copy-body-22\}
+
+
+## 設計系統的契約 \{#contracts-of-a-design-system\}
+
+## body-23 \{#copy-body-23\}
+
+
+以 Master CSS 建構的設計系統，可以用契約描述每個元件：它的 class 與放置位置、狀態、公開屬性，以及最小的正確標記。函式庫在自己的 `package.json` 宣告契約：
+
+```json
+{
+  "name": "your-design-system",
+  "masterCSS": {
+    "contracts": "./dist/contracts.json",
+    "check": "./check/index.js"
+  }
+}
+```
+
+`contracts` 是套件內的路徑，指向內容為 `{ "contracts": [...] }` 的 JSON 檔案。契約是帶有字串 `name` 與 `classes` 陣列的物件；其他欄位都由函式庫自行定義。選用的 `check` 是套件內的路徑，指向一個 ES 模組；該模組匯出 `check(source, contracts, { knows, strict })`，回傳的診斷包含 `code`、`severity`、`message`、`line`、`column`，並在適用時包含 `className` 與 `contract`。[`@master/ui`](https://ui.master.co) 是第一個以這種方式提供契約的函式庫。
+
+## body-24 \{#copy-body-24\}
+
+
+伺服器讀取工作區根目錄 `package.json` 的 `dependencies`、`devDependencies` 與 `peerDependencies`，從該根目錄解析每個套件，並保留宣告了 `masterCSS.contracts` 的套件。若都沒有，伺服器會改讀上層 monorepo 根目錄的相同欄位：也就是最近一個 `package.json` 列出 `workspaces`、或含有 `pnpm-workspace.yaml` 的目錄，且不會超出該 儲存庫。專案可在根目錄 `package.json` 的同一欄位用 glob 加入自己的契約，例如 `"masterCSS": { "contracts": "contracts/*.json" }`。函式庫在自己的 儲存庫 中，也可以在同一處宣告 `masterCSS.check`，用自己的檢查器檢查這些契約。有 `master-ui.json` 的專案，還會加入其 `directory`（預設為 `ui`）內的 JSON 檔案與其 `contracts` glob。專案契約會取代同 `name` 的函式庫契約。結果中的每個契約都帶有 `source`：套件與版本，或專案檔案及其取代的函式庫契約。
+
+## body-25 \{#copy-body-25\}
+
+
+伺服器只匯入已宣告相依套件或工作區本身 `package.json` 所指定的檢查器，而且路徑必須位於該套件內；專案的契約檔案只當作資料讀取，絕不執行。檢查器是該套件提供的程式碼。伺服器在 worker thread 中執行它；單一檔案超過 10 秒，或檢查器超出記憶體上限時，會停止它並回報 `CONTRACT_CHECKER_FAILED`。每次檢查都會重新載入檢查器，因此升級後的函式庫不必重新啟動就會生效。檢查器會收到 `knows(className)`，它依專案 manifest 回答某個 class 是否為有效的 Master CSS class，或專案樣式表定義的原生 class；只有在 manifest 載入成功時才會收到 `strict: true`。否則不提供 `knows`，且 `strict` 為 false。檢查器依照撰寫的標記判讀，無法確認執行階段產生的 class 或瀏覽器行為。
 
 ## title \{#copy-title\}
 

@@ -11,17 +11,17 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 944,
+    "records": 948,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
       "export": 762,
       "mcp-prompt": 3,
       "mcp-resource": 3,
-      "mcp-tool": 17,
+      "mcp-tool": 20,
       "package": 34,
       "subpath": 95,
-      "wire-contract": 23
+      "wire-contract": 24
     }
   },
   "records": [
@@ -20711,6 +20711,48 @@
       "lifecycle": "server-request",
       "visibility": "public",
       "disposition": "retain",
+      "id": "mcp-tool:mastercss_contract_check",
+      "name": "mastercss_contract_check"
+    },
+    {
+      "kind": "mcp-tool",
+      "owner": "@master/css-mcp",
+      "responsibility": "Model Context Protocol host",
+      "consumers": [
+        "MCP clients"
+      ],
+      "platform": "node",
+      "lifecycle": "server-request",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "mcp-tool:mastercss_contract_get",
+      "name": "mastercss_contract_get"
+    },
+    {
+      "kind": "mcp-tool",
+      "owner": "@master/css-mcp",
+      "responsibility": "Model Context Protocol host",
+      "consumers": [
+        "MCP clients"
+      ],
+      "platform": "node",
+      "lifecycle": "server-request",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "mcp-tool:mastercss_contract_list",
+      "name": "mastercss_contract_list"
+    },
+    {
+      "kind": "mcp-tool",
+      "owner": "@master/css-mcp",
+      "responsibility": "Model Context Protocol host",
+      "consumers": [
+        "MCP clients"
+      ],
+      "platform": "node",
+      "lifecycle": "server-request",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "mcp-tool:mastercss_css_compare",
       "name": "mastercss_css_compare"
     },
@@ -24898,6 +24940,20 @@
       "name": "CSS_COMPARE_VERSION",
       "source": "packages/mcp/src/compare.ts",
       "value": 2
+    },
+    {
+      "kind": "wire-contract",
+      "owner": "@master/css-mcp",
+      "responsibility": "Model Context Protocol host",
+      "consumers": [],
+      "platform": "universal",
+      "lifecycle": "serialized-value",
+      "visibility": "public-protocol",
+      "disposition": "retain",
+      "id": "wire-contract:packages/mcp/src/contracts.ts#CONTRACT_REPORT_VERSION",
+      "name": "CONTRACT_REPORT_VERSION",
+      "source": "packages/mcp/src/contracts.ts",
+      "value": 1
     },
     {
       "kind": "wire-contract",

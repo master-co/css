@@ -216,6 +216,26 @@ master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
 
 ---
 
+## 设计系统的契约 \{#contracts-of-a-design-system\}
+项目依赖的设计系统若提供契约，例如 [`@master/ui`](https://ui.master.co)，同一个 MCP 服务器也会提供这些契约。契约说明组件的类与放置位置、状态、公开属性，以及最小的正确标记。请代理在编写组件标记前先读取契约，再检查结果：
+
+1. `mastercss_contract_list` 找出组件；可用 `query`、`tier` 或 `category` 筛选。
+2. `mastercss_contract_get` 按契约名称或其中任何类返回完整契约，因此 `btn-primary` 会返回按钮契约。
+3. `mastercss_contract_check` 用库提供的检查器检查未保存的缓冲区或项目文件。
+
+例如，缺少基础类的按钮：
+
+```json name=mastercss_contract_check
+{
+  "content": "<button class=\"btn-primary\">Save</button>",
+  "filePath": "src/button.html"
+}
+```
+
+使用 `@master/ui` 时，这会报告 `missing-base`，因为 `btn-primary` 修饰的是 `btn`。项目自有的组件把契约留在项目内；该契约会替换库的同名契约，而每个结果都会标明 `source`。库在 `package.json` 中声明契约与检查器；该字段与项目自有契约的说明请见[设计系统的契约](/reference/tools/mcp#contracts-of-a-design-system)。这项检查按照编写的标记判读，不能替代 lint，也不能替代查看渲染结果。
+
+---
+
 ## 检查共用更改的影响范围 \{#review-the-second-change\}
 第一版看起来正确，不代表能看出下次编辑会影响什么。修改 `--color-brand` 这类共用定义前，先保存项目快照，编辑后再比较，即使标记没有改变也一样：
 

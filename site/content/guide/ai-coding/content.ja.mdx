@@ -216,6 +216,26 @@ MCP に接続していれば、同じ宣言ブロックを `mastercss_suggest_cl
 
 ---
 
+## デザインシステムのコントラクト \{#contracts-of-a-design-system\}
+プロジェクトが [`@master/ui`](https://ui.master.co) のようにコントラクトを提供するデザインシステムに依存している場合、同じ MCP サーバーがそれを提供します。コントラクトは、コンポーネントのクラスとその配置、状態、公開プロパティ、最小の正しいマークアップを示します。コンポーネントのマークアップを書く前にコントラクトを読み、その後で結果を検査するようエージェントに依頼します。
+
+1. `mastercss_contract_list` はコンポーネントを探します。`query`、`tier`、`category` で絞り込めます。
+2. `mastercss_contract_get` は、コントラクト名またはそのクラスのいずれかからコントラクト全体を返します。そのため、`btn-primary` ではボタンのコントラクトが返ります。
+3. `mastercss_contract_check` は、ライブラリが提供するチェッカーで未保存のバッファーまたはプロジェクトのファイルを検査します。
+
+たとえば、基本クラスのないボタンです。
+
+```json name=mastercss_contract_check
+{
+  "content": "<button class=\"btn-primary\">Save</button>",
+  "filePath": "src/button.html"
+}
+```
+
+`@master/ui` では `missing-base` が報告されます。`btn-primary` は `btn` を修飾するためです。プロジェクトが所有するコンポーネントのコントラクトはプロジェクト内に置きます。そのコントラクトは同じ名前のライブラリのコントラクトを置き換え、各結果は `source` を示します。ライブラリは `package.json` でコントラクトとチェッカーを宣言します。このフィールドとプロジェクト所有のコントラクトについては[デザインシステムのコントラクト](/reference/tools/mcp#contracts-of-a-design-system)を参照してください。この検査は書かれたとおりのマークアップを読みます。lint や描画結果の確認の代わりにはなりません。
+
+---
+
 ## 共有定義の変更が及ぶ範囲を確認する \{#review-the-second-change\}
 最初の案が正しく見えても、次の編集の影響は分かりません。`--color-brand` などの共有定義を変える前にスナップショットを保存し、マークアップが同じでも編集後と比較します。
 

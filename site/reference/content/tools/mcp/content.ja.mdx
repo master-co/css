@@ -140,6 +140,36 @@
 
 ワークスペースのファイルは書きません。
 
+## editorial-mastercss_contract_list-purpose \{#copy-editorial-mastercss_contract_list-purpose\}
+
+
+このワークスペースが依存するデザインシステムのコンポーネントコントラクトを、プロジェクト独自のものと統合して探します。`query`、`tier`、`category` で絞り込めます。各項目は `source` を示します。`note` 付きの空リストは、コントラクトを宣言しているパッケージもプロジェクトもないことを示し、失敗ではありません。
+
+## editorial-mastercss_contract_list-lifecycle \{#copy-editorial-mastercss_contract_list-lifecycle\}
+
+
+ワークスペースのファイルは書かず、パッケージのコードも実行しません。
+
+## editorial-mastercss_contract_get-purpose \{#copy-editorial-mastercss_contract_get-purpose\}
+
+
+コンポーネントのマークアップを書く前に、そのコントラクト全体を読みます。クラスとその配置、状態、公開プロパティ、最小の正しい例が含まれます。`name` はコントラクト名、またはコントラクトが定義する任意のクラスで、`btn-primary` はボタンのコントラクトを返します。未知の名前はエラー結果となり、最も近いコントラクト名とクラス名を示します。
+
+## editorial-mastercss_contract_get-lifecycle \{#copy-editorial-mastercss_contract_get-lifecycle\}
+
+
+ワークスペースのファイルは書かず、パッケージのコードも実行しません。
+
+## editorial-mastercss_contract_check-purpose \{#copy-editorial-mastercss_contract_check-purpose\}
+
+
+未保存のバッファー（`content`。メッセージ用の `filePath` は任意）またはプロジェクトのファイル（`patterns`）を、統合したコントラクトに照らして検査します。診断は、依存するデザインシステムが宣言するチェッカーから得られ、`checkers` は実行した各チェッカーを示します。`classValidation` と `strict` は、ほかにどのクラスが存在するかをプロジェクト manifest がチェッカーに伝えたかどうかを報告します。何も実行されなかった場合、`coverage.status` は `no-checker` または `no-contracts` になり、診断がゼロでも何も検証されていません。
+
+## editorial-mastercss_contract_check-lifecycle \{#copy-editorial-mastercss_contract_check-lifecycle\}
+
+
+ワークスペースのファイルは書きません。チェッカーを宣言したパッケージのコードを、時間とメモリの上限がある worker thread で実行します。
+
 ## editorial-mastercss_preview_fixes-purpose \{#copy-editorial-mastercss_preview_fixes-purpose\}
 
 
@@ -314,6 +344,43 @@ Markdown と MDX の抽出は有効なマークアップ・コードと表示テ
 
 
 同じ接続サーバーセッションの `tools/list` で受付引数を確認します。GitHub には[ツール登録](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts)、[出力スキーマ](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts)、[結果エンベロープ](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts)があります。[ワークフローガイド](/guide/ai-coding#safe-write-previews)はプレビューから適用までを示します。ソースリンクは `rc` ブランチで、接続サーバーはインストール済み版を説明します。
+
+## body-21 \{#copy-body-21\}
+
+
+| デザインシステムのコンポーネントは何を要求するか？ | [`contract_list`](#mastercss_contract_list), [`contract_get`](#mastercss_contract_get), [`contract_check`](#mastercss_contract_check) |
+
+## body-22 \{#copy-body-22\}
+
+
+## デザインシステムのコントラクト \{#contracts-of-a-design-system\}
+
+## body-23 \{#copy-body-23\}
+
+
+Master CSS で構築したデザインシステムは、各コンポーネントをコントラクトで記述できます。クラスとその配置、状態、公開プロパティ、最小の正しいマークアップです。ライブラリは自身の `package.json` でコントラクトを宣言します。
+
+```json
+{
+  "name": "your-design-system",
+  "masterCSS": {
+    "contracts": "./dist/contracts.json",
+    "check": "./check/index.js"
+  }
+}
+```
+
+`contracts` はパッケージ内のパスで、`{ "contracts": [...] }` を持つ JSON ファイルを指します。コントラクトは文字列の `name` と `classes` 配列を持つオブジェクトで、ほかのフィールドはライブラリが定めます。任意の `check` はパッケージ内のパスで、`check(source, contracts, { knows, strict })` をエクスポートする ES モジュールを指します。この関数は `code`、`severity`、`message`、`line`、`column` と、該当する場合は `className` と `contract` を持つ診断を返します。[`@master/ui`](https://ui.master.co) は、この方法でコントラクトを提供する最初のライブラリです。
+
+## body-24 \{#copy-body-24\}
+
+
+サーバーはワークスペースルートの `package.json` から `dependencies`、`devDependencies`、`peerDependencies` を読み、そのルートから各パッケージを解決して、`masterCSS.contracts` を宣言するものを採用します。該当するものがない場合は、上位にある monorepo ルートの同じフィールドを読みます。対象は、`package.json` に `workspaces` があるか `pnpm-workspace.yaml` を含む最も近いディレクトリで、リポジトリの外には出ません。プロジェクトは、ルートの `package.json` の同じフィールドに glob を書いて独自のコントラクトを追加できます。たとえば `"masterCSS": { "contracts": "contracts/*.json" }` です。自身のリポジトリにあるライブラリは、同じ場所に `masterCSS.check` も宣言して、それらのコントラクトを自身のチェッカーで検査できます。`master-ui.json` があるプロジェクトでは、その `directory`（既定は `ui`）内の JSON ファイルと `contracts` の glob も加わります。プロジェクトのコントラクトは、同じ `name` のライブラリのコントラクトを置き換えます。結果の各コントラクトは `source` を持ちます。パッケージとバージョン、またはプロジェクトのファイルとそれが置き換えるライブラリのコントラクトです。
+
+## body-25 \{#copy-body-25\}
+
+
+インポートされるのは、宣言済みの依存パッケージまたはワークスペース自身の `package.json` が指定するチェッカーだけで、パスはそのパッケージ内に限られます。プロジェクトのコントラクトファイルはデータとして読まれ、実行されることはありません。チェッカーはそのパッケージが提供するコードです。サーバーはそれを worker thread で実行し、1 ファイルの検査が 10 秒を超えた場合や、チェッカーがメモリ上限を超えた場合は停止して `CONTRACT_CHECKER_FAILED` を返します。チェッカーは検査のたびに読み込み直されるため、更新したライブラリは再起動なしで反映されます。チェッカーは `knows(className)` を受け取ります。これは、クラスが有効な Master CSS クラスか、プロジェクトのスタイルシートが定義するネイティブクラスかを、プロジェクト manifest に基づいて答えます。`strict: true` になるのは、その manifest を読み込めた場合だけです。それ以外では `knows` は渡されず、`strict` は false です。チェッカーは書かれたとおりのマークアップを読みます。実行時に生成されるクラスやブラウザーの動作は確認しません。
 
 ## title \{#copy-title\}
 

@@ -256,6 +256,26 @@ declaration check does not verify surrounding styles or browser rendering.
 
 ---
 
+## Contracts of a design system \{#contracts-of-a-design-system\}
+When the project depends on a design system that ships contracts, such as [`@master/ui`](https://ui.master.co), the same MCP server serves them. A contract states a component's classes and where they go, its states, public properties and smallest correct markup. Ask the agent to read the contract before it writes a component's markup, then check the result:
+
+1. `mastercss_contract_list` finds the component; filter with `query`, `tier` or `category`.
+2. `mastercss_contract_get` returns the full contract by its name or by any of its classes, so `btn-primary` returns the button contract.
+3. `mastercss_contract_check` checks an unsaved buffer or project files with the checker the library ships.
+
+For example, a button that is missing its base class:
+
+```json name=mastercss_contract_check
+{
+  "content": "<button class=\"btn-primary\">Save</button>",
+  "filePath": "src/button.html"
+}
+```
+
+With `@master/ui` this reports `missing-base`, because `btn-primary` modifies `btn`. A component the project owns keeps its contract in the project; that contract replaces the library's contract of the same name, and every result names its `source`. A library declares its contracts and checker in its `package.json`; see [contracts of a design system](/reference/tools/mcp#contracts-of-a-design-system) for that field and for project-owned contracts. The check reads markup as written. It does not replace lint or a look at the rendered result.
+
+---
+
 ## Check the reach of a shared change \{#review-the-second-change\}
 A first draft that looks right does not show what the next edit will affect. Before changing a shared definition such as `--color-brand`, save a project snapshot, then compare after editing, even when markup has not changed:
 

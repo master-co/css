@@ -30,6 +30,9 @@ lookups. Do not load the complete documentation bundle for an ordinary style edi
 
 Query only relevant namespaces through `mastercss_manifest_query`. Prefer nearby
 product tokens and component patterns. Never infer a token's value from its name.
+When tools/list shows `mastercss_contract_list` and `mastercss_contract_get`, read
+a design-system component's contract with them before writing its markup, then
+check the markup with `mastercss_contract_check`.
 
 ## Choose the workflow
 
