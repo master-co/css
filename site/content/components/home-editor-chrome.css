@@ -1,4 +1,4 @@
-/* File-window bars, lights and tabs. */
+/* File-window bars, lights and status. */
 @layer components {
   /* Chrome: a quiet bar whose divider steps up around the open tab, so the tab reads as the file itself. */
   .home-editor-bar {
@@ -26,70 +26,6 @@
       border-radius: calc(infinity * 1px);
       background: linear-gradient(var(--home-rule), var(--home-rule-strong));
       box-shadow: inset 0 1px 1px var(--home-highlight), 0 1px 0 var(--home-highlight);
-    }
-  }
-
-  .home-editor-tab {
-    --home-editor-tab-radius: 0.75rem;
-    --home-editor-tab-fill: var(--home-sheet);
-    --home-editor-tab-line: var(--home-hairline);
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    align-self: flex-end;
-    min-width: 0;
-    height: 2.25rem;
-    padding-inline: var(--spacing-md);
-    border-radius: var(--home-editor-tab-radius) var(--home-editor-tab-radius) 0 0;
-    font-family: var(--home-mono);
-    font-size: 0.75rem;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--home-text);
-    background-color: var(--home-editor-tab-fill);
-    /* Top and sides only: the open tab continues into the code below. */
-    box-shadow: inset 1px 0 0 var(--home-editor-tab-line), inset -1px 0 0 var(--home-editor-tab-line), inset 0 1px 0 var(--home-editor-tab-line);
-
-    /* Reverse curves turn the side contours into the bar's baseline. The extra pixel covers the side seam. */
-    &::before,
-    &::after {
-      position: absolute;
-      bottom: 0;
-      width: calc(var(--home-editor-tab-radius) + 1px);
-      height: var(--home-editor-tab-radius);
-      /* Blend each edge over half a pixel so the circular contour stays smooth at any pixel density. */
-      background-image:
-        radial-gradient(
-          circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
-          transparent calc(100% - 1.25px),
-          var(--home-editor-tab-line) calc(100% - 0.75px),
-          var(--home-editor-tab-line) calc(100% - 0.25px),
-          transparent calc(100% + 0.25px)
-        ),
-        radial-gradient(
-          circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
-          transparent calc(100% - 0.25px),
-          var(--home-editor-tab-fill) calc(100% + 0.25px)
-        );
-      pointer-events: none;
-      content: '';
-    }
-
-    &::before {
-      --home-editor-tab-corner: left;
-      left: calc(-1 * var(--home-editor-tab-radius));
-    }
-
-    &::after {
-      --home-editor-tab-corner: right;
-      right: calc(-1 * var(--home-editor-tab-radius));
-    }
-
-    & svg {
-      flex: none;
-      color: var(--home-text-faint);
     }
   }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import './home-editor-chrome.css'
+  import './home-editor-tab.css'
   import type { Snippet } from 'svelte'
   import type { HTMLAttributes } from 'svelte/elements'
 

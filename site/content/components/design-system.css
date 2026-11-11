@@ -204,37 +204,23 @@
     }
   }
 
-  /*
-   * Tokens: the @theme sample alone, with bare, quiet line numbers like the page's other editors. Long lines wrap
-   * with a hanging indent instead of running out of the well. The theme preview beside it tints each
-   * light-dark() value by the share of the screen it paints.
-   */
+  /* The token pane fills the card width. The theme preview beside it tints each light-dark() value. */
   .home-tokens {
-    --home-gutter: 2.75rem;
-    height: 28rem;
+    --home-tokens-inset: 1rem;
     container-type: inline-size;
-
-    /* Alone in its row, the pane is as tall as its code. */
-    @media (width < 64rem) {
-      height: auto;
-    }
-
-    /* Level with the theme preview's taller well beside it. */
-    @media (--xl) {
-      height: 30rem;
-    }
+    overflow: hidden;
+    border-radius: 0 0 var(--home-radius-sheet) var(--home-radius-sheet);
+    background-color: var(--home-well);
+    box-shadow: inset 0 1px 0 var(--home-hairline);
   }
 
   .home-tokens-code {
-    position: relative;
-    height: 100%;
-
     & :is(pre, code) {
       font-size: 0.875rem;
     }
 
-    & .home-code-window-pre {
-      padding: 1.75rem 0;
+    & .ui-code .home-code-window-pre {
+      padding-inline: 0;
     }
 
     /* The code takes the pane's width, not its longest line's, so long lines wrap. */
@@ -250,32 +236,21 @@
     }
 
     @container (width < 30rem) {
-      --home-gutter: 2.25rem;
-
       & :is(pre, code) {
         font-size: 0.75rem;
       }
     }
   }
 
-  /* Whole-pixel lines, so neighbouring tints meet without a seam; a wrapped line hangs 4ch in from its start. */
+  /* Whole-pixel lines keep neighbouring tints joined. */
   .home-tokens-code .line {
-    padding: 0 1.25rem 0 calc(var(--home-gutter) + 1rem + 4ch);
+    padding-inline: var(--home-tokens-inset);
     line-height: 1.625rem;
-    text-indent: -4ch;
+    overflow-wrap: anywhere;
     white-space: pre-wrap;
 
     @container (width < 34rem) {
       line-height: 1.375rem;
-    }
-
-    /* The line number sits in its own column, right-aligned and quiet. */
-    &:not(:only-child)::before {
-      width: var(--home-gutter);
-      margin: 0 1rem 0 calc((var(--home-gutter) + 1rem) * -1);
-      padding-right: 0.75rem;
-      text-indent: 0;
-      color: var(--home-text-faint);
     }
   }
 
@@ -284,11 +259,8 @@
     --home-token-percent: calc(var(--home-token-share, 0) * 100);
     position: relative;
     z-index: 0;
+    padding-inline-end: calc(var(--home-tokens-inset) + 4ch);
     counter-reset: home-token var(--home-token-percent);
-
-    &:not(:only-child)::before {
-      color: var(--home-text-body);
-    }
 
     &::after {
       position: absolute;
@@ -297,11 +269,10 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding-right: 1.25rem;
+      padding-inline-end: var(--home-tokens-inset);
       font-family: var(--home-mono);
       font-size: var(--home-label);
       font-variant-numeric: tabular-nums;
-      text-indent: 0;
       color: var(--home-text-faint);
       background-color: color-mix(in oklab, var(--home-signal) calc(var(--home-token-share, 0) * 30%), transparent);
       transition: background-color var(--home-quick) linear;

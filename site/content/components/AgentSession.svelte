@@ -112,6 +112,7 @@
   import aronImage from '@master/internal-site/assets/images/authors/aron.jpg'
   import { getSite } from '@master/internal-site/site'
   import AgentsOrbit from './AgentsFigures.svelte'
+  import HomeEditorTab from './HomeEditorTab.svelte'
   import type { HomeCodeWindowProblem } from './home-content'
   import { pointerMoved } from './pointer-motion'
 
@@ -404,7 +405,7 @@
       <div class="home-agent-bar home-agent-bar-chat"><span aria-hidden="true" class="home-agent-dots"><span></span><span></span><span></span></span><span class="home-agent-bar-label">{t('Session')}</span><span class={['home-agent-server home-status', calling && running && 'home-status-live']}>@master/css-mcp</span></div>
 
       <!-- The open file is a tab that joins the editor below it. -->
-      <div class="home-agent-bar home-agent-bar-file"><span class="home-agent-file-tab"><IconFileCode aria-hidden="true" class="home-agent-file-icon" {...icon} />{file}{@render statusMark()}</span></div>
+      <div class="home-agent-bar home-agent-bar-file"><HomeEditorTab class="home-agent-file-tab"><IconFileCode aria-hidden="true" class="home-agent-file-icon" {...icon} />{file}{@render statusMark()}</HomeEditorTab></div>
 
       <!-- A narrow window shows one pane at a time behind the same folder tabs; they follow the session and let the reader choose. -->
       <div class="home-agent-bar home-agent-tabs">

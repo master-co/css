@@ -199,32 +199,27 @@
 
   /* The open file: a tab cut from the editor's sheet, so its bottom edge opens into the code; its icon sits on the inset. */
   .home-agent-bar-file {
+    --home-agent-file-radius: 0.75rem;
+    --home-agent-file-padding: min(0.8125rem, calc(var(--home-agent-inset) - var(--home-agent-file-radius)));
     align-items: flex-end;
-    padding-inline: calc(var(--home-agent-inset) - 0.75rem - 1px);
+    padding-inline: calc(var(--home-agent-inset) - var(--home-agent-file-padding));
   }
 
-  .home-agent-file-tab {
-    position: relative;
+  .home-agent-bar-file .home-agent-file-tab {
+    --home-editor-tab-radius: var(--home-agent-file-radius);
     z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    min-width: 0;
     height: 2.375rem;
     margin-bottom: -1px;
-    padding-inline: 0.75rem 0.875rem;
-    border: 1px solid var(--home-hairline);
-    border-bottom: 0;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    font-family: var(--home-mono);
-    font-size: 0.75rem;
-    color: var(--home-text);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-edge);
+    padding-inline: var(--home-agent-file-padding) 0.9375rem;
+
+    @media (forced-colors: active) {
+      padding-inline: calc(var(--home-agent-file-padding) - 1px) 0.875rem;
+      border: 1px solid CanvasText;
+      border-bottom: 0;
+    }
   }
 
-  .home-agent-file-icon {
-    flex: none;
+  .home-agent-file-tab > .home-agent-file-icon {
     color: var(--home-text-quiet);
   }
 
@@ -233,6 +228,8 @@
     display: inline-flex;
     flex: none;
     align-items: center;
+
+    .home-agent-file-tab & > svg { color: inherit; }
   }
 
   /*

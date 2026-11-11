@@ -195,7 +195,7 @@ The hero's materials continue down the page, so the reader meets one world rathe
 One eight-column bento grid holds all five cards: themes on the first row, primitives on the second, and the P3 palette across the full width as the last card. Each card's title links to its guide above one or two plain sentences. Its figure reads as an artifact from a design tool, drawn in the page's ruler vocabulary: hairlines, corner marks, measured guides and dimension lines, with one gold only for the active or selected moment. Cards in a row share a header track, so figures in a row start at one height.
 
 - The theme preview is an artboard with corner marks: the same markup twice, `.light` and `.dark` named above it like frame names, split by a 1px guide and measured below by a dimension line. Its clips, guide, labels and token-line shares update together once per frame, while both real CSS interfaces retain their DOM. The guide turns gold while dragged or focused. Its one introduction pauses off screen and in hidden tabs, and interaction ends it. A vertical touch scrolls the page; horizontal movement drags the split. Shift plus an arrow adjusts one percentage point.
-- The token sample is an editor pane with bare, quiet line numbers like the page's other editors, and soft-wraps with a hanging indent.
+- The token pane fills the card width. Code rows soft-wrap, keep the source indentation, and tint the two color values from edge to edge.
 - The layout card overlays a 12-column layout grid, columns as quiet bands and gutters hatched as reserved space; the photo in hand marks its columns in gold on the rulers and shows its span classes on a tag. A native modal opens the original photo at its natural ratio with a view transition, names its span classes below it, protects background focus and returns focus to its trigger. The scroll lock preserves the page width, and the backdrop uses one quiet 6px blur.
 - The layer stack is one SVG exploded drawing: five softly lit plates with a thin machined edge, inset seams, etched details and registration pins. Dashed extension lines locate the assembly; a numbered ruler and front-facing labels make its order readable. The `.btn` rule is struck on its plate; the engine-generated `.px-lg` wins on a lightly amber-tinted top plate and its actual declaration appears below. Hover and keyboard focus gently separate the five groups using only 2D transforms; reduced motion keeps the finished drawing.
 - The P3 palette closes the grid: a native listbox with rounded, top-lit color prisms as tall as their chroma on one subtly outlined plate. The resting sculpture fits completely inside the well. Hover opens the complete field into its table, leaving restores its depth, keyboard focus opens it, and phones keep the table. The camera settles before pointer readouts change, and the small gutters belong to their nearest color. Clicking or tapping keeps a color selected; horizontal touch scrubs a row while vertical scrolling and pinch zoom remain native.
@@ -331,13 +331,14 @@ A consumer of `home.css` alone does not receive either feature. The section owns
 any feature class it passes to a child as a prop.
 
 Product file windows share `HomeEditorWindow`, `HomeEditorBar`, `HomeEditorTab`
-and `HomeEditorLights`. Window imports only `home-window-surface.css`; the bar,
-tab and lights import `home-editor-chrome.css`. The three wrapper components
+and `HomeEditorLights`. The window imports `home-window-surface.css`, the bar
+and lights import `home-editor-chrome.css`, and the tab imports
+`home-editor-tab.css`. The three wrapper components
 accept `children` snippets, `class` and native HTML attributes; lights are purely
 decorative. `--home-editor-tab-fill`, `--home-editor-tab-line` and
 `--home-editor-tab-radius` describe tab material without importing scene rules.
-The Agent uses only the `.home-window-surface` outer material and retains its
-own pane layout. Lint tabs retain the well fill while using the Editor contour.
+The Agent uses `.home-window-surface` for its outer material and `HomeEditorTab`
+for its desktop file tab. Lint tabs retain the well fill while using the Editor contour.
 
 `HomeCodeWindow` owns `home-code-window.css`; its unused `fixPreviewCode` prop
 and overlay layers are removed. Product diagnostics still use

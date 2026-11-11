@@ -71,7 +71,7 @@ const { t } = siteOf(Astro)
             {tile.visual === 'art-gallery' && <ArtGalleryPreview client:idle={{ timeout: 500 }} class="home-bento-visual home-gallery" />}
             {/* The @theme sample; the theme preview beside it tints each light-dark() value by the share of the preview it paints. */}
             {tile.visual === 'theme-variables' && (
-              <div class="home-bento-visual home-tokens">
+              <div class="home-tokens">
                 <HomeCodeWindow class="home-tokens-code" lang="css" code={themeVariablesCode} />
               </div>
             )}
