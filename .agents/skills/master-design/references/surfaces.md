@@ -15,6 +15,8 @@ An outside zero-blur shadow draws a ring without occupying layout space. Hairlin
 
 Use project tokens. Fractional shadow spread and border width can rasterize differently. Width, alpha, base tone, device scale and edge alignment jointly determine visible weight; .25px may disappear or become asymmetric in a particular rasterizer.
 
+When the shadow list is composed from named values, a value that should draw nothing must still be a valid layer, such as `0 0 0 0 transparent`. `none` is invalid inside a comma-separated list and discards the whole declaration, ring included; inspect the computed `box-shadow` in every state that turns a layer off.
+
 A dark stripe below a card suggests accumulated ring/contact weight. A dirty halo suggests excessive ambient contribution. Negative spread can limit shadow reach. On dark backgrounds, inspect surface luminance first, then contour and dark depth separately.
 
 A hard white inner rim needs an actual material purpose. Solid near-white panels often need no inner highlight. Keep deliberate flat or strongly outlined styles where appropriate; shadow is not a mandatory elevation system.

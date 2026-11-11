@@ -28,13 +28,11 @@ Read only the references needed for this task:
 | Rings, hairlines, layered shadows and dark surfaces | [Surfaces](references/surfaces.md) |
 | Insets, painted boundaries, nested and continuous corners | [Geometry](references/geometry.md) |
 | Image outlines, crop, container edges and avatar stacks | [Images](references/images.md) |
-| Wrapping, figures, visible glyphs, icon weight and tracking | [Typography](references/typography.md) |
-| Grouping, alignment, density and narrow layouts | [Layout](references/layout.md) |
-| Segments, shared seams, pressed state, targets and focus | [States](references/states.md) |
+| CJK and mixed scripts, wrapping, figures, visible glyphs and icons | [Typography](references/typography.md) |
+| Grouping, hierarchy, disclosure, mixed-content rows and narrow layouts | [Layout](references/layout.md) |
+| Segments, shared seams, concurrent states, targets and focus | [States](references/states.md) |
 | State swaps, interruptions and entrance/exit timing | [Motion](references/motion.md) |
 | Glass, directional edges, masks and falloff | [Materials](references/materials.md) |
-
-**Aron preferences are opt-in.** Read [Aron preferences](references/aron-preferences.md) when explicitly requested or selected by project instructions. Its palette, radii and numeric recipes are specimen starting points, not the default for every polish task.
 
 ## Refine the implementation
 

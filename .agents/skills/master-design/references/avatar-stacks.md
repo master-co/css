@@ -54,4 +54,4 @@ Display-only avatars need no tabindex. Give names once through a group label or 
 
 Compare spaced versus stacked arrangement with image inset and separator fixed, then compare image-inset presence with the same stack and separator. A separate live toggle compares separator presence while other choices stay fixed. Use actual photo content, not only initials. Save native pixels separately from magnified geometry. Across relevant engines/densities, check central image pixels and crop preservation, visible edge differences, last-on-top order, RTL centers, host joins, fallback, exact overflow counts and narrow/focus behavior. Record renderer differences rather than treating a support query as proof of visible paint.
 
-[Images](images.md) covers general image finishing. [Aron preferences](aron-preferences.md) supplies opt-in starting values; this reference does not impose the example's dimensions or palette on other brands.
+[Images](images.md) covers general image finishing. This reference does not impose the example's dimensions or palette on other brands.
