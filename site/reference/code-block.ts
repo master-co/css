@@ -8,6 +8,22 @@ export type ReferenceMarkdownNode = Tree | Children<Tree> | Children<Children<Tr
 type Code = Extract<ReferenceMarkdownNode, { type: 'code' }>
 export type ReferenceCodeNode = Code & { data: { prepared: PreparedCode } }
 
+/** Only authored boundaries group examples; adjacent code blocks alone never imply a relationship. */
+export function documentExampleEnd(nodes: ReferenceMarkdownNode[], start: number): number | undefined {
+  const first = nodes[start]
+  if (first?.type === 'html' && first.value === '<!-- /document-example -->') throw new Error('Unexpected Reference document example closing boundary')
+  if (first?.type !== 'html' || first.value !== '<!-- document-example -->') return undefined
+  for (let index = start + 1; index < nodes.length; index++) {
+    const node = nodes[index]
+    if (node.type === 'html' && node.value === '<!-- /document-example -->') {
+      if (index === start + 1) throw new Error('Empty Reference document example')
+      return index
+    }
+    if (node.type !== 'code') throw new Error('Reference document examples must contain explicit code blocks only')
+  }
+  throw new Error('Unclosed Reference document example')
+}
+
 /** Source/result pairs use the unformatted code displayed by DocumentCodeExample. */
 export function isStylesheetExample(title: ReferenceMarkdownNode, source?: ReferenceMarkdownNode, result?: ReferenceMarkdownNode): boolean {
   return title.type === 'paragraph' && title.children.length === 1 && title.children[0].type === 'strong'

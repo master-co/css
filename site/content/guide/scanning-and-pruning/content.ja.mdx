@@ -39,6 +39,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
@@ -76,6 +77,8 @@ const className = statusClasses[status]
 
 見出しのサイズをエディターの操作部品で決める場合を考えます。クラス名を完全なまま保ち、要素のカスタムプロパティを変更します。
 
+<DocumentExample>
+
 ```html
 <h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
   Launch notes
@@ -87,6 +90,8 @@ document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
 <Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+</DocumentExample>
 
 静的ビルド後にブラウザーのコンソールでこの JavaScript を実行します。クラスを追加したり新しいルールを生成したりせず、見出しが大きくなります。ローカルなカスタムプロパティに `@theme` の登録や Master CSS runtime は不要です。クラス名自体が起動後に初めて現れる場合は、[ランタイムまたはプログレッシブレンダリング](/guide/rendering-modes#comparisons)を使います。
 

@@ -4,6 +4,7 @@ description: "Master CSS 클래스를 읽고 조합하며 상호작용 상태와
 figures: {"SyntaxIllustration":{"title":"스타일, 선택자, 조건 읽기","alt":"완전한 클래스 fg-blue-60:hover@sm에 세 범위가 표시되어 있습니다. fg-blue-60은 스타일, :hover는 선택자, @sm은 조건입니다.","caption":"뷰포트가 sm과 일치할 때만 호버된 요소에 색상이 적용됩니다. 두 접미사는 모두 이 클래스에 속합니다.","description":[{"title":"스타일","text":"fg-blue-60은 color를 var(--color-blue-60)으로 설정합니다."},{"title":"선택자","text":":hover는 클래스를 가진 요소에 마우스를 올렸을 때 일치합니다."},{"title":"조건","text":"@sm은 규칙을 프리셋의 이름 있는 sm 미디어 쿼리로 감쌉니다. 선택자와 조건이 모두 일치해야 이 클래스가 적용됩니다."}]},"GuideStudy:pipes-and-quotes":{"title":"따옴표 안에서 의미가 달라지는 밑줄","alt":"두 리터럴 입력이 각 출력에 대응합니다. rgb(30_60_90)은 rgb(30 60 90)이 되고 따옴표 문자열 New_collection은 밑줄을 유지합니다.","caption":"공백 디코딩은 따옴표 문자열 밖에 적용됩니다. 출력 문자열은 여전히 하나의 리터럴 값입니다."},"GuideStudy:conditions-intersection":{"title":"두 조건이 모두 일치해야 합니다","alt":"2×2 행렬에서 뷰포트가 sm과 일치하고 display:grid를 지원하는 교집합만 강조합니다.","caption":"grid@sm@supports(display:grid)는 어느 한 조건만으로 선언을 활성화하지 않습니다."}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -66,6 +67,8 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서 CSS 값에 공백이 필요하면 선택자에서 하위 요소를 연결하는 공백과 같은 문자인 `_`를 쓰고 쉼표, 슬래시, 괄호는 그대로 유지하세요.
 
+<DocumentExample>
+
 ```html
 <div class="(transform:translate(0,1rem)) (color:rgb(30_60_90/80%))">
   <span class="(content:'New_collection')::before"></span>
@@ -73,6 +76,8 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
 ```
 
 <Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30_60_90/80%))', "(content:'New_collection')::before"]} />
+
+</DocumentExample>
 
 색상은 `rgb(30 60 90 / 80%)`가 됩니다. 따옴표로 감싼 content 문자열 안의 밑줄은 그대로 유지되어 텍스트는 `New_collection`입니다. 값의 다른 위치에서 이름에 속한 밑줄은 `slide\_in`처럼 이스케이프하세요. Master CSS는 `calc(100%-2rem)` 같은 식의 연산자 간격도 정규화하며 계산은 브라우저가 수행합니다. 네이티브 선언 경계, 따옴표 값, 이스케이프는 [선언과 값](/reference/rules/declarations)을 참고하세요.
 
@@ -104,6 +109,8 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
 
 각 결정에 별도 클래스를 지정해 작은 표면을 구성하세요.
 
+<DocumentExample>
+
 ```html
 <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
   <h2 class="m(0) text-lg fg-text-strong">Field notes</h2>
@@ -112,6 +119,8 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
 ```
 
 <Class2CSS classes={['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']} />
+
+</DocumentExample>
 
 여기서 `b(1)`은 테두리 너비, `b-solid`는 스타일, `b-line-divider`는 색상을 설정합니다. 하나를 바꿀 때 나머지를 다시 지정할 필요가 없습니다. 패딩, 반지름, 텍스트 설정도 독립적이므로 이후 변형을 작게 유지할 수 있습니다. 넓은 레이아웃에서 표면과 텍스트는 유지하고 패딩만 바꿀 수 있습니다.
 
@@ -141,6 +150,8 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
 
 선택자는 다른 요소를 대상으로 할 수도 있습니다. 이 예제에서는 article이 클래스를 갖지만 article에 호버하면 직계 자식 링크가 색상을 받습니다.
 
+<DocumentExample>
+
 ```html
 <article class="fg-blue-60:hover>a">
   <h3>Field notes</h3>
@@ -149,6 +160,8 @@ HTML은 공백으로 클래스를 구분합니다. 따옴표 문자열 밖에서
 ```
 
 <Class2CSS classes={['fg-blue-60:hover>a']} />
+
+</DocumentExample>
 
 직계 자식에는 `>`, 하위 요소에는 `_`를 사용하세요. `fg-blue-60_a`는 하위 링크를 대상으로 합니다. 클래스를 가진 요소는 여전히 접미사의 기준입니다. 형제 결합자, 속성, 선택자 목록, 명시도는 [선택자](/reference/rules/selectors)를 참고하세요.
 

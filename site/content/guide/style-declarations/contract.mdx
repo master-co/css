@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import FixedUtilities from '~/site/reference/FixedUtilities.astro'
@@ -89,11 +90,15 @@ Master CSS emits selected compatibility declarations, such as `-webkit-backdrop-
 
 HTML whitespace separates classes, even when the value contains CSS quotes. Within a class value, an unquoted `_` encodes a space, as it does between selectors. Inside a quoted string or a `url()`, the underscore remains literal. Keep CSS punctuation such as commas and slashes in place.
 
+<DocumentExample>
+
 ```html
 <div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
 <Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
+
+</DocumentExample>
 
 The color value becomes `rgb(30 60 90 / 80%)`; the content string stays `'a_b'`. For an actual space in a CSS string, use a CSS escape such as `\000020`: `(content:'New\000020collection')::before` produces “New collection”. The six-digit escape avoids a terminating space in the HTML class.
 
@@ -168,6 +173,8 @@ Recipes can coordinate properties or companions: `text-sm` includes size, line h
 
 A `(--name:value)` head declares a CSS custom property on the matched element. It can carry the same selectors and conditions as any other declaration. It does not register a utility or a theme token.
 
+<DocumentExample>
+
 ```html
 <div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
   Progress
@@ -175,6 +182,8 @@ A `(--name:value)` head declares a CSS custom property on the matched element. I
 ```
 
 <Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+</DocumentExample>
 
 `var(--progress)` uses normal CSS resolution and inheritance. An unresolved variable or an incompatible substituted value can make the consuming declaration invalid; use a [CSS variable fallback](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var) where appropriate. The [Syntax tutorial](/guide/syntax-tutorial#complete-card) covers keeping a fixed class while supplying a dynamic value.
 

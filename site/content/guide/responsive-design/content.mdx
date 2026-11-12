@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -79,6 +80,8 @@ Put `container-inline` on an ancestor, then give its descendant a container cond
 
 <FoundationContainerGrid />
 
+<DocumentExample>
+
 ```html
 <section class="container-inline">
   <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
@@ -101,6 +104,8 @@ Put `container-inline` on an ancestor, then give its descendant a container cond
 ```
 
 <Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+</DocumentExample>
 
 Move the **Container** slider while keeping your browser window unchanged. It resizes the ancestor, not the viewport. At a 16px font size, compare 447px and 448px: the second column should appear at 448px. The control stays within the article's available width; widen the browser if the article itself is narrower than that threshold.
 
@@ -136,11 +141,15 @@ The two status readouts sit inside the same narrow inner container. Widening the
 
 Keep shared styles unconditional. Add a condition only for the property and range that need a different value. For example, an aside can have a raised surface below `md` without carrying that background into larger layouts:
 
+<DocumentExample>
+
 ```html
 <aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
 <Class2CSS classes={['bg-surface-raised@max-md']} />
+
+</DocumentExample>
 
 `@max-md` is the complement of the preset `@md`; they do not overlap. Redeclaring `--md` moves both. A local bounded condition, such as `hidden@media(52.125rem<=width<=64rem)`, can target a specific interval without changing the project's named thresholds. The [conditions reference](/reference/rules/conditions#mediafeature) covers that query syntax.
 

@@ -1,5 +1,5 @@
 ---
-import '@master/internal-site/styles/system/table.ts'
+import DocumentTableFrame from '@master/internal-site/components/DocumentTableFrame.astro'
 import { siteOf } from '@master/internal-site/astro/site-context.ts'
 import { fixedUtilityRows } from './fixed-utilities'
 import { referenceLabel } from './ui'
@@ -7,9 +7,9 @@ import { referenceLabel } from './ui'
 const { locale } = siteOf(Astro)
 ---
 
-<div class="sheet sheet-flat ui-table" role="region" aria-label={referenceLabel(locale, 'class')} tabindex="0">
+<DocumentTableFrame label={referenceLabel(locale, 'class')}>
 <table class="table">
   <thead><tr class="table-row"><th class="table-heading" scope="col">{referenceLabel(locale, 'class')}</th><th class="table-heading" scope="col">{referenceLabel(locale, 'declarations')}</th></tr></thead>
   <tbody>{fixedUtilityRows.map(row => <tr class="table-row"><td class="table-cell"><code>{row.className}</code></td><td class="table-cell"><code>{row.declaration}</code></td></tr>)}</tbody>
 </table>
-</div>
+</DocumentTableFrame>

@@ -5,6 +5,7 @@ figures: {"ColorIllustration":{"title":"配色が変わっても役割は同じ"
 demos: {"DemoRaisedSurface":{"title":"浮き上がった面","caption":"両文書で同じクラスを使います。面、文字、影の色は有効なモードから得られ、影の形状は変わりません。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import ColorIllustration from './components/ColorIllustration.astro'
@@ -30,6 +31,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 <FoundationColorRoles />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
 <section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
@@ -40,6 +43,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+</DocumentExample>
 
 役割は色のキーに含まれます。`bg-surface-raised` は `--color-surface-raised`、`b-line-divider` は `--color-line-divider` を読み取ります。線の役割で設定するのは色だけなので、境界線の幅とスタイルは別に指定します。すべての役割は[色の役割](/reference/tokens/color-roles)、パレットは[カラーパレット](/reference/tokens/color)を参照してください。
 
@@ -53,6 +58,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 `fg-yellow` などの色相エイリアスは固定色で、どのモードでも同じ値です。`fg-text-yellow` などの文字用色相エイリアスは、各モードで文字の前景色に適した色階を選びます。実際の背景とのコントラストを確認してください。適応型のエイリアスでも、すべての組み合わせを保証するわけではありません。
 
+<DocumentExample>
+
 ```html
 <!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
 <svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
@@ -60,6 +67,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+</DocumentExample>
 
 色付きのラベルには文字用色相エイリアスを使います。本文、強調、リンクには文字の役割を使います。
 
@@ -70,6 +79,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 浮き上がった面は、面の役割、角丸トークン、影のトークンを組み合わせます。操作できる面では、ホバーやフォーカス時に影を1段階上げます。通常のカードやコントロールには小さな角丸を使い、`pill` は下のバッジのように全体を丸くしたい形に使います。
 
 <DemoRaisedSurface />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
@@ -82,6 +93,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+</DocumentExample>
 
 プリセットの影は色に `light-dark()` を使うため、`shadow-sm` は形状を保ちながら要素のカラースキームに従います。`pill` は角丸トークンではなく固定ユーティリティで、幅と高さが同じなら円になります。個別の角は `rtl-lg`、`rtr-lg`、`rbl-lg`、`rbr-lg` で丸められます。スケールとカスタマイズは[角丸](/reference/tokens/radius)と[影](/reference/tokens/shadow)を参照してください。
 

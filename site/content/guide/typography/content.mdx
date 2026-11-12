@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import TypeIllustration from './components/TypeIllustration.astro'
@@ -11,6 +12,8 @@ Use `text-<token>` for a complete type treatment: font size, line height and let
 
 <FoundationTypography />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-regular -->
 <p class="text-xs font-regular fg-text-muted">Field notes / 024</p>
@@ -19,6 +22,8 @@ Use `text-<token>` for a complete type treatment: font size, line height and let
 ```
 
 <Class2CSS classes={['text-2xl', 'font-regular']} />
+
+</DocumentExample>
 
 This hierarchy uses size, spacing and text roles while keeping regular weight. Add emphasis only where the content calls for it; a heading does not need a heavier weight by default. See [Text](/reference/tokens/text) for every treatment and how to add one.
 
@@ -32,6 +37,8 @@ This hierarchy uses size, spacing and text roles while keeping regular weight. A
 
 <FoundationTypeComparison />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK font-3xl --><!-- @MARK text-3xl -->
 <div class="leading-md tracking-normal">
@@ -41,6 +48,8 @@ This hierarchy uses size, spacing and text roles while keeping regular weight. A
 ```
 
 <Class2CSS classes={['font-3xl', 'text-3xl']} />
+
+</DocumentExample>
 
 Use `text-<token>` for body, heading and display styles. Use `font-<size>`, `leading-<token>` or `tracking-<token>` only when the design deliberately departs from a treatment.
 

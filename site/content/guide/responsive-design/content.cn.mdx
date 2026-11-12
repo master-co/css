@@ -4,6 +4,7 @@ description: "选择合适的响应式边界，调整页面列数与可复用摘
 figures: {"ResponsiveIllustration":{"title":"同一视口，两种组件宽度","alt":"同一页中，相同摘要在主列获得 448px 容器，在侧栏获得 160px 容器。只有主列容器达到 28rem 阈值，因此只在主列显示双轨道。","caption":"根字号为 16px 时，28rem 等于 448px。这些是实际容器宽度：同一视口内，宽摘要分为双轨道，窄摘要保持堆叠。","description":[{"title":"相同视口","text":"两张卡片位于同一页面。视口断点看到的宽度相同。"},{"title":"不同容器","text":"主容器宽 448px，侧栏容器宽 160px。"},{"title":"局部响应","text":"每个祖先使用 container-inline。后代卡片使用 grid-cols(1) 与 grid-cols(2)@container(--md)，所以只有主列卡片达到预设的 28rem 查询阈值。"}]},"GuideStudy:named-container-target":{"title":"具名查询可越过较近容器","alt":"嵌套 article 与 card 容器边界包住同一个子元素。蓝色标示将子元素的 article 查询配对到外层具名 article 边界；较近的 card 边界仍为紫色。","caption":"名称选择符合条件的祖先。被查询元素须置于该祖先内；容器不会查询自己。"},"GuideStudy:responsive-local-change":{"title":"改变布局，不重复表面样式","alt":"两张卡片共用表面、圆角与文本。父元素跨越阈值时，只有布局从堆叠改为横排。","caption":"带条件的布局 class 保留其他无关声明。此示意图省略非必要的卡片内容。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -85,6 +86,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 <FoundationContainerGrid />
 
+<DocumentExample>
+
 ```html
 <section class="container-inline">
   <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
@@ -107,6 +110,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 ```
 
 <Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+</DocumentExample>
 
 保持浏览器窗口不变，移动 **容器** 滑块。它调整的是祖先元素，而不是视口。以 16px 字号比较 447px 与 448px：第二列应在 448px 出现。控件受限于文章可用宽度；若文章本身比阈值窄，请加宽浏览器。
 
@@ -142,11 +147,15 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 共用样式保持无条件。只有需要不同值的属性与范围才加上条件。例如，侧栏在低于 `md` 时使用凸起表面，而较大布局不保留这个背景：
 
+<DocumentExample>
+
 ```html
 <aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
 <Class2CSS classes={['bg-surface-raised@max-md']} />
+
+</DocumentExample>
 
 `@max-md` 是预设 `@md` 的补集，两者不重叠。重新声明 `--md` 会一起移动两个边界。`hidden@media(52.125rem<=width<=64rem)` 这类局部范围条件，可锁定特定区间而不改变项目的具名阈值。[条件参考](/reference/rules/conditions#mediafeature)说明此查询语法。
 

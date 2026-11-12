@@ -103,6 +103,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -278,6 +279,8 @@ root.addEventListener('click', event => {
 
 Master CSS 也能表达这些原生属性和选择器。对于小型、固定的快照，下列写法等同于原生声明：
 
+<DocumentExample>
+
 ```html
 <html class="(animation-duration:.5s)::view-transition-group(.article)">
   <body>
@@ -292,6 +295,8 @@ Master CSS 也能表达这些原生属性和选择器。对于小型、固定的
   '(view-transition-class:article)',
   '(animation-duration:.5s)::view-transition-group(.article)'
 ]} />
+
+</DocumentExample>
 
 伪元素工具类应放在 `html` 上，而非图片上。在已挂载组件中添加该类名，也意味着要管理它在共享根元素上的生命周期。随着动画选择器、关键帧和动效条件增多，原生样式表能将相关决策放在一起，让作用域更易检查。
 

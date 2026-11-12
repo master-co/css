@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
@@ -35,6 +36,8 @@ Both branches are visible even though only one is used at a time. The active pro
 
 Suppose a heading's size comes from an editor control. Keep its class complete and change the custom property on the element:
 
+<DocumentExample>
+
 ```html
 <h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
   Launch notes
@@ -46,6 +49,8 @@ document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
 <Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+</DocumentExample>
 
 After a static build, run the JavaScript in the browser console. The heading grows without adding a class or generating a new rule. A local custom property needs no `@theme` registration or Master CSS runtime. If a class name itself first exists after startup, use [runtime or progressive rendering](/guide/rendering-modes#comparisons).
 

@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import FixedUtilities from '~/site/reference/FixedUtilities.astro'
@@ -89,11 +90,15 @@ Master CSS는 `backdrop-filter` 옆에 `-webkit-backdrop-filter`를 추가하는
 
 값에 CSS 따옴표가 있어도 HTML 공백은 클래스를 구분합니다. 클래스 값의 따옴표 밖에 있는 `_`는 선택자 사이에서처럼 공백을 인코딩하며 따옴표 문자열이나 `url()` 안의 밑줄은 문자 그대로 유지됩니다. 쉼표와 슬래시 같은 CSS 구두점은 그대로 두세요.
 
+<DocumentExample>
+
 ```html
 <div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
 <Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
+
+</DocumentExample>
 
 색상 값은 `rgb(30 60 90 / 80%)`가 되고 content 문자열은 `'a_b'`로 유지됩니다. CSS 문자열 안에 실제 공백이 필요하면 `\000020` 같은 CSS 이스케이프를 사용하세요. `(content:'New\000020collection')::before`는 “New collection”을 만듭니다. 여섯 자리 이스케이프는 HTML 클래스에 종료 공백을 넣지 않아도 됩니다.
 
@@ -168,6 +173,8 @@ CSS 함수는 네이티브 속성의 값으로 남습니다. Master CSS는 `calc
 
 `(--name:value)` 선두 부분은 일치하는 요소에 CSS 사용자 지정 속성을 선언합니다. 다른 선언과 같은 선택자와 조건을 사용할 수 있으며 유틸리티나 테마 토큰을 등록하지는 않습니다.
 
+<DocumentExample>
+
 ```html
 <div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
   Progress
@@ -175,6 +182,8 @@ CSS 함수는 네이티브 속성의 값으로 남습니다. Master CSS는 `calc
 ```
 
 <Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+</DocumentExample>
 
 `var(--progress)`는 일반 CSS 해석과 상속을 사용합니다. 해석되지 않은 변수나 호환되지 않는 치환 값은 이를 참조하는 선언을 무효화할 수 있으므로 필요하면 [CSS 변수 대체 값](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var)을 사용하세요. 클래스를 고정하고 동적 값을 별도로 전달하는 방법은 [구문 튜토리얼](/guide/syntax-tutorial#complete-card)에서 설명합니다.
 

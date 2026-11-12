@@ -4,6 +4,7 @@ description: "Master CSS のクラスを読み、組み合わせ、操作状態�
 figures: {"SyntaxIllustration":{"title":"スタイル、セレクター、条件を読む","alt":"完全なクラス fg-blue-60:hover@sm の3区間を括弧で示します。fg-blue-60 はスタイル、:hover はセレクター、@sm は条件です。","caption":"ビューポートが sm に一致する間だけ、ホバーした要素に色が適用されます。どちらの接尾辞もこのクラスに属します。","description":[{"title":"スタイル","text":"fg-blue-60 は color を var(--color-blue-60) に設定します。"},{"title":"セレクター","text":":hover はクラスを持つ要素のホバー時に一致します。"},{"title":"条件","text":"@sm はルールをプリセットの名前付き sm メディアクエリーで囲みます。セレクターと条件が両方一致すると適用されます。"}]},"GuideStudy:pipes-and-quotes":{"title":"アンダースコアは引用符内で意味が変わる","alt":"2つのリテラル入力と出力を対応付けています。rgb(30_60_90) は rgb(30 60 90) になり、引用文字列 New_collection はアンダースコアを保ちます。","caption":"空白の復元は引用文字列の外で行います。出力の文字列は1つのリテラル値のままです。"},"GuideStudy:conditions-intersection":{"title":"両方の条件が一致する必要がある","alt":"2行2列の表で、ビューポートが sm に一致し、display:grid に対応する交差部分だけを強調しています。","caption":"grid@sm@supports(display:grid) は、片方の条件だけでは宣言を有効にしません。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -66,6 +67,8 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 HTML は空白でクラスを区切ります。引用符付き文字列の外では、CSS 値に必要な空白を、セレクターで子孫の空白を表すのと同じ `_` で表します。カンマ、スラッシュ、括弧はそのまま残します。
 
+<DocumentExample>
+
 ```html
 <div class="(transform:translate(0,1rem)) (color:rgb(30_60_90/80%))">
   <span class="(content:'New_collection')::before"></span>
@@ -73,6 +76,8 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
 ```
 
 <Class2CSS classes={['(transform:translate(0,1rem))', '(color:rgb(30_60_90/80%))', "(content:'New_collection')::before"]} />
+
+</DocumentExample>
 
 色は `rgb(30 60 90 / 80%)` になります。引用符内の content 文字列ではアンダースコアはそのまま残り、文字は `New_collection` です。値のほかの位置で名前の一部になるアンダースコアは、`slide\_in` のようにエスケープします。Master CSS は `calc(100%-2rem)` などの演算子の空白も正規化し、計算はブラウザーが行います。ネイティブ宣言の境界、引用値、エスケープは[宣言と値](/reference/rules/declarations)を参照してください。
 
@@ -104,6 +109,8 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
 
 判断ごとにクラスを分け、小さな面を組み立てます。
 
+<DocumentExample>
+
 ```html
 <article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
   <h2 class="m(0) text-lg fg-text-strong">Field notes</h2>
@@ -112,6 +119,8 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
 ```
 
 <Class2CSS classes={['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']} />
+
+</DocumentExample>
 
 ここでは `b(1)` が境界線の幅、`b-solid` がスタイル、`b-line-divider` が色を設定します。1つを変えてもほかを書き直す必要はありません。パディング、角丸、組版設定も独立しているため、後の変更を小さくできます。広いレイアウトでパディングだけ変え、面と文字は保てます。
 
@@ -141,6 +150,8 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
 
 セレクターは別の要素も対象にできます。この例では article にクラスを付けていますが、article のホバー時に色が付くのは直下のリンクです。
 
+<DocumentExample>
+
 ```html
 <article class="fg-blue-60:hover>a">
   <h3>Field notes</h3>
@@ -149,6 +160,8 @@ HTML は空白でクラスを区切ります。引用符付き文字列の外で
 ```
 
 <Class2CSS classes={['fg-blue-60:hover>a']} />
+
+</DocumentExample>
 
 直接の子には `>`、子孫には `_` を使います。`fg-blue-60_a` は子孫のリンクに届きます。クラスを持つ要素が接尾辞の基準である点は変わりません。兄弟結合子、属性、セレクターリスト、詳細度は[セレクター](/reference/rules/selectors)を参照してください。
 

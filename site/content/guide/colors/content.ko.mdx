@@ -5,6 +5,7 @@ figures: {"ColorIllustration":{"title":"색 구성표가 바뀌어도 역할은 
 demos: {"DemoRaisedSurface":{"title":"돌출 표면","caption":"두 문서는 같은 클래스를 사용합니다. 표면, 텍스트, 그림자 색상은 활성 모드가 제공하고 그림자 형태는 유지됩니다."}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import ColorIllustration from './components/ColorIllustration.astro'
@@ -30,6 +31,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 <FoundationColorRoles />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
 <section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
@@ -40,6 +43,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+</DocumentExample>
 
 역할은 색상 키의 일부입니다. `bg-surface-raised`는 `--color-surface-raised`를, `b-line-divider`는 `--color-line-divider`를 읽습니다. 선 역할은 색상만 설정하므로 테두리 너비와 스타일은 별도로 지정하세요. 모든 역할은 [색상 역할](/reference/tokens/color-roles), 팔레트는 [색상 팔레트](/reference/tokens/color)를 참고하세요.
 
@@ -53,6 +58,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 `fg-yellow` 같은 색상 별칭은 모든 모드에서 같은 값을 갖는 고정 색상입니다. `fg-text-yellow` 같은 텍스트 색상 별칭은 각 모드에서 텍스트 전경에 적합한 단계를 선택합니다. 실제 배경에서 대비를 확인하세요. 적응형 별칭도 모든 조합을 보장하지는 않습니다.
 
+<DocumentExample>
+
 ```html
 <!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
 <svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
@@ -60,6 +67,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+</DocumentExample>
 
 색상 라벨에는 텍스트 색상 별칭을 사용하세요. 본문, 강조, 링크에는 텍스트 역할을 유지하세요.
 
@@ -70,6 +79,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 돌출 표면은 표면 역할, 반지름 토큰, 그림자 토큰을 조합합니다. 상호작용 가능한 표면에 마우스를 올리거나 포커스하면 그림자를 한 단계 높이세요. 일반 카드와 컨트롤에는 작은 반지름을 사용하고, `pill`은 아래 배지처럼 완전히 둥근 모양이 필요할 때 사용하세요.
 
 <DemoRaisedSurface />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
@@ -82,6 +93,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+</DocumentExample>
 
 프리셋 그림자는 색상에 `light-dark()`를 사용하므로 `shadow-sm`은 형태를 유지하며 요소의 색 구성표를 따릅니다. `pill`은 반지름 토큰이 아닌 고정 유틸리티이며, 너비와 높이가 같으면 원을 만듭니다. `rtl-lg`, `rtr-lg`, `rbl-lg`, `rbr-lg`로 모서리를 개별 지정할 수 있습니다. 크기 체계와 사용자 지정은 [반지름](/reference/tokens/radius)과 [그림자](/reference/tokens/shadow)를 참고하세요.
 

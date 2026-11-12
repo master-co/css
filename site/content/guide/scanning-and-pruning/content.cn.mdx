@@ -39,6 +39,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
@@ -76,6 +77,8 @@ const className = statusClasses[status]
 
 假设标题大小来自编辑器控件。请保持类名完整，并修改元素上的自定义属性：
 
+<DocumentExample>
+
 ```html
 <h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
   Launch notes
@@ -87,6 +90,8 @@ document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
 <Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+</DocumentExample>
 
 完成静态构建后，在浏览器控制台运行这段 JavaScript。标题会变大，但不会添加类名或生成新规则。局部自定义属性不需要注册 `@theme`，也不需要 Master CSS 运行时。如果类名本身在启动后才首次出现，请使用[运行时或渐进式渲染](/guide/rendering-modes#comparisons)。
 

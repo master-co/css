@@ -4,6 +4,7 @@ description: "選擇合適的響應式邊界，調整頁面欄數與可重用摘
 figures: {"ResponsiveIllustration":{"title":"同一檢視區，兩種元件寬度","alt":"同一頁中，相同摘要在主欄取得 448px 容器，在側欄取得 160px 容器。只有主欄容器達到 28rem 門檻，因此只在主欄顯示雙軌道。","caption":"根字級為 16px 時，28rem 等於 448px。這些是實際容器寬度：同一檢視區內，寬摘要分為雙軌道，窄摘要維持堆疊。","description":[{"title":"相同檢視區","text":"兩張卡片位於同一頁面。檢視區斷點看到的寬度相同。"},{"title":"不同容器","text":"主容器寬 448px，側欄容器寬 160px。"},{"title":"區域回應","text":"每個祖先使用 container-inline。後代卡片使用 grid-cols(1) 與 grid-cols(2)@container(--md)，所以只有主欄卡片達到預設集的 28rem 查詢門檻。"}]},"GuideStudy:named-container-target":{"title":"具名查詢可越過較近容器","alt":"巢狀 article 與 card 容器邊界包住同一個子元素。藍色標示將子元素的 article 查詢配對到外層具名 article 邊界；較近的 card 邊界仍為紫色。","caption":"名稱選擇符合資格的祖先。被查詢元素須置於該祖先內；容器不會查詢自己。"},"GuideStudy:responsive-local-change":{"title":"改變版面，不重述表面樣式","alt":"兩張卡片共用表面、圓角與文字。父元素跨越門檻時，只有版面從堆疊改為橫列。","caption":"帶條件的版面 class 保留其他無關宣告。此示意圖省略非必要的卡片內容。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -85,6 +86,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 <FoundationContainerGrid />
 
+<DocumentExample>
+
 ```html
 <section class="container-inline">
   <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
@@ -107,6 +110,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 ```
 
 <Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+</DocumentExample>
 
 保持瀏覽器視窗不變，移動 **容器** 滑桿。它調整的是祖先元素，而不是檢視區。以 16px 字級比較 447px 與 448px：第二欄應在 448px 出現。控制項受限於文章可用寬度；若文章本身比門檻窄，請加寬瀏覽器。
 
@@ -142,11 +147,15 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 共用樣式維持無條件。只有需要不同值的屬性與範圍才加上條件。例如，側欄在低於 `md` 時使用凸起表面，而較大版面不保留這個背景：
 
+<DocumentExample>
+
 ```html
 <aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
 <Class2CSS classes={['bg-surface-raised@max-md']} />
+
+</DocumentExample>
 
 `@max-md` 是預設集 `@md` 的補集，兩者不重疊。重新宣告 `--md` 會一起移動兩個邊界。`hidden@media(52.125rem<=width<=64rem)` 這類區域範圍條件，可鎖定特定區間而不改變專案的具名門檻。[條件參考](/reference/rules/conditions#mediafeature)說明此查詢語法。
 

@@ -103,6 +103,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -278,6 +279,8 @@ root.addEventListener('click', event => {
 
 Master CSS로도 이런 네이티브 속성과 선택자를 표현할 수 있습니다. 작고 고정된 캡처라면 다음은 네이티브 선언과 동등합니다:
 
+<DocumentExample>
+
 ```html
 <html class="(animation-duration:.5s)::view-transition-group(.article)">
   <body>
@@ -292,6 +295,8 @@ Master CSS로도 이런 네이티브 속성과 선택자를 표현할 수 있습
   '(view-transition-class:article)',
   '(animation-duration:.5s)::view-transition-group(.article)'
 ]} />
+
+</DocumentExample>
 
 의사 요소 유틸리티는 이미지가 아닌 `html`에 있어야 합니다. 마운트된 컴포넌트에서 클래스를 추가한다면 공유 루트에서 그 수명 주기도 관리해야 합니다. 애니메이션 선택자, 키프레임, 모션 조건이 늘어날수록 네이티브 스타일시트가 관련 결정을 모으고 범위를 쉽게 검사하도록 합니다.
 

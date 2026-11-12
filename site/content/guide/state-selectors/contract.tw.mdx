@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -93,6 +94,8 @@ Master CSS 會在生成的 CSS 選擇器中跳脫完整 class 名稱。`.underli
 
 <ReferenceIllustration id="selector-targets" />
 
+<DocumentExample>
+
 ```html
 <article class="underline:hover>a">
   <p>Documentation</p>
@@ -109,11 +112,15 @@ Master CSS 會在生成的 CSS 選擇器中跳脫完整 class 名稱。`.underli
 
 <Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
 
+</DocumentExample>
+
 連結處於 hover 時，其祖先 article 也會處於 hover。第一個範例因此讓兩個連結都符合條件；第二個範例中，另一個連結仍未通過自己的 `:hover` 檢查。各 class 都屬於 article，但宣告指向它的連結。連結自身的 class 先移除預設底線；權重較高的父子選擇器會在 hover 檢查符合時恢復底線。
 
 ## 選擇器清單 \{#selector-groups\}
 
 頂層逗號會從同一個帶有 class 的元素開始另一個分支。每個分支都要重複組合器：`block>div,>span` 會選取直接的 `div` 子元素與直接的 `span` 子元素。第二個分支不會接續第一個分支的目標。
+
+<DocumentExample>
 
 ```html
 <section class="block>div,>span">
@@ -123,6 +130,8 @@ Master CSS 會在生成的 CSS 選擇器中跳脫完整 class 名稱。`.underli
 ```
 
 <Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+</DocumentExample>
 
 函式或引號屬性值中的逗號仍留在該結構內。`underline:is(:hover,:focus-visible)` 是一個含有兩種選項的選擇器後綴，而非兩個頂層分支。
 
@@ -144,6 +153,8 @@ Master CSS 會在生成的 CSS 選擇器中跳脫完整 class 名稱。`.underli
 
 `:has()` 檢查關係，但不會將宣告移到符合的相關元素。`b-blue-60:has(>input:checked)` 會在 label 的直接子 input 被勾選時，設定 label 的邊框色彩：
 
+<DocumentExample>
+
 ```html
 <label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
   <input type="checkbox" /> Include archived items
@@ -151,6 +162,8 @@ Master CSS 會在生成的 CSS 選擇器中跳脫完整 class 名稱。`.underli
 ```
 
 <Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+</DocumentExample>
 
 相對比對也可以是同層元素：`underline:has(+input:checked)` 會在下一個同層元素是已勾選的 input 時，為帶有 class 的元素加上底線。原生 [`:has()` 限制](https://www.w3.org/TR/selectors-4/#relational)仍適用；將 `:has()` 巢狀放在自身內部是無效的。可運作的核取方塊範例與實用備援方式，請見[相容性](/guide/compatibility#new-selectors)。
 
@@ -179,6 +192,8 @@ Master CSS 保留原生偽類別名稱。以下列出常用後綴，並非完整
 
 請使用 `:first-child`、`:nth-child(odd)` 這類完整名稱。即使 Master CSS 能輸出某種拼法，瀏覽器仍可能不支援或視為無效。各狀態的詳細行為以[原生偽類別參考](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes)為準。
 
+<DocumentExample>
+
 ```html
 <ul>
   <li class="bg-surface-inset:nth-child(even)">Draft</li>
@@ -188,6 +203,8 @@ Master CSS 保留原生偽類別名稱。以下列出常用後綴，並非完整
 ```
 
 <Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+</DocumentExample>
 
 ## 屬性選擇器 \{#attribute-selectors\}
 
@@ -217,12 +234,16 @@ Master CSS 保留原生偽類別名稱。以下列出常用後綴，並非完整
 
 引號內的屬性文字保留字面意義：`underline[data-state=':first']:first-child` 會檢查值 `:first`，並另外檢查元素位置。`[data-id='a_b']` 中的底線留在值內；`.is\_active` 中跳脫的底線則留在 class 識別名稱內。
 
+<DocumentExample>
+
 ```html
 <a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
 <a class="underline.is\_active is_active" href="/reference">Reference</a>
 ```
 
 <Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+</DocumentExample>
 
 CSS 引號無法阻止 HTML 空白分隔 class。屬性值中若需要真正的空白，請用 CSS 跳脫，例如 `[data-label='New\000020collection']`。引號值後可直接接大小寫旗標，例如 `[data-kind='draft'i]` 代表 ASCII 不分大小寫比對。原生運算子與大小寫比對請見[屬性選擇器](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors)。
 
@@ -236,6 +257,8 @@ CSS 引號無法阻止 HTML 空白分隔 class。屬性值中若需要真正的�
 
 偽元素後綴指向該偽元素，而非產生它的元素。使用生成內容時，請明確撰寫 `content` 宣告：
 
+<DocumentExample>
+
 ```html
 <span class="(content:open-quote)::before (content:close-quote)::after">
   Keep the interface clear.
@@ -243,6 +266,8 @@ CSS 引號無法阻止 HTML 空白分隔 class。屬性值中若需要真正的�
 ```
 
 <Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="pseudo-element-origin" />
 

@@ -205,6 +205,8 @@ Keep reduced-motion handling and progressive hardening after the primary example
 
 ## Example Code
 
+Group an authored source/output pair with the shared `DocumentExample` wrapper; `ConfiguredExample` already supplies that group. Keep its source, configuration and generated CSS in their original order. A standalone `Class2CSS` lookup after prose or a table is not implicitly part of that preceding block. Reference preserves explicit groups through its normalized Markdown model and removes internal boundaries from portable exports. Use the shared `DocumentTableFrame` for native table surfaces and scrolling; keep Reference column geometry local.
+
 Visible documentation examples should be as framework-neutral as practical:
 
 - Prefer native `html`, `css`, and `js` blocks.

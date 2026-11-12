@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
@@ -41,11 +42,15 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <ReferenceIllustration id="nested-conditions" />
 
+<DocumentExample>
+
 ```html
 <div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
 ```
 
 <Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+</DocumentExample>
 
 이들은 중첩된 CSS 조건이지 순서대로 실행하는 단계가 아닙니다. 두 쿼리가 모두 일치해야 `display: grid` 선언이 캐스케이드에 참여합니다. 선언을 받을 요소는 여전히 선택자가 결정합니다.
 
@@ -121,6 +126,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 크기 쿼리는 자격을 갖춘 상위 쿼리 컨테이너를 측정합니다. 일반 CSS로 컨테이너를 설정하고 가장 가까운 적격 컨테이너가 아닌 특정 컨테이너를 선택해야 할 때 이름을 추가하세요. 이 예제의 쿼리 대상 요소는 하위 요소입니다.
 
+<DocumentExample>
+
 ```html
 <aside class="(container-name:card) container-inline">
   <div class="grid-cols(2)@container(card_width>=40rem)">
@@ -132,9 +139,13 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
+</DocumentExample>
+
 조건이 일치하면 조합 스타일은 `display: grid`와 같은 너비의 두 열을 설정합니다. 임계값 미만에서는 두 선언 모두 제공하지 않으므로 두 블록 자식은 일반 흐름에서 세로로 쌓입니다. 컨테이너 자체 너비는 주변 레이아웃에 의해 정해집니다.
 
 사용자 지정 속성 스타일 쿼리는 상위 컨테이너의 값을 확인하며 `container-inline`은 필요하지 않습니다.
+
+<DocumentExample>
 
 ```html
 <div style="--density:compact">
@@ -143,6 +154,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 ```
 
 <Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+</DocumentExample>
 
 컨테이너 자격과 매칭은 네이티브 [컨테이너 쿼리](https://www.w3.org/TR/css-conditional-5/#container-queries)가 정의합니다. `--container-md` 같은 크기 토큰을 바꿔도 명시적 쿼리 임계값이나 이름 있는 컨테이너 조건은 바뀌지 않습니다. 별도의 크기 역할은 [컨테이너 토큰](/reference/tokens/container)을 참고하세요.
 

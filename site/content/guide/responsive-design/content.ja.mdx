@@ -4,6 +4,7 @@ description: "適切なレスポンシブの境界を選び、ページの列や
 figures: {"ResponsiveIllustration":{"title":"1つのビューポート、2つのコンポーネント幅","alt":"同じページで、同一の概要がメイン列では 448px、サイドバーでは 160px のコンテナーに置かれています。28rem に達するメイン列だけで2トラックになります。","caption":"ルートが 16px なら 28rem は 448px です。これは実際のコンテナー幅です。同じビューポート内で、広い概要は2トラック、狭い概要は縦並びになります。","description":[{"title":"同じビューポート","text":"2枚のカードは同じページにあります。ビューポートのブレークポイントでは同じ幅として扱われます。"},{"title":"異なるコンテナー","text":"メインのコンテナーは幅 448px、サイドバーは幅 160px です。"},{"title":"局所的な応答","text":"各祖先は container-inline を使います。子孫のカードは grid-cols(1) と grid-cols(2)@container(--md) を使い、メインのカードだけがプリセットの 28rem に達します。"}]},"GuideStudy:named-container-target":{"title":"名前付きクエリーは近いコンテナーを越えて選べる","alt":"入れ子の article と card のコンテナー境界が1つの子を囲んでいます。青い印が子の article クエリーと外側の名前付き article 境界を対応付け、近い card 境界は紫のままです。","caption":"名前で適格な祖先を選びます。対象の要素はその祖先内に置いてください。コンテナーは自分自身を問い合わせません。"},"GuideStudy:responsive-local-change":{"title":"面を指定し直さずにレイアウトを変える","alt":"2枚のカードは面、角丸、文字を共有しています。親がしきい値を越えると、レイアウトだけが縦並びから横並びに変わります。","caption":"条件付きのレイアウトクラスは、無関係な宣言をそのまま保ちます。この模式図では不要なカード内容を省略しています。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -85,6 +86,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 <FoundationContainerGrid />
 
+<DocumentExample>
+
 ```html
 <section class="container-inline">
   <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
@@ -107,6 +110,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 ```
 
 <Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+</DocumentExample>
 
 ブラウザーウィンドウを固定したまま **コンテナー** スライダーを動かします。変わるのは祖先のサイズで、ビューポートではありません。文字サイズ 16px で 447px と 448px を比べると、448px で2列目が現れるはずです。操作部品は記事の幅内に収まるため、記事自体がしきい値より狭ければブラウザーを広げてください。
 
@@ -142,11 +147,15 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 共通のスタイルには条件を付けません。値を変える必要のあるプロパティと範囲だけに条件を加えます。たとえば aside に `md` 未満で浮き上がった面を使い、大きなレイアウトにはその背景を持ち越さないようにできます。
 
+<DocumentExample>
+
 ```html
 <aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
 <Class2CSS classes={['bg-surface-raised@max-md']} />
+
+</DocumentExample>
 
 `@max-md` はプリセットの `@md` の補集合で、両者は重なりません。`--md` の再宣言で両方が移動します。`hidden@media(52.125rem<=width<=64rem)` のような局所的な範囲条件なら、プロジェクトの名前付きしきい値を変えずに特定区間を指定できます。構文は[条件のリファレンス](/reference/rules/conditions#mediafeature)を参照してください。
 

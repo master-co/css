@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
@@ -41,11 +42,15 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <ReferenceIllustration id="nested-conditions" />
 
+<DocumentExample>
+
 ```html
 <div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
 ```
 
 <Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+</DocumentExample>
 
 これらは入れ子の CSS 条件であり、順番に実行する手順ではありません。両方のクエリーが一致して初めて、`display: grid` 宣言がカスケードに参加します。宣言を受け取る要素は、引き続きセレクターが決めます。
 
@@ -121,6 +126,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 サイズクエリーは、クエリー対象にできる祖先コンテナーを測定します。通常の CSS でコンテナーを作り、最も近い対象ではなく特定のコンテナーを選ぶ場合は名前を付けます。この例では、クエリーを適用する要素は子孫です。
 
+<DocumentExample>
+
 ```html
 <aside class="(container-name:card) container-inline">
   <div class="grid-cols(2)@container(card_width>=40rem)">
@@ -132,9 +139,13 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
+</DocumentExample>
+
 条件が一致すると、組み合わせスタイルは `display: grid` と等幅の 2 列を設定します。しきい値未満ではどちらの宣言も提供しないため、2 つのブロック子要素は通常フローで縦に並びます。コンテナー自身の幅は周囲のレイアウトが決めます。
 
 カスタムプロパティのスタイルクエリーは、祖先コンテナーの値を調べます。`container-inline` は不要です。
+
+<DocumentExample>
 
 ```html
 <div style="--density:compact">
@@ -143,6 +154,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 ```
 
 <Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+</DocumentExample>
 
 コンテナーの適格性と照合は、ネイティブの[コンテナークエリー](https://www.w3.org/TR/css-conditional-5/#container-queries)が定義します。`--container-md` などのサイズトークンを変えても、明示的なしきい値や名前付きコンテナー条件は変わりません。独立したサイズの役割は[コンテナートークン](/reference/tokens/container)を参照してください。
 

@@ -4,6 +4,7 @@ description: "選擇完整文字樣式或單一字型 token，並一次設定網
 figures: {"TypeIllustration":{"title":"相同字級，也能呈現不同節奏","alt":"兩份 Make room for details 都使用 32px 字級。font-3xl 繼承 1.6 行高與一般字距；text-3xl 設定 1.25 行高與 -0.02em 字距，形成更緊湊的雙行區塊。","caption":"以根字級 16px 呈現預設集的實際排版。每一列標示一個行框；font-size 本身無法描述行與行之間的間距。","description":[{"title":"只有字級","text":"font-3xl 將字級設為 2rem。在此父元素中，會繼承 line-height 1.6 與一般字距。"},{"title":"完整文字樣式","text":"text-3xl 設定相同的 2rem 字級，再加上 line-height 1.25 與 letter-spacing -0.02em。"},{"title":"比較行框","text":"根字級為 16px 時，範例文字為 32px，行高分別為 51.2px 與 40px。相同兩行文字佔用不同高度。"}]},"GuideStudy:type-content-height":{"title":"固定文字欄寬，讓高度成長","alt":"兩個等寬文字範例分別包含短文與長文。較長標題佔用更多行，將後續內容往下推。","caption":"為了比較而控制寬度，兩個文字框都未固定高度；垂直範圍由內容決定。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import TypeIllustration from './components/TypeIllustration.astro'
@@ -17,6 +18,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 
 <FoundationTypography />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-regular -->
 <p class="text-xs font-regular fg-text-muted">Field notes / 024</p>
@@ -25,6 +28,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 ```
 
 <Class2CSS classes={['text-2xl', 'font-regular']} />
+
+</DocumentExample>
 
 此層級運用字級、間距與文字角色，同時維持一般字重。只在內容需要時加入強調；標題不必預設使用更粗的字重。[文字樣式](/reference/tokens/text)列出所有設定與新增方式。
 
@@ -38,6 +43,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 
 <FoundationTypeComparison />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK font-3xl --><!-- @MARK text-3xl -->
 <div class="leading-md tracking-normal">
@@ -47,6 +54,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 ```
 
 <Class2CSS classes={['font-3xl', 'text-3xl']} />
+
+</DocumentExample>
 
 內文、標題與大型展示文字使用 `text-<token>`。只有設計刻意偏離既有文字樣式時，才使用 `font-<size>`、`leading-<token>` 或 `tracking-<token>`。
 

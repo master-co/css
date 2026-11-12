@@ -39,6 +39,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
@@ -76,6 +77,8 @@ const className = statusClasses[status]
 
 제목 크기가 편집기 컨트롤에서 정해진다고 가정해 보세요. 클래스는 완전하게 유지하고 요소의 사용자 지정 속성을 변경하세요:
 
+<DocumentExample>
+
 ```html
 <h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
   Launch notes
@@ -87,6 +90,8 @@ document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
 <Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+</DocumentExample>
 
 정적 빌드 후 브라우저 콘솔에서 JavaScript를 실행하세요. 클래스를 추가하거나 새 규칙을 생성하지 않고 제목이 커집니다. 로컬 사용자 지정 속성에는 `@theme` 등록이나 Master CSS 런타임이 필요하지 않습니다. 클래스 이름 자체가 시작 후 처음 생긴다면 [런타임 또는 점진적 렌더링](/guide/rendering-modes#comparisons)을 사용하세요.
 

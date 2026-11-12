@@ -68,12 +68,45 @@ for (const profile of profiles) test(`${engine} ${JSON.stringify(profile)}: actu
     const plain = page.locator('.ref-table tbody code:not(.code)').first()
     assert.ok(await plain.count(), 'lookup identifiers remain plain')
     assert.equal(await plain.evaluate(element => getComputedStyle(element).boxShadow), 'none')
+    if (profile.width <= 390) {
+      const region = page.locator('.ref-value-table[data-modes][tabindex]').first()
+      assert.ok(await region.evaluate(element => element.scrollWidth > element.clientWidth), 'a real narrow lookup table overflows inside its frame')
+      await region.focus()
+      await region.press('ArrowRight')
+      await page.waitForFunction(element => element.scrollLeft > 0, await region.elementHandle())
+      const right = await region.evaluate(element => element.scrollLeft)
+      await region.press('ArrowLeft')
+      assert.ok(await region.evaluate(element => element.scrollLeft) < right, 'keyboard scrolling returns toward the first column')
+    }
     await assertFace(page.locator('.ui-stage'), 'ui-stage', ['sheet', 'sheet-flat'])
     await assertFace(page.locator('.ui-tray'), 'ui-tray', ['tray'])
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, 'lookup content stays within its page at enlarged text')
 
     await open('/guide/theme')
     await assertFace(page.locator('.ui-code.code-panel'), 'ui-code', ['code-panel'])
+    const overlay = page.locator('.ui-code > .ui-copy:visible').first()
+    assert.ok(await overlay.count(), 'a real untitled source block has an overlay copy control')
+    const copyGeometry = await overlay.evaluate(element => {
+      const box = element.getBoundingClientRect()
+      const panel = element.parentElement.getBoundingClientRect()
+      const style = getComputedStyle(element)
+      return { inset: Number.parseFloat(style.right), rightGap: panel.right - box.right, radius: Number.parseFloat(style.borderTopRightRadius), panelRadius: Number.parseFloat(getComputedStyle(element.parentElement).borderTopRightRadius), corner: style.cornerShape, panelCorner: getComputedStyle(element.parentElement).cornerShape }
+    })
+    assert.ok(copyGeometry.inset > 0 && copyGeometry.rightGap >= copyGeometry.inset - 1, 'the copy overlay stays inside the code panel edge')
+    assert.ok(copyGeometry.radius > 0, 'the overlay background has its own inset corner')
+    assert.ok(Math.abs(copyGeometry.radius - (copyGeometry.panelRadius - copyGeometry.inset)) <= 1, 'the overlay subtracts its inset from the already-scaled outer radius')
+    assert.equal(copyGeometry.corner, copyGeometry.panelCorner, 'the overlay follows the supported panel corner shape')
+    const copyButton = overlay.locator('button')
+    await copyButton.focus()
+    const focus = await copyButton.evaluate(element => {
+      const button = element.getBoundingClientRect()
+      const panel = element.closest('.ui-code').getBoundingClientRect()
+      const style = getComputedStyle(element)
+      const extent = Number.parseFloat(style.outlineWidth) + Number.parseFloat(style.outlineOffset)
+      return { visible: element.matches(':focus-visible'), outline: style.outlineStyle, width: Number.parseFloat(style.outlineWidth), contained: button.left - extent >= panel.left - 1 && button.right + extent <= panel.right + 1 && button.top - extent >= panel.top - 1 && button.bottom + extent <= panel.bottom + 1 }
+    })
+    assert.ok(focus.visible && focus.outline !== 'none' && focus.width > 0, 'the copy button retains a visible keyboard focus indicator')
+    assert.ok(focus.contained, 'the entire copy focus outline fits inside its code panel')
     const tab = page.locator('.ui-tabs [role="tab"]').first()
     assert.ok(await tab.count())
     assert.equal(await tab.evaluate(element => element.classList.contains('tabs-item')), true)
@@ -83,6 +116,19 @@ for (const profile of profiles) test(`${engine} ${JSON.stringify(profile)}: actu
     assert.equal(await active.evaluate(element => document.activeElement === element), true)
     const panelId = await active.getAttribute('aria-controls')
     assert.equal(await page.locator(`[id="${panelId}"]`).isVisible(), true)
+    if (profile.width <= 390) {
+      let scrollableCode
+      for (const code of await page.locator('.ui-code pre[tabindex]').all()) {
+        if (await code.evaluate(element => element.scrollWidth > element.clientWidth && element.clientWidth > 0)) { scrollableCode = code; break }
+      }
+      assert.ok(scrollableCode, 'the narrow document has a real long source line')
+      await scrollableCode.focus()
+      await scrollableCode.press('ArrowRight')
+      await page.waitForFunction(element => element.scrollLeft > 0, await scrollableCode.elementHandle())
+      const right = await scrollableCode.evaluate(element => element.scrollLeft)
+      await scrollableCode.press('ArrowLeft')
+      assert.ok(await scrollableCode.evaluate(element => element.scrollLeft) < right, 'keyboard scrolling returns toward the start of the source line')
+    }
     const chips = page.locator('.ui-prose > p code.code')
     assert.ok(await chips.count(), 'editorial inline literals consume UI code')
     assert.notEqual(await chips.first().evaluate(element => getComputedStyle(element).boxShadow), 'none')

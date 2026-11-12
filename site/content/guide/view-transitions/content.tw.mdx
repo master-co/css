@@ -103,6 +103,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -278,6 +279,8 @@ root.addEventListener('click', event => {
 
 Master CSS 能表達這些原生屬性與選擇器。若只有小型、固定的快照，下列寫法等同原生宣告：
 
+<DocumentExample>
+
 ```html
 <html class="(animation-duration:.5s)::view-transition-group(.article)">
   <body>
@@ -292,6 +295,8 @@ Master CSS 能表達這些原生屬性與選擇器。若只有小型、固定的
   '(view-transition-class:article)',
   '(animation-duration:.5s)::view-transition-group(.article)'
 ]} />
+
+</DocumentExample>
 
 偽元素 utility 應放在 `html`，不是圖片上。在掛載元件中加入該類別，也意味著要管理它在共用根元素上的生命週期。動畫選擇器、關鍵影格與動態效果條件逐漸增加時，原生樣式表能把相關決策放在一起，讓作用範圍更容易檢查。
 

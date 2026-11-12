@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import ColorIllustration from './components/ColorIllustration.astro'
@@ -23,6 +24,8 @@ Build interface color from roles: surface, line and text colors whose class stay
 
 <FoundationColorRoles />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
 <section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
@@ -33,6 +36,8 @@ Build interface color from roles: surface, line and text colors whose class stay
 ```
 
 <Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+</DocumentExample>
 
 The role is part of the color key: `bg-surface-raised` reads `--color-surface-raised`, and `b-line-divider` reads `--color-line-divider`. A line role sets only the color, so give the border its width and style separately. See [Color roles](/reference/tokens/color-roles) for every role and [Color palette](/reference/tokens/color) for the palette.
 
@@ -46,6 +51,8 @@ The role is part of the color key: `bg-surface-raised` reads `--color-surface-ra
 
 A hue alias such as `fg-yellow` is a fixed swatch with the same value in every mode. A text hue alias such as `fg-text-yellow` chooses a foreground step intended for text in each mode. Check its contrast on the actual background; an adaptive alias cannot guarantee every pairing.
 
+<DocumentExample>
+
 ```html
 <!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
 <svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
@@ -53,6 +60,8 @@ A hue alias such as `fg-yellow` is a fixed swatch with the same value in every m
 ```
 
 <Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+</DocumentExample>
 
 Use text hue aliases for colored labels. Keep body copy, emphasis and links on the text roles.
 
@@ -63,6 +72,8 @@ Use text hue aliases for colored labels. Keep body copy, emphasis and links on t
 A raised surface combines a surface role, a radius token and a shadow token. Raise the shadow one step when an interactive surface is hovered or focused. Use a small radius for ordinary cards and controls; reserve `pill` for a deliberately fully rounded shape, such as the badge below.
 
 <DemoRaisedSurface />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
@@ -75,6 +86,8 @@ A raised surface combines a surface role, a radius token and a shadow token. Rai
 ```
 
 <Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+</DocumentExample>
 
 Preset shadows use `light-dark()` for their colors, so `shadow-sm` keeps its geometry and follows the element's color scheme. `pill` is a fixed utility, not a radius token; with equal width and height it draws a circle. Round single corners with `rtl-lg`, `rtr-lg`, `rbl-lg` and `rbr-lg`. See [Radius](/reference/tokens/radius) and [Shadow](/reference/tokens/shadow) for the scales and their customization.
 

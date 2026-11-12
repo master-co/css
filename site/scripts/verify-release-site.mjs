@@ -211,9 +211,10 @@ if (!process.argv.includes('--static-only')) {
           } finally { await page.close() }
         })
       } finally { await browser.close() }
-      await check(`${engine}: actual UI material consumption`, async () => {
+      await check(`${engine}: actual UI material and document example composition`, async () => {
         // Asynchronous execution keeps this process's artifact HTTP server responsive.
-        const result = await new Promise(resolve => execFile(process.execPath, ['--test', new URL('../tests/ui-material-consumption.e2e.mjs', import.meta.url).pathname], {
+        const suites = ['ui-material-consumption.e2e.mjs', 'document-examples.e2e.mjs', 'guide-preview-reflow.e2e.mjs'].map(file => new URL(`../tests/${file}`, import.meta.url).pathname)
+        const result = await new Promise(resolve => execFile(process.execPath, ['--test', ...suites], {
           env: { ...process.env, MASTER_SITE_URL: base, MASTER_SITE_BROWSER: engine },
           timeout: 420000,
           maxBuffer: 1024 * 1024,

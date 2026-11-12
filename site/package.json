@@ -27,7 +27,7 @@
         "test:css-contract": "bun test scripts/css-variable-references.test.ts scripts/sitemap.test.ts && bun scripts/verify-css-contract.ts",
         "update:css-contract": "bun scripts/verify-css-contract.ts --update",
         "test:syntax": "bun test components/SyntaxTr.test.ts common/generate-preset-css.test.ts",
-        "test:reference": "node --import tsx --test reference/reference.test.ts reference/localization.test.ts",
+        "test:reference": "node --import tsx --test reference/reference.test.ts reference/localization.test.ts reference/code-block.test.ts",
         "start": "bun --bun wrangler pages dev site/out --cwd ..",
         "lint": "bun scripts/lint.mjs",
         "lint:full": "bun scripts/lint.mjs --no-cache",

@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -93,6 +94,8 @@ Master CSS は生成する CSS セレクター内で完全なクラス名をエ�
 
 <ReferenceIllustration id="selector-targets" />
 
+<DocumentExample>
+
 ```html
 <article class="underline:hover>a">
   <p>Documentation</p>
@@ -109,11 +112,15 @@ Master CSS は生成する CSS セレクター内で完全なクラス名をエ�
 
 <Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
 
+</DocumentExample>
+
 リンクをホバーすると祖先の article もホバーされます。そのため最初の例では両リンクが対象になり、2 番目の例ではもう一方のリンクは自身の `:hover` 検査に一致しません。各クラスは article が持ちますが、宣言の対象はそのリンクです。リンクのクラスが既定の下線を消し、より詳細度の高い親子セレクターがホバー条件の一致時に下線を戻します。
 
 ## セレクターリスト \{#selector-groups\}
 
 最上位のカンマは、同じクラスを持つ要素から別の分岐を始めます。各分岐に結合子を繰り返してください。`block>div,>span` は直下の `div` と直下の `span` を選びます。2 番目の分岐は最初の分岐の対象から続くわけではありません。
+
+<DocumentExample>
 
 ```html
 <section class="block>div,>span">
@@ -123,6 +130,8 @@ Master CSS は生成する CSS セレクター内で完全なクラス名をエ�
 ```
 
 <Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+</DocumentExample>
 
 関数内や引用符付きの属性値内のカンマは、その構造の中に残ります。`underline:is(:hover,:focus-visible)` は選択肢を 2 つ持つ 1 個のセレクター接尾辞で、最上位の分岐が 2 つあるわけではありません。
 
@@ -144,6 +153,8 @@ Master CSS は生成する CSS セレクター内で完全なクラス名をエ�
 
 `:has()` は関係を検査しますが、一致した関連要素に宣言を移しません。`b-blue-60:has(>input:checked)` は、label の直下の input がチェックされているときに label の枠線の色を設定します。
 
+<DocumentExample>
+
 ```html
 <label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
   <input type="checkbox" /> Include archived items
@@ -151,6 +162,8 @@ Master CSS は生成する CSS セレクター内で完全なクラス名をエ�
 ```
 
 <Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+</DocumentExample>
 
 相対的な一致は兄弟要素でも可能です。`underline:has(+input:checked)` は、次の兄弟要素がチェック済みの input なら、クラスを持つ要素に下線を付けます。ネイティブの [`:has()` の制限](https://www.w3.org/TR/selectors-4/#relational)も適用され、`:has()` の中に自身を入れ子にするのは無効です。動くチェックボックスの例と代替手段は[互換性](/guide/compatibility#new-selectors)を参照してください。
 
@@ -179,6 +192,8 @@ Master CSS はネイティブの疑似クラス名を保持します。以下は
 
 `:first-child` や `:nth-child(odd)` などの完全な名前を使ってください。Master CSS が出力できる綴りでも、ブラウザーでは未対応または無効な場合があります。各状態の詳細な動作は[ネイティブの疑似クラスリファレンス](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes)を参照してください。
 
+<DocumentExample>
+
 ```html
 <ul>
   <li class="bg-surface-inset:nth-child(even)">Draft</li>
@@ -188,6 +203,8 @@ Master CSS はネイティブの疑似クラス名を保持します。以下は
 ```
 
 <Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+</DocumentExample>
 
 ## 属性セレクター \{#attribute-selectors\}
 
@@ -217,12 +234,16 @@ Master CSS はネイティブの疑似クラス名を保持します。以下は
 
 引用符付きの属性テキストは文字どおりです。`underline[data-state=':first']:first-child` は値 `:first` と、要素の位置を別々に検査します。`[data-id='a_b']` のアンダースコアは値の中に、`.is\_active` のエスケープされたアンダースコアはクラス識別子の中に残ります。
 
+<DocumentExample>
+
 ```html
 <a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
 <a class="underline.is\_active is_active" href="/reference">Reference</a>
 ```
 
 <Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+</DocumentExample>
 
 CSS の引用符でも、HTML の空白によるクラスの分割は防げません。属性値に実際の空白が必要なら `[data-label='New\000020collection']` のように CSS エスケープを使います。引用符付きの値の直後には、ASCII の大文字小文字を区別しない `[data-kind='draft'i]` のようにフラグを付けられます。演算子と大小文字の一致は[属性セレクター](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors)を参照してください。
 
@@ -236,6 +257,8 @@ CSS の引用符でも、HTML の空白によるクラスの分割は防げま�
 
 疑似要素の接尾辞は、元の要素ではなくその疑似要素を対象にします。生成コンテンツには `content` 宣言を明示的に書きます。
 
+<DocumentExample>
+
 ```html
 <span class="(content:open-quote)::before (content:close-quote)::after">
   Keep the interface clear.
@@ -243,6 +266,8 @@ CSS の引用符でも、HTML の空白によるクラスの分割は防げま�
 ```
 
 <Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="pseudo-element-origin" />
 

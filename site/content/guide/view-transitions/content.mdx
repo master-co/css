@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -173,6 +174,8 @@ Keep selectors in a global, feature-owned stylesheet: a component-scoped `.card:
 
 Master CSS can express these native properties and selectors. For a small fixed capture, the following is equivalent to native declarations:
 
+<DocumentExample>
+
 ```html
 <html class="(animation-duration:.5s)::view-transition-group(.article)">
   <body>
@@ -187,6 +190,8 @@ Master CSS can express these native properties and selectors. For a small fixed 
   '(view-transition-class:article)',
   '(animation-duration:.5s)::view-transition-group(.article)'
 ]} />
+
+</DocumentExample>
 
 The pseudo-element utility belongs on `html`, not on the image. In a mounted component, adding that class also means owning its lifetime on a shared root. As animation selectors, keyframes and motion conditions grow, a native stylesheet keeps those related decisions together and makes their scope easier to inspect.
 

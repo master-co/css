@@ -210,6 +210,7 @@ jobs:
           path: |
             site/out/
             site/test-results/release-site.json
+            site/test-results/document-examples/
             release-artifacts/site.manifest.json
           if-no-files-found: error
           retention-days: 30

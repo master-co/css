@@ -4,6 +4,7 @@ description: "組版設定全体または個別のフォントトークンを選
 figures: {"TypeIllustration":{"title":"同じ文字サイズでもリズムは変わる","alt":"2つの Make room for details はどちらも文字サイズ 32px です。font-3xl は行高 1.6 と通常の字間を継承し、text-3xl は行高 1.25 と字間 -0.02em を設定して、よりコンパクトな2行のブロックになります。","caption":"ルート文字サイズ 16px で、プリセットの実際の組版を表示しています。各段は行ボックスを示します。font-size だけでは行間の余白を説明できません。","description":[{"title":"文字サイズのみ","text":"font-3xl はサイズを 2rem にします。この親では line-height 1.6 と通常の字間を継承します。"},{"title":"組版設定全体","text":"text-3xl は同じ 2rem に加え、line-height 1.25 と letter-spacing -0.02em を設定します。"},{"title":"行ボックスを比べる","text":"ルートが 16px なら、文字は 32px、行高はそれぞれ 51.2px と 40px です。同じ2行でも占める高さが異なります。"}]},"GuideStudy:type-content-height":{"title":"文字の行幅を保ち、高さは内容に任せる","alt":"同じ幅の2つの文字見本に短い文章と長い文章を入れています。長い見出しは行数が増え、後続の内容を下に押し出します。","caption":"比較のために幅を揃えています。どちらの文字ボックスも高さは固定せず、内容が縦の長さを決めます。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import TypeIllustration from './components/TypeIllustration.astro'
@@ -17,6 +18,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 
 <FoundationTypography />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-regular -->
 <p class="text-xs font-regular fg-text-muted">Field notes / 024</p>
@@ -25,6 +28,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 ```
 
 <Class2CSS classes={['text-2xl', 'font-regular']} />
+
+</DocumentExample>
 
 この階層は標準のウェイトを保ち、文字サイズ、余白、文字の役割で構成しています。強調は内容が必要とする箇所だけに加えます。見出しだからといって太くする必要はありません。各設定と追加方法は[文字](/reference/tokens/text)を参照してください。
 
@@ -38,6 +43,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 
 <FoundationTypeComparison />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK font-3xl --><!-- @MARK text-3xl -->
 <div class="leading-md tracking-normal">
@@ -47,6 +54,8 @@ import FoundationTypeComparison from '@master/internal-site/demo/foundations/Fou
 ```
 
 <Class2CSS classes={['font-3xl', 'text-3xl']} />
+
+</DocumentExample>
 
 本文、見出し、ディスプレイ用のスタイルには `text-<token>` を使います。`font-<size>`、`leading-<token>`、`tracking-<token>` は、意図的に組版設定から外す場合に使います。
 

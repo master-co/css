@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
@@ -41,11 +42,15 @@ Stack simple query suffixes to require all their conditions. The first suffix be
 
 <ReferenceIllustration id="nested-conditions" />
 
+<DocumentExample>
+
 ```html
 <div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
 ```
 
 <Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+</DocumentExample>
 
 These are nested CSS conditions, not steps executed in sequence. Both queries must match before the `display: grid` declaration participates in the cascade. A selector still determines which element receives the declaration.
 
@@ -121,6 +126,8 @@ For browser interpretation of features and ranges, see [Media Queries](https://w
 
 Size queries measure an eligible ancestor query container. Establish that container with ordinary CSS; add a name when the query should select a particular container rather than the nearest eligible one. The queried element is a descendant in this example:
 
+<DocumentExample>
+
 ```html
 <aside class="(container-name:card) container-inline">
   <div class="grid-cols(2)@container(card_width>=40rem)">
@@ -132,9 +139,13 @@ Size queries measure an eligible ancestor query container. Establish that contai
 
 <Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
+</DocumentExample>
+
 The recipe sets both `display: grid` and two equal columns while the condition matches. Below the threshold, it supplies neither declaration, so these two block children stay stacked in normal flow. The container's own width is established by its surrounding layout.
 
 A custom-property style query checks the value on an ancestor container; it does not need `container-inline`:
+
+<DocumentExample>
 
 ```html
 <div style="--density:compact">
@@ -143,6 +154,8 @@ A custom-property style query checks the value on an ancestor container; it does
 ```
 
 <Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+</DocumentExample>
 
 Native [container queries](https://www.w3.org/TR/css-conditional-5/#container-queries) define container eligibility and matching. Changing a sizing token such as `--container-md` does not change an explicit query threshold or a named container condition. See [container tokens](/reference/tokens/container) for their separate sizing role.
 

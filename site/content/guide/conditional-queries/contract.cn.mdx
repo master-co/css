@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ConfiguredExample from '@master/internal-site/css/ConfiguredExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
@@ -41,11 +42,15 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <ReferenceIllustration id="nested-conditions" />
 
+<DocumentExample>
+
 ```html
 <div class="grid@media(width>=40rem)@supports(display:grid)">Content</div>
 ```
 
 <Class2CSS classes={['grid@media(width>=40rem)@supports(display:grid)', 'grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']} />
+
+</DocumentExample>
 
 这些是嵌套 CSS 条件，不是按顺序执行的步骤。两个查询都必须匹配，`display: grid` 声明才参与层叠。哪些元素获得声明，仍由选择器决定。
 
@@ -121,6 +126,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 尺寸查询测量符合条件的祖先查询容器。请用普通 CSS 建立该容器；如果查询应选择特定容器，而不是最近的合格容器，再添加名称。此例中，被查询的元素是后代元素：
 
+<DocumentExample>
+
 ```html
 <aside class="(container-name:card) container-inline">
   <div class="grid-cols(2)@container(card_width>=40rem)">
@@ -132,9 +139,13 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 <Class2CSS classes={['(container-name:card) container-inline', 'grid-cols(2)@container(card_width>=40rem)']} />
 
+</DocumentExample>
+
 条件匹配时，组合样式同时设置 `display: grid` 与两个等宽列。低于阈值时，两个声明都不会提供，因此这两个块级子元素仍在常规流中垂直堆叠。容器自身宽度由周围布局决定。
 
 自定义属性样式查询检查祖先容器上的值，不需要 `container-inline`：
+
+<DocumentExample>
 
 ```html
 <div style="--density:compact">
@@ -143,6 +154,8 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 ```
 
 <Class2CSS classes={['p(8)@container(style(--density:compact))']} />
+
+</DocumentExample>
 
 原生[容器查询](https://www.w3.org/TR/css-conditional-5/#container-queries)定义容器资格与匹配方式。修改 `--container-md` 这类尺寸令牌，不会改变显式查询阈值或具名容器条件。它们独立的尺寸用途见[容器令牌](/reference/tokens/container)。
 

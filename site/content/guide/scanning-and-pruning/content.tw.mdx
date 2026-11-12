@@ -39,6 +39,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import DeliveryFlow from '~/site/components/DeliveryFlow.astro'
@@ -76,6 +77,8 @@ const className = statusClasses[status]
 
 假設標題大小來自編輯器控制項。請保留完整類別，並修改元素上的自訂屬性：
 
+<DocumentExample>
+
 ```html
 <h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
   Launch notes
@@ -87,6 +90,8 @@ document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
 <Class2CSS classes={'(font-size:var(--headline-size))'} />
+
+</DocumentExample>
 
 完成靜態建置後，在瀏覽器主控台執行這段 JavaScript。標題會變大，但不會加入類別或生成新規則。區域自訂屬性不需要註冊 `@theme`，也不需要 Master CSS 執行階段。如果類別名稱本身是在啟動後才首次出現，請使用[執行階段或漸進式渲染](/guide/rendering-modes#comparisons)。
 

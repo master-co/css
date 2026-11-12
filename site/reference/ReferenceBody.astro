@@ -2,11 +2,11 @@
 import { siteOf } from '@master/internal-site/astro/site-context'
 import { referenceLabel } from './ui'
 import '@master/css-language-service/shiki.css'
-import '@master/internal-site/styles/system/table.ts'
+import DocumentTableFrame from '@master/internal-site/components/DocumentTableFrame.astro'
 import '@master/internal-site/styles/system/inline-code.ts'
 import Link from '@master/internal-site/components/Link.svelte'
 import PreparedCodeView from '@master/internal-site/components/PreparedCodeView.astro'
-import { isStylesheetExample, referenceCodeProps } from './code-block'
+import { documentExampleEnd, isStylesheetExample, referenceCodeProps } from './code-block'
 import { anchorOf, createReferenceBodyContext, headingChildren, referenceCodeWrapper, referenceTable, type ReferenceBodyContext } from './reference-body'
 import DocumentAPIIndex from '@master/internal-site/components/DocumentAPIIndex.astro'
 import DocumentDeclarationView from '@master/internal-site/components/DocumentDeclarationView.astro'
@@ -15,7 +15,7 @@ import DocumentParameters from '@master/internal-site/components/DocumentParamet
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
 import DocumentOptions from '@master/internal-site/components/DocumentOptions.astro'
-import DocumentCodeExampleView from '@master/internal-site/components/DocumentCodeExampleView.astro'
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentCodeTable from '@master/internal-site/components/DocumentCodeTable.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import DocumentNamespaceTable from '@master/internal-site/components/DocumentNamespaceTable.astro'
@@ -39,13 +39,17 @@ const root = 'tree' in props
 const context = 'context' in props ? props.context : createReferenceBodyContext(props)
 
 // The document: a marked illustration renders as its figure, and top-level stylesheet source/result pairs as one example.
-const blocks: ({ example: { title: string, source: any, result: any } } | { illustration: ReferenceIllustrationId } | { node: any })[] = []
+const blocks: ({ group: any[] } | { example: { title: string, source: any, result: any } } | { illustration: ReferenceIllustrationId } | { node: any })[] = []
 if ('tree' in props) {
   const children = props.tree.children
   for (let index = 0; index < children.length; index++) {
     const [title, source, result] = children.slice(index, index + 3) as any[]
+    const exampleEnd = documentExampleEnd(children, index)
     const illustration = title.type === 'html' && title.value.match(/^<!-- reference-illustration:([\w-]+) -->$/)?.[1]
-    if (illustration) {
+    if (exampleEnd !== undefined) {
+      blocks.push({ group: children.slice(index + 1, exampleEnd) })
+      index = exampleEnd
+    } else if (illustration) {
       const end = children.findIndex((node: any, at: number) => at > index && node.type === 'html' && node.value === '<!-- /reference-illustration -->')
       if (end < 0) throw new Error(`Unclosed Reference illustration: ${illustration}`)
       blocks.push({ illustration: illustration as ReferenceIllustrationId })
@@ -76,10 +80,12 @@ const table = type === 'table' ? referenceTable(node) : undefined
 const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
 ---
 
-{root ? blocks.map(block => 'illustration' in block
+{root ? blocks.map(block => 'group' in block
+  ? <DocumentExample><Astro.self nodes={block.group} context={context} /></DocumentExample>
+  : 'illustration' in block
   ? <ReferenceIllustration id={block.illustration} />
   : 'example' in block
-  ? <DocumentCodeExampleView title={block.example.title} resultKind="generated-css"><PreparedCodeView slot="sourceCode" {...referenceCodeProps(block.example.source, true)} prepared={block.example.source.data.prepared} /><PreparedCodeView slot="resultCode" {...referenceCodeProps(block.example.result, true)} prepared={block.example.result.data.prepared} /></DocumentCodeExampleView>
+  ? <DocumentExample title={block.example.title} resultKind="generated-css"><PreparedCodeView slot="sourceCode" {...referenceCodeProps(block.example.source, true)} prepared={block.example.source.data.prepared} /><PreparedCodeView slot="resultCode" {...referenceCodeProps(block.example.result, true)} prepared={block.example.result.data.prepared} /></DocumentExample>
   : <Astro.self node={block.node} context={context} />)
   : nodes ? nodes.map(child => child.type === 'text' ? child.value : <Astro.self node={child} context={context} />)
   : type === 'text' ? node.value
@@ -114,8 +120,8 @@ const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
   }))} />
   : table?.kind === 'code' ? <DocumentCodeTable label={table.label} rows={table.rows} />
   : table?.kind === 'namespace' ? <DocumentNamespaceTable rows={table.rows} />
-  : table?.kind === 'table' && table.comparison ? <DocumentComparison><div class="sheet sheet-flat ui-table"><table class="table"><thead><tr class="table-row">{node.children[0].children.map((cell: any) => <th class="table-heading" scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div></DocumentComparison>
+  : table?.kind === 'table' && table.comparison ? <DocumentComparison><DocumentTableFrame><table class="table"><thead><tr class="table-row">{node.children[0].children.map((cell: any) => <th class="table-heading" scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></DocumentTableFrame></DocumentComparison>
   // A wide table's overflow region must be focusable for native keyboard scrolling.
-  : table?.kind === 'table' ? <div class="sheet sheet-flat ui-table" role="region" aria-label={table.label} tabindex="0"><table class="table"><thead><tr class="table-row">{node.children[0].children.map((cell: any) => <th class="table-heading" scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div>
+  : table?.kind === 'table' ? <DocumentTableFrame label={table.label}><table class="table"><thead><tr class="table-row">{node.children[0].children.map((cell: any) => <th class="table-heading" scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></DocumentTableFrame>
   : type === 'html' || type === 'definition' ? null
   : <Astro.self nodes={node.children ?? []} context={context} />}

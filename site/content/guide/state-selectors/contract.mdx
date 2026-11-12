@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -93,6 +94,8 @@ The position of a state determines which element must match it. These two classe
 
 <ReferenceIllustration id="selector-targets" />
 
+<DocumentExample>
+
 ```html
 <article class="underline:hover>a">
   <p>Documentation</p>
@@ -109,11 +112,15 @@ The position of a state determines which element must match it. These two classe
 
 <Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
 
+</DocumentExample>
+
 Hovering a link also hovers its ancestor article. In the first example, that makes both links eligible; in the second, the other link still fails its own `:hover` test. The article owns each class, but the declarations target its links. The link classes remove the default underline; the more specific parent-to-child selectors restore it when their hover tests match.
 
 ## Selector lists \{#selector-groups\}
 
 A top-level comma starts another branch from the same class-bearing element. Repeat each branch's combinator: `block>div,>span` targets direct `div` children and direct `span` children. The second branch does not continue from the first branch's target.
+
+<DocumentExample>
 
 ```html
 <section class="block>div,>span">
@@ -123,6 +130,8 @@ A top-level comma starts another branch from the same class-bearing element. Rep
 ```
 
 <Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+</DocumentExample>
 
 Commas inside functions or quoted attribute values stay inside those constructs. `underline:is(:hover,:focus-visible)` contains one selector suffix with two alternatives, rather than two top-level branches.
 
@@ -144,6 +153,8 @@ Commas inside functions or quoted attribute values stay inside those constructs.
 
 `:has()` tests a relationship without moving the declaration to the matched relative. `b-blue-60:has(>input:checked)` sets the label's border color when its direct child input is checked:
 
+<DocumentExample>
+
 ```html
 <label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
   <input type="checkbox" /> Include archived items
@@ -151,6 +162,8 @@ Commas inside functions or quoted attribute values stay inside those constructs.
 ```
 
 <Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+</DocumentExample>
 
 A relative match can also be a sibling: `underline:has(+input:checked)` underlines the class-bearing element when the next element sibling is a checked input. Native [`:has()` restrictions](https://www.w3.org/TR/selectors-4/#relational) still apply; nesting `:has()` inside itself is invalid. For a working checkbox example and a usable fallback, see [Compatibility](/guide/compatibility#new-selectors).
 
@@ -179,6 +192,8 @@ Master CSS preserves native pseudo-class names. The following are common suffixe
 
 Use complete names such as `:first-child` and `:nth-child(odd)`. A spelling that Master CSS emits can still be unsupported or invalid in the browser. The [native pseudo-class reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes) owns each state's detailed behavior.
 
+<DocumentExample>
+
 ```html
 <ul>
   <li class="bg-surface-inset:nth-child(even)">Draft</li>
@@ -188,6 +203,8 @@ Use complete names such as `:first-child` and `:nth-child(odd)`. A spelling that
 ```
 
 <Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+</DocumentExample>
 
 ## Attribute selectors \{#attribute-selectors\}
 
@@ -217,12 +234,16 @@ Attribute suffixes test the DOM value. A boolean-style attribute selector tests 
 
 Quoted attribute text remains literal: `underline[data-state=':first']:first-child` tests the value `:first` and separately tests the element's position. An underscore in `[data-id='a_b']` stays inside the value; an escaped underscore in `.is\_active` stays in the class identifier.
 
+<DocumentExample>
+
 ```html
 <a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
 <a class="underline.is\_active is_active" href="/reference">Reference</a>
 ```
 
 <Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+</DocumentExample>
 
 CSS quotes do not prevent HTML whitespace from splitting a class. Use a CSS escape for a literal space in an attribute value, such as `[data-label='New\000020collection']`. A quoted value can be followed directly by a case flag, as in `[data-kind='draft'i]` for an ASCII case-insensitive match. See [attribute selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors) for native operators and case matching.
 
@@ -236,6 +257,8 @@ CSS quotes do not prevent HTML whitespace from splitting a class. Use a CSS esca
 
 A pseudo-element suffix targets that pseudo-element rather than its originating element. For generated content, write the `content` declaration explicitly:
 
+<DocumentExample>
+
 ```html
 <span class="(content:open-quote)::before (content:close-quote)::after">
   Keep the interface clear.
@@ -243,6 +266,8 @@ A pseudo-element suffix targets that pseudo-element rather than its originating 
 ```
 
 <Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="pseudo-element-origin" />
 

@@ -5,6 +5,7 @@ figures: {"ColorIllustration":{"title":"模式改变，角色不变","alt":"明�
 demos: {"DemoRaisedSurface":{"title":"凸起表面","caption":"两份文档使用相同 class。表面、文本与阴影颜色由当前模式提供；阴影几何形状保持不变。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import ColorIllustration from './components/ColorIllustration.astro'
@@ -30,6 +31,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 <FoundationColorRoles />
 
+<DocumentExample>
+
 ```html
 <!-- @MARK bg-surface-raised --><!-- @MARK b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
 <section class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body">
@@ -40,6 +43,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['bg-surface-raised', 'b-line-divider', 'fg-text-muted']} />
+
+</DocumentExample>
 
 角色是颜色键名的一部分：`bg-surface-raised` 读取 `--color-surface-raised`，`b-line-divider` 读取 `--color-line-divider`。线条角色只设置颜色，因此边框宽度与样式须另外指定。[颜色角色](/reference/tokens/color-roles)列出所有角色，[调色板](/reference/tokens/color)则列出完整色阶。
 
@@ -53,6 +58,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 
 `fg-yellow` 这类色相别名是固定颜色，在每个模式中都使用相同的值。`fg-text-yellow` 这类文本色相别名则会按模式选择适合文本的前景色阶。请在实际背景上检查对比度；自适应别名无法保证每种搭配都合适。
 
+<DocumentExample>
+
 ```html
 <!-- @MARK fg-yellow --><!-- @MARK fg-text-yellow -->
 <svg class="fg-yellow" fill="currentColor" aria-hidden="true">…</svg>
@@ -60,6 +67,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['fg-yellow', 'fg-text-yellow']} />
+
+</DocumentExample>
 
 彩色标签使用文本色相别名；正文、强调文本与链接则使用文本角色。
 
@@ -70,6 +79,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 凸起表面结合表面角色、圆角 token 与阴影 token。可交互的表面在悬停或获得焦点时，将阴影提高一级。普通卡片与控件使用小圆角；`pill` 留给刻意完全圆润的形状，例如下方徽章。
 
 <DemoRaisedSurface />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK r-lg --><!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow-md:focus-visible --><!-- @MARK pill -->
@@ -82,6 +93,8 @@ import DemoRaisedSurface from './components/DemoRaisedSurface.astro'
 ```
 
 <Class2CSS classes={['r-lg', 'shadow-sm', 'shadow-md:hover', 'pill']} />
+
+</DocumentExample>
 
 预设阴影用 `light-dark()` 设置颜色，因此 `shadow-sm` 保留几何形状，并跟随元素的配色方案。`pill` 是固定工具类，不是圆角 token；宽高相等时会形成圆形。使用 `rtl-lg`、`rtr-lg`、`rbl-lg` 与 `rbr-lg` 可分别设置单个角。各种尺度与自定义方式请见[圆角](/reference/tokens/radius)与[阴影](/reference/tokens/shadow)。
 

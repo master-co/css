@@ -4,6 +4,7 @@ description: "적절한 반응형 경계를 선택하고 페이지 열과 재사
 figures: {"ResponsiveIllustration":{"title":"하나의 뷰포트, 두 컴포넌트 너비","alt":"한 페이지에서 같은 요약이 주 열에서는 448px 컨테이너를, 사이드바에서는 160px 컨테이너를 받습니다. 28rem 임계값에 도달한 주 열에서만 두 트랙이 나타납니다.","caption":"루트 크기가 16px일 때 28rem은 448px입니다. 이는 실제 컨테이너 너비입니다. 같은 뷰포트 안에서 넓은 요약은 두 트랙으로, 좁은 요약은 세로로 배치됩니다.","description":[{"title":"같은 뷰포트","text":"두 카드는 같은 페이지에 있습니다. 뷰포트 중단점은 두 카드에서 같은 너비를 봅니다."},{"title":"다른 컨테이너","text":"주 컨테이너는 448px, 사이드바 컨테이너는 160px 너비입니다."},{"title":"영역별 반응","text":"각 상위 요소는 container-inline을 사용합니다. 하위 카드는 grid-cols(1)과 grid-cols(2)@container(--md)를 사용하므로 주 카드만 프리셋의 28rem 쿼리에 도달합니다."}]},"GuideStudy:named-container-target":{"title":"이름 있는 쿼리는 더 가까운 컨테이너를 건너뜁니다","alt":"중첩된 article과 card 컨테이너 경계가 한 자식을 감쌉니다. 같은 파란색 표시는 자식의 article 쿼리를 바깥의 이름 있는 article 경계와 연결하며, 더 가까운 card 경계는 보라색으로 남습니다.","caption":"이름은 적격 상위 요소를 선택합니다. 쿼리 대상 요소는 그 상위 요소 안에 있어야 합니다. 컨테이너는 자기 자신을 조회하지 않습니다."},"GuideStudy:responsive-local-change":{"title":"표면을 다시 지정하지 않고 레이아웃 변경","alt":"두 카드는 표면, 반지름, 텍스트를 공유합니다. 부모가 임계값을 넘으면 레이아웃만 세로 배치에서 가로 배치로 바뀝니다.","caption":"조건부 레이아웃 클래스는 관련 없는 선언을 유지합니다. 이 도식은 핵심과 관계없는 카드 내용을 생략했습니다."}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -85,6 +86,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 <FoundationContainerGrid />
 
+<DocumentExample>
+
 ```html
 <section class="container-inline">
   <article class="grid-cols(1) gap-lg p-md b-solid b(1) b-line-divider r-lg bg-surface-raised grid-cols(2)@container(--md)">
@@ -107,6 +110,8 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 ```
 
 <Class2CSS classes={['container-inline', 'grid-cols(1)', 'grid-cols(2)@container(--md)']} />
+
+</DocumentExample>
 
 브라우저 창을 그대로 둔 채 **컨테이너** 슬라이더를 움직이세요. 뷰포트가 아닌 상위 요소의 크기를 바꿉니다. 글자 크기 16px에서 447px와 448px를 비교하면 448px에서 두 번째 열이 나타나야 합니다. 컨트롤은 기사의 가용 너비 안에 머무르므로 기사 자체가 임계값보다 좁다면 브라우저를 넓히세요.
 
@@ -142,11 +147,15 @@ import FoundationContainerGrid from '@master/internal-site/demo/foundations/Foun
 
 공유 스타일은 조건 없이 유지하세요. 다른 값이 필요한 속성과 범위에만 조건을 추가하세요. 예를 들어 aside는 `md` 미만에서 돌출 표면을 사용하고 더 큰 레이아웃에는 해당 배경을 적용하지 않을 수 있습니다.
 
+<DocumentExample>
+
 ```html
 <aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
 <Class2CSS classes={['bg-surface-raised@max-md']} />
+
+</DocumentExample>
 
 `@max-md`는 프리셋 `@md`의 여집합으로 두 조건은 겹치지 않습니다. `--md`를 다시 선언하면 두 경계가 함께 바뀝니다. `hidden@media(52.125rem<=width<=64rem)` 같은 로컬 범위 조건은 프로젝트의 명명된 임계값을 바꾸지 않고 특정 구간을 지정할 수 있습니다. 쿼리 구문은 [조건 레퍼런스](/reference/rules/conditions#mediafeature)를 참고하세요.
 

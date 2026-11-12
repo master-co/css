@@ -1,9 +1,7 @@
 ---
 import '@master/internal-site/styles/system/stage.ts'
-import '@master/internal-site/styles/system/tray.ts'
-import '@master/internal-site/styles/system/tray-code.css'
 import Code from '@master/internal-site/components/Code.astro'
-import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import InlineText from './InlineText.astro'
 import type { SheetExample } from './sheets'
 
@@ -22,12 +20,14 @@ const { example, preview = true, source = true, caption } = Astro.props
 ---
 
 {example.lead && <p><InlineText text={example.lead} /></p>}
-<figure class="tray ui-tray">
-  {preview && <div class="sheet sheet-flat ui-stage">
+<DocumentExample resultKind="generated-css" providedSlots={['sourceCode', 'resultCode', ...(preview ? ['preview'] : []), ...(caption ? ['caption'] : [])]}>
+  <Fragment slot="preview">{preview && <div class="sheet sheet-flat ui-stage">
     <div class="ref-example-scene" set:html={example.html} />
-  </div>}
-  {!preview && example.configuration && <Code lang="css" code={example.configuration} />}
-  {source && <Code lang="html" code={example.code} />}
-  <GeneratedCSS><Code lang="css" beautify code={example.css} /></GeneratedCSS>
-  {caption && <figcaption class="ui-tray-caption"><InlineText text={caption} plain /></figcaption>}
-</figure>
+  </div>}</Fragment>
+  <Fragment slot="sourceCode">
+    {!preview && example.configuration && <Code lang="css" code={example.configuration} />}
+    {source && <Code lang="html" code={example.code} />}
+  </Fragment>
+  <Code slot="resultCode" lang="css" beautify code={example.css} />
+  {caption && <InlineText slot="caption" text={caption} plain />}
+</DocumentExample>

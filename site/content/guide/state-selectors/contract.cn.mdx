@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -93,6 +94,8 @@ Master CSS 在生成的 CSS 选择器中转义完整类名。`.underline\:hover`
 
 <ReferenceIllustration id="selector-targets" />
 
+<DocumentExample>
+
 ```html
 <article class="underline:hover>a">
   <p>Documentation</p>
@@ -109,11 +112,15 @@ Master CSS 在生成的 CSS 选择器中转义完整类名。`.underline\:hover`
 
 <Class2CSS classes={['(text-decoration-line:none)', 'underline:hover>a', 'underline>a:hover']} />
 
+</DocumentExample>
+
 悬停链接时，其祖先 article 也会处于悬停状态。因此第一个示例中两个链接都符合条件；第二个示例中，另一个链接仍未通过自身的 `:hover` 检查。各类都属于 article，但声明指向它的链接。链接自身的类先移除默认下划线，优先级更高的父子选择器则在悬停条件匹配时恢复下划线。
 
 ## 选择器列表 \{#selector-groups\}
 
 顶层逗号会从同一个带有类的元素开始另一条分支。每条分支都要重复组合器：`block>div,>span` 选择直接的 `div` 子元素与直接的 `span` 子元素。第二条分支不会接续第一条分支的目标。
+
+<DocumentExample>
 
 ```html
 <section class="block>div,>span">
@@ -123,6 +130,8 @@ Master CSS 在生成的 CSS 选择器中转义完整类名。`.underline\:hover`
 ```
 
 <Class2CSS classes={['block>div,>span', "(content:'“')::before,::after"]} />
+
+</DocumentExample>
 
 函数或带引号属性值中的逗号仍留在该结构内。`underline:is(:hover,:focus-visible)` 是一个包含两种选项的选择器后缀，而不是两条顶层分支。
 
@@ -144,6 +153,8 @@ Master CSS 在生成的 CSS 选择器中转义完整类名。`.underline\:hover`
 
 `:has()` 检查关系，但不会将声明移到匹配的相关元素。`b-blue-60:has(>input:checked)` 在 label 的直接子 input 被选中时设置 label 的边框颜色：
 
+<DocumentExample>
+
 ```html
 <label class="b(1) b-solid b-line-control b-blue-60:has(>input:checked)">
   <input type="checkbox" /> Include archived items
@@ -151,6 +162,8 @@ Master CSS 在生成的 CSS 选择器中转义完整类名。`.underline\:hover`
 ```
 
 <Class2CSS classes={['b-blue-60:has(>input:checked)', 'underline:has(+input:checked)']} />
+
+</DocumentExample>
 
 相对匹配也可以是兄弟元素：`underline:has(+input:checked)` 在下一个兄弟元素是已选中的 input 时，为带有类的元素添加下划线。原生 [`:has()` 限制](https://www.w3.org/TR/selectors-4/#relational)仍然适用；将 `:has()` 嵌套在自身内部无效。可运行的复选框示例及实用回退方案见[兼容性](/guide/compatibility#new-selectors)。
 
@@ -179,6 +192,8 @@ Master CSS 保留原生伪类名称。以下为常用后缀，并非完整的状
 
 请使用 `:first-child`、`:nth-child(odd)` 这类完整名称。即使 Master CSS 能输出某种写法，浏览器仍可能不支持或视为无效。各状态的详细行为以[原生伪类参考](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes)为准。
 
+<DocumentExample>
+
 ```html
 <ul>
   <li class="bg-surface-inset:nth-child(even)">Draft</li>
@@ -188,6 +203,8 @@ Master CSS 保留原生伪类名称。以下为常用后缀，并非完整的状
 ```
 
 <Class2CSS classes={['bg-surface-inset:nth-child(even)', '(opacity:.5):disabled', 'mr-xs:dir(rtl)']} />
+
+</DocumentExample>
 
 ## 属性选择器 \{#attribute-selectors\}
 
@@ -217,12 +234,16 @@ Master CSS 保留原生伪类名称。以下为常用后缀，并非完整的状
 
 引号内的属性文本保留字面含义：`underline[data-state=':first']:first-child` 检查值 `:first`，并另行检查元素位置。`[data-id='a_b']` 中的下划线留在值内；`.is\_active` 中转义的下划线则留在类标识符内。
 
+<DocumentExample>
+
 ```html
 <a class="underline[data-state=':first']:first-child" data-state=":first" href="/guide">Guide</a>
 <a class="underline.is\_active is_active" href="/reference">Reference</a>
 ```
 
 <Class2CSS classes={["underline[data-state=':first']:first-child", "underline[data-id='a_b']", 'underline.is\\_active']} />
+
+</DocumentExample>
 
 CSS 引号无法阻止 HTML 空格分隔类。属性值中若需要真正的空格，请用 CSS 转义，例如 `[data-label='New\000020collection']`。带引号的值后可直接接大小写标志，例如 `[data-kind='draft'i]` 表示 ASCII 不区分大小写匹配。原生运算符与大小写匹配见[属性选择器](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Attribute_selectors)。
 
@@ -236,6 +257,8 @@ CSS 引号无法阻止 HTML 空格分隔类。属性值中若需要真正的空�
 
 伪元素后缀指向该伪元素，而非其来源元素。使用生成内容时请显式编写 `content` 声明：
 
+<DocumentExample>
+
 ```html
 <span class="(content:open-quote)::before (content:close-quote)::after">
   Keep the interface clear.
@@ -243,6 +266,8 @@ CSS 引号无法阻止 HTML 空格分隔类。属性值中若需要真正的空�
 ```
 
 <Class2CSS classes={['(content:open-quote)::before', '(content:close-quote)::after', '(background-color:currentcolor)::-webkit-scrollbar-thumb']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="pseudo-element-origin" />
 

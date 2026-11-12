@@ -360,6 +360,7 @@ jobs:
           path: |
             site/out/
             site/test-results/release-site.json
+            site/test-results/document-examples/
           if-no-files-found: error
           retention-days: 7
       - name: Build examples

@@ -103,6 +103,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import TransitionIllustration from './components/TransitionIllustration.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
@@ -278,6 +279,8 @@ root.addEventListener('click', event => {
 
 Master CSS でもこれらのネイティブなプロパティとセレクターを表せます。小さな固定キャプチャなら、次はネイティブ宣言と同等です：
 
+<DocumentExample>
+
 ```html
 <html class="(animation-duration:.5s)::view-transition-group(.article)">
   <body>
@@ -292,6 +295,8 @@ Master CSS でもこれらのネイティブなプロパティとセレクター
   '(view-transition-class:article)',
   '(animation-duration:.5s)::view-transition-group(.article)'
 ]} />
+
+</DocumentExample>
 
 擬似要素のユーティリティは画像ではなく `html` に置きます。マウント済みコンポーネントで追加する場合は、共通ルート上のクラスの寿命も管理します。アニメーションのセレクター、キーフレーム、モーション条件が増えるほど、ネイティブスタイルシートで判断をまとめると範囲を調べやすくなります。
 

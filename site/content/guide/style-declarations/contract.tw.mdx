@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import FixedUtilities from '~/site/reference/FixedUtilities.astro'
@@ -89,11 +90,15 @@ Master CSS 會輸出特定相容宣告，例如在 `backdrop-filter` 旁加入 `
 
 即使值包含 CSS 引號，HTML 空白仍會分隔 class。class 值內未加引號的 `_` 會編碼一個空白，與選擇器之間的用法相同；引號字串或 `url()` 內的底線則維持原樣。逗號與斜線等 CSS 標點應保留在原位。
 
+<DocumentExample>
+
 ```html
 <div class="(color:rgb(30_60_90/80%)) (content:'a_b')::before"></div>
 ```
 
 <Class2CSS classes={['(color:rgb(30_60_90/80%))', "(content:'a_b')::before", '(animation-name:slide\\_in)', '(color:red)_a']} />
+
+</DocumentExample>
 
 色彩值會成為 `rgb(30 60 90 / 80%)`，content 字串則保留為 `'a_b'`。CSS 字串中需要真正空白時，請使用 `\000020` 這類 CSS 跳脫：`(content:'New\000020collection')::before` 會產生「New collection」。六位數跳脫可避免 HTML class 中出現終止空白。
 
@@ -168,6 +173,8 @@ token 前綴由 utility 定義註冊，不會從屬性縮寫推論。`p-md` 讀�
 
 `(--name:value)` 頭部會在符合選擇器的元素上宣告 CSS 自訂屬性。它可使用與其他宣告相同的選擇器與條件，不會註冊 utility 或主題 token。
 
+<DocumentExample>
+
 ```html
 <div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
   Progress
@@ -175,6 +182,8 @@ token 前綴由 utility 定義註冊，不會從屬性縮寫推論。`p-md` 讀�
 ```
 
 <Class2CSS classes={['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']} />
+
+</DocumentExample>
 
 `var(--progress)` 使用一般 CSS 解析與繼承規則。未解析的變數或替換後不相容的值，可能讓引用該值的宣告失效；請視需要使用 [CSS 變數備援值](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var)。[語法教學](/guide/syntax-tutorial#complete-card)說明如何固定 class，並另外提供動態值。
 

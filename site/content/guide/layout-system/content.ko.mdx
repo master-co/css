@@ -4,6 +4,7 @@ description: "너비를 제한한 래퍼, 간격 토큰, 열 그리드, 명시�
 figures: {"LayoutIllustration":{"title":"항목의 열 범위를 그리드와 함께 조정","alt":"8열 그리드에서 헤더는 8열 전체, 두 지표는 각각 4열을 차지하며 마지막 행은 수요 영역 5열과 작업 영역 3열로 나뉩니다.","caption":"넓은 레이아웃은 같은 너비의 트랙 8개를 사용합니다. 각 행은 8, 4 + 4, 5 + 3으로 트랙을 모두 배분하며 거터는 트랙 사이에 놓입니다.","description":[{"title":"하나의 그리드","text":"넓은 구성은 grid-cols(8)을 사용하며 각 트랙 사이 간격은 같습니다."},{"title":"전체 행과 공유 행","text":"헤더는 8개 트랙, 각 지표는 4개 트랙을 차지합니다. 수요와 작업 영역은 각각 5개와 3개를 차지합니다."},{"title":"함께 조정","text":"중단점에서 그리드 열 수를 바꾸면 해당 열 수에 의존하는 열 범위도 같은 중단점에서 갱신하세요."}]},"GuideStudy:width-cap-growth":{"title":"너비 상한은 작은 부모에도 대응","alt":"두 부모에 같은 너비 상한의 콘텐츠 상자가 있습니다. 작은 부모는 상자 너비를 제한하고 큰 부모는 최대 너비에 도달한 상자 주위에 여유 공간을 남깁니다.","caption":"상한은 최대값이지 고정 너비가 아닙니다. 그려진 너비는 같은 척도를 사용하며 라벨은 뷰포트 픽셀이 아닌 제약을 설명합니다."},"GuideStudy:grid-long-content":{"title":"줄어드는 트랙에도 텍스트 줄바꿈이 필요","alt":"같은 너비의 두 그리드 트랙에서 짧은 라벨과 줄바꿈되는 긴 라벨을 비교합니다. 두 번째 행의 높이가 늘어나도 트랙 경계는 정렬을 유지합니다.","caption":"minmax(0,1fr)은 트랙을 줄어들게 하지만 텍스트에는 적절한 줄바꿈 정책이 여전히 필요합니다. 높이는 콘텐츠를 따릅니다."}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LayoutIllustration from './components/LayoutIllustration.astro'
@@ -16,6 +17,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 (resize) 슬라이더나 화살표 키로 뷰포트를 조절해 조밀한 세로 배치가 8열 구성으로 바뀌는 모습을 확인하세요.
 
 <DemoPageViewport src="/examples/layout-system" title="작업 공간 레이아웃" height={540} />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
@@ -31,6 +34,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
+
+</DocumentExample>
 
 <LayoutIllustration />
 
@@ -92,12 +97,16 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 래퍼가 부모를 채우게 하고 컨테이너 크기로 상한을 설정한 뒤 가운데 배치하세요. 콘텐츠의 양옆 여백은 간격 체계에서 선택합니다.
 
+<DocumentExample>
+
 ```html
 <!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
 <main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
 ```
 
 <Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
+
+</DocumentExample>
 
 페이지 정렬은 래퍼가 담당하고 콘텐츠 간의 관계는 내부 그리드로 정하세요.
 
@@ -118,6 +127,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 (o) 같은 중단점에서 기사가 8열을 차지합니다.
 
+<DocumentExample>
+
 ```html
 <!-- @MARK grid-col-span(8)@md -->
 <section class="grid-cols(4) gap-lg grid-cols(12)@md">
@@ -127,6 +138,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="span-includes-gaps" />
 
@@ -138,6 +151,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 고정 또는 혼합 트랙에는 네이티브 `grid-template-columns` 값을 작성하세요. 트랙은 `_`로 구분하며 생성 CSS에서는 공백으로 변환됩니다.
 
+<DocumentExample>
+
 ```html
 <!-- @MARK (grid-template-columns:4.5rem_minmax(0,1fr)) -->
 <section class="grid (grid-template-columns:4.5rem_minmax(0,1fr)) gap-md">
@@ -147,6 +162,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['(grid-template-columns:4.5rem_minmax(0,1fr))', 'min-w(0)']} />
+
+</DocumentExample>
 
 `min-w(0)`은 주 영역이 콘텐츠 너비보다 작게 줄어들 수 있게 합니다. 일반 콘텐츠에는 같은 너비의 열과 열 병합을 유지하고 앱 셸과 분할 창에는 명시적 트랙을 사용하세요.
 

@@ -1,23 +1,15 @@
 ---
-import Code from '@master/internal-site/components/Code.astro'
+import SharedClass2CSS from '@master/internal-site/css/Class2CSS.astro'
 import type { CodeProp } from '@master/internal-site/components/code-props'
 import { slotText } from '@master/internal-site/utils/slot-text'
-import { generatePresetCSS } from '@master/internal-site/css/generate-preset-css.ts'
-import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
 
 type Props = Partial<CodeProp> & {
   /** The classes to compile, as a list or a space-separated string. Text children work too: `<Class2CSS>p-md shadow-md</Class2CSS>`. */
   classes?: string | readonly string[]
 }
 
-function normalizeClasses(classes: unknown) {
-  const input = Array.isArray(classes) ? classes : [classes]
-  return input.flatMap((classNames) => String(classNames ?? '').split(/\s+/).filter(Boolean))
-}
-
 // A slot renders an array of strings as one joined text, so lists of classes come through `classes`.
 const { classes = await slotText(Astro.slots), ...props } = Astro.props
-const generatedCSS = generatePresetCSS(normalizeClasses(classes))
 ---
 
-<GeneratedCSS><Code {...props} lang="css" beautify code={generatedCSS} /></GeneratedCSS>
+<SharedClass2CSS {...props} classes={classes} />

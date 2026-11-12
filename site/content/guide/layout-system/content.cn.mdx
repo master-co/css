@@ -4,6 +4,7 @@ description: "用限宽外层容器、间距 token、列网格与显式轨道组
 figures: {"LayoutIllustration":{"title":"跨列数与网格同步调整","alt":"八列网格中，页首跨满八列，两个指标各跨四列，最后一行分为五列的需求区与三列的任务区。","caption":"宽布局使用八条等宽轨道。每行都完整分配这些轨道：8、4 + 4，再来是 5 + 3。列间距位于轨道之间。","description":[{"title":"同一套网格","text":"宽版配置使用 grid-cols(8)，每对轨道之间都有相同间距。"},{"title":"整行与共用行","text":"页首跨八条轨道，每个指标跨四条；需求与任务区分别跨五条与三条。"},{"title":"同步调整","text":"断点改变网格列数时，在相同断点更新依赖它的跨列数。"}]},"GuideStudy:width-cap-growth":{"title":"宽度上限为较小父元素保留弹性","alt":"两个父元素包含相同的限宽内容框。较小父元素限制内容宽度；较大父元素则在达到最大宽度的内容框周围留下空间。","caption":"上限是最大值，不是固定宽度。图中宽度采用同一比例；标签描述限制条件，而非视口像素。"},"GuideStudy:grid-long-content":{"title":"可收缩轨道仍需要文本换行","alt":"两条等宽网格轨道比较短标签与会换行的长标签。第二行高度增加，轨道边界仍保持对齐。","caption":"minmax(0,1fr) 让轨道可收缩；文本仍需适当的换行策略。高度由内容决定。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LayoutIllustration from './components/LayoutIllustration.astro'
@@ -16,6 +17,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 (resize) 使用滑块或方向键调整视口，观察布局从紧凑堆叠转为八列配置。
 
 <DemoPageViewport src="/examples/layout-system" title="工作区布局" height={540} />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
@@ -31,6 +34,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
+
+</DocumentExample>
 
 <LayoutIllustration />
 
@@ -92,12 +97,16 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 让外层容器填满父元素，用容器尺寸设置上限、居中，并从间距尺度中选择两侧留白：
 
+<DocumentExample>
+
 ```html
 <!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
 <main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
 ```
 
 <Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
+
+</DocumentExample>
 
 外层容器负责页面对齐，内部网格则负责内容之间的关系。
 
@@ -118,6 +127,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 (o) 文章在相同断点改为跨八列。
 
+<DocumentExample>
+
 ```html
 <!-- @MARK grid-col-span(8)@md -->
 <section class="grid-cols(4) gap-lg grid-cols(12)@md">
@@ -127,6 +138,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="span-includes-gaps" />
 
@@ -138,6 +151,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 需要固定或混合轨道时，写出原生 `grid-template-columns` 值。使用 `_` 分隔轨道，生成 CSS 时会转为空格：
 
+<DocumentExample>
+
 ```html
 <!-- @MARK (grid-template-columns:4.5rem_minmax(0,1fr)) -->
 <section class="grid (grid-template-columns:4.5rem_minmax(0,1fr)) gap-md">
@@ -147,6 +162,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['(grid-template-columns:4.5rem_minmax(0,1fr))', 'min-w(0)']} />
+
+</DocumentExample>
 
 `min-w(0)` 让主要区域可缩小至内容宽度以下。普通内容保持等宽列与跨列设置；应用外壳与分割面板再使用显式轨道。
 

@@ -4,6 +4,7 @@ description: "幅を制限したラッパー、間隔トークン、列グリッ
 figures: {"LayoutIllustration":{"title":"項目のスパンをグリッドに合わせる","alt":"8列のグリッドで、ヘッダーは8列すべて、2つの指標は各4列を使います。最後の行は需要の5列とタスクの3列に分かれます。","caption":"広いレイアウトでは等幅の8トラックを使います。各行は 8、4 + 4、5 + 3 と全トラックを配分します。ガターはトラック間にあります。","description":[{"title":"1つのグリッド","text":"広い構成は grid-cols(8) を使い、各トラック間に同じ間隔を設けます。"},{"title":"全幅と共有の行","text":"ヘッダーは8トラック、各指標は4トラック、需要とタスクはそれぞれ5トラックと3トラックにまたがります。"},{"title":"同時に適応させる","text":"ブレークポイントで列数を変えたら、それに依存するスパンも同じ境界で更新します。"}]},"GuideStudy:width-cap-growth":{"title":"幅の上限は小さな親にも対応できる","alt":"2つの親に同じ幅制限のある内容ボックスが入っています。小さい親では親が幅を制限し、大きい親では最大幅のボックスの周囲に余白が残ります。","caption":"上限は最大値であり、固定幅ではありません。幅は共通の尺度で描き、ラベルはビューポートのピクセル数ではなく制約を説明します。"},"GuideStudy:grid-long-content":{"title":"縮められるトラックでも文字の折り返しは必要","alt":"等幅の2つのグリッドトラックで、短いラベルと折り返す長いラベルを比較します。2行目の高さが増えてもトラックの境界は揃ったままです。","caption":"minmax(0,1fr) はトラックを縮められるようにしますが、文字には適切な折り返しの指定も必要です。高さは内容に従います。"}}
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
 import LayoutIllustration from './components/LayoutIllustration.astro'
@@ -16,6 +17,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 (resize) スライダーや矢印キーでビューポートを調整し、コンパクトな縦並びから8列の構成に変わる様子を確認してください。
 
 <DemoPageViewport src="/examples/layout-system" title="ワークスペースのレイアウト" height={540} />
+
+<DocumentExample>
 
 ```html
 <!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
@@ -31,6 +34,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['max-w-3xl', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-md@2xs', 'grid-col-span(5)@2xs']} />
+
+</DocumentExample>
 
 <LayoutIllustration />
 
@@ -92,12 +97,16 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 ラッパーを親いっぱいに広げ、コンテナーサイズで上限を設け、中央に配置します。内容の左右の余白は間隔スケールから選びます。
 
+<DocumentExample>
+
 ```html
 <!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
 <main class="w-full max-w-7xl mx-auto px-md px-xl@md">…</main>
 ```
 
 <Class2CSS classes={['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']} />
+
+</DocumentExample>
 
 ページ全体の位置合わせはラッパーが担い、内容同士の関係は内側のグリッドで決めます。
 
@@ -118,6 +127,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 (o) 同じブレークポイントで記事を8列に広げます。
 
+<DocumentExample>
+
 ```html
 <!-- @MARK grid-col-span(8)@md -->
 <section class="grid-cols(4) gap-lg grid-cols(12)@md">
@@ -127,6 +138,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['grid-cols(4)', 'grid-cols(12)@md', 'grid-col-span(8)@md']} />
+
+</DocumentExample>
 
 <ReferenceIllustration id="span-includes-gaps" />
 
@@ -138,6 +151,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 
 固定幅や混在したトラックには、ネイティブの `grid-template-columns` 値を記述します。トラックを `_` で区切ると、生成 CSS では空白になります。
 
+<DocumentExample>
+
 ```html
 <!-- @MARK (grid-template-columns:4.5rem_minmax(0,1fr)) -->
 <section class="grid (grid-template-columns:4.5rem_minmax(0,1fr)) gap-md">
@@ -147,6 +162,8 @@ import DemoPageViewport from '@master/internal-site/demo/DemoPageViewport.astro'
 ```
 
 <Class2CSS classes={['(grid-template-columns:4.5rem_minmax(0,1fr))', 'min-w(0)']} />
+
+</DocumentExample>
 
 `min-w(0)` を使うとメイン領域を内容の幅より狭くできます。通常の内容には等幅の列とスパンを使い、アプリの外枠や分割ペインには明示的なトラックを使います。
 
