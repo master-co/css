@@ -219,8 +219,10 @@
       font-size: 0.875rem;
     }
 
+    /* Each code-line bleeds by --code-padding-x to the pane's edges and pads its text back in, so the pane's inset is that one value. */
     & .ui-code .home-code-window-pre {
-      padding-inline: 0;
+      --code-padding-x: var(--home-tokens-inset);
+      padding-inline: var(--code-padding-x);
     }
 
     /* The code takes the pane's width, not its longest line's, so long lines wrap. */
@@ -244,7 +246,6 @@
 
   /* Whole-pixel lines keep neighbouring tints joined. */
   .home-tokens-code .line {
-    padding-inline: var(--home-tokens-inset);
     line-height: 1.625rem;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
