@@ -28,4 +28,4 @@ bun run dev
 
 Open the URL printed by Nuxt. From this directory, run `bun run build`, then `bun run preview` to inspect the production build. Use `bun run generate` to produce a prerendered site.
 
-Nuxt also supports `runtime`, `prerender`, and `progressive`. The module uses Nitro to render CSS from HTML in `prerender` and `progressive`. See the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs).
+Nuxt also supports `runtime`, `prerender`, and `progressive`. The module uses Nitro to render CSS from HTML in `prerender` and `progressive`. See the [Nuxt installation guide](https://css.master.co/guide/installation/nuxtjs).

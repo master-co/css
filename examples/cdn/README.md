@@ -92,4 +92,4 @@ In `iife.html`, replace both stylesheet URLs with `./base.css`, both script URLs
 `hidden` prevents the unstyled first paint. Handled program errors or the runtime's three-second startup timeout reveal the content. If JavaScript is disabled or the script itself cannot load, it cannot remove `hidden`; omit that attribute when readability must survive those cases, or use static CSS.
 
 ## Documentation
-Check out the official [CDN installation guide](https://rc.css.master.co/guide/installation#cdn).
+Check out the official [CDN installation guide](https://css.master.co/guide/installation#cdn).

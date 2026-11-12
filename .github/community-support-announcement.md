@@ -2,7 +2,7 @@
 
 Starting with this announcement, we’re running a 60-day trial with GitHub Discussions as the primary place for Master CSS questions and community feedback. Keeping answers together will make them easier to find and reuse, while giving maintainers more time for the project.
 
-- [Documentation](https://rc.css.master.co/guide/installation): setup, guides, and [reference](https://rc.css.master.co/reference).
+- [Documentation](https://css.master.co/guide/installation): setup, guides, and [reference](https://css.master.co/reference).
 - [GitHub Discussions](https://github.com/master-co/css/discussions): usage questions, ideas, and sharing what you build. English and Chinese are welcome.
 - [GitHub Issues](https://github.com/master-co/css/issues): reproducible bugs and concrete improvements.
 - [Releases](https://github.com/master-co/css/releases): release notes and version updates.
@@ -17,7 +17,7 @@ If this change makes it harder for you to participate, please tell us in this di
 
 自這篇公告發布起，我們將試行 60 天，以 GitHub Discussions 作為 Master CSS 問答與社群回饋的主要入口，讓答案更容易查找與重複使用，也讓維護者能集中時間改善專案。
 
-使用問題、想法與作品分享請到 [Discussions](https://github.com/master-co/css/discussions)，歡迎使用中文或英文；可重現的錯誤請開 [Issue](https://github.com/master-co/css/issues)。教學與參考資料請查閱[文件](https://rc.css.master.co/guide/installation)，版本更新請看 [Releases](https://github.com/master-co/css/releases)。
+使用問題、想法與作品分享請到 [Discussions](https://github.com/master-co/css/discussions)，歡迎使用中文或英文；可重現的錯誤請開 [Issue](https://github.com/master-co/css/issues)。教學與參考資料請查閱[文件](https://css.master.co/guide/installation)，版本更新請看 [Releases](https://github.com/master-co/css/releases)。
 
 提問時請附上 Master CSS 版本、框架、渲染模式、已嘗試的方法，以及適用時的最小重現範例。維護者與社群將以非即時方式回覆，不保證固定回覆時間。
 

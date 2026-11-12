@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <div className='grid-cols(2) w-fit mx-auto'>
-        <a href="https://rc.css.master.co" target="_blank" rel="noreferrer">
+        <a href="https://css.master.co" target="_blank" rel="noreferrer">
           <img src={masterLogo} className="(scale:2) logo master" alt="Master logo" />
         </a>
         <a href="https://reactjs.org" target="_blank" rel="noreferrer">

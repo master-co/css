@@ -28,4 +28,4 @@ bun run dev
 
 Open the URL printed by Vite. From this directory, run `bun run build` to generate `dist/`, then `bun run preview` to inspect the production build.
 
-See the [Lit installation guide](https://rc.css.master.co/guide/installation/lit).
+See the [Lit installation guide](https://css.master.co/guide/installation/lit).

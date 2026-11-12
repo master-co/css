@@ -28,4 +28,4 @@ bun run dev
 
 Open the URL printed by Vite. From this directory, run `bun run build` to generate `dist/`. `bun run preview` rebuilds and previews the production output; `bun run lint` checks the example.
 
-See the [React setup in the Vite installation guide](https://rc.css.master.co/guide/installation/vite#react).
+See the [React setup in the Vite installation guide](https://css.master.co/guide/installation/vite#react).

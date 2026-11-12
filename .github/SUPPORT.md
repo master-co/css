@@ -1,7 +1,7 @@
 # Getting help with Master CSS
 
-Start with the [installation guide](https://rc.css.master.co/guide/installation)
-and [reference](https://rc.css.master.co/reference). Include the Master CSS version
+Start with the [installation guide](https://css.master.co/guide/installation)
+and [reference](https://css.master.co/reference). Include the Master CSS version
 you use when asking for help so readers can distinguish published releases from
 the current checkout.
 

@@ -5,9 +5,9 @@ loading-boundary refactor, or a missing-CSS failure that requires tracing delive
 For an ordinary component edit, keep its styles with their owner and run the local
 checks; do not turn it into a whole-site audit.
 
-The public conceptual source is [Optimizing CSS delivery](https://rc.css.master.co/guide/optimizing-css-delivery).
-Its Authoring prerequisites are [Route-level styles](https://rc.css.master.co/guide/route-level-styles)
-and [Scanning class names](https://rc.css.master.co/guide/scanning-and-pruning).
+The public conceptual source is [Optimizing CSS delivery](https://css.master.co/guide/optimizing-css-delivery).
+Its Authoring prerequisites are [Route-level styles](https://css.master.co/guide/route-level-styles)
+and [Scanning class names](https://css.master.co/guide/scanning-and-pruning).
 Native pruning workflow belongs to the delivery guide; directive grammar belongs
 to Reference. Use the documentation matching the installed release. Source inspection and a
 manifest snapshot describe inputs and definitions; they do not measure production

@@ -24,8 +24,8 @@ The active project manifest is authoritative. A load failure requires fixing tha
 context, not silently using `context: "preset"`.
 
 This skill targets Manifest v6 / language v18. Read the project's matching release
-documentation if its versions differ. The current preview documentation is
-<https://rc.css.master.co>; use its Reference index and per-page Markdown for focused
+documentation if its versions differ. The current documentation is
+<https://css.master.co>; use its Reference index and per-page Markdown for focused
 lookups. Do not load the complete documentation bundle for an ordinary style edit.
 
 Query only relevant namespaces through `mastercss_manifest_query`. Prefer nearby

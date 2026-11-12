@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Documentation
-    url: https://rc.css.master.co/guide/installation
+    url: https://css.master.co/guide/installation
     about: Read the installation guide and reference before opening a support request.
   - name: Questions & Discussions
     url: https://github.com/master-co/css/discussions

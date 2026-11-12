@@ -1,6 +1,6 @@
 # Master CSS benchmarks
 
-Advisory measurement suites for Master CSS build, delivery, browser and runtime costs. The published charts and their limits are on the [Benchmarks page](https://rc.css.master.co/benchmarks); this file records how the data is produced and how to read it.
+Advisory measurement suites for Master CSS build, delivery, browser and runtime costs. The published charts and their limits are on the [Benchmarks page](https://css.master.co/benchmarks); this file records how the data is produced and how to read it.
 
 ## Methodology
 

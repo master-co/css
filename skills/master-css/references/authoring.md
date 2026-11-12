@@ -77,7 +77,7 @@ JavaScript. Apply a small edit, lint it, and check its browser behavior.
 Keep component styles at their loading owner; shared definitions need not import
 all native feature rules. Complete class maps support static extraction and native
 pruning. Runtime/progressive may generate valid names first known in the browser.
-Use [Route-level styles](https://rc.css.master.co/guide/route-level-styles) for local
-ownership and definition sharing, and [Scanning class names](https://rc.css.master.co/guide/scanning-and-pruning)
+Use [Route-level styles](https://css.master.co/guide/route-level-styles) for local
+ownership and definition sharing, and [Scanning class names](https://css.master.co/guide/scanning-and-pruning)
 for source discovery, complete alternatives and bounded safelists.
 Read [delivery](delivery.md) only when optimization or a delivery failure is in scope.

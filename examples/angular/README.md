@@ -26,4 +26,4 @@ The production server listens on `http://localhost:4000` by default, or the port
 
 Run `bun run test` for the configured Karma unit tests. No end-to-end test runner is configured.
 
-See the [Angular installation guide](https://rc.css.master.co/guide/installation/angular) for application setup options.
+See the [Angular installation guide](https://css.master.co/guide/installation/angular) for application setup options.

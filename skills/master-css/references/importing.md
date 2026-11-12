@@ -18,7 +18,7 @@ the CSS the component actually uses. If only a snippet is available and its
 configuration is unknown, state the missing evidence and request the necessary
 context; do not advertise a visually faithful conversion based on default names.
 
-Read <https://rc.css.master.co/guide/migration/tailwindcss> for the current Master
+Read <https://css.master.co/guide/migration/tailwindcss> for the current Master
 workflow and the installed Tailwind version's official documentation for source
 semantics. The default palettes, spacing scales and breakpoints differ.
 
