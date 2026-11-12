@@ -4,7 +4,7 @@ description: "Design and refine web interfaces: principles, foundations, accessi
 license: MIT
 metadata:
   author: master-co
-  version: "0.3.1"
+  version: "0.3.2"
 ---
 
 # Master Design
@@ -38,7 +38,7 @@ Use these craft references when the visible mechanism needs closer inspection:
 
 | Work | Reference |
 | --- | --- |
-| Rings, hairlines, layered shadows and dark surfaces | [Surfaces](references/surfaces.md) |
+| Rings, hairlines, layered shadows, dark surfaces and textures | [Surfaces](references/surfaces.md) |
 | Insets, painted boundaries, nested and continuous corners | [Geometry](references/geometry.md) |
 | Image outlines, crop, container edges and avatar stacks | [Images](references/images.md) |
 | CJK and mixed scripts, wrapping, figures, visible glyphs and icons | [Typography](references/typography.md) |

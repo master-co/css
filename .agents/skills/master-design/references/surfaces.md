@@ -22,3 +22,9 @@ A dark stripe below a card suggests accumulated ring/contact weight. A dirty hal
 A hard white inner rim needs an actual material purpose. Solid near-white panels often need no inner highlight. Keep deliberate flat or strongly outlined styles where appropriate; shadow is not a mandatory elevation system.
 
 Check native straight edges, corners and states against actual surrounding tones. A decorative hairline is not automatically an adequate input boundary. Forced-colors mode can remove shadows; use native controls or a targeted system-color border/outline fallback without disturbing layout.
+
+## Textures
+
+A repeated drawing across a face (dots, a grid, stripes, a checker) marks room that holds no content: an open stage, measured space, an area kept clear, the ground behind something transparent. Give each texture one such meaning within a project and keep it to specimens, margins and empty regions. Never put one under running text or controls, where marks cross letterforms and lower contrast. Its ink belongs below the faintest structural line nearby, so the eye finds the edge of what stands on it before it notices the drawing; a texture that reads first has become decoration.
+
+Draw marks with hard-stopped gradients so the stated weight is the drawn weight, and count tiles from a whole-pixel origin: a tile centered in a box of odd width lands on half a pixel and blurs every mark. Check hairline textures at 1x as well as 2x, where a half-pixel line may vanish or double. A texture never carries meaning alone; forced-colors mode may remove it, so a boundary or a label must still say what the room is.
