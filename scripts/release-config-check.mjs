@@ -134,3 +134,12 @@ process.stdout.write(`Validated ${packageRoots.length} release package(s) in dep
 process.stdout.write('Validated OIDC-only npm publication configuration in both workflows.\n')
 process.stdout.write('Validated gated, exact-output Pages Git delivery without Cloudflare credentials.\n')
 process.stdout.write('Validated the MCP Registry listing of every stable release.\n')
+
+
+const cutoverVariable = "${{ vars[format('MASTER_LEGACY_DESIGN_CUTOVER_{0}', github.ref_name == 'main' && 'STABLE' || 'RC')] == '1' && '1' || '0' }}"
+assert.equal(releaseWorkflow.jobs['deploy-site'].env.MASTER_LEGACY_DESIGN_CUTOVER, cutoverVariable)
+const validationCutover = YAML.parse(readFileSync(new URL('../.github/workflows/validation.yml', import.meta.url), 'utf8'))
+const cutoverSteps = Object.values(validationCutover.jobs).flatMap(job => job.steps ?? []).filter(step => step.env?.MASTER_CSS_IMAGE_TRANSFORMATIONS !== undefined)
+assert.equal(cutoverSteps.length, 3)
+for (const step of cutoverSteps) assert.equal(step.env.MASTER_LEGACY_DESIGN_CUTOVER, cutoverVariable)
+assert.ok(hosted.includes('MASTER_CSS_IMAGE_TRANSFORMATIONS|MASTER_LEGACY_DESIGN_CUTOVER)'))

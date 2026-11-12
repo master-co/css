@@ -6,6 +6,7 @@ import { chromium, webkit } from '@playwright/test'
 
 const browserName = process.env.MASTER_SITE_BROWSER ?? 'chromium'
 const base = process.env.MASTER_SITE_URL ?? 'http://127.0.0.1:3217'
+const organization = process.env.MASTER_ORGANIZATION_URL
 const output = new URL(`../test-results/interior-redesign/navigation-${browserName}/`, import.meta.url)
 let browser
 before(async () => { await mkdir(output, { recursive: true }); browser = await ({ chromium, webkit })[browserName].launch() })
@@ -14,9 +15,24 @@ after(async () => { await browser?.close() })
 async function open(route, { width = 390, scheme = 'light', js = true, touch = false, motion = 'reduce' } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, reducedMotion: motion, javaScriptEnabled: js, hasTouch: touch })
   const page = await context.newPage()
+  // Preserve the product's actual HTTPS redirect; optionally serve its destination from the Master candidate.
+  if (organization) await page.route('https://master.co/**', async route => {
+    const target = new URL(route.request().url())
+    const response = await route.fetch({ url: new URL(target.pathname + target.search, organization).href })
+    await route.fulfill({ response })
+  })
   const errors = []
   page.on('pageerror', error => errors.push(error.message))
-  const response = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
+  let destination = base + route
+  if (/^\/(?:tw\/)?blog(?:\/|$)/.test(route)) {
+    const redirect = await context.request.get(base + route, { maxRedirects: 0 })
+    assert.equal(redirect.status(), 301, 'CSS delegates Blog ownership with a permanent redirect')
+    assert.equal(redirect.headers().location, `https://master.co${route}`)
+    // Playwright routes only the first URL in an HTTP redirect chain. Start a separate
+    // candidate navigation after checking the real 301; public validation follows it normally.
+    if (organization) destination = redirect.headers().location
+  }
+  const response = await page.goto(destination, { waitUntil: 'networkidle', timeout: 60000 })
   if (route.endsWith('/404')) assert.ok([200, 404].includes(response.status()), 'a named 404 template is a normal HTML resource in static preview')
   else assert.equal(response.status(), 200)
   await page.evaluate(() => document.fonts.ready)
@@ -32,7 +48,7 @@ test(`${browserName}: unknown paths serve the actual 404 response and recovery c
       assert.equal(response.status(), 404)
       assert.equal(await page.locator('h1').count(), 1)
       assert.equal(await page.locator('.ui-not-found .ui-search-trigger').count(), 1)
-      assert.equal(await page.locator('.ui-not-found > a.ui-button').count(), 1)
+      assert.equal(await page.locator('.ui-not-found > a.btn').count(), 1)
       await noOverflow(page)
     }
   } finally { await context.close() }
@@ -44,7 +60,7 @@ async function noOverflow(page, selector = 'html') {
 }
 
 for (const width of [320, 390, 768]) for (const section of ['guide', 'reference']) {
-  test(`${browserName} ${width} ${section}: chapters, nested search, Escape and focus`, { timeout: 60000 }, async () => {
+  test(`${browserName} ${width} ${section}: site navigation, search handoff, Escape and focus`, { timeout: 60000 }, async () => {
     const route = section === 'guide' ? '/guide/introduction' : '/reference/rules/conditions'
     const { context, page, errors } = await open(route, { width, scheme: section === 'reference' ? 'dark' : 'light', touch: true })
     try {
@@ -55,7 +71,14 @@ for (const width of [320, 390, 768]) for (const section of ['guide', 'reference'
       await trigger.focus(); await trigger.press('Enter')
       const menu = page.getByRole('dialog', { name: 'Navigation', exact: true })
       await menu.waitFor()
-      assert.ok(await menu.locator('.ui-sidebar a').count() > 15, 'the menu carries the section\'s complete chapter list')
+      // The preserved mobile shell contains site navigation, community and preferences.
+      const nav = menu.locator('.ui-mobile-menu-nav')
+      for (const [name, href] of [['Guide', '/guide'], ['Reference', '/reference'], ['Blog', 'https://master.co/blog']]) {
+        assert.equal(await nav.getByRole('link', { name, exact: true }).getAttribute('href'), href)
+      }
+      assert.equal(await menu.locator('.ui-sidebar').count(), 0)
+      assert.ok(await menu.locator('.ui-mobile-menu-community a').count() > 0)
+      assert.equal(await menu.locator('.ui-mobile-menu-preferences select').count(), 3)
       assert.equal(await menu.getByRole('button', { name: 'Close menu' }).count(), 1)
       const close = menu.getByRole('button', { name: 'Close menu' })
       await close.focus(); await page.keyboard.press('Shift+Tab')
@@ -66,16 +89,21 @@ for (const width of [320, 390, 768]) for (const section of ['guide', 'reference'
       await lookup.getByRole('combobox').pressSequentially('padding')
       await lookup.getByRole('option').first().waitFor()
       await page.keyboard.press('Escape')
-      assert.equal(await menu.isVisible(), true)
-      assert.equal(await search.evaluate(element => element === document.activeElement), true)
-      await noOverflow(page, 'dialog.ui-dialog[data-variant="sheet"]')
+      assert.equal(await menu.isVisible(), false, 'search replaces the mobile menu')
+      assert.equal(await page.evaluate(() => {
+        const active = document.activeElement
+        return !!active?.closest('header') && active.getClientRects().length > 0 && ['Menu', 'Search documentation'].includes(active.getAttribute('aria-label'))
+      }), true, 'search restores a visible header control')
+      await trigger.click()
+      await menu.waitFor()
+      await noOverflow(page, 'dialog.ui-mobile-menu[data-variant="sheet"]')
       await page.screenshot({ path: new URL(`${width}-${section}-menu.png`, output).pathname })
       await page.keyboard.press('Escape')
       assert.equal(await page.getByRole('dialog').count(), 0)
       assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
       await trigger.click()
       await page.setViewportSize({ width: 1280, height: 900 })
-      await page.waitForFunction(() => !document.querySelector('dialog.ui-dialog[data-variant="sheet"]'))
+      await page.waitForFunction(() => !document.querySelector('dialog.ui-mobile-menu[data-variant="sheet"][open]'))
       assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).overflowY !== 'hidden'), true)
       assert.deepEqual(errors, [])
     } finally { await context.close() }
@@ -86,13 +114,18 @@ test(`${browserName}: language changes retain a document query and semantic anch
   const { context, page } = await open('/guide/introduction?source=brand#what-is-master-css')
   try {
     await page.getByRole('button', { name: 'Menu', exact: true }).click()
-    const select = page.locator('.ui-dialog-fields label').filter({ hasText: 'Language' }).locator('select')
+    const select = page.locator('.ui-mobile-menu-preferences').getByRole('combobox', { name: 'Language', exact: true })
     await Promise.all([page.waitForURL(url => url.pathname === '/tw/guide/introduction'), select.selectOption('tw')])
     const url = new URL(page.url())
     assert.equal(url.search, '?source=brand')
     assert.equal(url.hash, '#what-is-master-css')
     assert.equal(await page.getByRole('dialog').count(), 0)
     assert.equal(await page.getByRole('link', { name: 'Master CSS 首頁', exact: true }).count(), 1)
+    await page.getByRole('button', { name: '選單', exact: true }).click()
+    for (const href of ['/tw/guide', '/tw/reference', 'https://master.co/tw/blog']) {
+      assert.equal(await page.locator('.ui-mobile-menu-nav').locator(`a[href="${href}"]`).count(), 1)
+    }
+    await page.keyboard.press('Escape')
     const tracking = await page.locator('article.ui-prose :is(h1,h2,h3)').evaluateAll(headings => headings.map(heading => getComputedStyle(heading).letterSpacing))
     assert.ok(tracking.every(value => value === 'normal' || parseFloat(value) === 0), 'the localized document keeps natural heading tracking')
   } finally { await context.close() }
@@ -125,8 +158,8 @@ test(`${browserName}: enlarged navigation and contents disclosure retain local b
   try {
     await page.addStyleTag({ content: 'html{font-size:32px!important}' })
     await page.getByRole('button', { name: /Menu|選單/, exact: true }).click()
-    await noOverflow(page, 'dialog.ui-dialog[data-variant="sheet"]')
-    await page.locator('.ui-dialog-fields').scrollIntoViewIfNeeded()
+    await noOverflow(page, 'dialog.ui-mobile-menu[data-variant="sheet"]')
+    await page.locator('.ui-mobile-menu-preferences').scrollIntoViewIfNeeded()
     await page.screenshot({ path: new URL('320-tw-enlarged-menu.png', output).pathname })
     await page.keyboard.press('Escape')
     await noOverflow(page)
@@ -144,19 +177,17 @@ test(`${browserName}: enlarged navigation and contents disclosure retain local b
 })
 
 test(`${browserName}: documentation column geometry stays at the recorded baseline`, { timeout: 180000 }, async () => {
-  const baseline = JSON.parse(await readFile(new URL('../test-results/interior-redesign/document-baseline/geometry.json', import.meta.url), 'utf8'))
-  const entries = Array.isArray(baseline) ? baseline : baseline.results
-  for (const entry of entries) {
-    const { context, page } = await open(entry.path, { width: entry.width })
+  const baseline = JSON.parse(await readFile(new URL('./document-column-baseline.json', import.meta.url), 'utf8'))
+  for (const entry of baseline.results) {
+    const { context, page } = await open(entry.path, { width: entry.width, scheme: entry.scheme })
     try {
-      const actual = await page.evaluate(() => Object.fromEntries(Object.entries({ article: 'article.ui-prose', sidebar: '#sidebar', contents: 'nav.ui-toc[data-rail]' }).map(([key, selector]) => {
+      const actual = await page.evaluate(selectors => Object.fromEntries(selectors.map(selector => {
         const element = document.querySelector(selector)
-        if (!element?.getClientRects().length) return [key, null]
+        if (!element) return [selector, null]
         const rect = element.getBoundingClientRect()
-        return [key, { x: rect.x, width: rect.width }]
-      })))
-      const expected = entry.columns ?? entry
-      for (const key of ['article', 'sidebar', 'contents']) assert.deepEqual(actual[key], expected[key], `${entry.width} ${entry.path} ${key}`)
+        return [selector, { x: rect.x, width: rect.width, ...(selector === 'header.ui-header' ? { height: rect.height } : {}) }]
+      })), Object.keys(entry.boxes))
+      assert.deepEqual(actual, entry.boxes, `${entry.width} ${entry.scheme} ${entry.path}: original shell geometry`)
     } finally { await context.close() }
   }
 })
@@ -169,7 +200,7 @@ for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserNam
     await page.addStyleTag({ content: 'html{font-size:32px!important}' })
     await noOverflow(page)
     if (route.endsWith('/404')) {
-      const target = await page.locator('.ui-not-found > a.ui-button').getAttribute('href')
+      const target = await page.locator('.ui-not-found > a.btn').getAttribute('href')
       // Static hosting serves the same 404 HTML fallback to unknown locales.
       const language = await page.locator('html').getAttribute('lang')
       assert.equal(target, language.startsWith('zh') ? '/tw/guide' : '/guide')
@@ -182,7 +213,10 @@ for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserNam
       assert.equal(await query.inputValue(), 'padding', 'initial typing survives the dialog opening and index loading')
       await page.keyboard.press('Escape')
       assert.equal(await page.locator('.ui-not-found .ui-search-trigger').evaluate(element => element === document.activeElement), true)
-    } else assert.equal(await page.locator('.blog-entry-link').count(), 2)
+    } else {
+      const links = await page.locator('.blog-entry-link').evaluateAll(elements => elements.map(element => new URL(element.href).pathname.replace(/^\/tw\//, '/')).sort())
+      assert.deepEqual(links, ['/blog/bootstrapping-master-css-with-vite', '/blog/master-css-next', '/blog/master-css-v2'])
+    }
     await page.screenshot({ path: new URL(`${route.replaceAll('/', '-')}-320-enlarged.png`, output).pathname, fullPage: true })
     assert.deepEqual(errors, [])
   } finally { await context.close() }
@@ -202,7 +236,8 @@ test(`${browserName}: enlarged Blog article titles and author links remain fully
       assert.ok(box.x >= 0 && box.x + box.width <= 321, 'the author link fits the page')
       assert.ok(box.height >= 44, 'the complete author link offers a standalone touch target')
       if (slug === 'master-css-next') {
-        const second = await page.getByRole('link', { name: /^BenSeage\b/ }).boundingBox()
+        // A contributor without a profile URL is readable attribution, not an invented link.
+        const second = await page.locator('.blog-article-author').filter({ hasText: /^BenSeage$/ }).boundingBox()
         assert.ok(second.x >= 0 && second.x + second.width <= 321, 'the second author wraps into available space')
       }
       await page.screenshot({ path: new URL(`${locale ? 'tw' : 'en'}-${slug}-320-enlarged.png`, output).pathname })
@@ -213,7 +248,7 @@ test(`${browserName}: enlarged Blog article titles and author links remain fully
 
 test(`${browserName}: pages without a document sidebar keep a visible desktop search entry`, { timeout: 120000 }, async () => {
   // The homepage is left out: its compact header hides the search entry on desktop by design (data-compact).
-  for (const locale of ['', '/tw']) for (const route of ['/brand', '/blog', '/design-system', '/404']) {
+  for (const locale of ['', '/tw']) for (const route of ['/guide', '/reference', '/benchmarks', '/404']) {
     const { context, page, errors } = await open(locale + route, { width: 1024 })
     try {
       const tw = (await page.locator('html').getAttribute('lang')).startsWith('zh')

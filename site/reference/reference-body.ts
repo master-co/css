@@ -11,6 +11,7 @@ export interface ReferenceBodyContext {
   definitions: Map<string, any>
   headingOf: Map<any, ReferenceRenderDocument['headings'][number]>
   entrypointOf: Map<any, string>
+  plainInlineCode: WeakSet<object>
 }
 
 const headingAnchor = /\s+\{#[\w-]+\}$/
@@ -20,18 +21,22 @@ export function createReferenceBodyContext({ tree, headings }: Pick<ReferenceRen
   for (const node of tree.children) if (node.type === 'definition') definitions.set(node.identifier, node)
   const headingOf = new Map<any, ReferenceRenderDocument['headings'][number]>()
   const entrypointOf = new Map<any, string>()
+  const plainInlineCode = new WeakSet<object>()
   let headingIndex = 0
   let entrypoint = ''
-  function visit(node: any) {
+  function visit(node: any, plainCode = false) {
+    // Headings and ordinary data tables use plain identifiers; prose and parameter descriptions use code chips.
+    plainCode ||= node.type === 'heading' || node.type === 'table' && referenceTable(node).kind === 'table'
+    if (node.type === 'inlineCode' && plainCode) plainInlineCode.add(node)
     if (node.type === 'heading') {
       if (node.depth === 2) entrypoint = node.children.map((child: any) => child.value ?? '').join('').replace(headingAnchor, '')
       if (node.depth === 2 || node.depth === 3) headingOf.set(node, headings[headingIndex++])
     }
     if (node.type === 'table') entrypointOf.set(node, entrypoint)
-    node.children?.forEach(visit)
+    node.children?.forEach((child: any) => visit(child, plainCode))
   }
-  tree.children.forEach(visit)
-  return { definitions, headingOf, entrypointOf }
+  tree.children.forEach(node => visit(node))
+  return { definitions, headingOf, entrypointOf, plainInlineCode }
 }
 
 /** Heading text without its trailing `{#id}`. */

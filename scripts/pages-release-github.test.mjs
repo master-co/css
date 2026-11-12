@@ -5,7 +5,7 @@ import { identityPath, inventoryDigest, jsonBytes, manifestName, manifestUrl, sh
 
 const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
   channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
-  origin: 'https://css.master.co', imageTransformations: false }
+  origin: 'https://css.master.co', imageTransformations: false, legacyDesignCutover: false }
 const files = [{ path: 'index.html', size: 10, sha256: 'a'.repeat(64) }, { path: identityPath, size: 20, sha256: 'b'.repeat(64) }]
 const manifest = { schemaVersion: 1, ...metadata, files, buildDigest: inventoryDigest(files),
   registry: { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [

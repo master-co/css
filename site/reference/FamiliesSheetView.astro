@@ -39,10 +39,10 @@ const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, st
     ? <h2 id={group.id}>{group.pages.map(page => page.title).join(l('and'))}</h2>
     : <h2 id="other">{l('otherFamilies')}</h2>}
   <SheetTable class="ref-family-table" head={['Prefix', 'Token namespace', 'Properties'].map(header => referenceHeader(locale, header))} keyWidth="5.5rem">
-    {rows.map((row, index) => <tr id={rows.findIndex(other => other.prefix === row.prefix) === index ? `family-${row.prefix}` : undefined}>
-      <th scope="row"><code>{row.prefix}-</code></th>
-      <td><code>--{row.namespace}-*</code></td>
-      <td><code>{row.property}</code></td>
+    {rows.map((row, index) => <tr class="table-row" id={rows.findIndex(other => other.prefix === row.prefix) === index ? `family-${row.prefix}` : undefined}>
+      <th class="table-cell table-primary" scope="row"><code>{row.prefix}-</code></th>
+      <td class="table-cell"><code>--{row.namespace}-*</code></td>
+      <td class="table-cell"><code>{row.property}</code></td>
     </tr>)}
   </SheetTable>
   {group && <p class="ref-links">{l('valuesIn')} {group.pages.map((page, index) => <Fragment>{index ? l('and') : ''}<Link href={page.href}>{page.title}</Link></Fragment>)}.</p>}

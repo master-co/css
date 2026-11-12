@@ -1,4 +1,5 @@
 ---
+import '@master/internal-site/styles/system/table.ts'
 import { siteOf } from '@master/internal-site/astro/site-context.ts'
 import { fixedUtilityRows } from './fixed-utilities'
 import { referenceLabel } from './ui'
@@ -6,7 +7,9 @@ import { referenceLabel } from './ui'
 const { locale } = siteOf(Astro)
 ---
 
-<table>
-  <thead><tr><th>{referenceLabel(locale, 'class')}</th><th>{referenceLabel(locale, 'declarations')}</th></tr></thead>
-  <tbody>{fixedUtilityRows.map(row => <tr><td><code>{row.className}</code></td><td><code>{row.declaration}</code></td></tr>)}</tbody>
+<div class="sheet sheet-flat ui-table" role="region" aria-label={referenceLabel(locale, 'class')} tabindex="0">
+<table class="table">
+  <thead><tr class="table-row"><th class="table-heading" scope="col">{referenceLabel(locale, 'class')}</th><th class="table-heading" scope="col">{referenceLabel(locale, 'declarations')}</th></tr></thead>
+  <tbody>{fixedUtilityRows.map(row => <tr class="table-row"><td class="table-cell"><code>{row.className}</code></td><td class="table-cell"><code>{row.declaration}</code></td></tr>)}</tbody>
 </table>
+</div>

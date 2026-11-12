@@ -11,7 +11,7 @@ import { createManifest, inventoryDigest, jsonBytes, manifestName, manifestUrl, 
 const revision = 'a'.repeat(40)
 const metadata = { repository: 'master-co/css', revision, releaseRevision: revision, version: '2.0.0', tag: 'v2.0.0', channel: 'main',
   deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
-  origin: 'https://css.master.co', imageTransformations: false }
+  origin: 'https://css.master.co', imageTransformations: false, legacyDesignCutover: false }
 const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [
   { name: '@master/css', version: metadata.version, integrity: 'sha512-YQ==', provenance: true }
 ] }
@@ -158,7 +158,8 @@ test('the real hosted shell command fails before installing tools when release i
   assert.deepEqual(await readdir(temporary), [], 'The rejected build removes its temporary evidence directory')
 })
 
-test('the real hosted shell exports the exact release and rejects altered rebuilt bytes before success', async t => {
+for (const cutover of [false, true]) test(`the real hosted shell exports the exact release and cutover=${cutover}, rejecting altered bytes`, async t => {
+  const delivery = { ...metadata, legacyDesignCutover: cutover }
   const root = await mkdtemp(path.join(tmpdir(), 'master-pages-hosted-'))
   t.after(() => rm(root, { recursive: true, force: true }))
   for (const name of ['scripts', 'tools', 'packages/css', 'site/.cache', 'verified/assets']) await mkdir(path.join(root, name), { recursive: true })
@@ -167,11 +168,12 @@ test('the real hosted shell exports the exact release and rejects altered rebuil
   }
   await writeFile(path.join(root, 'packages/css/package.json'), JSON.stringify({ name: '@master/css' }))
   const payload = { 'index.html': '<p>Release fixture</p>', 'assets/a.css': 'a{color:red}' }
+  if (cutover) Object.assign(payload, { '_worker.js': 'export default {}', '_routes.json': '{"version":1}' })
   for (const [name, contents] of Object.entries(payload)) await writeFile(path.join(root, 'verified', name), contents)
-  await prepareIdentity(path.join(root, 'verified'), metadata)
+  await prepareIdentity(path.join(root, 'verified'), delivery)
   const report = { revision, origin: metadata.origin, pages: 1, localLinks: 2, failures: [], sourceStatus: [],
     profiles: ['chromium', 'firefox', 'webkit'].map(engine => ({ engine })), buildDigest: inventoryDigest(await outputInventory(path.join(root, 'verified'))) }
-  const manifest = await createManifest(path.join(root, 'verified'), metadata, jsonBytes(report), registry)
+  const manifest = await createManifest(path.join(root, 'verified'), delivery, jsonBytes(report), registry)
   await writeFile(path.join(root, 'manifest.json'), jsonBytes(manifest))
   await writeFile(path.join(root, 'payload.json'), JSON.stringify(payload))
   await writeFile(path.join(root, 'site/.cache/previous'), 'generated cache')
@@ -203,7 +205,7 @@ fs.appendFileSync('trace.txt', process.argv.slice(2).join(' ')+'\\n')
 if(process.argv[2]==='install') {
  if(fs.existsSync('site/.cache')) throw new Error('Old generated cache was not cleared')
 } else if(process.argv[2]==='run' && process.argv[3]==='build:site') {
- if(process.env.PUBLIC_VERSION!=='2.0.0'||process.env.PUBLIC_COMMIT_REF!=='main'||process.env.PUBLIC_URL!=='https://css.master.co'||process.env.MASTER_CSS_IMAGE_TRANSFORMATIONS!=='false') throw new Error('Wrong build environment')
+ if(process.env.PUBLIC_VERSION!=='2.0.0'||process.env.PUBLIC_COMMIT_REF!=='main'||process.env.PUBLIC_URL!=='https://css.master.co'||process.env.MASTER_CSS_IMAGE_TRANSFORMATIONS!=='false'||process.env.MASTER_LEGACY_DESIGN_CUTOVER!==${JSON.stringify(cutover ? '1' : '0')}) throw new Error('Wrong build environment')
  fs.rmSync('site/out',{recursive:true,force:true})
  for(const [name,contents] of Object.entries(JSON.parse(fs.readFileSync('payload.json')))) {
   fs.mkdirSync(path.dirname('site/out/'+name),{recursive:true});fs.writeFileSync('site/out/'+name,contents)
@@ -212,7 +214,7 @@ if(process.argv[2]==='install') {
 `)
   const env = { PATH: `${path.join(root, 'tools')}${path.delimiter}${process.env.PATH}`, HOME: root, TMPDIR: root,
     NODE_OPTIONS: `--import=${pathToFileURL(path.join(root, 'fetch.mjs')).href}`, ...cf,
-    PAGES_FIXTURE_MANIFEST: path.join(root, 'manifest.json') }
+    MASTER_LEGACY_DESIGN_CUTOVER: cutover ? '1' : '0', PAGES_FIXTURE_MANIFEST: path.join(root, 'manifest.json') }
   const result = execFileSync('bash', [path.join(root, 'scripts/build-site-hosted.sh')], { env, stdio: 'pipe', encoding: 'utf8' })
   assert.ok(result.includes(manifest.buildDigest))
   assert.deepEqual((await readFile(path.join(root, 'trace.txt'), 'utf8')).trim().split('\n'), ['install --frozen-lockfile', 'run build:site'])
@@ -359,4 +361,14 @@ test('real successful delivery records bootstrap and production checks separatel
     assert.equal(attempt.pages.checkRunId, 42)
     assert.equal(attempt.manifestSha256, attempt.asset.sha256)
   }
+})
+
+
+test('cutover is opt-in and part of both builder identities', () => {
+  for (const flag of [undefined, '', '0', 'true']) {
+    assert.equal(ciMetadata({ ...ci, MASTER_LEGACY_DESIGN_CUTOVER: flag }, runGit).legacyDesignCutover, false)
+    assert.equal(hostedMetadata({ ...cf, MASTER_LEGACY_DESIGN_CUTOVER: flag }, runGit).legacyDesignCutover, false)
+  }
+  assert.equal(ciMetadata({ ...ci, MASTER_LEGACY_DESIGN_CUTOVER: '1' }, runGit).legacyDesignCutover, true)
+  assert.equal(hostedMetadata({ ...cf, MASTER_LEGACY_DESIGN_CUTOVER: '1' }, runGit).legacyDesignCutover, true)
 })

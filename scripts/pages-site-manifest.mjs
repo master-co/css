@@ -11,7 +11,7 @@ export const channels = {
 }
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 export const jsonBytes = value => Buffer.from(JSON.stringify(value, null, 2) + '\n')
-const metadataKeys = ['repository', 'revision', 'releaseRevision', 'version', 'tag', 'channel', 'deliveryBranch', 'project', 'subdomain', 'origin', 'imageTransformations']
+const metadataKeys = ['repository', 'revision', 'releaseRevision', 'version', 'tag', 'channel', 'deliveryBranch', 'project', 'subdomain', 'origin', 'imageTransformations', 'legacyDesignCutover']
 
 export function releaseMetadata(input) {
   const result = Object.fromEntries(metadataKeys.map(key => [key, input[key]]))
@@ -28,6 +28,8 @@ export function releaseMetadata(input) {
   assert.match(result.project ?? '', /^[a-z0-9][a-z0-9-]{0,62}$/, 'A Pages project name is required')
   assert.match(result.subdomain ?? '', /^[a-z0-9][a-z0-9-]{0,62}\.pages\.dev$/, 'Use the actual Pages subdomain, independently of the project name')
   assert.equal(result.imageTransformations, false, 'Both builders must use portable images')
+  result.legacyDesignCutover ??= false
+  assert.equal(typeof result.legacyDesignCutover, 'boolean', 'Cutover must be an explicit boolean')
   return result
 }
 
@@ -71,6 +73,13 @@ export async function outputInventory(directory, excluded = new Set()) {
   return files
 }
 
+function assertLegacyDesignAssets(files, metadata) {
+  const paths = new Set(files.map(file => file.path))
+  for (const file of ['_worker.js', '_routes.json']) {
+    assert.equal(paths.has(file), metadata.legacyDesignCutover, `${file} presence differs from the legacy design cutover`)
+  }
+}
+
 function identityBytes(metadata, payloadDigest) {
   // This descriptor does not contain its own hash or the enclosing manifest hash.
   return jsonBytes({ schemaVersion: 1, ...metadata, payloadDigest })
@@ -80,6 +89,7 @@ export async function prepareIdentity(directory, input) {
   const metadata = releaseMetadata(input)
   const payload = await outputInventory(directory, new Set([identityPath]))
   assert.ok(payload.some(file => file.path.endsWith('.html')), 'Production HTML is required')
+  assertLegacyDesignAssets(payload, metadata)
   const target = path.join(directory, identityPath)
   // Inventory rejects a preexisting symlink, including at the reserved path.
   await mkdir(path.dirname(target), { recursive: true })
@@ -116,6 +126,7 @@ export function validateManifest(value, expected) {
     assert.ok(Number.isSafeInteger(file.size) && file.size >= 0 && file.size <= 25 * 1024 ** 2)
     assert.match(file.sha256 ?? '', /^[a-f0-9]{64}$/)
   }
+  assertLegacyDesignAssets(value.files, metadata)
   const paths = value.files.map(file => file.path)
   assert.deepEqual(paths, [...new Set(paths)].sort(), 'Manifest paths must be unique and sorted')
   assert.ok(paths.includes(identityPath) && paths.some(file => file.endsWith('.html')))
@@ -153,6 +164,7 @@ export async function checkVerifiedOutput(directory, input, reportBytes) {
   assert.equal(report.origin, metadata.origin)
   assert.deepEqual(report.failures, [], 'Browser verification must succeed before publishing its manifest')
   const files = await outputInventory(directory)
+  assertLegacyDesignAssets(files, metadata)
   assert.equal(report.buildDigest, inventoryDigest(files), 'Browser proof must cover the final output including its public identity')
   const payload = files.filter(file => file.path !== identityPath)
   assert.ok((await readFile(path.join(directory, identityPath))).equals(identityBytes(metadata, inventoryDigest(payload))), 'Public site identity differs from this delivery')

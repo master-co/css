@@ -4,7 +4,7 @@ import { markdownTree } from '@master/internal-site/utils/markdown-tree'
 import { createReferenceCopyLoader, referenceCopy, referenceCopyResources, referenceEditorial, requiredReferenceContracts, referenceText } from './copy'
 import { tokenPages } from './sheet-editorial'
 import { tokenSheet } from './sheets'
-import { referenceTable } from './reference-body'
+import { createReferenceBodyContext, referenceTable } from './reference-body'
 import { localizeReferenceMarkdown, readRequiredReferenceContract } from './build'
 import { extractReferenceMdx } from './markdown'
 import { documentHeadings } from './headings'
@@ -143,6 +143,20 @@ test('structured Reference tables do not depend on their visible header language
   }
   const values = referenceTable(table('| Token | Class | Declaration |\n| --- | --- | --- |\n| `--x` | `x` | `width:var(--x)` |'))
   assert.equal(values.kind, 'table', 'three code columns are facts, not project options')
+})
+
+test('Reference distinguishes plain identifiers from editorial inline code', () => {
+  const source = '## `heading`\n\nUse **`prose`** here.\n\n| Code | Meaning |\n| --- | --- |\n| `fact` | Plain table identifier |\n\n| Name | Default | Description |\n| --- | --- | --- |\n| `option` | `false` | Use `detail` in a parameter description. |'
+  const tree = markdownTree(source)
+  const context = createReferenceBodyContext({ tree, headings: documentHeadings(source) })
+  const code = new Map<string, object>()
+  const visit = (node: any) => {
+    if (node.type === 'inlineCode') code.set(node.value, node)
+    node.children?.forEach(visit)
+  }
+  visit(tree)
+  for (const value of ['heading', 'fact']) assert.equal(context.plainInlineCode.has(code.get(value)!), true, value)
+  for (const value of ['prose', 'detail']) assert.equal(context.plainInlineCode.has(code.get(value)!), false, value)
 })
 
 test('portable locale links preserve fragments and keep fenced example code verbatim', () => {

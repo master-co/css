@@ -33,12 +33,6 @@ async function readyFrame(iframe) {
   return frame
 }
 
-/** Open the closed handbook disclosure that holds a specimen, so its frame can load. */
-async function reveal(demo) {
-  await demo.evaluate(element => { const details = element.closest('details'); if (details) details.open = true })
-  await demo.scrollIntoViewIfNeeded()
-}
-
 async function noPageOverflow(page) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, 'wide specimens scroll inside their own frame')
 }
@@ -150,59 +144,6 @@ test(`${engine}: example theme control updates the iframe and keeps the document
   } finally { await context.close() }
 })
 
-// Both motion specimens are kept together in the Design System authoring handbook.
-test(`${engine}: finite motion and native dialog preserve reduced-motion and focus behavior`, { timeout: 90000 }, async () => {
-  const { context, page, errors } = await open('/design-system/authoring', { motion: 'no-preference' })
-  try {
-    const demo = page.locator('[data-foundation-type-motion="finite-motion"]')
-    await reveal(demo)
-    const frame = await readyFrame(demo.locator('iframe'))
-    const readouts = frame.locator('[data-animation-readout]')
-    assert.equal(await readouts.count(), 2)
-    assert.ok(await readouts.evaluateAll(elements => elements.every(element => element.getAttribute('aria-live') === 'off')), 'frequent timeline updates do not become live announcements')
-    assert.ok(await frame.evaluate(() => document.getAnimations().every(animation => animation.playState === 'paused')))
-    await demo.getByRole('button', { name: 'Play', exact: true }).click()
-    await frame.waitForFunction(() => document.getAnimations().some(animation => ['running', 'finished'].includes(animation.playState)))
-    await demo.getByRole('button', { name: 'Pause', exact: true }).click()
-    assert.ok(await frame.evaluate(() => document.getAnimations().every(animation => animation.playState === 'paused')))
-    assert.ok((await readouts.allTextContents()).every(value => value.startsWith('paused')), 'the current timeline remains readable')
-    await demo.getByRole('button', { name: 'Replay', exact: true }).click()
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-    await frame.waitForFunction(() => document.getAnimations().every(animation => animation.playState !== 'running'))
-    assert.equal(await frame.locator('#fade').evaluate(element => getComputedStyle(element).opacity), '1')
-    const dialogDemo = page.locator('[data-foundation-type-motion="dialog-entrance"]')
-    const dialogFrame = await readyFrame(dialogDemo.locator('iframe'))
-    const trigger = dialogFrame.getByRole('button', { name: 'Open details', exact: true })
-    await trigger.click()
-    const dialog = dialogFrame.getByRole('dialog', { name: 'Collection details', exact: true })
-    assert.equal(await dialog.evaluate(element => element.matches(':modal')), true)
-    await page.screenshot({ path: new URL('native-dialog.png', output).pathname })
-    await page.keyboard.press('Escape')
-    assert.equal(await dialog.isVisible(), false)
-    assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
-    await noPageOverflow(page)
-    assert.deepEqual(errors, [])
-  } finally { await context.close() }
-})
-
-// The sizing specimen lives in the Design System authoring handbook.
-test(`${engine}: enlarged sizing specimen retains the measured avatar while its text reflows`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/tw/design-system/authoring', { width: 320, enlarged: true })
-  try {
-    const demo = page.locator('[data-foundation="sizing"]')
-    await reveal(demo)
-    const avatar = demo.locator('.ui-item')
-    assert.equal(Math.round((await avatar.boundingBox()).width), 96, 'the authored 3rem avatar is preserved at a 32px root')
-    const canvas = await demo.locator('.ui-stage').boundingBox()
-    const prose = demo.getByText('Measured avatar. Flexible content.', { exact: true })
-    const text = await prose.boundingBox()
-    assert.ok(text.x >= canvas.x && text.x + text.width <= canvas.x + canvas.width, 'the flexible text stays in the specimen')
-    await noPageOverflow(page)
-    await demo.screenshot({ path: new URL('320-tw-enlarged-sizing.png', output).pathname })
-    assert.deepEqual(errors, [])
-  } finally { await context.close() }
-})
-
 test(`${engine}: delivery payload bars compare complete responses on one scale`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/benchmarks', { width: 390, scheme: 'dark' })
   try {
@@ -241,23 +182,6 @@ if (engine === 'chromium') test('chromium: forced colors retain palette samples 
       return { chip: element.classList.contains('ui-palette-chip'), visible: element.matches(':focus-visible'), width: parseFloat(style.outlineWidth), offset: parseFloat(style.outlineOffset), style: style.outlineStyle }
     })
     assert.ok(focus.chip && focus.visible && focus.width >= 2 && focus.offset >= 2 && focus.style !== 'none', 'keyboard focus has a visible offset boundary')
-    await noPageOverflow(page)
-    assert.deepEqual(errors, [])
-  } finally { await context.close() }
-})
-
-if (engine === 'chromium') test('chromium: forced colors retain resource-discovery bar boundaries', { timeout: 60000 }, async () => {
-  // The resource waterfall is kept as a design-system specimen.
-  const { context, page, errors } = await open('/design-system/review/waterfall', { width: 390, scheme: 'dark' })
-  try {
-    await page.emulateMedia({ forcedColors: 'active' })
-    assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
-    const bars = await page.locator('.ui-waterfall-track > i').evaluateAll(elements => elements.map(element => {
-      const style = getComputedStyle(element)
-      return { width: parseFloat(style.borderTopWidth), style: style.borderTopStyle, border: style.borderTopColor, track: getComputedStyle(element.parentElement).backgroundColor }
-    }))
-    assert.ok(bars.length > 0)
-    assert.ok(bars.every(bar => bar.width > 0 && bar.style !== 'none' && bar.border !== bar.track), 'each interval remains distinguishable from its track')
     await noPageOverflow(page)
     assert.deepEqual(errors, [])
   } finally { await context.close() }

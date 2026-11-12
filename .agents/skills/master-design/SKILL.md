@@ -1,15 +1,15 @@
 ---
 name: master-design
-description: Build and refine web interface details in the project's existing design language. Use for surfaces, images and avatars, typography, spacing, icons, component states, responsive layouts and interaction polish, with implementation and visual verification.
+description: "Design and refine web interfaces: principles, foundations, accessible interactions, component choices and complete task flows, with implementation and visual verification. Use Master UI foundations when working in the Master ecosystem; preserve other projects' own brands and frameworks."
 license: MIT
 metadata:
   author: master-co
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Master Design
 
-Make relationships deliberate: an edge against its background, an insert inside its track, letters inside a control, and feedback following the user's next action.
+Start with the person, task and useful outcome. Establish hierarchy, interaction and accessibility before refining surfaces and geometry. Keep the project's brand, framework and density unless the task asks to change them.
 
 ## Establish the target
 
@@ -19,9 +19,23 @@ Use the provided URL, image or code as evidence. A screenshot permits a reconstr
 
 For review-only requests, report observations and proposed fixes. For implementation requests, carry fixes through the actual code and verify them. Polish does not authorize replacing the framework, fonts, library or brand.
 
-## Load the relevant detail
+## Choose the relevant guidance
 
-Read only the references needed for this task:
+Read only the layers needed for the task. General guidance is portable; the Master UI page describes a specific implementation, not a mandatory style for other projects.
+
+| Decision | Reference |
+| --- | --- |
+| Purpose, hierarchy, agency and design tradeoffs | [Principles](references/principles.md) |
+| Semantics, keyboard, contrast, targets, reflow and announcements | [Accessibility](references/accessibility.md) |
+| Visual roles and consistent dimensions | [Color](references/foundations/color.md), [typography](references/foundations/typography.md), [spacing](references/foundations/spacing.md), [sizing](references/foundations/sizing.md) |
+| Containment, layering, symbols and movement | [Shape](references/foundations/shape.md), [elevation](references/foundations/elevation.md), [icons](references/foundations/icons.md), [motion](references/foundations/motion.md) |
+| Choosing a control and its behavior | [Actions](references/components/actions.md), [fields](references/components/forms.md), [selection](references/components/selection.md), [navigation](references/components/navigation.md), [overlays](references/components/overlays.md), [feedback](references/components/feedback.md), [data display](references/components/data-display.md) |
+| A complete task across states | [Form flows](references/patterns/forms.md), [search](references/patterns/search.md), [navigation flows](references/patterns/navigation.md), [asynchronous work](references/patterns/async.md), [recovery](references/patterns/recovery.md), [responsive composition](references/patterns/responsive.md) |
+| Applying the guide to Master UI | [Master UI foundations](references/master-ui.md) |
+
+## Refine the relevant detail
+
+Use these craft references when the visible mechanism needs closer inspection:
 
 | Work | Reference |
 | --- | --- |
@@ -36,7 +50,7 @@ Read only the references needed for this task:
 
 ## Refine the implementation
 
-Start with a visible failure: a doubled seam, moving label, weak control edge, or misleading grouping. Preserve what works. Keep contour, depth and state independently adjustable; strengthen functional boundaries when identification requires it.
+Start with an observable problem: an unclear action, lost input, missing keyboard behavior, misleading grouping, doubled seam or moving label. Preserve what works. Keep contour, depth and state independently adjustable; strengthen functional boundaries when identification requires it.
 
 Inspect every affected state. Use semantic native controls or established accessible equivalents. Distinguish selected, pressed, focused and disabled. Real controls need local behavior, a valid destination, or an explicit unavailable state.
 

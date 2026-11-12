@@ -14,7 +14,6 @@
   "Get started": "使い始める",
   "Star us on GitHub": "GitHub でスターを付ける",
   "Rendering": "レンダリング",
-  "Design system": "デザインシステム",
   "New": "新着",
   "Look up a reference": "リファレンスを調べる",
   "Check syntax, values, generated CSS and tool contracts.": "構文、値、生成される CSS、ツールの仕様を確認します。",
@@ -190,7 +189,6 @@
   "Works with your framework and build.": "使い慣れたフレームワークとビルドに対応。",
   "Written": "書き込み済み",
   "for developers and AI agents.": "開発者と​ AI エージェント​のために。",
-  "then grow into a design system.": "デザインシステムへ育てていく。",
   "{count} colors · {tiers} tiers": "{count} 色・{tiers} 段階",
   "{count} problems": "{count} 件の問題",
   "{count} tokens": "{count} 個のトークン",
@@ -213,7 +211,6 @@
   "CLI": "CLI",
   "Brotli": "Brotli",
   "fg-text-muted": "fg-text-muted",
-  "A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.": "ルールに基づく CSS-in-class で、美しいウェブサイトやデザインシステムをすばやく構築するための CSS 言語とフレームワークです。",
   "Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.": "以下の各リファレンスリンクは、ソースのリビジョン、前提条件、生成 CSS を含む Markdown を返します。",
   "Package": "パッケージ",
   "Reference discovery": "リファレンスを探す",
@@ -484,5 +481,8 @@
   "Copy setup prompt": "セットアップ用プロンプトをコピー",
   "shadcn/ui": "shadcn/ui",
   "Watch the film": "動画を見る",
-  "Close video": "動画を閉じる"
+  "Close video": "動画を閉じる",
+  "Interface styling": "インターフェースのスタイリング",
+  "then build your next interface.": "次のインターフェースを作りましょう。",
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "ルールに基づく CSS-in-class でウェブインターフェースを構築するための CSS 言語とフレームワークです。"
 }

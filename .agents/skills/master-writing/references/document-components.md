@@ -2,7 +2,7 @@
 
 Choose the shared component by the reader's task. Import through explicit
 `@master/internal-site/components/*.astro` paths and check the consuming site's
-pinned version. The [document gallery](https://master.co/design-system/review/documents)
+pinned version. The [document gallery](https://design.master.co/components/data-display)
 and neighboring tooling, parameter and agent pages show the shared presentations.
 
 | Content | Presentation |

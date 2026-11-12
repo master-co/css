@@ -1,7 +1,7 @@
 /** Verify an existing production build; never builds, publishes, or deploys. */
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { execFileSync } from 'node:child_process'
+import { execFile, execFileSync } from 'node:child_process'
 import { createReadStream, existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { createRequire } from 'node:module'
@@ -14,7 +14,7 @@ const out = path.resolve(argument('--out', 'site/out'))
 const origin = new URL(argument('--origin', 'https://css.master.co')).origin
 const reportPath = path.resolve(argument('--report', 'site/test-results/release-site/report.json'))
 const engines = argument('--browsers', 'chromium,firefox,webkit').split(',')
-const report = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), origin, out, pages: 0, localLinks: 0, profiles: [], noJavaScript: [], failures: [] }
+const report = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), origin, out, pages: 0, localLinks: 0, profiles: [], noJavaScript: [], material: [], failures: [] }
 report.sourceStatus = execFileSync('git', ['status', '--porcelain=v1', '--untracked-files=normal'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean)
 const files = directory => readdirSync(directory, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(path.join(directory, entry.name)) : [path.join(directory, entry.name)])
 const inventory = files(out)
@@ -56,7 +56,7 @@ const findFile = pathname => {
 // Engines run concurrently; order their entries by --browsers for a stable report.
 const byEngine = (a, b) => engines.indexOf(a.engine) - engines.indexOf(b.engine)
 const save = () => {
-  report.profiles.sort(byEngine); report.noJavaScript.sort(byEngine)
+  report.profiles.sort(byEngine); report.noJavaScript.sort(byEngine); report.material.sort(byEngine)
   mkdirSync(path.dirname(reportPath), { recursive: true }); writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
 }
 const check = async (name, operation) => {
@@ -211,6 +211,16 @@ if (!process.argv.includes('--static-only')) {
           } finally { await page.close() }
         })
       } finally { await browser.close() }
+      await check(`${engine}: actual UI material consumption`, async () => {
+        // Asynchronous execution keeps this process's artifact HTTP server responsive.
+        const result = await new Promise(resolve => execFile(process.execPath, ['--test', new URL('../tests/ui-material-consumption.e2e.mjs', import.meta.url).pathname], {
+          env: { ...process.env, MASTER_SITE_URL: base, MASTER_SITE_BROWSER: engine },
+          timeout: 420000,
+          maxBuffer: 1024 * 1024,
+        }, (error, stdout, stderr) => resolve({ passed: !error, output: stdout + stderr })))
+        report.material.push({ engine, ...result })
+        assert.equal(result.passed, true, result.output)
+      })
     })))
   } finally { await new Promise(resolve => server.close(resolve)) }
 }

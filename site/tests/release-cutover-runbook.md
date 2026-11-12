@@ -48,7 +48,7 @@ For each Pages Git source, use the matching production delivery branch, disable 
 
 | Cloudflare build variable | Value |
 | --- | --- |
-| `NODE_VERSION` | `24` |
+| `NODE_VERSION` | `26.13.0` for the current stable source, matching its Node 26 toolchain |
 | `BUN_VERSION` | `1.4.4` |
 | `SKIP_DEPENDENCY_INSTALL` | `1`; the hosted script runs the frozen install itself |
 | `MASTER_CSS_PAGES_PROJECT` | That project's actual name |
@@ -56,6 +56,8 @@ For each Pages Git source, use the matching production delivery branch, disable 
 | `MASTER_CSS_IMAGE_TRANSFORMATIONS` | `false`, identical to release CI |
 
 Leave `PUBLIC_VERSION` unset in hosting settings. The helper resolves the unique actual release tag that points to `CF_PAGES_COMMIT_SHA`; for a site-only commit it uses the channel's newest release tag, whose release must already carry the manifest CI published for this exact commit. It maps `CF_PAGES_BRANCH` to the logical channel and sets the canonical origin. Any explicit `PUBLIC_VERSION`, `PUBLIC_COMMIT_REF` or `PUBLIC_URL` must agree. `git HEAD`, the exact release tag, Pages commit SHA, delivery branch, configured project and actual immutable Pages URL must all match the manifest.
+
+The 2026-11-12 ownership migration updates stable only. RC retains its previous deployment and disabled production builds; its Node 24 setting remains unchanged until an independently verified RC source update. Preparing a future RC legacy-route flag does not deploy or certify that older surface.
 
 Current Cloudflare documentation says Direct Upload projects cannot switch to Git integration. An empty project's dashboard may present a newer **Connect** path; inspect it without saving or deploying before deciding whether attachment is supported. A button alone is not successful source attachment. Do not delete/recreate the empty stable project automatically. Keep both automatic build controls held until the source, guarded build command, release handoff and owner prerequisites are ready. [Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/), [Direct Upload limitation](https://developers.cloudflare.com/pages/get-started/direct-upload/)
 
@@ -144,3 +146,15 @@ Rollback is an externally visible deployment change and requires the operator's 
 - #473: the final registry-backed installation instructions must work, the actual release announcement/version must be reconciled, and final deployed browser/accessibility checks must pass. Passing local automated rules does not certify full assistive-technology conformance.
 
 No item in this runbook grants permission to lift the publication/deployment hold.
+
+## Retired organization design routes
+
+The default build leaves `MASTER_LEGACY_DESIGN_CUTOVER` off. Before changing it, publish the required UI and shared packages, deploy Master UI and Master Design, and verify every exact 301 destination in `@master/internal-site/data/legacy-design-routes.json` on its canonical domain. Design currently publishes English only, so incoming localized routes use the exact English destination. Only an explicit, verified `localizedDestinations` entry may override it; never construct destination paths from the source locale. Markdown variants use the explicit `markdownDestination`: Design exports live under `/guidelines/*.md`, not the HTML path plus `.md`. Exercise all source locales, including the `/en` alias. A local candidate or Pages preview does not establish canonical-domain readiness.
+
+For a target surface, set the GitHub repository variable `MASTER_LEGACY_DESIGN_CUTOVER_STABLE=1` (or `_RC=1`) and set `MASTER_LEGACY_DESIGN_CUTOVER=1` in that surface's Cloudflare Pages Git build environment. Then deliver a **new source commit** on `main` (or `rc`): an already published manifest for the same source revision is immutable and must not be replaced just to change this setting. Keep both settings absent or `0` until destinations are ready. Master organization's deployment must independently receive the same opt-in flag after the same destination checks.
+
+For API changes, PATCH only the named `MASTER_LEGACY_DESIGN_CUTOVER` entry under each environment's `env_vars`, together with its current `wrangler_config_hash` when present. This matches the audited Wrangler 4.129.0 `pages secret put` request shape. Never resend masked `secret_text` values from a GET response: existing RC secrets are returned with empty values. Compare all other environment keys/visible fields and the canonical deployment identity before and after; retain RC Node 24 and do not redeploy its held source. The [Pages update API](https://developers.cloudflare.com/api/resources/pages/subresources/projects/methods/edit/) requires explicit `null` to delete an environment variable.
+
+Validation, deployment and the hosted build bind the boolean `legacyDesignCutover` into `site-release.json` and the immutable output manifest. Both `_worker.js` and `_routes.json` must exist exactly when it is enabled; a missing worker, a stale worker in an off build, an earlier validation artifact, or inconsistent GitHub/Pages settings fails closed. The hosted shell explicitly exports the verified flag before building. Worker and route bytes remain covered by the same exact inventory and browser proof as all other output.
+
+After delivery, check representative localized `.html`, `.md` and slash variants: moved documents return 301 with the expected destination and query; private review routes return 410 and noindex; unknown retired paths remain 404; current CSS guides still return 200. In Pages advanced mode the worker handles redirects as well as 410 responses, since `_redirects` is not applied to worker-handled requests. Rollback uses the recorded prior deployment; a subsequent Git delivery that disables the flag also needs a new source commit and matching settings on both builders.

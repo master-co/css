@@ -1,8 +1,8 @@
 ---
 import { siteOf } from '@master/internal-site/astro/site-context'
 import { referenceLabel, referenceHeader } from './ui'
-import '@master/internal-site/styles/system/stage.css'
-import '@master/internal-site/styles/system/tray.css'
+import '@master/internal-site/styles/system/stage.ts'
+import '@master/internal-site/styles/system/tray.ts'
 import '@master/internal-site/styles/system/tray-code.css'
 import { keyWidth } from './sheet-blocks'
 import Link from '@master/internal-site/components/Link.svelte'
@@ -60,19 +60,19 @@ const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, st
 {sheet.groups.filter(group => group.values.length).map(group => <Fragment>
   {grouped && group.title && <h3 id={group.id}>{group.title}</h3>}
   {group.palette
-    ? <div class="ui-tray">
-      <div class="ui-stage" data-padding="sm" data-align="start">
+    ? <div class="tray ui-tray">
+      <div class="sheet sheet-flat ui-stage" data-padding="sm" data-align="start">
         <Palette client:idle={{ timeout: 500 }} groups={paletteGroups(group)} />
       </div>
     </div>
     : <SheetTable class="ref-value-table" head={group.head.map(header => referenceHeader(locale, header))} modes={group.modes} keyWidth={width}>
-      {group.values.map(row => <tr id={row.id}>
-        <th scope="row"><code>{row.className}</code></th>
-        {group.modes ? modePair(row.value)!.map(value => <td><code>{value}</code></td>)
+      {group.values.map(row => <tr class="table-row" id={row.id}>
+        <th class="table-cell table-primary" scope="row"><code>{row.className}</code></th>
+        {group.modes ? modePair(row.value)!.map(value => <td class="table-cell"><code>{value}</code></td>)
           : (row.cells ?? [row.value]).map(value => {
             // A hue alias is a lookup relationship; do not hide its reference behind a hover title.
             const display = group.namespace === 'color' ? value : resolved(value)
-            return <td title={display === value ? undefined : value}><SheetValue value={display} note={pixels(display)} /></td>
+            return <td class="table-cell" title={display === value ? undefined : value}><SheetValue value={display} note={pixels(display)} /></td>
           })}
       </tr>)}
     </SheetTable>}

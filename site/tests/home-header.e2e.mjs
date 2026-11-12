@@ -58,7 +58,7 @@ for (const width of [390, 1440]) for (const scheme of ['light', 'dark']) {
       assert.equal(await github.isVisible(), true)
       assert.equal(await github.getAttribute('href'), 'https://github.com/master-co/css')
       assert.equal(await header.locator('.ui-header-nav > a:visible').count(), 0)
-      assert.equal(await header.locator('.ui-header-end > a.ui-button:visible').count(), 1)
+      assert.equal(await header.locator('.ui-header-end > a.btn:visible').count(), 1)
       assert.equal(await header.locator('.ui-header-end > label:has(> select)').isVisible(), false)
       assert.equal(await header.locator('.ui-header-search').isVisible(), false)
       const initialGithub = await github.boundingBox()
@@ -70,7 +70,7 @@ for (const width of [390, 1440]) for (const scheme of ['light', 'dark']) {
 
       await scroll(page, 80)
       assert.equal(await header.locator('.ui-header-nav > a:visible').count(), width >= 1024 ? 3 : 0)
-      assert.equal(await header.locator('.ui-header-end > a.ui-button:visible').count(), width >= 1024 ? 4 : 0)
+      assert.equal(await header.locator('.ui-header-end > a.btn:visible').count(), width >= 1024 ? 4 : 0)
       assert.equal(await header.locator('.ui-header-end > label:has(> select)').isVisible(), width >= 1024)
       assert.equal(await header.locator('.ui-header-search').isVisible(), width < 1024)
       if (width >= 1024) assert.ok((await github.boundingBox()).x < initialGithub.x - 100, 'GitHub moves beside the restored community links')
@@ -148,7 +148,7 @@ test(`${browserName}: static homepage and other document headers retain usable l
       const mobile = options.width === 390
       assert.equal(await header.getByRole('link', { name: 'GitHub', exact: true }).isVisible(), options.js === false || !mobile)
       assert.equal(await header.locator('.ui-header-nav > a:visible').count(), mobile ? 0 : 3)
-      assert.equal(await header.locator('.ui-header-end > a.ui-button:visible').count(), options.js === false ? 1 : mobile ? 0 : 4)
+      assert.equal(await header.locator('.ui-header-end > a.btn:visible').count(), options.js === false ? 1 : mobile ? 0 : 4)
       assert.deepEqual(errors, [])
     } finally { await context.close() }
   }

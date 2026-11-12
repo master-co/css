@@ -19,7 +19,7 @@
   }
 
   /**
-   * Client figures for the homepage's Design system section: the palette explorer.
+   * Client figures for the homepage's Interface styling section: the palette explorer.
    * Native options own the colors and accessibility; the canvas is their measured visual projection.
    */
   let { children, columns, label, summary }: Props = $props()

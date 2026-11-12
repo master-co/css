@@ -66,7 +66,7 @@ for (const width of full ? [320, 390, 768, 1024, 1440, 1920] : [390, 1440]) {
         const box = await section.boundingBox()
         const title = section.getByRole('heading', { level: 2 })
         await title.waitFor({ state: 'visible' })
-        assert.ok((await title.textContent()).includes(locale === 'tw' ? '一套設計系統' : 'design system.'))
+        assert.ok((await title.textContent()).includes(locale === 'tw' ? '下一個介面' : 'next interface.'))
         const link = section.getByRole('link')
         assert.equal(await link.getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/introduction`)
         const code = section.locator('.home-command-label')

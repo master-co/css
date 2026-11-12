@@ -224,8 +224,8 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         throw new Error(`${route} declares cascade layers out of order: ${layerOrder}.`)
     }
     const selectors = {
-        // The shell interface (styles/interface.css) and document styles (styles/documents.css) boundaries.
-        interface: /\.ui-dialog\s*\{/,
+        // Detect the persistent shell; the search dialog is a lazy, canonical UI component.
+        interface: /\.ui-header\s*\{/,
         tree: /\.ui-tree\s*\{/,
         reference: '.reference-document',
         // Benchmark tables and charts (styles/benchmarks.css).
@@ -233,17 +233,19 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         // The demo family (styles/demo.css); prose may name a tray without loading Demo itself.
         demo: /\.ui-tray\s*>\s*\.ui-disclosure\s*\{/,
         button: '.btn{',
+        // The responsive-button lesson is self-contained; its styles must not reach the shell.
+        teachingButton: '.btn-responsive{',
         // Specimen parts (styles/system/specimens.css), loaded only by the components that use them.
         specimens: /\.ui-swatch\s*\{/
     }
     const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
-        '/': { interface: true, tree: false, reference: false, benchmark: false, demo: false, button: false, specimens: false },
+        '/': { interface: true, tree: false, reference: false, benchmark: false, demo: false, button: true, teachingButton: false, specimens: false },
         '/guide': { tree: false, reference: false, benchmark: false },
         // Pages that render only the shell interface.
         '/404': { interface: true, tree: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/benchmarks': { benchmark: true, reference: false },
-        '/examples/responsive-button': { button: true, interface: false, tree: false, reference: false, benchmark: false, demo: false },
+        '/examples/responsive-button': { button: true, teachingButton: true, interface: false, tree: false, reference: false, benchmark: false, demo: false },
         '/examples/article-transitions': { interface: false, tree: false },
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {

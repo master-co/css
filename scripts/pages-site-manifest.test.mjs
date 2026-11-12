@@ -7,7 +7,7 @@ import { checkVerifiedOutput, createManifest, identityPath, inventoryDigest, jso
 
 const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
   channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
-  origin: 'https://css.master.co', imageTransformations: false }
+  origin: 'https://css.master.co', imageTransformations: false, legacyDesignCutover: false }
 const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [
   { name: '@master/css', version: metadata.version, integrity: 'sha512-YQ==', provenance: true }
 ] }
@@ -104,4 +104,21 @@ test('logical channel, actual version and delivery ref are deliberately distinct
   assert.throws(() => releaseMetadata({ ...rc, version: '2.0.0', tag: 'v2.0.0' }))
   assert.throws(() => releaseMetadata({ ...metadata, origin: 'https://rc.css.master.co' }))
   assert.throws(() => releaseMetadata({ ...metadata, subdomain: 'https://fixture.pages.dev/' }))
+})
+
+
+test('cutover identity rejects absent, partial and stale worker artifacts', async t => {
+  const { out, report } = await fixture(t)
+  const enabled = { ...metadata, legacyDesignCutover: true }
+  await assert.rejects(prepareIdentity(out, enabled), /_worker.js presence/)
+  await assert.rejects(checkVerifiedOutput(out, enabled, jsonBytes(report)), /presence/)
+  await writeFile(path.join(out, '_worker.js'), 'export default {}')
+  await assert.rejects(prepareIdentity(out, enabled), /_routes.json presence/)
+  await assert.rejects(prepareIdentity(out, metadata), /_worker.js presence/)
+  await writeFile(path.join(out, '_routes.json'), '{"version":1}')
+  await prepareIdentity(out, enabled)
+  const proof = { ...report, buildDigest: inventoryDigest(await outputInventory(out)) }
+  const manifest = await createManifest(out, enabled, jsonBytes(proof), registry)
+  await verifyOutput(out, manifest, enabled)
+  assert.throws(() => validateManifest(manifest, metadata), /identity differs/)
 })

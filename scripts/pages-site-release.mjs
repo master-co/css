@@ -87,7 +87,8 @@ export function ciMetadata(env = process.env, runGit = git) {
   const releaseRevision = runGit(['rev-parse', '--verify', `refs/tags/${tag}^{commit}`])
   const metadata = releaseMetadata({ repository, revision: env.GITHUB_SHA, releaseRevision, version: env.PUBLIC_VERSION,
     tag, channel, deliveryBranch: channels[channel]?.deliveryBranch,
-    project: env.PAGES_PROJECT, subdomain: env.PAGES_SUBDOMAIN, origin: env.PUBLIC_URL, imageTransformations: false })
+    project: env.PAGES_PROJECT, subdomain: env.PAGES_SUBDOMAIN, origin: env.PUBLIC_URL, imageTransformations: false,
+    legacyDesignCutover: env.MASTER_LEGACY_DESIGN_CUTOVER === '1' })
   assert.equal(env.PUBLIC_COMMIT_REF, channel)
   assert.equal(env.MASTER_CSS_IMAGE_TRANSFORMATIONS, 'false')
   assert.ok(['bootstrap', 'production'].includes(env.PAGES_RELEASE_MODE), 'Choose an explicit bootstrap or production delivery mode')
@@ -105,7 +106,8 @@ export function hostedMetadata(env = process.env, runGit = git) {
   const { tag, releaseRevision } = selectReleaseTag(runGit(['ls-remote', '--tags', remote, 'v*']), env.CF_PAGES_COMMIT_SHA, channel)
   const metadata = releaseMetadata({ repository, revision: env.CF_PAGES_COMMIT_SHA, releaseRevision, version: tag.slice(1), tag, channel,
     deliveryBranch: env.CF_PAGES_BRANCH, project: env.MASTER_CSS_PAGES_PROJECT,
-    subdomain: env.MASTER_CSS_PAGES_SUBDOMAIN, origin: channels[channel].origin, imageTransformations: false })
+    subdomain: env.MASTER_CSS_PAGES_SUBDOMAIN, origin: channels[channel].origin, imageTransformations: false,
+    legacyDesignCutover: env.MASTER_LEGACY_DESIGN_CUTOVER === '1' })
   for (const [name, expected] of Object.entries({ PUBLIC_COMMIT_REF: channel, PUBLIC_VERSION: metadata.version,
     PUBLIC_URL: metadata.origin, MASTER_CSS_IMAGE_TRANSFORMATIONS: 'false' })) {
     if (env[name] !== undefined) assert.equal(env[name], expected, `Configured ${name} differs from the actual release`)
@@ -359,7 +361,8 @@ async function main(command, directory) {
     await mkdir(directory, { recursive: true })
     await writeFile(path.join(directory, 'manifest.json'), bytes)
     await writeFile(path.join(directory, 'environment'), Object.entries({ PUBLIC_COMMIT_REF: metadata.channel,
-      PUBLIC_VERSION: metadata.version, PUBLIC_URL: metadata.origin, MASTER_CSS_IMAGE_TRANSFORMATIONS: 'false'
+      PUBLIC_VERSION: metadata.version, PUBLIC_URL: metadata.origin, MASTER_CSS_IMAGE_TRANSFORMATIONS: 'false',
+      MASTER_LEGACY_DESIGN_CUTOVER: metadata.legacyDesignCutover ? '1' : '0'
     }).map(([key, value]) => `${key}=${value}`).join('\n') + '\n')
     console.log(`Prepared ${metadata.tag} at ${metadata.revision}; public registry and release manifest verified.`)
     return

@@ -1,8 +1,8 @@
 ---
 import { siteOf } from '@master/internal-site/astro/site-context'
 import { referenceLabel } from './ui'
-import '@master/internal-site/styles/system/stage.css'
-import '@master/internal-site/styles/system/tray.css'
+import '@master/internal-site/styles/system/stage.ts'
+import '@master/internal-site/styles/system/tray.ts'
 import '@master/internal-site/styles/system/tray-code.css'
 import DocumentDisclosure from '@master/internal-site/components/DocumentDisclosure.astro'
 import { foundationTokens, tokenSpecimenProperties } from '@master/internal-site/css/foundation-data/tokens.ts'
@@ -29,9 +29,9 @@ const styleOf = (value: SheetGroup['values'][number]): Record<string, string> =>
 ---
 
 {shown && <DocumentDisclosure title={title}>
-  <div class="ui-tray">
+  <div class="tray ui-tray">
     {/* Real-size specimens can exceed the viewport; native scrolling must also work with a keyboard. */}
-    <div class="ref-type-scale ui-stage" data-kind={group.namespace} role="region" aria-label={title} tabindex="0">
+    <div class="sheet sheet-flat ref-type-scale ui-stage" data-kind={group.namespace} role="region" aria-label={title} tabindex="0">
       {group.values.map(value => <div class="ref-type-specimen">
         <code>{value.className}</code>
         <div class="ref-type-sample" style={styleOf(value)}>

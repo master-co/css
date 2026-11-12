@@ -1,4 +1,4 @@
-/** Data for the Design system section's figures that is not shared with the rest of the homepage. */
+/** Data for the Interface styling section's figures that is not shared with the rest of the homepage. */
 
 /** The two values `--color-surface-base` takes in the token sample; the theme preview tints the line in use. */
 export const surfaceModeValues = [

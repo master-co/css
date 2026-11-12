@@ -144,6 +144,7 @@ jobs:
       PUBLIC_COMMIT_REF: ${{ github.ref_name }}
       PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
       MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
+      MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars[format('MASTER_LEGACY_DESIGN_CUTOVER_{0}', github.ref_name == 'main' && 'STABLE' || 'RC')] == '1' && '1' || '0' }}
       PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
       PAGES_SUBDOMAIN: ${{ vars[format('CLOUDFLARE_PAGES_{0}_SUBDOMAIN', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
       PAGES_RELEASE_MODE: ${{ vars[format('CLOUDFLARE_PAGES_{0}_MODE', github.ref_name == 'main' && 'STABLE' || 'RC')] }}

@@ -8,10 +8,10 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 ## Document Shell Ownership
 
-- Master owns reusable navigation, layouts, contexts, MDX rendering, page factories, styles, fonts, artwork and presentation primitives in `@master/internal-site`.
+- Master owns reusable site navigation, layouts, contexts, MDX rendering, page factories, fonts, artwork and document/demo presentation in `@master/internal-site`. Master UI owns reusable controls, UI tokens and component contracts; the site package consumes them. Master Design owns the visual and interaction guidelines behind those components.
 - Consume an exact published package version. Edit the source in the Master repository and validate a packed consumer before upgrading; do not copy shared implementation back into this repository or use a cross-repository source submodule.
-- Product guides, generated reference, semantic examples, real benchmark inputs, preparation adapters and homepage composition remain here. Master owns organization Blog articles, `/brand` and `/design-system`; preserve old URLs with redirects only after verifying their destinations.
-- The shared `styles/system/DESIGN.md` owns `ui-*` and `--ui-*` contracts. Import component styles at their owning boundary; do not reintroduce `doc-*`, `app-*` or `code-*` shell classes.
+- Product guides, generated reference, semantic examples, real benchmark inputs, preparation adapters and homepage composition remain here. Master owns organization Blog articles and `/brand`. Retired `/design-system` routes use the shared legacy route manifest; enable their production cutover only after verifying the destination pages.
+- Reusable `ui-*` controls and `--ui-*` token contracts belong to Master UI; document/demo presentation belongs to `@master/internal-site`. Import styles at their owning boundary. Do not copy either implementation into this product or introduce a second control/token vocabulary.
 - Shared skills are distributed by `@master/internal-skills`. Run `skills:sync` explicitly and commit the managed files and hash lock. Keep Master CSS-specific extensions in their own skill directories.
 
 ## Owns
@@ -58,7 +58,7 @@ The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro 
 - Guide pages: `site/content/guide/<slug>/{metadata.ts,page.astro,content.mdx}` plus optional `components/`.
 - Example iframe pages: `site/content/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
-- Master owns the organization brand handbook and the Master CSS identity page at `https://master.co/brand/master-css`. Interface materials, controls, layout and motion belong to `https://master.co/design-system`; product token values remain in Reference.
+- Master owns the organization brand handbook and the Master CSS identity page at `https://master.co/brand/master-css`. Visual and interaction guidelines belong to Master Design; reusable controls belong to Master UI. Product token values and CSS semantics remain in Reference.
 - Category data is generated; run `bun run --filter site prepare-app` when adding or renaming pages.
 
 ## Risk Areas
@@ -201,7 +201,7 @@ Guides should teach in this order:
 4. Show generated CSS with `<Class2CSS>` when introducing new Master CSS classes.
 5. Cover Master-specific constraints and failure conditions after the core flow is clear.
 
-Keep reduced-motion handling and progressive hardening after the primary example unless the guide is specifically about accessibility. For guide layout, visual design, responsive behavior, and token choices, inspect the current Design Foundations guides and the Reference token pages instead of duplicating their rules here.
+Keep reduced-motion handling and progressive hardening after the primary example unless the guide is specifically about accessibility. For guide presentation, consult Master Design and the owning Master UI component. Use the CSS Design Foundations guides and Reference token pages to verify the public syntax and values taught by the example.
 
 ## Example Code
 
@@ -221,17 +221,17 @@ For View Transitions examples, keep `view-transition-name` values unique, prefer
 
 ## Demo Implementation
 
-Before authoring or revising a demo, read the active rules in [the design system](styles/system/DESIGN.md#rules) and inspect the relevant component source. Check the preview's contents as well as its tray: using `<Demo>` does not establish visual conformity.
+Before authoring or revising a demo, read the relevant Master Design guideline and inspect the owning Master UI or internal-site component source. Check the preview's contents as well as its tray: using `<Demo>` does not establish visual conformity.
 
 Interactive demos should be local Svelte components under the guide's `components/` folder, hydrated where the MDX uses them. Use existing site primitives:
 
-- Wrap demos in `<Demo>`: one example is one `ui-tray` with a head (`title`, `description`, `controls`), a `ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
-- Use the specimen primitives from `@master/internal-site/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they render the `ui-*` components in `styles/system/specimens.css` and `surfaces.css`. Teaching hue uses a named `tone` and is always named by a legend or label.
+- Wrap demos in `<Demo>`: one example is one `tray ui-tray` with a head (`title`, `description`, `controls`), a `sheet sheet-flat ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
+- Use the specimen primitives from `@master/internal-site/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they compose canonical UI parts with teaching labels, measurements and layout. Their owning modules import the required styles; do not recreate a generic surface or badge recipe. Teaching hue uses a named `tone` and is always named by a legend or label.
 - Use `@master/internal-site/components/Image.svelte` for local bitmap images.
 - Use `@tabler/icons-svelte-runes` for icon buttons and icon+text controls when an appropriate icon exists.
-- Use the `ui-*` controls (`ui-button`, `ui-segmented`, `ui-range`, `ui-select`, `ui-check`) and `ui-sheet` panels; do not add demo-specific button, panel or color classes. `styles/system/DESIGN.md` is the markup contract.
+- Use Master UI parts (`btn`, `icon`, `input`, `select`, `slider`, `kbd`, `well`, `sheet`, `table`, `code`) with their documented modifiers and native/ARIA states. Internal-site owns document layout and interaction adapters. Import shared TypeScript style entries such as `styles/system/table.ts`, `tray.ts`, `stage.ts`, `code-panel.ts` and `inline-code.ts` from Astro/Svelte/TypeScript; these share canonical UI modules in the build graph. Do not use retired CSS collections or add local generic paint overrides.
 
-Distinguish the interface operating the demonstration from the subject being taught. Preview controls and supporting presentation use the site's components. A component class or utility that is itself the lesson must remain reproducible from the displayed public CSS and markup; do not insert private `ui-*` dependencies to make that sample look correct. Use the public preset to express the system's restrained materials, type and geometry, varying only what the lesson needs. A saturated button is not justified merely because it is example content. For supporting buttons inside a `demoDocument` iframe, opt into `DemoScene.systemButtons` and use the canonical `ui-button`; keep this out of public teaching markup. Inspect the existing iframe materials bridge before adding presentation overrides; it must not supply a missing declaration essential to the lesson.
+Distinguish the interface operating the demonstration from the subject being taught. Preview controls and supporting presentation use the site's components. A component class or utility that is itself the lesson must remain reproducible from the displayed public CSS and markup; do not insert private `ui-*` dependencies to make that sample look correct. Use the public preset to express the system's restrained materials, type and geometry, varying only what the lesson needs. A saturated button is not justified merely because it is example content. For supporting buttons inside a `demoDocument` iframe, opt into `DemoScene.systemButtons` and use the canonical `btn`; keep this out of public teaching markup. Inspect the existing iframe materials bridge before adding presentation overrides; it must not supply a missing declaration essential to the lesson.
 
 Optional preview controls start absent. Add Theme only when the section explicitly teaches color schemes, width controls when resizing demonstrates the stated viewport or container behavior, and replay or other actions when their outcome is part of the lesson. State what readers should change and observe. Supporting both themes is a verification requirement, not a reason to expose a local theme switch; ordinary previews follow the site's theme. Keep useful source tabs, copying and Generated CSS inspection.
 
@@ -243,13 +243,13 @@ Design demos for the doc content column, not the viewport. A `<Demo>` inside gui
 
 For View Transition demos, keep the iframe viewport stable throughout capture and animation; use `DemoViewport` with `sizing="viewport"` rather than resizing it to changing content. Prefer route-owned native CSS for transition pseudo-elements, and stable data-derived names through native styles. If teaching equivalent pseudo-element utility classes, attach them to the document root and clean up any client-added classes on unmount. In Svelte state demos, wrap the update passed to `document.startViewTransition()` in `flushSync()` so the DOM update happens inside the transition callback. Provide no-API and reduced-motion fallbacks, and distinguish skipped animations from failed DOM updates.
 
-For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `DemoPageViewport` (or `DemoViewport` with `src` and `responsive`) for primary responsive demos when the lesson depends on viewport width, and `DemoContainer` when it depends on a container. Keep iframe pages under `site/content/examples/<slug>/`. Isolated documents from `components/demo/reference/document.ts` receive `styles/system/tokens.css`, the materials bridge and `reference/frame.css`; frame paint uses `--ui-*` roles only. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
+For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `DemoPageViewport` (or `DemoViewport` with `src` and `responsive`) for primary responsive demos when the lesson depends on viewport width, and `DemoContainer` when it depends on a container. Keep iframe pages under `site/content/examples/<slug>/`. Isolated documents from `@master/internal-site/demo/reference/document.ts` compile the canonical `@master/ui/theme.css` with the materials bridge and receive site token aliases and `reference/frame.css`; optional operating controls use UI button CSS. The `--ui-*` aliases are compatibility references to UI roles, not a second token authority. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
 
 ## Design References
 
-Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant Design Foundations guide pages and follow current patterns.
+Before changing guide presentation, read the relevant [Master Design guideline](https://design.master.co/) and inspect the [Master UI component contract](https://ui.master.co/components). Verify the actual rendered component, its nested geometry and affected states.
 
-The site interface (shell, examples, data views, demo primitives) uses the Moonstone system in `@master/internal-site/styles/system/`: `ui-*` components with variants on `data-*` and state on native/ARIA attributes, painted only with `--ui-*` roles. Follow its `DESIGN.md`. `specimens.css` and `data.css` are imported by the components that use them. `--ui-*` roles are not utility tokens: teaching and content markup keeps the preset vocabulary below.
+Master Design owns design principles and guidance. Master UI owns executable semantic tokens, reusable component material, geometry and states. `@master/internal-site` composes those parts into documentation, navigation and teaching interfaces; `ui-*` hooks retain only that site-specific behavior and layout. Do not introduce semantic token values or a parallel component recipe in this site. Brand, typography and measured teaching geometry may remain product-owned; existing `--ui-*` aliases refer to UI roles. Teaching markup uses the public CSS preset vocabulary below and must remain reproducible without private site dependencies.
 
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
@@ -274,7 +274,7 @@ The homepage is `content/page.astro`, importing `@master/internal-site/home/desi
 | Area | Components | Logic and styles |
 | --- | --- | --- |
 | Hero | `HeroSection`, `HeroCanvas`, `HomeLamp` | `hero-shaders.ts`, `hero-title-mask.ts`, `home-lamp.ts`, `hero.css` |
-| 01 Design system | `DesignSystemSection`, `DesignSystemFigures`, `HomeBento`, `ThemeModesPreview`, `ArtGalleryPreview`, `CascadeLayers` | `design-system-content.ts`, `palette-*.ts`, `theme-split.ts`, `design-system.css` |
+| 01 Interface styling | `DesignSystemSection`, `DesignSystemFigures`, `HomeBento`, `ThemeModesPreview`, `ArtGalleryPreview`, `CascadeLayers` | `design-system-content.ts`, `palette-*.ts`, `theme-split.ts`, `design-system.css` |
 | 02 Editor | `LanguageServiceSection`, `EditorFigures`, `HomeEditorWindow` | `editor-*.ts`, `editor-tiles.css`, `home-editor-window.css` |
 | 03 Rendering | `DeliveryModesSection`, `DeliveryStage`, `DeliveryFigures`, `DeliveryPreview` | `delivery-*.ts`, `delivery.css`, `delivery-preview.css` |
 | 04 CSS size | `BenchmarkSection`, `BenchmarkSizeChart` | `benchmark.css` |

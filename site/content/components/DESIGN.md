@@ -21,7 +21,7 @@ The page reads as a sequence, each section answering the next question a reader 
 | # | Section | Question | Figure |
 | --- | --- | --- | --- |
 | — | Hero | What is it? | The positioning line, cut in stone, over a sheet of gold silk under one lamp |
-| 01 | Design system | What can I express? | Bento: modes, tokens, P3 palette, layout and motion, layers |
+| 01 | Interface styling | What can I express? | Bento: modes, tokens, P3 palette, layout and motion, layers |
 | 02 | Editor | Can I read it? | One editor: completion, hover, focused highlighting and color picker in turn |
 | 03 | Rendering | How does CSS reach the browser? | A split editor, a processing rail and a live mode explainer that uses the generated CSS |
 | 04 | CSS size | What does it cost? | Bar chart from the benchmark snapshot |
@@ -124,7 +124,7 @@ Han text keeps its own tracking: under `:lang(zh)`, display and titles tighten o
 
 ## Copy
 
-Plain and specific, the way the docs would say it. Say what the thing is or does, then stop: "A markup-driven CSS orchestration language for developers and AI agents", "Lint classes against your project". Headings are regular weight: soft and even, never bold. No superlatives, no slogans, no claims the samples cannot back up. Section leads run one or two sentences (about 20 words) and card descriptions one full sentence: long enough to say what the figure shows and why it matters, short enough that the figure leads. Details beyond that go to the guide behind a quiet link. Eyebrows are plain nouns (Design system, Editor, Rendering, CSS size, Lint, AI agents, Workflow).
+Plain and specific, the way the docs would say it. Say what the thing is or does, then stop: "A markup-driven CSS orchestration language for developers and AI agents", "Lint classes against your project". Headings are regular weight: soft and even, never bold. No superlatives, no slogans, no claims the samples cannot back up. Section leads run one or two sentences (about 20 words) and card descriptions one full sentence: long enough to say what the figure shows and why it matters, short enough that the figure leads. Details beyond that go to the guide behind a quiet link. Eyebrows are plain nouns (Interface styling, Editor, Rendering, CSS size, Lint, AI agents, Workflow).
 
 ## Data
 
@@ -190,7 +190,7 @@ The hero's materials continue down the page, so the reader meets one world rathe
 - **Silk** (`--silk-*`): the hero's gold as a material, only for the Master CSS bar in the CSS size chart: a ribbon whose fold deepens at both ends, with a satin highlight stretched along it and a hairline crest where it peaks; a broad sheen crosses it once as the bars land and once per change of measure, never at rest.
 - Forced colors and print replace stone with plain boundaries and drop rims and glints; cut type returns to solid text. As on the hero, reduced transparency or more contrast turns the glass solid, and more contrast keeps cut type free of glints and highlights.
 
-## Design system figures
+## Interface styling figures
 
 One eight-column bento grid holds all five cards: themes on the first row, primitives on the second, and the P3 palette across the full width as the last card. Each card's title links to its guide above one or two plain sentences. Its figure reads as an artifact from a design tool, drawn in the page's ruler vocabulary: hairlines, corner marks, measured guides and dimension lines, with one gold only for the active or selected moment. Cards in a row share a header track, so figures in a row start at one height.
 

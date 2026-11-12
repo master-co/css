@@ -14,7 +14,6 @@
   "Get started": "시작하기",
   "Star us on GitHub": "GitHub에서 스타 누르기",
   "Rendering": "렌더링",
-  "Design system": "디자인 시스템",
   "New": "새 소식",
   "Look up a reference": "참조 문서 찾아보기",
   "Check syntax, values, generated CSS and tool contracts.": "구문, 값, 생성된 CSS, 도구 규약을 확인하세요.",
@@ -190,7 +189,6 @@
   "Works with your framework and build.": "사용 중인 프레임워크와 빌드에 맞게.",
   "Written": "기록됨",
   "for developers and AI agents.": "개발자와 AI 에이전트를 위해.",
-  "then grow into a design system.": "디자인 시스템으로 발전시키세요.",
   "{count} colors · {tiers} tiers": "{count}개 색상 · {tiers}개 단계",
   "{count} problems": "문제 {count}개",
   "{count} tokens": "토큰 {count}개",
@@ -213,7 +211,6 @@
   "CLI": "CLI",
   "Brotli": "Brotli",
   "fg-text-muted": "fg-text-muted",
-  "A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.": "규칙 기반 CSS-in-class로 아름다운 웹사이트와 디자인 시스템을 빠르게 만드는 CSS 언어이자 프레임워크입니다.",
   "Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.": "아래 각 참조 링크는 소스 리비전, 사전 조건, 생성 CSS가 포함된 Markdown을 제공합니다.",
   "Package": "패키지",
   "Reference discovery": "참조 문서 탐색",
@@ -484,5 +481,8 @@
   "Copy setup prompt": "설정 프롬프트 복사",
   "shadcn/ui": "shadcn/ui",
   "Watch the film": "영상 보기",
-  "Close video": "영상 닫기"
+  "Close video": "영상 닫기",
+  "Interface styling": "인터페이스 스타일링",
+  "then build your next interface.": "다음 인터페이스를 만들어 보세요.",
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "규칙 기반 CSS-in-class로 웹 인터페이스를 만드는 CSS 언어이자 프레임워크입니다."
 }

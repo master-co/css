@@ -1,6 +1,6 @@
 ---
-import '@master/internal-site/styles/system/stage.css'
-import '@master/internal-site/styles/system/tray.css'
+import '@master/internal-site/styles/system/stage.ts'
+import '@master/internal-site/styles/system/tray.ts'
 import '@master/internal-site/styles/system/tray-code.css'
 import Code from '@master/internal-site/components/Code.astro'
 import GeneratedCSS from '@master/internal-site/components/GeneratedCSS.astro'
@@ -22,12 +22,12 @@ const { example, preview = true, source = true, caption } = Astro.props
 ---
 
 {example.lead && <p><InlineText text={example.lead} /></p>}
-<figure class="ui-tray">
-  {preview && <div class="ui-stage">
+<figure class="tray ui-tray">
+  {preview && <div class="sheet sheet-flat ui-stage">
     <div class="ref-example-scene" set:html={example.html} />
   </div>}
   {!preview && example.configuration && <Code lang="css" code={example.configuration} />}
   {source && <Code lang="html" code={example.code} />}
   <GeneratedCSS><Code lang="css" beautify code={example.css} /></GeneratedCSS>
-  {caption && <figcaption class="ui-tray-caption"><InlineText text={caption} /></figcaption>}
+  {caption && <figcaption class="ui-tray-caption"><InlineText text={caption} plain /></figcaption>}
 </figure>

@@ -4,7 +4,7 @@
   .reference-document code { overflow-wrap: anywhere; }
   .reference-syntax-row:target > * { background: light-dark(oklch(22% .002 265 / .05), oklch(100% 0 none / .06)); }
   /* Every Reference table reads as one typographic grid: plain mono, the first column in strong ink. */
-  .reference-document .ui-table :is(td, tbody th) code { padding: 0; border-radius: 0; background: none; box-shadow: none; color: inherit; font-size: .8125rem; line-height: 1.6; }
+  .reference-document .ui-table :is(td, tbody th) code:not(.code) { color: inherit; font-size: .8125rem; line-height: 1.6; }
   @media (width < 48rem) {
     /* Syntax rows stack their key above its declarations instead of scrolling sideways. */
     .reference-document table:has(.reference-syntax-row) { display: block; }

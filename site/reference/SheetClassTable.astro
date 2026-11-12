@@ -26,13 +26,13 @@ const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, st
 ---
 
 <SheetTable class="ref-class-table" head={['Class', 'Declarations'].map(header => referenceHeader(locale, header))} keyWidth={width}>
-  {rows.map(row => <tr>
-    <th scope="row">
+  {rows.map(row => <tr class="table-row">
+    <th class="table-cell table-primary" scope="row">
       {row.prefix
         ? <Link href={`/reference/tokens/families#family-${row.prefix}`}><code>{placeholderParts(row.syntax).map(part => part.placeholder ? <var>{part.text}</var> : part.text)}</code></Link>
         : <code>{placeholderParts(row.syntax).map(part => part.placeholder ? <var>{part.text}</var> : part.text)}</code>}
     </th>
-    <td><span class="ref-declarations">{declarationsOf(row).map(({ property, value }) => <span class="ref-declaration"><span class="ref-property">{property}:</span> <span class="ref-declaration-value">{placeholderParts(value).map(part => part.placeholder ? <var>{part.text}</var> : part.text)};</span></span>)}</span></td>
+    <td class="table-cell"><span class="ref-declarations">{declarationsOf(row).map(({ property, value }) => <span class="ref-declaration"><span class="ref-property">{property}:</span> <span class="ref-declaration-value">{placeholderParts(value).map(part => part.placeholder ? <var>{part.text}</var> : part.text)};</span></span>)}</span></td>
   </tr>)}
 </SheetTable>
 {/* The disclosed rows size their own column; they never join the page's alignment. */}

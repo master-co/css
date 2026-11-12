@@ -1,5 +1,5 @@
 ---
-import '@master/internal-site/styles/system/table.css'
+import '@master/internal-site/styles/system/table.ts'
 interface Props {
   class?: string
   head: string[]
@@ -8,15 +8,15 @@ interface Props {
 }
 
 /**
- * Sheet tables are bare `.ui-table` children of the prose column, so they share the
- * document table treatment and bleed with code blocks and examples.
+ * Sheet tables use Master UI material and cell contracts inside the site scroll
+ * wrapper; the reference stylesheet owns column sizing and code presentation.
  */
 const { class: className, head, modes, keyWidth } = Astro.props
 ---
 
-<div role="region" aria-label={head.join(', ')} tabindex="0" class:list={['ref-table ui-table', className]} data-columns={head.length} data-modes={modes ? 'true' : undefined} style={keyWidth ? { '--ref-key-width': keyWidth } : undefined}>
-  <table>
-    <thead><tr>{head.map(label => <th scope="col">{label}</th>)}</tr></thead>
+<div role="region" aria-label={head.join(', ')} tabindex="0" class:list={['ref-table sheet sheet-flat ui-table', className]} data-columns={head.length} data-modes={modes ? 'true' : undefined} style={keyWidth ? { '--ref-key-width': keyWidth } : undefined}>
+  <table class="table">
+    <thead><tr class="table-row">{head.map(label => <th class="table-heading" scope="col">{label}</th>)}</tr></thead>
     <tbody><slot /></tbody>
   </table>
 </div>

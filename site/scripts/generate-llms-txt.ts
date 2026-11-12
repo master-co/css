@@ -26,7 +26,7 @@ const DEFAULT_LOCALE = 'en'
 const SITE_URL = resolvePublicEnv().PUBLIC_URL
 const PROJECT_NAME = 'Master CSS'
 const PROJECT_DESC =
-  'A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.'
+  'A CSS language and framework for building web interfaces with rule-based CSS-in-class.'
 
 export type Page = {
   /** Filesystem path of the .mdx file. */

@@ -14,7 +14,6 @@
   "Get started": "开始使用",
   "Star us on GitHub": "在 GitHub 上为我们加星",
   "Rendering": "渲染",
-  "Design system": "设计系统",
   "New": "最新",
   "Look up a reference": "查阅参考文档",
   "Check syntax, values, generated CSS and tool contracts.": "查阅语法、值、生成的 CSS 与工具规则。",
@@ -190,7 +189,6 @@
   "Works with your framework and build.": "适配你的框架与构建工具。",
   "Written": "已写入",
   "for developers and AI agents.": "为开发者与 AI 智能体而设计。",
-  "then grow into a design system.": "逐步构建完整的设计系统。",
   "{count} colors · {tiers} tiers": "{count} 种颜色 · {tiers} 个级别",
   "{count} problems": "{count} 个问题",
   "{count} tokens": "{count} 个令牌",
@@ -213,7 +211,6 @@
   "CLI": "CLI",
   "Brotli": "Brotli",
   "fg-text-muted": "fg-text-muted",
-  "A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.": "使用基于规则的 CSS-in-class，快速构建美观网站和设计系统的 CSS 语言与框架。",
   "Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.": "下方各参考链接提供 Markdown，包含源代码修订版本、前提条件和生成的 CSS。",
   "Package": "软件包",
   "Reference discovery": "查找参考资料",
@@ -484,5 +481,8 @@
   "Copy setup prompt": "复制设置提示词",
   "shadcn/ui": "shadcn/ui",
   "Watch the film": "观看视频",
-  "Close video": "关闭视频"
+  "Close video": "关闭视频",
+  "Interface styling": "界面样式",
+  "then build your next interface.": "接着构建你的下一个界面。",
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "使用基于规则的 CSS-in-class 构建网页界面的 CSS 语言与框架。"
 }

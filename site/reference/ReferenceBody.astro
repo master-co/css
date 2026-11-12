@@ -2,7 +2,8 @@
 import { siteOf } from '@master/internal-site/astro/site-context'
 import { referenceLabel } from './ui'
 import '@master/css-language-service/shiki.css'
-import '@master/internal-site/styles/system/table.css'
+import '@master/internal-site/styles/system/table.ts'
+import '@master/internal-site/styles/system/inline-code.ts'
 import Link from '@master/internal-site/components/Link.svelte'
 import PreparedCodeView from '@master/internal-site/components/PreparedCodeView.astro'
 import { isStylesheetExample, referenceCodeProps } from './code-block'
@@ -63,7 +64,7 @@ const anchor = node && (type === 'paragraph' || type === 'html') ? anchorOf(node
 // Elements that only wrap their children.
 const Wrapper = anchor ? undefined : {
   paragraph: 'p', strong: 'strong', emphasis: 'em', delete: 'del', listItem: 'li', blockquote: 'blockquote',
-  tableRow: 'tr', tableCell: 'td', list: node?.ordered ? 'ol' : 'ul'
+  list: node?.ordered ? 'ol' : 'ul'
 }[type ?? '']
 // A long path may break after a slash, so a table column of import paths leaves its neighbour a readable measure.
 const codeParts: string[] | undefined = type === 'inlineCode' && node.value.length > 24 && node.value.includes('/') ? node.value.split(/(?<=\/)/) : undefined
@@ -83,8 +84,10 @@ const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
   : nodes ? nodes.map(child => child.type === 'text' ? child.value : <Astro.self node={child} context={context} />)
   : type === 'text' ? node.value
   : anchor ? <span id={anchor} />
+  : type === 'tableRow' ? <tr class="table-row"><Astro.self nodes={node.children} context={context} /></tr>
+  : type === 'tableCell' ? <td class="table-cell"><Astro.self nodes={node.children} context={context} /></td>
   : Wrapper ? <Wrapper><Astro.self nodes={node.children} context={context} /></Wrapper>
-  : type === 'inlineCode' ? <code>{codeParts ? codeParts.map((part, index) => <Fragment>{index ? <wbr /> : null}{part}</Fragment>) : node.value}</code>
+  : type === 'inlineCode' ? <code class={context.plainInlineCode.has(node) ? undefined : 'code'}>{codeParts ? codeParts.map((part, index) => <Fragment>{index ? <wbr /> : null}{part}</Fragment>) : node.value}</code>
   : type === 'code' ? (codeWrapper?.kind === 'declaration'
     ? <DocumentDeclarationView source={node.value}><PreparedCodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDeclarationView>
     : codeWrapper?.kind === 'generated-css'
@@ -111,8 +114,8 @@ const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
   }))} />
   : table?.kind === 'code' ? <DocumentCodeTable label={table.label} rows={table.rows} />
   : table?.kind === 'namespace' ? <DocumentNamespaceTable rows={table.rows} />
-  : table?.kind === 'table' && table.comparison ? <DocumentComparison><div class="ui-table"><table><thead><tr>{node.children[0].children.map((cell: any) => <th scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div></DocumentComparison>
+  : table?.kind === 'table' && table.comparison ? <DocumentComparison><div class="sheet sheet-flat ui-table"><table class="table"><thead><tr class="table-row">{node.children[0].children.map((cell: any) => <th class="table-heading" scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div></DocumentComparison>
   // A wide table's overflow region must be focusable for native keyboard scrolling.
-  : table?.kind === 'table' ? <div class="ui-table" role="region" aria-label={table.label} tabindex="0"><table><thead><tr>{node.children[0].children.map((cell: any) => <th><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div>
+  : table?.kind === 'table' ? <div class="sheet sheet-flat ui-table" role="region" aria-label={table.label} tabindex="0"><table class="table"><thead><tr class="table-row">{node.children[0].children.map((cell: any) => <th class="table-heading" scope="col"><Astro.self nodes={cell.children} context={context} /></th>)}</tr></thead><tbody><Astro.self nodes={node.children.slice(1)} context={context} /></tbody></table></div>
   : type === 'html' || type === 'definition' ? null
   : <Astro.self nodes={node.children ?? []} context={context} />}

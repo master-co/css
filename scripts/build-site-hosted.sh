@@ -11,7 +11,7 @@ trap 'rm -rf "$release_evidence_dir"' EXIT
 node scripts/pages-site-release.mjs hosted-prepare "$release_evidence_dir"
 while IFS='=' read -r release_env_name release_env_value; do
   case "$release_env_name" in
-    PUBLIC_COMMIT_REF|PUBLIC_VERSION|PUBLIC_URL|MASTER_CSS_IMAGE_TRANSFORMATIONS)
+    PUBLIC_COMMIT_REF|PUBLIC_VERSION|PUBLIC_URL|MASTER_CSS_IMAGE_TRANSFORMATIONS|MASTER_LEGACY_DESIGN_CUTOVER)
       export "$release_env_name=$release_env_value" ;;
     *) echo "Unexpected hosted release environment field" >&2; exit 1 ;;
   esac

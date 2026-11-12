@@ -32,9 +32,9 @@ const l = (key: Parameters<typeof referenceLabel>[1], values?: Record<string, st
   </Fragment>}
   <h3 id={group.id}>{group.title}</h3>
   <SheetTable class="ref-value-table" head={['Suffix', 'Expanded query'].map(header => referenceHeader(locale, header))}>
-    {group.rows.map(row => <tr id={row.id}>
-      <th scope="row"><code>{row.suffix}</code></th>
-      <td><code>{row.query}</code></td>
+    {group.rows.map(row => <tr class="table-row" id={row.id}>
+      <th class="table-cell table-primary" scope="row"><code>{row.suffix}</code></th>
+      <td class="table-cell"><code>{row.query}</code></td>
     </tr>)}
   </SheetTable>
 </Fragment>)}

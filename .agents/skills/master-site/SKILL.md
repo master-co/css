@@ -1,6 +1,6 @@
 ---
 name: master-site
-description: Build and maintain first-party Master Astro sites using the shared site framework, content conventions, Svelte islands and design system. Use for site integration, documentation layouts and shared UI; product compiler semantics stay in their owning project.
+description: Build and maintain first-party Master Astro sites using the shared site framework, content conventions, Svelte islands and Master UI. Use for site integration, documentation layouts and shared UI; product compiler semantics stay in their owning project.
 ---
 
 # Master sites
@@ -13,7 +13,7 @@ Read the consuming repository's instructions, its `site.config.ts` and the affec
 - Read context through `siteOf(Astro)` or `getSite()`; keep render state request-local. Island props are serializable. Svelte snippets receive Astro slots as static markup.
 - Shared styles are authored once with the current pinned Master CSS toolchain. Foundation, interface and document CSS have separate ordered asset boundaries. Keep product semantic highlighting and generated examples in product adapters; do not import compiler code into client components.
 - `documentStyles` controls article typography only. Feature components import their own narrow style subpaths, including interaction states and bare contexts. Keep base rules before docs-shell overrides; compatibility aggregate styles are for explicit gallery consumers. MDX uses static imports for only its used mappings, never a full registry or blanket data stylesheet. Keep global native pruning off; opt in at a proven source with complete class/state/dependency coverage. Check route CSS bytes, request counts, import depth and exact contract differences against the combined source baseline.
-- Read `@master/internal-site/styles/system/DESIGN.md` from the installed package for the `ui-*` component and `--ui-*` material contracts. Use `master-design` when refining visual relationships.
+- Read `@master/internal-site/styles/site-contract.md` from the installed package for site composition; use `@master/ui` contracts for reusable components. Use `master-design` when refining visual relationships.
 - Publish real translations only where configured; preserve explicit anchors, source dates and canonical ownership. Organization articles live on master.co. A draft stays out of production routes, indexes, feeds and exports.
 - Pin shared package versions. Update skills explicitly using the repository's `skills:sync` command and commit the generated files and lock manifest. Do not edit synchronized files in the consumer or change global skills.
 

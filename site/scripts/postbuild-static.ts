@@ -3,7 +3,7 @@ import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPublicEnv } from '../utils/public-env.js'
-import { organizationRedirects } from './organization-redirects'
+import { organizationRedirects, legacyDesignAssets } from './organization-redirects'
 import { renderSitemap } from './sitemap'
 import { stabilizeIslandIds } from './stable-island-ids'
 import { locales } from '@master/internal-site/common/locales.js'
@@ -85,6 +85,15 @@ async function writeRedirects() {
         '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 302',
         ''
     ].join('\n'), 'utf8')
+    const legacy = legacyDesignAssets()
+    if (legacy) {
+        await writeFile(path.join(outDir, '_worker.js'), legacy.worker, 'utf8')
+        await writeFile(path.join(outDir, '_routes.json'), JSON.stringify(legacy.routes, null, 2) + '\n', 'utf8')
+    } else {
+        // A rebuild without the deployment flag must not retain a previous cutover worker.
+        await rm(path.join(outDir, '_worker.js'), { force: true })
+        await rm(path.join(outDir, '_routes.json'), { force: true })
+    }
 }
 
 async function validateInlineScripts() {

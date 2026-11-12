@@ -1,12 +1,14 @@
 ---
 import { inlineTextParts } from './sheet-blocks'
+import '@master/internal-site/styles/system/inline-code.ts'
 
 interface Props {
   text: string
+  plain?: boolean
 }
 
 /** Backticks in short editorial sentences mark inline code. */
 const parts = inlineTextParts(Astro.props.text)
 ---
 
-{parts.map(part => part.code ? <code>{part.text}</code> : part.text)}
+{parts.map(part => part.code ? <code class={Astro.props.plain ? undefined : 'code'}>{part.text}</code> : part.text)}

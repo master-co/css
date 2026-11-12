@@ -46,6 +46,7 @@ for (const width of [390, 768, 1440]) for (const locale of ['en', 'tw']) for (co
       if (await dialog.getByRole('option').count() > 1) assert.notEqual(next, first)
       assert.equal(await dialog.locator(`#${next}`).getAttribute('aria-selected'), 'true')
       assert.ok((await dialog.locator(`#${next}`).getAttribute('href')).startsWith(locale === 'tw' ? '/tw/' : '/'))
+      await page.locator('dialog.dialog[open]').evaluate(async element => { await Promise.all(element.getAnimations().map(animation => animation.finished)) })
       await page.screenshot({ path: new URL(`${width}-${locale}-${scheme}.png`, output).pathname })
       await input.press('Escape')
       assert.equal(await page.getByRole('dialog').count(), 0, 'one Escape closes the dialog')
@@ -142,12 +143,14 @@ for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: 320px with 20
     const clear = dialog.getByRole('button', { name: locale === 'tw' ? '清除搜尋' : 'Clear search' })
     const close = dialog.getByRole('button', { name: locale === 'tw' ? '關閉搜尋' : 'Close search' })
     assert.ok((await close.boundingBox()).y > (await input.boundingBox()).y, 'the secondary close action uses the next row')
+    await page.locator('dialog.dialog[open]').evaluate(async element => { await Promise.all(element.getAnimations().map(animation => animation.finished)) })
     await page.screenshot({ path: new URL(`320-${locale}-enlarged-query.png`, output).pathname })
     await clear.click()
     assert.equal(await input.inputValue(), '')
     assert.equal(await input.evaluate(element => element === document.activeElement), true)
     const dimensions = await dialog.evaluate(element => ({ width: element.clientWidth, content: element.scrollWidth }))
     assert.ok(dimensions.content <= dimensions.width + 1)
+    await page.locator('dialog.dialog[open]').evaluate(async element => { await Promise.all(element.getAnimations().map(animation => animation.finished)) })
     await page.screenshot({ path: new URL(`320-${locale}-enlarged.png`, output).pathname })
     await close.click()
     assert.equal(await dialog.count(), 0)
@@ -226,13 +229,29 @@ test(`${browserName}: forced colors retain distinct focus and selected-result bo
     const id = await input.getAttribute('aria-activedescendant')
     const selected = page.locator(`#${id}`)
     assert.equal(await selected.getAttribute('aria-selected'), 'true')
-    for (const element of [input, selected]) {
-      const outline = await element.evaluate(element => ({ style: getComputedStyle(element).outlineStyle, width: parseFloat(getComputedStyle(element).outlineWidth) }))
-      assert.equal(outline.style, 'solid')
-      assert.ok(outline.width >= 2, 'forced colors keep a painted boundary')
-    }
+    const outline = await input.evaluate(element => ({ style: getComputedStyle(element).outlineStyle, width: parseFloat(getComputedStyle(element).outlineWidth) }))
+    assert.equal(outline.style, 'solid')
+    assert.ok(outline.width >= 2, 'forced colors keep the editing focus boundary')
+    const selection = await selected.evaluate(element => {
+      const probe = document.createElement('span')
+      probe.style.cssText = 'forced-color-adjust:none;background:Highlight;color:HighlightText'
+      element.after(probe)
+      const expected = getComputedStyle(probe)
+      const style = getComputedStyle(element)
+      const value = {
+        background: style.backgroundColor, color: style.color,
+        expectedBackground: expected.backgroundColor, expectedColor: expected.color,
+        details: [...element.querySelectorAll('.listbox-description, mark')].map(child => getComputedStyle(child).color),
+      }
+      probe.remove()
+      return value
+    })
+    assert.equal(selection.background, selection.expectedBackground, 'selected option uses the system Highlight fill')
+    assert.equal(selection.color, selection.expectedColor, 'selected option uses the system HighlightText ink')
+    for (const color of selection.details) assert.equal(color, selection.expectedColor, 'descriptions and query marks retain selected-row contrast')
     assert.equal(await input.evaluate(element => element.matches(':focus-visible')), true)
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    await page.locator('dialog.dialog[open]').evaluate(async element => { await Promise.all(element.getAnimations().map(animation => animation.finished)) })
     await page.screenshot({ path: new URL('320-tw-enlarged-forced-colors.png', output).pathname })
     await input.press('Escape')
     assert.equal(await trigger.evaluate(element => element === document.activeElement), true)

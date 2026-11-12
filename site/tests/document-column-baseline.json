@@ -1,0 +1,198 @@
+{
+  "source": "Original whole-task before capture: work/evidence/before/measurements.json; recorded before the ownership migration. Only shell horizontal geometry and header height are retained, not article content height.",
+  "sourceSha256": "9f27372374ddee291161c9b482e19d47213a37c6e46060dffe2de657f2a34c13",
+  "results": [
+    {
+      "path": "/guide/compatibility",
+      "width": 1440,
+      "scheme": "light",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 1440,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 276
+        },
+        "main": {
+          "x": 276,
+          "width": 1164
+        },
+        ".ui-toc": {
+          "x": 1140,
+          "width": 252
+        }
+      }
+    },
+    {
+      "path": "/reference/tokens/font",
+      "width": 1440,
+      "scheme": "light",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 1440,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 276
+        },
+        "main": {
+          "x": 276,
+          "width": 1164
+        },
+        ".ui-toc": {
+          "x": 1140,
+          "width": 252
+        }
+      }
+    },
+    {
+      "path": "/guide/compatibility",
+      "width": 1440,
+      "scheme": "dark",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 1440,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 276
+        },
+        "main": {
+          "x": 276,
+          "width": 1164
+        },
+        ".ui-toc": {
+          "x": 1140,
+          "width": 252
+        }
+      }
+    },
+    {
+      "path": "/reference/tokens/font",
+      "width": 1440,
+      "scheme": "dark",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 1440,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 276
+        },
+        "main": {
+          "x": 276,
+          "width": 1164
+        },
+        ".ui-toc": {
+          "x": 1140,
+          "width": 252
+        }
+      }
+    },
+    {
+      "path": "/guide/compatibility",
+      "width": 390,
+      "scheme": "light",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 390,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 0
+        },
+        "main": {
+          "x": 0,
+          "width": 390
+        },
+        ".ui-toc": {
+          "x": 0,
+          "width": 0
+        }
+      }
+    },
+    {
+      "path": "/reference/tokens/font",
+      "width": 390,
+      "scheme": "light",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 390,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 0
+        },
+        "main": {
+          "x": 0,
+          "width": 390
+        },
+        ".ui-toc": {
+          "x": 0,
+          "width": 0
+        }
+      }
+    },
+    {
+      "path": "/guide/compatibility",
+      "width": 390,
+      "scheme": "dark",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 390,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 0
+        },
+        "main": {
+          "x": 0,
+          "width": 390
+        },
+        ".ui-toc": {
+          "x": 0,
+          "width": 0
+        }
+      }
+    },
+    {
+      "path": "/reference/tokens/font",
+      "width": 390,
+      "scheme": "dark",
+      "boxes": {
+        "header.ui-header": {
+          "x": 0,
+          "width": 390,
+          "height": 60
+        },
+        ".ui-sidebar": {
+          "x": 0,
+          "width": 0
+        },
+        "main": {
+          "x": 0,
+          "width": 390
+        },
+        ".ui-toc": {
+          "x": 0,
+          "width": 0
+        }
+      }
+    }
+  ]
+}

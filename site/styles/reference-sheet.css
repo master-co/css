@@ -20,9 +20,8 @@
     .ref-table.ui-table tbody th code { white-space: normal; overflow-wrap: anywhere; }
   }
   .ref-table var { color: var(--ui-text-muted); font-style: italic; }
-  /* Both tables read as one typographic grid: plain mono, the class in strong ink. The doubled class outranks the
-     shared table's chips. */
-  .ref-table.ui-table :is(td, tbody th) code { padding: 0; border-radius: 0; background: none; box-shadow: none; font-size: .8125rem; line-height: 1.6; }
+  /* These identifiers stay plain mono; editorial code chips retain their canonical UI styling. */
+  .ref-table.ui-table :is(td, tbody th) code:not(.code) { font-size: .8125rem; line-height: 1.6; }
   .ref-table.ui-table tbody th code { color: var(--ui-text-strong); white-space: nowrap; }
   .ref-table.ui-table td code { color: var(--ui-text-body); font-size: .75rem; white-space: normal; overflow-wrap: anywhere; }
   .ref-table tbody th a:hover code { text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-underline-offset: .2em; }

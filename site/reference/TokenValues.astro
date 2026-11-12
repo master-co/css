@@ -1,5 +1,6 @@
 ---
 import { selectFoundationTokens } from '@master/internal-site/css/foundation-data/tokens.ts'
+import '@master/internal-site/styles/system/inline-code.ts'
 
 interface Props {
   namespace: string
@@ -10,7 +11,7 @@ const { namespace, keys } = Astro.props
 ---
 
 <ul>{selectFoundationTokens(namespace, keys).map(token =>
-  <li><code>--{token.name}</code>: {token.values.map((value, index) =>
-    <span>{index ? '; ' : ''}<code>{value.value}</code> ({value.path.join(' → ')})</span>
+  <li><code class="code">--{token.name}</code>: {token.values.map((value, index) =>
+    <span>{index ? '; ' : ''}<code class="code">{value.value}</code> ({value.path.join(' → ')})</span>
   )}</li>
 )}</ul>

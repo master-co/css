@@ -13,7 +13,6 @@
   "Customization": "Customization",
   "Get started": "Get started",
   "Rendering": "Rendering",
-  "Design system": "Design system",
   "New": "New",
   "Look up a reference": "Look up a reference",
   "Check syntax, values, generated CSS and tool contracts.": "Check syntax, values, generated CSS and tool contracts.",
@@ -40,11 +39,13 @@
   "CLI": "CLI",
   "Brotli": "Brotli",
   "fg-text-muted": "fg-text-muted",
-  "A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.": "A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.",
   "Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.": "Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.",
   "Package": "Package",
   "Reference discovery": "Reference discovery",
   "Summary": "Summary",
   "The language and tool reference for writing, understanding and reviewing Master CSS.": "The language and tool reference for writing, understanding and reviewing Master CSS.",
-  "structured index": "structured index"
+  "structured index": "structured index",
+  "Interface styling": "Interface styling",
+  "then build your next interface.": "then build your next interface.",
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "A CSS language and framework for building web interfaces with rule-based CSS-in-class."
 }

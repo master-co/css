@@ -14,7 +14,7 @@ import preset from '@master/internal-site/css/preset-manifest.ts'
 import { fixMasterCSSContent, lintMasterCSSContent, resolveMasterCSSLintRules } from '@master/css-tooling/lint'
 import { lintRuleReach } from './lint-content'
 import { deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
-// The Design system section checks its gallery classes, token values and cascade probe against the engine.
+// The Interface styling section checks its gallery classes, token values and cascade probe against the engine.
 import './design-system-content.test'
 import './delivery-content.test'
 // The AI agents section checks its MCP samples against the server source and the tooling lint.

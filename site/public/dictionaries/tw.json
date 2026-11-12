@@ -399,7 +399,6 @@
   "Build one button step by step with declarations, interaction states, responsive conditions and a project theme token.": "透過宣告、互動狀態、響應式條件與專案 token，逐步完成一個按鈕。",
   "Get started": "開始使用",
   "Star us on GitHub": "在 GitHub 上幫我們加星",
-  "Design system": "設計系統",
   "Modern CSS primitives": "現代 CSS 原語",
   "Layout and motion, together": "版面與動態，一起設計",
   "Click a photo to preview the transition.": "點擊照片，預覽轉場效果。",
@@ -496,7 +495,6 @@
   "Measured on real documentation pages.": "在真實​文件頁上​實測。",
   "View benchmark details": "查看效能測試細節",
   "Start with one class string,": "從一串 class 開始，",
-  "then grow into a design system.": "再長成​一套設計系統。",
   "Rendering": "渲染",
   "One syntax. Every delivery path.": "一種語法，各種交付方式。",
   "Build modern interfaces from one class vocabulary.": "用同一套 class 詞彙​打造現代介面。",
@@ -664,7 +662,6 @@
   "Other inline": "其他行內 CSS",
   "Recorded CSS body size": "記錄的 CSS 回應本文大小",
   "Recorded CSS body sizes from documentation page snapshots": "文件頁面快照中記錄的 CSS 本文大小",
-  "A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.": "以規則式 CSS-in-class 快速建立美觀網站與設計系統的 CSS 語言與框架。",
   "Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.": "下方各參考連結提供 Markdown，包含來源修訂版本、使用前提與生成的 CSS。",
   "Reference discovery": "尋找參考資料",
   "Summary": "摘要",
@@ -920,5 +917,8 @@
   "Copy setup prompt": "複製設定提示詞",
   "shadcn/ui": "shadcn/ui",
   "Watch the film": "觀看影片",
-  "Close video": "關閉影片"
+  "Close video": "關閉影片",
+  "Interface styling": "介面樣式",
+  "then build your next interface.": "接著打造你的下一個介面。",
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "以規則式 CSS-in-class 建構網頁介面的 CSS 語言與框架。"
 }
