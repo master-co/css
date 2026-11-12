@@ -6,8 +6,7 @@ import path from 'node:path'
 export const repository = 'master-co/css'
 export const identityPath = 'site-release.json'
 export const channels = {
-  main: { deliveryBranch: 'codex/pages-stable', origin: 'https://css.master.co' },
-  rc: { deliveryBranch: 'codex/pages-rc', origin: 'https://rc.css.master.co' }
+  main: { deliveryBranch: 'pages-stable', origin: 'https://css.master.co' }
 }
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 export const jsonBytes = value => Buffer.from(JSON.stringify(value, null, 2) + '\n')
@@ -20,8 +19,8 @@ export function releaseMetadata(input) {
   // The site documents the packages of one published release. A release push builds that
   // release commit itself; a later site-only commit keeps its unchanged package sources.
   assert.match(result.releaseRevision ?? '', /^[a-f0-9]{40}$/, 'The exact source revision of the documented release is required')
-  assert.ok(Object.hasOwn(channels, result.channel), 'Only main and rc can deliver the site')
-  assert.match(result.version ?? '', result.channel === 'main' ? /^\d+\.\d+\.\d+$/ : /^\d+\.\d+\.\d+-rc\.\d+$/, 'Version must match the logical release channel')
+  assert.ok(Object.hasOwn(channels, result.channel), 'Only main can deliver the site')
+  assert.match(result.version ?? '', /^\d+\.\d+\.\d+$/, 'The site documents a stable release')
   assert.equal(result.tag, `v${result.version}`, 'The exact published version tag is required')
   assert.equal(result.deliveryBranch, channels[result.channel].deliveryBranch)
   assert.equal(result.origin, channels[result.channel].origin)
@@ -99,7 +98,7 @@ export async function prepareIdentity(directory, input) {
 
 export function validateRegistryEvidence(registry, metadata) {
   assert.equal(registry?.url, 'https://registry.npmjs.org/')
-  assert.equal(registry.channel, metadata.channel === 'main' ? 'latest' : 'rc')
+  assert.equal(registry.channel, 'latest')
   assert.ok(Array.isArray(registry.packages) && registry.packages.length > 0)
   const names = registry.packages.map(pkg => pkg.name)
   assert.deepEqual(names, [...new Set(names)].sort(), 'Registry cohort must be complete, unique and sorted')

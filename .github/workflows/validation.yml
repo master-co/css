@@ -19,7 +19,7 @@ on:
         type: boolean
         default: false
       site_delivery:
-        description: Whether this push of main or rc may deliver the site, so a site-only delivery is built and browser-verified here with its public identity for deploy-site to reuse.
+        description: Whether this push of main may deliver the site, so a site-only delivery is built and browser-verified here with its public identity for deploy-site to reuse.
         type: boolean
         default: false
     outputs:
@@ -298,12 +298,12 @@ jobs:
         if: ${{ steps.site_plan.outputs.deliver == 'true' }}
         env:
           PUBLIC_COMMIT_REF: ${{ github.ref_name }}
-          PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
+          PUBLIC_URL: https://css.master.co
           MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
-          MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars[format('MASTER_LEGACY_DESIGN_CUTOVER_{0}', github.ref_name == 'main' && 'STABLE' || 'RC')] == '1' && '1' || '0' }}
-          PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
-          PAGES_SUBDOMAIN: ${{ vars[format('CLOUDFLARE_PAGES_{0}_SUBDOMAIN', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
-          PAGES_RELEASE_MODE: ${{ vars[format('CLOUDFLARE_PAGES_{0}_MODE', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+          MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars.MASTER_LEGACY_DESIGN_CUTOVER == '1' && '1' || '0' }}
+          PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          PAGES_SUBDOMAIN: ${{ vars.CLOUDFLARE_PAGES_SUBDOMAIN }}
+          PAGES_RELEASE_MODE: ${{ vars.CLOUDFLARE_PAGES_MODE }}
         run: node scripts/pages-site-release.mjs preflight
       - name: Build and verify site
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}
@@ -312,9 +312,9 @@ jobs:
           RELEASE_BUILD: ${{ inputs.release_build }}
           # Empty unless this build is the delivery, so other builds keep their resolved values.
           PUBLIC_COMMIT_REF: ${{ steps.site_plan.outputs.deliver == 'true' && github.ref_name || '' }}
-          PUBLIC_URL: ${{ steps.site_plan.outputs.deliver == 'true' && (github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co') || '' }}
+          PUBLIC_URL: ${{ steps.site_plan.outputs.deliver == 'true' && 'https://css.master.co' || '' }}
           MASTER_CSS_IMAGE_TRANSFORMATIONS: ${{ steps.site_plan.outputs.deliver == 'true' && 'false' || '' }}
-          MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars[format('MASTER_LEGACY_DESIGN_CUTOVER_{0}', github.ref_name == 'main' && 'STABLE' || 'RC')] == '1' && '1' || '0' }}
+          MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars.MASTER_LEGACY_DESIGN_CUTOVER == '1' && '1' || '0' }}
         run: |
           set -euo pipefail
           if [ "$RELEASE_BUILD" != true ]; then
@@ -337,12 +337,12 @@ jobs:
         if: ${{ steps.site_plan.outputs.deliver == 'true' }}
         env:
           PUBLIC_COMMIT_REF: ${{ github.ref_name }}
-          PUBLIC_URL: ${{ github.ref_name == 'main' && 'https://css.master.co' || 'https://rc.css.master.co' }}
+          PUBLIC_URL: https://css.master.co
           MASTER_CSS_IMAGE_TRANSFORMATIONS: "false"
-          MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars[format('MASTER_LEGACY_DESIGN_CUTOVER_{0}', github.ref_name == 'main' && 'STABLE' || 'RC')] == '1' && '1' || '0' }}
-          PAGES_PROJECT: ${{ vars[format('CLOUDFLARE_PAGES_{0}_PROJECT', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
-          PAGES_SUBDOMAIN: ${{ vars[format('CLOUDFLARE_PAGES_{0}_SUBDOMAIN', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
-          PAGES_RELEASE_MODE: ${{ vars[format('CLOUDFLARE_PAGES_{0}_MODE', github.ref_name == 'main' && 'STABLE' || 'RC')] }}
+          MASTER_LEGACY_DESIGN_CUTOVER: ${{ vars.MASTER_LEGACY_DESIGN_CUTOVER == '1' && '1' || '0' }}
+          PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          PAGES_SUBDOMAIN: ${{ vars.CLOUDFLARE_PAGES_SUBDOMAIN }}
+          PAGES_RELEASE_MODE: ${{ vars.CLOUDFLARE_PAGES_MODE }}
         run: node scripts/pages-site-release.mjs identity
       - name: Verify built site in Chromium, Firefox and WebKit
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}

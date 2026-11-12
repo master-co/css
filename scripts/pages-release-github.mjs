@@ -71,7 +71,7 @@ export async function publishManifest(metadata, data, { token, fetchApi = fetch,
   assert.equal(release.status, 200, 'The actual published GitHub release is required')
   assert.equal(release.value.tag_name, metadata.tag)
   assert.equal(release.value.draft, false)
-  assert.equal(release.value.prerelease, metadata.channel !== 'main')
+  assert.equal(release.value.prerelease, false, 'The site documents a stable release')
   assert.ok(Number.isSafeInteger(release.value.id) && release.value.id > 0)
   const name = manifestName(metadata)
   const list = async () => {

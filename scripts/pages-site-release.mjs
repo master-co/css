@@ -10,7 +10,7 @@ const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignor
 const remote = `https://github.com/${repository}.git`
 const manifestFile = 'release-artifacts/site.manifest.json'
 
-const tagPatterns = { main: /^v(\d+)\.(\d+)\.(\d+)$/, rc: /^v(\d+)\.(\d+)\.(\d+)-rc\.(\d+)$/ }
+const tagPatterns = { main: /^v(\d+)\.(\d+)\.(\d+)$/ }
 
 function tagTargets(refs) {
   const tags = new Map()
@@ -26,7 +26,7 @@ function tagTargets(refs) {
 /** The highest release tag of a channel, compared numerically. */
 export function newestTag(tags, channel) {
   const pattern = tagPatterns[channel]
-  assert.ok(pattern, 'Only main and rc can deliver the site')
+  assert.ok(pattern, 'Only main can deliver the site')
   const parts = tag => tag.match(pattern).slice(1).map(Number)
   return tags.filter(tag => pattern.test(tag)).sort((a, b) => {
     const [x, y] = [parts(a), parts(b)]
@@ -64,7 +64,7 @@ export function selectReleaseTag(refs, revision, channel) {
  */
 export function planDelivery({ released, version, channel, reachableTags, pendingRelease }) {
   if (released) {
-    assert.match(version ?? '', /^\d+\.\d+\.\d+(-rc\.\d+)?$/, 'A release delivers with its actual version')
+    assert.match(version ?? '', /^\d+\.\d+\.\d+$/, 'A release delivers with its actual version')
     return { deliver: true, kind: 'release', version }
   }
   const tag = newestTag(reachableTags, channel)
@@ -158,7 +158,7 @@ export function registryFromState(state, metadata, names) {
   assert.equal(state.schemaVersion, 1)
   assert.equal(state.revision, metadata.releaseRevision)
   assert.equal(state.version, metadata.version)
-  const channel = metadata.channel === 'main' ? 'latest' : 'rc'
+  const channel = 'latest'
   assert.equal(state.channels?.[channel]?.complete, true, 'The whole public cohort must be promoted first')
   assert.deepEqual([...state.channels[channel].promoted].sort(), names)
   assert.equal(state.consumerProof?.revision, metadata.releaseRevision)
@@ -197,7 +197,7 @@ export async function verifyPublicRegistry(registry, metadata, fetchApi = fetch)
  */
 export async function registryFromNpm(metadata, names, fetchApi = fetch) {
   const url = 'https://registry.npmjs.org/'
-  const channel = metadata.channel === 'main' ? 'latest' : 'rc'
+  const channel = 'latest'
   const read = async address => {
     const response = await fetchApi(address, { headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(15_000) })
     assert.equal(response.status, 200, `Published registry metadata is unavailable: ${address}`)
@@ -236,7 +236,7 @@ async function writeGitHubFile(name, lines) {
 
 async function plan() {
   const channel = process.env.GITHUB_REF_NAME
-  assert.ok(Object.hasOwn(channels, channel), 'Only main and rc can deliver the site')
+  assert.ok(Object.hasOwn(channels, channel), 'Only main can deliver the site')
   // aronrepo is installed by then; the hosted builder never plans, so it stays a lazy import.
   const { explainRange, getVersionTags } = await import('aronrepo/node')
   const cwd = process.cwd()

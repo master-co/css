@@ -1,17 +1,16 @@
 # Website release cutover and recovery
 
-This is a reviewable procedure for #472 and #473. Execution remains subject to the owner's release authorization and completion of the agreed readiness and MDX/translation work. This document does not itself authorize publication, deployment, DNS changes or rollback. Local candidate checks do not establish that either public domain serves this candidate.
+This is a reviewable procedure for #472 and #473. Execution remains subject to the owner's release authorization and completion of the agreed readiness and MDX/translation work. This document does not itself authorize publication, deployment, DNS changes or rollback. Local candidate checks do not establish that the public domain serves this candidate.
 
 ## Routing and artifact contract
 
 | Surface | Intended source | Canonical origin | Cutover condition |
 | --- | --- | --- | --- |
 | Stable documentation | Approved stable release commit on `main` | `https://css.master.co` | Matching public package set is available; exact artifact and live checks pass |
-| RC documentation | Approved prerelease commit on `rc` | `https://rc.css.master.co` | Matching RC packages and the RC artifact pass independently |
-| Private candidate preview | The same immutable commit and built output intended for the target surface | Keep the intended stable or RC canonical origin | Require preview `X-Robots-Tag: noindex`; do not promote a moving branch alias as proof |
+| Private candidate preview | The same immutable commit and built output intended for the stable surface | Keep the stable canonical origin | Require preview `X-Robots-Tag: noindex`; do not promote a moving branch alias as proof |
 | Existing v1 site | Retained previous production deployment | Its existing origin until an approved cutover | Record a rollback target before replacing the stable domain |
 
-The site reads `PUBLIC_COMMIT_REF`, `PUBLIC_VERSION` and `PUBLIC_URL`. Set them explicitly in release CI. Stable `main` defaults to the stable origin, including when a hosting provider supplies its own preview URL; RC defaults to the RC origin. An explicit `PUBLIC_URL` overrides either default. Local development continues to use localhost.
+The site reads `PUBLIC_COMMIT_REF`, `PUBLIC_VERSION` and `PUBLIC_URL`. Set them explicitly in release CI. Stable `main`, and a build whose ref cannot be resolved, defaults to the stable origin, including when a hosting provider supplies its own preview URL. An explicit `PUBLIC_URL` overrides that default. Prerelease branches (`alpha`, `beta`, `rc`, `canary`) publish npm packages only; they have no site and no canonical origin. Local development continues to use localhost.
 
 `PUBLIC_VERSION=2.0.0` is suitable for a local stable-metadata rehearsal only. It does not prove that version exists in npm. A release job must obtain the real version from its release result and bind the checked-out commit, build report, artifact digest and uploaded deployment to the same revision. Do not use a branch-head deploy hook to claim exact-commit deployment.
 
@@ -25,8 +24,9 @@ Either way the workflow builds the exact source, runs browser verification, publ
 
 | Logical release channel | Pages production Git branch | Canonical origin |
 | --- | --- | --- |
-| `main` | `codex/pages-stable` | `https://css.master.co` |
-| `rc` | `codex/pages-rc` | `https://rc.css.master.co` |
+| `main` | `pages-stable` | `https://css.master.co` |
+
+`main` is the only site channel. One Pages project builds `pages-stable` and serves `css.master.co`; the former RC surface (`rc.css.master.co`, delivery branch `codex/pages-rc`) is retired, and the stable delivery branch was renamed from `codex/pages-stable`.
 
 This deliberately separates source/release branches from deployment triggers. `PUBLIC_COMMIT_REF` remains the logical channel; it is not the Pages delivery branch. A branch-head deploy hook must not replace the exact-source handoff.
 
@@ -34,17 +34,17 @@ The operator's strict target check in `scripts/pages-release-target.mjs` still r
 
 ## Git App configuration
 
-Configure these repository variables for each `STABLE` and `RC` surface:
+Configure these repository variables for the Pages project:
 
 | Repository variable | Value |
 | --- | --- |
-| `CLOUDFLARE_PAGES_STABLE_PROJECT` / `CLOUDFLARE_PAGES_RC_PROJECT` | Actual Pages project name |
-| `CLOUDFLARE_PAGES_STABLE_SUBDOMAIN` / `CLOUDFLARE_PAGES_RC_SUBDOMAIN` | Actual `<assigned-name>.pages.dev` subdomain, without scheme or path; do not infer it from the project name |
-| `CLOUDFLARE_PAGES_STABLE_MODE` / `CLOUDFLARE_PAGES_RC_MODE` | Explicitly `bootstrap` or `production`; missing/other values fail |
+| `CLOUDFLARE_PAGES_PROJECT` | Actual Pages project name |
+| `CLOUDFLARE_PAGES_SUBDOMAIN` | Actual `<assigned-name>.pages.dev` subdomain, without scheme or path; do not infer it from the project name |
+| `CLOUDFLARE_PAGES_MODE` | Explicitly `bootstrap` or `production`; missing/other values fail |
 
 The workflow uses its existing repository `GITHUB_TOKEN` only for immutable release-asset creation, fast-forward Git ref updates and reading official Pages checks. It does not expose that write token during dependency builds. The selected project and public subdomain appear in public release evidence; account identifiers, API tokens, hook URLs and full Cloudflare deployment identifiers do not.
 
-For each Pages Git source, use the matching production delivery branch, disable all preview branch builds, retain all build watch paths (`*`, no exclusions), set the repository root as the build root, set build command `bun run build:site:cloudflare-pages`, and output directory `site/out`. Configure these build variables:
+For the Pages Git source, use the production delivery branch `pages-stable`, disable all preview branch builds, retain all build watch paths (`*`, no exclusions), set the repository root as the build root, set build command `bun run build:site:cloudflare-pages`, and output directory `site/out`. Configure these build variables:
 
 | Cloudflare build variable | Value |
 | --- | --- |
@@ -56,8 +56,6 @@ For each Pages Git source, use the matching production delivery branch, disable 
 | `MASTER_CSS_IMAGE_TRANSFORMATIONS` | `false`, identical to release CI |
 
 Leave `PUBLIC_VERSION` unset in hosting settings. The helper resolves the unique actual release tag that points to `CF_PAGES_COMMIT_SHA`; for a site-only commit it uses the channel's newest release tag, whose release must already carry the manifest CI published for this exact commit. It maps `CF_PAGES_BRANCH` to the logical channel and sets the canonical origin. Any explicit `PUBLIC_VERSION`, `PUBLIC_COMMIT_REF` or `PUBLIC_URL` must agree. `git HEAD`, the exact release tag, Pages commit SHA, delivery branch, configured project and actual immutable Pages URL must all match the manifest.
-
-The 2026-11-12 ownership migration updates stable only. RC retains its previous deployment and disabled production builds; its Node 24 setting remains unchanged until an independently verified RC source update. Preparing a future RC legacy-route flag does not deploy or certify that older surface.
 
 Current Cloudflare documentation says Direct Upload projects cannot switch to Git integration. An empty project's dashboard may present a newer **Connect** path; inspect it without saving or deploying before deciding whether attachment is supported. A button alone is not successful source attachment. Do not delete/recreate the empty stable project automatically. Keep both automatic build controls held until the source, guarded build command, release handoff and owner prerequisites are ready. [Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/), [Direct Upload limitation](https://developers.cloudflare.com/pages/get-started/direct-upload/)
 
@@ -77,7 +75,7 @@ The workflow waits for the official Cloudflare Pages App check on this exact sou
 
 1. Finish the required CI checks on the intended commit, including Windows and native consumer checks. Preserve the existing production deployment.
 2. Complete the registry readiness inventory: every required package and native/Wasm dependency must resolve at the release version and channel. Test a clean installer run and the documented framework/manual installation paths. Build success from workspace dependencies is not registry installation proof.
-3. Check the public Installation availability notice and CDN `VERSION` template. Remove the pending-release notice only after the matching package set exists. Keep RC instructions on the RC surface; before stable cutover, change stable installer and manual-install examples together to the verified stable channel/version. Keep the runtime script, program and preset from one version.
+3. Check the public Installation availability notice and CDN `VERSION` template. Remove the pending-release notice only after the matching package set exists. Before stable cutover, change stable installer and manual-install examples together to the verified stable channel/version. Keep the runtime script, program and preset from one version.
 4. Keep public Migration content about converting external styling systems. Historical package incidents belong in their issues and maintainer release records; do not add retired APIs to the current Guide. The release announcement belongs to the organization site. Verify its destination and actual publication date before linking it; do not invent a release post or date here.
 5. Build and verify the target metadata without deploying:
 
@@ -100,7 +98,7 @@ The workflow waits for the official Cloudflare Pages App check on this exact sou
 
 Before any authorized cutover, record these fields in a private operator record, not this repository or public issues:
 
-- Owning account/project, production branch and domain mappings for stable and RC.
+- Owning account/project, production branch and domain mappings.
 - Current successful production deployment identifier, commit, artifact digest and tested recovery URL.
 - Candidate deployment identifier, exact commit and artifact digest; intended release version/channel.
 - Current DNS values, proxy mode, cache configuration and any separately managed redirect rules that would change.
@@ -118,13 +116,13 @@ For a new stable project, start with mode `bootstrap`. Inspect the project and s
 node scripts/pages-site-release.mjs canonical release-artifacts/site.manifest.json
 ```
 
-This command verifies the retained manifest against its exact public release asset, source tag, public registry cohort and canonical public site identity, then writes `release-artifacts/site-canonical.json`. Set the surface's mode to `production` after cutover; future deliveries must also verify the canonical identity. Mode is absent from immutable output/manifest bytes, so cutover does not create a conflicting asset for the same revision.
+This command verifies the retained manifest against its exact public release asset, source tag, public registry cohort and canonical public site identity, then writes `release-artifacts/site-canonical.json`. Set `CLOUDFLARE_PAGES_MODE` to `production` after cutover; future deliveries must also verify the canonical identity. Mode is absent from immutable output/manifest bytes, so cutover does not create a conflicting asset for the same revision.
 
 If a failed site job is rerun, it downloads the npm evidence artifact named by the original completed release job, even when the workflow attempt number changes. If its delivery ref already selects this SHA, no new push or synthetic commit is made. Inspect or retry that exact Pages deployment through the authorized dashboard when appropriate; do not force a ref, move a version tag or republish npm to obtain a site retry. A new publication manifest with different bytes requires reconciliation, never `--clobber`.
 
 Pages reconstructs the site from the same source and lockfile, then `hosted-verify` compares every output file with the immutable CI manifest before deployment. It does not directly upload the CI archive. After that comparison and the delivery-ref check succeed, `hosted-verify` atomically updates the build-local `wrangler.jsonc` with seven controlled plaintext build inputs: the actual Node version, repository-pinned Bun version, `SKIP_DEPENDENCY_INSTALL=1`, and the verified project, subdomain, portable-image and legacy-cutover values. This configuration is outside `site/out`; neither public output nor the CI manifest changes. Existing runtime variables, bindings and other configuration remain intact, and production variables keep Wrangler's non-inheritance semantics. Arbitrary process variables and dashboard secrets are never copied.
 
-This synchronization is required on every Worker deployment: [Wrangler configuration is the Pages source of truth](https://developers.cloudflare.com/pages/functions/wrangler-configuration/), so an empty source `vars` map can replace dashboard plaintext build values. Verify the seven build inputs after delivery, including the actual channel's project and subdomain. Keep four explicit prefixes on each surface's Pages build command: `MASTER_CSS_PAGES_PROJECT`, `MASTER_CSS_PAGES_SUBDOMAIN`, `MASTER_CSS_IMAGE_TRANSFORMATIONS=false` and `MASTER_LEGACY_DESIGN_CUTOVER` aligned with its GitHub variable. Use that surface's real project/subdomain, including RC. Pages can apply source configuration before the hosted shell runs, so dashboard-only identity values are insufficient. A failed metadata, registry, output or delivery-ref check must leave the configuration untouched.
+This synchronization is required on every Worker deployment: [Wrangler configuration is the Pages source of truth](https://developers.cloudflare.com/pages/functions/wrangler-configuration/), so an empty source `vars` map can replace dashboard plaintext build values. Verify the seven build inputs after delivery, including the actual project and subdomain. Keep four explicit prefixes on the Pages build command: `MASTER_CSS_PAGES_PROJECT`, `MASTER_CSS_PAGES_SUBDOMAIN`, `MASTER_CSS_IMAGE_TRANSFORMATIONS=false` and `MASTER_LEGACY_DESIGN_CUTOVER` aligned with its GitHub variable. Use the real project/subdomain. Pages can apply source configuration before the hosted shell runs, so dashboard-only identity values are insufficient. A failed metadata, registry, output or delivery-ref check must leave the configuration untouched.
 
 `release-artifacts/site-delivery.json` records the source, actual version, logical channel, delivery ref, project, mode and owning GitHub run/attempt before any asset/ref write. Each external write records its intent and acknowledged, rejected or unknown response outcome; asset/ref verification is recorded separately. A lost response can leave a successful remote write with an `unknown` outcome. A failed CLI status never means that no write occurred or that Cloudflare rolled back. Inspect the retained receipt and authoritative asset/ref state before retrying. Retries with an existing local receipt append an attempt without replacing its history; separate workflow attempts retain separate artifacts. Immutable-host and canonical verification flags become true only after their respective live checks complete. Failure receipts contain fixed phase/error codes, never raw responses, credentials or private dashboard identifiers.
 
@@ -132,7 +130,7 @@ This synchronization is required on every Worker deployment: [Wrangler configura
 2. Verify `/`, `/tw`, Installation, Migration, a generated Reference page, search JSON, `llms.txt`, `llms-full.txt`, sitemap, one hashed JS/CSS asset and one image/font. Verify real HTTPS responses, MIME types, caching and canonical URLs. Run the browser matrix against the deployed artifact, including Firefox, and manually exercise keyboard focus and screen-reader navigation.
 3. Verify `/en` and `/en/*` normalization, organization redirects for Blog/Brand/Design System, the `/cdn/*` destination, and unknown route 404 behavior. The generated `_redirects` applies to Pages static responses, not arbitrary Functions routes. [Redirect documentation](https://developers.cloudflare.com/pages/configuration/redirects/)
 4. Do not redirect all old documentation URLs to unrelated new pages. The existing product policy deliberately retires removed Reference routes. Preserve committed brand download URLs. Decide any separate legacy-site hostname only after an operator verifies its hosting and recovery plan; this runbook reserves no new domain.
-5. Confirm the matching packages, installer and editor extension are publicly available. Promote the stable domain only after those checks and release authorization. RC remains a separate prerelease surface; do not silently redirect it to stable.
+5. Confirm the matching packages, installer and editor extension are publicly available. Promote the stable domain only after those checks and release authorization.
 6. Repeat the HTTP, asset, canonical, search and critical-browser checks on the public domain. Save exact responses, the deployed commit/digest and the time checked. A WAF challenge must be recorded as an access limitation and verified with an authorized browser; it is not proof of an unavailable site.
 
 ## Rollback
@@ -155,9 +153,9 @@ No item in this runbook grants permission to lift the publication/deployment hol
 
 The default build leaves `MASTER_LEGACY_DESIGN_CUTOVER` off. Before changing it, publish the required UI and shared packages, deploy Master UI and Master Design, and verify every exact 301 destination in `@master/internal-site/data/legacy-design-routes.json` on its canonical domain. Design currently publishes English only, so incoming localized routes use the exact English destination. Only an explicit, verified `localizedDestinations` entry may override it; never construct destination paths from the source locale. Markdown variants use the explicit `markdownDestination`: Design exports live under `/guidelines/*.md`, not the HTML path plus `.md`. Exercise all source locales, including the `/en` alias. A local candidate or Pages preview does not establish canonical-domain readiness.
 
-For a target surface, set the GitHub repository variable `MASTER_LEGACY_DESIGN_CUTOVER_STABLE=1` (or `_RC=1`) and set `MASTER_LEGACY_DESIGN_CUTOVER=1` in that surface's Cloudflare Pages Git build environment. Then deliver a **new source commit** on `main` (or `rc`): an already published manifest for the same source revision is immutable and must not be replaced just to change this setting. Keep both settings absent or `0` until destinations are ready. Master organization's deployment must independently receive the same opt-in flag after the same destination checks.
+Set the GitHub repository variable `MASTER_LEGACY_DESIGN_CUTOVER=1` and set `MASTER_LEGACY_DESIGN_CUTOVER=1` in the Cloudflare Pages Git build environment. Then deliver a **new source commit** on `main`: an already published manifest for the same source revision is immutable and must not be replaced just to change this setting. Keep both settings absent or `0` until destinations are ready. Master organization's deployment must independently receive the same opt-in flag after the same destination checks.
 
-For API changes, PATCH only the named `MASTER_LEGACY_DESIGN_CUTOVER` entry under each environment's `env_vars`, together with its current `wrangler_config_hash` when present. This matches the audited Wrangler 4.129.0 `pages secret put` request shape. Never resend masked `secret_text` values from a GET response: existing RC secrets are returned with empty values. Compare all other environment keys/visible fields and the canonical deployment identity before and after; retain RC Node 24 and do not redeploy its held source. The [Pages update API](https://developers.cloudflare.com/api/resources/pages/subresources/projects/methods/edit/) requires explicit `null` to delete an environment variable.
+For API changes, PATCH only the named `MASTER_LEGACY_DESIGN_CUTOVER` entry under each environment's `env_vars`, together with its current `wrangler_config_hash` when present. This matches the audited Wrangler 4.129.0 `pages secret put` request shape. Never resend masked `secret_text` values from a GET response: existing secrets are returned with empty values. Compare all other environment keys/visible fields and the canonical deployment identity before and after. The [Pages update API](https://developers.cloudflare.com/api/resources/pages/subresources/projects/methods/edit/) requires explicit `null` to delete an environment variable.
 
 Validation, deployment and the hosted build bind the boolean `legacyDesignCutover` into `site-release.json` and the immutable output manifest. Both `_worker.js` and `_routes.json` must exist exactly when it is enabled; a missing worker, a stale worker in an off build, an earlier validation artifact, or inconsistent GitHub/Pages settings fails closed. The hosted shell explicitly exports the verified flag before building. Worker and route bytes remain covered by the same exact inventory and browser proof as all other output.
 

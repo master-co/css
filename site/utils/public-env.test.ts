@@ -142,10 +142,11 @@ test('supports legacy release tags when no channel is known', () => {
   }), '2.0.0-rc.77')
 })
 
-test('uses repo-owned defaults for the rc Cloudflare Pages build', () => {
+test('an rc build has no canonical site origin but keeps its prerelease version', () => {
   const publicEnv = resolvePublicEnv({
     env: {
-      CF_PAGES_BRANCH: 'rc'
+      CF_PAGES_BRANCH: 'rc',
+      CF_PAGES_URL: 'https://0123abcd.fixture.pages.dev'
     },
     cwd: '/repo',
     runGit: git({
@@ -158,9 +159,27 @@ test('uses repo-owned defaults for the rc Cloudflare Pages build', () => {
   })
 
   assert.equal(publicEnv.PUBLIC_PROJECT, 'Master CSS')
-  assert.equal(publicEnv.PUBLIC_HOST, 'rc.css.master.co')
-  assert.equal(publicEnv.PUBLIC_URL, 'https://rc.css.master.co')
+  assert.equal(publicEnv.PUBLIC_HOST, '0123abcd.fixture.pages.dev')
+  assert.equal(publicEnv.PUBLIC_URL, 'https://0123abcd.fixture.pages.dev')
   assert.equal(publicEnv.PUBLIC_VERSION, '2.0.0-rc.79')
+})
+
+test('an unresolved ref defaults to the stable site', () => {
+  const publicEnv = resolvePublicEnv({
+    env: {},
+    cwd: '/repo',
+    runGit: git({
+      'symbolic-ref --short HEAD': '',
+      'tag --points-at HEAD --list v* --sort=-v:refname': '',
+      'ls-remote --tags --sort=-v:refname https://github.com/master-co/css.git v*': '3482d1cdc49314f367d040969926a12881ee4e08\trefs/tags/v2.1.4',
+      'describe --tags --abbrev=0 --match v* --exclude v*-*': 'v2.1.3'
+    }),
+    repositoryUrl: JSON.parse(repository).repository.url
+  })
+
+  assert.equal(publicEnv.PUBLIC_COMMIT_REF, 'main')
+  assert.equal(publicEnv.PUBLIC_URL, 'https://css.master.co')
+  assert.equal(publicEnv.PUBLIC_VERSION, '2.1.4')
 })
 
 test('uses localhost for local development even on rc', () => {

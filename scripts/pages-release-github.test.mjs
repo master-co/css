@@ -4,7 +4,7 @@ import { advancePointer, completedPagesCheck, downloadManifest, downloadPublicBy
 import { identityPath, inventoryDigest, jsonBytes, manifestName, manifestUrl, sha256 } from './pages-site-manifest.mjs'
 
 const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
-  channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
+  channel: 'main', deliveryBranch: 'pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
   origin: 'https://css.master.co', imageTransformations: false, legacyDesignCutover: false }
 const files = [{ path: 'index.html', size: 10, sha256: 'a'.repeat(64) }, { path: identityPath, size: 20, sha256: 'b'.repeat(64) }]
 const manifest = { schemaVersion: 1, ...metadata, files, buildDigest: inventoryDigest(files),
@@ -114,14 +114,14 @@ test('an existing delivery ref advances without force and without creating a com
   const server = pointerApi()
   assert.deepEqual(await advancePointer(metadata, { token, fetchApi: server.fetchApi }), { advanced: true })
   assert.deepEqual(server.mutations.map(call => [call.method, call.body]), [['PATCH', { sha: metadata.revision, force: false }]])
-  assert.ok(server.mutations[0].url.endsWith('/git/refs/heads/codex/pages-stable'))
+  assert.ok(server.mutations[0].url.endsWith('/git/refs/heads/pages-stable'))
   await assert.rejects(advancePointer({ ...metadata, deliveryBranch: 'main' }, { token, fetchApi: async () => { throw new Error('must not request') } }))
 })
 
 test('initial creation and already-selected source remain distinct from force or synthetic commits', async () => {
   const initial = pointerApi({ initial: null })
   await advancePointer(metadata, { token, fetchApi: initial.fetchApi })
-  assert.deepEqual(initial.mutations.map(call => [call.method, call.body]), [['POST', { ref: 'refs/heads/codex/pages-stable', sha: metadata.revision }]])
+  assert.deepEqual(initial.mutations.map(call => [call.method, call.body]), [['POST', { ref: 'refs/heads/pages-stable', sha: metadata.revision }]])
   const same = pointerApi({ initial: metadata.revision })
   assert.deepEqual(await advancePointer(metadata, { token, fetchApi: same.fetchApi }), { advanced: false })
   assert.equal(same.mutations.length, 0)

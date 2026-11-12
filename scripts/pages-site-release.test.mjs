@@ -10,7 +10,7 @@ import { createManifest, inventoryDigest, jsonBytes, manifestName, manifestUrl, 
 
 const revision = 'a'.repeat(40)
 const metadata = { repository: 'master-co/css', revision, releaseRevision: revision, version: '2.0.0', tag: 'v2.0.0', channel: 'main',
-  deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
+  deliveryBranch: 'pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
   origin: 'https://css.master.co', imageTransformations: false, legacyDesignCutover: false }
 const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [
   { name: '@master/css', version: metadata.version, integrity: 'sha512-YQ==', provenance: true }
@@ -57,10 +57,11 @@ test('CI binds a site-only commit to the unchanged packages of the release it do
 test('every push delivers the site, with its own release or the newest one, unless a release is pending', () => {
   const tags = ['v1.37.8', 'v2.0.0-rc.3', 'v2.0.2', 'v2.0.10', 'v2.0.9']
   assert.equal(newestTag(tags, 'main'), 'v2.0.10')
-  assert.equal(newestTag(tags, 'rc'), 'v2.0.0-rc.3')
+  assert.throws(() => newestTag(tags, 'rc'), /Only main/)
   assert.equal(newestTag(['v2.0.0-rc.1'], 'main'), undefined)
   assert.deepEqual(planDelivery({ released: true, version: '2.0.11', channel: 'main' }), { deliver: true, kind: 'release', version: '2.0.11' })
   assert.throws(() => planDelivery({ released: true, version: '', channel: 'main' }))
+  assert.throws(() => planDelivery({ released: true, version: '2.0.11-rc.1', channel: 'main' }))
   // Commits that release nothing, even ones under package paths such as a README, deliver at once.
   const unchanged = planDelivery({ released: false, channel: 'main', reachableTags: tags, pendingRelease: tag => {
     assert.equal(tag, 'v2.0.10')
@@ -79,7 +80,8 @@ test('Cloudflare resolves a site-only commit to the newest release of its channe
   assert.deepEqual(selectReleaseTag(refs, site, 'main'), { tag: 'v9.0.0', releaseRevision: 'b'.repeat(40) })
   const annotated = `${'d'.repeat(40)}\trefs/tags/v9.0.0\n${'b'.repeat(40)}\trefs/tags/v9.0.0^{}\n`
   assert.deepEqual(selectReleaseTag(annotated, site, 'main'), { tag: 'v9.0.0', releaseRevision: 'b'.repeat(40) })
-  assert.throws(() => selectReleaseTag(refs, site, 'rc'), /published release/)
+  assert.throws(() => selectReleaseTag(refs, site, 'rc'), /Only main/)
+  assert.throws(() => selectReleaseTag(`${revision}\trefs/tags/v2.0.0-rc.1\n`, site, 'main'), /published release/)
   assert.throws(() => selectReleaseTag(refs + `${revision}\trefs/tags/v2.0.1\n`, revision, 'main'))
 })
 
@@ -88,7 +90,7 @@ test('Cloudflare maps the delivery ref to a logical channel and verifies its act
   assert.deepEqual(hostedMetadata({ ...cf, PUBLIC_COMMIT_REF: 'main', PUBLIC_VERSION: '2.0.0',
     PUBLIC_URL: metadata.origin, MASTER_CSS_IMAGE_TRANSFORMATIONS: 'false' }, runGit), metadata)
   for (const wrong of [
-    { CF_PAGES: undefined }, { CF_PAGES_BRANCH: 'main' }, { CF_PAGES_COMMIT_SHA: 'f'.repeat(40) },
+    { CF_PAGES: undefined }, { CF_PAGES_BRANCH: 'main' }, { CF_PAGES_BRANCH: 'codex/pages-stable' }, { CF_PAGES_BRANCH: 'codex/pages-rc' }, { CF_PAGES_COMMIT_SHA: 'f'.repeat(40) },
     { PUBLIC_COMMIT_REF: 'rc' }, { PUBLIC_VERSION: '1.37.8' }, { PUBLIC_URL: 'https://preview.example' },
     { MASTER_CSS_IMAGE_TRANSFORMATIONS: 'true' }, { CF_PAGES_URL: 'https://css.master.co' },
     { CF_PAGES_URL: 'https://12345678.fixture.pages.dev' }, { CF_PAGES_URL: 'https://main.fixture-suffix.pages.dev' },
@@ -158,7 +160,7 @@ test('the real hosted shell command fails before installing tools when release i
   assert.deepEqual(await readdir(temporary), [], 'The rejected build removes its temporary evidence directory')
 })
 
-test('hosted Pages configuration retains build inputs for either channel without copying environment secrets', () => {
+test('hosted Pages configuration retains build inputs for either cutover without copying environment secrets', () => {
   const config = { name: 'fixture', compatibility_date: '2026-06-11', pages_build_output_dir: 'site/out',
     vars: { PUBLIC_LABEL: 'Keep', JSON_VALUE: { nested: true }, NODE_VERSION: 'stale' },
     kv_namespaces: [{ binding: 'CACHE', id: 'existing-kv' }],
@@ -168,10 +170,8 @@ test('hosted Pages configuration retains build inputs for either channel without
   const previous = process.env.OPENAI_API_KEY
   process.env.OPENAI_API_KEY = 'must-not-copy-secret'
   try {
-    for (const channel of ['main', 'rc']) for (const cutover of [false, true]) {
-      const input = channel === 'main' ? { ...metadata, legacyDesignCutover: cutover } : { ...metadata,
-        channel: 'rc', version: '2.0.0-rc.1', tag: 'v2.0.0-rc.1', deliveryBranch: 'codex/pages-rc',
-        origin: 'https://rc.css.master.co', project: 'release-candidate', subdomain: 'release-candidate-e8w.pages.dev', legacyDesignCutover: cutover }
+    for (const cutover of [false, true]) {
+      const input = { ...metadata, legacyDesignCutover: cutover }
       const result = hostedBuildConfig(config, input, { packageManager: 'bun@1.4.4' })
       for (const vars of [result.vars, result.env.production.vars]) {
         assert.equal(vars.NODE_VERSION, process.versions.node)
@@ -241,7 +241,7 @@ globalThis.fetch = async (url, options) => {
 const args=process.argv.slice(2), sha=${JSON.stringify(revision)}
 if(args[0]==='rev-parse') console.log(sha)
 else if(args.includes('--tags')) console.log(sha+'\u0009refs/tags/v2.0.0')
-else if(args.includes('--heads')) console.log(sha+'\u0009refs/heads/codex/pages-stable')
+else if(args.includes('--heads')) console.log(sha+'\u0009refs/heads/pages-stable')
 else throw new Error('Unexpected git request')
 `)
   await executable('rustup', '#!/bin/sh\nexit 0\n')

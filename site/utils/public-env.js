@@ -4,7 +4,6 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const publicProjectName = 'Master CSS'
-export const defaultRcUrl = 'https://rc.css.master.co'
 export const defaultStableUrl = 'https://css.master.co'
 
 const siteDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -27,7 +26,7 @@ export function resolvePublicEnv(options = {}) {
     || env.VERCEL_GIT_COMMIT_REF
     || env.GITHUB_REF_NAME
     || getGitBranch(runGit)
-  const commitRef = resolvedCommitRef || 'rc'
+  const commitRef = resolvedCommitRef || 'main'
   const siteUrl = resolveSiteUrl(env, commitRef)
 
   return {
@@ -97,16 +96,11 @@ function resolveSiteUrl(env, commitRef) {
   const port = env.PORT || 3000
   const localUrl = `http://localhost:${port}`
   if (env.NODE_ENV === 'development' && !env.CF_PAGES_URL) return localUrl
-  if (isRcBranch(commitRef)) return defaultRcUrl
   if (getReleaseChannel(commitRef) === 'stable') return defaultStableUrl
   if (env.CF_PAGES_URL) return env.CF_PAGES_URL
   if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`
 
   return localUrl
-}
-
-function isRcBranch(commitRef) {
-  return commitRef === 'rc' || commitRef.endsWith('/rc')
 }
 
 function isReleaseRef(commitRef) {

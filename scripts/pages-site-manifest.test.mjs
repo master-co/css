@@ -6,7 +6,7 @@ import { test } from 'node:test'
 import { checkVerifiedOutput, createManifest, identityPath, inventoryDigest, jsonBytes, manifestName, outputInventory, prepareIdentity, releaseMetadata, validateManifest, verifyOutput } from './pages-site-manifest.mjs'
 
 const metadata = { repository: 'master-co/css', revision: 'a'.repeat(40), releaseRevision: 'a'.repeat(40), version: '2.0.0', tag: 'v2.0.0',
-  channel: 'main', deliveryBranch: 'codex/pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
+  channel: 'main', deliveryBranch: 'pages-stable', project: 'fixture', subdomain: 'fixture-suffix.pages.dev',
   origin: 'https://css.master.co', imageTransformations: false, legacyDesignCutover: false }
 const registry = { url: 'https://registry.npmjs.org/', channel: 'latest', packages: [
   { name: '@master/css', version: metadata.version, integrity: 'sha512-YQ==', provenance: true }
@@ -97,11 +97,13 @@ test('manifest identity, registry integrity and exact path inventory fail closed
 })
 
 test('logical channel, actual version and delivery ref are deliberately distinct', () => {
-  const rc = releaseMetadata({ ...metadata, version: '2.0.0-rc.1', tag: 'v2.0.0-rc.1', channel: 'rc',
-    origin: 'https://rc.css.master.co', deliveryBranch: 'codex/pages-rc' })
-  assert.equal(rc.channel, 'rc')
-  assert.equal(manifestName(rc), `site-rc-${metadata.revision}.manifest.json`)
-  assert.throws(() => releaseMetadata({ ...rc, version: '2.0.0', tag: 'v2.0.0' }))
+  assert.equal(releaseMetadata(metadata).deliveryBranch, 'pages-stable')
+  assert.equal(manifestName(metadata), `site-main-${metadata.revision}.manifest.json`)
+  // Only main delivers the site; prerelease channels publish npm packages without a site.
+  assert.throws(() => releaseMetadata({ ...metadata, version: '2.0.0-rc.1', tag: 'v2.0.0-rc.1', channel: 'rc',
+    origin: 'https://rc.css.master.co', deliveryBranch: 'codex/pages-rc' }), /Only main/)
+  assert.throws(() => releaseMetadata({ ...metadata, version: '2.0.0-rc.1', tag: 'v2.0.0-rc.1' }), /stable release/)
+  assert.throws(() => releaseMetadata({ ...metadata, deliveryBranch: 'codex/pages-stable' }))
   assert.throws(() => releaseMetadata({ ...metadata, origin: 'https://rc.css.master.co' }))
   assert.throws(() => releaseMetadata({ ...metadata, subdomain: 'https://fixture.pages.dev/' }))
 })

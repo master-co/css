@@ -88,11 +88,14 @@ for (const step of site.steps.slice(site.steps.indexOf(planStep) + 1)) {
 }
 assert.equal(site.env.PUBLIC_COMMIT_REF, '${{ github.ref_name }}')
 assert.equal(site.env.MASTER_CSS_IMAGE_TRANSFORMATIONS, 'false')
+assert.equal(site.env.PUBLIC_URL, 'https://css.master.co', 'Only the stable site is delivered')
+assert.match(site.if, /github\.ref_name == 'main' &&/, 'Only main delivers the site')
+assert.doesNotMatch(site.if, /github\.ref_name == 'rc'/, 'Prerelease channels publish npm packages without a site')
+assert.equal(releaseWorkflow.jobs.validation.with.site_delivery, "${{ github.ref_name == 'main' }}", 'Validation prepares only a main site delivery')
+// One Pages project serves the site, so its settings are not keyed by channel.
 for (const suffix of ['PROJECT', 'SUBDOMAIN', 'MODE']) {
   const value = site.env[`PAGES_${suffix === 'MODE' ? 'RELEASE_MODE' : suffix}`]
-  assert.ok(value.includes(`vars[format('CLOUDFLARE_PAGES_{0}_${suffix}'`))
-  assert.ok(value.includes(`github.ref_name == 'main' && 'STABLE' || 'RC'`))
-  assert.doesNotMatch(value, /\|\|\s*vars/, 'A missing stable setting must not fall back to the RC project/mode')
+  assert.equal(value, `\${{ vars.CLOUDFLARE_PAGES_${suffix} }}`)
 }
 assert.equal(site.steps.find(step => step.uses === 'actions/download-artifact@v7').with.name, '${{ needs.release.outputs.artifact_name }}', 'Site retries must use the owning release attempt artifact')
 const siteRuns = site.steps.map(step => step.run ?? '').join('\n')
@@ -136,7 +139,7 @@ process.stdout.write('Validated gated, exact-output Pages Git delivery without C
 process.stdout.write('Validated the MCP Registry listing of every stable release.\n')
 
 
-const cutoverVariable = "${{ vars[format('MASTER_LEGACY_DESIGN_CUTOVER_{0}', github.ref_name == 'main' && 'STABLE' || 'RC')] == '1' && '1' || '0' }}"
+const cutoverVariable = "${{ vars.MASTER_LEGACY_DESIGN_CUTOVER == '1' && '1' || '0' }}"
 assert.equal(releaseWorkflow.jobs['deploy-site'].env.MASTER_LEGACY_DESIGN_CUTOVER, cutoverVariable)
 const validationCutover = YAML.parse(readFileSync(new URL('../.github/workflows/validation.yml', import.meta.url), 'utf8'))
 const cutoverSteps = Object.values(validationCutover.jobs).flatMap(job => job.steps ?? []).filter(step => step.env?.MASTER_CSS_IMAGE_TRANSFORMATIONS !== undefined)
