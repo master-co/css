@@ -50,26 +50,30 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## 在源代码中保留完整类名 \{#keep-complete-classes-in-source\}
 
-扫描器读取源代码文本，不会运行应用。组件需要选择状态颜色时，请完整写出每个类名：
+扫描器读取源代码文本，不会运行应用。组件需要选择状态颜色时，请完整写出每个类名。
+
+静态提取无法从 `'bg-' + tone` 这类片段获得完整结果。多种状态会选择不同类名时，请使用有限的映射表。
+
+<DocumentExample>
 
 ```js
 const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
-
-静态提取无法从 `'bg-' + tone` 这类片段获得完整结果。多种状态会选择不同类名时，请使用有限的映射表：
 
 ```js
 const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
 const className = statusClasses[status]
 ```
 
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+</DocumentExample>
+
 扫描器不必执行这次查找，就能找到两个备选类名。运行时与渐进式渲染可为首次在浏览器中确定的有效工具类名生成规则；源代码中的完整字符串是静态扫描的要求，并不禁止动态工具类。选择方式请参阅[渲染模式](/guide/rendering-modes#comparisons)。
 
+即使同时只使用其中一个分支，扫描器仍能看见两个分支。各类名生成的内容由当前启用的项目定义决定。
+
 <DeliveryFlow name="scanning" />
-
-即使同时只使用其中一个分支，扫描器仍能看见两个分支。各类名生成的内容由当前启用的项目定义决定：
-
-<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
 
 <ReferenceIllustration id="static-branch-extraction" />
 

@@ -100,6 +100,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -168,6 +169,10 @@ CSS 入口中的原生选择器默认保留，即使扫描源文件中没有其�
 
 官方集成会对支持的 HTML 输出执行此步骤。自定义服务器或构建流水线可参考此示例，使用构建集成提供的 `virtual:master-css-manifest`。服务器代码运行前，构建工具必须先解析这个虚拟模块。
 
+写入或返回取得的 `html`。其中的 `style#master-css` 包含标题规则与所需 font-size 令牌：
+
+<DocumentExample>
+
 ```html name=index.html
 <!doctype html>
 <html lang="en">
@@ -194,9 +199,9 @@ const { html } = renderer.renderHTML(indexHTML)
 renderer.dispose()
 ```
 
-写入或返回取得的 `html`。其中的 `style#master-css` 包含标题规则与所需 font-size 令牌：
-
 <Class2CSS classes={'font-5xl'} />
+
+</DocumentExample>
 
 此输出不需要 Master CSS 运行时或水合清单。只在稍后出现的类名，需要另外提供 CSS，或选择支持运行时的模式。[为类名都在 HTML 中的页面预渲染](/guide/optimizing-css-delivery#prerender)说明如何找出这类类名，并让它们保留在服务器 HTML 中。
 

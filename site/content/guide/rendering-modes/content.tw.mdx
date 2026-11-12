@@ -100,6 +100,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -168,6 +169,10 @@ CSS 進入點中的原生選擇器預設保留，即使掃描來源中沒有其�
 
 官方整合會對支援的 HTML 輸出執行此步驟。自訂伺服器或建置流程可參考此範例，使用建置整合提供的 `virtual:master-css-manifest`。伺服器程式碼執行前，建置工具必須先解析這個虛擬模組。
 
+寫入或回傳取得的 `html`。其中的 `style#master-css` 包含標題規則與所需 font-size token：
+
+<DocumentExample>
+
 ```html name=index.html
 <!doctype html>
 <html lang="en">
@@ -194,9 +199,9 @@ const { html } = renderer.renderHTML(indexHTML)
 renderer.dispose()
 ```
 
-寫入或回傳取得的 `html`。其中的 `style#master-css` 包含標題規則與所需 font-size token：
-
 <Class2CSS classes={'font-5xl'} />
+
+</DocumentExample>
 
 此輸出不需要 Master CSS 執行階段或 hydration manifest。只在稍後出現的類別，需要另外提供 CSS，或選擇支援執行階段的模式。[為類別都在 HTML 中的頁面預先渲染](/guide/optimizing-css-delivery#prerender)說明如何找出這類類別，並讓它們留在伺服器 HTML 中。
 

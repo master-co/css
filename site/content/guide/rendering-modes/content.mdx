@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -66,6 +67,10 @@ Use pre-rendering when your build or server has the final page HTML and you do n
 
 Official integrations perform this step for their supported HTML outputs. For a custom server or build pipeline, this example uses `virtual:master-css-manifest` supplied by a build integration. That virtual module must be resolved by the build tool before the server code runs.
 
+Write or serve the returned `html`. Its `style#master-css` contains the heading's rule and the font-size token it needs:
+
+<DocumentExample>
+
 ```html name=index.html
 <!doctype html>
 <html lang="en">
@@ -92,9 +97,9 @@ const { html } = renderer.renderHTML(indexHTML)
 renderer.dispose()
 ```
 
-Write or serve the returned `html`. Its `style#master-css` contains the heading's rule and the font-size token it needs:
-
 <Class2CSS classes={'font-5xl'} />
+
+</DocumentExample>
 
 No Master CSS runtime or hydration manifest is needed for this output. A class that only appears later needs CSS supplied separately, or a mode with runtime support. [Prerender pages whose classes are in their HTML](/guide/optimizing-css-delivery#prerender) shows how to find such classes and keep them in the server HTML.
 

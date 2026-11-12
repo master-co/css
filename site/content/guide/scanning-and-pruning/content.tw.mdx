@@ -50,26 +50,30 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## 在原始碼中保留完整類別 \{#keep-complete-classes-in-source\}
 
-掃描器讀取原始碼文字，不會執行應用程式。元件需要選擇狀態色時，請將每個類別完整寫出：
+掃描器讀取原始碼文字，不會執行應用程式。元件需要選擇狀態色時，請將每個類別完整寫出。
+
+靜態擷取無法從 `'bg-' + tone` 這類片段取得完整結果。多種狀態會選擇不同類別時，請使用有限的對照表。
+
+<DocumentExample>
 
 ```js
 const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
-
-靜態擷取無法從 `'bg-' + tone` 這類片段取得完整結果。多種狀態會選擇不同類別時，請使用有限的對照表：
 
 ```js
 const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
 const className = statusClasses[status]
 ```
 
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+</DocumentExample>
+
 掃描器不必執行這次查找，就能找到兩個候選類別。執行階段與漸進式渲染可為首次在瀏覽器得知的有效 utility 名稱生成規則；原始碼中的完整字串是靜態掃描的要求，不代表禁止動態 utility。選擇方式請參閱[渲染模式](/guide/rendering-modes#comparisons)。
 
+即使同時只使用其中一個分支，兩個分支仍都能被掃描器看到。各類別生成的內容取決於目前啟用的專案定義。
+
 <DeliveryFlow name="scanning" />
-
-即使同時只使用其中一個分支，兩個分支仍都能被掃描器看到。各類別生成的內容取決於目前啟用的專案定義：
-
-<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
 
 <ReferenceIllustration id="static-branch-extraction" />
 

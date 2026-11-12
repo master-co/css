@@ -100,6 +100,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -168,6 +169,10 @@ CSS エントリー内のネイティブセレクターは、スキャンした�
 
 公式インテグレーションは、対応する HTML 出力にこの処理を行います。カスタムサーバーやビルドパイプライン向けの以下の例は、ビルドインテグレーションが提供する `virtual:master-css-manifest` を使います。サーバーコードの実行前に、ビルドツールでこの仮想モジュールを解決する必要があります。
 
+返された `html` を書き出すか配信します。その `style#master-css` には見出しのルールと必要な font-size トークンが含まれます。
+
+<DocumentExample>
+
 ```html name=index.html
 <!doctype html>
 <html lang="en">
@@ -194,9 +199,9 @@ const { html } = renderer.renderHTML(indexHTML)
 renderer.dispose()
 ```
 
-返された `html` を書き出すか配信します。その `style#master-css` には見出しのルールと必要な font-size トークンが含まれます。
-
 <Class2CSS classes={'font-5xl'} />
+
+</DocumentExample>
 
 この出力に Master CSS runtime や hydration マニフェストは不要です。後からしか現れないクラスには別途 CSS を用意するか、ランタイム対応のモードが必要です。そうしたクラスを見つけてサーバーの HTML に含める方法は、[クラスが HTML に含まれるページを事前レンダリングする](/guide/optimizing-css-delivery#prerender)を参照してください。
 

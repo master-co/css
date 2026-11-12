@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -48,13 +49,17 @@ const className = `px-md r-md ${tones.destructive}`
 | 格式错误的 Master 类 | 没有规则；检查功能可报告语法诊断 |
 | 已匹配但具有无效或未知 CSS 值的类 | 可能输出 CSS；匹配成功本身不代表值合法或浏览器支持 |
 
+<DocumentExample>
+
 ```html
 <article class="card p-md shadow-md">Release notes</article>
 ```
 
-这里的 `p-md` 和 `shadow-md` 由预设解析。只有项目确实提供原生规则，且裁剪策略会考虑使用情况时，`card` 才会保留该原生规则。原生样式表默认保留，扫描本身不会启用裁剪。
-
 <Class2CSS classes={['p-md', 'shadow-md']} />
+
+</DocumentExample>
+
+这里的 `p-md` 和 `shadow-md` 由预设解析。只有项目确实提供原生规则，且裁剪策略会考虑使用情况时，`card` 才会保留该原生规则。原生样式表默认保留，扫描本身不会启用裁剪。
 
 编译器匹配、CSS 语法验证、CSS 值验证和浏览器支持是不同的检查。请用[类检查](/reference/tools/mcp#mastercss_inspect_class)区分；匹配成功的类仍受浏览器层叠与计算值规则影响。
 

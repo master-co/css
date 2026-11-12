@@ -93,20 +93,20 @@
     },
     "guide/class-extraction/contract.mdx": {
       "tw": {
-        "sourceHash": "c1159145ab11af136b386c1485ba84142a137d34d1e93c94878d7dcdf4a9065b",
-        "translationHash": "22afae90206345995d189fb07917f35d9b919fa6e7c2191879abbd202201bb6b"
+        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "translationHash": "ded2392ccc1cbe377e778cfd1999e2e2e8d6255d37b0fd7e69b7a83eee14be5a"
       },
       "ja": {
-        "sourceHash": "c1159145ab11af136b386c1485ba84142a137d34d1e93c94878d7dcdf4a9065b",
-        "translationHash": "6f182e5e86c1f53b78101979d008d28a60de170c8a717261c296f6af932afb38"
+        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "translationHash": "1911b77807eb6823ea3c0c53a1a6b544e232699bf17a7a028f33dc530b8416d8"
       },
       "ko": {
-        "sourceHash": "c1159145ab11af136b386c1485ba84142a137d34d1e93c94878d7dcdf4a9065b",
-        "translationHash": "c01d3f9f2f4600b14657ea956176c6b86f48c03090851085079b67bd7627ffba"
+        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "translationHash": "0efc08a0e7678522609cdaf677118f534ee3a42302db5e77a8e7ed5531174d0b"
       },
       "cn": {
-        "sourceHash": "c1159145ab11af136b386c1485ba84142a137d34d1e93c94878d7dcdf4a9065b",
-        "translationHash": "545dd1830eb2b72aa2fd2e258b77b7febccb9179c7e702da13b198e1166433a2"
+        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "translationHash": "24f014c3d7925760cf3d21b6c7726e8b3cfc711a5fd4d97541bb18ce4f861f05"
       }
     },
     "guide/code-linting/content.mdx": {
@@ -165,20 +165,20 @@
     },
     "guide/conditional-queries/contract.mdx": {
       "tw": {
-        "sourceHash": "c2ab48f97d72b83e495954ade22eb378217d567ed3bb33ea9e05eefd57d674c0",
-        "translationHash": "de92ad23a9c38c75eb10b49c7ed8abd85b24a37696c5b9b7056a632bd8e0c559"
+        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "translationHash": "8de04844197115892b112dd1c9fadb88909d022a97f30cbff0c61fbcd3edbc56"
       },
       "ja": {
-        "sourceHash": "c2ab48f97d72b83e495954ade22eb378217d567ed3bb33ea9e05eefd57d674c0",
-        "translationHash": "0cc7c2d9042f5fdb53165f7c471fc3724d91467892d990464b5658d24a4fc131"
+        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "translationHash": "1a2c0722fb2eead12fc3a33e4ea85386b10c3c91d60b393e1145be93b7e06a9e"
       },
       "ko": {
-        "sourceHash": "c2ab48f97d72b83e495954ade22eb378217d567ed3bb33ea9e05eefd57d674c0",
-        "translationHash": "f1605308a6c08defbb432aa80a91430b38828d4058ee769eeb8b1a91c579033a"
+        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "translationHash": "18cdf14bf9a2ca963a12b9b097c9c0f8640a53b6cc8a02392eafbd65335baf03"
       },
       "cn": {
-        "sourceHash": "c2ab48f97d72b83e495954ade22eb378217d567ed3bb33ea9e05eefd57d674c0",
-        "translationHash": "eecbdec022f86b0547869b8397d40249c3b8571f5739ac2957d5a072ac5cd973"
+        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "translationHash": "cf2ea378e0124e5863eee207559455bd70ac9ee3f8f3f151ddcd3c306be3823d"
       }
     },
     "guide/content.mdx": {
@@ -669,20 +669,20 @@
     },
     "guide/rendering-modes/content.mdx": {
       "tw": {
-        "sourceHash": "5ed9c436d15dc0b7c128e29ae1f9fee47e0105daf850c3361fd4e6b36c71f4de",
-        "translationHash": "7d5e9216aca94d41b23e0a8ad6bef4b0b48523dd796877fbaa28be5402f933ee"
+        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "translationHash": "9ca6a6299cb54eacee5b4ef71f2bc50b5a6562be9aa9cbb43539f53d8029ef2f"
       },
       "ja": {
-        "sourceHash": "5ed9c436d15dc0b7c128e29ae1f9fee47e0105daf850c3361fd4e6b36c71f4de",
-        "translationHash": "acd201fe9466758d4096d1eeea3751d3818b110ca08994b6da95043d5565e50d"
+        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "translationHash": "b7f306d26c6d1857798fbc62dbe0e6396d585636f661df6edb65eb7701c1e03c"
       },
       "ko": {
-        "sourceHash": "5ed9c436d15dc0b7c128e29ae1f9fee47e0105daf850c3361fd4e6b36c71f4de",
-        "translationHash": "754e81550f5416dd0ab3e05bdd6df7fc0429ef4601607ff7b7ba1f62d5eed31c"
+        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "translationHash": "58ef2d7cd6c264df78e44800c7001657e4643a338ecc601d03f204c5079f1d82"
       },
       "cn": {
-        "sourceHash": "5ed9c436d15dc0b7c128e29ae1f9fee47e0105daf850c3361fd4e6b36c71f4de",
-        "translationHash": "517669308881eb96bfd535da0f5adf58e936d9cd3eae1e0b979f3bd60eb8763f"
+        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "translationHash": "ec9d2082267ff8e1190fd4ed3c8075c6fa6093b4bf54cbbbfe893ab0893ba385"
       }
     },
     "guide/responsive-design/content.mdx": {
@@ -741,20 +741,20 @@
     },
     "guide/scanning-and-pruning/content.mdx": {
       "tw": {
-        "sourceHash": "2c536c1fa13a4c8a4e551a1c767451825c907a726acd7a8eb1f8e2b483913732",
-        "translationHash": "9459ff5840c37c93834f72a7cb7c1476ab2b20fcf430c4c497a6a0e9fa4abeeb"
+        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "translationHash": "0ea6adadec6ec790f5687fe5009ae2d4da054502f24bfdeb9b28a10e627d3f47"
       },
       "ja": {
-        "sourceHash": "2c536c1fa13a4c8a4e551a1c767451825c907a726acd7a8eb1f8e2b483913732",
-        "translationHash": "f2ae9d3775fc6814a467d8575e76c1d0f1c5be4ac0a026d927f2a31896dbc34c"
+        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "translationHash": "ead0c271903d8686015e14763abb4aee7591632f402007355cc79d583d6475ec"
       },
       "ko": {
-        "sourceHash": "2c536c1fa13a4c8a4e551a1c767451825c907a726acd7a8eb1f8e2b483913732",
-        "translationHash": "fb984f8179c6a03a3dd05fe0381cc0eb1ea8bed9b4c7f023eeeeb89bf02ad50f"
+        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "translationHash": "fc76bb315f27f64bbee186628c7a41e8459aa2af7d6b4ce4285602b783035711"
       },
       "cn": {
-        "sourceHash": "2c536c1fa13a4c8a4e551a1c767451825c907a726acd7a8eb1f8e2b483913732",
-        "translationHash": "668b95f5738d60bd9c0825db46351c1eb7d97718e2c4da8ccea512f3d2e70adc"
+        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "translationHash": "72269bc00fb9973c4fdd0b7cdb7364a55a34c45ff92beb40544035a97accbf14"
       }
     },
     "guide/state-selectors/contract.mdx": {
@@ -795,20 +795,20 @@
     },
     "guide/syntax-tutorial/content.mdx": {
       "tw": {
-        "sourceHash": "6786e118ddc4825757d2c2e7a1cc02f6c38fad026baf22f3de256e0a843833da",
-        "translationHash": "1997e9959080aa89728c46114687d3291f0afd930e0ef96ed02f092e9d0af152"
+        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "translationHash": "4635cc23cfccfda66a43fcc7cd331bbfc18197a3367b4380668aa09533b68953"
       },
       "ja": {
-        "sourceHash": "6786e118ddc4825757d2c2e7a1cc02f6c38fad026baf22f3de256e0a843833da",
-        "translationHash": "b7fabd12a49880b72bf6c58148b506a9a825835d21003190f64aa38f223dea63"
+        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "translationHash": "7449dc7aa37ff11f79b58bbcde304cf9c70b69e446d655a5527bad8a553c4ced"
       },
       "ko": {
-        "sourceHash": "6786e118ddc4825757d2c2e7a1cc02f6c38fad026baf22f3de256e0a843833da",
-        "translationHash": "23d17ae937df5d2f95ec2546ccdbf7ce200174b51dfba91167bd952421a8530a"
+        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "translationHash": "1f64fe685ec5d99ae8d1c0f47bd2e1d6dbeb429efc4a1faf4e055c7b17c41c52"
       },
       "cn": {
-        "sourceHash": "6786e118ddc4825757d2c2e7a1cc02f6c38fad026baf22f3de256e0a843833da",
-        "translationHash": "c27b9220512391f7504e3abd5c10f41182eae367b72837f1a61c5dba2b9b7443"
+        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "translationHash": "36413bcc6a7a658dd65a11f97d65f521c2dbb14aff85045ed92d76025a94a3bb"
       }
     },
     "guide/theme/content.mdx": {

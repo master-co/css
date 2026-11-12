@@ -1,0 +1,486 @@
+[
+  {
+    "path": "site/content/guide/responsive-design/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/responsive-design/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/class-extraction/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "standalone-compiled-query",
+    "reason": "Output for four accepted forms in the syntax table; no complete source example."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "standalone-compiled-query",
+    "reason": "Aggregate output for the quoted-parenthesis illustration and three separate boundary-table cases."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 3,
+    "classification": "standalone-compiled-query",
+    "reason": "Two inline validity/registration examples, without a source fence."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 4,
+    "classification": "standalone-compiled-query",
+    "reason": "Compatibility declarations and a distinct vendor-selector example; not the previous validity query."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 5,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 6,
+    "classification": "standalone-compiled-query",
+    "reason": "Three inline function/variable lookups, without a source fence."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 7,
+    "classification": "standalone-compiled-query",
+    "reason": "Three negative-value forms discussed in prose, without a source fence."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 8,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 9,
+    "classification": "standalone-compiled-query",
+    "reason": "The HTML above repeats child selectors; this separate query compares padding/margin cascade ordering."
+  },
+  {
+    "path": "site/content/guide/style-declarations/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 10,
+    "classification": "standalone-compiled-query",
+    "reason": "Four inline importance/quoted-text forms, without a complete source example."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "standalone-compiled-query",
+    "reason": "The fence contains grammar placeholders, not the two concrete classes compiled by this query."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "standalone-compiled-query",
+    "reason": "Output for all five matching-owner table rows; the preceding link demonstrates only its first row."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 3,
+    "classification": "standalone-compiled-query",
+    "reason": "One combined requirement explained inline, without a source fence."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 4,
+    "classification": "standalone-compiled-query",
+    "reason": "Lookup for five combinators in the surrounding target table."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 5,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 6,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 7,
+    "classification": "standalone-compiled-query",
+    "reason": "Function/attribute commas are distinct cases from the preceding grouped top-level selector list."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 8,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 9,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 10,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 11,
+    "classification": "standalone-compiled-query",
+    "reason": "Literal-space escape and case flag are distinct cases from the preceding grouped quoted-attribute example."
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 12,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/state-selectors/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 13,
+    "classification": "standalone-compiled-query",
+    "reason": "Specificity comparison from the table; no complete source example."
+  },
+  {
+    "path": "site/content/guide/introduction/content.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 1,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/introduction/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "standalone-compiled-query",
+    "reason": "Focused p-lg token explanation after the separately complete card demonstration; not the full card output."
+  },
+  {
+    "path": "site/content/guide/layout-system/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/layout-system/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "standalone-compiled-query",
+    "reason": "Lookup for the spacing-form comparison table."
+  },
+  {
+    "path": "site/content/guide/layout-system/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 3,
+    "classification": "standalone-compiled-query",
+    "reason": "Token width versus intrinsic/static width explained inline, without a source fence."
+  },
+  {
+    "path": "site/content/guide/layout-system/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 4,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/layout-system/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 5,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/layout-system/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 6,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/rendering-modes/content.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 1,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/rendering-modes/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/rendering-modes/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "standalone-compiled-query",
+    "reason": "Recap of rules active midway through four insert/add/remove steps; grouping with final removed-element source would misrepresent its state."
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 1,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 2,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "standalone-compiled-query",
+    "reason": "Examples drawn from the query-forms table, without a complete source example."
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 3,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 4,
+    "classification": "standalone-compiled-query",
+    "reason": "Three independent range/resolution lookups described in prose."
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 5,
+    "classification": "standalone-compiled-query",
+    "reason": "One supports syntax lookup described inline, without a source fence."
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 6,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 7,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 8,
+    "classification": "standalone-compiled-query",
+    "reason": "Two named-container-condition lookups described in prose; no complete source example."
+  },
+  {
+    "path": "site/content/guide/conditional-queries/contract.mdx",
+    "component": "Class2CSS",
+    "ordinal": 9,
+    "classification": "standalone-compiled-query",
+    "reason": "One starting-style syntax lookup, without a transition source example."
+  },
+  {
+    "path": "site/content/guide/view-transitions/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/scanning-and-pruning/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/scanning-and-pruning/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/cascade-layers/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 1,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/cascade-layers/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 2,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/cascade-layers/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 3,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/cascade-layers/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 4,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/cascade-layers/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 5,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/cascade-layers/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 6,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/colors/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/colors/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/colors/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 3,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/variable-modes/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 1,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/variable-modes/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 2,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/variable-modes/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 3,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/variable-modes/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 4,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/variable-modes/contract.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 5,
+    "classification": "configured-source-output"
+  },
+  {
+    "path": "site/content/guide/typography/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/typography/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 1,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 2,
+    "classification": "standalone-compiled-query",
+    "reason": "Output for five value-choice comparison rows."
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 3,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 4,
+    "classification": "standalone-compiled-query",
+    "reason": "Output for three token/declaration comparison rows."
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 5,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 6,
+    "classification": "standalone-compiled-query",
+    "reason": "Inline padding-priority comparison, without a source fence."
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 7,
+    "classification": "explicit-source-output"
+  },
+  {
+    "path": "site/content/guide/syntax-tutorial/content.mdx",
+    "component": "Class2CSS",
+    "ordinal": 8,
+    "classification": "standalone-compiled-query",
+    "reason": "Output for the one-off threshold and condition table, not the preceding separately complete responsive preview."
+  },
+  {
+    "path": "site/content/guide/reusing-styles/content.mdx",
+    "component": "ConfiguredExample",
+    "ordinal": 1,
+    "classification": "configured-source-output"
+  }
+]

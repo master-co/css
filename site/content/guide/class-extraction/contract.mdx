@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -48,13 +49,17 @@ After extraction, the active manifest and stylesheet registrations determine a c
 | Malformed Master class | No rule; inspection can report a syntax diagnostic |
 | Matched class with an invalid or unknown CSS value | Can emit CSS; matching alone does not prove value validity or browser support |
 
+<DocumentExample>
+
 ```html
 <article class="card p-md shadow-md">Release notes</article>
 ```
 
-Here `p-md` and `shadow-md` resolve through the preset. `card` retains a native rule only if the project actually supplies one and its pruning policy considers usage. A native stylesheet is preserved by default; scanning does not opt it into pruning.
-
 <Class2CSS classes={['p-md', 'shadow-md']} />
+
+</DocumentExample>
+
+Here `p-md` and `shadow-md` resolve through the preset. `card` retains a native rule only if the project actually supplies one and its pruning policy considers usage. A native stylesheet is preserved by default; scanning does not opt it into pruning.
 
 A compiler match, CSS syntax validation, CSS value validation and browser support are distinct checks. Use [class inspection](/reference/tools/mcp#mastercss_inspect_class) to distinguish them; a matching class still enters the browser's cascade and computed-value rules.
 

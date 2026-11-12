@@ -9,26 +9,30 @@ Make class names available to static builds without making changing values into 
 
 ## Keep complete classes in source \{#keep-complete-classes-in-source\}
 
-The scanner reads source text; it does not run your application. When a component selects a status color, write each complete class:
+The scanner reads source text; it does not run your application. When a component selects a status color, write each complete class.
+
+For static extraction, fragments such as `'bg-' + tone` do not supply the complete result. Use a finite map when several states select a class.
+
+<DocumentExample>
 
 ```js
 const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
-
-For static extraction, fragments such as `'bg-' + tone` do not supply the complete result. Use a finite map when several states select a class:
 
 ```js
 const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
 const className = statusClasses[status]
 ```
 
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+</DocumentExample>
+
 The scanner can find both alternatives without executing this lookup. Runtime and progressive rendering can generate new valid utility names first known in the browser; complete source strings are a static scanning requirement, not a ban on dynamic utilities. See [Rendering modes](/guide/rendering-modes#comparisons) for that choice.
 
+Both branches are visible even though only one is used at a time. The active project definitions determine what each class generates.
+
 <DeliveryFlow name="scanning" />
-
-Both branches are visible even though only one is used at a time. The active project definitions determine what each class generates:
-
-<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
 
 <ReferenceIllustration id="static-branch-extraction" />
 

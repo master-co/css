@@ -95,3 +95,39 @@ test(`${engine}: configuration, HTML and generated CSS stay together without Jav
     assert.match(await details.textContent(), /padding:\s*calc\(8 \* 1px\)/)
   } finally { await context.close() }
 })
+
+test(`${engine}: narrative-separated source/output pairs share a frame without absorbing teaching figures`, { timeout: 90000 }, async () => {
+  for (const [width, scheme, locale] of [[1280, 'light', ''], [390, 'dark', '/tw']]) {
+    const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, reducedMotion: 'reduce' })
+    const page = await context.newPage()
+    try {
+      for (const [route, source, panels] of [
+        ['/reference/rules/extraction', 'card p-md shadow-md', 2],
+        ['/reference/rules/conditions', 'Hover at sm and above', 2],
+        ['/guide/rendering-modes', 'maxCachedClasses: Infinity', 3],
+        ['/guide/scanning-and-pruning', 'const statusClasses', 3],
+        ['/guide/syntax-tutorial', 'class="fg-blue-60:hover@sm"', 2]
+      ]) {
+        assert.equal((await page.goto(base + locale + route, { waitUntil: 'networkidle' })).status(), 200)
+        const group = page.locator('article figure.ui-tray:has(> details[data-generated])').filter({ hasText: source })
+        assert.equal(await group.count(), 1, `${route}: explicit source relationship is unique`)
+        assert.equal(await group.locator('figure, figcaption').count(), 0, `${route}: no nested teaching figure or empty caption`)
+        const disclosure = group.locator(':scope > details[data-generated]')
+        await disclosure.locator('summary').focus()
+        await page.keyboard.press('Space')
+        assert.notEqual(await disclosure.getAttribute('open'), null)
+        assert.equal(await group.locator('.code-panel').count(), panels, `${route}: every original source precedes its generated output`)
+        const bounds = await group.evaluate(figure => {
+          const outer = figure.getBoundingClientRect()
+          return { left: outer.left, right: outer.right, panels: [...figure.querySelectorAll('.code-panel')].map(panel => { const box = panel.getBoundingClientRect(); return { left: box.left, right: box.right } }) }
+        })
+        for (const panel of bounds.panels) assert.ok(panel.left >= bounds.left - 1 && panel.right <= bounds.right + 1, `${route}: contained code`)
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 1, `${route}: no document overflow`)
+        const filename = `${engine}-${width}-${scheme}-narrative-${route.split('/').pop()}.png`
+        await disclosure.locator('summary').evaluate(element => element.blur())
+        await group.screenshot({ path: path.join(evidence, filename), animations: 'disabled' })
+        captures.push({ route: locale + route, profile: { width, scheme }, state: 'narrative example generated output open', filename, bounds })
+      }
+    } finally { await context.close() }
+  }
+})

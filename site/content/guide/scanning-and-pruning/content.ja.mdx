@@ -52,24 +52,28 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 スキャナーはソースの文字列を読み取り、アプリケーションは実行しません。コンポーネントで状態の色を選ぶ場合は、クラスをそれぞれ完全に記述します。
 
+静的な抽出では、`'bg-' + tone` のような断片から完成したクラス名は得られません。複数の状態に応じてクラスを選ぶ場合は、有限のマップを使います。
+
+<DocumentExample>
+
 ```js
 const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
-
-静的な抽出では、`'bg-' + tone` のような断片から完成したクラス名は得られません。複数の状態に応じてクラスを選ぶ場合は、有限のマップを使います。
 
 ```js
 const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
 const className = statusClasses[status]
 ```
 
-スキャナーはこの参照処理を実行せず、両方の候補を見つけられます。ランタイムやプログレッシブレンダリングでは、ブラウザーで初めて判明した有効なユーティリティ名からもルールを生成できます。ソース内の完全な文字列は静的スキャンの要件であり、動的ユーティリティを禁じるものではありません。選び方は[レンダリングモード](/guide/rendering-modes#comparisons)を参照してください。
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
 
-<DeliveryFlow name="scanning" />
+</DocumentExample>
+
+スキャナーはこの参照処理を実行せず、両方の候補を見つけられます。ランタイムやプログレッシブレンダリングでは、ブラウザーで初めて判明した有効なユーティリティ名からもルールを生成できます。ソース内の完全な文字列は静的スキャンの要件であり、動的ユーティリティを禁じるものではありません。選び方は[レンダリングモード](/guide/rendering-modes#comparisons)を参照してください。
 
 一度に使う分岐が1つだけでも、ソース上では両方を確認できます。各クラスが何を生成するかは、有効なプロジェクト定義で決まります。
 
-<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+<DeliveryFlow name="scanning" />
 
 <ReferenceIllustration id="static-branch-extraction" />
 

@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -48,13 +49,17 @@ const className = `px-md r-md ${tones.destructive}`
 | 格式錯誤的 Master class | 沒有規則；檢查功能可回報語法診斷 |
 | 已比對但具有無效或未知 CSS 值的 class | 可能輸出 CSS；比對成功本身不代表值合法或瀏覽器支援 |
 
+<DocumentExample>
+
 ```html
 <article class="card p-md shadow-md">Release notes</article>
 ```
 
-這裡的 `p-md` 與 `shadow-md` 由預設集解析。只有專案確實提供原生規則，且修剪政策會考量使用情況時，`card` 才會保留該原生規則。原生樣式表預設會保留，掃描本身不會啟用修剪。
-
 <Class2CSS classes={['p-md', 'shadow-md']} />
+
+</DocumentExample>
+
+這裡的 `p-md` 與 `shadow-md` 由預設集解析。只有專案確實提供原生規則，且修剪政策會考量使用情況時，`card` 才會保留該原生規則。原生樣式表預設會保留，掃描本身不會啟用修剪。
 
 編譯器比對、CSS 語法驗證、CSS 值驗證與瀏覽器支援，是不同的檢查。請用 [class 檢查](/reference/tools/mcp#mastercss_inspect_class)區分；比對成功的 class 仍會受到瀏覽器階層串接與計算值規則影響。
 

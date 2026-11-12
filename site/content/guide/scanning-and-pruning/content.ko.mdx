@@ -50,26 +50,30 @@ import Class2CSS from '~/site/components/Class2CSS.astro'
 
 ## 소스에 완전한 클래스 유지하기 \{#keep-complete-classes-in-source\}
 
-스캐너는 소스 텍스트를 읽으며 앱을 실행하지 않습니다. 컴포넌트가 상태 색상을 선택한다면 각 클래스를 완전히 작성하세요:
+스캐너는 소스 텍스트를 읽으며 앱을 실행하지 않습니다. 컴포넌트가 상태 색상을 선택한다면 각 클래스를 완전히 작성하세요.
+
+정적 추출에서는 `'bg-' + tone` 같은 조각으로 완전한 결과를 얻을 수 없습니다. 여러 상태에서 클래스를 선택한다면 유한한 맵을 사용하세요.
+
+<DocumentExample>
 
 ```js
 const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
-
-정적 추출에서는 `'bg-' + tone` 같은 조각으로 완전한 결과를 얻을 수 없습니다. 여러 상태에서 클래스를 선택한다면 유한한 맵을 사용하세요:
 
 ```js
 const statusClasses = { error: 'bg-red-60', success: 'bg-green-60' }
 const className = statusClasses[status]
 ```
 
+<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
+
+</DocumentExample>
+
 스캐너는 이 조회를 실행하지 않고도 두 후보를 찾을 수 있습니다. 런타임과 점진적 렌더링은 브라우저에서 처음 알려진 유효한 유틸리티 이름의 규칙도 생성할 수 있습니다. 완전한 소스 문자열은 정적 스캔의 요구 사항이며 동적 유틸리티를 금지하는 것은 아닙니다. 선택 방법은 [렌더링 모드](/guide/rendering-modes#comparisons)를 참고하세요.
 
+한 번에 하나의 분기만 사용해도 두 분기는 모두 소스에 보입니다. 각 클래스가 생성하는 내용은 활성 프로젝트 정의가 결정합니다.
+
 <DeliveryFlow name="scanning" />
-
-한 번에 하나의 분기만 사용해도 두 분기는 모두 소스에 보입니다. 각 클래스가 생성하는 내용은 활성 프로젝트 정의가 결정합니다:
-
-<Class2CSS classes={['bg-red-60', 'bg-green-60']} />
 
 <ReferenceIllustration id="static-branch-extraction" />
 

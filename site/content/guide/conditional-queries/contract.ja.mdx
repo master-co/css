@@ -58,15 +58,19 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 `fg-red:hover@sm` は、トークンを参照するユーティリティ、セレクター、名前付きメディア条件を組み合わせます。
 
+<a id="complete-generated-css"></a>
+
+<DocumentExample>
+
 ```html
 <div class="fg-red:hover@sm">Hover at sm and above</div>
 ```
 
-プリセットでは、`fg-red` は `--color-red` を使い、`:hover` はクラスを持つ要素を調べ、`@sm` はビューポート幅が少なくとも `52.125rem` であることを要求します。プリセットの red エイリアスは固定色ですが、プロジェクトで上書きできます。トークン値と競合する CSS がなければ、クラスだけで最終色を確定できません。
-
-<a id="complete-generated-css"></a>
-
 <Class2CSS classes={['fg-red:hover@sm']} />
+
+</DocumentExample>
+
+プリセットでは、`fg-red` は `--color-red` を使い、`:hover` はクラスを持つ要素を調べ、`@sm` はビューポート幅が少なくとも `52.125rem` であることを要求します。プリセットの red エイリアスは固定色ですが、プロジェクトで上書きできます。トークン値と競合する CSS がなければ、クラスだけで最終色を確定できません。
 
 生成 CSS は必要なトークンの依存関係を含みますが、ベースのレイヤー順序宣言は挿入しません。通常は `@import '@master/css'` で[ベーススタイルシート](/reference/rules/layers)を読み込みます。
 

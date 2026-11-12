@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -48,13 +49,17 @@ const className = `px-md r-md ${tones.destructive}`
 | 형식이 잘못된 Master 클래스 | 규칙 없음. 검사에서 구문 진단을 보고할 수 있음 |
 | 매칭되었지만 CSS 값이 유효하지 않거나 알 수 없는 클래스 | CSS를 출력할 수 있음. 매칭만으로 값의 유효성이나 브라우저 지원이 보장되지 않음 |
 
+<DocumentExample>
+
 ```html
 <article class="card p-md shadow-md">Release notes</article>
 ```
 
-여기서 `p-md`와 `shadow-md`는 프리셋으로 해석됩니다. `card`가 네이티브 규칙을 유지하려면 프로젝트가 실제로 해당 규칙을 제공하고 가지치기 정책이 사용 여부를 고려해야 합니다. 네이티브 스타일시트는 기본적으로 유지되며 스캔 자체가 가지치기를 활성화하지는 않습니다.
-
 <Class2CSS classes={['p-md', 'shadow-md']} />
+
+</DocumentExample>
+
+여기서 `p-md`와 `shadow-md`는 프리셋으로 해석됩니다. `card`가 네이티브 규칙을 유지하려면 프로젝트가 실제로 해당 규칙을 제공하고 가지치기 정책이 사용 여부를 고려해야 합니다. 네이티브 스타일시트는 기본적으로 유지되며 스캔 자체가 가지치기를 활성화하지는 않습니다.
 
 컴파일러 매칭, CSS 구문 검증, CSS 값 검증, 브라우저 지원은 서로 다른 확인 항목입니다. [클래스 검사](/reference/tools/mcp#mastercss_inspect_class)로 구분하세요. 매칭된 클래스에도 브라우저의 캐스케이드와 계산값 규칙이 적용됩니다.
 

@@ -15,8 +15,8 @@ Master owns the document frame, generated-output body, native table frame and ti
 The canonical English inventory contains 16 `ConfiguredExample` uses and 60 `Class2CSS` uses across 16 files. Their four translations produce 380 component instances in 80 files.
 
 - All 16 configured examples retain their configuration, HTML and generated output inside one explicit group.
-- Twenty-seven class examples have an explicitly authored source/output relationship. Their five editions use 135 `DocumentExample` wrappers across 50 MDX files.
-- The other 33 class examples are standalone compiled lookups following prose, a table or an illustration. They retain that role; the renderer never guesses that adjacent content belongs to an example.
+- Thirty-two class examples have an explicitly authored source/output relationship. Their five editions use 160 `DocumentExample` wrappers across 60 MDX files.
+- The other 28 class examples are standalone compiled lookups or explicit historical recaps. Each has a reviewed reason in `document-example-inventory.json`; the renderer never guesses a relationship from adjacency.
 
 The explicit pairs are Responsive Design (2), Declarations (2), Selectors (6), Layout System (4), Conditions (3), View Transitions (1), Scanning and Pruning (1), Colors (3), Typography (2) and Syntax Tutorial (3). The scanning example keeps both its HTML and JavaScript source before the generated output.
 
@@ -309,3 +309,46 @@ UI 0.0.4 corrects the segmented indicator's reduced-motion selector specificity.
 Official-cohort local verification passed: the complete site rendered 389 pages; the reviewed final postbuild asset/style and exact-contract gates passed; Astro/Svelte/TypeScript reported no errors; 162 translation resources had no audit problems; Reference 42, executable examples 28, MDX imports 2, syntax 13, LLM/Markdown 43, verifier 6 and workflow 12 tests passed. Lint retains the same five warnings with no errors. Chromium and WebKit each passed all 25 configured cases, and the final 96 resting/focus screenshots are frozen under `work/doc-unification/css/screenshots-official-final`. The normal Linux CI must separately establish Firefox acceptance.
 
 The real checkout received only the three verified package entries, with their previous directories retained for rollback. All installed authored files match the official archives; shared skill checks and the new public imports resolve. This is bounded local dependency readiness, separate from the isolated full build. Original `pnpm-lock.yaml`, `pnpm-workspace.yaml`, other dependency entries and user processes remain untouched; no restart was performed.
+
+## Final semantic inventory correction
+
+The final review found that the initial 33-query classification incorrectly treated five same-example source/output pairs as standalone because prose or a diagram separated them. All five editions now explicitly group those five examples: extraction (`card p-md shadow-md`), conditional token dependencies (`fg-red:hover@sm`), server rendering (`index.html` + `server.ts`), static scanning (two equivalent JavaScript branches), and the first syntax tutorial link. This brings the total to 32 grouped Class2CSS examples and 28 independent queries.
+
+The existing shared `DocumentExample` is sufficient. No shared package, caption protocol, renderer or CSS core changes are involved. All words are retained. Independent reading review changed three terminal colons to full stops in the scanning introductions/recap in English, Traditional Chinese, Simplified Chinese and Korean; Japanese already used full stops. Extraction, conditions and syntax explanations now follow their source/output tray; the server-rendering output introduction precedes its tray; the conditions anchor remains immediately before that tray. The scanning introductions precede its two-source tray; its lookup/runtime explanation and recap follow it before the independent DeliveryFlow. The syntax illustration stays outside its tray, after its explanation. These are intentional prose/figure position changes; portable Markdown is **not byte-identical**. All 25 source documents retain the original block multiset (allowing only those enumerated terminal punctuation changes) and exact code order. Portable exports are separately checked for complete semantic blocks, examples and code order.
+
+The tracked inventory regression checks every Class2CSS occurrence across all five editions, including the five formerly prose-separated cases. Normalization tests verify source order, generated-output membership, independent illustrations and removal of private markers. Browser regression checks the five actual pages in English at 1280px/light and Traditional Chinese at 390px/dark, including keyboard disclosure, source/output count, bounds and screenshots. Existing three-engine CI runs this test through the normal site verifier.
+
+### Remaining standalone decisions
+
+| Source | Query ordinal | Reason |
+| --- | ---: | --- |
+| `style-declarations` | 1 | Output for four accepted forms in the syntax table; no complete source example. |
+| `style-declarations` | 2 | Aggregate output for the quoted-parenthesis illustration and three separate boundary-table cases. |
+| `style-declarations` | 3 | Two inline validity/registration examples, without a source fence. |
+| `style-declarations` | 4 | Compatibility declarations and a distinct vendor-selector example; not the previous validity query. |
+| `style-declarations` | 6 | Three inline function/variable lookups, without a source fence. |
+| `style-declarations` | 7 | Three negative-value forms discussed in prose, without a source fence. |
+| `style-declarations` | 9 | The HTML above repeats child selectors; this separate query compares padding/margin cascade ordering. |
+| `style-declarations` | 10 | Four inline importance/quoted-text forms, without a complete source example. |
+| `state-selectors` | 1 | The fence contains grammar placeholders, not the two concrete classes compiled by this query. |
+| `state-selectors` | 2 | Output for all five matching-owner table rows; the preceding link demonstrates only its first row. |
+| `state-selectors` | 3 | One combined requirement explained inline, without a source fence. |
+| `state-selectors` | 4 | Lookup for five combinators in the surrounding target table. |
+| `state-selectors` | 7 | Function/attribute commas are distinct cases from the preceding grouped top-level selector list. |
+| `state-selectors` | 11 | Literal-space escape and case flag are distinct cases from the preceding grouped quoted-attribute example. |
+| `state-selectors` | 13 | Specificity comparison from the table; no complete source example. |
+| `introduction` | 1 | Focused p-lg token explanation after the separately complete card demonstration; not the full card output. |
+| `layout-system` | 2 | Lookup for the spacing-form comparison table. |
+| `layout-system` | 3 | Token width versus intrinsic/static width explained inline, without a source fence. |
+| `rendering-modes` | 2 | Recap of rules active midway through four insert/add/remove steps; grouping with final removed-element source would misrepresent its state. |
+| `conditional-queries` | 1 | Examples drawn from the query-forms table, without a complete source example. |
+| `conditional-queries` | 4 | Three independent range/resolution lookups described in prose. |
+| `conditional-queries` | 5 | One supports syntax lookup described inline, without a source fence. |
+| `conditional-queries` | 8 | Two named-container-condition lookups described in prose; no complete source example. |
+| `conditional-queries` | 9 | One starting-style syntax lookup, without a transition source example. |
+| `syntax-tutorial` | 2 | Output for five value-choice comparison rows. |
+| `syntax-tutorial` | 4 | Output for three token/declaration comparison rows. |
+| `syntax-tutorial` | 6 | Inline padding-priority comparison, without a source fence. |
+| `syntax-tutorial` | 8 | Output for the one-off threshold and condition table, not the preceding separately complete responsive preview. |
+
+The independent read-only review accepted all 25 final localized source hashes and all 28 standalone decisions. Exactly 20 translation-review entries were refreshed. The final local build passed 389 pages, 85 public assets and all existing style budgets. All 52 CSS files are byte-identical to the pre-correction official dependency output; the existing 389-route / 58-contract / 2,246-segment snapshot passes unchanged. No budget or snapshot was raised for this correction. Reference tests pass 44/44, portable LLM tests 43/43, and Chromium/WebKit each pass all 26 document/material/preview cases, including the new five-route regression. Screenshots include the added English wide/light and Traditional Chinese narrow/dark examples. Linux Firefox runs the same new case through the existing three-engine CI; a local Firefox pass is not claimed.

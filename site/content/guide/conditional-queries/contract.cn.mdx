@@ -58,15 +58,19 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 `fg-red:hover@sm` 结合令牌驱动的工具类、选择器与具名媒体条件：
 
+<a id="complete-generated-css"></a>
+
+<DocumentExample>
+
 ```html
 <div class="fg-red:hover@sm">Hover at sm and above</div>
 ```
 
-使用预设时，`fg-red` 读取 `--color-red`，`:hover` 检查带有类的元素，`@sm` 要求视口宽度至少为 `52.125rem`。预设 red 别名具有固定颜色，项目可覆盖其值。没有令牌值与竞争的 CSS，仅凭类无法确定最终颜色。
-
-<a id="complete-generated-css"></a>
-
 <Class2CSS classes={['fg-red:hover@sm']} />
+
+</DocumentExample>
+
+使用预设时，`fg-red` 读取 `--color-red`，`:hover` 检查带有类的元素，`@sm` 要求视口宽度至少为 `52.125rem`。预设 red 别名具有固定颜色，项目可覆盖其值。没有令牌值与竞争的 CSS，仅凭类无法确定最终颜色。
 
 生成的 CSS 包含必要的令牌依赖项，不会插入基础层顺序声明。请加载[基础样式表](/reference/rules/layers)，通常通过 `@import '@master/css'`。
 

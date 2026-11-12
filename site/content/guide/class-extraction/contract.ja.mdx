@@ -1,3 +1,4 @@
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import Class2CSS from '~/site/components/Class2CSS.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
@@ -48,13 +49,17 @@ const className = `px-md r-md ${tones.destructive}`
 | 形式が不正な Master クラス | ルールはなく、検査で構文診断を報告できる |
 | 一致したが CSS 値が無効または未知のクラス | CSS を出力する場合があり、照合だけでは値の有効性やブラウザー対応は証明できない |
 
+<DocumentExample>
+
 ```html
 <article class="card p-md shadow-md">Release notes</article>
 ```
 
-ここでは `p-md` と `shadow-md` をプリセットで解決します。`card` がネイティブルールを保持するのは、プロジェクトが実際にそのルールを提供し、プルーニングのポリシーが使用状況を考慮する場合だけです。ネイティブスタイルシートは既定で保持され、スキャン自体がプルーニングを有効にすることはありません。
-
 <Class2CSS classes={['p-md', 'shadow-md']} />
+
+</DocumentExample>
+
+ここでは `p-md` と `shadow-md` をプリセットで解決します。`card` がネイティブルールを保持するのは、プロジェクトが実際にそのルールを提供し、プルーニングのポリシーが使用状況を考慮する場合だけです。ネイティブスタイルシートは既定で保持され、スキャン自体がプルーニングを有効にすることはありません。
 
 コンパイラーによる照合、CSS 構文の検証、CSS 値の検証、ブラウザー対応は別の確認事項です。[クラスの検査](/reference/tools/mcp#mastercss_inspect_class)で区別してください。一致したクラスにも、ブラウザーのカスケードと計算値の規則が適用されます。
 

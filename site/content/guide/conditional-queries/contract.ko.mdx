@@ -58,15 +58,19 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 `fg-red:hover@sm`은 토큰 기반 유틸리티, 선택자, 이름이 있는 미디어 조건을 결합합니다.
 
+<a id="complete-generated-css"></a>
+
+<DocumentExample>
+
 ```html
 <div class="fg-red:hover@sm">Hover at sm and above</div>
 ```
 
-프리셋에서 `fg-red`는 `--color-red`를 사용하고, `:hover`는 클래스를 가진 요소를 확인하며, `@sm`은 뷰포트 너비가 최소 `52.125rem`이어야 합니다. 프리셋 red 별칭은 고정 색상을 가지며 프로젝트에서 값을 덮어쓸 수 있습니다. 토큰 값과 경쟁 CSS 없이는 클래스만으로 최종 색상을 확정할 수 없습니다.
-
-<a id="complete-generated-css"></a>
-
 <Class2CSS classes={['fg-red:hover@sm']} />
+
+</DocumentExample>
+
+프리셋에서 `fg-red`는 `--color-red`를 사용하고, `:hover`는 클래스를 가진 요소를 확인하며, `@sm`은 뷰포트 너비가 최소 `52.125rem`이어야 합니다. 프리셋 red 별칭은 고정 색상을 가지며 프로젝트에서 값을 덮어쓸 수 있습니다. 토큰 값과 경쟁 CSS 없이는 클래스만으로 최종 색상을 확정할 수 없습니다.
 
 생성 CSS에는 필요한 토큰 의존 항목이 포함되지만 기본 레이어 순서 선언은 삽입하지 않습니다. 보통 `@import '@master/css'`로 [기본 스타일시트](/reference/rules/layers)를 불러오세요.
 

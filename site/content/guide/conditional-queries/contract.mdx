@@ -58,15 +58,19 @@ These are nested CSS conditions, not steps executed in sequence. Both queries mu
 
 `fg-red:hover@sm` combines a token-backed utility, a selector and a named media condition:
 
+<a id="complete-generated-css"></a>
+
+<DocumentExample>
+
 ```html
 <div class="fg-red:hover@sm">Hover at sm and above</div>
 ```
 
-With the preset, `fg-red` uses `--color-red`, `:hover` tests the class-bearing element and `@sm` requires a viewport width of at least `52.125rem`. The preset red alias has a fixed color; a project can override its value. The class alone cannot establish the final color without the token values and competing CSS.
-
-<a id="complete-generated-css"></a>
-
 <Class2CSS classes={['fg-red:hover@sm']} />
+
+</DocumentExample>
+
+With the preset, `fg-red` uses `--color-red`, `:hover` tests the class-bearing element and `@sm` requires a viewport width of at least `52.125rem`. The preset red alias has a fixed color; a project can override its value. The class alone cannot establish the final color without the token values and competing CSS.
 
 Generated CSS includes required token dependencies. It does not insert the base layer-order statement; load the [base stylesheet](/reference/rules/layers), normally through `@import '@master/css'`.
 

@@ -58,15 +58,19 @@ import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 
 `fg-red:hover@sm` 結合以 token 提供值的 utility、選擇器與具名媒體條件：
 
+<a id="complete-generated-css"></a>
+
+<DocumentExample>
+
 ```html
 <div class="fg-red:hover@sm">Hover at sm and above</div>
 ```
 
-使用預設集時，`fg-red` 讀取 `--color-red`，`:hover` 檢查帶有 class 的元素，`@sm` 要求檢視區寬度至少為 `52.125rem`。預設的 red 別名具有固定色彩，專案可覆寫其值。沒有 token 值與競爭的 CSS，單靠 class 無法確定最終色彩。
-
-<a id="complete-generated-css"></a>
-
 <Class2CSS classes={['fg-red:hover@sm']} />
+
+</DocumentExample>
+
+使用預設集時，`fg-red` 讀取 `--color-red`，`:hover` 檢查帶有 class 的元素，`@sm` 要求檢視區寬度至少為 `52.125rem`。預設的 red 別名具有固定色彩，專案可覆寫其值。沒有 token 值與競爭的 CSS，單靠 class 無法確定最終色彩。
 
 生成 CSS 會包含必要的 token 相依項目，不會插入基底串接層順序宣告。請載入[基底樣式表](/reference/rules/layers)，通常透過 `@import '@master/css'`。
 

@@ -27,17 +27,21 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 从一个链接开始：只有视口符合预设 `sm` 查询时，悬停才变成蓝色。
 
+<DocumentExample>
+
 ```html
 <a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
   Read the guide
 </a>
 ```
 
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+</DocumentExample>
+
 此 class 有三个部分。`fg-blue-60` 选择样式，`:hover` 选择状态，`@sm` 加上条件。只有选择器与条件都匹配时才应用样式。没有这些后缀时，`fg-blue-60` 不受悬停或视口宽度限制。
 
 <SyntaxIllustration />
-
-<Class2CSS classes={['fg-blue-60:hover@sm']} />
 
 生成的规则通过 CSS 变量设置 `color`，并放在媒体查询内。选择器会转义标点，以匹配 HTML 中的字面 class 名称。在 HTML 编写易读形式即可；转义后的 CSS 选择器属于生成的输出。
 

@@ -100,6 +100,7 @@
 }
 ---
 
+import DocumentExample from '@master/internal-site/components/DocumentExample.astro'
 import DocumentComparison from '@master/internal-site/components/DocumentComparison.astro'
 import ReferenceIllustration from '~/site/reference/ReferenceIllustration.astro'
 import GuideStudy from '~/site/content/guide/components/GuideStudy.astro'
@@ -168,6 +169,10 @@ CSS 진입점의 네이티브 선택자는 스캔 소스에 해당 클래스가 
 
 공식 통합은 지원하는 HTML 출력에 이 단계를 수행합니다. 사용자 지정 서버나 빌드 파이프라인을 위한 이 예제는 빌드 통합이 제공하는 `virtual:master-css-manifest`를 사용합니다. 서버 코드가 실행되기 전에 빌드 도구가 이 가상 모듈을 해석해야 합니다.
 
+반환된 `html`을 저장하거나 응답으로 제공하세요. `style#master-css`에는 제목 규칙과 필요한 font-size 토큰이 포함됩니다:
+
+<DocumentExample>
+
 ```html name=index.html
 <!doctype html>
 <html lang="en">
@@ -194,9 +199,9 @@ const { html } = renderer.renderHTML(indexHTML)
 renderer.dispose()
 ```
 
-반환된 `html`을 저장하거나 응답으로 제공하세요. `style#master-css`에는 제목 규칙과 필요한 font-size 토큰이 포함됩니다:
-
 <Class2CSS classes={'font-5xl'} />
+
+</DocumentExample>
 
 이 출력에는 Master CSS 런타임이나 hydration 매니페스트가 필요하지 않습니다. 나중에만 나타나는 클래스에는 CSS를 따로 제공하거나 런타임을 지원하는 모드가 필요합니다. 이런 클래스를 찾아 서버 HTML에 유지하는 방법은 [클래스가 HTML에 있는 페이지 사전 렌더링하기](/guide/optimizing-css-delivery#prerender)를 참고하세요.
 

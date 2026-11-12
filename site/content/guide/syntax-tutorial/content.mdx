@@ -21,17 +21,21 @@ Each **Generated CSS** disclosure shows output compiled from the accompanying cl
 
 Start with a link that turns blue on hover, but only when the viewport matches the preset's `sm` query:
 
+<DocumentExample>
+
 ```html
 <a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
   Read the guide
 </a>
 ```
 
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+</DocumentExample>
+
 The class has three parts. `fg-blue-60` selects the style, `:hover` selects a state, and `@sm` adds a condition. The style applies only when both the selector and the condition match. Without those suffixes, `fg-blue-60` applies regardless of hover or viewport width.
 
 <SyntaxIllustration />
-
-<Class2CSS classes={['fg-blue-60:hover@sm']} />
 
 The generated rule sets `color` through a CSS variable and sits inside a media query. Its selector escapes punctuation to match the literal HTML class name. Write the readable form in HTML; escaped CSS selectors belong in the generated output.
 

@@ -27,17 +27,21 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 從一個連結開始：只有檢視區符合預設集 `sm` 查詢時，滑鼠移入才變成藍色。
 
+<DocumentExample>
+
 ```html
 <a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
   Read the guide
 </a>
 ```
 
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+</DocumentExample>
+
 此 class 有三個部分。`fg-blue-60` 選擇樣式，`:hover` 選擇狀態，`@sm` 加上條件。只有選擇器與條件都相符時才套用樣式。沒有這些後綴時，`fg-blue-60` 不受滑鼠移入或檢視區寬度限制。
 
 <SyntaxIllustration />
-
-<Class2CSS classes={['fg-blue-60:hover@sm']} />
 
 產生的規則透過 CSS 變數設定 `color`，並放在媒體查詢內。選擇器會跳脫標點，以符合 HTML 中的字面 class 名稱。在 HTML 撰寫易讀形式即可；跳脫後的 CSS 選擇器屬於產生的輸出。
 

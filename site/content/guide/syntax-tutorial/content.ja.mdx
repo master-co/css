@@ -27,17 +27,21 @@ import SyntaxIllustration from './components/SyntaxIllustration.astro'
 
 プリセットの `sm` クエリーにビューポートが一致するときだけ、ホバーで青くなるリンクから始めます。
 
+<DocumentExample>
+
 ```html
 <a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
   Read the guide
 </a>
 ```
 
+<Class2CSS classes={['fg-blue-60:hover@sm']} />
+
+</DocumentExample>
+
 このクラスは3つの部分からなります。`fg-blue-60` がスタイル、`:hover` が状態を選び、`@sm` が条件を加えます。セレクターと条件の両方に一致したときだけ適用されます。接尾辞がなければ、`fg-blue-60` はホバーやビューポート幅に関係なく適用されます。
 
 <SyntaxIllustration />
-
-<Class2CSS classes={['fg-blue-60:hover@sm']} />
 
 生成ルールは CSS 変数で `color` を設定し、メディアクエリー内に置かれます。セレクターの記号は、HTML のクラス名に一致するようエスケープされます。HTML には読みやすい形を書き、エスケープした CSS セレクターは生成出力に任せます。
 
