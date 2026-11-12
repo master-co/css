@@ -135,6 +135,25 @@ async function publicCohort(root = '.') {
   return names.sort()
 }
 
+// Pages applies Wrangler vars on every Worker deployment, replacing dashboard plaintext
+// values. Retain the build inputs in that same source of truth; never copy process.env
+// or masked dashboard secret bindings into the configuration.
+export function hostedBuildConfig(config, input, { packageManager, nodeVersion = process.versions.node }) {
+  const metadata = releaseMetadata(input)
+  assert.match(packageManager ?? '', /^bun@\d+\.\d+\.\d+$/, 'The hosted build requires a pinned Bun version')
+  assert.match(nodeVersion, /^\d+\.\d+\.\d+$/, 'The actual hosted Node version is required')
+  assert.equal(config.pages_build_output_dir, 'site/out', 'Pages must publish the verified output directory')
+  const vars = {
+    BUN_VERSION: packageManager.slice(4), NODE_VERSION: nodeVersion, SKIP_DEPENDENCY_INSTALL: '1',
+    MASTER_CSS_PAGES_PROJECT: metadata.project, MASTER_CSS_PAGES_SUBDOMAIN: metadata.subdomain,
+    MASTER_CSS_IMAGE_TRANSFORMATIONS: 'false', MASTER_LEGACY_DESIGN_CUTOVER: metadata.legacyDesignCutover ? '1' : '0'
+  }
+  const result = { ...config, vars: { ...config.vars, ...vars } }
+  if (config.env?.production) result.env = { ...config.env,
+    production: { ...config.env.production, vars: { ...config.env.production.vars, ...vars } } }
+  return result
+}
+
 export function registryFromState(state, metadata, names) {
   assert.equal(state.schemaVersion, 1)
   assert.equal(state.revision, metadata.releaseRevision)
@@ -375,6 +394,17 @@ async function main(command, directory) {
     const proof = await verifyOutput('site/out', manifest, metadata)
     const pointer = git(['ls-remote', '--heads', remote, `refs/heads/${metadata.deliveryBranch}`])
     assert.equal(pointer, `${metadata.revision}\trefs/heads/${metadata.deliveryBranch}`, 'A newer release superseded this Pages build')
+    // Only after source, registry, complete output inventory and delivery pointer verify.
+    // This build-local configuration is outside site/out and the immutable CI manifest.
+    const configPath = 'wrangler.jsonc'
+    const config = JSON.parse(await readFile(configPath, 'utf8'))
+    const { packageManager } = JSON.parse(await readFile('package.json', 'utf8'))
+    const next = hostedBuildConfig(config, metadata, { packageManager })
+    const temporaryConfig = `${configPath}.verified`
+    try {
+      await writeFile(temporaryConfig, jsonBytes(next))
+      await rename(temporaryConfig, configPath)
+    } finally { await rm(temporaryConfig, { force: true }) }
     console.log(JSON.stringify(proof))
     return
   }

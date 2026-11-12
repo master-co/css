@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { test } from 'node:test'
-import { ciMetadata, hostedMetadata, newestTag, planDelivery, registryFromNpm, registryFromState, selectExactTag, selectReleaseTag, verifyPublicRegistry } from './pages-site-release.mjs'
+import { ciMetadata, hostedBuildConfig, hostedMetadata, newestTag, planDelivery, registryFromNpm, registryFromState, selectExactTag, selectReleaseTag, verifyPublicRegistry } from './pages-site-release.mjs'
 import { createManifest, inventoryDigest, jsonBytes, manifestName, manifestUrl, outputInventory, prepareIdentity, sha256 } from './pages-site-manifest.mjs'
 
 const revision = 'a'.repeat(40)
@@ -158,6 +158,49 @@ test('the real hosted shell command fails before installing tools when release i
   assert.deepEqual(await readdir(temporary), [], 'The rejected build removes its temporary evidence directory')
 })
 
+test('hosted Pages configuration retains build inputs for either channel without copying environment secrets', () => {
+  const config = { name: 'fixture', compatibility_date: '2026-06-11', pages_build_output_dir: 'site/out',
+    vars: { PUBLIC_LABEL: 'Keep', JSON_VALUE: { nested: true }, NODE_VERSION: 'stale' },
+    kv_namespaces: [{ binding: 'CACHE', id: 'existing-kv' }],
+    env: { production: { vars: { PUBLIC_LABEL: 'Production' }, compatibility_flags: ['nodejs_compat'] },
+      preview: { vars: { PUBLIC_LABEL: 'Preview' }, kv_namespaces: [{ binding: 'CACHE', id: 'preview-kv' }] } } }
+  const original = structuredClone(config)
+  const previous = process.env.OPENAI_API_KEY
+  process.env.OPENAI_API_KEY = 'must-not-copy-secret'
+  try {
+    for (const channel of ['main', 'rc']) for (const cutover of [false, true]) {
+      const input = channel === 'main' ? { ...metadata, legacyDesignCutover: cutover } : { ...metadata,
+        channel: 'rc', version: '2.0.0-rc.1', tag: 'v2.0.0-rc.1', deliveryBranch: 'codex/pages-rc',
+        origin: 'https://rc.css.master.co', project: 'release-candidate', subdomain: 'release-candidate-e8w.pages.dev', legacyDesignCutover: cutover }
+      const result = hostedBuildConfig(config, input, { packageManager: 'bun@1.4.4' })
+      for (const vars of [result.vars, result.env.production.vars]) {
+        assert.equal(vars.NODE_VERSION, process.versions.node)
+        assert.equal(vars.BUN_VERSION, '1.4.4')
+        assert.equal(vars.SKIP_DEPENDENCY_INSTALL, '1')
+        assert.equal(vars.MASTER_CSS_PAGES_PROJECT, input.project)
+        assert.equal(vars.MASTER_CSS_PAGES_SUBDOMAIN, input.subdomain)
+        assert.equal(vars.MASTER_CSS_IMAGE_TRANSFORMATIONS, 'false')
+        assert.equal(vars.MASTER_LEGACY_DESIGN_CUTOVER, cutover ? '1' : '0')
+        assert.equal(vars.OPENAI_API_KEY, undefined)
+      }
+      assert.deepEqual(result.vars.JSON_VALUE, config.vars.JSON_VALUE)
+      assert.equal(result.env.production.vars.JSON_VALUE, undefined, 'Production must not inherit local-only vars')
+      assert.equal(result.vars.PUBLIC_LABEL, 'Keep')
+      assert.equal(result.env.production.vars.PUBLIC_LABEL, 'Production')
+      assert.deepEqual(result.kv_namespaces, config.kv_namespaces)
+      assert.deepEqual(result.env.preview, config.env.preview)
+      assert.deepEqual(result.env.production.compatibility_flags, config.env.production.compatibility_flags)
+      assert.deepEqual(hostedBuildConfig(result, input, { packageManager: 'bun@1.4.4' }), result, 'Every subsequent deploy retains the same values')
+    }
+  } finally { if (previous === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = previous }
+  assert.deepEqual(config, original)
+  const noProductionVars = hostedBuildConfig({ ...config, env: { production: {} } }, metadata, { packageManager: 'bun@1.4.4' })
+  assert.equal(noProductionVars.env.production.vars.PUBLIC_LABEL, undefined, 'An empty production environment also must not inherit local vars')
+  assert.throws(() => hostedBuildConfig(config, { ...metadata, project: 'not/a/project' }, { packageManager: 'bun@1.4.4' }))
+  assert.throws(() => hostedBuildConfig(config, metadata, { packageManager: 'bun@latest' }), /pinned Bun/)
+  assert.throws(() => hostedBuildConfig(config, metadata, { packageManager: 'bun@1.4.4', nodeVersion: '$(untrusted)' }), /actual hosted Node/)
+})
+
 for (const cutover of [false, true]) test(`the real hosted shell exports the exact release and cutover=${cutover}, rejecting altered bytes`, async t => {
   const delivery = { ...metadata, legacyDesignCutover: cutover }
   const root = await mkdtemp(path.join(tmpdir(), 'master-pages-hosted-'))
@@ -167,6 +210,10 @@ for (const cutover of [false, true]) test(`the real hosted shell exports the exa
     await copyFile(new URL(name, import.meta.url), path.join(root, 'scripts', name))
   }
   await writeFile(path.join(root, 'packages/css/package.json'), JSON.stringify({ name: '@master/css' }))
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({ packageManager: 'bun@1.4.4' }))
+  const originalConfig = jsonBytes({ name: 'fixture', pages_build_output_dir: 'site/out', vars: { EXISTING: 'retained' },
+    kv_namespaces: [{ binding: 'CACHE', id: 'existing-kv' }] })
+  await writeFile(path.join(root, 'wrangler.jsonc'), originalConfig)
   const payload = { 'index.html': '<p>Release fixture</p>', 'assets/a.css': 'a{color:red}' }
   if (cutover) Object.assign(payload, { '_worker.js': 'export default {}', '_routes.json': '{"version":1}' })
   for (const [name, contents] of Object.entries(payload)) await writeFile(path.join(root, 'verified', name), contents)
@@ -217,12 +264,28 @@ if(process.argv[2]==='install') {
     MASTER_LEGACY_DESIGN_CUTOVER: cutover ? '1' : '0', PAGES_FIXTURE_MANIFEST: path.join(root, 'manifest.json') }
   const result = execFileSync('bash', [path.join(root, 'scripts/build-site-hosted.sh')], { env, stdio: 'pipe', encoding: 'utf8' })
   assert.ok(result.includes(manifest.buildDigest))
+  const config = JSON.parse(await readFile(path.join(root, 'wrangler.jsonc'), 'utf8'))
+  assert.equal(config.vars.MASTER_LEGACY_DESIGN_CUTOVER, cutover ? '1' : '0')
+  assert.equal(config.vars.MASTER_CSS_PAGES_PROJECT, metadata.project)
+  assert.equal(config.vars.NODE_VERSION, process.versions.node)
+  assert.equal(config.vars.BUN_VERSION, '1.4.4')
+  assert.equal(config.vars.EXISTING, 'retained')
+  assert.deepEqual(config.kv_namespaces, [{ binding: 'CACHE', id: 'existing-kv' }])
+  assert.deepEqual(await outputInventory(path.join(root, 'site/out')), manifest.files, 'Config generation cannot modify the verified public output')
+  assert.ok((await readFile(path.join(root, 'manifest.json'))).equals(jsonBytes(manifest)), 'The immutable CI manifest is unchanged')
   assert.deepEqual((await readFile(path.join(root, 'trace.txt'), 'utf8')).trim().split('\n'), ['install --frozen-lockfile', 'run build:site'])
+  await writeFile(path.join(root, 'wrangler.jsonc'), originalConfig)
+  assert.throws(() => execFileSync('bash', [path.join(root, 'scripts/build-site-hosted.sh')], {
+    env: { ...env, MASTER_CSS_PAGES_PROJECT: 'wrong-project' }, stdio: 'pipe'
+  }))
+  assert.ok((await readFile(path.join(root, 'wrangler.jsonc'))).equals(originalConfig), 'Rejected metadata cannot write configuration')
   await writeFile(path.join(root, 'payload.json'), JSON.stringify({ ...payload, 'assets/a.css': 'a{color:blue}' }))
   assert.throws(() => execFileSync('bash', [path.join(root, 'scripts/build-site-hosted.sh')], { env, stdio: 'pipe' }), error => {
     assert.ok(error.stderr.toString().includes('Cloudflare output differs'))
     return true
   })
+  assert.ok((await readFile(path.join(root, 'wrangler.jsonc'))).equals(originalConfig), 'Rejected output cannot write configuration')
+  assert.equal((await readdir(root)).includes('wrangler.jsonc.verified'), false)
 })
 
 async function deliveryFixture(t, scenario) {
