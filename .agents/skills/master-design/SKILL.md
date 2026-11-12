@@ -1,10 +1,10 @@
 ---
 name: master-design
-description: "Design and refine web interfaces: principles, foundations, accessible interactions, component choices and complete task flows, with implementation and visual verification. Use Master UI foundations when working in the Master ecosystem; preserve other projects' own brands and frameworks."
+description: "Design and refine web interfaces: principles, foundations, accessible interactions, component choices and complete task flows, with implementation and visual verification. Preserve each project's own brand and framework."
 license: MIT
 metadata:
   author: master-co
-  version: "0.3.0"
+  version: "0.3.1"
 ---
 
 # Master Design
@@ -21,7 +21,7 @@ For review-only requests, report observations and proposed fixes. For implementa
 
 ## Choose the relevant guidance
 
-Read only the layers needed for the task. General guidance is portable; the Master UI page describes a specific implementation, not a mandatory style for other projects.
+Read only the layers needed for the task. The guidance is portable across brands, frameworks and component libraries.
 
 | Decision | Reference |
 | --- | --- |
@@ -31,7 +31,6 @@ Read only the layers needed for the task. General guidance is portable; the Mast
 | Containment, layering, symbols and movement | [Shape](references/foundations/shape.md), [elevation](references/foundations/elevation.md), [icons](references/foundations/icons.md), [motion](references/foundations/motion.md) |
 | Choosing a control and its behavior | [Actions](references/components/actions.md), [fields](references/components/forms.md), [selection](references/components/selection.md), [navigation](references/components/navigation.md), [overlays](references/components/overlays.md), [feedback](references/components/feedback.md), [data display](references/components/data-display.md) |
 | A complete task across states | [Form flows](references/patterns/forms.md), [search](references/patterns/search.md), [navigation flows](references/patterns/navigation.md), [asynchronous work](references/patterns/async.md), [recovery](references/patterns/recovery.md), [responsive composition](references/patterns/responsive.md) |
-| Applying the guide to Master UI | [Master UI foundations](references/master-ui.md) |
 
 ## Refine the relevant detail
 
@@ -54,7 +53,7 @@ Start with an observable problem: an unclear action, lost input, missing keyboar
 
 Inspect every affected state. Use semantic native controls or established accessible equivalents. Distinguish selected, pressed, focused and disabled. Real controls need local behavior, a valid destination, or an explicit unavailable state.
 
-Use the project's styling system and tools. Translate the mechanisms in these references into that system without adding dependencies for small effects.
+Use the project's styling system and tools. Translate the mechanisms in these references into that system without adding dependencies for small effects. When a component library is already in use, read its installed contracts and theme for supported markup, states and customization; this guide supplies the design judgment, not a substitute API.
 
 ## Verify at the right scale
 

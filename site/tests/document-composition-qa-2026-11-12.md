@@ -262,3 +262,50 @@ Seventy-three canonical routes add exactly 19 gzip / 21 Brotli bytes compared wi
 | `/reference/truncation` | brotli | 37453 | 37474 | +21 |
 | `/guide/optimizing-css-delivery` | gzip | 38842 | 38861 | +19 |
 | `/guide/optimizing-css-delivery` | brotli | 33245 | 33266 | +21 |
+
+
+## Final official dependency cohort
+
+The final exact dependencies are `@master/internal-site@0.2.11`, `@master/internal-skills@0.1.5` and `@master/ui@0.0.4`. Registry archives match their accepted CI packages; isolated installed files match those archives (779 shared-site, 47 skills and 316 UI files), and frozen installation passes. Explicit skill synchronization installs the Design 0.3.1 snapshot from source 55f9e6e and preserves product-owned skills.
+
+UI 0.0.4 corrects the segmented indicator's reduced-motion selector specificity. It changes one supports block in one segmented CSS asset. Replacing only that block reconstructs candidate 10's previous asset byte for byte; it appears once, and all other 51 CSS files remain unchanged. Manifest v6 / language v18 and the 2,246-segment count remain unchanged. Forty-three canonical routes add 4 gzip bytes and save 19 Brotli bytes; 38 routes are unchanged. Only these 32 gzip ceilings exceed their prior bounds and receive the exact approved +4 update. No Brotli, file, depth or inline ceiling rises. The real Reference index view selector now also asserts zero indicator transition duration under reduced motion in the existing three-engine material suite.
+
+| Route | Gzip ceiling before | Official actual |
+| --- | ---: | ---: |
+| `/benchmarks` | 40642 | 40646 |
+| `/guide` | 34403 | 34407 |
+| `/guide/ai-coding` | 45855 | 45859 |
+| `/guide/colors` | 45752 | 45756 |
+| `/guide/global-styles` | 45168 | 45172 |
+| `/guide/installation/angular` | 46041 | 46045 |
+| `/guide/installation/astro` | 44486 | 44490 |
+| `/guide/installation/nextjs` | 44486 | 44490 |
+| `/guide/installation/nuxtjs` | 44486 | 44490 |
+| `/guide/installation/server-rendered` | 44665 | 44669 |
+| `/guide/installation/svelte` | 44486 | 44490 |
+| `/guide/installation/vite` | 44665 | 44669 |
+| `/guide/installation/webpack` | 44665 | 44669 |
+| `/guide/layout-system` | 43822 | 43826 |
+| `/guide/responsive-design` | 48198 | 48202 |
+| `/guide/reusing-styles` | 45347 | 45351 |
+| `/guide/syntax-tutorial` | 45347 | 45351 |
+| `/guide/theme` | 45168 | 45172 |
+| `/guide/view-transitions` | 44001 | 44005 |
+| `/reference` | 34885 | 34889 |
+| `/reference/tokens/color-roles` | 51094 | 51098 |
+| `/reference/tokens/color` | 51144 | 51148 |
+| `/reference/tokens/container` | 51138 | 51142 |
+| `/reference/tokens/families` | 50723 | 50727 |
+| `/reference/tokens/font` | 50889 | 50893 |
+| `/reference/tokens/leading` | 50837 | 50841 |
+| `/reference/tokens/motion` | 51153 | 51157 |
+| `/reference/tokens/radius` | 51266 | 51270 |
+| `/reference/tokens/shadow` | 51275 | 51279 |
+| `/reference/tokens/spacing` | 51110 | 51114 |
+| `/reference/tokens/text` | 50846 | 50850 |
+| `/reference/tokens/tracking` | 50865 | 50869 |
+
+
+Official-cohort local verification passed: the complete site rendered 389 pages; the reviewed final postbuild asset/style and exact-contract gates passed; Astro/Svelte/TypeScript reported no errors; 162 translation resources had no audit problems; Reference 42, executable examples 28, MDX imports 2, syntax 13, LLM/Markdown 43, verifier 6 and workflow 12 tests passed. Lint retains the same five warnings with no errors. Chromium and WebKit each passed all 25 configured cases, and the final 96 resting/focus screenshots are frozen under `work/doc-unification/css/screenshots-official-final`. The normal Linux CI must separately establish Firefox acceptance.
+
+The real checkout received only the three verified package entries, with their previous directories retained for rollback. All installed authored files match the official archives; shared skill checks and the new public imports resolve. This is bounded local dependency readiness, separate from the isolated full build. Original `pnpm-lock.yaml`, `pnpm-workspace.yaml`, other dependency entries and user processes remain untouched; no restart was performed.

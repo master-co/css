@@ -1,6 +1,6 @@
 # Design principles
 
-Make the task clear, keep people in control, and make every detail support the result. These principles guide a web interface in its own brand and framework. They also provide the design basis for [Master UI](master-ui.md).
+Make the task clear, keep people in control, and make every detail support the result. These principles guide a web interface in its own brand and framework.
 
 ## Start with purpose
 

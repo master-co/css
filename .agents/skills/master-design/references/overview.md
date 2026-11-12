@@ -11,7 +11,6 @@ Master Design is a practical guide to building web interfaces that are clear, ad
 | How should content and controls relate? | [Typography](foundations/typography.md), [spacing](foundations/spacing.md) and [sizing](foundations/sizing.md) |
 | Which control fits the job? | [Actions](components/actions.md), [forms](components/forms.md) and [selection](components/selection.md) |
 | How does a complete flow work? | [Form flows](patterns/forms.md), [search](patterns/search.md) and [recovery](patterns/recovery.md) |
-| How does this become code? | [Master UI foundations](master-ui.md) |
 | Why does a detail feel wrong? | [Surface craft](surfaces.md), [geometry](geometry.md) and [evidence](evidence.md) |
 
 ## Principles before polish
@@ -20,7 +19,7 @@ A useful interface lets people recognize the next action, understand the current
 
 ## Shared foundations, deliberate choices
 
-The guidance works with an existing brand, framework and density. It does not prescribe one appearance for every product. Master UI applies it through native markup, reusable component styles, semantic tokens and tested interaction behaviors. [See how the projects fit together](master-ui.md).
+The guidance works with an existing brand, framework and density. It does not prescribe one appearance for every product. Apply it through your project's established components, semantics and theme. The [Master UI library](https://ui.master.co) is one implementation; its design choices and APIs belong in its own documentation.
 
 ## Use the guide with an agent
 
