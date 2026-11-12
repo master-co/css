@@ -57,7 +57,7 @@ export const footerNavGroups = [
   {
     name: 'Legal',
     links: [
-      { name: 'MIT License', href: `${repositoryURL}?tab=MIT-1-ov-file#readme` },
+      { name: 'Licensing', href: `${repositoryURL}#license` },
       { name: 'Trademark Policy', href: 'https://master.co/brand/master-css#trademark-policy' },
     ]
   },

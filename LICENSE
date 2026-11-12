@@ -1,3 +1,13 @@
+Master CSS licensing
+
+Unless stated otherwise, the MIT License below applies to the Master CSS
+software, source code, reusable examples, and public skills in this repository.
+
+The first-party website material under site/ is subject to site/LICENSE. That
+notice identifies the reusable code examples and software artifacts that remain
+under MIT. Third-party material remains subject to its own terms. This notice
+does not revoke permissions granted for earlier versions.
+
 The MIT License
 
 Copyright (c) Aoyue Design LLC.

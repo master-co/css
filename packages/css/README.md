@@ -101,3 +101,10 @@ Some of the core concepts and designs are inspired by these giants.
 - The concept of enhanced syntax is inspired by [SASS](https://sass-lang.com/) and [TypeScript](https://www.typescriptlang.org/)
 - The concept of Virtual CSS is inspired by the [Virtual DOM](https://reactjs.org/docs/faq-internals.html)
 - CSS-first theme configuration and the `@theme` directive are inspired by [Tailwind CSS](https://tailwindcss.com/docs/theme).
+
+## License
+
+Master CSS software, reusable examples, and the public skill are licensed under
+the [MIT License](LICENSE). The [website copyright notice](https://github.com/master-co/css/blob/main/site/LICENSE) covers
+the site's original implementation, prose, illustrations, and brand assets.
+Code samples provided for reuse and copies of MIT-licensed software remain MIT.
