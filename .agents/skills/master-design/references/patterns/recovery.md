@@ -18,6 +18,18 @@ If recovery requires a permission or service change, explain the next useful act
 
 A field correction belongs near the field. An account-wide issue may require a persistent message. A blocking modal should be reserved for a decision that cannot proceed in context. Keep error and focus cues visible together.
 
+## Choose the recovery mechanism
+
+| Situation | Useful mechanism | Boundary |
+| --- | --- | --- |
+| Safe reversible change | Undo | Retain enough state and a lasting route when needed |
+| Unsaved local edit | Save, discard or stay | Explain exactly which draft would be lost |
+| Known failed operation | Retry | Preserve input and avoid repeating completed items |
+| Unknown remote outcome | Check status | Do not claim that a timeout proves failure |
+| Irreversible consequence | Specific confirmation | Identify object, scope and result before commitment |
+
+Design the recovery before choosing its notification. If undo is available only for the latest batch, say so and preserve that batch until the next operation replaces it. A confirmation must offer a real exit; pressing Escape should not execute the destructive choice.
+
 ## Acceptance scenario
 
 Cancel a destructive confirmation, complete a reversible action and undo it, fail a save and retry, then leave with unsaved changes. Check preserved data, truthful status, keyboard exit and focus return. See [overlays](../components/overlays.md) and [form flows](forms.md).

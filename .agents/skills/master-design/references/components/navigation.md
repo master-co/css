@@ -18,6 +18,12 @@ In a long document, a contents rail may track the current section without repeat
 
 On narrow screens, keep navigation reachable with a named control. A modal navigation sheet needs a visible close action, correct focus management and Escape handling. Preserve access to all destinations through the compact structure; hiding the desktop sidebar is not sufficient.
 
+## Keep location and expansion distinct
+
+A sidebar group can be expanded while a different destination is current. A breadcrumb describes hierarchy, not every page in browser history. Tabs identify related panels, while links connect destinations. These distinctions prevent an interface from assigning the same visual cue to several incompatible meanings.
+
+For a long article, section tracking should reflect reading without continuously forcing scroll or resetting manual expansion. Heading links need stable fragments and appropriate scroll offsets under sticky headers. A visually hidden destination is not a useful keyboard target.
+
 ## Verify
 
 Test direct URLs, back/forward, hash links, keyboard entry, focus after navigation and mobile menu exit. Ensure current indicators match the real URL. See [navigation flows](../patterns/navigation.md). Master UI implementations include [Tabs](https://ui.master.co/components/tabs), [Breadcrumb](https://ui.master.co/components/breadcrumb) and [Menu](https://ui.master.co/components/menu).

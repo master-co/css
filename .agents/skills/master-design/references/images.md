@@ -18,3 +18,13 @@ Separate the image treatment from its external shell. Verify object-fit, clippin
 ## Overlapping avatars
 
 Read [Avatar stacking](avatar-stacks.md) for image inset, an independent surface-colored separation ring, overlap geometry, ordering, counts and participant access.
+
+## Preserve the image while testing its edge
+
+Keep source pixels, crop, display size and container radius fixed when comparing an outline. An inward contour affects the image perimeter without increasing the layout box; an outside ring paints beyond it. A changed crop or brighter image cannot isolate the effect of the outline.
+
+A contour is optional when the image already separates clearly from its surroundings. Inspect bright and dark perimeter content rather than applying one opacity to every image. Identity and meaningful details must survive any crop, including narrow layouts.
+
+## Loading and fallback
+
+Reserve the intended aspect ratio to avoid shifting the next action. Use an appropriate alternative when an informative image fails, and avoid duplicate announcements when an adjacent name already identifies an avatar. A fallback should not imply that a different person's portrait loaded. Check delayed load, failure, zoom and both themes.

@@ -28,7 +28,7 @@
         "@eslint/compat": "^2.1.1",
         "@eslint/js": "^10.0.1",
         "@master/css-vscode": "workspace:^",
-        "@master/internal-skills": "0.1.6",
+        "@master/internal-skills": "0.1.8",
         "@playwright/test": "1.64.1",
         "@types/edit-json-file": "^1.7.4",
         "@types/node": "^24.19.2",
@@ -1711,7 +1711,7 @@
 
     "@master/internal-site": ["@master/internal-site@0.2.12", "", { "dependencies": { "@astrojs/markdown-remark": "^7.3.4", "@astrojs/mdx": "^8.1.2", "@astrojs/svelte": "^9.1.2", "@resvg/resvg-js": "2.6.2", "@shikijs/langs": "^4.4.3", "@shikijs/transformers": "^4.4.3", "@tabler/icons-svelte-runes": "^3.50.0", "acorn": "^8.18.0", "clsx": "^2.1.1", "colorjs.io": "^0.7.1", "dayjs": "^1.11.23", "defu": "^6.1.7", "fast-glob": "^3.3.3", "fuse.js": "^7.5.0", "github-slugger": "^2.0.0", "hast-util-to-html": "^9.0.5", "html": "^1.0.0", "js-beautify": "^2.0.3", "mdast-util-from-markdown": "2.0.3", "mdast-util-mdx-jsx": "^3.2.0", "mdast-util-mdxjs-esm": "^2.0.1", "micromark-extension-mdx-jsx": "^3.0.2", "micromark-extension-mdxjs-esm": "^3.0.0", "package-manager-detector": "^1.8.0", "remark": "^15.0.1", "remark-gfm": "^4.0.1", "satori": "0.63.2", "sharp": "0.35.5", "shiki": "^4.4.3", "svgo": "^4.1.0", "theme-mode": "^1.1.1", "throttle-debounce": "^5.0.2", "ts-dedent": "^2.3.0", "unist-util-visit": "^5.1.0" }, "peerDependencies": { "@master/css": "0.0.0 || >=0.0.0-site.1793646900.gdf48b35846c1 <0.0.1 || ^2.1.0", "@master/css-astro": "^2.1.0", "@master/css-compiler": "0.0.0 || >=0.0.0-site.1793646900.gdf48b35846c1 <0.0.1 || ^2.1.0", "@master/css-language-service": "0.0.0 || >=0.0.0-site.1793646900.gdf48b35846c1 <0.0.1 || ^2.1.0", "@master/css-preset": "0.0.0 || >=0.0.0-site.1793646900.gdf48b35846c1 <0.0.1 || ^2.1.0", "@master/css-schema": "0.0.0 || >=0.0.0-site.1793646900.gdf48b35846c1 <0.0.1 || ^2.1.0", "@master/css-tooling": "0.0.0 || >=0.0.0-site.1793646900.gdf48b35846c1 <0.0.1 || ^2.1.0", "@master/ui": "^0.0.5", "astro": "7.4.2", "svelte": "5.57.2", "vite": "8.3.5" }, "optionalPeers": ["@master/css-compiler", "@master/css-language-service", "@master/css-preset", "@master/css-schema", "@master/css-tooling"] }, "sha512-7uS/ZXnZusQtxTYkrPFGq6e/lc9MLqqR8rTMBX5imH8FU6d2MnkaJFfdJHxomwq8OpHSQaHFHob+Rud9I2KVFg=="],
 
-    "@master/internal-skills": ["@master/internal-skills@0.1.6", "", { "bin": { "master-skills": "bin/master-skills.mjs" } }, "sha512-790aKsfeQSGjiBCfU1YV0J/87V3Dsea7ktptDVPZrMXzdeqBmBj4zRze8enJs5Z5NBDNlqHIDG6/NuDrnAK4zw=="],
+    "@master/internal-skills": ["@master/internal-skills@0.1.8", "", { "bin": { "master-skills": "bin/master-skills.mjs" } }, "sha512-E7SXiBGnH7huSQmPj0VeJHivWpA1zBPDjIS++EUL7Zn4pVmzg4bJnZvW0rGlpK1eFmwD/Gj7eeF4vts36ebT5A=="],
 
     "@master/styled.react": ["@master/styled.react@2.0.6", "", { "dependencies": { "class-variant": "2.0.6", "clsx": "2.1.1" }, "peerDependencies": { "@types/react": ">=16", "react": ">=16", "react-dom": ">=16" } }, "sha512-b0MSyz6UZgk2G1FReS72f2Fyn+rHCifadT+hA+4sCU2f4xer5dwF6YwlTM2FmTw7cLA4HHA8RAqkRooUFCUMbg=="],
 

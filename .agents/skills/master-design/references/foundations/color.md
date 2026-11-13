@@ -18,6 +18,18 @@ Alpha colors depend on the surface below them. Test overlapping translucency and
 
 Combine color with labels, icons or shape for feedback and selection. Keep focus independent from the accent or decorative contour. In forced colors, preserve semantic boundaries with supported borders/outlines and system colors rather than relying on box shadows alone.
 
+## Compare the actual pair
+
+A foreground role needs a compatible background role. Moving muted text from a page to an accent-filled button can invalidate a previously acceptable pair. For translucent paint, the apparent color depends on both alpha and the surface underneath; multiplying several translucent layers is different from applying one opacity to the whole group, which also fades its text.
+
+Use a color comparison with the same words, size and layout. Change only the surface or alpha being investigated, and calculate contrast from the resulting foreground and background. A contrasting annotation color must not be mistaken for a prescribed brand accent.
+
+## Choose emphasis by meaning
+
+Semantic color may need to compete with a brand accent, a selected fill and keyboard focus at the same time. Give the distinct facts distinct cues: a selected checkmark, an error message and a focus outline can coexist. Do not make every actionable region the same saturated color merely because each is clickable.
+
+Check a selected row with secondary text and an invalid field with focus in both themes. Repeat without color and in forced colors. The same facts should remain identifiable even when decorative surfaces disappear. [Spectrum's token guidance](https://spectrum.adobe.com/page/design-tokens/) explains intent-based roles; its taxonomy and palette are not required here.
+
 ## Review
 
-Check normal, hover, active, focused, selected, invalid and disabled states, including concurrent states. Measure contrast on the composited result. Read the [accessibility baseline](../accessibility.md) and [surface craft](../surfaces.md). For Master UI, use its published theme roles rather than introducing a second palette in the consuming site.
+Check normal, hover, active, focused, selected, invalid and disabled states, including concurrent states. Measure contrast on the composited result. Read the [accessibility baseline](../accessibility.md) and [surface craft](../surfaces.md). A consumer library's published theme remains the owner of its roles and values.

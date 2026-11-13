@@ -14,6 +14,16 @@ Use photographs, illustrations and avatars when they help identify content or ex
 
 Crop for the intended container and inspect both bright and dark edges. A subtle inner outline can preserve an image's perimeter without altering its crop. Keep illustration style separate from the functional icon set.
 
+## Separate recognition from decoration
+
+An icon can identify a familiar operation, reinforce a written label or decorate a section. Decide which role it has before adding alternative text. A decorative arrow beside Continue need not be announced; an unlabeled icon button needs a meaningful action name. A new symbol may need visible explanation even when its accessible name is correct.
+
+Compare the same action with and without its visible label. If understanding depends on prior knowledge that the audience may not have, retain the label or provide an equally discoverable alternative. A tooltip does not solve first-touch ambiguity.
+
+## Preserve identity through failure
+
+An avatar's fallback should retain a useful name or initials without pretending a different portrait loaded. An informative image needs its conclusion available when loading fails. Reserve the intended aspect ratio to keep adjacent actions stable, and inspect the actual crop around important content at each composition size.
+
 ## Review
 
 Check image loading and fallback, long names, high-density rendering and themes. Icon targets must remain large enough and nonoverlapping even when their glyphs are small. See [images](../images.md), [avatar stacks](../avatar-stacks.md) and [typographic alignment](../typography.md).

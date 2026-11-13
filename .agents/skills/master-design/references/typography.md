@@ -47,3 +47,11 @@ Check body line spacing, short labels and multi-line headings separately. Compar
 An inline image, icon, badge, code run, superscript or control can change the line's ascent/descent. `vertical-align` applies to inline-level boxes and table cells; flex/grid items use their alignment model instead. `middle` uses the surrounding font's baseline and x-height, not the containing block's geometric center.
 
 Inspect native control padding, border and line-height before compensating. An inline image's baseline can leave descender space; make it block-level inside a dedicated media slot when it is not part of a sentence. Keep genuine inline content inline and test the actual baseline. Font-relative margins can locally reduce an atomic inline's contribution, but the surrounding line box still sets constraints. Do not promise that subtracting two margins produces exactly the text line height in every engine. Translation and relative offsets move the drawing without removing its original contribution. See [mixed-content rows](layout.md#mixed-content-rows) for layout footprints and available space.
+
+## Compare metrics with the actual words
+
+A line box is not the visible glyph bounds. Compare text, an icon and an adjacent control using the actual font and supported scripts, then decide whether the shared alignment should follow the baseline, visual center or container edge. A correction for one glyph must not shift every unrelated icon.
+
+Test numerals with the same signs, precision and units in both samples. Tabular figures stabilize digit widths, while decimal alignment depends on precision and column structure. A changing label needs reserved space or flexible layout; clipping the longer state is not stability.
+
+Inspect fallback loading and mixed-script punctuation at native size. Keep copied code and identifiers exact, and retain a route to full content when truncation is necessary. See [localization](foundations/localization.md) and [typography foundations](foundations/typography.md).

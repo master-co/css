@@ -37,3 +37,13 @@ Honor reduced motion, retain a static state cue and allow control over nonessent
 Check keyboard entry, submission, error correction, success and exit; test focus after content changes. Run automated checks for detectable issues, then inspect reading order, labels and announcements with a screen reader. Record the actual browser, assistive technology and conditions. Browser emulation is not a physical-device or screen-reader test.
 
 The normative source is [WCAG 2.2](https://www.w3.org/TR/WCAG22/). Use [APG patterns](https://www.w3.org/WAI/ARIA/apg/patterns/) to select expected widget behavior, and read [APG's support limitations](https://www.w3.org/WAI/ARIA/apg/practices/read-me-first/) before treating an example as production-ready.
+
+## Check beyond the resting screenshot
+
+Allow password managers and paste, provide accessible authentication alternatives where required, and preserve already supplied information when the task does not justify asking again. A drag operation needs an appropriate non-drag alternative. Avoid timing that removes the only route to recover work.
+
+Test text-spacing overrides as well as font enlargement: changed line, paragraph, letter and word spacing must not hide content. Check focus under sticky headers and at scroll-region boundaries. Document the actual applicability and exceptions of a criterion rather than converting one preferred target size into a universal conformance rule.
+
+## Review an assembled flow
+
+Use a representative search, form and collection task. Inspect names and descriptions, input errors, focus after navigation and status announcements with assistive technology where available. Automated accessibility checks complement this walkthrough; they do not certify the whole experience. See [focus](focus.md), [localization](foundations/localization.md) and [authentication](patterns/access.md).

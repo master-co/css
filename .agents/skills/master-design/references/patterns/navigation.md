@@ -18,6 +18,12 @@ Client-side transitions should update focus and document context deliberately. A
 
 A narrow layout can replace a persistent sidebar with a disclosure or sheet, but must retain its destinations. Keep a named trigger, visible close control and logical focus return. The contents of the current page should remain readable before enhancement loads.
 
+## Coordinate history and focus
+
+Distinguish navigation to a new document from changing a filter inside the current task. A new document needs a meaningful title and entry point. An in-place update usually preserves focus. Browser Back should restore a useful previous context without creating an endless series of duplicate history entries.
+
+A real link provides direct loading, copy-link and modified-click behavior before enhancement. If a client router intercepts it, preserve those paths. A hash link should reach its section beneath sticky content; a visual scroll effect is optional.
+
 ## Acceptance scenario
 
 Open a deep link, follow an in-page anchor, navigate to a sibling page, return with Back and repeat on a narrow screen. Use only the keyboard for the compact menu. Verify the current indicator, heading target, page title and reachable destinations. See [navigation components](../components/navigation.md).

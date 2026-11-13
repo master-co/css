@@ -4,7 +4,7 @@ description: "Design and refine web interfaces: principles, foundations, accessi
 license: MIT
 metadata:
   author: master-co
-  version: "0.3.2"
+  version: "0.3.4"
 ---
 
 # Master Design
@@ -31,6 +31,9 @@ Read only the layers needed for the task. The guidance is portable across brands
 | Containment, layering, symbols and movement | [Shape](references/foundations/shape.md), [elevation](references/foundations/elevation.md), [icons](references/foundations/icons.md), [motion](references/foundations/motion.md) |
 | Choosing a control and its behavior | [Actions](references/components/actions.md), [fields](references/components/forms.md), [selection](references/components/selection.md), [navigation](references/components/navigation.md), [overlays](references/components/overlays.md), [feedback](references/components/feedback.md), [data display](references/components/data-display.md) |
 | A complete task across states | [Form flows](references/patterns/forms.md), [search](references/patterns/search.md), [navigation flows](references/patterns/navigation.md), [asynchronous work](references/patterns/async.md), [recovery](references/patterns/recovery.md), [responsive composition](references/patterns/responsive.md) |
+| Page composition, words, locales and data meaning | [Layout](references/foundations/layout.md), [content design](references/foundations/content.md), [localization](references/foundations/localization.md), [data visualization](references/foundations/data-visualization.md) |
+| Starting, obtaining access and finding help | [Onboarding](references/patterns/onboarding.md), [access](references/patterns/access.md), [empty states](references/patterns/empty.md), [help](references/patterns/help.md) |
+| Changes that must survive failure | [Editing](references/patterns/editing.md), [files](references/patterns/files.md), [collections](references/patterns/collections.md), [notifications](references/patterns/notifications.md) |
 
 ## Refine the relevant detail
 
@@ -46,6 +49,7 @@ Use these craft references when the visible mechanism needs closer inspection:
 | Segments, shared seams, concurrent states, targets and focus | [States](references/states.md) |
 | State swaps, interruptions and entrance/exit timing | [Motion](references/motion.md) |
 | Glass, directional edges, masks and falloff | [Materials](references/materials.md) |
+| Focus placement, complete input and reachable scrolling | [Focus and input](references/focus.md), [scrolling](references/scrolling.md) |
 
 ## Refine the implementation
 

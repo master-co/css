@@ -18,6 +18,12 @@ Associate help and error text programmatically. Preserve entered data and focus 
 
 Let labels, help and errors wrap. Keep an error from displacing an adjacent control unpredictably. Group related fields with meaningful structure such as fieldset and legend where appropriate. Do not force an entire long form into one card or one fixed-height panel.
 
+## Keep the field relationships explicit
+
+Read the field in this order: label, value, persistent instruction, current correction. Use programmatic associations so the same relationships are available without visual proximity. A required indicator should be explained consistently; an asterisk alone may be ambiguous.
+
+Read-only values remain inspectable and often copyable; disabled inputs are unavailable and have different form behavior. Do not disable a field simply to display a confirmed value if doing so prevents a necessary copy or submission. For formatted inputs, preserve the person's cursor and distinguish display formatting from the underlying value.
+
 ## Verify
 
 Complete the form with keyboard, touch and a screen reader. Test autofill, paste, long values, submission by Enter, multiple errors and retry. See [form flows](../patterns/forms.md). Master UI implementations include [Input](https://ui.master.co/components/input) and [Select](https://ui.master.co/components/select); application validation still belongs to the product.

@@ -38,6 +38,16 @@ Tune edges, surfaces, geometry, typography and motion where they clarify boundar
 
 Use actual content and rendered evidence. Separate measured geometry from visual judgment. Test a complete interaction, not just its attractive resting state.
 
+## Resolve competing needs
+
+A compact table supports comparison but may make touch access fragile; a large primary action can be easy to find but crowd its explanation. State the task and the constraint, compare the alternatives with the same content, and choose the tradeoff that preserves the useful outcome. Consistency is a repeatable relationship, not an instruction to make every screen identical.
+
+Treat promotional claims and consequential choices with the same care as controls. Explain what a service offers before asking people to begin, make optional choices truly optional, and avoid hiding a refusal or cancellation route through visual emphasis.
+
+## Review the whole journey
+
+Walk from entry through the primary action to its result, then introduce one realistic interruption. Confirm that context, control and recovery remain available. Use the [reading](studies/reading.md), [service](studies/service.md) and [workspace](studies/workspace.md) scenarios to connect foundations, components, patterns and craft.
+
 ## Reference and interpretation
 
 These are original web-oriented guidelines informed by [Apple's design principles](https://developer.apple.com/design/human-interface-guidelines/design-principles) and [Spectrum's inclusive design guidance](https://spectrum.adobe.com/foundations/inclusivity/inclusive-design). They do not import either product's visual styling, platform dimensions or component APIs.

@@ -14,6 +14,18 @@ When space narrows, collapse optional columns or change the composition before c
 
 Distinguish the visual footprint from the interaction target. A compact icon can keep a generous hit area, but that area must not overlap neighboring rows. Treat any negative margin as local geometry and verify the complete clickable bounds.
 
+## Read the grouping before the numbers
+
+Consider two fields, each with a label and help text. If the gap from a label to its input is larger than the gap to the previous field, the layout suggests the wrong association. A shared spacing scale does not prevent this: the relationship between the chosen values matters.
+
+Use a controlled comparison that keeps text, font and container width identical. Compare equal gaps with smaller within-field and larger between-field gaps. For a particular specimen, 8 and 24 CSS pixels can illustrate the relationship; they are not a universal scale or a substitute for the project's tokens.
+
+## Reconcile enclosure and rhythm
+
+Container padding belongs to the boundary-to-content relationship. Adding the same amount as both child margin and parent padding can produce an unintended double gap. Inspect the first and last child as well as the repeated middle rhythm.
+
+Keep error messages and wrapped help inside their field group. Let vertical space grow when content grows instead of absolutely positioning a message into the next target. The test is whether people can still identify the associations after wrapping, not whether every row preserves its original height.
+
 ## Review
 
 Compare the same content with only the named spacing variable changed. Inspect edges, nested enclosure, focus rings and the longest state. At 320 CSS pixels and with enlarged text, the grouping should remain recognizable. See [layout craft](../layout.md) and [nested geometry](../geometry.md).

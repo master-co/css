@@ -18,6 +18,14 @@ If a batch partly succeeds, show the completed and failed items separately with 
 
 Success should be visible near the action and announced when it matters. Failures should preserve input and explain retry, correction or an alternative path. Offer cancellation when supported, and state whether completed work remains after cancelling.
 
+## Model the uncertain middle
+
+Separate not started, pending, completed, failed, cancelled and result unknown. A timeout can leave the remote result unknown even though the local request ended. Before repeating a consequential operation, offer a supported status check or explain the uncertainty. Do not manufacture a successful percentage to make waiting feel shorter.
+
+For optimistic updates, keep enough information to restore the previous state when the operation fails. Explain a rollback near the affected item and avoid silently discarding edits made after the optimistic change. Use optimistic behavior only when its consequences and recovery suit the task.
+
+Offline content may be cached or a local draft. Label freshness and actual persistence; an offline indicator does not itself provide synchronization. If retry is supported, make its scope explicit and prevent a stale callback from overwriting a newer operation.
+
 ## Acceptance scenario
 
 Run a slow operation, repeat the trigger, change input before completion, cancel where supported, then test partial failure and retry. Check focus, announcements, reduced motion and the final stable state. See [feedback](../components/feedback.md) and [motion](../foundations/motion.md).

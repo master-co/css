@@ -12,7 +12,7 @@ Compute progress against usable interior width. Treat track, fill and end shape 
 
 When replacing a drawn control with a real input, button or link, inspect the winning appearance, padding, border, line height and inherited color. Preserve the approved resting paint and alignment while adding real semantics. A native checkbox can keep its behavior with scoped custom paint, provided checked, focus, disabled and forced-colors states are also verified.
 
-Separate visible glyph size from hit area. A 16px glyph inside a 44px target is one specimen; check neighboring targets for overlap. Use an accessible name and native control or established equivalent. Growing the target should not move the visible mark: preserve its center with explicit geometry, and verify actual bounds because flex shrink can silently reduce a declared target.
+Separate visible glyph size from hit area. A 16px glyph inside a 44px target is one specimen; check neighboring targets for overlap. Use an accessible name and native control or established equivalent. Growing the target should not move or resize the visible mark: preserve its center with explicit geometry, keep the control's drawn size the same for every pointer, and verify actual bounds because flex shrink can silently reduce a declared target.
 
 When local margins reduce the [row footprint](layout.md#mixed-content-rows), the control's border box and target can still extend outside it. Inspect the full clickable bounds and every adjacent row, not just the visible glyph. Keep hover and focus unobstructed; increase row spacing or density size when there is insufficient room.
 
@@ -20,7 +20,7 @@ Focus needs independent strength and must remain identifiable against its surrou
 
 `mask` and `clip-path` cut an element's own outline and outer shadow along with its fill. When a part is drawn with a mask, put the focus indicator on its unmasked container, for example through `:has(:focus-visible)`, and confirm the whole ring is visible while tabbing.
 
-A row in a list or menu answers the pointer at once, with no fade: an eased highlight trails a moving pointer and leaves neighboring rows half lit. Keyboard focus on a row uses a separate indicator, so hover and focus stay different facts; sweep the pointer across rows and arrow through them to check both.
+In rapidly scanned lists and menus, keep row feedback direct. A lingering eased highlight can trail the pointer and leave neighboring rows half lit; remove the delay when it obscures the current target. Keyboard focus on a row uses a separate indicator, so hover and focus stay different facts; sweep the pointer across rows and arrow through them to check both.
 
 An action revealed by hover still needs a discoverable entry on devices without hover. A code-copy button can stay visible there while using hover/focus revelation on pointer devices. Keep the accessible name and successful/failed feedback; hide an unavailable enhancement when static content already provides the fallback. Test the first touch directly, rather than tapping an unrelated surface to reveal the control before testing it.
 
@@ -29,3 +29,11 @@ An action revealed by hover still needs a discoverable entry on devices without 
 Assign distinct cues to distinct facts: selection may use a checkmark and fill, keyboard focus an independent outline, an error a message and boundary treatment, and unavailability a visible reason. Do not rely on hue alone. Match visual cues to native semantics or appropriate accessibility properties; a drawn checkmark alone does not make a control selected.
 
 Check combinations as well as isolated specimens. A selected item may also receive focus; a validation error may remain when its field gains focus. Neither layer should erase the other. Focus cues must remain visible against selected fills, and error explanations should identify the affected input. A disabled explanation should not masquerade as successful feedback.
+
+## Follow a state through input
+
+A selected item can also be hovered, focused, pressed, busy or unavailable. Define which facts persist and which respond to input. Selection normally survives pointer release; pressed feedback does not. Busy prevents duplicate work but does not itself confirm success.
+
+Use an explicit state matrix for the affected control, then test combinations that could hide a cue: selected plus focused, invalid plus focused, busy after keyboard activation. Test pointer cancellation and disabled activation. A decorative preview that merely toggles colors cannot prove the underlying semantics.
+
+For focus placement and input completion, see [focus craft](focus.md). For request ordering and result identity, see [asynchronous work](patterns/async.md).

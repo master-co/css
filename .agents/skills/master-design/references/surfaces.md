@@ -28,3 +28,13 @@ Check native straight edges, corners and states against actual surrounding tones
 A repeated drawing across a face (dots, a grid, stripes, a checker) marks room that holds no content: an open stage, measured space, an area kept clear, the ground behind something transparent. Give each texture one such meaning within a project and keep it to specimens, margins and empty regions. Never put one under running text or controls, where marks cross letterforms and lower contrast. Its ink belongs below the faintest structural line nearby, so the eye finds the edge of what stands on it before it notices the drawing; a texture that reads first has become decoration.
 
 Draw marks with hard-stopped gradients so the stated weight is the drawn weight, and count tiles from a whole-pixel origin: a tile centered in a box of odd width lands on half a pixel and blurs every mark. Check hairline textures at 1x as well as 2x, where a half-pixel line may vanish or double. A texture never carries meaning alone; forced-colors mode may remove it, so a boundary or a label must still say what the room is.
+
+## Separate the contributions
+
+A ring defines a contour; a contact shadow suggests attachment; a diffuse shadow suggests separation. Compare these contributions on the same shape, background and content before combining them. A stronger shadow is not a substitute for a necessary field boundary, and a darker ring need not make a surface appear farther away.
+
+Dark appearances can need fill separation and a clear edge when a shadow against a dark background contributes little. This does not require a particular palette, gradient or light direction. Use the consumer's material language and verify the actual adjacent surfaces.
+
+## Test a functional boundary
+
+Inspect a resting field, a selected item and a focused action against their immediate backgrounds. Remove decorative shadows and enable forced colors. If the control can no longer be identified or its state disappears, strengthen the functional cue rather than prescribing thicker decoration everywhere. See [accessibility](accessibility.md) and [elevation](foundations/elevation.md).

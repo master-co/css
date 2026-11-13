@@ -51,3 +51,13 @@ Place a control near the scope it affects and name that scope. A per-row toggle 
 Disclose advanced or infrequent options on demand while keeping the primary task and necessary conditions visible. After collapse, retain a concise summary of consequential applied settings. Keep the disclosure trigger separate from links that navigate elsewhere. For a nested contents list, update the current section without repeatedly changing the reader's expansion choices or keyboard focus. For filters, keep applied criteria, removal actions and result status visible even when the option list is collapsed.
 
 These are contextual design judgments, not measured improvements in task success. See [verification](evidence.md) for comparison controls and [state distinctions](states.md#multiple-state-cues) for concurrent state feedback.
+
+## Compare the relationship, not the decoration
+
+Hold text, font, available width and alignment edges constant while testing grouping. A boundary around a title and its controls should describe the real task region. If its supporting copy sits outside, the enclosure may imply the wrong ownership even when its spacing looks balanced.
+
+A long article can use a reading column and optional contents rail; a dense tool can use aligned rows. Their rhythms serve different tasks. Reuse the project's conventions rather than imposing the same card composition on both. See [layout and hierarchy](foundations/layout.md).
+
+## Inspect the next state
+
+Add a two-line label, an error and a revealed secondary action. Check whether the intended grouping survives and whether the next target moves into the previous target's space. Local negative margins require measuring the full target, not only the visible row footprint. Check reading order after any visual rearrangement.

@@ -11,3 +11,11 @@ For a fade meeting a flat plane, inspect endpoint rate of change. An eased alpha
 CSS support alone does not prove visible backdrop rasterization. Compare against no blur or an independent patterned-background probe. Record an unobserved effect as a setup limitation rather than generalizing to all browser versions.
 
 These examples do not simulate physical refraction. Extended glass sampling remains outside the accepted article scope; do not add it to an existing interface just because a recipe could support it.
+
+## Make the backdrop part of the test
+
+Compare the same foreground and text over a plain surface, a high-contrast pattern and a realistic image. Vary one material property at a time: fill, blur, rim or exterior shadow. A readable result on a blank background says little about a translucent panel over detailed content.
+
+Provide a solid or otherwise readable fallback when an optional effect is unsupported. Never depend on blur alone for text contrast. Decorative masks may clip focus and shadows; put functional indicators on an appropriate unmasked boundary and verify them in forced colors.
+
+Material richness belongs to the project's visual direction. Glass, directional highlights and layered shadows are optional techniques, not a required quality level. See [surfaces](surfaces.md), [color](foundations/color.md) and [focus](focus.md).

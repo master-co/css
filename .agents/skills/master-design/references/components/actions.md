@@ -18,6 +18,17 @@ For asynchronous submission, prevent duplicate work, preserve the action's ident
 
 Specify button type inside forms. A secondary button should not submit accidentally. Keep grouped actions close enough to read together but with nonoverlapping targets. Do not nest a button inside a link or another button.
 
+## Choose the element before its appearance
+
+| Intent | Semantic choice | Expected behavior |
+| --- | --- | --- |
+| Open a document | Link with a real destination | Browser history, modified clicks and open-in-new-tab |
+| Save the current form | Submit button | Native form submission and validation path |
+| Show or hide a region | Button with expanded state | Activation updates the named region |
+| Keep a setting on or off | Appropriate toggle control | Persistent value exposed separately from focus |
+
+A large promotional action can still be a link when it navigates. An action can be visually quiet while remaining a button. Styling does not change the semantic choice. A disabled-looking destination that remains clickable is a mismatch between appearance and behavior.
+
 ## Verify
 
 Activate with keyboard and pointer, submit through the form's native mechanism, and retry after failure. Check long labels, focus rings, busy transitions, disabled behavior and first-touch discoverability. Master UI implementations: [Button](https://ui.master.co/components/button) and [Link](https://ui.master.co/components/link). Read their current contracts for supported classes and attributes.

@@ -20,6 +20,14 @@ On narrow screens, prioritize necessary columns, allow deliberate horizontal scr
 
 For charts, provide a textual summary and an accessible way to inspect important values. Color differences should have labels, shape or pattern support.
 
+## Choose the interaction model
+
+An ordinary table supports reading shared attributes and can contain links or controls in cells. A grid introduces a composite keyboard model for cell-level work. Choose that extra complexity for a real editing or navigation need, not because the rows look like a spreadsheet.
+
+Sort state belongs to the relevant header; selected state belongs to the chosen record. Keep stable identities through both. Explain whether a count describes all records, filtered records or selected records. A summary outside a filtered region may intentionally retain global totals, but must say so.
+
+For chart choices, scales and uncertainty, read [data visualization](../foundations/data-visualization.md). For selecting across results and retrying a partial operation, read [collections](../patterns/collections.md).
+
 ## Verify
 
 Test long names, large numbers, missing data, empty results, sorting, focus and narrow layouts. Check actual number alignment in the loaded font. Master UI includes [Table](https://ui.master.co/components/table), [List](https://ui.master.co/components/list) and [Avatar](https://ui.master.co/components/avatar); application data semantics remain the consumer's responsibility.

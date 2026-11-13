@@ -18,6 +18,14 @@ Do not disable the only submit action without explaining what remains. Allow the
 
 Show a clear result and the next useful destination. If a save is partial, state which parts succeeded. If leaving would discard unsaved work, offer an explicit choice at that boundary; do not interrupt every navigation when there is nothing to lose.
 
+## Carry a draft through the flow
+
+Model entry, review, submitting, failed and completed as distinct states. Going Back from review returns to the same draft. Retry uses the retained values, while completion identifies a confirmed result. Editing after completion starts a new draft rather than silently changing the submitted record.
+
+A review step is useful when consequences or multiple sections warrant checking. It is unnecessary friction for a trivial one-field task. If a flow has steps, make their names meaningful and show which are complete without claiming success merely because a panel was opened.
+
+If a session expires or the network becomes unavailable, state whether work is local, queued or confirmed. Do not clear values on a failed request. A server-side field error belongs to its field even if the person is currently on review; provide a clear route to correction. See [access](access.md) and [editing](editing.md).
+
 ## Acceptance scenario
 
 Enter data with autofill and keyboard, submit with two invalid fields, correct one, simulate a failed request, retry and complete. Confirm values survive, focus remains logical, messages are announced once and the final state is unambiguous. See [fields](../components/forms.md) and [feedback](../components/feedback.md).

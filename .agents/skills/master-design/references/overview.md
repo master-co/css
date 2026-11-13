@@ -15,6 +15,14 @@ Master Design is a practical guide to building web interfaces that are clear, ad
 
 ## Principles before polish
 
+Choose a reading path for the work:
+
+- **Design a page:** establish its [purpose](principles.md), [composition](foundations/layout.md), [words](foundations/content.md), [type](foundations/typography.md) and [responsive behavior](patterns/responsive.md). Use [content discovery](studies/reading.md) to review the whole journey.
+- **Complete a flow:** choose [controls](components/forms.md), define [state and recovery](patterns/async.md), and check [saving](patterns/editing.md), [access](patterns/access.md) and [notifications](patterns/notifications.md) where they apply. Walk the [form service](studies/service.md) or [workspace](studies/workspace.md) acceptance scenario.
+- **Review an existing interface:** identify an observable failure, preserve its brand and implementation conventions, then inspect [accessibility](accessibility.md), the relevant craft mechanism and [evidence](evidence.md). Check the full task after the local correction.
+
+Foundations explain relationships, components help choose an interaction, patterns connect a complete task, and craft examines the mechanism closely. They are different levels of the same decision rather than sequential stages that must all be read for every change.
+
 A useful interface lets people recognize the next action, understand the current state and recover when something goes wrong. Its typography, spacing, color and motion make those relationships easier to understand. [Explore the principles](principles.md).
 
 ## Shared foundations, deliberate choices

@@ -23,3 +23,13 @@ Separate the canvas, specimen layout, painted boundaries and annotations. A vali
 Use natural sizing for variable content, and justify any fixed height against the longest state. Compare matching text starts and content coordinates when the named variable is only grouping or emphasis. A useful negative check deliberately overfills the specimen or shifts a group boundary and confirms that the validator catches it. Passing geometry checks still needs visual review of balance and hierarchy.
 
 Preserve a known-good baseline and a versioned output manifest. Inspect each exported figure at its actual display size, native specimen size and enlargement where relevant, and in the article context. Do not infer mobile legibility from the full-resolution canvas. These practices do not prescribe one canvas size, brand or visual style for other projects.
+
+## Verify a complete task
+
+A local visual correction can change a wider interaction. After adjusting a field or action, complete entry, validation, failure, retry and exit. After changing a row, test sorting, selection and removal of the focused item. Keep the result's meaning aligned with the rendered state.
+
+Separate automated detection from human review. A bounds check can catch an overlapping label; it cannot establish that the grouping teaches the intended relationship. A contrast check cannot establish a useful error explanation. Record which claim each check supports and which remain unverified.
+
+## Check portability of the judgment
+
+Apply the same diagnosis to an editorial page, a strongly branded service and a dense workspace. Preserve their fonts, materials and density while correcting the observable problem. If the proposed improvement requires all three to adopt the same palette or radius, it is probably a style prescription rather than a transferable rule.

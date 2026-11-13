@@ -55,3 +55,11 @@ Display-only avatars need no tabindex. Give names once through a group label or 
 Compare spaced versus stacked arrangement with image inset and separator fixed, then compare image-inset presence with the same stack and separator. A separate live toggle compares separator presence while other choices stay fixed. Use actual photo content, not only initials. Save native pixels separately from magnified geometry. Across relevant engines/densities, check central image pixels and crop preservation, visible edge differences, last-on-top order, RTL centers, host joins, fallback, exact overflow counts and narrow/focus behavior. Record renderer differences rather than treating a support query as proof of visible paint.
 
 [Images](images.md) covers general image finishing. This reference does not impose the example's dimensions or palette on other brands.
+
+## Keep people reachable
+
+Overlap communicates a compact group, but it can hide both identity and targets. If each avatar opens a person, inspect the actual exposed clickable region and keyboard order. A single named group action with a complete participant list can be more useful than several tiny overlapping targets.
+
+The overflow label should explain the remaining count and open the relevant people when interactive. Keep the count derived from the same collection as the visible portraits. Loading failures must retain a useful identity fallback and must not alter which person an existing target opens.
+
+Compare narrow and long-name states with the same people. Test touch, focus on covered edges, missing portraits and an empty group. Preserve the original study's specimen dimensions as evidence rather than turning them into a universal capacity.
