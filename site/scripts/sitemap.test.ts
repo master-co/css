@@ -15,5 +15,5 @@ test('sitemap bytes do not depend on the order in which pages and locales were d
         'https://css.master.co/tw/a?x=1&amp;y=2', 'https://css.master.co/z', 'https://css.master.co/ja/z'
     ])
     assert.equal(xml.match(/hreflang="x-default" href="https:\/\/css\.master\.co\/z"/g)?.length, 2)
-    assert.ok(!xml.includes('hreflang="x-default" href="https://css.master.co/tw/'))
+    assert.ok(!xml.includes('hreflang="zh-TW"'))
 })

@@ -4,8 +4,8 @@ import '@master/css-language-service/shiki.css'
 import '@master/internal-site/home/design.css'
 import '@master/internal-site/home/home.css'
 import DocHeader from '@master/internal-site/components/DocHeader.svelte'
+import { createPageMetadata } from '@master/internal-site/factories/create-page'
 import dictionaries from '~/site/dictionaries'
-import { createTranslation } from '@master/internal-site/utils/i18n'
 import AgentsSection from './components/AgentsSection.astro'
 import BenchmarkSection from './components/BenchmarkSection.astro'
 import CTASection from './components/CTASection.astro'
@@ -21,16 +21,22 @@ import WorkflowSection from './components/WorkflowSection.astro'
 
 export const metadata = {
   title: { absolute: 'Master CSS - A markup-driven CSS orchestration language for developers and AI agents' },
-  description: 'Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.'
+  description: 'Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.',
+  openGraph: { title: 'Master CSS' },
+  cover: { src: '/brand/v2/social/png/master-css-og.png', alt: 'Master CSS', width: 1200, height: 630 }
 }
 
-/** Localized pages keep the same title and description in their own language. */
-export async function generateMetadata({ params }: { params: { locale: string } }) {
-  const $ = await createTranslation(params.locale, dictionaries)
-  return { title: { absolute: $(metadata.title.absolute) }, description: $(metadata.description) }
+export const generateMetadata = createPageMetadata(metadata, dictionaries)
+
+const website = Astro.props.params.locale === 'en' && {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Master CSS',
+  url: new URL('/', Astro.site).href
 }
 ---
 
+{website && <script is:inline type="application/ld+json" set:html={JSON.stringify(website).replace(/</g, '\\u003c')} />}
 <DocHeader client:load class="home-header" stickable />
 <main class="overflow-clip home-page">
   <HeroSection />

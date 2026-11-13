@@ -21,6 +21,7 @@ const inventory = files(out)
 const html = inventory.filter(file => file.endsWith('.html'))
 const routeOf = file => '/' + path.relative(out, file).split(path.sep).join('/').replace(/\.html$/, '').replace(/(^|\/)index$/, '')
 const documents = new Map()
+const indexable = new Map()
 const redirectText = readFileSync(path.join(out, '_redirects'), 'utf8')
 const redirects = redirectText.split('\n').filter(line => line && !line.startsWith('#')).map(line => line.trim().split(/\s+/))
 const redirectFor = target => {
@@ -66,13 +67,23 @@ const check = async (name, operation) => {
 for (const file of html) {
   const nodes = []
   const visit = node => { if (node.tagName) nodes.push({ tag: node.tagName, ...Object.fromEntries(node.attrs.map(({ name, value }) => [name, value])) }); for (const child of node.childNodes ?? []) visit(child) }
-  visit(parse(readFileSync(file, 'utf8')))
-  documents.set(file, { nodes, ids: nodes.filter(node => node.id).map(node => node.id) })
+  const document = parse(readFileSync(file, 'utf8'))
+  visit(document)
+  const root = document.childNodes.find(node => node.tagName === 'html')
+  const headNodes = root?.childNodes.find(node => node.tagName === 'head')?.childNodes ?? []
+  const bodyNodes = root?.childNodes.find(node => node.tagName === 'body')?.childNodes ?? []
+  const structuredData = [...headNodes, ...bodyNodes].filter(node =>
+    node.tagName === 'script' && node.attrs.some(attr => attr.name === 'type' && attr.value === 'application/ld+json'))
+    .map(node => node.childNodes[0]?.value)
+  const metadata = headNodes.filter(node => node.tagName === 'meta' || node.tagName === 'link').map(node =>
+    ({ tag: node.tagName, ...Object.fromEntries(node.attrs.map(({ name, value }) => [name, value])) }))
+  const title = headNodes.find(node => node.tagName === 'title')?.childNodes[0]?.value
+  documents.set(file, { nodes, ids: nodes.filter(node => node.id).map(node => node.id), metadata, title, structuredData })
 }
 report.pages = html.length
 report.buildDigest = createHash('sha256').update(inventory.sort().map(file => `${path.relative(out, file)}:${createHash('sha256').update(readFileSync(file)).digest('hex')}`).join('\n')).digest('hex')
 await check('built route inventory', () => assert.ok(html.length > 0, 'production HTML exists'))
-for (const [file, { nodes, ids }] of documents) await check(routeOf(file), () => {
+for (const [file, { nodes, ids, metadata, title, structuredData }] of documents) await check(routeOf(file), () => {
   const route = routeOf(file)
   assert.equal(new Set(ids).size, ids.length, 'document IDs are unique')
   if (/^\/(?:(?:ja|tw|ko|cn)\/)?reference(?:\/|$)/.test(route)) {
@@ -80,13 +91,39 @@ for (const [file, { nodes, ids }] of documents) await check(routeOf(file), () =>
     assert.equal(main.length, 1, 'Reference has one main landmark')
     assert.ok(main[0].class?.split(/\s+/).includes('reference-document'), 'Reference main retains reference-document styles in every locale')
   }
-  const canonical = nodes.filter(node => node.tag === 'link' && node.rel === 'canonical')
-  if (/^\/(?:(?:ja|tw|ko|cn)\/)?404$/.test(route)) {
-    assert.ok(nodes.some(node => node.tag === 'meta' && node.name === 'robots' && node.content === 'noindex'), '404 stays out of search indexes')
-    assert.equal(canonical.length, 0, '404 does not advertise an indexable canonical URL')
+  const canonical = metadata.filter(node => node.tag === 'link' && node.rel === 'canonical')
+  const alternateLinks = metadata.filter(node => node.rel === 'alternate' && node.hreflang)
+  const noindex = metadata.some(node => node.name === 'robots' && /\bnoindex\b/i.test(node.content))
+  if (/^\/(?:(?:ja|tw|ko|cn)\/)?404$/.test(route) || route.startsWith('/examples/')) {
+    assert.ok(noindex, '404 and embedded examples stay out of search indexes')
+    assert.equal(canonical.length, 0, 'noindex pages omit the canonical URL')
+    assert.equal(alternateLinks.length, 0, 'noindex pages omit hreflang')
   } else {
+    assert.ok(!noindex, 'public pages are indexable')
     assert.equal(canonical.length, 1, 'one canonical URL')
     assert.equal(canonical[0].href, new URL(route, origin).href, 'canonical matches the build origin and route')
+    indexable.set(canonical[0].href, alternateLinks.map(({ hreflang, href }) => [hreflang, href]))
+    assert.ok(title?.trim(), 'page has a title')
+    const meta = key => {
+      const tags = metadata.filter(node => node.name === key || node.property === key)
+      assert.equal(tags.length, 1, `one ${key} tag`)
+      assert.ok(tags[0].content?.trim(), `${key} has content`)
+      return tags[0].content
+    }
+    for (const key of ['description', 'og:title', 'og:description', 'og:site_name', 'og:type', 'og:locale', 'twitter:title', 'twitter:description', 'twitter:site']) meta(key)
+    assert.equal(meta('og:url'), canonical[0].href, 'Open Graph URL matches the canonical URL')
+    assert.equal(meta('twitter:card'), 'summary_large_image')
+    for (const key of ['og:image', 'twitter:image']) {
+      const image = new URL(meta(key))
+      assert.equal(image.origin, origin, `${key} uses the build origin`)
+      assert.match(image.pathname, /\.(?:png|jpe?g|webp)$/i, `${key} uses a supported static image`)
+      assert.ok(findFile(image.pathname), `${key} image exists in the build`)
+    }
+    if (route === '/') {
+      const website = structuredData.map(data => JSON.parse(data)).find(data => data['@type'] === 'WebSite')
+      assert.equal(website?.name, 'Master CSS', 'homepage declares the site name')
+      assert.equal(website.url, canonical[0].href, 'WebSite URL matches the homepage canonical URL')
+    }
   }
   for (const node of nodes) for (const value of [node.href, node.src]) {
     if (!value || /^(?:data:|mailto:|tel:|javascript:)/.test(value)) continue
@@ -114,9 +151,21 @@ await check('redirect destinations', () => {
 })
 await check('sitemap and portable origins', () => {
   const sitemap = readFileSync(path.join(out, 'sitemap.xml'), 'utf8')
-  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => new URL(match[1]))
-  assert.ok(locations.length > 0)
-  for (const location of locations) { assert.equal(location.origin, origin); assert.ok(findFile(location.pathname), location.href) }
+  const robots = readFileSync(path.join(out, 'robots.txt'), 'utf8')
+  assert.ok(robots.split(/\r?\n/).includes(`Sitemap: ${origin}/sitemap.xml`), 'robots.txt advertises the build sitemap')
+  const locations = []
+  for (const [, entry] of sitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)) {
+    const location = entry.match(/<loc>([^<]+)<\/loc>/)?.[1]
+    assert.ok(location && indexable.has(location), `sitemap URL is indexable: ${location}`)
+    locations.push(location)
+    const htmlAlternates = indexable.get(location)
+    const xmlAlternates = [...entry.matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(match => match.slice(1))
+    assert.deepEqual(xmlAlternates.sort(), htmlAlternates.sort(), `sitemap and HTML agree on hreflang for ${location}`)
+    for (const [, href] of htmlAlternates) {
+      assert.deepEqual(indexable.get(href)?.toSorted(), htmlAlternates, `hreflang is reciprocal for ${location} and ${href}`)
+    }
+  }
+  assert.deepEqual(locations.sort(), [...indexable.keys()].sort(), 'sitemap lists each indexable canonical URL once')
   for (const name of ['llms.txt', 'llms-full.txt']) {
     const text = readFileSync(path.join(out, name), 'utf8')
     assert.ok(text.includes(origin + '/reference/'), `${name}: absolute current reference URLs`)

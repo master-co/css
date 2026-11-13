@@ -1,6 +1,7 @@
 ---
 type Props = import('@master/internal-site/types/Props').Props
 import Page from '@master/internal-site/factories/Page.astro'
+import { createPageMetadata } from '@master/internal-site/factories/create-page'
 import Layout from '~/site/layouts/Doc.astro'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
@@ -10,12 +11,15 @@ import { referenceSectionCopy } from '~/site/reference/navigation-data'
 import { referenceText } from '~/site/reference/copy'
 import ReferenceIndex from '~/site/reference/Index.svelte'
 
-export function generateMetadata({ params }: Props) {
-  const locale = params.locale
-  return { ...metadata, title: referenceText('overview', 'title', locale), description: referenceText('overview', 'description', locale), alternates: { canonical: locale === 'en' ? '/reference' : `/${locale}/reference` } }
+export function overviewMetadata(locale: string) {
+  return { ...metadata, title: referenceText('overview', 'title', locale), description: referenceText('overview', 'description', locale) }
+}
+
+export function generateMetadata(props: Props) {
+  return createPageMetadata(overviewMetadata(props.params.locale), dictionaries)(props)
 }
 const locale = Astro.props.params.locale
-const pageMetadata = generateMetadata(Astro.props)
+const pageMetadata = overviewMetadata(locale)
 const documents = routeIndexForLocale(locale)
 const sections = referenceSectionCopy(locale)
 const related = { href: '/guide', title: referenceText('overview', 'guide-title', locale), description: referenceText('overview', 'guide-description', locale) }

@@ -10,6 +10,7 @@ export function renderSitemap(groups: ReadonlyMap<string, ReadonlyMap<string, st
             const url = variants.get(locale)
             return url === undefined ? [] : [[locale, url] as const]
         })
+        if (translations.length === 1) return [`  <url>\n    <loc>${escape(translations[0][1])}</loc>\n  </url>`]
         const alternates = translations.map(([locale, url]) => `    <xhtml:link rel="alternate" hreflang="${languageOf(locale)}" href="${escape(url)}"/>`)
         const english = variants.get('en')
         if (english) alternates.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(english)}"/>`)
