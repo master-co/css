@@ -13,6 +13,7 @@ import { stylesheetOutputMap } from './output-map'
 import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSManifestReference, MasterCSSManifestSource } from '@master/css-binding/compiler/node'
 import type { CompileCSSResult } from '../contracts'
 import type { TransformLocalStylesheetOptions, CompileStylesheetOptions, ScannerState, StylesheetSources, StylesheetSource, CreateExtractedCSSResult } from './types'
 
@@ -75,14 +76,21 @@ function prepareDelivery(graph: PreparedCSSImportGraph, delivery: StylesheetDeli
   return { urls, resourceURLs, resources: [...resources.values()] }
 }
 
+/** Graph compilation options; manifests may stay referenced in the binding. */
+type GraphOptions = Omit<CompileStylesheetOptions, 'baseManifest'> & {
+  readonly baseManifest?: MasterCSSManifestSource
+  /** Compile only for the manifests, dependencies and warnings a referencing graph reads. */
+  readonly referenceContext?: boolean
+}
+
 interface GraphReferenceContext {
-  manifest?: MasterCSSManifest
+  manifest?: MasterCSSManifestReference
   dependencies: string[]
   warnings: string[]
   resources: StylesheetResourceAsset[]
 }
 
-function prepareGraphReferences(graph: PreparedCSSImportGraph, options: CompileStylesheetOptions, referenceStack: readonly string[] = [], owners: Record<string, string> = {}, metadataOnly = false): GraphReferenceContext {
+function prepareGraphReferences(graph: PreparedCSSImportGraph, options: GraphOptions, referenceStack: readonly string[] = [], owners: Record<string, string> = {}, metadataOnly = false): GraphReferenceContext {
   const delivery = options.delivery!
   const references = [...referenceFileInputs(options.referenceFiles), ...Object.entries(graph.files).flatMap(([file, source]) => {
     // Keep parser diagnostics attached to the supplied source identity; only the
@@ -101,7 +109,7 @@ function prepareGraphReferences(graph: PreparedCSSImportGraph, options: CompileS
     const chain = [...stack, ...(item.file && !item.file.startsWith('\0') ? [existsSync(item.file) ? realpathSync(item.file) : resolve(item.file)] : [])]
     if (chain.includes(realpathSync(file))) throw new Error(`Circular CSS reference: ${[...stack, file].join(' -> ')}`)
     const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: delivery.resolveNodePackageImports }, analyzeCSSDependencies)
-    const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest }, undefined, chain, {}, {}, [], metadataOnly)
+    const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest, referenceContext: true }, undefined, chain, {}, {}, [], metadataOnly)
     reference.manifest = compiled.manifest
     reference.dependencies.push(...compiled.directives.dependencies)
     reference.warnings.push(...compiled.directives.warnings)
@@ -110,8 +118,8 @@ function prepareGraphReferences(graph: PreparedCSSImportGraph, options: CompileS
   return reference
 }
 
-function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetOptions, classes?: readonly string[], referenceStack: readonly string[] = [], owners: Record<string, string> = {}, classesByStylesheet: Record<string, string[] | null> = {}, nativeStylesheets?: string[], metadataOnly = false, inlineImports = false, hostImports: Record<string, string[]> = {}, preparedReference?: GraphReferenceContext): {
-  manifest: MasterCSSManifest, resolutionManifest: MasterCSSManifest, directives: CompileCSSResult, resources: StylesheetResourceAsset[],
+function compileGraph(graph: PreparedCSSImportGraph, options: GraphOptions, classes?: readonly string[], referenceStack: readonly string[] = [], owners: Record<string, string> = {}, classesByStylesheet: Record<string, string[] | null> = {}, nativeStylesheets?: string[], metadataOnly = false, inlineImports = false, hostImports: Record<string, string[]> = {}, preparedReference?: GraphReferenceContext): {
+  manifest: MasterCSSManifestReference, resolutionManifest: MasterCSSManifestReference, directives: CompileCSSResult, resources: StylesheetResourceAsset[],
   stylesheets: { id: string, href: string, css: string, nativeCSS: string, generatedCSS: string, outputMappings: CSSOutputMapping[] }[]
 } {
   const delivery = options.delivery!
@@ -123,7 +131,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   prepared.resources.push(...reference.resources)
   const binding = createCompilerBindingSessionSync()
   try {
-    const result = binding.compileCSSStylesheetGraph({
+    const result = binding.compileCSSStylesheetGraphWithReferences({
       graph,
       pruneNativeStylesheets: Object.keys(graph.files).filter(file => {
         const policy = collectStylesheetDirectives(graph.files[file], owners[file] ?? file, options.projectDir)
@@ -138,6 +146,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
       nativeStylesheets,
       baseManifest: options.baseManifest,
       resolutionManifest: reference.manifest,
+      ...(options.referenceContext ? { referenceContext: true } : {}),
       options: { preserveNativeCSS: options.preserveNativeCSS ?? true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(classes ? { classes: [...classes] } : {}) }
     })
@@ -145,7 +154,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
     directives.extractionPolicy = mergeCSSDirectiveExtractionPolicy(directives.extractionPolicy)
     directives.dependencies = [...new Set([...directives.dependencies.map(file => owners[file] ?? file), ...reference.dependencies, ...prepared.resources.map(({ file }) => file)])]
     directives.warnings = [...new Set([...directives.warnings, ...reference.warnings])]
-    return { ...result, manifest: result.manifest as MasterCSSManifest, directives, resources: [...new Map(prepared.resources.map(asset => [asset.file, asset])).values()] }
+    return { ...result, directives, resources: [...new Map(prepared.resources.map(asset => [asset.file, asset])).values()] }
   } catch (error) {
     if (error instanceof MasterCSSError && error.diagnostics.some(diagnostic => diagnostic.source && owners[diagnostic.source])) {
       throw new MasterCSSError({ ...error.payload, diagnostics: error.diagnostics.map(diagnostic => ({
@@ -158,7 +167,7 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
 }
 
 /** Compile native resource usage without flattening imports or reading host-owned assets. */
-export function compileStylesheetMetadata(file: string, source: string, options: CompileStylesheetOptions) {
+export function compileStylesheetMetadata(file: string, source: string, options: GraphOptions) {
   const graph = prepareCSSImportGraph(file, source, { projectDir: options.projectDir }, analyzeCSSDependencies)
   if (!Object.values(graph.files).some(text => inspectCSS(text).hasMasterEntry)) return
   return compileGraph(graph, {
@@ -308,7 +317,7 @@ export function composeDeliveredStylesheets(
     throw new MasterCSSError({ code: 'CSS_IMPORT_ERROR', domain: 'compiler', message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.' })
   }
   const rendered = renderCompiledManifestCSS({
-    manifest: result.manifest as MasterCSSManifest,
+    manifest: result.manifest,
     nativeCSS: result.stylesheets.map(asset => asset.css),
     classNames: generatedClasses,
     includeGeneratedCSS: options.includeGeneratedCSS

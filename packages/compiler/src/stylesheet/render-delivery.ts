@@ -27,7 +27,7 @@ export async function compileRenderedDelivery(id: string, source: string, option
       resources: result.resources,
       sourceMap,
       css, nativeCSS, generatedCSS: generated.generatedCSS,
-      emittedGlobals: generated.emittedGlobals, manifest: result.manifest, renderedCSS
+      emittedGlobals: generated.emittedGlobals, manifest: result.manifest.manifest(), renderedCSS
     }
   } catch (error) {
     throw mapStylesheetError(error, id, { baseFile: options.delivery?.baseFile ?? options.baseFile, sourceMap: options.delivery?.sourceMap ?? options.sourceMap }, source)

@@ -95,6 +95,13 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
   prepareCSSStylesheetBundle(request: MasterCSSPrepareStylesheetBundleRequest): MasterCSSStylesheetBundle
   renderCSSStylesheetBundle(request: MasterCSSRenderStylesheetBundleRequest): readonly MasterCSSStylesheetAsset[]
   compileCSSStylesheetGraph(request: MasterCSSCompileStylesheetGraphRequest): MasterCSSCompiledStylesheetGraph
+  /**
+   * `compileCSSStylesheetGraph` whose manifests stay in the binding: the request
+   * may pass references in place of manifests, and the result returns references.
+   */
+  compileCSSStylesheetGraphWithReferences(
+    request: import('./manifest-references').MasterCSSReferencedStylesheetGraphRequest
+  ): import('./manifest-references').MasterCSSReferencedStylesheetGraph
   createInspectionReport(input: MasterCSSDiagnosticsReportInput): MasterCSSInspectionReport
   renderClassNames(
     manifest: MasterCSSManifest,

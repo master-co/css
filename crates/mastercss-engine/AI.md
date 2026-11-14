@@ -13,6 +13,11 @@ encode and decode it, keeping the compact manifest JSON for `manifest_json`, and
 received encoding. `from_manifest` reuses the decoded `Program` of an identical
 manifest text (`program_cache.rs`): sessions share it as `Arc<Program>`, and the one
 in-place change, `rebuild` adding native animation variables, copies on write.
+`ManifestProgram` shares a compiled manifest with hosts that create sessions from it
+(`with_animation_variables` derives a manifest that differs only there).
+`ensure_hosted_stylesheets_resources` registers a page's stylesheets with at most one
+rebuild; `mastercss-render` defers registration until its state is read, because a
+rebuild per stylesheet re-registered all earlier ones.
 Both paths run `finish_program` for derived lookup state, so a host that starts from a
 manifest executes exactly what a browser receiving the program executes. Sessions take
 emitted globals as `EmittedGlobals` values; hosts that receive JSON use

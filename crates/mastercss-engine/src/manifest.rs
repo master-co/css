@@ -12,6 +12,16 @@ pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     }
 }
 
+/// The animation variables a program copies from `manifest`.
+pub(crate) fn animation_variables(manifest: &MasterCssManifest) -> HashMap<String, Vec<String>> {
+    manifest
+        .animation_variables
+        .iter()
+        .flatten()
+        .map(|(name, values)| (name.clone(), values.clone()))
+        .collect()
+}
+
 /// Validates a manifest and compiles it into the encoded part of a program; decoding
 /// derives the rest with [`finish_program`].
 pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, EngineError> {
@@ -75,12 +85,7 @@ pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, 
     let mut program = Program {
         theme: manifest.theme.clone().unwrap_or_default(),
         keyframes,
-        animation_variables: manifest
-            .animation_variables
-            .iter()
-            .flatten()
-            .map(|(name, values)| (name.clone(), values.clone()))
-            .collect(),
+        animation_variables: animation_variables(manifest),
         custom_media,
         custom_containers,
         mixins,

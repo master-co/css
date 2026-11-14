@@ -1,6 +1,6 @@
 import { MasterCSSError } from '@master/css-schema'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
-import { serializeSharedManifest } from './manifest-references'
+import { MasterCSSManifestReference, manifestOf, serializeSharedManifest } from './manifest-references'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
@@ -104,10 +104,14 @@ export function createNativeRenderSession(
   try {
     const loaded = loadNativeBinding(moduleOptions)
     if (!loaded) return
-    const session = new loaded.binding.RenderSession(
-      serializeSharedManifest(options.manifest, serializeMasterCSSManifest),
-      globalsJSON(options.emittedGlobals)
-    )
+    // A native reference executes the stored program without manifest JSON.
+    const handle = options.manifest instanceof MasterCSSManifestReference ? options.manifest.handle : undefined
+    const session = handle instanceof loaded.binding.ManifestHandle
+      ? loaded.binding.RenderSession.fromManifestHandle(handle, globalsJSON(options.emittedGlobals))
+      : new loaded.binding.RenderSession(
+        serializeSharedManifest(manifestOf(options.manifest), serializeMasterCSSManifest),
+        globalsJSON(options.emittedGlobals)
+      )
     let disposed = false
     const dispose = () => {
       if (disposed) return

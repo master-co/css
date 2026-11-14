@@ -37,8 +37,9 @@ interface MasterCSSCompilerWasmProviderSession {
   renderCSSStylesheetBundle(request: unknown): unknown
   compileCSSStylesheetGraph(request: unknown): unknown
   readonly manifestStore?: {
-    register(manifestJSON: string): string
-    json(key: string): string | undefined
+    register(manifestJSON: string): { readonly key: string, json(): string | undefined }
+    handle(key: string): { readonly key: string, json(): string | undefined }
+    readonly retains: boolean
   }
 }
 

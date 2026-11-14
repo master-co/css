@@ -22,6 +22,29 @@ pub struct CompileCssStylesheetGraphInput {
 pub fn compile_css_stylesheet_graph_input(
     input: &CompileCssStylesheetGraphInput,
 ) -> Result<CompiledCssStylesheetGraph, CompilerError> {
+    let mut result = compile_delivered_graph(input)?;
+    if input.request.reference_context {
+        result.stylesheets.clear();
+        let directives = &mut result.directives;
+        directives.notices.clear();
+        directives.definition_sources.clear();
+        directives.native_output = None;
+        directives.native_mappings.clear();
+        directives.manifest_input = Default::default();
+        directives.class_names.clear();
+        directives.native_class_names.clear();
+        directives.native_css.clear();
+        directives.css.clear();
+        directives.generated_css.clear();
+        directives.style_definitions = None;
+        directives.references = None;
+    }
+    Ok(result)
+}
+
+fn compile_delivered_graph(
+    input: &CompileCssStylesheetGraphInput,
+) -> Result<CompiledCssStylesheetGraph, CompilerError> {
     let mut result = compile_css_stylesheet_graph(&input.request)?;
     if input
         .host_imports

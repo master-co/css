@@ -1,7 +1,7 @@
 import { noticeDiagnostics } from './notices'
 /** @internal Node-only compiler and import-graph implementation. */
 import { createHash } from 'node:crypto'
-import { readFileSync, realpathSync } from 'node:fs'
+import { readFileSync, realpathSync, statSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { pureCSSCache } from './pure-css-cache'
@@ -162,14 +162,50 @@ export function analyzeCSSDependencies(source: string): CSSDependencyAnalysis {
   return pureCSSCache.run('dependencies', source, () => callCompilerBinding<CSSDependencyAnalysis>(() => nativeCompiler().analyzeCSSDependencies(source)))
 }
 
-export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
+interface MasterCSSPackageGraph {
+  entry: string
+  stamps: readonly (readonly [string, number, number])[]
+  graph: ResolvedCSSImportGraph
+  comparableFiles: ReadonlySet<string>
+}
+
+const masterCSSPackageGraphs = new Map<string, MasterCSSPackageGraph>()
+
+function fileStamp(file: string) {
+  const stats = statSync(file, { throwIfNoEntry: false })
+  return stats ? [stats.mtimeMs, stats.size] as const : [-1, -1] as const
+}
+
+/**
+ * Hosts ask for the installed `@master/css` graph for every stylesheet. Reuse it
+ * while its entry and every file it read are unchanged.
+ */
+function masterCSSPackageGraph(projectDir?: string): MasterCSSPackageGraph {
   const entry = resolveMasterCSSPackageEntryFile(MASTER_CSS_PACKAGE_ID, projectDir || process.cwd(), projectDir)
   if (!entry) {
     throw new Error(`Cannot resolve ${MASTER_CSS_PACKAGE_ID} CSS entry.`)
   }
-  return resolveCSSImportGraph(entry, {
-    projectDir
-  })
+  const key = projectDir ?? ''
+  const cached = masterCSSPackageGraphs.get(key)
+  if (cached?.entry === entry && cached.stamps.every(([file, mtimeMs, size]) => {
+    const [currentMtimeMs, currentSize] = fileStamp(file)
+    return currentMtimeMs === mtimeMs && currentSize === size
+  })) return cached
+  const files = new Set<string>([entry])
+  const graph = resolveCSSImportGraph(entry, { projectDir, onDependency: file => files.add(file) })
+  for (const dependency of graph.dependencies) files.add(dependency)
+  const resolved: MasterCSSPackageGraph = {
+    entry,
+    stamps: [...files].map(file => [file, ...fileStamp(file)] as const),
+    graph: Object.freeze({ ...graph, dependencies: Object.freeze([...graph.dependencies]) }) as ResolvedCSSImportGraph,
+    comparableFiles: new Set(graph.dependencies.map(resolveComparablePath))
+  }
+  masterCSSPackageGraphs.set(key, resolved)
+  return resolved
+}
+
+export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
+  return masterCSSPackageGraph(projectDir).graph
 }
 
 export function stripRequestSuffix(id: string) {
@@ -202,9 +238,7 @@ export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
   const filename = resolveComparablePath(stripRequest(id))
   if (extname(filename) !== '.css') return false
   try {
-    return resolveMasterCSSPackageImportGraph(projectDir).dependencies.some((dependency) => {
-      return resolveComparablePath(dependency) === filename
-    })
+    return masterCSSPackageGraph(projectDir).comparableFiles.has(filename)
   } catch {
     return false
   }

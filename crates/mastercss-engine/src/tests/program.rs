@@ -110,3 +110,21 @@ fn programs_from_other_versions_are_rejected() {
         Err(EngineError::InvalidProgram(_))
     ));
 }
+
+#[test]
+fn derived_animation_variables_compile_like_their_manifest() {
+    for (manifest, _) in program_manifests() {
+        let mut parsed = mastercss_schema::MasterCssManifest::parse(&manifest).unwrap();
+        let program = crate::ManifestProgram::compile(&parsed).unwrap();
+        let variables = parsed.animation_variables.get_or_insert_default();
+        variables.get_or_insert_default("derived-motion".into()).push("fade 1s".into());
+        variables.get_or_insert_default("derived-motion".into()).push("slide 2s".into());
+        let derived = program.with_animation_variables(&parsed);
+        let compiled = crate::ManifestProgram::compile(&parsed).unwrap();
+        assert!(
+            crate::program::encode(&derived.program()) == crate::program::encode(&compiled.program())
+        );
+        // The source program is shared and unchanged.
+        assert!(!program.program().animation_variables.contains_key("derived-motion"));
+    }
+}

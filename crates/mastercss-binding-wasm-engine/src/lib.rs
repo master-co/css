@@ -229,7 +229,7 @@ impl WasmRenderSession {
 
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
-        &self,
+        &mut self,
         class_names: Vec<String>,
     ) -> Result<String, JsValue> {
         render_value(
@@ -253,16 +253,16 @@ impl WasmRenderSession {
     }
 
     #[wasm_bindgen(js_name = emittedGlobals)]
-    pub fn emitted_globals(&self) -> Result<String, JsValue> {
+    pub fn emitted_globals(&mut self) -> Result<String, JsValue> {
         render_value(&self.inner.emitted_globals().map_err(js_error)?)
     }
 
-    pub fn snapshot(&self) -> Result<String, JsValue> {
+    pub fn snapshot(&mut self) -> Result<String, JsValue> {
         render_value(&self.inner.snapshot().map_err(js_error)?)
     }
 
     #[wasm_bindgen(js_name = snapshotForClasses)]
-    pub fn snapshot_for_classes(&self, class_names: Vec<String>) -> Result<String, JsValue> {
+    pub fn snapshot_for_classes(&mut self, class_names: Vec<String>) -> Result<String, JsValue> {
         render_value(
             &self
                 .inner

@@ -18,6 +18,7 @@ import {
 } from '../node-compiler'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSManifestSource } from '@master/css-binding/compiler/node'
 import { hasStylesheetResourceReferences, renderCompiledManifestCSS, type RenderCompiledManifestCSSResult } from './render'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import { SourcePolicy } from '@master/css-tooling/scanner/node'
@@ -385,7 +386,7 @@ export async function createStyleEntryEmittedGlobals(
   options: CreateStyleEntryEmittedGlobalsOptions
 ): Promise<CreateStyleEntryEmittedGlobalsResult> {
   const dependencies = new Set<string>()
-  let baseManifest = options.baseManifest
+  let baseManifest: MasterCSSManifestSource = options.baseManifest
   let emittedGlobals = createEmptyStyleEntryEmittedGlobals()
 
   for (const entry of [...new Set(entries)].sort()) {

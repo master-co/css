@@ -41,6 +41,51 @@ export function assertValidationOptions(options: object) {
   }
 }
 
+const VALIDATION_CACHE_CAPACITY = 256
+const validations = new Map<string, { readonly invalidSyntax: boolean, readonly declarations: readonly ReturnType<typeof validateRuleDeclarations>[number][] }>()
+
+/**
+ * The checks of one CSS text, which depend on nothing else. Hosts compile each
+ * stylesheet once per build environment and emit the same CSS each time.
+ */
+function checkCSS(css: string) {
+  let checked = validations.get(css)
+  if (checked) {
+    validations.delete(css)
+  } else {
+    checked = Object.freeze({
+      invalidSyntax: cssSyntaxStatus(css) === 'invalid',
+      declarations: Object.freeze(validateRuleDeclarations(css).filter(declaration => declaration.status === 'invalid' || declaration.status === 'unknown'))
+    })
+    if (validations.size >= VALIDATION_CACHE_CAPACITY) validations.delete(validations.keys().next().value!)
+  }
+  validations.set(css, checked)
+  return checked
+}
+
+/**
+ * Freezes `result` with its `diagnostics`. Without a diagnostic callback or
+ * strict validation nothing observes them as they are produced, so they are
+ * computed on first read: hosts that never read them, such as build plugins
+ * transforming each stylesheet, skip validating the output.
+ */
+export function withDiagnostics<T extends object>(
+  result: () => T,
+  diagnostics: () => readonly MasterCSSDiagnostic[],
+  options: Pick<MasterCSSCompileOptions, 'validation' | 'onDiagnostic'> = {}
+): Readonly<T & { readonly diagnostics: readonly MasterCSSDiagnostic[] }> {
+  if (options.onDiagnostic || options.validation === 'error') {
+    // Validation reports before the rest of the result, as it always has.
+    const reported = diagnostics()
+    return Object.freeze({ ...result(), diagnostics: reported })
+  }
+  let computed: readonly MasterCSSDiagnostic[] | undefined
+  return Object.freeze(Object.defineProperty({ ...result() }, 'diagnostics', {
+    enumerable: true,
+    get: () => computed ??= diagnostics()
+  }) as T & { readonly diagnostics: readonly MasterCSSDiagnostic[] })
+}
+
 /** Validate the complete emission before a host can publish any of its assets. */
 export function validateCompiledCSS(
   sources: readonly ValidationSource[],
@@ -50,13 +95,13 @@ export function validateCompiledCSS(
   const diagnostics: MasterCSSDiagnostic[] = []
   for (const input of sources) {
     const { css, source } = input
-    if (cssSyntaxStatus(css) === 'invalid') {
+    const checked = checkCSS(css)
+    if (checked.invalidSyntax) {
       const diagnostic: MasterCSSDiagnostic = Object.freeze({ version: MASTER_CSS_DIAGNOSTIC_VERSION, code: 'CSS_PARSE_ERROR', domain: 'compiler', phase: 'css-syntax', severity: 'error', message: 'Invalid CSS token structure in compiled output', source: source ? `${source}#generated` : '<generated-css>', notes: [`Checked with ${CSS_SYNTAX_CHECK.name} ${CSS_SYNTAX_CHECK.version}; no authored source offset is available.`] })
       diagnostics.push(diagnostic)
       options.onDiagnostic?.(diagnostic)
     }
-    for (const declaration of validateRuleDeclarations(css)) {
-      if (declaration.status !== 'invalid' && declaration.status !== 'unknown') continue
+    for (const declaration of checked.declarations) {
       const authored = declaration.range ? origin(input, declaration.range) : undefined
       const diagnostic: MasterCSSDiagnostic = Object.freeze({
         version: MASTER_CSS_DIAGNOSTIC_VERSION,

@@ -13,8 +13,9 @@ and compiler report IR.
 - `lower/`: public lowering API, resolution, merge, render, and focused tests.
 - `pattern.rs`: pattern semantics shared by compiler domains.
 - `graph_memo.rs`: process-wide reuse of identical JSON graph requests for the native and Wasm bindings.
-- `manifest_store.rs`: content-addressed manifests that graph requests pass and return as `{"$ref": key}` (`manifestRefs`), so per-stylesheet requests stop carrying the project and reference manifests. Keys name immutable entries; an evicted key fails with `UNKNOWN_MANIFEST_REFERENCE` and the host resends the manifest.
-- `lower/memo.rs`: reuse of a lowering (both manifests plus the resolution engine) onto stored manifests for an identical manifest input; most local stylesheets declare none.
+- `manifest_store.rs`: manifests that graph requests pass and return as `{"$ref": key}` (`manifestRefs`), so per-stylesheet requests stop carrying the project and reference manifests. Registered text keys by content; a compiled manifest gets a fresh key, serializes only when read and carries the `ManifestProgram` its lowering already built. Entries are immutable; hosts keep them alive by holding them (the native `ManifestHandle`), and an unheld, dropped key fails with `UNKNOWN_MANIFEST_REFERENCE` so the host resends the manifest.
+- `lower/memo.rs`: reuse of a lowering (both manifests plus the resolution engine) onto stored manifests for an identical manifest input; most local stylesheets declare none. A resolution manifest that only gained native animation variables derives its program instead of compiling it.
+- `referenceContext` requests compile a graph only for its manifests, dependencies, warnings and extraction policy; a referencing graph never reads its stylesheets or directive output.
 
 ## Guardrails
 

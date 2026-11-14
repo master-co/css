@@ -711,7 +711,10 @@ pub use native_output::{NativeCssOutput, NativeCssOutputSlot};
 mod graph_inline;
 mod graph_memo;
 mod manifest_store;
-pub use manifest_store::{UNKNOWN_MANIFEST_REFERENCE, manifest_json, register_manifest_json};
+pub use manifest_store::{
+    StoredManifest, UNKNOWN_MANIFEST_REFERENCE, manifest_json, register_manifest,
+    register_manifest_json, stored_manifest,
+};
 mod native_style;
 mod output_edits;
 pub use graph_inline::{CompileCssStylesheetGraphInput, compile_css_stylesheet_graph_input};

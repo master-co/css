@@ -112,13 +112,22 @@ impl EngineSession {
     /// Variables `native_css` provides that the host has not reported yet: those it
     /// declares on every theme path that defines them.
     fn hosted_variables(&self, native_css: &str) -> mastercss_schema::NameCounts {
+        self.hosted_variables_after(native_css, &self.emitted_globals)
+    }
+
+    /// The variables `native_css` hosts once `emitted_globals` are emitted.
+    fn hosted_variables_after(
+        &self,
+        native_css: &str,
+        emitted_globals: &EmittedGlobals,
+    ) -> mastercss_schema::NameCounts {
         let mut hosted = mastercss_schema::NameCounts::default();
         let declared = declared_paths(native_css);
         if !declared.is_empty() {
             let mut paths = HashMap::default();
             theme_paths(&self.compiled.theme, &mut Vec::new(), &mut paths);
             for (name, chains) in &declared {
-                if self.emitted_globals.variable_count(name) == 0
+                if emitted_globals.variable_count(name) == 0
                     && self.compiled.compiled_variables.contains_key(name)
                     && paths
                         .get(name)
@@ -147,6 +156,50 @@ impl EngineSession {
         emitted_globals.variables.extend(hosted);
         self.stylesheet_sources.push(native_css.into());
         self.rebuild(emitted_globals)
+    }
+
+    /// [`ensure_hosted_stylesheet_resources`](Self::ensure_hosted_stylesheet_resources)
+    /// for each stylesheet in order, ending in the same state. A stylesheet that
+    /// hosts variables or assigns new animation variables rebuilds the session,
+    /// and a rebuild registers every stylesheet again from the start, so one
+    /// rebuild after all of them replaces a rebuild after each: a page of N such
+    /// stylesheets registered N²/2 of them.
+    pub fn ensure_hosted_stylesheets_resources<S: AsRef<str>>(
+        &mut self,
+        stylesheets: &[S],
+    ) -> Result<(), EngineError> {
+        self.ensure_active()?;
+        if let [stylesheet] = stylesheets {
+            return self
+                .ensure_hosted_stylesheet_resources(stylesheet.as_ref())
+                .map(|_| ());
+        }
+        // Hosting depends on the variables earlier stylesheets host; animation
+        // variables only grow, so one new before a rebuild is new from the start.
+        let mut emitted_globals = self.emitted_globals.clone();
+        let mut rebuild = false;
+        for stylesheet in stylesheets {
+            let stylesheet = stylesheet.as_ref();
+            let hosted = self.hosted_variables_after(stylesheet, &emitted_globals);
+            if !hosted.is_empty() {
+                emitted_globals.variables.extend(hosted);
+                rebuild = true;
+            } else if !stylesheet.is_empty() && self.declares_animation_variables(stylesheet) {
+                rebuild = true;
+            }
+        }
+        if !rebuild {
+            for stylesheet in stylesheets {
+                self.ensure_stylesheet_resources(stylesheet.as_ref())?;
+            }
+            return Ok(());
+        }
+        self.stylesheet_sources.extend(
+            stylesheets
+                .iter()
+                .map(|stylesheet| stylesheet.as_ref().to_owned()),
+        );
+        self.rebuild(emitted_globals).map(|_| ())
     }
 }
 

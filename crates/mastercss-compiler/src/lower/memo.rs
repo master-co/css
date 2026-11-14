@@ -21,7 +21,7 @@ use crate::manifest_store::{StoredManifest, store_manifest};
 
 /// Distinct lowerings a host alternates between; stylesheets with definitions of
 /// their own each have one, and repeat only when compiled again.
-const MAX_ENTRIES: usize = 16;
+const MAX_ENTRIES: usize = 8;
 
 /// Manifests lowered onto stored manifests, with the engine of the resolution
 /// manifest and, once a caller needs them, their stored forms.
@@ -42,21 +42,41 @@ impl LoweredContext {
     /// The delivered manifest, stored; an unchanged input keeps its reference.
     pub(crate) fn stored_manifest(&self) -> Arc<StoredManifest> {
         self.manifest_entry
-            .get_or_init(|| store_manifest(&self.lowered.manifest, &self.candidates()))
+            .get_or_init(|| store_manifest(&self.lowered.manifest, &self.candidates(), None))
             .clone()
     }
 
     /// The resolution manifest, stored; an unchanged input keeps its reference.
     pub(crate) fn stored_resolution_manifest(&self) -> Arc<StoredManifest> {
         self.resolution_entry
-            .get_or_init(|| store_manifest(&self.lowered.resolution_manifest, &self.candidates()))
+            .get_or_init(|| {
+                // The engine executes exactly this manifest.
+                store_manifest(
+                    &self.lowered.resolution_manifest,
+                    &self.candidates(),
+                    Some(&|| self.engine.manifest_program()),
+                )
+            })
             .clone()
     }
 
-    /// Stores a manifest derived from this lowering, such as one extended with
-    /// native animation variables.
-    pub(crate) fn store_derived(&self, manifest: &MasterCssManifest) -> Arc<StoredManifest> {
-        store_manifest(manifest, &self.candidates())
+    /// Stores what this lowering's delivered or resolution manifest became once
+    /// native animation variables extended it, which changes nothing else.
+    pub(crate) fn store_derived(
+        &self,
+        manifest: &MasterCssManifest,
+        resolution: bool,
+    ) -> Arc<StoredManifest> {
+        let program = || {
+            self.engine
+                .manifest_program()
+                .with_animation_variables(manifest)
+        };
+        store_manifest(
+            manifest,
+            &self.candidates(),
+            resolution.then_some(&program as &dyn Fn() -> _),
+        )
     }
 }
 
@@ -77,8 +97,8 @@ pub(crate) fn lower_stored_manifests(
     resolution: Option<&Arc<StoredManifest>>,
 ) -> Result<Arc<LoweredContext>, CompilerError> {
     let key = serde_json::json!([
-        base.map(|entry| &*entry.key),
-        resolution.map(|entry| &*entry.key),
+        base.map(|entry| entry.key()),
+        resolution.map(|entry| entry.key()),
         initial_warnings,
         input,
     ])

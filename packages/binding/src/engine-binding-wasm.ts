@@ -1,5 +1,5 @@
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
-import { serializeSharedManifest } from './manifest-references'
+import { manifestOf, serializeSharedManifest } from './manifest-references'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSKeyframeDefinition, MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
@@ -126,7 +126,7 @@ export async function createWasmRenderBindingSession(
 ): Promise<MasterCSSRenderBindingSession> {
   const provider = await createWasmProvider('render', loadOptions, providerFactory)
   const session = await provider.createRenderSession(
-    serializeSharedManifest(options.manifest, serializeMasterCSSManifest),
+    serializeSharedManifest(manifestOf(options.manifest), serializeMasterCSSManifest),
     options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
   )
   const bound: MasterCSSRenderBindingSession = {

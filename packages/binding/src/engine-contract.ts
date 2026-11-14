@@ -27,7 +27,7 @@ export type MasterCSSNativeEngineSessionOptions = MasterCSSEngineSource & {
 }
 
 export interface MasterCSSNativeRenderSessionOptions {
-  readonly manifest: MasterCSSManifest
+  readonly manifest: MasterCSSManifest | import('./manifest-references').MasterCSSManifestReference
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 

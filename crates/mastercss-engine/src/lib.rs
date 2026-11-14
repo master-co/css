@@ -384,6 +384,7 @@ mod program_cache;
 mod render;
 mod resources;
 mod session;
+pub use program_cache::ManifestProgram;
 pub use session::{compile_program, parse_emitted_globals};
 mod state;
 pub use state::remote_selector;

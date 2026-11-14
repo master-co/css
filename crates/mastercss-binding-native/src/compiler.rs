@@ -427,16 +427,40 @@ pub fn resolve_css_stylesheet_graph_json(request_json: String) -> Result<String>
     )
 }
 
-/// Stores a manifest for graph requests to reference as `{"$ref": key}`.
-#[napi]
-pub fn register_manifest_json(manifest_json: String) -> Result<String> {
-    mastercss_compiler::register_manifest_json(&manifest_json).map_err(compiler_to_napi_error)
+/// A stored manifest that graph requests reference as `{"$ref": key}` and render
+/// sessions execute without its JSON. Holding it keeps the manifest and its
+/// compiled program alive.
+#[napi(js_name = "ManifestHandle")]
+pub struct NodeManifestHandle {
+    pub(crate) entry: std::sync::Arc<mastercss_compiler::StoredManifest>,
 }
 
-/// The JSON of a stored manifest; `None` once it was evicted.
 #[napi]
-pub fn manifest_json(key: String) -> Option<String> {
-    mastercss_compiler::manifest_json(&key)
+impl NodeManifestHandle {
+    #[napi(getter)]
+    pub fn key(&self) -> String {
+        self.entry.key().to_owned()
+    }
+
+    /// The manifest JSON, serialized on first use for a compiled manifest.
+    #[napi]
+    pub fn json(&self) -> String {
+        self.entry.json().to_string()
+    }
+}
+
+/// Validates and stores a manifest's JSON for graph requests to reference.
+#[napi]
+pub fn register_manifest(manifest_json: String) -> Result<NodeManifestHandle> {
+    mastercss_compiler::register_manifest(&manifest_json)
+        .map(|entry| NodeManifestHandle { entry })
+        .map_err(compiler_to_napi_error)
+}
+
+/// The stored manifest a graph result references; `None` once nothing holds it.
+#[napi]
+pub fn manifest_handle(key: String) -> Option<NodeManifestHandle> {
+    mastercss_compiler::stored_manifest(&key).map(|entry| NodeManifestHandle { entry })
 }
 
 #[napi]

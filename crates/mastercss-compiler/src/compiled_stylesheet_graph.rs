@@ -3,12 +3,12 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use mastercss_engine::EngineSession;
-use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition, MasterCssManifest};
+use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::lower::{LoweredContext, lower_stored_manifests};
-use crate::manifest_store::{RequestManifest, StoredManifest, reference_value, request_manifest};
+use crate::manifest_store::{RequestManifest, reference_value, request_manifest};
 use crate::{
     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssImportGraphRequest,
     CssStylesheetGraph, CssStylesheetNode, compile_css_directives, merge_extraction_policies,
@@ -47,6 +47,11 @@ pub struct CompileCssStylesheetGraphRequest {
     /// Either input manifest may be such a reference too, independently of this.
     #[serde(default)]
     pub manifest_refs: bool,
+    /// Compile the graph only as another graph's reference context: the result
+    /// keeps its manifests, dependencies, warnings and extraction policy, and
+    /// omits the stylesheets and directive output a referencing graph never reads.
+    #[serde(default)]
+    pub reference_context: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -657,28 +662,34 @@ pub fn compile_css_stylesheet_graph(
     combined.generated_css = entry.generated_css.clone();
     stylesheets.retain(|sheet| reachable.contains(sheet.id.as_str()));
     let (manifest, resolution_manifest) = if request.manifest_refs {
-        let stored = |manifest: &Cow<'_, MasterCssManifest>,
-                      unchanged: fn(&LoweredContext) -> Arc<StoredManifest>| {
-            match (&lowering, manifest) {
-                (Lowering::Stored(context), Cow::Borrowed(_)) => unchanged(context),
-                (Lowering::Stored(context), Cow::Owned(manifest)) => {
-                    context.store_derived(manifest)
-                }
-                (Lowering::Inline(..), manifest) => {
-                    crate::manifest_store::store_manifest(manifest, &[])
-                }
+        let delivered = match (&lowering, &delivered_manifest) {
+            (Lowering::Stored(context), Cow::Borrowed(_)) => context.stored_manifest(),
+            (Lowering::Stored(context), Cow::Owned(manifest)) => {
+                context.store_derived(manifest, false)
+            }
+            (Lowering::Inline(..), manifest) => {
+                crate::manifest_store::store_manifest(manifest, &[], None)
             }
         };
-        (
-            reference_value(&stored(
-                &delivered_manifest,
-                LoweredContext::stored_manifest,
-            )),
-            reference_value(&stored(
-                &resolution_manifest,
-                LoweredContext::stored_resolution_manifest,
-            )),
-        )
+        let resolution = match (&lowering, &resolution_manifest) {
+            (Lowering::Stored(context), Cow::Borrowed(_)) => context.stored_resolution_manifest(),
+            (Lowering::Stored(context), Cow::Owned(manifest)) => {
+                context.store_derived(manifest, true)
+            }
+            // The engine executes the lowered resolution manifest, which native
+            // animation variables alone may have extended.
+            (Lowering::Inline(inline), manifest) => crate::manifest_store::store_manifest(
+                manifest,
+                &[],
+                Some(&|| {
+                    inline
+                        .1
+                        .manifest_program()
+                        .with_animation_variables(manifest)
+                }),
+            ),
+        };
+        (reference_value(&delivered), reference_value(&resolution))
     } else {
         (
             delivered_manifest.to_value(),

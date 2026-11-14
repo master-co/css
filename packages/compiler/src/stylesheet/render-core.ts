@@ -1,6 +1,7 @@
 import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSManifestReference } from '@master/css-binding/compiler/node'
 import type {
   MasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
@@ -14,7 +15,8 @@ interface MasterCSSRenderBindingResult {
 }
 
 export interface RenderCompiledManifestCSSOptions {
-  manifest: MasterCSSManifest
+  /** A manifest, or a compiler binding's reference to one. */
+  manifest: MasterCSSManifest | MasterCSSManifestReference
   classNames?: Iterable<string>
   nativeCSS?: string | string[]
   includeGeneratedCSS?: boolean

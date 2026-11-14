@@ -56,7 +56,7 @@ impl CompilerRenderSession {
 
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
-        &self,
+        &mut self,
         class_names: Vec<String>,
     ) -> Result<JsValue, JsValue> {
         let candidates = self
@@ -79,12 +79,12 @@ impl CompilerRenderSession {
     }
 
     #[wasm_bindgen(js_name = emittedGlobals)]
-    pub fn emitted_globals(&self) -> Result<JsValue, JsValue> {
+    pub fn emitted_globals(&mut self) -> Result<JsValue, JsValue> {
         let emitted_globals = self.inner.emitted_globals().map_err(engine_error)?;
         render_value(&emitted_globals)
     }
 
-    pub fn snapshot(&self) -> Result<JsValue, JsValue> {
+    pub fn snapshot(&mut self) -> Result<JsValue, JsValue> {
         let snapshot = self.inner.snapshot().map_err(engine_error)?;
         render_value(&snapshot)
     }

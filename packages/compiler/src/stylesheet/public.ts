@@ -1,6 +1,6 @@
 import { stylesheetValidationSource } from './output-map'
 import { StylesheetCompositionCache } from './composition-cache'
-import { validateCompiledCSS, assertValidationOptions } from '../value-validation'
+import { validateCompiledCSS, assertValidationOptions, withDiagnostics } from '../value-validation'
 import { mapStylesheetError, type StylesheetSourceContext } from './source-context'
 import type { StylesheetDeliveryOptions, StylesheetResourceAsset } from './delivery'
 import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, normalizeStylesheetGraphID, type CSSImportFileResolver } from '../node-imports'
@@ -406,9 +406,8 @@ export async function transformStylesheet(
     loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
   })
   options.signal?.throwIfAborted()
-  return Object.freeze({
+  return withDiagnostics(() => ({
     code: result.code,
-    diagnostics: validateCompiledCSS([stylesheetValidationSource(result.code, id, result.result?.sourceMap), ...(result.globalStylesheet ? [stylesheetValidationSource(result.globalStylesheet.css, id, result.globalStylesheet.sourceMap)] : []), ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options),
     ...(result.globalStylesheet ? { globalStylesheet: Object.freeze({ ...result.globalStylesheet }) } : {}),
     ...(result.result?.sourceMap ? { sourceMap: result.result.sourceMap } : {}),
     dependencies: Object.freeze([...result.dependencies]),
@@ -424,7 +423,7 @@ export async function transformStylesheet(
         )
       }
       : {})
-  })
+  }), () => validateCompiledCSS([stylesheetValidationSource(result.code, id, result.result?.sourceMap), ...(result.globalStylesheet ? [stylesheetValidationSource(result.globalStylesheet.css, id, result.globalStylesheet.sourceMap)] : []), ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options), options)
 }
 
 let bindStylesheetCollection: () => MasterCSSStylesheetCollection

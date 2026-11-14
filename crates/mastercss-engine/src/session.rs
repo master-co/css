@@ -69,11 +69,24 @@ impl EngineSession {
         manifest: &MasterCssManifest,
         emitted_globals: EmittedGlobals,
     ) -> Result<Self, EngineError> {
-        let program = super::program::encode(&compile_manifest(manifest)?);
-        Ok(Self::with_program(
-            std::sync::Arc::new(decode_program(&program)?),
+        Ok(Self::from_manifest_program(
+            &crate::ManifestProgram::compile(manifest)?,
             emitted_globals,
         ))
+    }
+
+    /// Executes a compiled manifest. The session keeps no manifest JSON.
+    pub fn from_manifest_program(
+        program: &crate::ManifestProgram,
+        emitted_globals: EmittedGlobals,
+    ) -> Self {
+        Self::with_program(program.program(), emitted_globals)
+    }
+
+    /// The compiled manifest this session executes, for sharing with other sessions.
+    /// A session that added native animation variables reports its extended program.
+    pub fn manifest_program(&self) -> crate::ManifestProgram {
+        crate::ManifestProgram::from_shared(self.compiled.clone())
     }
 
     /// Executes a program that [`compile_program`](crate::compile_program) encoded.
@@ -274,24 +287,29 @@ impl EngineSession {
             self.stylesheet_sources.push(String::new());
             return Ok(EngineTransitionIr::empty());
         }
-        let changes_variables =
-            crate::stylesheet_declarations(native_css)
-                .iter()
-                .any(|(name, value)| {
-                    name.strip_prefix("--").is_some_and(|name| {
-                        !self
-                            .compiled
-                            .animation_variables
-                            .get(name)
-                            .is_some_and(|values| values.contains(value))
-                    })
-                });
+        let changes_variables = self.declares_animation_variables(native_css);
         self.stylesheet_sources.push(native_css.into());
         if changes_variables {
             self.rebuild(self.emitted_globals.clone())
         } else {
             self.register_stylesheet_resources(native_css)
         }
+    }
+
+    /// Whether `native_css` assigns a custom property a value the session does not
+    /// yet resolve animation names through, which rebuilds the session.
+    pub(crate) fn declares_animation_variables(&self, native_css: &str) -> bool {
+        crate::stylesheet_declarations(native_css)
+            .iter()
+            .any(|(name, value)| {
+                name.strip_prefix("--").is_some_and(|name| {
+                    !self
+                        .compiled
+                        .animation_variables
+                        .get(name)
+                        .is_some_and(|values| values.contains(value))
+                })
+            })
     }
 
     fn register_stylesheet_resources(

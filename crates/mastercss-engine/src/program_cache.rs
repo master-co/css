@@ -64,3 +64,37 @@ pub(crate) fn manifest_program(
     });
     Ok((program, json))
 }
+
+/// A compiled manifest that sessions execute, shared without copying.
+///
+/// Hosts that hold a parsed manifest compile it once and create any number of
+/// sessions from it, instead of passing manifest JSON to each one.
+#[derive(Debug, Clone)]
+pub struct ManifestProgram(Arc<Program>);
+
+impl ManifestProgram {
+    /// Validates and compiles `manifest` exactly as
+    /// [`EngineSession::from_parsed_manifest`](crate::EngineSession::from_parsed_manifest) does.
+    pub fn compile(manifest: &super::MasterCssManifest) -> Result<Self, EngineError> {
+        let encoded = super::program::encode(&compile_manifest(manifest)?);
+        Ok(Self(Arc::new(decode_program(&encoded)?)))
+    }
+
+    /// The program of `manifest`, which must equal the manifest this program was
+    /// compiled from except for its animation variables. Programs copy animation
+    /// variables verbatim and derive nothing from them, so replacing them equals
+    /// compiling `manifest`.
+    pub fn with_animation_variables(&self, manifest: &super::MasterCssManifest) -> Self {
+        let mut program = Program::clone(&self.0);
+        program.animation_variables = super::manifest::animation_variables(manifest);
+        Self(Arc::new(program))
+    }
+
+    pub(crate) fn from_shared(program: Arc<Program>) -> Self {
+        Self(program)
+    }
+
+    pub(crate) fn program(&self) -> Arc<Program> {
+        self.0.clone()
+    }
+}

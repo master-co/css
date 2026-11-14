@@ -15,8 +15,24 @@ impl NodeRenderSession {
         })
     }
 
+    /// A session executing a stored manifest's compiled program.
+    #[napi(factory)]
+    pub fn from_manifest_handle(
+        handle: &crate::compiler::NodeManifestHandle,
+        emitted_globals_json: Option<String>,
+    ) -> Result<Self> {
+        let program = handle.entry.program().map_err(to_napi_error)?;
+        Ok(Self {
+            inner: RustRenderSession::from_manifest_program(
+                &program,
+                emitted_globals_json.as_deref(),
+            )
+            .map_err(to_napi_error)?,
+        })
+    }
+
     #[napi]
-    pub fn native_declaration_candidates(&self, class_names: Vec<String>) -> Result<String> {
+    pub fn native_declaration_candidates(&mut self, class_names: Vec<String>) -> Result<String> {
         to_json(
             &self
                 .inner
@@ -40,17 +56,17 @@ impl NodeRenderSession {
     }
 
     #[napi]
-    pub fn emitted_globals(&self) -> Result<String> {
+    pub fn emitted_globals(&mut self) -> Result<String> {
         to_json(&self.inner.emitted_globals().map_err(to_napi_error)?)
     }
 
     #[napi]
-    pub fn snapshot(&self) -> Result<String> {
+    pub fn snapshot(&mut self) -> Result<String> {
         to_json(&self.inner.snapshot().map_err(to_napi_error)?)
     }
 
     #[napi]
-    pub fn snapshot_for_classes(&self, class_names: Vec<String>) -> Result<String> {
+    pub fn snapshot_for_classes(&mut self, class_names: Vec<String>) -> Result<String> {
         to_json(
             &self
                 .inner

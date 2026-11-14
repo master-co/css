@@ -2,7 +2,7 @@ import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSDiagnosticDomain } from '@master/css-schema'
 import type { MasterCSSCompilerBindingSession } from './compiler-binding-contract'
 import { callBinding, type BindingSourceText } from './normalize-error'
-import { compileGraphWithManifestStore, type MasterCSSManifestStore } from './manifest-references'
+import { compileGraphWithManifestStore, compileReferencedGraph, type MasterCSSManifestStore } from './manifest-references'
 
 interface CompilerOperations {
   findManifestEntries?: MasterCSSCompilerBindingSession['findManifestEntries']
@@ -111,6 +111,9 @@ export function bindCompilerBindingSession(
       invoke('compiler', () => operations.manifestStore
         ? compileGraphWithManifestStore(operations.manifestStore, request, operations.compileCSSStylesheetGraph)
         : operations.compileCSSStylesheetGraph(request), filename =>
+        Object.hasOwn(request.graph.files, filename) ? request.graph.files[filename] : undefined),
+    compileCSSStylesheetGraphWithReferences: (request) =>
+      invoke('compiler', () => compileReferencedGraph(operations.manifestStore, request, operations.compileCSSStylesheetGraph), filename =>
         Object.hasOwn(request.graph.files, filename) ? request.graph.files[filename] : undefined),
     createInspectionReport: (input) => invoke('tooling', () =>
       operations.createInspectionReport?.(input) ?? unavailable('Inspection reporting')),

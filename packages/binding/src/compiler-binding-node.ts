@@ -7,7 +7,8 @@ import type {
 import { normalizeBindingError } from './normalize-error'
 
 export { MASTER_CSS_DIAGNOSTICS_REPORT_VERSION } from './protocol'
-export { shareManifest } from './manifest-references'
+export { MasterCSSManifestReference, manifestOf, shareManifest } from './manifest-references'
+export type { MasterCSSManifestSource, MasterCSSReferencedStylesheetGraph, MasterCSSReferencedStylesheetGraphRequest } from './manifest-references'
 export type {
   MasterCSSCompileDefaultPresetRequest,
   MasterCSSCompileDefaultPresetResult,

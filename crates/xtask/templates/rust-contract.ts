@@ -1070,6 +1070,8 @@ export interface MasterCSSCompileStylesheetGraphRequest {
   options?: MasterCSSDirectiveCompileOptions
   baseManifest?: import('@master/css-schema/manifest').MasterCSSManifest
   resolutionManifest?: import('@master/css-schema/manifest').MasterCSSManifest
+  /** Compile only as another graph's reference context: no stylesheets or directive output. */
+  referenceContext?: boolean
 }
 
 export interface MasterCSSCompiledStylesheet {

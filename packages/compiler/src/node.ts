@@ -101,7 +101,7 @@ export function compileManifestFileSync(
       preserveNativeCSS: options.preserveNativeCSS ?? true
     })
     return Object.freeze({
-      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic, options.validation),
+      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest.manifest(), directives: result.directives }, options.onDiagnostic, options.validation),
       diagnostics: validateCompiledCSS(result.stylesheets.map(asset => stylesheetValidationSource(asset.css, asset.id, undefined, asset.outputMappings)), options),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))),

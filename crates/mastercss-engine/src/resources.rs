@@ -5,7 +5,7 @@ use super::{
 use mastercss_lexer::concat_text;
 
 impl EngineSession {
-    pub(crate) fn ensure_active(&self) -> Result<(), EngineError> {
+    pub fn ensure_active(&self) -> Result<(), EngineError> {
         if self.disposed {
             Err(EngineError::SessionDisposed)
         } else {

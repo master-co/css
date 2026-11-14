@@ -1,22 +1,32 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSCompiledStylesheetGraph, MasterCSSCompileStylesheetGraphRequest } from './protocol'
 
+/** A manifest a compiler binding stores, named by `key` in graph requests. */
+export interface MasterCSSStoredManifestHandle {
+  readonly key: string
+  /** The manifest JSON, or `undefined` once a non-retaining store dropped it. */
+  json(): string | undefined
+}
+
 /**
- * Manifests a compiler binding stores by content. A graph request references a
- * stored manifest as `{"$ref": key}` instead of carrying its ~0.7 MB of JSON, and
- * the compilation returns its manifests the same way.
+ * Manifests a compiler binding stores. A graph request references a stored
+ * manifest as `{"$ref": key}` instead of carrying its ~0.7 MB of JSON, and the
+ * compilation returns its manifests the same way.
  */
 export interface MasterCSSManifestStore {
-  /** Stores a manifest's JSON and returns its key; an identical text keeps its key. */
-  register(manifestJSON: string): string
-  /** A stored manifest's JSON, or `undefined` once the binding evicted it. */
-  json(key: string): string | undefined
+  /** Validates and stores a manifest's JSON; an identical text keeps its entry. */
+  register(manifestJSON: string): MasterCSSStoredManifestHandle
+  /** The stored manifest a graph result names, or `undefined` once it was dropped. */
+  handle(key: string): MasterCSSStoredManifestHandle | undefined
+  /**
+   * Whether a handle keeps its manifest alive. Without that guarantee references
+   * read their manifest as soon as a compilation returns them.
+   */
+  readonly retains: boolean
 }
 
 /** Rust `mastercss_compiler::UNKNOWN_MANIFEST_REFERENCE`. */
 const UNKNOWN_MANIFEST_REFERENCE = 'Unknown Master CSS manifest reference'
-
-interface ManifestReference { $ref: string }
 
 class StaleManifestReference extends Error { }
 
@@ -31,7 +41,7 @@ const sharedManifests = new WeakSet<object>()
 
 /**
  * Deeply freezes a manifest so bindings can identify it by reference: its stored
- * key and serialization are then reused instead of recomputed per call.
+ * entry and serialization are then reused instead of recomputed per call.
  */
 export function shareManifest<T extends MasterCSSManifest>(manifest: T): T {
   deepFreeze(manifest)
@@ -54,73 +64,139 @@ export function serializeSharedManifest(manifest: MasterCSSManifest, serialize: 
 }
 
 /**
- * Keys of the manifests one store holds. Only shared manifests are remembered by
- * identity, since a mutable object may change after it was stored; others are
- * serialized per request and the store deduplicates them by content. Manifests a
- * compilation returns are shared, so passing one back costs nothing.
+ * A manifest a compiler binding holds, passed between compilations and render
+ * sessions without reading it into JavaScript. `manifest()` reads it on demand
+ * as a deeply frozen, shared object.
+ */
+export class MasterCSSManifestReference {
+  readonly #store: MasterCSSManifestStore | undefined
+  readonly #handle: MasterCSSStoredManifestHandle | undefined
+  #manifest: MasterCSSManifest | undefined
+
+  /** @internal Created by compiler bindings. */
+  constructor(store: MasterCSSManifestStore | undefined, handle: MasterCSSStoredManifestHandle | undefined, manifest?: MasterCSSManifest) {
+    this.#store = store
+    this.#handle = handle
+    this.#manifest = manifest
+  }
+
+  /** @internal The store that holds this manifest, if any. */
+  get store() { return this.#store }
+
+  /** @internal The binding's handle of this manifest, if any. */
+  get handle() { return this.#handle }
+
+  manifest(): MasterCSSManifest {
+    if (!this.#manifest) {
+      const json = this.#handle?.json()
+      if (json === undefined) throw new StaleManifestReference(this.#handle?.key ?? '')
+      this.#manifest = shareManifest(JSON.parse(json) as MasterCSSManifest)
+      references.get(this.#store!)?.remember(this.#manifest, this)
+    }
+    return this.#manifest
+  }
+}
+
+/** A manifest, or a reference that stands for one. */
+export type MasterCSSManifestSource = MasterCSSManifest | MasterCSSManifestReference
+
+/** The manifest a source stands for, read on demand from a reference. */
+export function manifestOf(source: MasterCSSManifestSource): MasterCSSManifest {
+  return source instanceof MasterCSSManifestReference ? source.manifest() : source
+}
+
+export type MasterCSSReferencedStylesheetGraphRequest = Omit<MasterCSSCompileStylesheetGraphRequest, 'baseManifest' | 'resolutionManifest'> & {
+  baseManifest?: MasterCSSManifestSource
+  resolutionManifest?: MasterCSSManifestSource
+}
+
+export type MasterCSSReferencedStylesheetGraph = Omit<MasterCSSCompiledStylesheetGraph, 'manifest' | 'resolutionManifest'> & {
+  manifest: MasterCSSManifestReference
+  resolutionManifest: MasterCSSManifestReference
+}
+
+/**
+ * The references of one store. Only shared manifests are matched by identity,
+ * since a mutable object may change after it was stored; others are serialized
+ * per request and the store deduplicates them by content. A key keeps one
+ * reference while it is reachable, so its manifest is read at most once.
  */
 class ManifestReferences {
-  readonly #keys = new WeakMap<object, string>()
-  readonly #manifests = new Map<string, WeakRef<MasterCSSManifest>>()
+  readonly #byManifest = new WeakMap<object, MasterCSSManifestReference>()
+  readonly #byKey = new Map<string, WeakRef<MasterCSSManifestReference>>()
   readonly #collected = new FinalizationRegistry<string>((key) => {
-    if (!this.#manifests.get(key)?.deref()) this.#manifests.delete(key)
+    if (!this.#byKey.get(key)?.deref()) this.#byKey.delete(key)
   })
 
-  #remember(manifest: MasterCSSManifest, key: string) {
-    this.#keys.set(manifest, key)
-    this.#manifests.set(key, new WeakRef(manifest))
-    this.#collected.register(manifest, key)
+  constructor(readonly store: MasterCSSManifestStore) { }
+
+  remember(manifest: MasterCSSManifest, reference: MasterCSSManifestReference) {
+    this.#byManifest.set(manifest, reference)
+  }
+
+  #keep(reference: MasterCSSManifestReference) {
+    const key = reference.handle!.key
+    this.#byKey.set(key, new WeakRef(reference))
+    this.#collected.register(reference, key)
+    return reference
   }
 
   #forget(key: string) {
-    const manifest = this.#manifests.get(key)?.deref()
-    if (manifest) this.#keys.delete(manifest)
-    this.#manifests.delete(key)
+    this.#byKey.delete(key)
   }
 
-  #reference(store: MasterCSSManifestStore, manifest: MasterCSSManifest | undefined, used: string[]) {
-    if (!manifest) return manifest
-    let key = this.#keys.get(manifest)
-    if (!key) {
-      key = store.register(JSON.stringify(manifest))
-      if (sharedManifests.has(manifest)) this.#remember(manifest, key)
+  /** The reference that stands for `source` in this store. */
+  reference(source: MasterCSSManifestSource): MasterCSSManifestReference {
+    if (source instanceof MasterCSSManifestReference) {
+      if (source.store === this.store && source.handle) return source
+      source = source.manifest()
     }
-    used.push(key)
-    return { $ref: key } satisfies ManifestReference
+    const known = this.#byManifest.get(source)
+    if (known) return known
+    const handle = this.store.register(JSON.stringify(source))
+    const reference = this.#byKey.get(handle.key)?.deref() ?? this.#keep(new MasterCSSManifestReference(this.store, handle))
+    if (sharedManifests.has(source)) this.#byManifest.set(source, reference)
+    return reference
   }
 
-  #resolve(store: MasterCSSManifestStore, value: MasterCSSManifest | ManifestReference): MasterCSSManifest {
-    if (!('$ref' in value)) return value
-    const known = this.#manifests.get(value.$ref)?.deref()
+  /** The reference for a key a compilation returned. */
+  resolve(key: string): MasterCSSManifestReference {
+    const known = this.#byKey.get(key)?.deref()
     if (known) return known
-    const json = store.json(value.$ref)
-    if (json === undefined) throw new StaleManifestReference(value.$ref)
-    const manifest = shareManifest(JSON.parse(json) as MasterCSSManifest)
-    this.#remember(manifest, value.$ref)
-    return manifest
+    const handle = this.store.handle(key)
+    if (!handle) throw new StaleManifestReference(key)
+    const reference = this.#keep(new MasterCSSManifestReference(this.store, handle))
+    // Without a retaining handle, read the manifest while the store still has it.
+    if (!this.store.retains) reference.manifest()
+    return reference
   }
 
   /**
-   * Compiles `request` with referenced manifests. A reference the store evicted
-   * meanwhile falls back to the original request, which carries its manifests.
+   * Compiles `request` with referenced manifests. A reference the store dropped
+   * meanwhile falls back to compiling with the manifests themselves.
    */
   compileGraph(
-    store: MasterCSSManifestStore,
-    request: MasterCSSCompileStylesheetGraphRequest,
+    request: MasterCSSReferencedStylesheetGraphRequest,
     compile: (request: MasterCSSCompileStylesheetGraphRequest) => MasterCSSCompiledStylesheetGraph
-  ): MasterCSSCompiledStylesheetGraph {
+  ): MasterCSSReferencedStylesheetGraph {
     const used: string[] = []
+    const reference = (source: MasterCSSManifestSource | undefined) => {
+      if (!source) return undefined
+      const { key } = this.reference(source).handle!
+      used.push(key)
+      return { $ref: key }
+    }
     try {
       const result = compile({
         ...request,
-        baseManifest: this.#reference(store, request.baseManifest, used),
-        resolutionManifest: this.#reference(store, request.resolutionManifest, used),
+        baseManifest: reference(request.baseManifest),
+        resolutionManifest: reference(request.resolutionManifest),
         manifestRefs: true
-      } as MasterCSSCompileStylesheetGraphRequest)
+      } as unknown as MasterCSSCompileStylesheetGraphRequest)
       return {
         ...result,
-        manifest: this.#resolve(store, result.manifest),
-        resolutionManifest: this.#resolve(store, result.resolutionManifest)
+        manifest: this.resolve((result.manifest as unknown as { $ref: string }).$ref),
+        resolutionManifest: this.resolve((result.resolutionManifest as unknown as { $ref: string }).$ref)
       }
     } catch (error) {
       const stale = error instanceof StaleManifestReference
@@ -128,19 +204,54 @@ class ManifestReferences {
       if (!stale) throw error
       for (const key of used) this.#forget(key)
       if (error instanceof StaleManifestReference) this.#forget(error.message)
-      return compile(request)
+      const result = compile(inlineRequest(request))
+      return {
+        ...result,
+        manifest: this.reference(shareManifest(result.manifest)),
+        resolutionManifest: this.reference(shareManifest(result.resolutionManifest))
+      }
     }
   }
 }
 
 const references = new WeakMap<MasterCSSManifestStore, ManifestReferences>()
 
+function inlineRequest(request: MasterCSSReferencedStylesheetGraphRequest): MasterCSSCompileStylesheetGraphRequest {
+  return {
+    ...request,
+    baseManifest: request.baseManifest && manifestOf(request.baseManifest),
+    resolutionManifest: request.resolutionManifest && manifestOf(request.resolutionManifest)
+  }
+}
+
+/**
+ * Compiles a graph whose manifests stay in the binding's store, or, without a
+ * store, wraps the manifests a plain compilation returns.
+ */
+export function compileReferencedGraph(
+  store: MasterCSSManifestStore | undefined,
+  request: MasterCSSReferencedStylesheetGraphRequest,
+  compile: (request: MasterCSSCompileStylesheetGraphRequest) => MasterCSSCompiledStylesheetGraph
+): MasterCSSReferencedStylesheetGraph {
+  if (!store) {
+    const result = compile(inlineRequest(request))
+    return {
+      ...result,
+      manifest: new MasterCSSManifestReference(undefined, undefined, shareManifest(result.manifest)),
+      resolutionManifest: new MasterCSSManifestReference(undefined, undefined, shareManifest(result.resolutionManifest))
+    }
+  }
+  let stored = references.get(store)
+  if (!stored) references.set(store, stored = new ManifestReferences(store))
+  return stored.compileGraph(request, compile)
+}
+
+/** Compiles a graph like {@link compileReferencedGraph}, returning the manifests themselves. */
 export function compileGraphWithManifestStore(
   store: MasterCSSManifestStore,
-  request: MasterCSSCompileStylesheetGraphRequest,
+  request: MasterCSSReferencedStylesheetGraphRequest,
   compile: (request: MasterCSSCompileStylesheetGraphRequest) => MasterCSSCompiledStylesheetGraph
 ): MasterCSSCompiledStylesheetGraph {
-  let stored = references.get(store)
-  if (!stored) references.set(store, stored = new ManifestReferences())
-  return stored.compileGraph(store, request, compile)
+  const result = compileReferencedGraph(store, request, compile)
+  return { ...result, manifest: result.manifest.manifest(), resolutionManifest: result.resolutionManifest.manifest() }
 }

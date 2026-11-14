@@ -23,6 +23,9 @@ pub struct RenderSession {
     classes: Vec<String>,
     class_index: HashSet<String>,
     selector_classes: Vec<String>,
+    /// Stylesheets registered since the session last read its state. Registering
+    /// them together rebuilds the engine once instead of once per stylesheet.
+    pending_stylesheets: Vec<String>,
 }
 
 impl RenderSession {
@@ -37,17 +40,48 @@ impl RenderSession {
             engine,
             classes: Vec::new(),
             class_index: HashSet::new(),
+            pending_stylesheets: Vec::new(),
         })
     }
 
+    /// [`create`](Self::create) for a compiled manifest shared with other sessions.
+    pub fn from_manifest_program(
+        program: &mastercss_engine::ManifestProgram,
+        emitted_globals_json: Option<&str>,
+    ) -> Result<Self, EngineError> {
+        let emitted_globals = emitted_globals_json
+            .map(mastercss_engine::parse_emitted_globals)
+            .transpose()?
+            .unwrap_or_default();
+        let engine = EngineSession::from_manifest_program(program, emitted_globals);
+        Ok(Self {
+            selector_classes: engine.selector_class_names_without_rules()?,
+            engine,
+            classes: Vec::new(),
+            class_index: HashSet::new(),
+            pending_stylesheets: Vec::new(),
+        })
+    }
+
+    /// Registers the stylesheets received so far, in order.
+    fn flush_stylesheets(&mut self) -> Result<(), EngineError> {
+        if self.pending_stylesheets.is_empty() {
+            return Ok(());
+        }
+        let stylesheets = std::mem::take(&mut self.pending_stylesheets);
+        self.engine
+            .ensure_hosted_stylesheets_resources(&stylesheets)
+    }
+
     pub fn native_declaration_candidates<I, S>(
-        &self,
+        &mut self,
         class_names: I,
     ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError>
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
+        self.flush_stylesheets()?;
         self.engine.native_declaration_candidates(
             class_names
                 .into_iter()
@@ -60,6 +94,7 @@ impl RenderSession {
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
+        self.flush_stylesheets()?;
         let mut new_classes = Vec::new();
         for class_name in class_names {
             let class_name = class_name.as_ref();
@@ -72,16 +107,21 @@ impl RenderSession {
         Ok(())
     }
 
+    /// Registers a stylesheet delivered with the page. Registration is deferred
+    /// until the session's state is read; it can only fail once disposed.
     pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), EngineError> {
-        self.engine.ensure_hosted_stylesheet_resources(native_css)?;
+        self.engine.ensure_active()?;
+        self.pending_stylesheets.push(native_css.to_owned());
         Ok(())
     }
 
-    pub fn emitted_globals(&self) -> Result<EmittedGlobals, EngineError> {
+    pub fn emitted_globals(&mut self) -> Result<EmittedGlobals, EngineError> {
+        self.flush_stylesheets()?;
         self.engine.emitted_globals_snapshot()
     }
 
-    pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
+    pub fn snapshot(&mut self) -> Result<ServerRenderIr, EngineError> {
+        self.flush_stylesheets()?;
         let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
         let hydration_manifest = self.hydration_manifest(&snapshot, &self.classes)?;
         Ok(ServerRenderIr {
@@ -92,11 +132,15 @@ impl RenderSession {
         })
     }
 
-    pub fn snapshot_for_classes<I, S>(&self, class_names: I) -> Result<ServerRenderIr, EngineError>
+    pub fn snapshot_for_classes<I, S>(
+        &mut self,
+        class_names: I,
+    ) -> Result<ServerRenderIr, EngineError>
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
+        self.flush_stylesheets()?;
         let mut classes = Vec::new();
         let mut class_index = HashSet::new();
         for class_name in class_names {
@@ -164,6 +208,7 @@ impl RenderSession {
     }
 
     pub fn dispose(&mut self) {
+        self.pending_stylesheets.clear();
         self.engine.dispose();
         self.classes.clear();
         self.class_index.clear();

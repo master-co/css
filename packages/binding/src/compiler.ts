@@ -9,7 +9,7 @@ export type { MasterCSSNativeModuleOptions } from './engine-contract'
 
 export type MasterCSSNativeCompilerBinding = Omit<
   MasterCSSCompilerBindingSession,
-  'binding' | 'dispose' | typeof Symbol.dispose
+  'binding' | 'dispose' | 'compileCSSStylesheetGraphWithReferences' | typeof Symbol.dispose
 > & Readonly<{
   /** The manifests this native binding stores for graph requests to reference. */
   manifestStore: MasterCSSManifestStore
@@ -20,9 +20,11 @@ const manifestStores = new WeakMap<NativeBinding, MasterCSSManifestStore>()
 function nativeManifestStore(nativeBinding: NativeBinding) {
   let store = manifestStores.get(nativeBinding)
   if (!store) {
+    // Native handles hold the stored manifest until JavaScript collects them.
     store = Object.freeze({
-      register: (manifestJSON: string) => nativeBinding.registerManifestJson(manifestJSON),
-      json: (key: string) => nativeBinding.manifestJson(key) ?? undefined
+      register: (manifestJSON: string) => nativeBinding.registerManifest(manifestJSON),
+      handle: (key: string) => nativeBinding.manifestHandle(key) ?? undefined,
+      retains: true
     })
     manifestStores.set(nativeBinding, store)
   }

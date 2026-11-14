@@ -1,39 +1,149 @@
-//! Content-addressed manifests that requests reference instead of carrying.
+//! Manifests that requests reference instead of carrying.
 //!
 //! A host compiles every local stylesheet against the same project and reference
 //! manifests. Shipping, parsing and validating those ~0.7 MB documents per
 //! request dominated each compilation, so a host registers a manifest once and
 //! then passes `{"$ref": key}` in its place; graph compilations return their
-//! manifests the same way. The key is derived from the manifest text, and an
-//! entry never changes: a different manifest is a different key. Eviction only
-//! makes a later reference unknown, which the host answers by resending the
-//! manifest itself.
+//! manifests the same way. An entry never changes. A registered manifest's key
+//! derives from its text; a compiled manifest gets a fresh key and is serialized
+//! only when a host reads it, since most are only executed.
+//!
+//! Hosts keep entries alive by holding them ([`stored_manifest`]); the store
+//! itself retains the recently used ones. A reference to an entry nobody holds
+//! may fail with [`UNKNOWN_MANIFEST_REFERENCE`], which the host answers by
+//! resending the manifest itself.
 
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::hash::{BuildHasher, BuildHasherDefault, DefaultHasher};
-use std::sync::{Arc, Mutex, PoisonError};
+use std::sync::{Arc, LazyLock, Mutex, OnceLock, PoisonError, Weak};
 
+use mastercss_engine::ManifestProgram;
 use mastercss_schema::MasterCssManifest;
 use serde_json::Value;
 
 use crate::CompilerError;
 
-/// Project, reference and stylesheet-local manifests that a host alternates
-/// between. Each entry holds the manifest text and its parsed form.
-const MAX_ENTRIES: usize = 32;
+/// Recently used registered manifests the store retains without a holder: the
+/// project manifest and the manifests hosts pass back.
+const MAX_RECENT: usize = 32;
+
+/// Compiled manifests the store retains until a host holds them. A host takes
+/// both manifests of a compilation right after it returns.
+const MAX_RECENT_COMPILED: usize = 16;
 
 /// The message prefix of a reference to a manifest this process does not hold.
 pub const UNKNOWN_MANIFEST_REFERENCE: &str = "Unknown Master CSS manifest reference";
 
-pub(crate) struct StoredManifest {
-    pub(crate) key: Box<str>,
-    hash: u64,
-    text: Arc<str>,
+/// A stored manifest, its JSON and the program sessions execute for it.
+pub struct StoredManifest {
+    key: Box<str>,
+    /// The hash of a registered text; compiled manifests are not looked up by text.
+    text_hash: Option<u64>,
+    text: OnceLock<Arc<str>>,
     pub(crate) manifest: MasterCssManifest,
+    program: OnceLock<ManifestProgram>,
 }
 
-/// Least recently used entries first.
-static MANIFESTS: Mutex<VecDeque<Arc<StoredManifest>>> = Mutex::new(VecDeque::new());
+impl StoredManifest {
+    pub fn key(&self) -> &str {
+        &self.key
+    }
+
+    /// The manifest JSON: the registered text, or the compiled manifest serialized
+    /// on first use.
+    pub fn json(&self) -> Arc<str> {
+        self.text
+            .get_or_init(|| self.manifest.to_value().to_string().into())
+            .clone()
+    }
+
+    /// The compiled program, compiled on first use unless a compilation supplied it.
+    pub fn program(&self) -> Result<ManifestProgram, mastercss_engine::EngineError> {
+        if let Some(program) = self.program.get() {
+            return Ok(program.clone());
+        }
+        let program = ManifestProgram::compile(&self.manifest)?;
+        Ok(self.program.get_or_init(|| program).clone())
+    }
+
+    /// Supplies the program a compilation already built for this exact manifest.
+    pub(crate) fn supply_program(&self, program: impl FnOnce() -> ManifestProgram) {
+        if self.program.get().is_none() {
+            let _ = self.program.set(program());
+        }
+    }
+}
+
+impl std::fmt::Debug for StoredManifest {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("StoredManifest")
+            .field("key", &self.key)
+            .finish_non_exhaustive()
+    }
+}
+
+#[derive(Default)]
+struct Store {
+    index: HashMap<Box<str>, Weak<StoredManifest>>,
+    /// Least recently used first.
+    recent: VecDeque<Arc<StoredManifest>>,
+    /// Most recently compiled last.
+    recent_compiled: VecDeque<Arc<StoredManifest>>,
+    next_key: u64,
+}
+
+impl Store {
+    fn touch(&mut self, entry: &Arc<StoredManifest>) {
+        let (recent, max) = if entry.text_hash.is_some() {
+            (&mut self.recent, MAX_RECENT)
+        } else {
+            (&mut self.recent_compiled, MAX_RECENT_COMPILED)
+        };
+        if let Some(index) = recent.iter().position(|recent| Arc::ptr_eq(recent, entry)) {
+            recent.remove(index);
+        }
+        recent.push_back(entry.clone());
+        while recent.len() > max {
+            recent.pop_front();
+        }
+    }
+
+    fn get(&mut self, key: &str) -> Option<Arc<StoredManifest>> {
+        let entry = self.index.get(key)?.upgrade()?;
+        self.touch(&entry);
+        Some(entry)
+    }
+
+    fn insert(&mut self, entry: StoredManifest) -> Arc<StoredManifest> {
+        if self.index.len() >= 4 * (MAX_RECENT + MAX_RECENT_COMPILED) {
+            self.index.retain(|_, entry| entry.strong_count() > 0);
+        }
+        let entry = Arc::new(entry);
+        self.index.insert(entry.key.clone(), Arc::downgrade(&entry));
+        self.touch(&entry);
+        entry
+    }
+
+    fn registered(&mut self, hash: u64, text: &str) -> Option<Arc<StoredManifest>> {
+        let entry = self
+            .index
+            .values()
+            .filter_map(Weak::upgrade)
+            .find(|entry| {
+                entry.text_hash == Some(hash)
+                    && entry.text.get().is_some_and(|stored| **stored == *text)
+            })?;
+        self.touch(&entry);
+        Some(entry)
+    }
+}
+
+static STORE: LazyLock<Mutex<Store>> = LazyLock::new(Default::default);
+
+fn store() -> std::sync::MutexGuard<'static, Store> {
+    STORE.lock().unwrap_or_else(PoisonError::into_inner)
+}
 
 fn text_hash(text: &str) -> u64 {
     BuildHasherDefault::<DefaultHasher>::default().hash_one(text)
@@ -47,93 +157,98 @@ fn manifest_error(message: impl Into<String>) -> CompilerError {
     }
 }
 
-/// Moves a found entry to the most recently used end.
-fn take(
-    entries: &mut VecDeque<Arc<StoredManifest>>,
-    found: impl Fn(&StoredManifest) -> bool,
-) -> Option<Arc<StoredManifest>> {
-    let index = entries.iter().position(|entry| found(entry))?;
-    let entry = entries.remove(index).expect("found entry");
-    entries.push_back(entry.clone());
-    Some(entry)
-}
-
-/// Stores `text`, parsed as `manifest`, unless an identical text is stored.
-fn insert(text: Arc<str>, manifest: MasterCssManifest) -> Arc<StoredManifest> {
-    let hash = text_hash(&text);
-    let mut entries = MANIFESTS.lock().unwrap_or_else(PoisonError::into_inner);
-    if let Some(entry) = take(&mut entries, |entry| {
-        entry.hash == hash && entry.text == text
-    }) {
-        return entry;
-    }
-    // The hash and length name the text; a colliding different text gets a suffix.
-    let base = format!("{hash:016x}{:x}", text.len());
-    let mut key = base.clone();
-    let mut suffix = 0;
-    while entries.iter().any(|entry| *entry.key == *key) {
-        suffix += 1;
-        key = format!("{base}-{suffix}");
-    }
-    while entries.len() >= MAX_ENTRIES {
-        entries.pop_front();
-    }
-    let entry = Arc::new(StoredManifest {
-        key: key.into(),
-        hash,
-        text,
-        manifest,
-    });
-    entries.push_back(entry.clone());
-    entry
-}
-
-/// Validates and stores a manifest's JSON text, returning its reference key.
-/// Registering an identical text again returns the same key.
-pub fn register_manifest_json(manifest_json: &str) -> Result<String, CompilerError> {
+/// Validates and stores a manifest's JSON text. Registering an identical text
+/// again returns the same entry while it is alive.
+pub fn register_manifest(manifest_json: &str) -> Result<Arc<StoredManifest>, CompilerError> {
     let hash = text_hash(manifest_json);
-    {
-        let mut entries = MANIFESTS.lock().unwrap_or_else(PoisonError::into_inner);
-        if let Some(entry) = take(&mut entries, |entry| {
-            entry.hash == hash && &*entry.text == manifest_json
-        }) {
-            return Ok(entry.key.to_string());
-        }
+    if let Some(entry) = store().registered(hash, manifest_json) {
+        return Ok(entry);
     }
     let value = serde_json::from_str::<Value>(manifest_json)
         .map_err(|error| manifest_error(error.to_string()))?;
     let manifest = crate::manifest::parse_manifest_owned(value)?;
-    Ok(insert(manifest_json.into(), manifest).key.to_string())
+    let mut store = store();
+    if let Some(entry) = store.registered(hash, manifest_json) {
+        return Ok(entry);
+    }
+    // The hash and length name the text; a colliding different text gets a suffix.
+    let base = format!("{hash:016x}{:x}", manifest_json.len());
+    let mut key = base.clone();
+    let mut suffix = 0;
+    while store
+        .index
+        .get(key.as_str())
+        .is_some_and(|entry| entry.strong_count() > 0)
+    {
+        suffix += 1;
+        key = format!("{base}-{suffix}");
+    }
+    let text = OnceLock::new();
+    let _ = text.set(Arc::from(manifest_json));
+    Ok(store.insert(StoredManifest {
+        key: key.into(),
+        text_hash: Some(hash),
+        text,
+        manifest,
+        program: OnceLock::new(),
+    }))
 }
 
-/// The JSON text of a stored manifest, as registered or as a compilation produced it.
+/// [`register_manifest`], returning the reference key.
+pub fn register_manifest_json(manifest_json: &str) -> Result<String, CompilerError> {
+    Ok(register_manifest(manifest_json)?.key().to_owned())
+}
+
+/// The stored manifest a key names, while anything holds it.
+pub fn stored_manifest(key: &str) -> Option<Arc<StoredManifest>> {
+    store().get(key)
+}
+
+/// The JSON of a stored manifest, as registered or as a compilation produced it.
 pub fn manifest_json(key: &str) -> Option<String> {
-    let mut entries = MANIFESTS.lock().unwrap_or_else(PoisonError::into_inner);
-    take(&mut entries, |entry| *entry.key == *key).map(|entry| entry.text.to_string())
+    stored_manifest(key).map(|entry| entry.json().to_string())
 }
 
 /// Stores a manifest a compilation produced, reusing an equal `candidate`, such
 /// as the manifest it was compiled against, so its reference stays stable.
+/// `program`, when given, is the compiled form of exactly this manifest.
 pub(crate) fn store_manifest(
     manifest: &MasterCssManifest,
     candidates: &[&Arc<StoredManifest>],
+    program: Option<&dyn Fn() -> ManifestProgram>,
 ) -> Arc<StoredManifest> {
-    if let Some(candidate) = candidates
+    let entry = match candidates
         .iter()
         .find(|candidate| candidate.manifest == *manifest)
     {
-        let mut entries = MANIFESTS.lock().unwrap_or_else(PoisonError::into_inner);
-        // Refresh its recency, or restore it if it was evicted meanwhile.
-        if take(&mut entries, |entry| std::ptr::eq(entry, &***candidate)).is_none() {
-            while entries.len() >= MAX_ENTRIES {
-                entries.pop_front();
+        Some(candidate) => {
+            let mut store = store();
+            // Refresh its recency, or restore it if it was dropped meanwhile.
+            if !store.index.contains_key(candidate.key()) {
+                store
+                    .index
+                    .insert(candidate.key.clone(), Arc::downgrade(candidate));
             }
-            entries.push_back((*candidate).clone());
+            store.touch(candidate);
+            (*candidate).clone()
         }
-        return (*candidate).clone();
+        None => {
+            let mut store = store();
+            let key = format!("p{:x}", store.next_key);
+            store.next_key += 1;
+            store.insert(StoredManifest {
+                key: key.into(),
+                text_hash: None,
+                text: OnceLock::new(),
+                manifest: manifest.clone(),
+                program: OnceLock::new(),
+            })
+        }
+    };
+    if let Some(program) = program {
+        entry.supply_program(program);
     }
-    let text: Arc<str> = manifest.to_value().to_string().into();
-    insert(text, manifest.clone())
+    entry
 }
 
 /// The `{"$ref": key}` value that stands for a stored manifest.
@@ -158,8 +273,7 @@ pub(crate) fn request_manifest(value: &Value) -> Result<RequestManifest<'_>, Com
         .as_str()
         .filter(|_| object.len() == 1)
         .ok_or_else(|| manifest_error("A manifest reference is {\"$ref\": key}"))?;
-    let mut entries = MANIFESTS.lock().unwrap_or_else(PoisonError::into_inner);
-    take(&mut entries, |entry| *entry.key == *key)
+    stored_manifest(key)
         .map(RequestManifest::Stored)
         .ok_or_else(|| manifest_error(format!("{UNKNOWN_MANIFEST_REFERENCE} {key}")))
 }

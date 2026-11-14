@@ -144,9 +144,16 @@ export interface CompilerWasmSession {
   readonly manifestStore: CompilerWasmManifestStore
 }
 
+export interface CompilerWasmManifestHandle {
+  readonly key: string
+  json(): string | undefined
+}
+
+/** Wasm handles name entries without holding them, so the store may drop one. */
 export interface CompilerWasmManifestStore {
-  register(manifestJSON: string): string
-  json(key: string): string | undefined
+  register(manifestJSON: string): CompilerWasmManifestHandle
+  handle(key: string): CompilerWasmManifestHandle
+  readonly retains: false
 }
 
 const manifestStores = new WeakMap<object, CompilerWasmManifestStore>()
@@ -154,9 +161,11 @@ const manifestStores = new WeakMap<object, CompilerWasmManifestStore>()
 function wasmManifestStore(module: GeneratedCompilerWasmModule) {
   let store = manifestStores.get(module)
   if (!store) {
+    const handle = (key: string) => Object.freeze({ key, json: () => module.manifestJSON(key) ?? undefined })
     store = Object.freeze({
-      register: (manifestJSON: string) => module.registerManifestJSON(manifestJSON),
-      json: (key: string) => module.manifestJSON(key) ?? undefined
+      register: (manifestJSON: string) => handle(module.registerManifestJSON(manifestJSON)),
+      handle,
+      retains: false as const
     })
     manifestStores.set(module, store)
   }

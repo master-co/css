@@ -1,5 +1,5 @@
 import { noticeDiagnostics } from './notices'
-import { validateCompiledCSS, type ValidationSource } from './value-validation'
+import { validateCompiledCSS, withDiagnostics, type ValidationSource } from './value-validation'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
   MasterCSSError,
@@ -89,7 +89,7 @@ export function toMasterCSSCompileResultInternal(
   validation?: 'report' | 'error',
   origin?: Omit<ValidationSource, 'css'>
 ): MasterCSSCompileResult {
-  return Object.freeze({
+  return withDiagnostics(() => ({
     css: result.css,
     ...(result.sourceMap ? { sourceMap: result.sourceMap } : {}),
     nativeCSS: result.nativeCSS,
@@ -97,9 +97,8 @@ export function toMasterCSSCompileResultInternal(
     dependencies: Object.freeze([...result.dependencies]),
     classNames: Object.freeze([...result.classNames]),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
-    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...noticeDiagnostics(result.notices, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings ?? result.nativeMappings, ...origin }], { onDiagnostic, validation })]),
     directiveSummary: directiveSummary(result)
-  })
+  }), () => Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...noticeDiagnostics(result.notices, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings ?? result.nativeMappings, ...origin }], { onDiagnostic, validation })]), { onDiagnostic, validation })
 }
 
 interface InternalManifestCompileResult {

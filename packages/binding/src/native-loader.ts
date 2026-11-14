@@ -133,6 +133,11 @@ export interface NativeSourceSession {
   dispose(): void
 }
 
+export interface NativeManifestHandle {
+  readonly key: string
+  json(): string
+}
+
 export interface NativeBinding {
   bindingInfoJson(): string
   extractAstroClasses(source: string, content: string): string[]
@@ -160,8 +165,9 @@ export interface NativeBinding {
   prepareCssStylesheetBundleJson(requestJSON: string): string
   renderCssStylesheetBundleJson(requestJSON: string): string
   compileCssStylesheetGraphJson(requestJSON: string): string
-  registerManifestJson(manifestJSON: string): string
-  manifestJson(key: string): string | null
+  registerManifest(manifestJSON: string): NativeManifestHandle
+  manifestHandle(key: string): NativeManifestHandle | null
+  ManifestHandle: abstract new () => NativeManifestHandle
   compareProjectSnapshotsJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
@@ -170,7 +176,10 @@ export interface NativeBinding {
   LexerSession: new () => NativeLexerSession
   SourceSession: new () => NativeSourceSession
   ScannerSession: new (manifestJSON: string) => NativeScannerSession
-  RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
+  RenderSession: {
+    new (manifestJSON: string, emittedGlobalsJSON?: string): NativeRenderSession
+    fromManifestHandle(handle: NativeManifestHandle, emittedGlobalsJSON?: string): NativeRenderSession
+  }
   ValidatorSession: new (manifestJSON: string) => NativeValidatorSession
   LintSession: new (manifestJSON: string) => NativeLintSession
   EngineSession: {

@@ -50,7 +50,8 @@ export type MasterCSSEngineBindingSessionOptions = MasterCSSEngineSource & {
 }
 
 export interface MasterCSSRenderBindingSessionOptions {
-  readonly manifest: MasterCSSManifest
+  /** A manifest, or a compiler binding's reference to one. */
+  readonly manifest: MasterCSSManifest | import('./manifest-references').MasterCSSManifestReference
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 
