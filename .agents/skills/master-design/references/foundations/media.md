@@ -1,6 +1,6 @@
 # Media and alternatives
 
-Choose alternatives for the information conveyed, not just the media format. Meaningful speech, sound and visual events have different needs. A decorative loop still needs appropriate motion controls; a transcript does not automatically replace captions or audio description.
+Choose alternatives for the information conveyed, not just the media format. Meaningful speech, sound and visual events have different needs. A transcript does not automatically replace captions or audio description.
 
 ## Choose the alternative
 
@@ -21,9 +21,9 @@ Do not cover captions with controls or crop out essential visual information. Te
 
 ## Sequences and ongoing content
 
-A carousel needs a meaningful current-item label, reachable previous/next controls and stable focus. Prefer manual advance when automatic movement is unnecessary. If it rotates, provide a discoverable stop/pause operation and appropriate focus/hover behavior; do not repeatedly announce unsolicited slide changes. A stationary caption is not enough if the media behind it keeps changing.
+A carousel needs a meaningful current-item label, reachable previous/next controls and stable focus. Prefer manual advance when automatic movement is unnecessary. Do not repeatedly announce unsolicited slide changes.
 
-Apply [ongoing-content and timing conditions](motion.md#separate-preference-time-and-ongoing-content) independently from reduced motion. See the [WAI carousel tutorial](https://www.w3.org/WAI/tutorials/carousels/). A manual image sequence is a valid counterexample to requiring an automatic rotation timer.
+Apply [time-limit, audio and flashing conditions](motion.md#separate-preference-time-and-ongoing-content) independently from reduced motion. See the [WAI carousel tutorial](https://www.w3.org/WAI/tutorials/carousels/). A manual image sequence is a valid counterexample to requiring an automatic rotation timer.
 
 ## Verify
 

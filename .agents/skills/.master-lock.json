@@ -2,15 +2,15 @@
   "sources": {
     "master-design": {
       "repository": "https://github.com/master-co/design",
-      "sourceVersion": "0.3.5",
-      "sourceCommit": "14eaf5e1b9d77ff7b33c5f77a4f0f2a924dee966",
+      "sourceVersion": "0.3.6",
+      "sourceCommit": "458b38c75f1df3d983bf896844c63e778c61a36f",
       "sourceDirectory": "skills/master-design",
-      "snapshot": "495df72fc70ad5b5559343adc1cfa5e49abb219313f4c68f047da08797793fff"
+      "snapshot": "529f44e3d629f2676b2698f678d72bcacea865a9ce18fff61e6cba99da2aebe3"
     }
   },
   "schema": 1,
   "package": "@master/internal-skills",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "skills": [
     "master-design",
     "master-site",
@@ -19,7 +19,7 @@
   "files": {
     "master-design/agents/openai.yaml": "a60670381ecd7a6b8eb5dd2496098761d59c94aa613551f4865ac31c79fb9272",
     "master-design/LICENSE.txt": "c232c45ace1f2a8f613ba321a4bd71ac52c1eefe08fd37a1185e333b3a707295",
-    "master-design/references/accessibility.md": "2d21bb292c104d3b77f25175040e48d46f056ddcc524ad62cb7e282e25d6b112",
+    "master-design/references/accessibility.md": "8a6723bd8d36ed73fd45900dd20aeb4f1847bbfc83d53a1047b1e653c633b8bb",
     "master-design/references/avatar-stacks.md": "eb20a64ac499b0ea150eb7600a9fd6a8554520010f527776cbc91352fe5f2403",
     "master-design/references/components/actions.md": "2b30642aabc111b76be823a6c2cdda3d973f93fca40bab3c7803da4d0513cdde",
     "master-design/references/components/data-display.md": "c423bb21bde471d53254a0c5a8d1c93839f4fd87b3e35278126d1c3e8510b452",
@@ -38,8 +38,8 @@
     "master-design/references/foundations/icons.md": "45e35a6245840fe78c0193d3d179a0bffe062b78c73c717f9a754c1dc43e83a4",
     "master-design/references/foundations/layout.md": "8a4b63b237cb7adfb9d2c6d04658216bca58c7e8c410c26b8ee0b9873afcbfbd",
     "master-design/references/foundations/localization.md": "bc39d8ff85efe67cfba37dff324ec7710e9f3e627d6dba74e2583fa4037b304c",
-    "master-design/references/foundations/media.md": "29ae1c1bb6ff06b01a32c3c6d8d18864916f091269e148b771abb6ed1d144e46",
-    "master-design/references/foundations/motion.md": "103b480ea50a2cd81e421347c2b0333aac22ea152eb89be60f392d0c5b1794e2",
+    "master-design/references/foundations/media.md": "b3614361d145b0e50447c0697ab8d6cbd7e4fff7fe6f08fdaa75cf854f149c5c",
+    "master-design/references/foundations/motion.md": "a25312a348a1de2e2e6fadc957bc3cbd0cbe0a25236e1ba7253355d20000ffd7",
     "master-design/references/foundations/shape.md": "cbb7555e3e8209a11653347720ffa5a8db2a1127b1845fd24df8011ddd0e7154",
     "master-design/references/foundations/sizing.md": "3af35c66ae985f115ecec0d87b91c9addf11b1a697d6c6be5577cf1c9d8ba207",
     "master-design/references/foundations/spacing.md": "7336829411d57c8c51c419c34f9aeab628a87a17ece771f7a20f1460c2dcadaa",
@@ -62,7 +62,7 @@
     "master-design/references/patterns/help.md": "360190b1215da18a92d304b689da5295aa1d4d36f81837ef07ae2bb685471ab3",
     "master-design/references/patterns/large-collections.md": "6f75b17575903d2862571d4b2dce62bed8fc220d151f3cf548bae06b2cc9af23",
     "master-design/references/patterns/navigation.md": "fac744dd965e140e3850b59208a94864ba167236ae82e9075b81b5b4848b4c30",
-    "master-design/references/patterns/notifications.md": "c9e59539520d7e26475e7293121d57cfbadb55ba8814aa04f0a48abfa72e5ff7",
+    "master-design/references/patterns/notifications.md": "27265e8a23cb24c3b73545fc8e989813d68e05b71690815d65dcd79fda799612",
     "master-design/references/patterns/onboarding.md": "b3475db020727b73b07cd3c5cc1cdc909b42a61ea5fb7ba8dc0d729f48fa9b0a",
     "master-design/references/patterns/privacy.md": "caefb6f31f5837cccd63713865bf60831c787289934c3e38a8843ce670c9e5f5",
     "master-design/references/patterns/recovery.md": "a2a91749e7ad2127e363b57b91f0b4876c1b3c7af8051f220d7ea141391e8da9",
@@ -76,7 +76,7 @@
     "master-design/references/studies/workspace.md": "17fbd95d788c1ffaa1c0a0f02345dae7cd414a3431588c8693ff7895d1219f1f",
     "master-design/references/surfaces.md": "79c09f5b0d36ffe818e3ae6348c8ec96c826098a55cfd5dff463d6f8597d6c70",
     "master-design/references/typography.md": "7b3a18dc0dc3794a0d4bd0ffd72177a470db11785c1bf5560a3337f895e1446f",
-    "master-design/SKILL.md": "dbefae3a5d969068eaf1c5a25d2237aab8088ef13802379548396cc8581b15bf",
+    "master-design/SKILL.md": "43191d9938e035fd33b24aba7ee0ff27b56130b403a2c85ce2ab57a9db8d7b27",
     "master-site/SKILL.md": "ddb5888aece02e6ac34fe1d4762df1a2d2d19945fbaba2722e0f8e0d6b247f6c",
     "master-writing/references/document-components.md": "9c576a83d64c8e3c32a73d77d48d18a2d29cc64ad050ffbe21033d6b873486c4",
     "master-writing/references/style.md": "60f194f3b6c0be1feae0078916c97cdc7036914ca2551d9195a8e3e0608d32a4",

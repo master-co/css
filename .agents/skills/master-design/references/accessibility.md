@@ -30,7 +30,7 @@ Check 200% text resizing without loss of content or functionality. At a width eq
 
 Keep errors near the relevant input and give an actionable explanation. Announce meaningful asynchronous status without repeatedly interrupting reading. Do not announce each animation frame or each keystroke as a new alert. Loading, empty and failed are distinct states.
 
-Honor reduced motion, retain a static state cue and allow control over nonessential ongoing movement. Avoid automatically expiring messages that contain the only way to recover an action.
+Honor reduced motion and retain a static state cue. Avoid automatically expiring messages that contain the only way to recover an action.
 
 ## Verify a real task
 
@@ -58,7 +58,7 @@ Choose a [reading](studies/reading.md), [service](studies/service.md) or [worksp
 | Images, audio or video | Choose alternatives by content and purpose, not file extension; see [images](images.md#match-the-alternative-to-the-role) and [media](foundations/media.md) |
 | Hover/focus popup | Check dismissal, pointer reach and persistence; see [overlays](components/overlays.md#keep-hover-content-reachable) |
 | Shortcuts, gestures, dragging or device motion | Test the distinct input alternatives in [focus](focus.md#offer-complete-alternatives) |
-| Time limits, automatic updates, flashing or audio | Apply the separate conditions in [motion](foundations/motion.md#separate-preference-time-and-ongoing-content) |
+| Time limits, flashing or audio | Apply the separate conditions in [motion](foundations/motion.md#separate-preference-time-and-ongoing-content) |
 | Focus/input changes | Avoid unexpected context changes; see [content](foundations/content.md#support-recognition-and-predictable-choices) |
 | Prior answers or consequential submissions | Preserve/reselect information and provide appropriate correction, review or reversal; see [forms](patterns/forms.md#preserve-work-through-changing-branches) |
 

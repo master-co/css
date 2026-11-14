@@ -30,4 +30,4 @@ Let people control optional notification channels and frequency when the product
 
 Trigger several routine completions, a local error and an account-wide interruption while typing. Confirm messages do not steal focus, repeated updates are restrained, and recovery survives the toast lifetime. Test keyboard access, reduced motion and a screen reader. See [feedback](../components/feedback.md) and [recovery](recovery.md).
 
-Auto-updating information and timed recovery require [their own controls](../foundations/motion.md#separate-preference-time-and-ongoing-content); reduced motion alone does not pause updates.
+Timed recovery needs appropriate [time-limit controls](../foundations/motion.md#separate-preference-time-and-ongoing-content); reduced motion does not extend the recovery period.
