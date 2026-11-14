@@ -31,3 +31,5 @@ Warn at a boundary that would actually lose work, not on every navigation. State
 ## Acceptance scenario
 
 Edit, start saving, edit again before acknowledgement, then fail the next save. Retry, introduce a version conflict, cancel a discard decision and complete it intentionally. Check that no stale acknowledgement clears newer changes and that focus returns to a useful place. See [asynchronous work](async.md), [recovery](recovery.md) and [content design](../foundations/content.md).
+
+Generated text is a suggestion until explicitly applied; preserve the original through [AI-assisted editing](ai.md).

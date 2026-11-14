@@ -34,3 +34,11 @@ Selection is a value; focus is an input destination. Arrowing through suggestion
 ## Verify
 
 Test arrow-key radio navigation, Space activation, labels, mixed state, disabled options and long text. For custom options, verify focus and active selection separately. Master UI implementations: [Checkbox](https://ui.master.co/components/checkbox), [Radio](https://ui.master.co/components/radio), [Switch](https://ui.master.co/components/switch) and [Combobox](https://ui.master.co/components/combobox).
+
+## Search, multiple values and hierarchy
+
+Keep typed query, active suggestion and committed value separate. State whether the field accepts only known options or permits a new value. Empty results and failed lookup are different; retain committed choices on a failed query. Test Escape, slow responses and IME before accepting a suggestion. A usable native select is still preferable to an unnecessary custom combobox; consult [APG combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/).
+
+Multiple selected tokens need explicit names and removal operations, useful focus after removal, and a readable count. Do not make Backspace silently remove a value while the person is editing a query. A tag's outline does not decide whether it is text, a filter button, a destination link or a removable value.
+
+Use a nested disclosure list for ordinary grouped navigation; use a [tree widget](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/) only when hierarchical selection/navigation warrants its complete keyboard contract. Exact and approximate adjustments follow the [value contract](forms.md#choose-the-value-contract). For related content panels, use [disclosure and panels](disclosure.md), not selection semantics based on appearance alone.

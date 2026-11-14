@@ -27,3 +27,5 @@ Use persistent local feedback for a problem that remains actionable. A brief con
 ## Verify
 
 Test slow work, repeated input, partial completion, offline failure and retry. Check announcements, message lifetime, reduced motion and contrast. See [asynchronous work](../patterns/async.md) and [recovery](../patterns/recovery.md). Master UI includes [Alert](https://ui.master.co/components/alert), [Toast](https://ui.master.co/components/toast) and [Progress](https://ui.master.co/components/progress) implementations.
+
+When only part of a task is waiting or unavailable, show [regional progress and failure](../patterns/async.md#limit-failure-to-its-actual-scope) without erasing useful content.

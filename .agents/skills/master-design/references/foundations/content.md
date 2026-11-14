@@ -33,3 +33,9 @@ Use complete translatable messages instead of concatenating fragments whose orde
 ## Verify
 
 Read controls without surrounding decoration, then walk the complete task. Check consistent names, specific consequences and actionable errors. Try long translations and a screen reader; visible and announced messages should describe the same result without repeated interruption. See [localization](localization.md), [feedback](../components/feedback.md) and [help](../patterns/help.md).
+
+## Support recognition and predictable choices
+
+Keep required formats and prerequisites visible while entering information. Show relevant prior choices instead of requiring recall; use familiar terms and explain necessary specialist vocabulary beside the decision. A returning person should recognize what remains and what already succeeded.
+
+Focus alone must not unexpectedly change context. Changing an input must not unexpectedly navigate, submit or open a new window unless the person was advised beforehand. Updating an adjacent preview is different from relocating the task. Avoid hiding consequential options behind unexplained shorthand. Test a changed form branch and a return after interruption. These practices also draw on the supplemental [COGA guidance](https://www.w3.org/TR/coga-usable/), not additional WCAG AA criteria.

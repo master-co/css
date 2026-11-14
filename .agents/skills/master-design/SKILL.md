@@ -4,7 +4,7 @@ description: "Design and refine web interfaces: principles, foundations, accessi
 license: MIT
 metadata:
   author: master-co
-  version: "0.3.4"
+  version: "0.3.5"
 ---
 
 # Master Design
@@ -21,7 +21,7 @@ For review-only requests, report observations and proposed fixes. For implementa
 
 ## Choose the relevant guidance
 
-Read only the layers needed for the task. The guidance is portable across brands, frameworks and component libraries.
+Read only the layers needed for the task. For an inset fix, start with geometry; for a failed form, start with form flows. Load media, sharing or AI guidance only when that feature is present. The guidance is portable across brands, frameworks and component libraries.
 
 | Decision | Reference |
 | --- | --- |
@@ -33,6 +33,8 @@ Read only the layers needed for the task. The guidance is portable across brands
 | A complete task across states | [Form flows](references/patterns/forms.md), [search](references/patterns/search.md), [navigation flows](references/patterns/navigation.md), [asynchronous work](references/patterns/async.md), [recovery](references/patterns/recovery.md), [responsive composition](references/patterns/responsive.md) |
 | Page composition, words, locales and data meaning | [Layout](references/foundations/layout.md), [content design](references/foundations/content.md), [localization](references/foundations/localization.md), [data visualization](references/foundations/data-visualization.md) |
 | Starting, obtaining access and finding help | [Onboarding](references/patterns/onboarding.md), [access](references/patterns/access.md), [empty states](references/patterns/empty.md), [help](references/patterns/help.md) |
+| Media, hidden panels or temporal entry | [Media](references/foundations/media.md), [disclosure](references/components/disclosure.md), [dates and times](references/patterns/date-time.md) |
+| Large result sets, sharing or AI assistance | [Large collections](references/patterns/large-collections.md), [privacy and sharing](references/patterns/privacy.md), [AI interfaces](references/patterns/ai.md) |
 | Changes that must survive failure | [Editing](references/patterns/editing.md), [files](references/patterns/files.md), [collections](references/patterns/collections.md), [notifications](references/patterns/notifications.md) |
 
 ## Refine the relevant detail

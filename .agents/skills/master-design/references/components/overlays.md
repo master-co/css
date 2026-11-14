@@ -32,3 +32,9 @@ An overlay's appearance does not decide modality. A small modal can interrupt mo
 ## Verify
 
 Test open-close-open, Escape, outside interaction, focus return, nested surfaces and narrow screens. Confirm required information remains available without hover. Master UI implementations: [Dialog](https://ui.master.co/components/dialog), [Popover](https://ui.master.co/components/popover), [Menu](https://ui.master.co/components/menu) and [Tooltip](https://ui.master.co/components/tooltip).
+
+## Keep hover content reachable
+
+Additional content triggered by hover or focus generally needs to be dismissible without moving pointer/focus, hoverable when the pointer moves onto it, and persistent until dismissed, no longer triggered or no longer valid. WCAG 1.4.13 has exceptions, including user-agent-controlled content and dismissal when it obscures or replaces nothing. Read its [applicability](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html).
+
+Support Escape without stealing focus and leave a continuous pointer path to the popup. Do not close it as soon as the pointer leaves the trigger for the popup. Interactive content needs a popover/disclosure contract, not a tooltip role. Essential instructions remain visible or available on first touch; a keyboard name is independent from hover help. Test narrow placement, pointer travel, dismissal and reopen.

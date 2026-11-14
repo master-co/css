@@ -21,3 +21,9 @@ Measure straight segments and the bend. Equal straight padding does not guarante
 ## Verify the construction
 
 Test the smallest supported control and the largest relevant container, including asymmetric content. Inspect clipped focus, outside shadows and fractional edges at native size. A correct enlarged diagram establishes a geometric relationship, not identical rasterization across browsers or densities. See [shape](foundations/shape.md) and [evidence](evidence.md).
+
+## Check an embedded end control
+
+When a field presents its end action as an evenly inset insert, compare three gaps: block-start, block-end and adjacent inline-end. Measure from the shell's inner boundary to the action's painted boundary, not to its icon ink. With a borderless 40px shell and a 32px action, centered block gaps are 4px; an 8px end gap differs from that intention. A 4px end gap makes this specimen even. Account for physical borders and outward rings separately.
+
+The text's start padding is a different relationship. An attached full-height action, a separator or a deliberate asymmetric composition can have different gaps. Do not force the whole field to four equal paddings or resize the hit target to make the visible inset fit. Check RTL, focus, the smallest supported size and the actual clear/open action.

@@ -55,3 +55,11 @@ A line box is not the visible glyph bounds. Compare text, an icon and an adjacen
 Test numerals with the same signs, precision and units in both samples. Tabular figures stabilize digit widths, while decimal alignment depends on precision and column structure. A changing label needs reserved space or flexible layout; clipping the longer state is not stability.
 
 Inspect fallback loading and mixed-script punctuation at native size. Keep copied code and identifiers exact, and retain a route to full content when truncation is necessary. See [localization](foundations/localization.md) and [typography foundations](foundations/typography.md).
+
+## Correct a specific optical imbalance
+
+First select the reference: baseline for a sentence, a shared edge for a column, or visible center for a compact symbol. Establish geometric alignment, inspect actual ink, compare a small local correction, then recheck other labels and states. A play triangle may need a horizontal adjustment; a balanced symbol or a pre-normalized triangle may not. Latin descenders, CJK glyphs and different fonts prevent a universal upward text shift.
+
+For an icon-label pair, distinguish the asset viewport, its visible drawing, the icon-to-label gap and the outer padding. Prefer the icon family's existing normalization. An asset with extra internal space may justify smaller padding on its side, such as 12 versus 16 in one specimen. A normalized asset may need equal padding. Use logical sides for leading/trailing icons and inspect RTL rather than globally applying a negative margin.
+
+Keep the wrapper and hit target stable when nudging only the drawing. Compare native size with guides hidden as well as shown. Measured bounds establish position; choosing the more balanced result remains a contextual visual judgment.

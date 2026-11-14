@@ -33,3 +33,5 @@ Avoid treating Enter during an unfinished IME composition as submission or accep
 ## Verify
 
 Complete a form and search in a mixed-script locale, repeat in RTL, and inspect a long translated label at narrow width. Check punctuation, cursor behavior, selection, sorting, dates, copied values and focus order. Use the [W3C internationalization guidance](https://www.w3.org/International/techniques/authoring-html) for platform details; language-specific typography remains contextual.
+
+For temporal entry, distinguish [dates, instants, durations and ranges](../patterns/date-time.md); formatting alone does not decide which control or time zone is appropriate.

@@ -27,3 +27,16 @@ Read-only values remain inspectable and often copyable; disabled inputs are unav
 ## Verify
 
 Complete the form with keyboard, touch and a screen reader. Test autofill, paste, long values, submission by Enter, multiple errors and retry. See [form flows](../patterns/forms.md). Master UI implementations include [Input](https://ui.master.co/components/input) and [Select](https://ui.master.co/components/select); application validation still belongs to the product.
+
+## Choose the value contract
+
+| Value | Starting choice | Check |
+| --- | --- | --- |
+| Identifier with digits | Text with suitable input mode | Leading zeros, copy/paste, non-arithmetic meaning |
+| Exact incrementable quantity | Native number or established quantity control | Units, step, bounds, negative/decimal entry |
+| Approximate continuous adjustment | Slider, with exact entry when precision matters | Understandable value and keyboard increments |
+| Remembered date or booking | Task-specific entry/selection | See [dates and times](../patterns/date-time.md) |
+
+Keep editable intermediates such as a minus sign or decimal separator while typing. Parse and validate at a suitable commitment point without moving the caret or replacing the person's input unexpectedly. Do not silently clamp a consequential quantity to a limit. Explain a correction and preserve the original text. Test paste, locale separators, out-of-range values, autofill and submission through Enter.
+
+For personal-data fields covered by WCAG 1.3.5, expose the recognized input purpose using appropriate autocomplete tokens; input mode alone does not do this. Read-only, disabled and busy differ in focus, editing and submission; use the [state decision table](actions.md#explain-unavailable-actions).

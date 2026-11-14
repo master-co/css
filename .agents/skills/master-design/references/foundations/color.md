@@ -33,3 +33,5 @@ Check a selected row with secondary text and an invalid field with focus in both
 ## Review
 
 Check normal, hover, active, focused, selected, invalid and disabled states, including concurrent states. Measure contrast on the composited result. Read the [accessibility baseline](../accessibility.md) and [surface craft](../surfaces.md). A consumer library's published theme remains the owner of its roles and values.
+
+For text over photographs, inspect the [actual changing background](../images.md#keep-text-readable-over-changing-images). Chart colors encode [categories or quantities](data-visualization.md#keep-encoding-tied-to-meaning), not decoration alone.

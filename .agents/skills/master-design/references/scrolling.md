@@ -29,3 +29,5 @@ Allow people to interrupt programmatic movement. Reduced motion should remove un
 ## Verify
 
 Follow a deep heading link, tab through a sticky layout, open a long dialog, inspect a wide table and return from a detail page. Repeat at narrow width, with 200% text and reduced motion. Check reachable last items, focus visibility and absence of accidental page-wide horizontal scrolling. See [responsive composition](patterns/responsive.md) and [focus](focus.md).
+
+For unmounted records and growing feeds, explicitly address [find, print, focus and return context](patterns/large-collections.md).

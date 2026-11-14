@@ -28,3 +28,19 @@ A contour is optional when the image already separates clearly from its surround
 ## Loading and fallback
 
 Reserve the intended aspect ratio to avoid shifting the next action. Use an appropriate alternative when an informative image fails, and avoid duplicate announcements when an adjacent name already identifies an avatar. A fallback should not imply that a different person's portrait loaded. Check delayed load, failure, zoom and both themes.
+
+## Match the alternative to the role
+
+| Role | Useful alternative |
+| --- | --- |
+| Decoration | Empty alternative or hidden decorative markup; avoid duplicate announcements |
+| Identity | Identify the person/object when surrounding text does not already do so |
+| Action or destination | Name the action or destination, not the drawing's appearance |
+| Informative image | Convey the relevant information in context |
+| Complex chart or diagram | Provide its conclusion and a suitable detailed description or data representation |
+
+Use real text instead of an image of text when the presentation can be achieved with text, except where the image is essential or customizable under WCAG 1.4.5. A logo is a different case from a rasterized paragraph. Consult the [WAI image decision tree](https://www.w3.org/WAI/tutorials/images/decision-tree/).
+
+## Keep text readable over changing images
+
+Measure contrast at the actual background behind each letter after crop, resizing and compositing. An average image color cannot establish that contrast. Use a stable backing/scrim or a separate text region when the image cannot guarantee readability. Compare the same text and crop before changing treatment, then test alternate crops, loading failure and both themes. Do not cover the subject that the image needs to identify.

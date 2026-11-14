@@ -23,3 +23,7 @@ For bulk work, show per-item outcomes and retry only failed items. Completed ite
 5. Complete the flow by keyboard and touch at narrow width. Check mixed selection, focus when rows disappear, long names and durable feedback.
 
 See [collections](../patterns/collections.md), [editing](../patterns/editing.md), [data display](../components/data-display.md) and [recovery](../patterns/recovery.md). A teaching workspace uses local fixtures; it does not claim remote persistence.
+
+## A larger collection
+
+Use a separate 24-record collection to check page/append scope, partial loading failure, optional summary failure and removal from the last page. The original four-record workspace remains available above. See [large collections](../patterns/large-collections.md).

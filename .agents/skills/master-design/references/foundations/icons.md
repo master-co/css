@@ -27,3 +27,5 @@ An avatar's fallback should retain a useful name or initials without pretending 
 ## Review
 
 Check image loading and fallback, long names, high-density rendering and themes. Icon targets must remain large enough and nonoverlapping even when their glyphs are small. See [images](../images.md), [avatar stacks](../avatar-stacks.md) and [typographic alignment](../typography.md).
+
+For functional, identifying and complex images, choose the [alternative by role](../images.md#match-the-alternative-to-the-role). Inspect icon viewport versus visible ink before a [local optical correction](../typography.md#correct-a-specific-optical-imbalance).

@@ -32,3 +32,21 @@ A large promotional action can still be a link when it navigates. An action can 
 ## Verify
 
 Activate with keyboard and pointer, submit through the form's native mechanism, and retry after failure. Check long labels, focus rings, busy transitions, disabled behavior and first-touch discoverability. Master UI implementations: [Button](https://ui.master.co/components/button) and [Link](https://ui.master.co/components/link). Read their current contracts for supported classes and attributes.
+
+## Compose action groups
+
+A row of buttons can remain ordinary tab stops. Use a toolbar's composite keyboard model only for a related command collection that benefits from it; see [APG toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/). A menu is a command popup, not a role for any list of links.
+
+A split action has two separately named operations: execute the primary command and open its alternatives. The arrow must not unexpectedly execute the primary action. Keep overflow commands discoverable at narrow widths and return focus after dismissal. If people need to compare every option, visible controls may be better than an overflow menu.
+
+## Explain unavailable actions
+
+| State | Contract |
+| --- | --- |
+| Hidden | Absent from interaction; use when irrelevant, not to conceal a necessary explanation |
+| Native disabled | Browser suppresses activation and ordinary focus; disabled form controls are excluded from submission |
+| ARIA disabled | Exposes unavailability but does not suppress events, remove focus or change form submission by itself |
+| Read-only | Retains a value for reading/copying; only applicable controls support it; normally remains focusable and submitted |
+| Busy | Work is pending, not confirmed; prevent duplicate consequential actions and communicate progress |
+
+Use an adjacent reason when an unavailable action needs explanation. A disabled control's tooltip cannot be the only route. Native disabled controls are not universally absent from screen-reader reading. Test supported browser/AT behavior separately from tab focus. Check pointer, Enter/Space and form submission, including programmatic handlers. See [HTML disabled](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#enabling-and-disabling-form-controls:-the-disabled-attribute) and [ARIA disabled](https://www.w3.org/TR/wai-aria-1.2/#aria-disabled).

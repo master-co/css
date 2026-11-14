@@ -34,7 +34,7 @@ For equal circular boxes on a straight line, with diameter D, overlap O and no e
 
 The stacked study starts at D32, O8, G2: three boxes occupy 80px of layout and 84px of outside paint. For a spaced row with gap S, width is `N × D + (N − 1) × S`; S6 gives 108px of layout and 112px of outside paint. The A comparisons hold portraits, crop, image inset and G2 constant, with matching host size, inline-start and vertical center. Only spacing changes. They are original concept comparisons, not a claim that the dashboard historically used spaced avatars. These are specimen values. A snug parent must still leave the outside ring unclipped. Recalculate for unequal sizes, curved arrangements, visible gaps or a different border model.
 
-Use logical start margins and keep DOM data order. Later siblings paint in front through explicit stacking order; RTL mirrors placement without reversing people. Do not add a trailing negative margin. The dashboard specimen stays D22/O5 with a 1.5px outside separator; retain its original first-circle center and table column starts.
+Use logical start margins and keep DOM data order. Later siblings paint in front through explicit stacking order; RTL mirrors placement without reversing people. Do not add a trailing negative margin. A smaller specimen at D22/O5 with a 1.5px outside separator follows the same accounting. When refining an approved composition, compare its first-circle center and adjacent content starts against that project’s baseline.
 
 ## Surface coupling
 

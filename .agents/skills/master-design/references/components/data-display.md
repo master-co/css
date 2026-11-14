@@ -31,3 +31,9 @@ For chart choices, scales and uncertainty, read [data visualization](../foundati
 ## Verify
 
 Test long names, large numbers, missing data, empty results, sorting, focus and narrow layouts. Check actual number alignment in the loaded font. Master UI includes [Table](https://ui.master.co/components/table), [List](https://ui.master.co/components/list) and [Avatar](https://ui.master.co/components/avatar); application data semantics remain the consumer's responsibility.
+
+## Give cards their actual semantics
+
+A card groups content; its shape does not make the entire container a button. Use a heading, useful text and real destinations/actions. A stretched main link must not intercept text selection, secondary controls or another link. An informational badge normally remains text; a removable filter needs a separately named action. Do not make every status keyboard-focusable merely to reveal a tooltip.
+
+Test the main destination, selection/copy, secondary action, keyboard and first touch independently. For records beyond one useful page, choose a [large-collection strategy](../patterns/large-collections.md) without discarding the table's comparison relationships.

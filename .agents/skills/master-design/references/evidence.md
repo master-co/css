@@ -33,3 +33,13 @@ Separate automated detection from human review. A bounds check can catch an over
 ## Check portability of the judgment
 
 Apply the same diagnosis to an editorial page, a strongly branded service and a dense workspace. Preserve their fonts, materials and density while correcting the observable problem. If the proposed improvement requires all three to adopt the same palette or radius, it is probably a style prescription rather than a transferable rule.
+
+## Diagnose hierarchy at coarse scale
+
+State the intended first thing to notice. Squint or temporarily blur only the specimen to compare dominant masses; also inspect it with decorative imagery removed. An image or repeated border may dominate the action unintentionally. Keep real controls and explanatory text readable outside the diagnostic preview.
+
+Return to native size to read labels and complete the task. The [squint test](https://www.nngroup.com/videos/squint-test/) suggests a hierarchy hypothesis; it does not measure comprehension, contrast compliance or accessible operation. A quieter image is not automatically better when the image is the task.
+
+## Check useful restraint
+
+Pair a defect with a valid counterexample: an uneven embedded action beside an intentionally full-height attached action; a long article beside a wide comparison table; an unnormalized icon beside a balanced asset. A useful rule repairs the defect and preserves the counterexample. Retrieve only the references needed for that decision. Record actual inputs, font, engine and result; do not generalize one successful run to all projects.

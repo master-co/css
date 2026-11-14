@@ -10,7 +10,7 @@ For a fade meeting a flat plane, inspect endpoint rate of change. An eased alpha
 
 CSS support alone does not prove visible backdrop rasterization. Compare against no blur or an independent patterned-background probe. Record an unobserved effect as a setup limitation rather than generalizing to all browser versions.
 
-These examples do not simulate physical refraction. Extended glass sampling remains outside the accepted article scope; do not add it to an existing interface just because a recipe could support it.
+These examples do not simulate physical refraction. Add a more elaborate material only when it serves the project’s intended visual language and preserves readable content, performance and a useful fallback. The availability of an effect is not a reason to introduce it.
 
 ## Make the backdrop part of the test
 

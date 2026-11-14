@@ -27,3 +27,5 @@ For a long article, section tracking should reflect reading without continuously
 ## Verify
 
 Test direct URLs, back/forward, hash links, keyboard entry, focus after navigation and mobile menu exit. Ensure current indicators match the real URL. See [navigation flows](../patterns/navigation.md). Master UI implementations include [Tabs](https://ui.master.co/components/tabs), [Breadcrumb](https://ui.master.co/components/breadcrumb) and [Menu](https://ui.master.co/components/menu).
+
+Choose between [visible sections, disclosure and tabs](disclosure.md) before introducing another navigation mechanism. Repeated page regions also need a practical [bypass route](../accessibility.md#route-checks-by-the-actual-feature).

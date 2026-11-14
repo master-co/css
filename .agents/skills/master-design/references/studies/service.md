@@ -23,3 +23,7 @@ Completion identifies what happened and offers a useful next action. Returning t
 5. Repeat with Enter, autofill, paste, long labels and a narrow viewport. Check focus after step changes and meaningful announcements without repetition.
 
 See [fields](../components/forms.md), [form flows](../patterns/forms.md), [content design](../foundations/content.md) and [recovery](../patterns/recovery.md).
+
+## A changing branch
+
+Compare a remembered date with an available appointment and an exact quantity. Change postal delivery to collection, review the active values, then return: the address draft is recoverable but excluded while inactive. Preserve invalid input through correction and retry. See [branching forms](../patterns/forms.md#preserve-work-through-changing-branches).

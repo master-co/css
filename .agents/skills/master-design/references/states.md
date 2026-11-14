@@ -12,7 +12,7 @@ Compute progress against usable interior width. Treat track, fill and end shape 
 
 When replacing a drawn control with a real input, button or link, inspect the winning appearance, padding, border, line height and inherited color. Preserve the approved resting paint and alignment while adding real semantics. A native checkbox can keep its behavior with scoped custom paint, provided checked, focus, disabled and forced-colors states are also verified.
 
-Separate visible glyph size from hit area. A 16px glyph inside a 44px target is one specimen; check neighboring targets for overlap. Use an accessible name and native control or established equivalent. Growing the target should not move or resize the visible mark: preserve its center with explicit geometry, keep the control's drawn size the same for every pointer, and verify actual bounds because flex shrink can silently reduce a declared target.
+Separate visible glyph size from hit area. A 16px glyph inside a 44px target is one specimen; check neighboring targets for overlap. Use an accessible name and native control or established equivalent. When the intention is to preserve the visible mark, keep its center and drawn bounds stable while expanding its target. A coordinated density change can instead resize related controls; see [sizing](foundations/sizing.md). Verify actual bounds because flex shrink can silently reduce a declared target.
 
 When local margins reduce the [row footprint](layout.md#mixed-content-rows), the control's border box and target can still extend outside it. Inspect the full clickable bounds and every adjacent row, not just the visible glyph. Keep hover and focus unobstructed; increase row spacing or density size when there is insufficient room.
 
@@ -37,3 +37,5 @@ A selected item can also be hovered, focused, pressed, busy or unavailable. Defi
 Use an explicit state matrix for the affected control, then test combinations that could hide a cue: selected plus focused, invalid plus focused, busy after keyboard activation. Test pointer cancellation and disabled activation. A decorative preview that merely toggles colors cannot prove the underlying semantics.
 
 For focus placement and input completion, see [focus craft](focus.md). For request ordering and result identity, see [asynchronous work](patterns/async.md).
+
+Choose unavailable behavior using the [hidden, disabled, read-only and busy contracts](components/actions.md#explain-unavailable-actions); appearance alone does not suppress activation or define form submission.

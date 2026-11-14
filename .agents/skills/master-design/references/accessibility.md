@@ -40,10 +40,32 @@ The normative source is [WCAG 2.2](https://www.w3.org/TR/WCAG22/). Use [APG patt
 
 ## Check beyond the resting screenshot
 
-Allow password managers and paste, provide accessible authentication alternatives where required, and preserve already supplied information when the task does not justify asking again. A drag operation needs an appropriate non-drag alternative. Avoid timing that removes the only route to recover work.
-
-Test text-spacing overrides as well as font enlargement: changed line, paragraph, letter and word spacing must not hide content. Check focus under sticky headers and at scroll-region boundaries. Document the actual applicability and exceptions of a criterion rather than converting one preferred target size into a universal conformance rule.
+Use the feature routes below to find the relevant authentication, gesture, timing and text-growth conditions. Keep criterion applicability explicit; a preferred target size is not a universal conformance rule.
 
 ## Review an assembled flow
 
-Use a representative search, form and collection task. Inspect names and descriptions, input errors, focus after navigation and status announcements with assistive technology where available. Automated accessibility checks complement this walkthrough; they do not certify the whole experience. See [focus](focus.md), [localization](foundations/localization.md) and [authentication](patterns/access.md).
+Choose a [reading](studies/reading.md), [service](studies/service.md) or [workspace](studies/workspace.md) journey that matches the task. Record which reading order, labels, focus transitions and announcements were actually inspected, and which require a supported assistive-technology environment.
+
+## Route checks by the actual feature
+
+| Trigger | Required decision or route |
+| --- | --- |
+| Repeated navigation/content blocks | Provide a practical bypass such as a visible-on-focus skip link to main content; test its focus destination (2.4.1) |
+| Pages within a set | Offer more than one locating mechanism, except steps/results of a process; navigation plus search or an appropriate index can work (2.4.5) |
+| Instructions about position, sound, shape or color | Also identify the control/action by meaningful wording (1.3.3) |
+| Orientation | Do not restrict portrait/landscape unless a specific orientation is essential (1.3.4) |
+| Personal information and authentication | Use recognized input purposes; permit password managers/paste and a path satisfying 3.3.8's cognitive-test conditions and exceptions; see [access](patterns/access.md) |
+| Images, audio or video | Choose alternatives by content and purpose, not file extension; see [images](images.md#match-the-alternative-to-the-role) and [media](foundations/media.md) |
+| Hover/focus popup | Check dismissal, pointer reach and persistence; see [overlays](components/overlays.md#keep-hover-content-reachable) |
+| Shortcuts, gestures, dragging or device motion | Test the distinct input alternatives in [focus](focus.md#offer-complete-alternatives) |
+| Time limits, automatic updates, flashing or audio | Apply the separate conditions in [motion](foundations/motion.md#separate-preference-time-and-ongoing-content) |
+| Focus/input changes | Avoid unexpected context changes; see [content](foundations/content.md#support-recognition-and-predictable-choices) |
+| Prior answers or consequential submissions | Preserve/reselect information and provide appropriate correction, review or reversal; see [forms](patterns/forms.md#preserve-work-through-changing-branches) |
+
+For accessible authentication (3.3.8), a cognitive function test needs a qualifying alternative, assistance mechanism or applicable object-recognition/personal-content exception. Do not require memorization or transcription while blocking paste and password managers. Check the full criterion for the specific flow; a password field's presence alone neither proves nor disproves compliance.
+
+## Test content growth
+
+For text-spacing overrides (1.4.12), test line height at least 1.5 times font size, following-paragraph spacing at least twice font size, letter spacing at least .12 times font size and word spacing at least .16 times font size, without losing content or functionality. Apply the criterion's language/script exceptions; these are user override tests, not required default typography.
+
+Test 200% text resizing separately from zoom/reflow. A 320 CSS-pixel viewport exercises one reflow condition; changing the root font size is not proof of browser zoom behavior. Inspect closed/open popups, errors and controls after growth. Automated checks and this routing table do not establish whole-product conformance.

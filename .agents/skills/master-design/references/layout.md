@@ -61,3 +61,5 @@ A long article can use a reading column and optional contents rail; a dense tool
 ## Inspect the next state
 
 Add a two-line label, an error and a revealed secondary action. Check whether the intended grouping survives and whether the next target moves into the previous target's space. Local negative margins require measuring the full target, not only the visible row footprint. Check reading order after any visual rearrangement.
+
+For nested spacing, distinguish [sibling gaps, enclosure padding and separation](foundations/spacing.md#distinguish-three-distances). For a coarse hierarchy diagnosis, use the optional [squint comparison](evidence.md#diagnose-hierarchy-at-coarse-scale), then return to real-size reading.

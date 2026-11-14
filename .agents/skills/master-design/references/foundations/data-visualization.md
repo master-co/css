@@ -33,3 +33,9 @@ Use direct labels, line patterns or symbols alongside color. Provide a concise t
 ## Verify
 
 Recompute displayed totals from the same records as the chart. Test all-zero data, missing points, negative values, long labels and a narrow viewport. Check that changing a filter updates every dependent representation. Read the chart without color and without tooltips; the main conclusion should remain available. Apply the [WCAG use-of-color guidance](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html) without treating it as proof of statistical correctness.
+
+## Keep encoding tied to meaning
+
+Use distinct categorical colors for named groups, an ordered lightness progression for magnitude, and diverging encoding only around a meaningful midpoint such as zero change. A midpoint is not decoration. Keep a category's identity stable when filtering or sorting; assign colors by stable identity rather than current array position. Do not impose a new palette on the project.
+
+Label series and units directly where practical; keep a readable legend and source/time context where needed. Color alone cannot carry the distinction: use labels, shapes or patterns as appropriate. Test one category, reordered series, missing values and both themes. A data table provides values but may still need a text summary of the chart's conclusion. See [USWDS visualization guidance](https://designsystem.digital.gov/components/data-visualizations/) and [Carbon palettes](https://www.carbondesignsystem.com/building-blocks/data-visualization/color-palettes).

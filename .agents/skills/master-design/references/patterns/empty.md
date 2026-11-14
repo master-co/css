@@ -28,3 +28,5 @@ Keep query and filter values after a failure. Clearing filters should affect onl
 ## Acceptance scenario
 
 Visit a fresh collection, create one item, filter it out, simulate a failed reload and remove permission. Confirm each state has truthful wording and the appropriate action. Check keyboard focus, status announcements and readable fallback without illustrations. See [search](search.md), [onboarding](onboarding.md) and [content design](../foundations/content.md).
+
+A failed optional panel can coexist with useful primary work. Keep [failure scoped to that region](async.md#limit-failure-to-its-actual-scope), rather than declaring the entire task empty.

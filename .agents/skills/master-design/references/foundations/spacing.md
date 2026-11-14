@@ -29,3 +29,9 @@ Keep error messages and wrapped help inside their field group. Let vertical spac
 ## Review
 
 Compare the same content with only the named spacing variable changed. Inspect edges, nested enclosure, focus rings and the longest state. At 320 CSS pixels and with enlarged text, the grouping should remain recognizable. See [layout craft](../layout.md) and [nested geometry](../geometry.md).
+
+## Distinguish three distances
+
+Within-group gaps connect related siblings; enclosure padding separates content from its boundary; between-group separation distinguishes groups. Compare related quantities before applying a ratio. Label-to-input spacing usually needs to be tighter than separation from the next field, but a card with 24px padding, 8px internal gaps and a 12px external gutter can remain well grouped by its enclosure.
+
+These values are specimens. Read labels and fields without their borders, then with them. If a label seems closer to the wrong input, repair that relationship. Do not reject a valid card simply because its padding exceeds the gutter. Keep content and typography fixed when comparing grouping. See [geometry](../geometry.md) for painted inset measurement.

@@ -51,3 +51,7 @@ The website and the installed skill read the same Markdown sources. The skill is
 The craft references explain visible mechanisms: a contour against its background, a nested corner, an icon beside text, or feedback during an interrupted transition. Keep measurements, deductions and visual judgments separate. [Learn the verification method](evidence.md).
 
 The [Interface Craft essays](https://aron.tw/en/blog/interface-craft) provide companion illustrations. Original research studies remain in the [Master Design repository](https://github.com/master-co/design/tree/main/examples/interface-craft).
+
+## Read conditional topics when needed
+
+Use [media](foundations/media.md) for audiovisual content, [disclosure](components/disclosure.md) for hidden panels, [dates and times](patterns/date-time.md) for temporal entry, [large collections](patterns/large-collections.md) for paging/appending, [privacy](patterns/privacy.md) for sharing decisions and [AI](patterns/ai.md) for generated suggestions. These are independent task routes, not prerequisites for an ordinary spacing correction.

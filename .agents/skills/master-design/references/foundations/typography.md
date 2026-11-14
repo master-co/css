@@ -33,3 +33,11 @@ Test delayed fonts, fallback glyphs, long identifiers, text-spacing overrides an
 ## Review
 
 Read a full paragraph and scan a complete form or list at native size. Check headings, captions, links, numbers and controls in both themes. Verify font loading does not move the primary action unexpectedly. See [typographic craft](../typography.md) for glyph edges, line boxes, numbers and CJK mechanisms.
+
+## Choose a reading measure
+
+For sustained Latin prose, roughly 45–75 characters per line is a useful starting hypothesis, not a universal limit. [USWDS](https://designsystem.digital.gov/components/typography/) uses a broader 45–90 range with a target around 66. Judge actual paragraphs, font size and line height together: returning to the next line and finding the next paragraph should be easy. Start alignment usually preserves a stable reading edge without the uneven word spacing of forced justification.
+
+CSS `ch` uses the advance of the zero glyph, not the average width of this text. Test actual CJK and mixed-script paragraphs in the loaded font; do not halve a Latin count automatically. Short captions, display headings, code and wide data tables have different tasks and need not share a prose measure cap.
+
+[WCAG 1.4.8](https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html) is AAA and requires a mechanism for specified presentation adjustments, including its 80-character/40-CJK condition. It is not an AA requirement to set every paragraph to that width. Compare short, moderate and long measures with the same copy, then independently adjust line height. Check fallback fonts, text enlargement and [spacing overrides](../accessibility.md#test-content-growth).

@@ -23,3 +23,7 @@ Do not replace a result link with a button solely to support a preview. Client e
 5. Repeat at narrow width, with long text and keyboard navigation. Check title changes, focus, actual destinations and no-JavaScript content.
 
 The observable result is a continuous reading journey. See [layout](../foundations/layout.md), [search](../patterns/search.md), [navigation](../patterns/navigation.md) and [scrolling](../scrolling.md).
+
+## A larger collection
+
+Compare paging with explicit append in a separate 24-record collection. Fail the next chunk, retry and return from a detail with Back. Existing records and selected identities survive. The original four-article journey remains unchanged. See [large collections](../patterns/large-collections.md).

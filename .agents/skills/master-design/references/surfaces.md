@@ -25,9 +25,11 @@ Check native straight edges, corners and states against actual surrounding tones
 
 ## Textures
 
-A repeated drawing across a face (dots, a grid, stripes, a checker) marks room that holds no content: an open stage, measured space, an area kept clear, the ground behind something transparent. Give each texture one such meaning within a project and keep it to specimens, margins and empty regions. Never put one under running text or controls, where marks cross letterforms and lower contrast. Its ink belongs below the faintest structural line nearby, so the eye finds the edge of what stands on it before it notices the drawing; a texture that reads first has become decoration.
+A grid behind a transparent image can explain empty space; stripes in a chart can distinguish data; a project may use texture as part of its identity. State the intended role. The empty-stage recipe uses a quiet pattern beneath the specimen, but that meaning and intensity do not apply to every texture.
 
-Draw marks with hard-stopped gradients so the stated weight is the drawn weight, and count tiles from a whole-pixel origin: a tile centered in a box of odd width lands on half a pixel and blurs every mark. Check hairline textures at 1x as well as 2x, where a half-pixel line may vanish or double. A texture never carries meaning alone; forced-colors mode may remove it, so a boundary or a label must still say what the room is.
+Inspect interference with letters, controls and necessary boundaries on the actual backdrop. Prefer a separate text region or stable backing when a pattern makes reading unreliable. A branded texture behind content can be valid if contrast and legibility survive crops, themes and text growth. Decorative pattern weight is a judgment; meaningful data patterns also need distinguishable labels or shapes.
+
+Hard-stopped gradients are one way to draw crisp repeated marks, not a mandatory renderer. Check tile origin, fractional alignment and rasterization at native 1× and 2×; an odd-width centered tile may change edge weight. Forced colors may remove patterns, so necessary meaning must survive through text, shape or boundaries.
 
 ## Separate the contributions
 

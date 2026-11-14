@@ -25,3 +25,5 @@ If setup fails, preserve entered values and retry the failed step. Skipping a tu
 Start with no data, skip optional help, complete one required step and fail another. Leave and return through the supported continuation path. Confirm completed work is retained, the next action is clear and help remains reachable with keyboard and touch. Test the same flow for a returning person.
 
 The [GOV.UK service-start guidance](https://design-system.service.gov.uk/patterns/start-using-a-service/) is a task-oriented reference; its page styling and public-service assumptions are not defaults for every product.
+
+For hiding optional detail, use the [disclosure decision](../components/disclosure.md); consequential state and essential instructions remain discoverable.

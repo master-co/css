@@ -29,3 +29,9 @@ Offline content may be cached or a local draft. Label freshness and actual persi
 ## Acceptance scenario
 
 Run a slow operation, repeat the trigger, change input before completion, cancel where supported, then test partial failure and retry. Check focus, announcements, reduced motion and the final stable state. See [feedback](../components/feedback.md) and [motion](../foundations/motion.md).
+
+## Limit failure to its actual scope
+
+Keep useful primary content when an optional region fails. Name the unavailable region, its retry and any stale information that remains. A failed recommendation panel need not replace an editable document with a page-wide error. Conversely, do not call a dependent action ready when its required data is unavailable.
+
+Keep controls responsive during loading; replace only content whose identity is changing. Use determinate progress only with a meaningful measured total, never merely because waiting is long. Do not force a minimum spinner duration that delays a completed task. Test regional failure alongside editing, stale content, retry and unavailable enhancement. See [large collections](large-collections.md) for failed append behavior.

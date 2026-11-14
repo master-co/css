@@ -28,3 +28,9 @@ Keep a durable record of failed items long enough to recover. Do not replace a p
 ## Acceptance scenario
 
 Select two rows, filter until one is hidden, inspect the selection scope and sort. Run a batch with one simulated failure, retry only that item and undo a reversible result. Check counts, stable identity, mixed checkbox state, focus and announcements. See [selection](../components/selection.md), [data display](../components/data-display.md) and [recovery](recovery.md).
+
+## Reorder without losing identity
+
+Distinguish automatic sorting from manual order. Explain which order is being changed and whether a filter hides other members. A manual move must not silently disappear under an active automatic sort.
+
+Offer a visible non-drag operation such as Move up/down or a destination chooser. Identify the item and destination, let a multi-step operation cancel before commitment, announce the result and retain useful focus on the moved item. Provide undo when the operation supports it. Keyboard access alone is not the single-pointer alternative required by WCAG 2.5.7. Test first/last positions, long names, filtered scope, cancellation and repeated moves. See [focus alternatives](../focus.md#offer-complete-alternatives) and [large collections](large-collections.md).

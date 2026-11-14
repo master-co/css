@@ -29,3 +29,11 @@ If a session expires or the network becomes unavailable, state whether work is l
 ## Acceptance scenario
 
 Enter data with autofill and keyboard, submit with two invalid fields, correct one, simulate a failed request, retry and complete. Confirm values survive, focus remains logical, messages are announced once and the final state is unambiguous. See [fields](../components/forms.md) and [feedback](../components/feedback.md).
+
+## Preserve work through changing branches
+
+Make conditional questions follow the answer that reveals them. If an answer removes a branch, exclude obsolete hidden answers from submission; retain a recoverable draft when returning within the task is supported. Explain any value that must be discarded. Required fields in an inactive branch must not block completion.
+
+Progress describes the actual remaining path. When branching makes the total unknown, show named stages or current progress without an invented fixed denominator. A review link returns to the relevant editable section and retains unrelated values; reveal any hidden panel containing an error before moving focus to it.
+
+For information already supplied in the same process, populate it or make it available for selection, except when re-entry is essential, required for security, or the earlier information is no longer valid (WCAG 3.3.7). For legal/financial commitments, modification/deletion of user-controlled stored data, or test-response submission, provide the applicable reversible, checked/correctable or reviewed/confirmed path under 3.3.4. Not every harmless setting needs a confirmation dialog. Test changed branches, review correction and failed retry with real entered values.

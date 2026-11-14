@@ -16,7 +16,7 @@ For a table that needs two-dimensional comparison, horizontal scrolling can be a
 
 ## Respect input and environment
 
-Keep actions reachable without hover. Touch targets can grow independently from their glyphs and surfaces; a coarse pointer should not make a control's visible geometry change. Preserve focus indicators at overflow boundaries and account for sticky bars and safe areas. Test both themes and forced colors rather than treating responsive work as geometry alone.
+Keep actions reachable without hover. Choose target expansion, coordinated visible growth or recomposition using the [sizing guidance](../foundations/sizing.md). Do not infer a required density solely from pointer type. Preserve focus indicators at overflow boundaries and account for sticky bars and safe areas. Test both themes and forced colors rather than treating responsive work as geometry alone.
 
 ## Transform relationships
 

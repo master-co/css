@@ -29,3 +29,5 @@ Hiding or disabling a control is not access enforcement. Interface feedback must
 ## Acceptance scenario
 
 Open a permitted deep link while signed out, sign in and return. Expire a session during editing, retry after authentication, then repeat with insufficient permission and with a different identity. Check truthful save status, focus, back navigation and a useful exit. See [editing](editing.md) and [recovery](recovery.md).
+
+Distinguish session expiry from a [content time limit](../foundations/motion.md#separate-preference-time-and-ongoing-content), and permission from [audience, sharing and consent](privacy.md). A UI promise must match the actual service capability.

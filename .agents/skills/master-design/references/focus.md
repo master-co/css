@@ -27,3 +27,11 @@ A mask, clipping ancestor or overflow boundary can remove an otherwise strong ri
 ## Verify
 
 Complete the task with Tab, Shift+Tab, activation and the pattern's arrow keys. Open and dismiss overlays, delete the focused item, cancel a pointer action and submit mixed-script input. Inspect focus at scroll boundaries and beneath sticky regions. Record actual browser and assistive-technology behavior; a visible ring alone does not prove a correct focus sequence. See [states](states.md) and [scrolling](scrolling.md).
+
+## Offer complete alternatives
+
+Single-character shortcuts need an off switch, remapping to include a nonprinting modifier, or activation only while their control has focus (WCAG 2.1.4). Do not intercept editable text, IME composition or established browser commands. Discoverable commands remain available when shortcuts are off.
+
+Keyboard access and a single-pointer alternative are different checks. Dragging needs a click/tap operation that does not require dragging unless essential or user-agent-controlled; multipoint/path gestures need a simple pointer alternative unless essential. Motion-actuated features need ordinary controls and a way to disable motion actuation, subject to the assistive-interface and essential exceptions. Do not add gestures just to demonstrate an alternative. See [dragging](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html), [pointer gestures](https://www.w3.org/WAI/WCAG22/Understanding/pointer-gestures.html) and [motion actuation](https://www.w3.org/WAI/WCAG22/Understanding/motion-actuation.html).
+
+For ordering, provide named Move controls or a destination chooser operable with click/tap as well as keyboard. Keep focus with the item and announce its new position; see [collections](patterns/collections.md).

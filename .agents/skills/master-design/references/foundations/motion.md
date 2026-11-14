@@ -31,3 +31,11 @@ Keep distance, duration and easing the same when comparing reversal mechanisms. 
 ## Review
 
 Check initial render, interruption, keyboard, touch, disabled input and asynchronous updates. Record actual behavior rather than judging only an exported video. See [motion craft](../motion.md) for reversal and state-identity mechanisms.
+
+## Separate preference, time and ongoing content
+
+Reduced motion controls animation preference; it does not pause auto-updating information or extend a timed task. Moving/blinking/scrolling content that starts automatically, lasts more than five seconds and runs alongside other content needs pause/stop/hide unless essential. Auto-updating information presented alongside other content needs pause/stop/hide or control over update frequency unless essential; that rule has no five-second threshold.
+
+Avoid flashing. WCAG 2.3.1 permits no more than three flashes in any one-second period or flashing below its general/red thresholds; a subjective preview is not a threshold analysis. Use static explanations rather than hazardous demonstrations. Automatically playing audio lasting more than three seconds needs pause/stop or volume control independent of overall system volume. See [WCAG 2.2](https://www.w3.org/TR/WCAG22/) and [media](media.md).
+
+For a content-imposed time limit, provide the applicable off, adjustment or extension option before expiry. The extension path warns with at least 20 seconds to respond and permits at least ten extensions; exceptions include real-time events, essential timing and limits longer than 20 hours. Read [2.2.1](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html) for exact conditions. Preserve entered work when a session must end; do not pretend a visual countdown controls a server's authorization.
