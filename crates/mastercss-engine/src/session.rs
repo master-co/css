@@ -57,8 +57,8 @@ impl EngineSession {
         manifest_json: &str,
         emitted_globals: EmittedGlobals,
     ) -> Result<Self, EngineError> {
-        let (manifest, json) = parse_manifest(manifest_json)?;
-        let mut session = Self::from_parsed_manifest(&manifest, emitted_globals)?;
+        let (program, json) = super::program_cache::manifest_program(manifest_json)?;
+        let mut session = Self::with_program(program, emitted_globals);
         session.manifest_json = Some(json);
         Ok(session)
     }
@@ -71,7 +71,7 @@ impl EngineSession {
     ) -> Result<Self, EngineError> {
         let program = super::program::encode(&compile_manifest(manifest)?);
         Ok(Self::with_program(
-            decode_program(&program)?,
+            std::sync::Arc::new(decode_program(&program)?),
             emitted_globals,
         ))
     }
@@ -82,12 +82,15 @@ impl EngineSession {
         emitted_globals: EmittedGlobals,
     ) -> Result<Self, EngineError> {
         Ok(Self::with_program(
-            decode_program(program)?,
+            std::sync::Arc::new(decode_program(program)?),
             emitted_globals,
         ))
     }
 
-    pub(crate) fn with_program(compiled: Program, emitted_globals: EmittedGlobals) -> Self {
+    pub(crate) fn with_program(
+        compiled: std::sync::Arc<Program>,
+        emitted_globals: EmittedGlobals,
+    ) -> Self {
         let mut session = Self {
             manifest_json: None,
             compiled,
@@ -117,9 +120,14 @@ impl EngineSession {
 
     pub fn manifest_json(&self) -> Result<String, EngineError> {
         self.ensure_active()?;
-        self.manifest_json.clone().ok_or_else(|| {
-            EngineError::InvalidManifest("this session executes a program, not a manifest".into())
-        })
+        self.manifest_json
+            .as_deref()
+            .map(str::to_owned)
+            .ok_or_else(|| {
+                EngineError::InvalidManifest(
+                    "this session executes a program, not a manifest".into(),
+                )
+            })
     }
 
     pub fn ensure_class_rules<I, S>(
@@ -380,8 +388,7 @@ impl EngineSession {
         globals: Option<&str>,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
-        let (manifest, json) = parse_manifest(manifest_json)?;
-        let program = decode_program(&super::program::encode(&compile_manifest(&manifest)?))?;
+        let (program, json) = super::program_cache::manifest_program(manifest_json)?;
         let emitted = match globals {
             Some(globals) => parse_emitted_globals(globals)?,
             None => self.emitted_globals.clone(),
@@ -401,7 +408,7 @@ impl EngineSession {
         emitted_globals: Option<EmittedGlobals>,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
-        let program = decode_program(program)?;
+        let program = std::sync::Arc::new(decode_program(program)?);
         let emitted = emitted_globals.unwrap_or_else(|| self.emitted_globals.clone());
         {
             self.manifest_json = None;
@@ -436,15 +443,19 @@ impl EngineSession {
             session.theme_variable_names.clear();
             for source in &session.stylesheet_sources {
                 for (name, value) in crate::stylesheet_declarations(source) {
-                    if let Some(name) = name.strip_prefix("--") {
-                        let values = session
+                    if let Some(name) = name.strip_prefix("--")
+                        && !session
                             .compiled
                             .animation_variables
+                            .get(name)
+                            .is_some_and(|values| values.contains(&value))
+                    {
+                        // Programs are shared; copy this session's only when it changes.
+                        std::sync::Arc::make_mut(&mut session.compiled)
+                            .animation_variables
                             .entry(name.into())
-                            .or_default();
-                        if !values.contains(&value) {
-                            values.push(value);
-                        }
+                            .or_default()
+                            .push(value);
                     }
                 }
             }
@@ -1088,7 +1099,9 @@ impl EngineSession {
 
 /// Parses a manifest, with the compact JSON of what it parsed, in its member order,
 /// which [`EngineSession::manifest_json`] returns.
-fn parse_manifest(manifest_json: &str) -> Result<(MasterCssManifest, String), EngineError> {
+pub(crate) fn parse_manifest(
+    manifest_json: &str,
+) -> Result<(MasterCssManifest, String), EngineError> {
     let value: serde_json::Value =
         serde_json::from_str(manifest_json).map_err(mastercss_schema::SchemaError::from)?;
     let json = serde_json::to_string(&value).map_err(mastercss_schema::SchemaError::from)?;
@@ -1101,7 +1114,7 @@ pub fn compile_program(manifest_json: &str) -> Result<Vec<u8>, EngineError> {
     Ok(super::program::encode(&compile_manifest(&manifest)?))
 }
 
-fn decode_program(program: &[u8]) -> Result<Program, EngineError> {
+pub(crate) fn decode_program(program: &[u8]) -> Result<Program, EngineError> {
     super::program::decode(program).map_err(|error| match error {
         super::program::ProgramError::Invalid(reason) => EngineError::InvalidProgram(reason.into()),
         super::program::ProgramError::UnsupportedVersion => EngineError::UnsupportedProgramVersion,

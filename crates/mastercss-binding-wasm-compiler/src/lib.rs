@@ -249,6 +249,18 @@ pub fn binding_info() -> Result<JsValue, JsValue> {
     .map_err(serialization_error)
 }
 
+/// Stores a manifest for graph requests to reference as `{"$ref": key}`.
+#[wasm_bindgen(js_name = registerManifestJSON)]
+pub fn register_manifest_json(manifest_json: &str) -> Result<String, JsValue> {
+    mastercss_compiler::register_manifest_json(manifest_json).map_err(compiler_error)
+}
+
+/// The JSON of a stored manifest; `undefined` once it was evicted.
+#[wasm_bindgen(js_name = manifestJSON)]
+pub fn manifest_json(key: &str) -> Option<String> {
+    mastercss_compiler::manifest_json(key)
+}
+
 /// JSON in and out, like the native binding, so both share the compiler's reuse of
 /// identical requests.
 #[wasm_bindgen(js_name = compileCSSStylesheetGraph)]

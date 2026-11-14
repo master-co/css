@@ -26,19 +26,30 @@ pub(crate) fn lower_manifests(
         .as_ref()
         .map(parse_manifest)
         .transpose()?;
-    let reference = options
+    let resolution = options
         .resolution_manifest
         .as_ref()
-        .map(|manifest| Ok(reference_context(parse_manifest(manifest)?, base.as_ref())))
+        .map(parse_manifest)
         .transpose()?;
-    let resolution_manifest = compile_manifest(input, reference.as_ref().or(base.as_ref()))?;
+    lower_parsed_manifests(input, initial_warnings, base.as_ref(), resolution)
+}
+
+/// [`lower_manifests`] onto manifests already parsed and validated.
+pub(crate) fn lower_parsed_manifests(
+    input: &CssDirectiveManifestInput,
+    initial_warnings: &[String],
+    base: Option<&MasterCssManifest>,
+    resolution: Option<MasterCssManifest>,
+) -> Result<LoweredManifests, CompilerError> {
+    let reference = resolution.map(|manifest| reference_context(manifest, base));
+    let resolution_manifest = compile_manifest(input, reference.as_ref().or(base))?;
     let manifest = match reference {
-        Some(reference) if Some(&reference) != base.as_ref() => {
+        Some(reference) if Some(&reference) != base => {
             // Resolve local bodies against reference definitions before removing
             // reference-only registrations from the delivered manifest.
             let mut delivered = input.clone();
             delivered.mixins = super::resolution::delivered_mixins(input, &resolution_manifest);
-            let mut manifest = compile_manifest(&delivered, base.as_ref())?;
+            let mut manifest = compile_manifest(&delivered, base)?;
             if let Some(keyframes) = &resolution_manifest.keyframes {
                 manifest.keyframes = Some(keyframes.clone());
             }

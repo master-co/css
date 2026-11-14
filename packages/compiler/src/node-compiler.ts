@@ -1,5 +1,6 @@
 import { noticeDiagnostics } from './notices'
 /** @internal Node-only compiler and import-graph implementation. */
+import { createHash } from 'node:crypto'
 import { readFileSync, realpathSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -207,6 +208,30 @@ export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
   } catch {
     return false
   }
+}
+
+const REFERENCE_CACHE_CAPACITY = 512
+const referenceCache = new Map<string, readonly CSSDirectiveReference[]>()
+
+/**
+ * The `@reference` statements that {@link compileCSS} reports for `source`. Hosts
+ * read them for every stylesheet in a reference graph, per compiled stylesheet;
+ * they depend only on the source and its identity, so a repeated source skips
+ * compiling and copying the whole directive result.
+ */
+export function compileCSSReferences(source: string, from: string): readonly CSSDirectiveReference[] {
+  const key = createHash('sha256').update(from).update('\0').update(source).digest('hex')
+  const cached = referenceCache.get(key)
+  if (cached) {
+    referenceCache.delete(key)
+    referenceCache.set(key, cached)
+    return cached
+  }
+  const references = Object.freeze((compileCSS(source, { from, preserveNativeCSS: false }).references ?? [])
+    .map(reference => Object.freeze(reference)))
+  if (referenceCache.size >= REFERENCE_CACHE_CAPACITY) referenceCache.delete(referenceCache.keys().next().value!)
+  referenceCache.set(key, references)
+  return references
 }
 
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {

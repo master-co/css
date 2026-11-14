@@ -2,14 +2,32 @@ import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSCompilerBindingSession } from './compiler-binding-contract'
 import type { MasterCSSNativeModuleOptions } from './engine-contract'
 import { NativeBindingError } from './errors'
-import { loadNativeBinding } from './native-loader'
+import type { MasterCSSManifestStore } from './manifest-references'
+import { loadNativeBinding, type NativeBinding } from './native-loader'
 
 export type { MasterCSSNativeModuleOptions } from './engine-contract'
 
 export type MasterCSSNativeCompilerBinding = Omit<
   MasterCSSCompilerBindingSession,
   'binding' | 'dispose' | typeof Symbol.dispose
->
+> & Readonly<{
+  /** The manifests this native binding stores for graph requests to reference. */
+  manifestStore: MasterCSSManifestStore
+}>
+
+const manifestStores = new WeakMap<NativeBinding, MasterCSSManifestStore>()
+
+function nativeManifestStore(nativeBinding: NativeBinding) {
+  let store = manifestStores.get(nativeBinding)
+  if (!store) {
+    store = Object.freeze({
+      register: (manifestJSON: string) => nativeBinding.registerManifestJson(manifestJSON),
+      json: (key: string) => nativeBinding.manifestJson(key) ?? undefined
+    })
+    manifestStores.set(nativeBinding, store)
+  }
+  return store
+}
 
 function parse<T>(value: string): T {
   return JSON.parse(value) as T
@@ -86,7 +104,8 @@ export function loadNativeCompilerBinding(
         parse(nativeBinding.renderClassesJson(
           JSON.stringify(manifest),
           [...classNames]
-        ))
+        )),
+      manifestStore: nativeManifestStore(nativeBinding)
     }
     return Object.freeze(compilerBinding)
   } catch (cause) {

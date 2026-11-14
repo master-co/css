@@ -11,7 +11,12 @@ use std::collections::{HashMap, HashSet};
 
 /// Parses and validates a manifest a request supplies.
 pub(crate) fn parse_manifest(manifest: &Value) -> Result<MasterCssManifest, CompilerError> {
-    MasterCssManifest::new(manifest.clone()).map_err(|error| manifest_error(error.to_string()))
+    parse_manifest_owned(manifest.clone())
+}
+
+/// [`parse_manifest`] for a manifest value the caller no longer needs.
+pub(crate) fn parse_manifest_owned(manifest: Value) -> Result<MasterCssManifest, CompilerError> {
+    MasterCssManifest::new(manifest).map_err(|error| manifest_error(error.to_string()))
 }
 
 /// Base definitions followed by `next`, where a definition replaces the last base

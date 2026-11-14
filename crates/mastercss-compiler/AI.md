@@ -13,6 +13,8 @@ and compiler report IR.
 - `lower/`: public lowering API, resolution, merge, render, and focused tests.
 - `pattern.rs`: pattern semantics shared by compiler domains.
 - `graph_memo.rs`: process-wide reuse of identical JSON graph requests for the native and Wasm bindings.
+- `manifest_store.rs`: content-addressed manifests that graph requests pass and return as `{"$ref": key}` (`manifestRefs`), so per-stylesheet requests stop carrying the project and reference manifests. Keys name immutable entries; an evicted key fails with `UNKNOWN_MANIFEST_REFERENCE` and the host resends the manifest.
+- `lower/memo.rs`: reuse of a lowering (both manifests plus the resolution engine) onto stored manifests for an identical manifest input; most local stylesheets declare none.
 
 ## Guardrails
 

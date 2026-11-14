@@ -427,6 +427,18 @@ pub fn resolve_css_stylesheet_graph_json(request_json: String) -> Result<String>
     )
 }
 
+/// Stores a manifest for graph requests to reference as `{"$ref": key}`.
+#[napi]
+pub fn register_manifest_json(manifest_json: String) -> Result<String> {
+    mastercss_compiler::register_manifest_json(&manifest_json).map_err(compiler_to_napi_error)
+}
+
+/// The JSON of a stored manifest; `None` once it was evicted.
+#[napi]
+pub fn manifest_json(key: String) -> Option<String> {
+    mastercss_compiler::manifest_json(&key)
+}
+
 #[napi]
 pub fn compile_css_stylesheet_graph_json(request_json: String) -> Result<String> {
     use mastercss_compiler::CompileCssStylesheetGraphJsonError as GraphError;

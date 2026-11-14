@@ -1,13 +1,18 @@
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
+use std::sync::Arc;
 
-use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition};
+use mastercss_engine::EngineSession;
+use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition, MasterCssManifest};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::lower::{LoweredContext, lower_stored_manifests};
+use crate::manifest_store::{RequestManifest, StoredManifest, reference_value, request_manifest};
 use crate::{
     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssImportGraphRequest,
-    CssStylesheetGraph, CssStylesheetNode, LowerCssDirectivesOptions, compile_css_directives,
-    merge_extraction_policies, resolve_prepared_css_stylesheet_graph,
+    CssStylesheetGraph, CssStylesheetNode, compile_css_directives, merge_extraction_policies,
+    resolve_prepared_css_stylesheet_graph,
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -38,6 +43,10 @@ pub struct CompileCssStylesheetGraphRequest {
     pub base_manifest: Option<Value>,
     #[serde(default)]
     pub resolution_manifest: Option<Value>,
+    /// Return both manifests as `{"$ref": key}` references to stored manifests.
+    /// Either input manifest may be such a reference too, independently of this.
+    #[serde(default)]
+    pub manifest_refs: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -399,21 +408,16 @@ pub fn compile_css_stylesheet_graph(
         .collect();
     combined.references = (!graph.references.is_empty()).then(|| graph.references.clone());
     combined.style_definitions = (!all_definitions.is_empty()).then_some(all_definitions);
-    let crate::lower::LoweredManifests {
-        manifest: mut delivered_manifest,
-        mut resolution_manifest,
-        warnings,
-    } = crate::lower::lower_manifests(
-        &combined.manifest_input,
-        &combined.warnings,
-        &LowerCssDirectivesOptions {
-            base_manifest: request.base_manifest.clone(),
-            resolution_manifest: request.resolution_manifest.clone(),
-        },
-    )?;
-    combined.warnings = warnings;
-    // One engine expands every stylesheet's native @apply applications.
-    let engine = crate::lower::engine_for_manifest(&resolution_manifest)?;
+    let lowering = lower_request_manifests(request, &combined.manifest_input, &combined.warnings)?;
+    let (lowered, engine) = match &lowering {
+        Lowering::Stored(context) => (&context.lowered, &context.engine),
+        Lowering::Inline(inline) => (&inline.0, &inline.1),
+    };
+    // Borrowed until native animation variables extend them.
+    let mut delivered_manifest = Cow::Borrowed(&lowered.manifest);
+    let mut resolution_manifest = Cow::Borrowed(&lowered.resolution_manifest);
+    combined.warnings = lowered.warnings.clone();
+    // One engine, `engine`, expands every stylesheet's native @apply applications.
 
     let mut generated = Vec::new();
     let mut raw_sources = Vec::new();
@@ -423,7 +427,7 @@ pub fn compile_css_stylesheet_graph(
             .is_none_or(|selected| selected.contains(node.id.as_str()));
         let mut replacements = Vec::new();
         for slot in slots.iter().filter(|_| emit_native) {
-            let (css, mappings) = crate::lower::render_definitions(&slot.definitions, &engine)?;
+            let (css, mappings) = crate::lower::render_definitions(&slot.definitions, engine)?;
             replacements.push((slot.name.clone(), css, mappings));
         }
         raw_sources.push(
@@ -612,8 +616,10 @@ pub fn compile_css_stylesheet_graph(
         .iter()
         .filter(|sheet| reachable.contains(sheet.id.as_str()))
     {
-        crate::keyframes::include_native_variables(&mut delivered_manifest, &sheet.css);
-        crate::keyframes::include_native_variables(&mut resolution_manifest, &sheet.css);
+        if crate::keyframes::has_native_variables(&sheet.css) {
+            crate::keyframes::include_native_variables(delivered_manifest.to_mut(), &sheet.css);
+            crate::keyframes::include_native_variables(resolution_manifest.to_mut(), &sheet.css);
+        }
     }
     // Animation variables of the delivered CSS resolve dynamic names, so notices
     // analyze it with the final resolution manifest.
@@ -623,12 +629,20 @@ pub fn compile_css_stylesheet_graph(
         .filter(|sheet| crate::keyframes::may_declare_animations(&sheet.css))
         .collect::<Vec<_>>();
     if !animated.is_empty() {
-        let engine = crate::lower::engine_for_manifest(&resolution_manifest)?;
+        // Native variables may have extended the resolution manifest.
+        let extended;
+        let engine = match &resolution_manifest {
+            Cow::Borrowed(_) => engine,
+            Cow::Owned(manifest) => {
+                extended = crate::lower::engine_for_manifest(manifest)?;
+                &extended
+            }
+        };
         for sheet in animated {
             combined.notices.extend(crate::keyframes::native_notices(
                 &sheet.css,
                 &sheet.id,
-                &engine,
+                engine,
                 &sheet.output_mappings,
             ));
         }
@@ -642,11 +656,89 @@ pub fn compile_css_stylesheet_graph(
     combined.native_css = entry.native_css.clone();
     combined.generated_css = entry.generated_css.clone();
     stylesheets.retain(|sheet| reachable.contains(sheet.id.as_str()));
+    let (manifest, resolution_manifest) = if request.manifest_refs {
+        let stored = |manifest: &Cow<'_, MasterCssManifest>,
+                      unchanged: fn(&LoweredContext) -> Arc<StoredManifest>| {
+            match (&lowering, manifest) {
+                (Lowering::Stored(context), Cow::Borrowed(_)) => unchanged(context),
+                (Lowering::Stored(context), Cow::Owned(manifest)) => {
+                    context.store_derived(manifest)
+                }
+                (Lowering::Inline(..), manifest) => {
+                    crate::manifest_store::store_manifest(manifest, &[])
+                }
+            }
+        };
+        (
+            reference_value(&stored(
+                &delivered_manifest,
+                LoweredContext::stored_manifest,
+            )),
+            reference_value(&stored(
+                &resolution_manifest,
+                LoweredContext::stored_resolution_manifest,
+            )),
+        )
+    } else {
+        (
+            delivered_manifest.to_value(),
+            resolution_manifest.to_value(),
+        )
+    };
     Ok(CompiledCssStylesheetGraph {
         entry: graph.entry,
         stylesheets,
-        manifest: delivered_manifest.to_value(),
-        resolution_manifest: resolution_manifest.to_value(),
+        manifest,
+        resolution_manifest,
         directives: combined,
     })
+}
+
+/// Lowered manifests, shared when both request manifests are stored.
+enum Lowering {
+    Stored(Arc<LoweredContext>),
+    Inline(Box<(crate::lower::LoweredManifests, EngineSession)>),
+}
+
+fn lower_request_manifests(
+    request: &CompileCssStylesheetGraphRequest,
+    input: &CssDirectiveManifestInput,
+    warnings: &[String],
+) -> Result<Lowering, CompilerError> {
+    let base = request
+        .base_manifest
+        .as_ref()
+        .map(request_manifest)
+        .transpose()?;
+    let resolution = request
+        .resolution_manifest
+        .as_ref()
+        .map(request_manifest)
+        .transpose()?;
+    let stored = |manifest: &Option<RequestManifest<'_>>| match manifest {
+        Some(RequestManifest::Stored(entry)) => Some(Some(entry.clone())),
+        Some(RequestManifest::Inline(_)) => None,
+        None => Some(None),
+    };
+    if let (Some(base), Some(resolution)) = (stored(&base), stored(&resolution)) {
+        return Ok(Lowering::Stored(lower_stored_manifests(
+            input,
+            warnings,
+            base.as_ref(),
+            resolution.as_ref(),
+        )?));
+    }
+    let parse = |manifest: Option<RequestManifest<'_>>| {
+        manifest
+            .map(|manifest| match manifest {
+                RequestManifest::Inline(value) => crate::manifest::parse_manifest(value),
+                RequestManifest::Stored(entry) => Ok(entry.manifest.clone()),
+            })
+            .transpose()
+    };
+    let base = parse(base)?;
+    let resolution = parse(resolution)?;
+    let lowered = crate::lower::lower_parsed_manifests(input, warnings, base.as_ref(), resolution)?;
+    let engine = crate::lower::engine_for_manifest(&lowered.resolution_manifest)?;
+    Ok(Lowering::Inline(Box::new((lowered, engine))))
 }

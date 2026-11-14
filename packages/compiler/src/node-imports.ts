@@ -73,8 +73,16 @@ export function resolveRelativeCSSFile(source: string, fromFile: string) {
   return fileURLToPath(new URL(source, pathToFileURL(fromFile)))
 }
 
+const jsonFiles = new Map<string, { mtimeMs: number, size: number, value: unknown }>()
+
+/** Package manifests are read for every stylesheet; reuse one until it changes. */
 function readJSONFile<T>(file: string) {
-  return JSON.parse(readFileSync(file, 'utf-8')) as T
+  const { mtimeMs, size } = statSync(file)
+  const cached = jsonFiles.get(file)
+  if (cached && cached.mtimeMs === mtimeMs && cached.size === size) return cached.value as T
+  const value = JSON.parse(readFileSync(file, 'utf-8')) as T
+  jsonFiles.set(file, { mtimeMs, size, value })
+  return value
 }
 
 function findPackageRoot(entryFile: string, packageName: string) {

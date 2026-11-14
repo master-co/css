@@ -36,6 +36,10 @@ interface MasterCSSCompilerWasmProviderSession {
   prepareCSSStylesheetBundle(request: unknown): unknown
   renderCSSStylesheetBundle(request: unknown): unknown
   compileCSSStylesheetGraph(request: unknown): unknown
+  readonly manifestStore?: {
+    register(manifestJSON: string): string
+    json(key: string): string | undefined
+  }
 }
 
 interface MasterCSSCompilerWasmRenderProviderSession {

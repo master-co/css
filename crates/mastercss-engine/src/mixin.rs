@@ -91,121 +91,123 @@ fn validate_argument(
 /// Validate the final registry, including unused definitions. Generation being
 /// lazy must not hide malformed definitions or recursive call graphs.
 pub fn validate_mixins(definitions: &[MixinDefinition]) -> Result<(), String> {
-    validate_recipe_definitions(definitions, None)
+    validate_mixin_registry(&mixin_registry(definitions)).map(|_| ())
 }
 
-fn validate_recipe_definitions(
-    definitions: &[MixinDefinition],
-    utility_root: Option<&str>,
-) -> Result<(), String> {
-    let registry = definitions
+fn mixin_registry(definitions: &[MixinDefinition]) -> HashMap<&str, &MixinDefinition> {
+    definitions
         .iter()
         .map(|definition| (definition.name.as_str(), definition))
-        .collect::<HashMap<_, _>>();
-    fn visit<'a>(
-        name: &'a str,
-        registry: &HashMap<&'a str, &'a MixinDefinition>,
-        visiting: &mut HashSet<&'a str>,
-        done: &mut HashSet<&'a str>,
-    ) -> Result<(), String> {
-        if visiting.len() >= 64 {
-            return Err("Mixin call depth exceeds 64".into());
-        }
-        if done.contains(name) {
-            return Ok(());
-        }
-        if !visiting.insert(name) {
-            return Err(format!("Recursive mixin call involving {name}"));
-        }
-        let definition = registry
-            .get(name)
-            .ok_or_else(|| format!("Unknown mixin {name}"))?;
-        let mut names = HashSet::default();
-        for parameter in &definition.parameters {
-            if !parameter.name.starts_with("--") || !names.insert(&parameter.name) {
-                return Err(format!(
-                    "Invalid or duplicate parameter {} in {name}",
-                    parameter.name
-                ));
-            }
-            if let Some(default) = &parameter.default {
-                validate_mixin_argument(parameter, default)?;
-            }
-        }
-        let parameters = definition
-            .parameters
-            .iter()
-            .map(|parameter| (parameter.name.clone(), String::new()))
-            .collect::<HashMap<_, _>>();
-        let mut pending = vec![(definition.body.as_slice(), true)];
-        while let Some((nodes, same_element)) = pending.pop() {
-            for node in nodes {
-                match node {
-                    MixinNode::Apply {
-                        name: target,
-                        arguments,
-                        contents,
-                        ..
-                    } => {
-                        let target_definition = registry
-                            .get(target.as_str())
-                            .ok_or_else(|| format!("Unknown mixin {target}"))?;
-                        if arguments.len() > target_definition.parameters.len()
-                            || target_definition
-                                .parameters
-                                .iter()
-                                .skip(arguments.len())
-                                .any(|parameter| parameter.default.is_none())
-                        {
-                            return Err(format!("Incorrect argument count for {target} in {name}"));
-                        }
-                        if !same_element
-                            && arguments
-                                .iter()
-                                .any(|value| references_parameters(value, &parameters))
-                        {
-                            return Err(format!(
-                                "Mixin parameters cannot be passed across elements in {name}"
-                            ));
-                        }
-                        visit(target, registry, visiting, done)?;
-                        if let Some(contents) = contents {
-                            pending.push((contents, same_element));
-                        }
-                    }
-                    MixinNode::Rule { selector, body } => {
-                        pending.push((body, same_element && same_subject(selector)))
-                    }
-                    MixinNode::Condition { body, .. } | MixinNode::Contents { fallback: body } => {
-                        pending.push((body, same_element))
-                    }
-                    MixinNode::Declaration { property, .. } if names.contains(property) => {
-                        return Err(format!("Mixin parameter {property} cannot be reassigned"));
-                    }
-                    MixinNode::Declaration { value, .. }
-                        if !same_element && references_parameters(value, &parameters) =>
-                    {
-                        return Err(format!(
-                            "Mixin parameters cannot be used across elements in {name}"
-                        ));
-                    }
-                    _ => {}
-                }
-            }
-        }
-        visiting.remove(name);
-        done.insert(name);
-        Ok(())
-    }
+        .collect()
+}
+
+/// Validates every mixin in `registry` and returns their names, all validated.
+fn validate_mixin_registry<'a>(
+    registry: &HashMap<&'a str, &'a MixinDefinition>,
+) -> Result<HashSet<&'a str>, String> {
     let mut done = HashSet::default();
     for name in registry.keys() {
-        if utility_root != Some(name)
-            && (!name.starts_with("--") || !mastercss_lexer::valid_utility_name(&name[2..]))
-        {
+        if !name.starts_with("--") || !mastercss_lexer::valid_utility_name(&name[2..]) {
             return Err(format!("Invalid mixin name {name}"));
         }
-        visit(name, &registry, &mut HashSet::default(), &mut done)?;
+        visit_definition(name, registry, &mut HashSet::default(), &mut done)?;
     }
+    Ok(done)
+}
+
+fn visit_definition<'a>(
+    name: &'a str,
+    registry: &HashMap<&'a str, &'a MixinDefinition>,
+    visiting: &mut HashSet<&'a str>,
+    done: &mut HashSet<&'a str>,
+) -> Result<(), String> {
+    if visiting.len() >= 64 {
+        return Err("Mixin call depth exceeds 64".into());
+    }
+    if done.contains(name) {
+        return Ok(());
+    }
+    if !visiting.insert(name) {
+        return Err(format!("Recursive mixin call involving {name}"));
+    }
+    let definition = registry
+        .get(name)
+        .ok_or_else(|| format!("Unknown mixin {name}"))?;
+    let mut names = HashSet::default();
+    for parameter in &definition.parameters {
+        if !parameter.name.starts_with("--") || !names.insert(&parameter.name) {
+            return Err(format!(
+                "Invalid or duplicate parameter {} in {name}",
+                parameter.name
+            ));
+        }
+        if let Some(default) = &parameter.default {
+            validate_mixin_argument(parameter, default)?;
+        }
+    }
+    let parameters = definition
+        .parameters
+        .iter()
+        .map(|parameter| (parameter.name.clone(), String::new()))
+        .collect::<HashMap<_, _>>();
+    let mut pending = vec![(definition.body.as_slice(), true)];
+    while let Some((nodes, same_element)) = pending.pop() {
+        for node in nodes {
+            match node {
+                MixinNode::Apply {
+                    name: target,
+                    arguments,
+                    contents,
+                    ..
+                } => {
+                    let target_definition = registry
+                        .get(target.as_str())
+                        .ok_or_else(|| format!("Unknown mixin {target}"))?;
+                    if arguments.len() > target_definition.parameters.len()
+                        || target_definition
+                            .parameters
+                            .iter()
+                            .skip(arguments.len())
+                            .any(|parameter| parameter.default.is_none())
+                    {
+                        return Err(format!("Incorrect argument count for {target} in {name}"));
+                    }
+                    if !same_element
+                        && arguments
+                            .iter()
+                            .any(|value| references_parameters(value, &parameters))
+                    {
+                        return Err(format!(
+                            "Mixin parameters cannot be passed across elements in {name}"
+                        ));
+                    }
+                    visit_definition(target, registry, visiting, done)?;
+                    if let Some(contents) = contents {
+                        pending.push((contents, same_element));
+                    }
+                }
+                MixinNode::Rule { selector, body } => {
+                    pending.push((body, same_element && same_subject(selector)))
+                }
+                MixinNode::Condition { body, .. } | MixinNode::Contents { fallback: body } => {
+                    pending.push((body, same_element))
+                }
+                MixinNode::Declaration { property, .. } if names.contains(property) => {
+                    return Err(format!("Mixin parameter {property} cannot be reassigned"));
+                }
+                MixinNode::Declaration { value, .. }
+                    if !same_element && references_parameters(value, &parameters) =>
+                {
+                    return Err(format!(
+                        "Mixin parameters cannot be used across elements in {name}"
+                    ));
+                }
+                _ => {}
+            }
+        }
+    }
+    visiting.remove(name);
+    done.insert(name);
     Ok(())
 }
 
@@ -758,6 +760,13 @@ pub fn validate_utilities(
     definitions: &[mastercss_schema::UtilityDefinition],
 ) -> Result<(), String> {
     use mastercss_schema::UtilityKind;
+    // Validate the mixins once instead of copying and revisiting them per utility.
+    let mut registry = mixin_registry(mixins);
+    let validated = if definitions.is_empty() {
+        HashSet::default()
+    } else {
+        validate_mixin_registry(&registry)?
+    };
     for definition in definitions {
         let recipe = &definition.recipe;
         if recipe.name.starts_with("--")
@@ -792,9 +801,18 @@ pub fn validate_utilities(
             }
             _ => {}
         }
-        let mut registry = mixins.to_vec();
-        registry.push(recipe.clone());
-        validate_recipe_definitions(&registry, Some(&recipe.name))?;
+        // Each recipe joins the shared registry alone. Recipe names cannot start
+        // with `--`, so a recipe never replaces a mixin, and mixins can only reach
+        // other mixins: validating the recipe root suffices.
+        registry.insert(&recipe.name, recipe);
+        let result = visit_definition(
+            &recipe.name,
+            &registry,
+            &mut HashSet::default(),
+            &mut validated.clone(),
+        );
+        registry.remove(recipe.name.as_str());
+        result?;
     }
     Ok(())
 }

@@ -2,6 +2,7 @@ import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSDiagnosticDomain } from '@master/css-schema'
 import type { MasterCSSCompilerBindingSession } from './compiler-binding-contract'
 import { callBinding, type BindingSourceText } from './normalize-error'
+import { compileGraphWithManifestStore, type MasterCSSManifestStore } from './manifest-references'
 
 interface CompilerOperations {
   findManifestEntries?: MasterCSSCompilerBindingSession['findManifestEntries']
@@ -27,6 +28,8 @@ interface CompilerOperations {
   compileCSSStylesheetGraph: MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']
   createInspectionReport?: MasterCSSCompilerBindingSession['createInspectionReport']
   renderClassNames?: MasterCSSCompilerBindingSession['renderClassNames']
+  /** Lets graph compilations reference manifests; one object per binding instance. */
+  manifestStore?: MasterCSSManifestStore
   dispose?: () => void
 }
 
@@ -105,7 +108,9 @@ export function bindCompilerBindingSession(
     renderCSSStylesheetBundle: (request) =>
       invoke('compiler', () => operations.renderCSSStylesheetBundle(request)),
     compileCSSStylesheetGraph: (request) =>
-      invoke('compiler', () => operations.compileCSSStylesheetGraph(request), filename =>
+      invoke('compiler', () => operations.manifestStore
+        ? compileGraphWithManifestStore(operations.manifestStore, request, operations.compileCSSStylesheetGraph)
+        : operations.compileCSSStylesheetGraph(request), filename =>
         Object.hasOwn(request.graph.files, filename) ? request.graph.files[filename] : undefined),
     createInspectionReport: (input) => invoke('tooling', () =>
       operations.createInspectionReport?.(input) ?? unavailable('Inspection reporting')),

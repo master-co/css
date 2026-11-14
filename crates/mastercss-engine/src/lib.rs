@@ -319,8 +319,8 @@ pub struct EngineCompositionRuleIr {
 pub struct EngineSession {
     /// The JSON of the manifest a session was created from; sessions created from
     /// an encoded program or a parsed manifest have none.
-    manifest_json: Option<String>,
-    compiled: Program,
+    manifest_json: Option<std::sync::Arc<str>>,
+    compiled: std::sync::Arc<Program>,
     layers: [Vec<StoredRule>; LAYER_COUNT],
     class_rules: HashMap<String, Vec<(UtilityLayerName, String)>>,
     class_order: Vec<String>,
@@ -380,6 +380,7 @@ pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
 mod named;
 mod ordering;
 mod program;
+mod program_cache;
 mod render;
 mod resources;
 mod session;

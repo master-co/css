@@ -60,13 +60,15 @@ struct MergedStyleDefinition {
 }
 
 mod api;
+mod memo;
 mod merge;
 mod output;
 mod render;
 mod resolution;
 
-pub(crate) use api::{LoweredManifests, lower_manifests, render_definitions};
+pub(crate) use api::{LoweredManifests, lower_parsed_manifests, render_definitions};
 pub use api::{lower_css_directives, lower_css_directives_request};
+pub(crate) use memo::{LoweredContext, lower_stored_manifests};
 pub(crate) use resolution::engine_for_manifest;
 
 #[cfg(test)]

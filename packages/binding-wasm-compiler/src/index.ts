@@ -23,6 +23,8 @@ interface GeneratedCompilerWasmModule {
   prepareCSSStylesheetBundle(request: unknown): unknown
   renderCSSStylesheetBundle(request: unknown): unknown
   compileCSSStylesheetGraph(requestJSON: string): string
+  registerManifestJSON(manifestJSON: string): string
+  manifestJSON(key: string): string | undefined
   CompilerRenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
     ensureClasses(classNames: string[]): void
@@ -138,6 +140,27 @@ export interface CompilerWasmSession {
   prepareCSSStylesheetBundle<T = unknown>(request: unknown): T
   renderCSSStylesheetBundle<T = unknown>(request: unknown): T
   compileCSSStylesheetGraph<T = unknown>(request: unknown): T
+  /** The manifests this Wasm instance stores; one object per instance. */
+  readonly manifestStore: CompilerWasmManifestStore
+}
+
+export interface CompilerWasmManifestStore {
+  register(manifestJSON: string): string
+  json(key: string): string | undefined
+}
+
+const manifestStores = new WeakMap<object, CompilerWasmManifestStore>()
+
+function wasmManifestStore(module: GeneratedCompilerWasmModule) {
+  let store = manifestStores.get(module)
+  if (!store) {
+    store = Object.freeze({
+      register: (manifestJSON: string) => module.registerManifestJSON(manifestJSON),
+      json: (key: string) => module.manifestJSON(key) ?? undefined
+    })
+    manifestStores.set(module, store)
+  }
+  return store
 }
 
 export async function createCompilerWasmSession(
@@ -164,7 +187,8 @@ export async function createCompilerWasmSession(
     resolveCSSStylesheetGraph: <T>(request: unknown) => module.resolveCSSStylesheetGraph(request) as T,
     prepareCSSStylesheetBundle: <T>(request: unknown) => module.prepareCSSStylesheetBundle(request) as T,
     renderCSSStylesheetBundle: <T>(request: unknown) => module.renderCSSStylesheetBundle(request) as T,
-    compileCSSStylesheetGraph: <T>(request: unknown) => JSON.parse(module.compileCSSStylesheetGraph(JSON.stringify(request))) as T
+    compileCSSStylesheetGraph: <T>(request: unknown) => JSON.parse(module.compileCSSStylesheetGraph(JSON.stringify(request))) as T,
+    manifestStore: wasmManifestStore(module)
   }
 }
 

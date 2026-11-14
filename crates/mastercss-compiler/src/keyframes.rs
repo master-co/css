@@ -34,6 +34,11 @@ pub(crate) fn include_native_variables(
     }
 }
 
+/// Whether `css` declares native variables that [`include_native_variables`] adds.
+pub(crate) fn has_native_variables(css: &str) -> bool {
+    !native_variables(css).is_empty()
+}
+
 /// Whether `css` can contain an animation declaration, possibly escaped.
 pub(crate) fn may_declare_animations(css: &str) -> bool {
     css.contains('\\') || css.to_ascii_lowercase().contains("animation")

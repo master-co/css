@@ -10,7 +10,9 @@ compiled program (`program.rs`); `EngineSession::create`/`from_manifest` compile
 encode and decode it, keeping the compact manifest JSON for `manifest_json`, and
 `EngineSession::from_parsed_manifest` does the same for the compiler's typed
 `MasterCssManifest` without keeping JSON. `EngineSession::from_program` decodes a
-received encoding.
+received encoding. `from_manifest` reuses the decoded `Program` of an identical
+manifest text (`program_cache.rs`): sessions share it as `Arc<Program>`, and the one
+in-place change, `rebuild` adding native animation variables, copies on write.
 Both paths run `finish_program` for derived lookup state, so a host that starts from a
 manifest executes exactly what a browser receiving the program executes. Sessions take
 emitted globals as `EmittedGlobals` values; hosts that receive JSON use

@@ -111,6 +111,7 @@ pub(super) fn compile_manifest_graph_with_output(
             },
             base_manifest: Some(base_manifest),
             resolution_manifest: reference_manifest,
+            manifest_refs: false,
         },
     })?;
     if emit_native_compose {

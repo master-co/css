@@ -1,5 +1,6 @@
 import { MasterCSSError } from '@master/css-schema'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { serializeSharedManifest } from './manifest-references'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
@@ -104,7 +105,7 @@ export function createNativeRenderSession(
     const loaded = loadNativeBinding(moduleOptions)
     if (!loaded) return
     const session = new loaded.binding.RenderSession(
-      serializeMasterCSSManifest(options.manifest),
+      serializeSharedManifest(options.manifest, serializeMasterCSSManifest),
       globalsJSON(options.emittedGlobals)
     )
     let disposed = false

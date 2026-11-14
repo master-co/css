@@ -4,7 +4,7 @@ import { isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, normalizeStylesheetGraphID, assertRegularResourceFile, type PreparedCSSImportGraph, type CSSImportFileResolver } from '../node-imports'
-import { analyzeCSSDependencies, compileCSS, inspectCSS, resolveCSSReferenceFile, mergeCSSDirectiveExtractionPolicy } from '../node-compiler'
+import { analyzeCSSDependencies, compileCSSReferences, inspectCSS, resolveCSSReferenceFile, mergeCSSDirectiveExtractionPolicy } from '../node-compiler'
 import { collectStylesheetDirectives, mergeStylesheetDirectives, mergeStylesheetSourceOptions, hasStylesheetSourceDirectives, resolveStylesheetSourcePaths, hasLocalStyleDirectives } from './directives'
 import { hasStylesheetResourceReferences, renderCompiledManifestCSS } from './render'
 import { resolveReferenceOrigins } from './reference-origins'
@@ -87,9 +87,8 @@ function prepareGraphReferences(graph: PreparedCSSImportGraph, options: CompileS
   const references = [...referenceFileInputs(options.referenceFiles), ...Object.entries(graph.files).flatMap(([file, source]) => {
     // Keep parser diagnostics attached to the supplied source identity; only the
     // filesystem lookup of its references uses the host's original source owner.
-    const parsed = compileCSS(source, { from: owners[file] ?? file, preserveNativeCSS: false })
+    const references = compileCSSReferences(source, owners[file] ?? file)
     if (file === graph.entry && options.references) return options.references
-    const references = parsed.references || []
     const owner = graph.baseFiles?.[file] ?? owners[file] ?? file
     return resolveReferenceOrigins(source, references.map(reference => ({ ...reference, file: owner })), owner, graph.sourceMaps?.[file])
   })]

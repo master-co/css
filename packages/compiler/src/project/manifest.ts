@@ -11,6 +11,7 @@ import {
   type MasterCSSProjectResult
 } from './options'
 import { loadBindingProjectManifest } from './binding-project'
+import { shareManifest } from '@master/css-binding/compiler/node'
 
 export type {
   MasterCSSProjectCompileOptions,
@@ -49,7 +50,8 @@ function immutableProjectResult(
   const diagnostics = Object.freeze(result.warnings.map(warningDiagnostic))
   for (const diagnostic of diagnostics) onDiagnostic?.(diagnostic)
   return Object.freeze({
-    manifest: Object.freeze(result.manifest),
+    // Deeply frozen and shared: compilations reference it instead of serializing it.
+    manifest: shareManifest(result.manifest),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
     entries: Object.freeze([...result.entries]),
     dependencies: Object.freeze([...result.dependencies]),

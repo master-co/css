@@ -6,6 +6,7 @@ import type {
   MasterCSSWasmBindingLoadOptions
 } from './compiler-binding-contract'
 import type { MasterCSSBindingInfo } from './protocol'
+import type { MasterCSSManifestStore } from './manifest-references'
 
 type MasterCSSCompilerWasmProviderSession = Pick<
   MasterCSSCompilerBindingSession,
@@ -26,6 +27,8 @@ type MasterCSSCompilerWasmProviderSession = Pick<
   | 'renderCSSStylesheetBundle'
   | 'compileCSSStylesheetGraph'
 > & Readonly<{
+  /** Absent in providers that predate manifest references. */
+  manifestStore?: MasterCSSManifestStore
   normalizeManifestForJSON: MasterCSSCompilerBindingSession['normalizeManifest']
   normalizeDefaultManifestForJSON: MasterCSSCompilerBindingSession['normalizeDefaultManifest']
 }>
@@ -96,7 +99,8 @@ export async function createCompilerWasmBindingSession(
     resolveCSSStylesheetGraph: (request) => session.resolveCSSStylesheetGraph(request),
     prepareCSSStylesheetBundle: (request) => session.prepareCSSStylesheetBundle(request),
     renderCSSStylesheetBundle: (request) => session.renderCSSStylesheetBundle(request),
-    compileCSSStylesheetGraph: (request) => session.compileCSSStylesheetGraph(request)
+    compileCSSStylesheetGraph: (request) => session.compileCSSStylesheetGraph(request),
+    manifestStore: session.manifestStore
   })
 }
 

@@ -53,7 +53,10 @@ fn decoded_programs_execute_like_compiled_manifests() {
         let mut program = crate::compile_manifest(&parsed).unwrap();
         crate::finish_program(&mut program).unwrap();
         let mut compiled =
-            EngineSession::with_program(program, mastercss_schema::EmittedGlobals::default());
+            EngineSession::with_program(
+                std::sync::Arc::new(program),
+                mastercss_schema::EmittedGlobals::default(),
+            );
         let mut decoded = EngineSession::from_program(
             &crate::compile_program(&manifest).unwrap(),
             Default::default(),
