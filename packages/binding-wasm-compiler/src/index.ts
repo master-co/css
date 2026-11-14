@@ -5,6 +5,12 @@ interface GeneratedCompilerWasmModule {
     module_or_path: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
   }): Promise<WebAssembly.Exports>
   bindingInfo(): unknown
+  cssGrammarVersion(): string
+  cssSyntaxStatus(text: string): string
+  cssValueStatus(property: string, value: string, atRule?: string): string
+  cssRuleDeclarationsJSON(text: string): string
+  validateCSSJSON(text: string): string
+  parseCSSDeclarationsJSON(text: string): string
   compareProjectSnapshots(request: unknown): unknown
   inspectCSS(source: string): unknown
   compileNativeCSS(source: string, options?: unknown): unknown

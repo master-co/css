@@ -11,16 +11,16 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 948,
+    "records": 969,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 762,
+      "export": 782,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
       "package": 34,
-      "subpath": 95,
+      "subpath": 96,
       "wire-contract": 24
     }
   },
@@ -550,6 +550,28 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler/node#manifestOf",
+      "package": "@master/css-binding",
+      "subpath": "./compiler/node",
+      "name": "manifestOf"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "node",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler/node#MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "package": "@master/css-binding",
       "subpath": "./compiler/node",
@@ -946,6 +968,50 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler/node#MasterCSSManifestReference",
+      "package": "@master/css-binding",
+      "subpath": "./compiler/node",
+      "name": "MasterCSSManifestReference"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "node",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler/node#MasterCSSManifestSource",
+      "package": "@master/css-binding",
+      "subpath": "./compiler/node",
+      "name": "MasterCSSManifestSource"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "node",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler/node#MasterCSSNativeBindingLoadOptions",
       "package": "@master/css-binding",
       "subpath": "./compiler/node",
@@ -1100,6 +1166,50 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler/node#MasterCSSReferencedStylesheetGraph",
+      "package": "@master/css-binding",
+      "subpath": "./compiler/node",
+      "name": "MasterCSSReferencedStylesheetGraph"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "node",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler/node#MasterCSSReferencedStylesheetGraphRequest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler/node",
+      "name": "MasterCSSReferencedStylesheetGraphRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "node",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler/node#MasterCSSResolvedImportGraph",
       "package": "@master/css-binding",
       "subpath": "./compiler/node",
@@ -1126,6 +1236,28 @@
       "package": "@master/css-binding",
       "subpath": "./compiler/node",
       "name": "MasterCSSStandaloneDirectiveAnalysis"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "node",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler/node#shareManifest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler/node",
+      "name": "shareManifest"
     },
     {
       "kind": "export",
@@ -1170,6 +1302,28 @@
       "package": "@master/css-binding",
       "subpath": "./compiler",
       "name": "createCompilerRenderBindingSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#manifestOf",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "manifestOf"
     },
     {
       "kind": "export",
@@ -1716,6 +1870,50 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSManifestReference",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSManifestReference"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSManifestSource",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSManifestSource"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler#MasterCSSNativeBindingLoadOptions",
       "package": "@master/css-binding",
       "subpath": "./compiler",
@@ -1892,6 +2090,50 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSReferencedStylesheetGraph",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSReferencedStylesheetGraph"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSReferencedStylesheetGraphRequest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSReferencedStylesheetGraphRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler#MasterCSSRenderStylesheetBundleRequest",
       "package": "@master/css-binding",
       "subpath": "./compiler",
@@ -2006,6 +2248,204 @@
       "package": "@master/css-binding",
       "subpath": "./compiler",
       "name": "MasterCSSWasmBindingLoadOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#shareManifest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "shareManifest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#cssGrammar",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "cssGrammar"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#MASTER_CSS_GRAMMAR_DATA",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "MASTER_CSS_GRAMMAR_DATA"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#MasterCSSGrammar",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "MasterCSSGrammar"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#MasterCSSGrammarDeclaration",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "MasterCSSGrammarDeclaration"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#MasterCSSGrammarError",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "MasterCSSGrammarError"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#MasterCSSGrammarProvider",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "MasterCSSGrammarProvider"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#MasterCSSGrammarStatus",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "MasterCSSGrammarStatus"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./css-grammar#registerCSSGrammar",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "name": "registerCSSGrammar"
     },
     {
       "kind": "export",
@@ -22034,6 +22474,38 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "subpath:@master/css-binding:./css-grammar",
+      "package": "@master/css-binding",
+      "subpath": "./css-grammar",
+      "conditions": [
+        "browser",
+        "default",
+        "import",
+        "types"
+      ],
+      "targets": [
+        "./dist/css-grammar-browser.js",
+        "./dist/css-grammar.d.ts",
+        "./dist/css-grammar.js"
+      ]
+    },
+    {
+      "kind": "subpath",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "subpath:@master/css-binding:./engine",
       "package": "@master/css-binding",
       "subpath": "./engine",
@@ -24639,7 +25111,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 33
+      "value": 35
     },
     {
       "kind": "wire-contract",

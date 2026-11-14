@@ -578,6 +578,7 @@ name = "mastercss-binding-native"
 version = "0.0.0"
 dependencies = [
  "mastercss-compiler",
+ "mastercss-css-grammar",
  "mastercss-diagnostics",
  "mastercss-engine",
  "mastercss-language",
@@ -602,6 +603,7 @@ version = "0.0.0"
 dependencies = [
  "getrandom",
  "mastercss-compiler",
+ "mastercss-css-grammar",
  "mastercss-engine",
  "mastercss-render",
  "mastercss-schema",
@@ -627,6 +629,7 @@ dependencies = [
 name = "mastercss-binding-wasm-tooling"
 version = "0.0.0"
 dependencies = [
+ "mastercss-css-grammar",
  "mastercss-diagnostics",
  "mastercss-engine",
  "mastercss-language",
@@ -666,6 +669,14 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+]
+
+[[package]]
+name = "mastercss-css-grammar"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

@@ -10,6 +10,7 @@ import {
   type MasterCSSBindingInfo
 } from './protocol'
 import { assertMasterCSSBindingInfo } from './binding'
+import { registerCSSGrammar } from './css-grammar-contract'
 import { NativeBindingError } from './errors'
 import { MASTER_CSS_PACKAGE_VERSION } from './version'
 
@@ -172,6 +173,12 @@ export interface NativeBinding {
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
   compileRuntimeProgram(manifestJSON: string): Uint8Array
+  cssGrammarVersion(): string
+  cssSyntaxStatus(text: string): string
+  cssValueStatus(property: string, value: string, atRule?: string): string
+  cssRuleDeclarationsJson(text: string): string
+  validateCssJson(text: string): string
+  parseCssDeclarationsJson(text: string): string
   LanguageSession: new (manifestJSON: string) => NativeLanguageSession
   LexerSession: new () => NativeLexerSession
   SourceSession: new () => NativeSourceSession
@@ -446,6 +453,7 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
       source
     })
     loadedNativeBindings.set(source, loaded)
+    registerNativeCSSGrammar(binding)
     return loaded
   } catch (cause) {
     if (cause instanceof NativeBindingError) throw cause
@@ -455,4 +463,17 @@ export function loadNativeBinding(options: LoadNativeBindingOptions = {}): Loade
       { cause }
     )
   }
+}
+
+/** CSS checks then use the binding the host loaded, wherever it came from. */
+export function registerNativeCSSGrammar(native: NativeBinding) {
+  if (typeof native.cssGrammarVersion !== 'function') return
+  registerCSSGrammar('native', {
+    cssGrammarVersion: () => native.cssGrammarVersion(),
+    cssSyntaxStatus: (text) => native.cssSyntaxStatus(text),
+    cssValueStatus: (property, value, atRule) => native.cssValueStatus(property, value, atRule),
+    cssRuleDeclarationsJSON: (text) => native.cssRuleDeclarationsJson(text),
+    validateCSSJSON: (text) => native.validateCssJson(text),
+    parseCSSDeclarationsJSON: (text) => native.parseCssDeclarationsJson(text)
+  })
 }

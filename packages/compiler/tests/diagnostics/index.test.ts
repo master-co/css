@@ -76,7 +76,7 @@ describe('@master/css-compiler/diagnostics', () => {
       expect(byName.get("grid-cols(2.5)")?.matchStatus).toBe('syntax-error')
       expect(byName.get('(width:future(2qu))')?.cssValueStatus).toBe('unknown')
       expect(byName.get('(padding:var(--space))')?.cssValueStatus).toBe('unknown')
-      expect(byName.get('(font:16px)')?.checks).toEqual([expect.objectContaining({ name: '@eslint/css-tree', phase: 'css-syntax', scope: 'selectors-queries-declarations' }), expect.objectContaining({ name: '@eslint/css-tree', phase: 'css-value', scope: 'expanded-declarations-and-known-math-grammar-and-static-types-v1', version: expect.any(String) })])
+      expect(byName.get('(font:16px)')?.checks).toEqual([expect.objectContaining({ name: 'mdn-data', phase: 'css-syntax', scope: 'selectors-queries-declarations' }), expect.objectContaining({ name: 'mdn-data', phase: 'css-value', scope: 'expanded-declarations-and-known-math-grammar-and-static-types-v1', version: expect.any(String) })])
       expect(report.diagnostics.filter(item => item.code === 'CSS_VALUE_INVALID')).toHaveLength(1)
       expect(report.diagnostics.some(item => item.message.includes('ordinary'))).toBe(false)
       expect(report.summary.errors).toBe(2)

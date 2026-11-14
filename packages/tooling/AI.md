@@ -12,6 +12,9 @@ analysis, and the dependency-light diagnostics bridge.
 - Feature subpaths under `lexer`, `source`, `scanner`, `validator`, `lint`, and
   `language`.
 - CSS syntax/value reports and source/file orchestration around Rust IR. Checks never filter generation.
+  Syntax and value checks call `mastercss-css-grammar` through `@master/css-binding/css-grammar`:
+  Node registers the native grammar when it loads the binding; browsers register the
+  grammar of the first compiler or tooling Wasm binding a host creates.
 - Read-only token-family metadata inferred by Rust from the active manifest for documentation and tooling.
 - Advisory `suggestClasses()` on composite sessions and `./lint` converts isolated declaration blocks through Rust lint. Uncertain blocks remain intact; this is separate from canonical autofix and browser validation.
 - `inspectDesignSystem()` delegates authored CSS token references, tool-only

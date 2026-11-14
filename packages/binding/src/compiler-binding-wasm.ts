@@ -1,4 +1,5 @@
 import { assertMasterCSSBindingInfo } from './binding'
+import { registerCSSGrammar, type MasterCSSGrammarProvider } from './css-grammar-contract'
 import { bindCompilerBindingSession } from './compiler-binding-adapter'
 import type {
   MasterCSSCompilerBindingSession,
@@ -35,6 +36,8 @@ type MasterCSSCompilerWasmProviderSession = Pick<
 
 export interface MasterCSSCompilerWasmProviderContract {
   readonly info: MasterCSSBindingInfo
+  /** Absent from providers built before the Rust CSS grammar. */
+  readonly cssGrammar?: MasterCSSGrammarProvider
   createSession(): Promise<MasterCSSCompilerWasmProviderSession>
   createRenderSession(
     manifestJSON: string,
@@ -67,6 +70,7 @@ async function provider(
     surface: 'compiler',
     features: ['compiler', 'render']
   })
+  registerCSSGrammar('wasm', wasm.cssGrammar)
   return wasm
 }
 

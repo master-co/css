@@ -85,8 +85,18 @@ interface MasterCSSToolingWasmLintProviderSession {
   dispose(): void
 }
 
+interface MasterCSSWasmGrammarProvider {
+  cssGrammarVersion(): string
+  cssSyntaxStatus(text: string): string
+  cssValueStatus(property: string, value: string, atRule?: string): string
+  cssRuleDeclarationsJSON(text: string): string
+  validateCSSJSON(text: string): string
+  parseCSSDeclarationsJSON(text: string): string
+}
+
 interface MasterCSSToolingWasmProvider {
   readonly info: unknown
+  readonly cssGrammar: MasterCSSWasmGrammarProvider
   createLexerSession(): Promise<Readonly<{
     analyze(request: unknown): unknown
     dispose(): void
@@ -120,6 +130,15 @@ export async function createMasterCSSToolingWasmProvider(
   const module = await initToolingWasm(options)
   const provider: MasterCSSToolingWasmProvider = Object.freeze({
     info: module.bindingInfo(),
+    cssGrammar: Object.freeze({
+      cssGrammarVersion: () => module.cssGrammarVersion(),
+      cssSyntaxStatus: (text: string) => module.cssSyntaxStatus(text),
+      cssValueStatus: (property: string, value: string, atRule?: string) =>
+        module.cssValueStatus(property, value, atRule),
+      cssRuleDeclarationsJSON: (text: string) => module.cssRuleDeclarationsJSON(text),
+      validateCSSJSON: (text: string) => module.validateCSSJSON(text),
+      parseCSSDeclarationsJSON: (text: string) => module.parseCSSDeclarationsJSON(text)
+    }),
     async createLexerSession() {
       const session = new module.ToolingLexerSession()
       let disposed = false

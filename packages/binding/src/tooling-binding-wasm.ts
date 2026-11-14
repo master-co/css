@@ -1,4 +1,5 @@
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { registerCSSGrammar, type MasterCSSGrammarProvider } from './css-grammar-contract'
 import { assertMasterCSSBindingInfo } from './binding'
 import type { MasterCSSWasmBindingLoadOptions } from './binding-options'
 import type {
@@ -34,6 +35,8 @@ type MasterCSSLintWasmProviderSession =
 
 export interface MasterCSSToolingWasmProviderContract {
   readonly info: MasterCSSBindingInfo
+  /** Absent from providers built before the Rust CSS grammar. */
+  readonly cssGrammar?: MasterCSSGrammarProvider
   createLexerSession(): Promise<ProviderSession<MasterCSSLexerBindingSession>>
   createSourceSession(): Promise<ProviderSession<MasterCSSSourceBindingSession>>
   createValidatorSession(manifestJSON: string): Promise<Readonly<{
@@ -97,6 +100,7 @@ export async function createWasmToolingBinding(
     surface: 'tooling',
     features: ['diagnostics', 'language', 'lint', 'scanner', 'source', 'validator']
   })
+  registerCSSGrammar('wasm', wasm.cssGrammar)
   const bound: MasterCSSToolingBinding = {
     binding: 'wasm',
     info: wasm.info,

@@ -43,7 +43,7 @@ describe('CSS validation reports knowledge without changing declarations', () =>
     const result = withCSSValueValidation({ className: 'a', rules })
     expect(result.rules).toBe(rules)
     expect(result.declarations.map(declaration => declaration.status)).toEqual(['valid', 'unknown'])
-    expect(result.checks.map(check => check.name)).toEqual(['@eslint/css-tree', '@eslint/css-tree'])
+    expect(result.checks.map(check => check.name)).toEqual(['mdn-data', 'mdn-data'])
     expect(result.browserSupport).toBe('not-checked')
     expect(cssSyntaxStatus('@supports font-tech(color-COLRv1){.a{display:block}}')).toBe('valid')
   })

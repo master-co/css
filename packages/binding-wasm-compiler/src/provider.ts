@@ -52,8 +52,18 @@ interface MasterCSSCompilerWasmRenderProviderSession {
   dispose(): void
 }
 
+interface MasterCSSWasmGrammarProvider {
+  cssGrammarVersion(): string
+  cssSyntaxStatus(text: string): string
+  cssValueStatus(property: string, value: string, atRule?: string): string
+  cssRuleDeclarationsJSON(text: string): string
+  validateCSSJSON(text: string): string
+  parseCSSDeclarationsJSON(text: string): string
+}
+
 interface MasterCSSCompilerWasmProvider {
   readonly info: unknown
+  readonly cssGrammar: MasterCSSWasmGrammarProvider
   createSession(): Promise<MasterCSSCompilerWasmProviderSession>
   createRenderSession(
     manifestJSON: string,
@@ -67,6 +77,15 @@ export async function createMasterCSSCompilerWasmProvider(
   const module = await initCompilerWasm(options)
   const provider: MasterCSSCompilerWasmProvider = Object.freeze({
     info: module.bindingInfo(),
+    cssGrammar: Object.freeze({
+      cssGrammarVersion: () => module.cssGrammarVersion(),
+      cssSyntaxStatus: (text: string) => module.cssSyntaxStatus(text),
+      cssValueStatus: (property: string, value: string, atRule?: string) =>
+        module.cssValueStatus(property, value, atRule),
+      cssRuleDeclarationsJSON: (text: string) => module.cssRuleDeclarationsJSON(text),
+      validateCSSJSON: (text: string) => module.validateCSSJSON(text),
+      parseCSSDeclarationsJSON: (text: string) => module.parseCSSDeclarationsJSON(text)
+    }),
     createSession: () => createCompilerWasmSession(options),
     createRenderSession: (manifestJSON, emittedGlobalsJSON) =>
       createCompilerRenderSession(manifestJSON, emittedGlobalsJSON, options)

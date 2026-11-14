@@ -24,7 +24,9 @@ const entryByPackageName: Record<string, TsdownInputOption> = {
     'src/compiler-binding-node.ts',
     'src/tooling-binding.ts',
     'src/tooling-binding-browser.ts',
-    'src/tooling-binding-node.ts'
+    'src/tooling-binding-node.ts',
+    'src/css-grammar.ts',
+    'src/css-grammar-browser.ts'
   ],
   '@master/css-binding-wasm-compiler': ['src/provider.ts', 'src/provider-node.ts'],
   '@master/css-binding-wasm-engine': ['src/provider.ts', 'src/provider-node.ts'],

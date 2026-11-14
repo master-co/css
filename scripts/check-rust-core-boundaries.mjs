@@ -42,8 +42,8 @@ for (const file of await collectSourceFiles(packagesDirectory)) {
 }
 
 const forbiddenDependencies = new Map([
-  ['packages/compiler/package.json', new Set(['lightningcss', 'lightningcss-wasm', 'css-tree'])],
-  ['packages/tooling/package.json', new Set(['oxc-parser', 'htmlparser2'])],
+  ['packages/compiler/package.json', new Set(['lightningcss', 'lightningcss-wasm', 'css-tree', '@eslint/css-tree'])],
+  ['packages/tooling/package.json', new Set(['oxc-parser', 'htmlparser2', 'css-tree', '@eslint/css-tree'])],
   ['packages/vscode/package.json', new Set(['lightningcss', 'lightningcss-wasm', 'oxc-parser'])]
 ])
 

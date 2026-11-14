@@ -12,6 +12,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 mastercss-compiler = { path = "../mastercss-compiler" }
+mastercss-css-grammar = { path = "../mastercss-css-grammar" }
 mastercss-engine = { path = "../mastercss-engine" }
 mastercss-render = { path = "../mastercss-render" }
 mastercss-schema = { path = "../mastercss-schema" }

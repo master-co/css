@@ -5,7 +5,7 @@
 Native napi ABI adaptation. It groups engine, compiler, tooling, and render/scanner
 bindings without owning their semantics.
 
-Route to `engine.rs`, `compiler.rs`, `tooling.rs`, or `render_scanner.rs`; keep
+Route to `engine.rs`, `compiler.rs`, `css_grammar.rs`, `tooling.rs`, or `render_scanner.rs`; keep
 `lib.rs` as assembly/export glue. Do not duplicate semantic fallback logic here.
 
 ```sh

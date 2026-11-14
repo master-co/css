@@ -295,3 +295,37 @@ pub fn render_css_stylesheet_bundle(request: JsValue) -> Result<JsValue, JsValue
         &mastercss_compiler::render_css_stylesheet_bundle(&request).map_err(compiler_error)?,
     )
 }
+
+#[wasm_bindgen(js_name = cssGrammarVersion)]
+pub fn css_grammar_version() -> String {
+    mastercss_css_grammar::MDN_DATA_VERSION.to_owned()
+}
+
+#[wasm_bindgen(js_name = cssSyntaxStatus)]
+pub fn css_syntax_status(text: &str) -> String {
+    mastercss_css_grammar::syntax_status(text)
+        .as_str()
+        .to_owned()
+}
+
+#[wasm_bindgen(js_name = cssValueStatus)]
+pub fn css_value_status(property: &str, value: &str, at_rule: Option<String>) -> String {
+    mastercss_css_grammar::value_status(property, value, at_rule.as_deref())
+        .as_str()
+        .to_owned()
+}
+
+#[wasm_bindgen(js_name = cssRuleDeclarationsJSON)]
+pub fn css_rule_declarations_json(text: &str) -> String {
+    mastercss_css_grammar::rule_declarations_json(text)
+}
+
+#[wasm_bindgen(js_name = validateCSSJSON)]
+pub fn validate_css_json(text: &str) -> String {
+    mastercss_css_grammar::validate_css_json(text)
+}
+
+#[wasm_bindgen(js_name = parseCSSDeclarationsJSON)]
+pub fn parse_css_declarations_json(text: &str) -> String {
+    mastercss_css_grammar::parse_declarations_json(text)
+}

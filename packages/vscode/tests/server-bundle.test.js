@@ -258,14 +258,14 @@ test('server bundle does not retain removed TypeScript semantic bindings', () =>
   expect(legacySemanticImports).toEqual([])
 })
 
-test('server bundle embeds referenced MDN JSON modules', () => {
+test('server bundle leaves no MDN JSON module to resolve at runtime', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
 
+  // CSS grammar data lives in the Rust binding; any MDN JSON the server reads is embedded.
   expect(imports.filter((specifier) => specifier.startsWith('mdn-data/'))).toEqual([])
-  expect(source).not.toContain('../data/patch.json')
   expect(source).not.toContain('mdn-data/css/')
-  expect(source).toContain('repeating-linear-gradient()')
+  expect(source).not.toContain('css-tree')
 })
 
 test('staged extension includes runtime packages for the current target', async () => {

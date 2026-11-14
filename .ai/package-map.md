@@ -35,7 +35,7 @@ than loading every crate:
 |---|---|
 | `mastercss-schema`, `mastercss-lexer` | Dependency-light wire contracts and tokens |
 | `mastercss-engine`, `mastercss-compiler`, `mastercss-project` | CSS execution, authoring lowering, and project policy |
-| `mastercss-source`, `mastercss-scanner`, `mastercss-validator`, `mastercss-lint`, `mastercss-language` | Developer-tooling semantics |
+| `mastercss-source`, `mastercss-scanner`, `mastercss-validator`, `mastercss-css-grammar`, `mastercss-lint`, `mastercss-language` | Developer-tooling semantics |
 | `mastercss-render`, `mastercss-diagnostics` | Server render and diagnostic IR |
 | `mastercss-binding-native`, `mastercss-binding-wasm-*` | ABI adaptation and artifact delivery only |
 | `mastercss-cli`, `xtask` | Native CLI transport and repository build/codegen/parity orchestration |

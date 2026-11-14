@@ -26,6 +26,7 @@
         ".",
         "./compiler",
         "./compiler/node",
+        "./css-grammar",
         "./engine",
         "./engine/node",
         "./tooling",
@@ -100,6 +101,8 @@
           "MasterCSSLowerDirectivesOptions",
           "MasterCSSLowerDirectivesRequest",
           "MasterCSSLowerDirectivesResult",
+          "MasterCSSManifestReference",
+          "MasterCSSManifestSource",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSPrepareStylesheetBundleRequest",
           "MasterCSSProjectAssetChange",
@@ -108,6 +111,8 @@
           "MasterCSSProjectEntryGraph",
           "MasterCSSProjectManifest",
           "MasterCSSProjectSnapshot",
+          "MasterCSSReferencedStylesheetGraph",
+          "MasterCSSReferencedStylesheetGraphRequest",
           "MasterCSSRenderStylesheetBundleRequest",
           "MasterCSSResolvedImportGraph",
           "MasterCSSStandaloneDirectiveAnalysis",
@@ -115,7 +120,9 @@
           "MasterCSSStylesheetBundle",
           "MasterCSSWasmBindingLoadOptions",
           "createCompilerBindingSession",
-          "createCompilerRenderBindingSession"
+          "createCompilerRenderBindingSession",
+          "manifestOf",
+          "shareManifest"
         ],
         "./compiler/node": [
           "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
@@ -136,6 +143,8 @@
           "MasterCSSLowerDirectivesOptions",
           "MasterCSSLowerDirectivesRequest",
           "MasterCSSLowerDirectivesResult",
+          "MasterCSSManifestReference",
+          "MasterCSSManifestSource",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSProjectAssetChange",
           "MasterCSSProjectComparison",
@@ -143,9 +152,13 @@
           "MasterCSSProjectEntryGraph",
           "MasterCSSProjectManifest",
           "MasterCSSProjectSnapshot",
+          "MasterCSSReferencedStylesheetGraph",
+          "MasterCSSReferencedStylesheetGraphRequest",
           "MasterCSSResolvedImportGraph",
           "MasterCSSStandaloneDirectiveAnalysis",
-          "createCompilerBindingSessionSync"
+          "createCompilerBindingSessionSync",
+          "manifestOf",
+          "shareManifest"
         ],
         "./tooling": [
           "MASTER_CSS_LANGUAGE_BATCH_VERSION",
@@ -219,9 +232,19 @@
           "MasterCSSToolingBindingSync",
           "MasterCSSValidatorBindingSession",
           "createToolingBindingSync"
+        ],
+        "./css-grammar": [
+          "MASTER_CSS_GRAMMAR_DATA",
+          "MasterCSSGrammar",
+          "MasterCSSGrammarDeclaration",
+          "MasterCSSGrammarError",
+          "MasterCSSGrammarProvider",
+          "MasterCSSGrammarStatus",
+          "cssGrammar",
+          "registerCSSGrammar"
         ]
       },
-      "surface": "cea38a4655d97e4c"
+      "surface": "0dcb3bc5d09bb5fd"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",

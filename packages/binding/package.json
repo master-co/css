@@ -60,6 +60,12 @@
       "types": "./dist/tooling-binding-node.d.ts",
       "import": "./dist/tooling-binding-node.js",
       "default": "./dist/tooling-binding-node.js"
+    },
+    "./css-grammar": {
+      "types": "./dist/css-grammar.d.ts",
+      "browser": "./dist/css-grammar-browser.js",
+      "import": "./dist/css-grammar.js",
+      "default": "./dist/css-grammar.js"
     }
   },
   "files": [

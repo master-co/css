@@ -156,11 +156,13 @@ fn to_json<T: Serialize>(value: &T) -> Result<String> {
 }
 
 mod compiler;
+mod css_grammar;
 mod engine;
 mod render_scanner;
 mod tooling;
 
 pub use compiler::*;
+pub use css_grammar::*;
 pub use engine::*;
 pub use render_scanner::*;
 pub use tooling::*;

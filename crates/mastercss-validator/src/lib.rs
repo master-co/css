@@ -5,9 +5,8 @@ use mastercss_schema::{
     NativeDeclarationCandidateIr, VALIDATOR_BATCH_VERSION, ValidatorBatchIr, ValidatorClassIr,
 };
 
-/// Stateful rule-generation core for host validators. CSS grammar validation
-/// intentionally remains in the host so css-tree and CSS.supports behavior can
-/// be preserved without introducing a second CSS grammar implementation.
+/// Stateful rule-generation core for host validators. Hosts check the generated
+/// CSS against `mastercss-css-grammar` and, in browsers, `CSS.supports`.
 #[derive(Debug)]
 pub struct ValidatorSession {
     engine: EngineSession,

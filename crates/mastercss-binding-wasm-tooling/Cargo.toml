@@ -11,6 +11,7 @@ publish.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+mastercss-css-grammar = { path = "../mastercss-css-grammar" }
 mastercss-engine = { path = "../mastercss-engine" }
 mastercss-lint = { path = "../mastercss-lint" }
 mastercss-language = { path = "../mastercss-language" }
