@@ -11,11 +11,13 @@ import type { FSWatcher } from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
-import { createSourceWatchPlan } from './source-watch'
+import { changedSources, createSourceWatchPlan, sourceStamps } from './source-watch'
 import { publishOwnedStylesheet, stylesheetStatePath } from './asset-ownership'
 import { withStylesheetPublicationLock } from './publication-lock'
 import { createDependencyRebuild } from './dependency-rebuild'
 
+// Chokidar reports one change of a path per 50 ms and drops the rest; check after it.
+const CHANGE_THROTTLE_MS = 100
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 type FastGlob = Pick<typeof import('fast-glob'), 'sync' | 'generateTasks'>
 type Chokidar = typeof import('chokidar').default
@@ -316,14 +318,36 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       pipelineReady = false
       attemptedDependencies.clear()
       missingDependencies.clear()
-      // Reconcile the successful source snapshot without discarding prior state.
-      await prepareScanner(scanner, stylesheets, scanPaths(), delivery)
-      await writeOutput()
-      await syncDependencies([...scanner.resetDependencies, ...scanner.sourcePolicyDependencies, ...attemptedDependencies])
-      pipelineReady = true
-      missingDependencies.clear()
-      process.stderr.write(initial ? '\nStart watching source changes\n' : '\nRestart watching source changes\n')
-      if (!initial) scanner.emit('resetDependencyChange')
+      const sources = scanPaths()
+      const stamps = sourceStamps(scanner.cwd, sources)
+      for (const [source, stamp] of stamps) readStamps.set(source, stamp)
+      try {
+        // Reconcile the successful source snapshot without discarding prior state.
+        await prepareScanner(scanner, stylesheets, sources, delivery)
+        await writeOutput()
+        await syncDependencies([...scanner.resetDependencies, ...scanner.sourcePolicyDependencies, ...attemptedDependencies])
+        pipelineReady = true
+        missingDependencies.clear()
+        process.stderr.write(initial ? '\nStart watching source changes\n' : '\nRestart watching source changes\n')
+        if (!initial) scanner.emit('resetDependencyChange')
+      } finally {
+        // Also after a failure: an edit made while reading is how users recover.
+        for (const source of changedSources(scanner.cwd, stamps)) rescanSource(source)
+      }
+    }
+    // The state of each source as the queue last read it.
+    const readStamps = new Map<string, string>()
+    // Sources the queue read while they changed are read again, in order.
+    const rescanSource = (source: string) => {
+      void enqueue(async () => {
+        if (!pipelineReady) return rebuild()
+        const stamps = sourceStamps(scanner.cwd, [source])
+        readStamps.set(source, stamps.get(source)!)
+        if (scanner.isSourceAllowed(source, { explicit: specifiedSourcePaths.length > 0 })) await scanSourceFile(scanner, source)
+        else scanner.removeSource(source)
+        await writeOutput()
+        for (const changed of changedSources(scanner.cwd, stamps)) rescanSource(changed)
+      })
     }
     const enqueue = (operation: () => Promise<void>) => {
       writing = writing.then(async () => {
@@ -361,12 +385,14 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       const scanChangedSource = (file: string) => {
         if (!sourcePlan.matches(file)) return
         const source = filesystemSourceIdentity(scanner.cwd, file)
-        void enqueue(async () => {
-          if (!pipelineReady) return rebuild()
-          if (scanner.isSourceAllowed(source, { explicit: specifiedSourcePaths.length > 0 })) await scanSourceFile(scanner, source)
-          else scanner.removeSource(source)
-          await writeOutput()
-        })
+        rescanSource(source)
+        // Chokidar drops further changes of a path for a while after reporting
+        // one. Once that window passes, read the source again if it changed.
+        setTimeout(() => {
+          if (stopped) return
+          const read = readStamps.get(source)
+          if (read !== undefined && changedSources(scanner.cwd, new Map([[source, read]])).length) rescanSource(source)
+        }, CHANGE_THROTTLE_MS).unref()
       }
       next.on('add', scanChangedSource)
       next.on('change', scanChangedSource)

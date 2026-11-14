@@ -40,3 +40,22 @@ export function createSourceWatchPlan(fg: SourceGlob, cwd: string, patterns: str
     }
   }
 }
+
+const stampOf = (file: string) => {
+  const stat = fs.statSync(file, { bigint: true, throwIfNoEntry: false })
+  return stat ? `${stat.mtimeNs}:${stat.size}` : 'missing'
+}
+
+/**
+ * The state of sources as a scan is about to read them. A write that lands while
+ * they are read can share one native event with an earlier write, so compare
+ * afterwards with `changedSources` instead of waiting for another event.
+ */
+export function sourceStamps(cwd: string, sources: readonly string[]) {
+  return new Map(sources.map(source => [source, stampOf(path.resolve(cwd, source))] as const))
+}
+
+/** The sources that changed since `stamps` were taken. */
+export function changedSources(cwd: string, stamps: ReadonlyMap<string, string>) {
+  return [...stamps].filter(([source, stamp]) => stampOf(path.resolve(cwd, source)) !== stamp).map(([source]) => source)
+}
