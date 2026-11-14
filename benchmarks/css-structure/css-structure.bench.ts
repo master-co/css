@@ -83,7 +83,8 @@ async function createCSSStructureReport(): Promise<BenchmarkReport> {
       '@tailwindcss/cli',
       '@tailwindcss/vite',
       'vite',
-      'css-tree'
+      'postcss',
+      'postcss-selector-parser'
     ]),
     fixtures: getStaticBenchmarkFixtures(benchmarkFixtures),
     adapters: staticBenchmarkAdapters,

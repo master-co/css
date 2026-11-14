@@ -4,10 +4,11 @@ import { join } from 'node:path'
 import { createHash } from 'node:crypto'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import { compile } from '@tailwindcss/node'
-import { parse, generate, walk, ident } from 'css-tree'
+import postcss from 'postcss'
+import selectorParser from 'postcss-selector-parser'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import { createRenderSessionSync } from '@master/css/node'
-import { createToolingSessionSync } from '@master/css-tooling/node'
+import { createToolingSessionSync, validateRuleDeclarations } from '@master/css-tooling/node'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { projectStyleExamples } from '../../site/components/demo/project-style-examples.ts'
 import { getStaticFixtureSource } from '../../benchmarks/fixtures/static.ts'
@@ -71,22 +72,40 @@ export async function tailwindFixture(compiled, suggest, repository) {
   const candidates = classNames(html)
   const compiler = await compile('@import "tailwindcss";', { base: repository, onDependency() {} })
   const sourceCSS = compiler.build(candidates)
-  const tree = parse(sourceCSS)
+  const { mappings, reports, retained, retainedNames, retainedCSS, layerOrder } = await convertTailwindRules(sourceCSS, candidates, suggest)
+  const targetHTML = html.replace(/class="[^"]*"/, `class="${candidates.flatMap(name => mappings.get(name) ?? [retainedNames.get(name)]).join(' ')}"`)
+  const generated = render(compiled.manifest, targetHTML, [...retainedNames.values()])
+  const version = JSON.parse(await readFile(join(repository, 'node_modules/tailwindcss/package.json'), 'utf8')).version
+  return { id: 'tailwind-export', source: { html, css: sourceCSS }, target: { html: targetHTML, css: layerOrder + generated.css + retainedCSS },
+    checks: generated.checks, reports, retainedCSS, converted: [...mappings.keys()], retained,
+    provenance: 'benchmarks/fixtures/static.ts#dashboard.tailwindHtml Export button',
+    additions: states.split(' '), tailwindVersion: version }
+}
+
+// Declarations as the CSS generator writes them, without optional whitespace.
+function declarationText(node) {
+  if (node.type !== 'decl') return node.toString()
+  const [declaration] = validateRuleDeclarations(`a{${node.prop}:${node.value}}`)
+  return `${node.prop}:${declaration?.value ?? node.value}${node.important ? '!important' : ''}`
+}
+
+// Converts each single-class Tailwind rule that Rust can suggest, and renames the classes of every retained rule.
+export async function convertTailwindRules(sourceCSS, candidates, suggest) {
+  const root = postcss.parse(sourceCSS)
   const simpleRules = new Map()
-  walk(tree, { visit: 'Rule', enter(node) {
-    if (node.prelude?.type !== 'SelectorList') return
-    const selectors = node.prelude.children.toArray()
+  root.walkRules(rule => {
+    const selectors = selectorParser().astSync(rule.selector).nodes
     if (selectors.length !== 1) return
-    const parts = selectors[0].children.toArray()
-    if (parts.length !== 1 || parts[0].type !== 'ClassSelector') return
-    const name = ident.decode(parts[0].name)
-    if (candidates.includes(name) && !name.includes(':')) simpleRules.set(name, node)
-  } })
+    const parts = selectors[0].nodes
+    if (parts.length !== 1 || parts[0].type !== 'class') return
+    const name = parts[0].value
+    if (candidates.includes(name) && !name.includes(':')) simpleRules.set(name, rule)
+  })
   const mappings = new Map()
   const reports = []
   for (const [name, rule] of simpleRules) {
     // Read the actual compiled declaration block; Rust decides whether to suggest or preserve.
-    const report = await suggest(rule.block.children.toArray().map(generate).join(';'))
+    const report = await suggest(rule.nodes.map(declarationText).join(';'))
     reports.push({ sourceClass: name, ...report })
     if (report.status === 'suggested') mappings.set(name, report.classes)
   }
@@ -95,22 +114,15 @@ export async function tailwindFixture(compiled, suggest, repository) {
   const retainedNames = new Map(retained.map((name, index) => [name, `imported-state-${index}`]))
   // This is a fixture adapter, not a stylesheet converter: retain all unconverted
   // rules, wrappers, theme/reset dependencies and @property registrations.
-  walk(tree, { visit: 'Rule', enter(node, item, list) {
-    if ([...mappings.keys()].some(name => simpleRules.get(name) === node)) list.remove(item)
-  } })
-  walk(tree, { visit: 'ClassSelector', enter(node) {
-    const replacement = retainedNames.get(ident.decode(node.name))
-    if (replacement) node.name = replacement
-  } })
-  const targetHTML = html.replace(/class="[^"]*"/, `class="${candidates.flatMap(name => mappings.get(name) ?? [retainedNames.get(name)]).join(' ')}"`)
-  const generated = render(compiled.manifest, targetHTML, [...retainedNames.values()])
+  for (const name of mappings.keys()) simpleRules.get(name).remove()
+  const rename = selectorParser(selectors => selectors.walkClasses(node => {
+    const replacement = retainedNames.get(node.value)
+    if (replacement) node.value = replacement
+  }))
+  root.walkRules(rule => { rule.selector = rename.processSync(rule.selector) })
   // Retained source globals follow generated globals so Tailwind token values
   // remain authoritative, even where both systems have a token with the same name.
-  const retainedCSS = generate(tree)
-  const layerOrder = tree.children.toArray().filter(node => node.type === 'Atrule' && node.name === 'layer' && !node.block).map(generate).join('')
-  const version = JSON.parse(await readFile(join(repository, 'node_modules/tailwindcss/package.json'), 'utf8')).version
-  return { id: 'tailwind-export', source: { html, css: sourceCSS }, target: { html: targetHTML, css: layerOrder + generated.css + retainedCSS },
-    checks: generated.checks, reports, retainedCSS, converted: [...mappings.keys()], retained,
-    provenance: 'benchmarks/fixtures/static.ts#dashboard.tailwindHtml Export button',
-    additions: states.split(' '), tailwindVersion: version }
+  const retainedCSS = root.toString()
+  const layerOrder = root.nodes.filter(node => node.type === 'atrule' && node.name === 'layer' && !node.nodes).map(node => `${node};`).join('')
+  return { mappings, reports, retained, retainedNames, retainedCSS, layerOrder }
 }

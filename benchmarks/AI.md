@@ -70,7 +70,7 @@ Benchmark results are evidence for investigation. They do not replace correctnes
 
 - Changing product code to improve benchmark numbers without package tests and intentional behavior review.
 - Changing CSS output, cascade order, hydration behavior, runtime lifecycle, extraction behavior, or public APIs from benchmark code.
-- Adding dependencies when existing Node, Vitest, Playwright, CSS Tree, or workspace helpers are sufficient.
+- Adding dependencies when existing Node, Vitest, Playwright, PostCSS, or workspace helpers are sufficient.
 - Serializing compiled indexes or caches into runtime/browser payloads to make benchmark setup faster without bundle-size review.
 - Reusing `.results` output as checked-in fixture data.
 - Publishing `report-smoke` values as real benchmark results.

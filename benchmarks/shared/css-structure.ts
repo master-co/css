@@ -1,6 +1,7 @@
-import { generate, parse } from 'css-tree'
+import postcss, { type AtRule, type ChildNode, type Container, type Rule } from 'postcss'
+import type { Selector } from 'postcss-selector-parser'
 import type { BenchmarkMetric, BenchmarkSample } from './types'
-import { emptySpecificity, maxSpecificity, selectorSpecificity, toSpecificityScore, type SelectorSpecificity, type SelectorNode } from './selector-specificity'
+import { emptySpecificity, maxSpecificity, parseSelectorList, selectorSpecificity, toSpecificityScore, walkSelectorComponents, type SelectorSpecificity } from './selector-specificity'
 
 const knownLayers = ['theme', 'base', 'defaults', 'components', 'utilities'] as const
 type KnownLayer = typeof knownLayers[number]
@@ -132,12 +133,15 @@ export const cssStructureMetrics: BenchmarkMetric[] = [
 ]
 
 export function analyzeCSSStructure(css: string | Buffer): CSSStructureSummary {
-  const ast = parse(css.toString(), {
-    positions: false
-  }) as CSSNode
+  let root
+  try {
+    root = postcss.parse(css.toString())
+  } catch (error) {
+    throw new Error(`Cannot analyze recovered CSS: ${(error as { reason?: string }).reason ?? (error as Error).message}`)
+  }
   const summary = createEmptySummary()
 
-  visitCSSNode(ast, {
+  visitChildren(root, {
     inKeyframes: false,
     layerName: undefined
   }, summary)
@@ -172,20 +176,6 @@ export function createCSSStructureSamples(variantId: string, summary: CSSStructu
     round: 0,
     value
   }))
-}
-
-interface CSSNode extends SelectorNode {
-  type?: string
-  name?: string
-  property?: string
-  important?: boolean
-  prelude?: CSSNode
-  block?: CSSNode
-  children?: CSSNodeList
-}
-
-interface CSSNodeList {
-  forEach(callback: (node: CSSNode) => void): void
 }
 
 interface CSSVisitContext {
@@ -223,76 +213,56 @@ function createEmptySummary(): CSSStructureSummary {
   }
 }
 
-function visitCSSNode(node: CSSNode | undefined, context: CSSVisitContext, summary: CSSStructureSummary) {
-  if (!node) return
-
-  // CSS Tree style blocks only recognize nesting that begins with &. Reparse
-  // recovered raw rule sequences through its stylesheet grammar, preserving context.
-  if (node.type === 'Raw') {
-    const nested = parse(node.value || '', {
-      positions: false,
-      onParseError(error) { throw new Error(`Cannot analyze recovered CSS: ${error.message}`) }
-    }) as CSSNode
-    visitCSSNode(nested, context, summary)
-    return
-  }
-
-  if (node.type === 'Atrule') {
-    visitAtRule(node, context, summary)
-    return
-  }
-
-  if (node.type === 'Rule') {
-    visitRule(node, context, summary)
-    return
-  }
-
-  if (node.type === 'Declaration') {
-    summary.declarationCount += 1
-    if (node.property?.startsWith('--')) summary.customPropertyCount += 1
-    if (node.important) summary.importantDeclarationCount += 1
-    return
-  }
-
-  forEachChild(node, (child) => visitCSSNode(child, context, summary))
+function visitChildren(container: Container, context: CSSVisitContext, summary: CSSStructureSummary) {
+  for (const node of container.nodes ?? []) visitCSSNode(node, context, summary)
 }
 
-function visitAtRule(node: CSSNode, context: CSSVisitContext, summary: CSSStructureSummary) {
+function visitCSSNode(node: ChildNode, context: CSSVisitContext, summary: CSSStructureSummary) {
+  if (node.type === 'atrule') {
+    visitAtRule(node, context, summary)
+  } else if (node.type === 'rule') {
+    visitRule(node, context, summary)
+  } else if (node.type === 'decl') {
+    summary.declarationCount += 1
+    if (node.prop.startsWith('--')) summary.customPropertyCount += 1
+    if (node.important) summary.importantDeclarationCount += 1
+  }
+}
+
+function visitAtRule(node: AtRule, context: CSSVisitContext, summary: CSSStructureSummary) {
   summary.atRuleCount += 1
-  const name = node.name?.toLowerCase()
-  const hasBlock = Boolean(node.block)
+  const name = node.name.toLowerCase()
+  const hasBlock = Boolean(node.nodes)
   const nextContext = { ...context }
 
   if (name === 'scope') nextContext.parentSpecificity = undefined
 
   if (name === 'layer' && hasBlock) {
     summary.layerBlockCount += 1
-    nextContext.layerName = getLayerName(node.prelude)
+    nextContext.layerName = node.params.trim() || 'anonymous'
   } else if (name === 'media' && hasBlock) {
     summary.mediaBlockCount += 1
   } else if (name === 'supports' && hasBlock) {
     summary.supportsBlockCount += 1
   } else if (name === 'container' && hasBlock) {
     summary.containerBlockCount += 1
-  } else if (name?.endsWith('keyframes')) {
+  } else if (name.endsWith('keyframes')) {
     summary.keyframesCount += 1
     nextContext.inKeyframes = true
   }
 
-  if (node.block) {
-    visitCSSNode(node.block, nextContext, summary)
-  }
+  visitChildren(node, nextContext, summary)
 }
 
-function visitRule(node: CSSNode, context: CSSVisitContext, summary: CSSStructureSummary) {
+function visitRule(node: Rule, context: CSSVisitContext, summary: CSSStructureSummary) {
   const nextContext = { ...context }
   if (!context.inKeyframes) {
     summary.styleRuleCount += 1
     incrementLayerRuleCount(summary, context.layerName)
-    nextContext.parentSpecificity = analyzeRulePrelude(node.prelude, summary, context.parentSpecificity)
+    nextContext.parentSpecificity = analyzeRulePrelude(node.selector, summary, context.parentSpecificity)
   }
 
-  visitCSSNode(node.block, nextContext, summary)
+  visitChildren(node, nextContext, summary)
 }
 
 function incrementLayerRuleCount(summary: CSSStructureSummary, layerName: string | undefined) {
@@ -308,10 +278,8 @@ function incrementLayerRuleCount(summary: CSSStructureSummary, layerName: string
   }
 }
 
-function analyzeRulePrelude(prelude: CSSNode | undefined, summary: CSSStructureSummary, parent?: SelectorSpecificity) {
-  const selectors = getTopLevelSelectors(prelude)
-
-  if (!selectors.length && prelude) throw new Error('Cannot calculate specificity for an unparsed selector prelude.')
+function analyzeRulePrelude(prelude: string, summary: CSSStructureSummary, parent?: SelectorSpecificity) {
+  const selectors = parseSelectorList(prelude)
   let greatest = emptySpecificity()
 
   for (const selector of selectors) {
@@ -328,31 +296,18 @@ function analyzeRulePrelude(prelude: CSSNode | undefined, summary: CSSStructureS
   return greatest
 }
 
-function getTopLevelSelectors(prelude: CSSNode | undefined) {
-  if (!prelude) return []
-  if (prelude.type === 'Selector') return [prelude]
-  if (prelude.type !== 'SelectorList') return []
-
-  const selectors: CSSNode[] = []
-  prelude.children?.forEach((child) => {
-    if (child.type === 'Selector') selectors.push(child)
-  })
-
-  return selectors
-}
-
-function calculateSelectorComplexity(selector: CSSNode) {
+function calculateSelectorComplexity(selector: Selector) {
   let score = 0
-  walkSelector(selector, (node) => {
+  walkSelectorComponents(selector, (node) => {
     if (
-      node.type === 'IdSelector' ||
-      node.type === 'ClassSelector' ||
-      node.type === 'AttributeSelector' ||
-      node.type === 'TypeSelector' ||
-      node.type === 'PseudoClassSelector' ||
-      node.type === 'PseudoElementSelector' ||
-      node.type === 'Combinator' ||
-      node.type === 'NestingSelector'
+      node.type === 'id' ||
+      node.type === 'class' ||
+      node.type === 'attribute' ||
+      node.type === 'tag' ||
+      node.type === 'universal' ||
+      node.type === 'pseudo' ||
+      node.type === 'combinator' ||
+      node.type === 'nesting'
     ) {
       score += 1
     }
@@ -360,39 +315,14 @@ function calculateSelectorComplexity(selector: CSSNode) {
   return score
 }
 
-function countSelectorCombinators(selector: CSSNode) {
+function countSelectorCombinators(selector: Selector) {
   let count = 0
-  walkSelector(selector, (node) => {
-    if (node.type === 'Combinator') count += 1
+  walkSelectorComponents(selector, (node) => {
+    if (node.type === 'combinator') count += 1
   })
   return count
 }
 
-function walkSelector(node: CSSNode, callback: (node: CSSNode) => void) {
-  callback(node)
-  forEachChild(node, (child) => walkSelector(child, callback))
-}
-
-function getLayerName(prelude: CSSNode | undefined) {
-  if (!prelude) return 'anonymous'
-  const value = generate(prelude as never).trim()
-  return value || 'anonymous'
-}
-
 function isKnownLayer(layerName: string): layerName is KnownLayer {
   return knownLayers.includes(layerName as KnownLayer)
-}
-
-function forEachChild(node: CSSNode, callback: (child: CSSNode) => void) {
-  if (node.children) {
-    node.children.forEach(callback)
-  }
-
-  if (node.prelude) {
-    callback(node.prelude)
-  }
-
-  if (node.block) {
-    callback(node.block)
-  }
 }

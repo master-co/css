@@ -1,5 +1,6 @@
 import { chromium } from '@playwright/test'
-import * as csstree from 'css-tree'
+import postcss, { type Container, type Root } from 'postcss'
+import selectorParser from 'postcss-selector-parser'
 
 export type SelectorUsage = {
   styleRules: number
@@ -26,33 +27,25 @@ const statePseudo = /::?(?:-[a-z]+-)?(?:hover|focus|focus-visible|focus-within|a
 export function collectStyleRules(cssTexts: string[]): StyleRule[] {
   const rules: StyleRule[] = []
   for (const text of cssTexts) {
-    let ast: csstree.CssNode
+    let root: Root
     try {
-      ast = csstree.parse(text, { positions: true, parseValue: false, parseCustomProperty: false })
+      root = postcss.parse(text)
     } catch {
       continue
     }
-    visitRules(ast, '', false, rules)
+    visitRules(root, '', false, rules)
   }
   return rules
 }
 
-function visitRules(node: csstree.CssNode, parentSelector: string, insideKeyframes: boolean, rules: StyleRule[]) {
-  const children = 'children' in node ? node.children as csstree.List<csstree.CssNode> | null : null
-  children?.forEach((child) => {
-    // css-tree leaves a nested rule without a leading `&` as raw text.
-    if (child.type === 'Raw' && parentSelector && child.value.includes('{')) {
-      try {
-        visitRules(csstree.parse(child.value, { positions: true, parseValue: false, parseCustomProperty: false }), parentSelector, insideKeyframes, rules)
-      } catch {}
-      return
+function visitRules(container: Container, parentSelector: string, insideKeyframes: boolean, rules: StyleRule[]) {
+  for (const child of container.nodes ?? []) {
+    if (child.type === 'atrule') {
+      if (child.nodes) visitRules(child, parentSelector, insideKeyframes || /keyframes$/.test(child.name), rules)
+      continue
     }
-    if (child.type === 'Atrule') {
-      if (child.block) visitRules(child.block, parentSelector, insideKeyframes || /keyframes$/.test(child.name), rules)
-      return
-    }
-    if (child.type !== 'Rule' || insideKeyframes) return
-    let selector = csstree.generate(child.prelude)
+    if (child.type !== 'rule' || insideKeyframes) continue
+    let selector = generateSelector(child.selector)
     if (parentSelector) {
       selector = splitSelectorList(selector)
         .map((part) => part.includes('&') ? part.replaceAll('&', `:is(${parentSelector})`) : `:is(${parentSelector}) ${part}`)
@@ -60,20 +53,51 @@ function visitRules(node: csstree.CssNode, parentSelector: string, insideKeyfram
     }
     let declarations = 0
     let customProperties = 0
-    child.block.children.forEach((item) => {
-      if (item.type !== 'Declaration') return
-      if (item.property.startsWith('--')) customProperties++
+    for (const item of child.nodes) {
+      if (item.type !== 'decl') continue
+      if (item.prop.startsWith('--')) customProperties++
       else declarations++
-    })
+    }
     if (declarations || customProperties) {
       rules.push({
         selectors: splitSelectorList(selector).map(normalizeSelector),
-        bytes: child.loc!.end.offset - child.loc!.start.offset,
+        bytes: child.source!.end!.offset - child.source!.start!.offset,
         tokenOnly: declarations === 0
       })
     }
-    visitRules(child.block, selector, false, rules)
-  })
+    visitRules(child, selector, false, rules)
+  }
+}
+
+/** Prints a selector compactly: no comments, no whitespace around commas or explicit combinators. */
+function generateSelector(selector: string) {
+  try {
+    const root = selectorParser().astSync(selector)
+    root.walk((node) => {
+      if (node.type === 'comment') {
+        node.remove()
+        return
+      }
+      node.spaces.before = ''
+      node.spaces.after = ''
+      if (node.type === 'combinator') {
+        node.rawSpaceBefore = ''
+        node.rawSpaceAfter = ''
+        node.value = node.value.trim() || ' '
+        if (node.raws) delete node.raws.value
+      } else if (node.type === 'attribute') {
+        // The printer keeps the one space an unquoted value needs before its flag.
+        for (const spaces of [node.spaces, node.raws.spaces]) {
+          for (const part of Object.values(spaces ?? {})) {
+            if (typeof part === 'object') Object.assign(part, { before: '', after: '' })
+          }
+        }
+      }
+    })
+    return root.toString()
+  } catch {
+    return selector
+  }
 }
 
 function splitSelectorList(selector: string) {

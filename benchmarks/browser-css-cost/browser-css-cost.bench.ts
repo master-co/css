@@ -129,7 +129,8 @@ async function createBrowserCSSCostReport(): Promise<BenchmarkReport> {
     },
     packages: await collectPackageVersions([
       '@playwright/test',
-      'css-tree'
+      'postcss',
+      'postcss-selector-parser'
     ]),
     fixtures: getBrowserCostFixtures(),
     adapters: getBrowserCostAdapters(),
