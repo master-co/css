@@ -5,7 +5,7 @@ import { readFileSync, realpathSync, statSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { pureCSSCache } from './pure-css-cache'
-import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
+import { createCompilerBindingSessionSync, manifestOf, MasterCSSManifestReference, type MasterCSSManifestSource } from '@master/css-binding/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
   MasterCSSError,
@@ -89,7 +89,9 @@ export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
   root?: string
 }
 
-type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
+type CompileCSSManifestInternalOptions = Omit<CompileCSSManifestSourceOptions, 'baseManifest'> & {
+  /** Internal compilations pass the binding's references along unread. */
+  baseManifest?: MasterCSSManifestSource
   /** Host context definitions retain file URL owners until the host publishes assets. */
   resolveReferenceResources?: boolean
   definitionsOnly?: boolean
@@ -104,6 +106,10 @@ export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manife
   manifest: MasterCSSManifest
   resolutionManifest: MasterCSSManifest
   directives: CompileCSSResult
+  /** @internal The binding's references, read into `manifest` and `resolutionManifest` on demand. */
+  readonly manifestReference?: MasterCSSManifestReference
+  /** @internal */
+  readonly resolutionManifestReference?: MasterCSSManifestReference
 }
 
 export interface CompileProjectManifestResult extends CompileCSSManifestResult {
@@ -468,7 +474,7 @@ function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
   }
 }
 
-export function resolveCSSReferenceFile(reference: CSSDirectiveReference & { resolvedFile?: string }, options: CompileCSSManifestSourceOptions = {}) {
+export function resolveCSSReferenceFile(reference: CSSDirectiveReference & { resolvedFile?: string }, options: Pick<CompileCSSManifestSourceOptions, 'root'> = {}) {
   if (reference.resolvedFile) return reference.resolvedFile
   const fromFile = reference.file
     ? isAbsolute(reference.file)
@@ -515,7 +521,7 @@ function resolveCSSReferenceContext(
     })
     definitionSources.push(...(result.definitionSources || []))
     hasReferences = true
-    manifest = result.manifest
+    manifest = result.manifestReference ?? result.manifest
     addUnique(dependencies, result.dependencies)
     addUnique(warnings, result.warnings)
   }
@@ -536,8 +542,8 @@ function toCompileCSSManifestResult(
   const referenceContext = resolveCSSReferenceContext(result.references, options)
   const definitionSources = [...referenceContext.definitionSources, ...(result.definitionSources || [])]
   const lowerResult = lowerCSSDirectivesWithBinding({ ...result, definitionSources }, {
-    baseManifest: options.baseManifest,
-    resolutionManifest: referenceContext.manifest,
+    baseManifest: options.baseManifest && manifestOf(options.baseManifest),
+    resolutionManifest: referenceContext.manifest && manifestOf(referenceContext.manifest),
     onDiagnostic: options.onDiagnostic,
     sourceText: options.sourceText
   })
@@ -592,7 +598,8 @@ export function compileCSSManifestGraph(
       return [[url, resource.href]]
     }))
   ])) : undefined
-  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => nativeCompiler().compileCSSStylesheetGraph({
+  // Manifests stay in the binding: the project manifest is not shipped for every stylesheet.
+  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraphWithReferences']>>(() => nativeCompiler().compileCSSStylesheetGraphWithReferences({
     graph,
     ...(options.definitionsOnly ? { nativeStylesheets: [] } : {}),
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
@@ -612,11 +619,17 @@ export function compileCSSManifestGraph(
   for (const warning of warnings) options.onDiagnostic?.(compilerWarningDiagnostic(warning))
   noticeDiagnostics(directives.notices, options.onDiagnostic)
   const entry = compiled.stylesheets.find(sheet => sheet.id === compiled.entry)!
-  return {
+  const result = {
     ...directives, dependencies, warnings, css: entry.css, outputMappings: entry.outputMappings, sourceTexts: graph.files,
-    manifest: compiled.manifest, resolutionManifest: compiled.resolutionManifest,
     directives, stylesheets: compiled.stylesheets
   }
+  // Most hosts only execute the manifests, through their references; read them on demand.
+  return Object.defineProperties(result, {
+    manifest: { enumerable: true, configurable: true, get: () => compiled.manifest.manifest() },
+    resolutionManifest: { enumerable: true, configurable: true, get: () => compiled.resolutionManifest.manifest() },
+    manifestReference: { value: compiled.manifest },
+    resolutionManifestReference: { value: compiled.resolutionManifest }
+  }) as typeof result & Pick<CompileCSSManifestResult, 'manifest' | 'resolutionManifest' | 'manifestReference' | 'resolutionManifestReference'>
 }
 
 export function createManifestFromCSSResult(

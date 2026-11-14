@@ -44,11 +44,16 @@ export function compilePreparedStylesheet(filename: string, css: string, options
     }
     const context = { file: baseFile ?? filename, source: css, compilationFile, sourceMap }
     errorContext = context
-    const result = compileCSS(compilationSource, { ...compileOptions, from: compilationFile })
-    if (suppliedReferences) result.references = suppliedReferences
-    else if (sourceMap && result.references) result.references = [...resolveReferenceOrigins(css, result.references, baseFile ?? filename, sourceMap)]
-    if (hostReferences.length) result.references = [...hostReferences, ...(result.references ?? [])]
-    const finalizedResult = createManifestFromCSSResult(result, { ...compileOptions, onDependency, baseManifest, root: projectDir, from: filename, sourceText: compilationSource, resolveReferenceResources: Boolean(referenceFiles?.length) })
+    // One compilation parses and lowers the source, as for a graph, without
+    // following its imports: the host owns them.
+    const finalizedResult = compileCSSManifestGraph({ entry: compilationFile, files: { [compilationFile]: compilationSource }, edges: [] }, {
+      ...compileOptions, baseManifest, from: compilationFile, root: projectDir, onDependency,
+      resolveReferenceResources: Boolean(referenceFiles?.length),
+      mapReferences: (file, text, references) => file === compilationFile
+        ? [...hostReferences, ...(suppliedReferences ?? (sourceMap ? resolveReferenceOrigins(text, references, baseFile ?? filename, sourceMap) : references))]
+        : references
+    })
+    const result = finalizedResult.directives
     const mappings = finalizedResult.outputMappings ?? stylesheetOutputMappings(result.nativeCSS, result.nativeMappings, finalizedResult.generatedMappings)
     const outputMap = (code: string, resources: CSSOutputMapping[] = []) => stylesheetOutputMap(code, [...mappings, ...resources], context, finalizedResult.css.length)
     return { compileOptions, finalizedResult, result, outputMap }

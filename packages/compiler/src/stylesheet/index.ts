@@ -350,7 +350,7 @@ export async function compileRenderedStylesheet(
   }
   const { compileOptions, finalizedResult, result, outputMap } = await compileStylesheetResult(id, source, options, true)
   const renderedCSS = renderCompiledManifestCSS({
-    manifest: finalizedResult.resolutionManifest,
+    manifest: finalizedResult.resolutionManifestReference ?? finalizedResult.resolutionManifest,
     // Include expanded native mixin applications as well as parsed native CSS.
     nativeCSS: finalizedResult.css,
     classNames: compileOptions.classes,
@@ -469,11 +469,11 @@ export async function transformLocalStylesheet(
     preserveNativeSource: compileOptions.preserveNativeSource ?? native,
     preserveNativeCSS: true
   })
-  if (native && !hasStylesheetResourceReferences(finalizedResult.resolutionManifest, finalizedResult.css || result.nativeCSS || '')) {
+  if (native && !hasStylesheetResourceReferences(finalizedResult.resolutionManifestReference ?? finalizedResult.resolutionManifest, finalizedResult.css || result.nativeCSS || '')) {
     return { code: source, dependencies: finalizedResult.dependencies, transformed: false }
   }
   const renderedCSS = renderCompiledManifestCSS({
-    manifest: finalizedResult.resolutionManifest,
+    manifest: finalizedResult.resolutionManifestReference ?? finalizedResult.resolutionManifest,
     nativeCSS: finalizedResult.css || result.nativeCSS,
     includeGeneratedCSS: false,
     emittedGlobals

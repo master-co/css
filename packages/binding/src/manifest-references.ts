@@ -154,7 +154,8 @@ class ManifestReferences {
     const known = this.#byManifest.get(source)
     if (known) return known
     const handle = this.store.register(JSON.stringify(source))
-    const reference = this.#byKey.get(handle.key)?.deref() ?? this.#keep(new MasterCSSManifestReference(this.store, handle))
+    // A shared manifest is the manifest its reference reads: keep it rather than parse it again.
+    const reference = this.#byKey.get(handle.key)?.deref() ?? this.#keep(new MasterCSSManifestReference(this.store, handle, sharedManifests.has(source) ? source : undefined))
     if (sharedManifests.has(source)) this.#byManifest.set(source, reference)
     return reference
   }
