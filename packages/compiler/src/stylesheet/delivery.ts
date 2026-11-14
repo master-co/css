@@ -108,7 +108,9 @@ function prepareGraphReferences(graph: PreparedCSSImportGraph, options: GraphOpt
     delivery.onDependency?.(file)
     const chain = [...stack, ...(item.file && !item.file.startsWith('\0') ? [existsSync(item.file) ? realpathSync(item.file) : resolve(item.file)] : [])]
     if (chain.includes(realpathSync(file))) throw new Error(`Circular CSS reference: ${[...stack, file].join(' -> ')}`)
-    const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: delivery.resolveNodePackageImports }, analyzeCSSDependencies)
+    // A reference graph is definition context that is never delivered, so its
+    // package imports resolve like the project manifest's, whatever the host's.
+    const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: true }, analyzeCSSDependencies)
     const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest, referenceContext: true }, undefined, chain, {}, {}, [], metadataOnly)
     reference.manifest = compiled.manifest
     reference.dependencies.push(...compiled.directives.dependencies)
