@@ -11,6 +11,7 @@ import { realpathSync } from 'node:fs'
 import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { prepareCSSImportGraph } from '../node-imports'
 import type { MasterCSSProjectSourceGraph } from './options'
+import { fileStampsCurrent, settledFileStamps, type FileStamp } from '../file-stamps'
 
 // Package specifiers resolve as the build delivery resolves them, so editor, lint
 // and MCP manifests see the definitions a shared workspace stylesheet supplies.
@@ -66,12 +67,68 @@ function isProjectPath(root: string, file: string) {
     && !local.split(sep).includes('node_modules')
 }
 
+interface CachedProjectManifest {
+  readonly stamps: readonly FileStamp[]
+  /** The dependencies in the order the load observed them, replayed to hosts. */
+  readonly observed: readonly string[]
+  readonly result: BindingProjectManifestResult
+}
+
+const PROJECT_CACHE_CAPACITY = 8
+const projectManifests = new WeakMap<MasterCSSManifest, Map<string, CachedProjectManifest>>()
+
+/**
+ * Build hosts without a watcher of their own, such as the Next and Webpack
+ * loaders, load the project manifest for every stylesheet they transform.
+ * Reuse a load while its entries and every file it read are unchanged.
+ */
 export function loadBindingProjectManifest(
   projectDir: string,
   baseManifest: MasterCSSManifest,
   entries?: readonly string[],
   onDependency?: (file: string) => void,
   includeSourceGraph = false
+): BindingProjectManifestResult {
+  const resolvedEntries = entries ?? createCompilerBindingSessionSync().findManifestEntries(projectDir)
+  const key = JSON.stringify([resolve(projectDir), includeSourceGraph, resolvedEntries])
+  let cache = projectManifests.get(baseManifest)
+  const cached = cache?.get(key)
+  if (cached && fileStampsCurrent(cached.stamps)) {
+    cache!.delete(key)
+    cache!.set(key, cached)
+    for (const file of cached.observed) onDependency?.(file)
+    return cached.result
+  }
+  const startedAt = Date.now()
+  const observed: string[] = []
+  const result = loadProjectManifestNow(projectDir, baseManifest, resolvedEntries, file => {
+    observed.push(file)
+    onDependency?.(file)
+  }, includeSourceGraph)
+  const stamps = settledFileStamps([...result.entries, ...observed, ...result.dependencies], startedAt)
+  if (stamps) {
+    if (!cache) projectManifests.set(baseManifest, cache = new Map())
+    cache.delete(key)
+    if (cache.size >= PROJECT_CACHE_CAPACITY) cache.delete(cache.keys().next().value!)
+    cache.set(key, { stamps, observed, result: deepFreeze(result) })
+  }
+  return result
+}
+
+function deepFreeze<T>(value: T): T {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value)
+    for (const child of Object.values(value)) deepFreeze(child)
+  }
+  return value
+}
+
+function loadProjectManifestNow(
+  projectDir: string,
+  baseManifest: MasterCSSManifest,
+  entries: readonly string[],
+  onDependency: (file: string) => void,
+  includeSourceGraph: boolean
 ): BindingProjectManifestResult {
   const compiler = createCompilerBindingSessionSync()
   const root = resolve(projectDir)
@@ -88,7 +145,7 @@ export function loadBindingProjectManifest(
       ? join(root, relative(realRoot, absoluteFile))
       : absoluteFile
   }
-  const resolvedEntries = (entries ?? compiler.findManifestEntries(projectDir)).map(preservePath)
+  const resolvedEntries = entries.map(preservePath)
   const observed = new Set<string>()
   const dependency = onDependency ? (file: string) => {
     const path = preservePath(file)

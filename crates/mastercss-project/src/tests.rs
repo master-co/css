@@ -263,3 +263,36 @@ fn matches_source_globs_with_fast_glob_compatible_primitives() {
     assert!(glob_matches("/root/[!a]*.tsx", "/root/button.tsx"));
     assert!(!glob_matches("/root/[!a]*.tsx", "/root/alert.tsx"));
 }
+
+#[test]
+fn rediscovers_entries_whose_files_changed() {
+    let project = temp_project();
+    let file = project.join("theme.css");
+    let settled = |seconds: u64| SystemTime::now() - std::time::Duration::from_secs(seconds);
+    let write = |source: &str, modified: SystemTime| {
+        fs::write(&file, source).unwrap();
+        fs::File::options()
+            .write(true)
+            .open(&file)
+            .unwrap()
+            .set_modified(modified)
+            .unwrap();
+    };
+
+    write("@import '@master/css';", settled(60));
+    assert_eq!(
+        find_css_manifest_entries(&project),
+        vec![file.canonicalize().unwrap()]
+    );
+    // Unchanged files are not read again; a changed one is.
+    write(".plain { color: red; }", settled(30));
+    assert!(find_css_manifest_entries(&project).is_empty());
+    // A file written just now is never remembered, even at the same size.
+    write(".plain { color: red; }", settled(30));
+    write("@import '@master/css';", SystemTime::now());
+    assert_eq!(find_css_manifest_entries(&project).len(), 1);
+    write(".plain { color: rgb; }", SystemTime::now());
+    assert!(find_css_manifest_entries(&project).is_empty());
+
+    fs::remove_dir_all(project).unwrap();
+}

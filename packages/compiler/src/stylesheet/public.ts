@@ -15,7 +15,7 @@ import type {
   MasterCSSCompileOptions,
   MasterCSSCompileResult
 } from '../index'
-import { toMasterCSSCompileResultInternal } from '../compiler'
+import { compileResultDiagnosticsInternal, compileResultFieldsInternal, toMasterCSSCompileResultInternal } from '../compiler'
 import {
   cleanStyleRequest,
   collectStylesheetDependencies as collectStylesheetDependenciesInternal,
@@ -360,10 +360,10 @@ export async function compileRenderedStylesheet(
     loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
   })
   options.signal?.throwIfAborted()
-  const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
-  return Object.freeze({
-    ...compilation,
-    diagnostics: Object.freeze([...compilation.diagnostics, ...validateCompiledCSS((result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap)), options)]),
+  // Like every compile result, diagnostics are computed on first read unless the
+  // host reports them as they are produced or fails on them.
+  return withDiagnostics(() => ({
+    ...compileResultFieldsInternal(result),
     ...(result.stylesheets ? {
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(({ id, href, css, sourceMap }) => Object.freeze({ id, href, css, sourceMap }))),
@@ -371,7 +371,10 @@ export async function compileRenderedStylesheet(
     } : {}),
     manifest: Object.freeze(result.manifest),
     emittedGlobals: freezeEmittedGlobals(result.emittedGlobals)
-  })
+  }), () => Object.freeze([
+    ...compileResultDiagnosticsInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap)),
+    ...validateCompiledCSS((result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap)), options)
+  ]), options)
 }
 
 export async function collectStylesheetEmittedGlobals(

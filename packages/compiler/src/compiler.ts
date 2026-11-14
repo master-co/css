@@ -82,14 +82,9 @@ function directiveSummary(result: CompileCSSResult) {
   })
 }
 
-/** @internal */
-export function toMasterCSSCompileResultInternal(
-  result: CompileCSSResult,
-  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
-  validation?: 'report' | 'error',
-  origin?: Omit<ValidationSource, 'css'>
-): MasterCSSCompileResult {
-  return withDiagnostics(() => ({
+/** @internal The fields of a compile result, without its diagnostics. */
+export function compileResultFieldsInternal(result: CompileCSSResult) {
+  return {
     css: result.css,
     ...(result.sourceMap ? { sourceMap: result.sourceMap } : {}),
     nativeCSS: result.nativeCSS,
@@ -98,7 +93,31 @@ export function toMasterCSSCompileResultInternal(
     classNames: Object.freeze([...result.classNames]),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
     directiveSummary: directiveSummary(result)
-  }), () => Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...noticeDiagnostics(result.notices, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings ?? result.nativeMappings, ...origin }], { onDiagnostic, validation })]), { onDiagnostic, validation })
+  }
+}
+
+/** @internal The diagnostics of a compile result, reported as they are produced. */
+export function compileResultDiagnosticsInternal(
+  result: CompileCSSResult,
+  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
+  validation?: 'report' | 'error',
+  origin?: Omit<ValidationSource, 'css'>
+): readonly MasterCSSDiagnostic[] {
+  return [...diagnosticsFor(result.warnings, onDiagnostic), ...noticeDiagnostics(result.notices, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings ?? result.nativeMappings, ...origin }], { onDiagnostic, validation })]
+}
+
+/** @internal */
+export function toMasterCSSCompileResultInternal(
+  result: CompileCSSResult,
+  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
+  validation?: 'report' | 'error',
+  origin?: Omit<ValidationSource, 'css'>
+): MasterCSSCompileResult {
+  return withDiagnostics(
+    () => compileResultFieldsInternal(result),
+    () => Object.freeze(compileResultDiagnosticsInternal(result, onDiagnostic, validation, origin)),
+    { onDiagnostic, validation }
+  )
 }
 
 interface InternalManifestCompileResult {

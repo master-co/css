@@ -3,9 +3,11 @@
 mod filesystem_graph;
 mod manifest_graph;
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Component, Path, PathBuf};
+use std::sync::{LazyLock, Mutex};
+use std::time::SystemTime;
 
 use mastercss_compiler::{
     CompileNativeCssOptions, CompilerError, CssImportProvider, LowerCssDirectivesOptions,
@@ -457,15 +459,58 @@ fn collect_entries(directory: &Path, entries: &mut Vec<PathBuf>) {
                 continue;
             }
             collect_entries(&path, entries);
-        } else if file_type.is_file() && path.extension().is_some_and(|value| value == "css") {
-            let Ok(source) = fs::read_to_string(&path) else {
-                continue;
-            };
-            if inspect_css(&source).has_master_entry {
-                entries.push(path.canonicalize().unwrap_or(path));
-            }
+        } else if file_type.is_file()
+            && path.extension().is_some_and(|value| value == "css")
+            && let Some(entry) = manifest_entry(&path)
+        {
+            entries.push(entry);
         }
     }
+}
+
+/// Whether a file declared a manifest entry, by the modification time and size it had.
+struct EntryCheck {
+    modified: SystemTime,
+    len: u64,
+    entry: Option<PathBuf>,
+}
+
+/// Hosts discover entries for each stylesheet they transform; most files are unchanged
+/// between discoveries, so only changed files are read and inspected again.
+static ENTRY_CHECKS: LazyLock<Mutex<HashMap<PathBuf, EntryCheck>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+
+fn manifest_entry(path: &Path) -> Option<PathBuf> {
+    let metadata = fs::metadata(path).ok();
+    let stamp = metadata
+        .as_ref()
+        .and_then(|metadata| Some((metadata.modified().ok()?, metadata.len())));
+    if let Some((modified, len)) = stamp
+        && let Some(check) = ENTRY_CHECKS.lock().ok()?.get(path)
+        && check.modified == modified
+        && check.len == len
+    {
+        return check.entry.clone();
+    }
+    let source = fs::read_to_string(path).ok()?;
+    let entry = inspect_css(&source)
+        .has_master_entry
+        .then(|| path.canonicalize().unwrap_or_else(|_| path.to_path_buf()));
+    // A file written within the timestamp granularity can change again unnoticed.
+    if let Some((modified, len)) = stamp
+        && modified.elapsed().is_ok_and(|age| age.as_secs_f64() > 2.0)
+        && let Ok(mut checks) = ENTRY_CHECKS.lock()
+    {
+        checks.insert(
+            path.to_path_buf(),
+            EntryCheck {
+                modified,
+                len,
+                entry: entry.clone(),
+            },
+        );
+    }
+    entry
 }
 
 pub fn find_css_manifest_entries(project_dir: &Path) -> Vec<PathBuf> {
