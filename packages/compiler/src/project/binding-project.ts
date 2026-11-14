@@ -12,6 +12,7 @@ import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { prepareCSSImportGraph } from '../node-imports'
 import type { MasterCSSProjectSourceGraph } from './options'
 import { fileStampsCurrent, settledFileStamps, type FileStamp } from '../file-stamps'
+import { deepFreeze } from '../deep-freeze'
 
 // Package specifiers resolve as the build delivery resolves them, so editor, lint
 // and MCP manifests see the definitions a shared workspace stylesheet supplies.
@@ -113,14 +114,6 @@ export function loadBindingProjectManifest(
     cache.set(key, { stamps, observed, result: deepFreeze(result) })
   }
   return result
-}
-
-function deepFreeze<T>(value: T): T {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value)
-    for (const child of Object.values(value)) deepFreeze(child)
-  }
-  return value
 }
 
 function loadProjectManifestNow(

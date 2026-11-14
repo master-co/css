@@ -15,6 +15,7 @@ import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSManifestReference, MasterCSSManifestSource } from '@master/css-binding/compiler/node'
 import type { CompileCSSResult } from '../contracts'
+import { fileStampsCurrent, settledFileStamps, type FileStamp } from '../file-stamps'
 import type { TransformLocalStylesheetOptions, CompileStylesheetOptions, ScannerState, StylesheetSources, StylesheetSource, CreateExtractedCSSResult } from './types'
 
 export interface StylesheetDeliveryOptions {
@@ -110,14 +111,82 @@ function prepareGraphReferences(graph: PreparedCSSImportGraph, options: GraphOpt
     if (chain.includes(realpathSync(file))) throw new Error(`Circular CSS reference: ${[...stack, file].join(' -> ')}`)
     // A reference graph is definition context that is never delivered, so its
     // package imports resolve like the project manifest's, whatever the host's.
-    const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency: delivery.onDependency, resolveNodePackageImports: true }, analyzeCSSDependencies)
-    const compiled = compileGraph(referenceGraph, { ...options, referenceFiles: undefined, references: undefined, baseManifest: reference.manifest ?? options.baseManifest, referenceContext: true }, undefined, chain, {}, {}, [], metadataOnly)
+    const compiled = compileReferenceGraph(file, reference.manifest ?? options.baseManifest, options, chain, metadataOnly)
     reference.manifest = compiled.manifest
-    reference.dependencies.push(...compiled.directives.dependencies)
-    reference.warnings.push(...compiled.directives.warnings)
+    reference.dependencies.push(...compiled.dependencies)
+    reference.warnings.push(...compiled.warnings)
     reference.resources.push(...compiled.resources)
   }
   return reference
+}
+
+interface CompiledReferenceGraph {
+  readonly manifest: MasterCSSManifestReference
+  readonly dependencies: readonly string[]
+  readonly warnings: readonly string[]
+  readonly resources: readonly StylesheetResourceAsset[]
+}
+
+interface CachedReferenceGraph {
+  readonly stamps: readonly FileStamp[]
+  /** Every file the compilation read, to detect a referencing stylesheet among them. */
+  readonly files: ReadonlySet<string>
+  /** The dependencies it reported, replayed to later hosts in order. */
+  readonly observed: readonly string[]
+  readonly result: CompiledReferenceGraph
+}
+
+const REFERENCE_GRAPH_CAPACITY = 32
+const withoutBaseManifest = {}
+const referenceGraphs = new WeakMap<object, Map<string, CachedReferenceGraph>>()
+
+const comparable = (file: string) => existsSync(file) ? realpathSync(file) : resolve(file)
+
+/**
+ * The definitions a graph reads from one `@reference`. Hosts deliver every local
+ * stylesheet against the same project references, so a compilation is reused
+ * while every file it read is unchanged. Graphs with resources are compiled
+ * each time: their URLs belong to the delivering host.
+ */
+function compileReferenceGraph(file: string, baseManifest: MasterCSSManifestSource | undefined, options: GraphOptions, chain: readonly string[], metadataOnly: boolean): CompiledReferenceGraph {
+  const delivery = options.delivery!
+  const key = JSON.stringify([
+    file, options.projectDir ?? '', metadataOnly, options.preserveNativeCSS ?? null, options.preserveNativeSource ?? null,
+    options.pruneNativeCSS === true, delivery.inlineImports === true, delivery.relativeResourceURLs === true
+  ])
+  const cache = referenceGraphs.get(baseManifest ?? withoutBaseManifest)
+  const cached = cache?.get(key)
+  // A referencing stylesheet the definitions read is a cycle: compile to report it.
+  if (cached && !chain.some(item => cached.files.has(item)) && fileStampsCurrent(cached.stamps)) {
+    cache!.delete(key)
+    cache!.set(key, cached)
+    for (const dependency of cached.observed) delivery.onDependency?.(dependency)
+    return cached.result
+  }
+  const startedAt = Date.now()
+  const observed: string[] = []
+  const onDependency = (dependency: string) => { observed.push(dependency); delivery.onDependency?.(dependency) }
+  const referenceGraph = prepareCSSImportGraph(file, undefined, { projectDir: options.projectDir, onDependency, resolveNodePackageImports: true }, analyzeCSSDependencies)
+  const compiled = compileGraph(referenceGraph, {
+    ...options, referenceFiles: undefined, references: undefined, baseManifest, referenceContext: true,
+    delivery: { ...delivery, onDependency }
+  }, undefined, chain, {}, {}, [], metadataOnly)
+  const result: CompiledReferenceGraph = {
+    manifest: compiled.manifest,
+    dependencies: compiled.directives.dependencies,
+    warnings: compiled.directives.warnings,
+    resources: compiled.resources
+  }
+  const read = [file, ...observed, ...result.dependencies]
+  const stamps = !result.resources.length && settledFileStamps(read, startedAt)
+  if (stamps) {
+    let entries = cache
+    if (!entries) referenceGraphs.set(baseManifest ?? withoutBaseManifest, entries = new Map())
+    entries.delete(key)
+    if (entries.size >= REFERENCE_GRAPH_CAPACITY) entries.delete(entries.keys().next().value!)
+    entries.set(key, { stamps, files: new Set(read.map(comparable)), observed, result: Object.freeze({ ...result, dependencies: Object.freeze([...result.dependencies]), warnings: Object.freeze([...result.warnings]), resources: Object.freeze([]) }) })
+  }
+  return result
 }
 
 function compileGraph(graph: PreparedCSSImportGraph, options: GraphOptions, classes?: readonly string[], referenceStack: readonly string[] = [], owners: Record<string, string> = {}, classesByStylesheet: Record<string, string[] | null> = {}, nativeStylesheets?: string[], metadataOnly = false, inlineImports = false, hostImports: Record<string, string[]> = {}, preparedReference?: GraphReferenceContext): {

@@ -5,6 +5,8 @@ import { readFileSync, realpathSync, statSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { pureCSSCache } from './pure-css-cache'
+import { deepFreeze } from './deep-freeze'
+import { fileStampsCurrent, settledFileStamps, type FileStamp } from './file-stamps'
 import { createCompilerBindingSessionSync, manifestOf, MasterCSSManifestReference, type MasterCSSManifestSource } from '@master/css-binding/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
@@ -493,6 +495,81 @@ function normalizeReferenceStack(stack: string[] | undefined) {
   return (stack || []).map((file) => resolveComparablePath(file))
 }
 
+type ReferenceDefinitions = Pick<CompileCSSManifestResult, 'definitionSources' | 'dependencies' | 'warnings'> & {
+  readonly manifest: MasterCSSManifestSource
+}
+
+interface CachedReferenceDefinitions {
+  readonly stamps: readonly FileStamp[]
+  /** Comparable paths of every file the compilation read. */
+  readonly files: ReadonlySet<string>
+  /** What the compilation reported, replayed to later hosts in order. */
+  readonly observed: readonly string[]
+  readonly diagnostics: readonly MasterCSSDiagnostic[]
+  readonly result: ReferenceDefinitions
+}
+
+const REFERENCE_DEFINITIONS_CAPACITY = 32
+const withoutBaseManifest = {}
+const referenceDefinitions = new WeakMap<object, Map<string, CachedReferenceDefinitions>>()
+
+/**
+ * The definitions a stylesheet reads from one `@reference`. Hosts transform
+ * every local stylesheet against the same project references, so a compilation
+ * is reused while every file it read is unchanged.
+ */
+function compileReferenceDefinitions(
+  referenceFile: string,
+  baseManifest: MasterCSSManifestSource | undefined,
+  options: CompileCSSManifestInternalOptions
+): ReferenceDefinitions {
+  const key = JSON.stringify([
+    referenceFile, options.root ?? '', options.resolveReferenceResources === true, options.pruneNativeCSS === true,
+    options.preserveNativeSource ?? null, options.classes ?? null, Boolean(options.onDiagnostic)
+  ])
+  const cache = referenceDefinitions.get(baseManifest ?? withoutBaseManifest)
+  const cached = cache?.get(key)
+  const stack = normalizeReferenceStack(options.referenceStack)
+  // A referencing stylesheet the definitions read is a cycle: compile to report it.
+  if (cached && !stack.some(file => cached.files.has(file)) && fileStampsCurrent(cached.stamps)) {
+    cache!.delete(key)
+    cache!.set(key, cached)
+    for (const file of cached.observed) options.onDependency?.(file)
+    for (const diagnostic of cached.diagnostics) options.onDiagnostic?.(diagnostic)
+    return cached.result
+  }
+  const startedAt = Date.now()
+  const observed: string[] = []
+  const diagnostics: MasterCSSDiagnostic[] = []
+  const { mapReferences: _mapReferences, ...inherited } = options as CompileCSSManifestInternalOptions & { mapReferences?: unknown }
+  const compiled = compileCSSManifestFileInternal(referenceFile, {
+    ...inherited,
+    baseManifest,
+    preserveNativeCSS: false,
+    definitionsOnly: true,
+    referenceResources: options.resolveReferenceResources,
+    referenceStack: options.referenceStack,
+    onDependency: file => { observed.push(file); options.onDependency?.(file) },
+    ...(options.onDiagnostic ? { onDiagnostic: (diagnostic: MasterCSSDiagnostic) => { diagnostics.push(diagnostic); options.onDiagnostic!(diagnostic) } } : {})
+  })
+  const result: ReferenceDefinitions = {
+    definitionSources: compiled.definitionSources,
+    manifest: compiled.manifestReference ?? compiled.manifest,
+    dependencies: compiled.dependencies,
+    warnings: compiled.warnings
+  }
+  const read = [referenceFile, ...observed, ...compiled.dependencies]
+  const stamps = settledFileStamps(read, startedAt)
+  if (stamps) {
+    let entries = cache
+    if (!entries) referenceDefinitions.set(baseManifest ?? withoutBaseManifest, entries = new Map())
+    entries.delete(key)
+    if (entries.size >= REFERENCE_DEFINITIONS_CAPACITY) entries.delete(entries.keys().next().value!)
+    entries.set(key, { stamps, files: new Set(read.map(resolveComparablePath)), observed, diagnostics, result: Object.freeze({ ...result, definitionSources: deepFreeze(result.definitionSources) }) })
+  }
+  return result
+}
+
 function resolveCSSReferenceContext(
   references: CSSDirectiveReference[] | undefined,
   options: CompileCSSManifestInternalOptions = {}
@@ -511,17 +588,10 @@ function resolveCSSReferenceContext(
     if (stack.includes(comparableReferenceFile)) {
       throw new Error(`Circular CSS reference: ${[...(options.referenceStack || []), referenceFile].join(' -> ')}`)
     }
-    const result = compileCSSManifestFileInternal(referenceFile, {
-      ...options,
-      baseManifest: manifest,
-      preserveNativeCSS: false,
-      definitionsOnly: true,
-      referenceResources: options.resolveReferenceResources,
-      referenceStack: options.referenceStack
-    })
+    const result = compileReferenceDefinitions(referenceFile, manifest, options)
     definitionSources.push(...(result.definitionSources || []))
     hasReferences = true
-    manifest = result.manifestReference ?? result.manifest
+    manifest = result.manifest
     addUnique(dependencies, result.dependencies)
     addUnique(warnings, result.warnings)
   }
