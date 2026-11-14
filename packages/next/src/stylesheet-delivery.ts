@@ -7,6 +7,31 @@ import { publishFile } from './static-publication'
 
 const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex')
 
+/**
+ * URLs name the revision of the output they belong to. Compile once with a
+ * placeholder of a revision's length, then substitute the revision: the text
+ * keeps its length, so source map columns stay valid.
+ */
+const REVISION_PLACEHOLDER = 'x'.repeat(64) + '-'
+
+/** A copy of `value` with `fields` replaced; lazily computed fields stay lazy. */
+function override<T extends object>(value: T, fields: Record<string, unknown>): T {
+  const descriptors = Object.getOwnPropertyDescriptors(value) as PropertyDescriptorMap
+  for (const [key, field] of Object.entries(fields)) descriptors[key] = { value: field, enumerable: true, writable: true, configurable: true }
+  return Object.defineProperties({}, descriptors) as T
+}
+
+function withRevision<T extends Pick<MasterCSSCompiledStylesheet, 'stylesheets' | 'css' | 'sourceMap'>>(result: T, revision: string): T {
+  const swap = (text: string) => text.replaceAll(REVISION_PLACEHOLDER, revision)
+  const { nativeCSS } = result as { nativeCSS?: unknown }
+  return override(result, {
+    css: swap(result.css),
+    ...(result.sourceMap === undefined ? {} : { sourceMap: swap(result.sourceMap) }),
+    ...(typeof nativeCSS === 'string' ? { nativeCSS: swap(nativeCSS) } : {}),
+    ...(result.stylesheets ? { stylesheets: result.stylesheets.map(asset => ({ ...asset, href: swap(asset.href), css: swap(asset.css), sourceMap: swap(asset.sourceMap) })) } : {})
+  })
+}
+
 /** The host loads entry CSS in place; publish every retained child before returning it. */
 export async function deliverNextStylesheet<T extends Pick<MasterCSSCompiledStylesheet, 'entry' | 'stylesheets' | 'resources' | 'css' | 'sourceMap'>>(file: string, projectDir: string, onDependency: (file: string) => void,
   compile: (delivery: MasterCSSStylesheetDeliveryOptions) => Promise<T>, sharedGlobals = false) {
@@ -17,7 +42,7 @@ export async function deliverNextStylesheet<T extends Pick<MasterCSSCompiledStyl
     if (!bytes) { bytes = readFileSync(file);resources.set(file, bytes) }
     return bytes
   }
-  let revision = ''
+  let revision = REVISION_PLACEHOLDER
   const delivery: MasterCSSStylesheetDeliveryOptions = {
     get entryURL() { return href(revision + 'entry.css') },
     stylesheetURL: (owner, variant) => href(`${revision}${hash(owner + (variant ?? ''))}.css`),
@@ -25,16 +50,16 @@ export async function deliverNextStylesheet<T extends Pick<MasterCSSCompiledStyl
     relativeResourceURLs: true,
     onDependency
   }
-  let result = await compile(delivery)
+  const draft = await compile(delivery)
   // Generated globals have no local Module identity. Their resolved CSS already
   // contains content-addressed resource URLs, so identical resource sets from
   // separate modules can share one delivery entry without changing selectors.
   const identity = sharedGlobals
-    ? hash(JSON.stringify({ version: 2, kind: 'generated-globals', stylesheets: result.stylesheets?.map(({ css, sourceMap }) => ({ css, sourceMap })) }))
+    ? hash(JSON.stringify({ version: 2, kind: 'generated-globals', stylesheets: draft.stylesheets?.map(({ css, sourceMap }) => ({ css, sourceMap })) }))
     : hash(file)
   const directory = join(projectDir, '.master/stylesheets', identity)
-  revision = (sharedGlobals ? identity : hash(JSON.stringify({ version: 2, stylesheets: result.stylesheets }))) + '-'
-  result = await compile(delivery)
+  revision = (sharedGlobals ? identity : hash(JSON.stringify({ version: 2, stylesheets: draft.stylesheets }))) + '-'
+  const result = withRevision(draft, revision)
   const assets = new Map<string, Buffer>()
   const cssBytes = new Map<string, number>()
   const cssMaps = new Map<string, string>()
@@ -59,5 +84,5 @@ export async function deliverNextStylesheet<T extends Pick<MasterCSSCompiledStyl
   await publishFile(metadataPath, Buffer.from(JSON.stringify(metadata)), true)
   onDependency(metadataPath)
   const request = relative(dirname(file), output).replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')
-  return { ...result, css: `@import "${request.startsWith('.') ? request : './' + request}";`, sourceMap: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }) }
+  return override(result, { css: `@import "${request.startsWith('.') ? request : './' + request}";`, sourceMap: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }) })
 }
