@@ -20,7 +20,15 @@ Establish the row's role and density, choose appropriate component sizes, then i
 
 Negative margins can compensate for padding or let an auxiliary element bleed into surrounding whitespace while retaining its border box. With an auto-sized horizontal flex row, a 36px control with -6px block margins can contribute 24px, while its actual target remains 36px high. This is a specimen, not a formula for every layout. Reserve enough unblocked surrounding space, and inspect neighboring targets, focus, hover, clipping and wrapped text. Translation or relative positioning alone moves the visible element but keeps its original layout contribution.
 
+Align a control beside a heading or a multi-line label to the first line, not to the whole block. An action, a status badge or a trailing value centered on a two-line title and description appears to belong to the description. Measure the control's center against the first line's cap-height middle, and give it negative block margins equal to half the difference between its height and the line height so it does not deepen the row. Within one row, choose one strategy: when a checkbox or radio is aligned to the first line, align the trailing value to the first line as well. Avatar rows with short two-line content may center every part instead. Do not mix the two strategies within a row.
+
 Vertical rhythm names the repeated spacing relationship; baseline alignment and optical alignment name different alignment decisions. Bleed describes controlled extension. “Negative-margin compensation” describes the implementation, not a single formal technique covering all these cases. Prefer logical margin/padding properties, and keep adjustments tied to the specific component pairing and density.
+
+## Share one gutter
+
+A page header and the content beneath it share one inline gutter at every width. Where the side navigation is visible, the header can align with the navigation's text instead. When the navigation leaves at a narrower width, the header, the brand and the first column of content should start on the same edge. Change the header's and the content's inline padding together at each breakpoint; a 20px header above 24px content looks like a 4px error, not a deliberate offset.
+
+Test this at the narrowest width with a menu button, a brand, a trailing action and a heading. Measure the menu button's glyph, the brand mark, the heading's first glyph and the trailing action's contour against the same edge. Add safe-area insets to the shared gutter instead of replacing it.
 
 ## Table actions and inline contents
 

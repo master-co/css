@@ -6,6 +6,8 @@ Preserve the project's typefaces and hierarchy. Wait for the actual font. A comp
 
 Use balanced wrapping where a short heading benefits from more even lines. Pretty wrapping can improve an isolated last line in prose. Compare fixed content and measure. Algorithms vary by engine and script; do not promise identical breaks or globally balance paragraphs. Test real strings, narrow widths and longer translations.
 
+`overflow-wrap: anywhere` and `break-word` both break an unbreakable word that would overflow, but `anywhere` also treats every character as a break opportunity in min-content sizing. A label in a column sized to its content, such as an auto grid track or a flexible stub, can then wrap one letter at a time. Use `break-word` for short labels that may sit in such a column, and keep `anywhere` for long identifiers in fixed-width prose.
+
 ## Numbers
 
 Use tabular figures for changing values and aligned numeric columns when supported by the font. Confirm widths actually become equal; keep prose figures proportional where appropriate.
@@ -45,6 +47,8 @@ Check body line spacing, short labels and multi-line headings separately. Compar
 ## Inline objects and line boxes
 
 An inline image, icon, badge, code run, superscript or control can change the line's ascent/descent. `vertical-align` applies to inline-level boxes and table cells; flex/grid items use their alignment model instead. `middle` uses the surrounding font's baseline and x-height, not the containing block's geometric center.
+
+A flex or grid box exports the baseline of its first item that has one. A leading icon, a decorative pseudo-element or a replaced element usually has no text baseline, so a box such as an arrow followed by a percentage can export the icon's bottom edge. In a baseline-aligned row, the percentage then sits above its neighbor's baseline. Align the box's own items on the baseline and center the mark separately. Then measure the visible text baselines in the row; the boxes' alignment alone does not prove the result.
 
 Inspect native control padding, border and line-height before compensating. An inline image's baseline can leave descender space; make it block-level inside a dedicated media slot when it is not part of a sentence. Keep genuine inline content inline and test the actual baseline. Font-relative margins can locally reduce an atomic inline's contribution, but the surrounding line box still sets constraints. Do not promise that subtracting two margins produces exactly the text line height in every engine. Translation and relative offsets move the drawing without removing its original contribution. See [mixed-content rows](layout.md#mixed-content-rows) for layout footprints and available space.
 

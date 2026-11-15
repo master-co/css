@@ -4,7 +4,7 @@ description: "Design and refine web interfaces: principles, foundations, accessi
 license: MIT
 metadata:
   author: master-co
-  version: "0.3.6"
+  version: "0.3.7"
 ---
 
 # Master Design
@@ -44,10 +44,10 @@ Use these craft references when the visible mechanism needs closer inspection:
 | Work | Reference |
 | --- | --- |
 | Rings, hairlines, layered shadows, dark surfaces and textures | [Surfaces](references/surfaces.md) |
-| Insets, painted boundaries, nested and continuous corners | [Geometry](references/geometry.md) |
+| Insets, painted boundaries, end controls, nested and continuous corners | [Geometry](references/geometry.md) |
 | Image outlines, crop, container edges and avatar stacks | [Images](references/images.md) |
-| CJK and mixed scripts, wrapping, figures, visible glyphs and icons | [Typography](references/typography.md) |
-| Grouping, hierarchy, disclosure, mixed-content rows and narrow layouts | [Layout](references/layout.md) |
+| CJK and mixed scripts, wrapping, figures, baselines, visible glyphs and icons | [Typography](references/typography.md) |
+| Grouping, hierarchy, disclosure, mixed-content rows, shared gutters and narrow layouts | [Layout](references/layout.md) |
 | Segments, shared seams, concurrent states, targets and focus | [States](references/states.md) |
 | State swaps, interruptions and entrance/exit timing | [Motion](references/motion.md) |
 | Glass, directional edges, masks and falloff | [Materials](references/materials.md) |

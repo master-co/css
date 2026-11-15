@@ -27,3 +27,13 @@ Test the smallest supported control and the largest relevant container, includin
 When a field presents its end action as an evenly inset insert, compare three gaps: block-start, block-end and adjacent inline-end. Measure from the shell's inner boundary to the action's painted boundary, not to its icon ink. With a borderless 40px shell and a 32px action, centered block gaps are 4px; an 8px end gap differs from that intention. A 4px end gap makes this specimen even. Account for physical borders and outward rings separately.
 
 The text's start padding is a different relationship. An attached full-height action, a separator or a deliberate asymmetric composition can have different gaps. Do not force the whole field to four equal paddings or resize the hit target to make the visible inset fit. Check RTL, focus, the smallest supported size and the actual clear/open action.
+
+## Align a control at the end of a bar
+
+Decide what the reader sees at rest before choosing the edge. A control with a visible face or contour is seen by that boundary. A borderless control, such as an icon button that only shows a fill on hover, is seen by its glyph. Align each by what is seen.
+
+In a bar without its own contour, such as a page header flush with the viewport, let a borderless control at either end extend its box into the bar's padding so its glyph meets the edge that the brand, the title and the content below start on. With a 16px icon in a 32px button, the box extends 8px past that edge; only the hover fill shows the difference. A contoured control in the same bar aligns its contour to that edge.
+
+In a holder with its own contour, such as a field, a floating bar, a toast or a banner, keep the embedded end control's box evenly inset from block-start, block-end and inline-end, as described above, so its hover fill stays concentric. When a borderless control in a compact contoured holder leaves its glyph visibly farther from the edge than the content at the opposite end, record the tradeoff: an even box inset or an even glyph inset. Reducing the block gap can satisfy both. Do not move a glyph by changing the hit target.
+
+Determine the end from what is drawn, not from the source order. A popover, a hidden element or a control removed at the current width is not an end. Check RTL, the narrowest width at which the control appears, focus rings near the viewport edge and touch targets, which must not overlap a neighbor after the extension.
