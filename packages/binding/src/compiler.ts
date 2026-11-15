@@ -68,6 +68,7 @@ export function loadNativeCompilerBinding(
         )),
       compareProjectSnapshots: (request) => parse(nativeBinding.compareProjectSnapshotsJson(JSON.stringify(request))),
       inspectCSS: (source) => parse(nativeBinding.inspectCssJson(source)),
+      hasLocalStyleDirectives: (source, from) => nativeBinding.hasLocalStyleDirectives(source, from),
       compileNativeCSS: (source, options) =>
         parse(nativeBinding.compileNativeCssJson(source, options === undefined ? undefined : JSON.stringify(options))),
       compileCSSDirectives: (source, options) =>

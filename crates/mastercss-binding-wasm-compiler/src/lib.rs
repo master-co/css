@@ -94,6 +94,11 @@ impl CompilerRenderSession {
     }
 }
 
+#[wasm_bindgen(js_name = hasLocalStyleDirectives)]
+pub fn has_local_style_directives(source: &str, from: &str) -> Result<bool, JsValue> {
+    mastercss_compiler::has_local_style_directives(source, from).map_err(compiler_error)
+}
+
 #[wasm_bindgen(js_name = inspectCSS)]
 pub fn inspect_css(source: &str) -> Result<JsValue, JsValue> {
     render_value(&mastercss_compiler::inspect_css(source))

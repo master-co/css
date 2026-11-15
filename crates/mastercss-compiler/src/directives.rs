@@ -492,3 +492,30 @@ fn print_native_css(
         .code;
     Ok(css.trim().to_owned())
 }
+
+/// Whether a stylesheet needs a local Master CSS transform: a native style rule
+/// applies a mixin, it references definitions, or it uses custom media. Hosts
+/// ask this of every stylesheet. One that contains Master CSS at-rules compiles
+/// to answer and reports their errors; any other produces no style definitions
+/// or references, so only its custom media is read and its CSS is not parsed:
+/// the host's CSS pipeline owns it.
+pub fn has_local_style_directives(source: &str, from: &str) -> Result<bool, CompilerError> {
+    let directives = mastercss_lexer::tokenize_css_syntax(source).iter().any(|token| {
+        matches!(&token.kind, mastercss_lexer::CssSyntaxKind::AtKeyword(name)
+            if mastercss_lexer::MASTER_CSS_DIRECTIVE_NAMES.iter().any(|directive| name.eq_ignore_ascii_case(directive)))
+    });
+    if directives {
+        let result = compile_css_directives(
+            source,
+            &CompileNativeCssOptions {
+                from: from.to_owned(),
+                preserve_native_css: false,
+                ..CompileNativeCssOptions::default()
+            },
+        )?;
+        if result.style_definitions.is_some() || result.references.is_some() {
+            return Ok(true);
+        }
+    }
+    Ok(crate::custom_media::uses_native_alias(source))
+}

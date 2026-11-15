@@ -11,6 +11,7 @@ interface CompilerOperations {
   loadPreparedProjectManifest?: MasterCSSCompilerBindingSession['loadPreparedProjectManifest']
   compareProjectSnapshots: MasterCSSCompilerBindingSession['compareProjectSnapshots']
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
+  hasLocalStyleDirectives: MasterCSSCompilerBindingSession['hasLocalStyleDirectives']
   compileNativeCSS: MasterCSSCompilerBindingSession['compileNativeCSS']
   compileCSSDirectives: MasterCSSCompilerBindingSession['compileCSSDirectives']
   analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
@@ -78,6 +79,7 @@ export function bindCompilerBindingSession(
         ?? unavailable('Prepared project manifest loading')),
     compareProjectSnapshots: (request) => invoke('compiler', () => operations.compareProjectSnapshots(request)),
     inspectCSS: (source) => invoke('compiler', () => operations.inspectCSS(source), source),
+    hasLocalStyleDirectives: (source, from) => invoke('compiler', () => operations.hasLocalStyleDirectives(source, from), source),
     compileNativeCSS: (source, options) =>
       invoke('compiler', () => operations.compileNativeCSS(source, options), source),
     compileCSSDirectives: (source, options) =>

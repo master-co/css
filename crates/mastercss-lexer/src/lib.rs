@@ -286,7 +286,8 @@ pub use css_syntax::{
     is_name_code_point, leading_declaration_name, tokenize_css_syntax,
 };
 pub use directives::{
-    find_css_directive_ranges, is_keyframe_safelist, keyframe_safelist_diagnostics,
+    MASTER_CSS_DIRECTIVE_NAMES, find_css_directive_ranges, is_keyframe_safelist,
+    keyframe_safelist_diagnostics,
 };
 pub use escape::{css_escape, escape_regexp};
 pub use functions::{collect_css_declaration_ranges, read_css_function};

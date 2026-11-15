@@ -59,6 +59,11 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
   ): MasterCSSProjectManifest
   compareProjectSnapshots(request: import('./protocol').MasterCSSProjectComparisonRequest): import('./protocol').MasterCSSProjectComparison
   inspectCSS(source: string): MasterCSSCompilerInspection
+  /**
+   * Whether a stylesheet needs a local Master CSS transform: a native style rule
+   * applies a mixin, it references definitions, or it uses custom media.
+   */
+  hasLocalStyleDirectives(source: string, from: string): boolean
   compileNativeCSS(
     source: string,
     options?: MasterCSSDirectiveCompileOptions

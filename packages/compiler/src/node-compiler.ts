@@ -141,6 +141,15 @@ function nativeCompiler() {
   return createCompilerBindingSessionSync()
 }
 
+/**
+ * Whether a stylesheet needs a local Master CSS transform: a native style rule
+ * applies a mixin, it references definitions, or it uses custom media. Rust
+ * parses only stylesheets that contain `@apply`.
+ */
+export function hasLocalStyleDirectives(source: string, from?: string): boolean {
+  return callCompilerBinding<boolean>(() => nativeCompiler().hasLocalStyleDirectives(source, from || 'master.css'))
+}
+
 export function inspectCSS(source: string): InspectCSSResult {
   return callCompilerBinding<InspectCSSResult>(() => nativeCompiler().inspectCSS(source))
 }

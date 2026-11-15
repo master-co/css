@@ -79,6 +79,12 @@ pub fn load_project_manifest_prepared_json(
     to_json(&result)
 }
 
+/// Whether a stylesheet needs a local Master CSS transform.
+#[napi]
+pub fn has_local_style_directives(source: String, from: String) -> Result<bool> {
+    mastercss_compiler::has_local_style_directives(&source, &from).map_err(compiler_to_napi_error)
+}
+
 #[napi]
 pub fn inspect_css_json(source: String) -> Result<String> {
     to_json(&mastercss_compiler::inspect_css(&source))

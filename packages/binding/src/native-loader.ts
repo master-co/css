@@ -171,6 +171,7 @@ export interface NativeBinding {
   ManifestHandle: abstract new () => NativeManifestHandle
   compareProjectSnapshotsJson(requestJSON: string): string
   inspectCssJson(source: string): string
+  hasLocalStyleDirectives(source: string, from: string): boolean
   createInspectionReportJson(inputJSON: string): string
   compileRuntimeProgram(manifestJSON: string): Uint8Array
   cssGrammarVersion(): string

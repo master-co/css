@@ -6,23 +6,26 @@ pub fn is_keyframe_safelist(source: &str) -> bool {
         && matches!(tokens.get(1).map(|token| &token.kind), Some(super::CssSyntaxKind::Ident(name)) if name == "keyframes")
 }
 
+/// The at-rules Master CSS reads in a stylesheet, lowercase.
+pub const MASTER_CSS_DIRECTIVE_NAMES: &[&str] = &[
+    "source",
+    "safelist",
+    "blocklist",
+    "preserve",
+    "prune",
+    "reference",
+    "theme",
+    "mixin",
+    "utility",
+    "apply",
+    "custom-media",
+    "custom-container",
+    "contents",
+];
+
 pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
     use super::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
-    const NAMES: &[&str] = &[
-        "source",
-        "safelist",
-        "blocklist",
-        "preserve",
-        "prune",
-        "reference",
-        "theme",
-        "mixin",
-        "utility",
-        "apply",
-        "custom-media",
-        "custom-container",
-        "contents",
-    ];
+    const NAMES: &[&str] = MASTER_CSS_DIRECTIVE_NAMES;
     let tokens = tokenize_css_syntax(source);
     let units = |byte| byte_to_utf16_offset(source, byte).unwrap_or_default();
     let mut ranges: Vec<_> = collect_css_syntax_statements(&tokens)

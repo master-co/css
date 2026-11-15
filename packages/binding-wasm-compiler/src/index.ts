@@ -13,6 +13,7 @@ interface GeneratedCompilerWasmModule {
   parseCSSDeclarationsJSON(text: string): string
   compareProjectSnapshots(request: unknown): unknown
   inspectCSS(source: string): unknown
+  hasLocalStyleDirectives(source: string, from: string): boolean
   compileNativeCSS(source: string, options?: unknown): unknown
   compileCSSDirectives(source: string, options?: unknown): unknown
   analyzeCSSDependencies(source: string): unknown
@@ -130,6 +131,7 @@ export interface CompilerWasmSession {
   readonly info: unknown
   compareProjectSnapshots<T = unknown>(request: unknown): T
   inspectCSS<T = unknown>(source: string): T
+  hasLocalStyleDirectives(source: string, from: string): boolean
   compileNativeCSS<T = unknown>(source: string, options?: unknown): T
   compileCSSDirectives<T = unknown>(source: string, options?: unknown): T
   analyzeCSSDependencies<T = unknown>(source: string): T
@@ -186,6 +188,7 @@ export async function createCompilerWasmSession(
     info: compilerBindingInfo(module),
     compareProjectSnapshots: <T>(request: unknown) => module.compareProjectSnapshots(request) as T,
     inspectCSS: <T>(source: string) => module.inspectCSS(source) as T,
+    hasLocalStyleDirectives: (source: string, from: string) => module.hasLocalStyleDirectives(source, from),
     compileNativeCSS: <T>(source: string, compileOptions?: unknown) => module.compileNativeCSS(source, compileOptions) as T,
     compileCSSDirectives: <T>(source: string, compileOptions?: unknown) => module.compileCSSDirectives(source, compileOptions) as T,
     analyzeCSSDependencies: <T>(source: string) => module.analyzeCSSDependencies(source) as T,

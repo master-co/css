@@ -754,7 +754,7 @@ pub use compiled_stylesheet_graph::{
     CompileCssStylesheetGraphRequest, CompiledCssStylesheet, CompiledCssStylesheetGraph,
     compile_css_stylesheet_graph,
 };
-pub use directives::compile_css_directives;
+pub use directives::{compile_css_directives, has_local_style_directives};
 pub use imports::{
     compile_native_css, inspect_css, resolve_css_import_graph, resolve_prepared_css_import_graph,
 };

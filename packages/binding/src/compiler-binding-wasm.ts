@@ -13,6 +13,7 @@ type MasterCSSCompilerWasmProviderSession = Pick<
   MasterCSSCompilerBindingSession,
   | 'compareProjectSnapshots'
   | 'inspectCSS'
+  | 'hasLocalStyleDirectives'
   | 'compileNativeCSS'
   | 'compileCSSDirectives'
   | 'analyzeCSSDependencies'
@@ -83,6 +84,7 @@ export async function createCompilerWasmBindingSession(
   return bindCompilerBindingSession('wasm', {
     compareProjectSnapshots: (request) => session.compareProjectSnapshots(request),
     inspectCSS: (source) => session.inspectCSS(source),
+    hasLocalStyleDirectives: (source, from) => session.hasLocalStyleDirectives(source, from),
     compileNativeCSS: (source, compileOptions) =>
       session.compileNativeCSS(source, compileOptions),
     compileCSSDirectives: (source, compileOptions) =>

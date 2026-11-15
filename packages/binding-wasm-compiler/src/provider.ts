@@ -20,6 +20,7 @@ interface MasterCSSCompilerWasmProviderSession {
   readonly info: unknown
   compareProjectSnapshots(request: unknown): unknown
   inspectCSS(source: string): unknown
+  hasLocalStyleDirectives(source: string, from: string): boolean
   compileNativeCSS(source: string, options?: unknown): unknown
   compileCSSDirectives(source: string, options?: unknown): unknown
   analyzeCSSDependencies(source: string): unknown
