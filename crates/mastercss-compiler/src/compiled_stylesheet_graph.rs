@@ -667,8 +667,8 @@ pub fn compile_css_stylesheet_graph(
     combined.generated_css = entry.generated_css.clone();
     stylesheets.retain(|sheet| reachable.contains(sheet.id.as_str()));
     let (manifest, resolution_manifest) = if request.manifest_refs {
-        let delivered = lowering.store(&delivered_manifest, false);
-        let resolution = lowering.store(&resolution_manifest, true);
+        let (delivered, resolution) =
+            lowering.store_both(&delivered_manifest, &resolution_manifest);
         (reference_value(&delivered), reference_value(&resolution))
     } else {
         (

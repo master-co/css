@@ -175,9 +175,10 @@ fn lower(
         ),
     };
     let (manifest, resolution_manifest) = if manifest_refs {
+        let (manifest, resolution_manifest) = lowering.store_both(&manifest, &resolution_manifest);
         (
-            reference_value(&lowering.store(&manifest, false)),
-            reference_value(&lowering.store(&resolution_manifest, true)),
+            reference_value(&manifest),
+            reference_value(&resolution_manifest),
         )
     } else {
         (manifest.to_value(), resolution_manifest.to_value())

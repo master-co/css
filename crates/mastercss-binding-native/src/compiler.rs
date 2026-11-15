@@ -1,4 +1,5 @@
 use super::*;
+use napi::Env;
 
 #[napi]
 pub fn binding_info_json() -> Result<String> {
@@ -446,9 +447,35 @@ pub fn resolve_css_stylesheet_graph_json(request_json: String) -> Result<String>
 /// A stored manifest that graph requests reference as `{"$ref": key}` and render
 /// sessions execute without its JSON. Holding it keeps the manifest and its
 /// compiled program alive.
-#[napi(js_name = "ManifestHandle")]
+///
+/// Only a collected handle releases its manifest, so it reports what the
+/// manifest holds as external memory: otherwise the collector sees a small
+/// object and lets dropped handles pin megabytes of manifests each.
+#[napi(js_name = "ManifestHandle", custom_finalize)]
 pub struct NodeManifestHandle {
     pub(crate) entry: std::sync::Arc<mastercss_compiler::StoredManifest>,
+    external_size: i64,
+}
+
+impl NodeManifestHandle {
+    fn new(env: &Env, entry: std::sync::Arc<mastercss_compiler::StoredManifest>) -> Self {
+        let size = i64::try_from(entry.approximate_size()).unwrap_or(i64::MAX);
+        // Without the report the handle still works; the collector only runs later.
+        let external_size = env.adjust_external_memory(size).map_or(0, |_| size);
+        Self {
+            entry,
+            external_size,
+        }
+    }
+}
+
+impl napi::bindgen_prelude::ObjectFinalize for NodeManifestHandle {
+    fn finalize(self, env: Env) -> Result<()> {
+        if self.external_size != 0 {
+            env.adjust_external_memory(-self.external_size)?;
+        }
+        Ok(())
+    }
 }
 
 #[napi]
@@ -467,16 +494,16 @@ impl NodeManifestHandle {
 
 /// Validates and stores a manifest's JSON for graph requests to reference.
 #[napi]
-pub fn register_manifest(manifest_json: String) -> Result<NodeManifestHandle> {
+pub fn register_manifest(env: Env, manifest_json: String) -> Result<NodeManifestHandle> {
     mastercss_compiler::register_manifest(&manifest_json)
-        .map(|entry| NodeManifestHandle { entry })
+        .map(|entry| NodeManifestHandle::new(&env, entry))
         .map_err(compiler_to_napi_error)
 }
 
 /// The stored manifest a graph result references; `None` once nothing holds it.
 #[napi]
-pub fn manifest_handle(key: String) -> Option<NodeManifestHandle> {
-    mastercss_compiler::stored_manifest(&key).map(|entry| NodeManifestHandle { entry })
+pub fn manifest_handle(env: Env, key: String) -> Option<NodeManifestHandle> {
+    mastercss_compiler::claim_manifest(&key).map(|entry| NodeManifestHandle::new(&env, entry))
 }
 
 #[napi]

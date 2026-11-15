@@ -712,7 +712,7 @@ mod graph_inline;
 mod graph_memo;
 mod manifest_store;
 pub use manifest_store::{
-    StoredManifest, UNKNOWN_MANIFEST_REFERENCE, manifest_json, register_manifest,
+    StoredManifest, UNKNOWN_MANIFEST_REFERENCE, claim_manifest, manifest_json, register_manifest,
     register_manifest_json, stored_manifest,
 };
 mod native_style;

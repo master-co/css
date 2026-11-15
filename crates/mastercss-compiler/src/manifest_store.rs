@@ -42,6 +42,7 @@ pub struct StoredManifest {
     text: OnceLock<Arc<str>>,
     pub(crate) manifest: MasterCssManifest,
     program: OnceLock<ManifestProgram>,
+    json_len: OnceLock<usize>,
 }
 
 impl StoredManifest {
@@ -55,6 +56,29 @@ impl StoredManifest {
         self.text
             .get_or_init(|| self.manifest.to_value().to_string().into())
             .clone()
+    }
+
+    /// About how many bytes this entry holds, for a host that reports native
+    /// memory to its garbage collector: its parsed manifest takes about twice
+    /// its JSON length and a compiled program about three times. A compiled
+    /// manifest's JSON length is counted once, without building the text.
+    pub fn approximate_size(&self) -> usize {
+        let json_len = *self.json_len.get_or_init(|| match self.text.get() {
+            Some(text) => text.len(),
+            None => {
+                let mut counter = ByteCounter(0);
+                serde_json::to_writer(&mut counter, &self.manifest)
+                    .expect("a manifest serializes to JSON");
+                counter.0
+            }
+        });
+        let text = self.text.get().map_or(0, |text| text.len());
+        let program = if self.program.get().is_some() {
+            3 * json_len
+        } else {
+            0
+        };
+        2 * json_len + text + program
     }
 
     /// The compiled program, compiled on first use unless a compilation supplied it.
@@ -80,6 +104,19 @@ impl std::fmt::Debug for StoredManifest {
             .debug_struct("StoredManifest")
             .field("key", &self.key)
             .finish_non_exhaustive()
+    }
+}
+
+struct ByteCounter(usize);
+
+impl std::io::Write for ByteCounter {
+    fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+        self.0 += bytes.len();
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
     }
 }
 
@@ -191,6 +228,7 @@ pub fn register_manifest(manifest_json: &str) -> Result<Arc<StoredManifest>, Com
         text,
         manifest,
         program: OnceLock::new(),
+        json_len: OnceLock::new(),
     }))
 }
 
@@ -202,6 +240,24 @@ pub fn register_manifest_json(manifest_json: &str) -> Result<String, CompilerErr
 /// The stored manifest a key names, while anything holds it.
 pub fn stored_manifest(key: &str) -> Option<Arc<StoredManifest>> {
     store().get(key)
+}
+
+/// The stored manifest a key names, for a host handle that holds it from now
+/// on: a compiled manifest is no longer retained for the host to take, so it
+/// lives exactly as long as the host's handles.
+pub fn claim_manifest(key: &str) -> Option<Arc<StoredManifest>> {
+    let mut store = store();
+    let entry = store.index.get(key)?.upgrade()?;
+    if entry.text_hash.is_some() {
+        store.touch(&entry);
+    } else if let Some(index) = store
+        .recent_compiled
+        .iter()
+        .position(|recent| Arc::ptr_eq(recent, &entry))
+    {
+        store.recent_compiled.remove(index);
+    }
+    Some(entry)
 }
 
 /// The JSON of a stored manifest, as registered or as a compilation produced it.
@@ -242,6 +298,7 @@ pub(crate) fn store_manifest(
                 text: OnceLock::new(),
                 manifest: manifest.clone(),
                 program: OnceLock::new(),
+                json_len: OnceLock::new(),
             })
         }
     };
@@ -353,6 +410,14 @@ mod tests {
                 // An unchanged manifest keeps the reference it was compiled against.
                 assert_eq!(stored_key == key, manifest == preset, "{css}: {field}");
             }
+            // Equal delivered and resolution manifests are stored once.
+            let (delivered_key, delivered) = stored(&referenced["manifest"]);
+            let (resolution_key, resolution) = stored(&referenced["resolutionManifest"]);
+            assert_eq!(
+                delivered_key == resolution_key,
+                delivered == resolution,
+                "{css}"
+            );
         }
     }
 

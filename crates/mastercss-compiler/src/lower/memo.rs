@@ -205,6 +205,24 @@ impl Lowering {
         }
     }
 
+    /// Stores the delivered and resolution manifests a compilation produced.
+    /// Unless references added resolution-only definitions they are one
+    /// manifest, which is stored once.
+    #[allow(clippy::ptr_arg)] // `store` tells lowered from extended manifests by whether they are borrowed.
+    pub(crate) fn store_both(
+        &self,
+        manifest: &Cow<'_, MasterCssManifest>,
+        resolution_manifest: &Cow<'_, MasterCssManifest>,
+    ) -> (Arc<StoredManifest>, Arc<StoredManifest>) {
+        let resolution = self.store(resolution_manifest, true);
+        let delivered = if manifest == resolution_manifest {
+            resolution.clone()
+        } else {
+            self.store(manifest, false)
+        };
+        (delivered, resolution)
+    }
+
     /// Stores the delivered (`resolution: false`) or resolution manifest a
     /// compilation produced from this lowering: the lowered one, or what native
     /// animation variables extended it to.
