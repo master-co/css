@@ -238,7 +238,7 @@ test('docs example classes are valid default preset classes or locally defined c
         formatFileLine(eachCandidate.file, eachCandidate.line),
         eachCandidate.kind,
         eachCandidate.candidate,
-        result.errors.map((eachError) => eachError.rawMessage ?? eachError.message).join('; ')
+        result.errors.map((eachError) => 'rawMessage' in eachError ? eachError.rawMessage : eachError.message).join('; ')
       ].join(' | '))
     }
   }
