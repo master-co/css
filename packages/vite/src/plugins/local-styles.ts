@@ -172,14 +172,21 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           // that pipeline, while the generated theme rules remain global.
           if (scopedVueStyle && !result.stylesheets?.length) {
             if (result.globalStylesheet) {
-              const slot = registerLocalStylesheet(context, id, { ...result, code: result.globalStylesheet.css, globalStylesheet: undefined })
+              // Copy property descriptors: spreading the result would compute its diagnostics.
+              const globals = Object.defineProperties({}, {
+                ...Object.getOwnPropertyDescriptors(result),
+                code: { value: result.globalStylesheet.css, enumerable: true },
+                globalStylesheet: { value: undefined, enumerable: true }
+              }) as typeof result
+              const slot = registerLocalStylesheet(context, id, globals)
               const nativeCSS = result.code
               output = `${nativeCSS}\n:global(${slot.slice(0, slot.indexOf('{'))})${slot.slice(slot.indexOf('{'))}`
             } else output = result.code
           } else output = registerLocalStylesheet(context, id, result)
         }
         else if (context.config?.command === 'serve') {
-          output = publishDevStylesheets(context, { ...result, css: result.code, emittedGlobals: { variables: {}, keyframes: {} } }, '#master-css-local-slot{--slot:0}')
+          // Pass only what is published: spreading the result would compute its diagnostics.
+          output = publishDevStylesheets(context, { css: result.code, stylesheets: result.stylesheets }, '#master-css-local-slot{--slot:0}')
           if (result.globalStylesheet) output = publishDevGlobalStylesheet(context, result.globalStylesheet.css) + '\n' + output
         }
         return {

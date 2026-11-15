@@ -70,7 +70,7 @@ export function getDevStylesheetDelivery(context: MasterCSSVitePluginContext): M
   }
 }
 
-export function publishDevStylesheets(context: MasterCSSVitePluginContext, result: MasterCSSStylesheetComposition, slotCSSRule: string): string {
+export function publishDevStylesheets(context: MasterCSSVitePluginContext, result: Pick<MasterCSSStylesheetComposition, 'css' | 'stylesheets'>, slotCSSRule: string): string {
   const delivery = getDevStylesheetDelivery(context)!
   const state = devStylesheetState(context)
   using compiler = createCompilerSync()

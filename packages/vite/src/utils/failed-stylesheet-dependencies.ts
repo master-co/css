@@ -12,12 +12,20 @@ export interface DependencyHost {
   addWatchFile?(file: string): void
 }
 const watchers = new WeakMap<MasterCSSVitePluginContext, ViteDevServer['watcher']>()
+/** Files already given to the server watcher; every stylesheet reports the shared ones again. */
+const watched = new WeakMap<MasterCSSVitePluginContext, Set<string>>()
 export function configureStylesheetRecovery(context: MasterCSSVitePluginContext, watcher: ViteDevServer['watcher']) {
   failures.delete(context)
   watchers.set(context, watcher)
+  watched.set(context, new Set())
+  // A deleted path may stop being watched, and a missing one was watched through an ancestor.
+  for (const event of ['unlink', 'unlinkDir', 'add', 'addDir'] as const) watcher.on(event, () => watched.get(context)?.clear())
 }
 function watchDependency(context: MasterCSSVitePluginContext, file: string) {
   if (!isAbsolute(file)) return
+  const registered = watched.get(context)
+  if (registered?.has(file)) return
+  registered?.add(file)
   // A missing leaf may have missing parents too. Register the nearest existing
   // ancestor so both Node and FSEvents backends can discover the new subtree.
   let watchedPath = file
@@ -46,9 +54,11 @@ export async function withStylesheetDependencies<T>(context: MasterCSSVitePlugin
   const buildRecovery = context.config?.command === 'build' && Boolean(context.config.build?.watch)
   const environment = host.environment ?? context
   if (modules || buildRecovery) forgetFailedDependencyReconciliation(context, environment, key)
+  const reported = new Set<string>()
   try {
     const result = await operation(file => {
-      if (file.includes('\0')) return
+      if (file.includes('\0') || reported.has(file)) return
+      reported.add(file)
       file = normalizeFilePath(file)
       if ((modules || buildRecovery) && !dependencies.has(file)) {
         const version = failedDependencyVersion(context, file)

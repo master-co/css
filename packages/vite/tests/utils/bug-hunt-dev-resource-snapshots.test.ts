@@ -16,11 +16,7 @@ test.each(['replace', 'delete'] as const)('resource naming captures bytes before
     const href = delivery.resourceURL(source)
     if (action === 'replace') writeFileSync(source, '<svg xmlns="http://www.w3.org/2000/svg"><title>blue</title></svg>')
     else rmSync(source)
-    publishDevStylesheets(context, {
-      css: `.resource{background-image:url("${href}")}`,
-      resources: [{ file: source, href }],
-      diagnostics: [], emittedGlobals: { variables: {}, keyframes: {} }
-    }, '#master-css-slot{--slot:0}')
+    publishDevStylesheets(context, { css: `.resource{background-image:url("${href}")}` }, '#master-css-slot{--slot:0}')
     snapshot = devStylesheetState(context).resources.get(new URL(href).pathname)?.file
     expect(snapshot).toBeDefined()
     expect(readFileSync(snapshot!, 'utf8')).toBe(red)
