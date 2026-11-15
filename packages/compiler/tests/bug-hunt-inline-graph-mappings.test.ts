@@ -35,7 +35,7 @@ for (const binding of ['native', 'wasm'] as const) {
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }, inlineImports: true }
       const result = compiler.compileStylesheets(request)
       expect(result.css).not.toContain('@import')
-      expect(result.manifest.mixins?.some(utility => utility.name === '--paint')).toBe(true)
+      expect(result.manifest.manifest().mixins?.some(utility => utility.name === '--paint')).toBe(true)
       const sheet = result.stylesheets.find(sheet => sheet.id === '/entry.css')!
       for (const [needle, file, source, original] of [['.card', '/child.css', child, '.card'], ['padding:2rem', '/child.css', child, 'padding:2rem;'], ['.after', '/entry.css', entry, '.after']]) {
         expect(sheet.outputMappings.find(mapping => mapping.generatedStart === sheet.css.indexOf(needle))?.source).toMatchObject({ file, range: { start: source.indexOf(original) } })

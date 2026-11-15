@@ -29,20 +29,20 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     <section id="tokens"><div id="token" class="p-md"></div><div id="function" class="p(var(--spacing-md))"></div><div id="apply" class="applied"></div><div id="caller" class="caller"></div></section>
     <span id="empty" class="cleared">Empty</span><div id="replaced" class="aligned-start"></div><div id="static" class="aligned-end"></div>
     <span id="shorthand" class="stroke (-webkit-text-stroke:1px)">A</span><span id="longhand" class="stroke (-webkit-text-stroke-width:1px)">B</span></body></html>`
-    const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
+    const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest.manifest() })
     expect(rendered.cssText).not.toContain('--color-obsolete')
     expect(rendered.cssText).not.toContain('padding:100px')
     expect(rendered.hydrationManifest.languageVersion).toBe(18)
     if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {
-      using server = createServerRenderer({ manifest: compiled.manifest })
+      using server = createServerRenderer({ manifest: compiled.manifest.manifest() })
       await page.setContent(server.renderHTML(html, { hydrationManifest: 'inject' }).html)
     }
     if (mode === 'runtime' || mode === 'progressive') await page.evaluate(async ({ loader, manifest }) => {
       const { startCSSRuntime } = await import(loader)
       await startCSSRuntime({ manifest })
-    }, { loader: await getRuntimeLoaderURL(), manifest: compiled.manifest })
+    }, { loader: await getRuntimeLoaderURL(), manifest: compiled.manifest.manifest() })
     await expect(page.locator('#panel')).toHaveCSS('display', 'block')
     await expect(page.locator('#panel')).toHaveCSS('width', '24px')
     await expect(page.locator('#panel')).toHaveCSS('padding', '5px')

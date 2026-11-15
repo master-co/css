@@ -87,7 +87,7 @@ export async function verifyLanguageExamples() {
   const markup = fences.find(fence => fence.language === 'html' && fence.text.includes('p-card'))!.text
   const compiled = compileManifestSync(theme.text.replace(/@import\s+'@master\/css';/, ''), { baseManifest: preset })
   assert.deepEqual(compiled.diagnostics.filter(item => item.severity === 'error'), [])
-  const project = new MasterCSSLanguageService({}, { session: createToolingSessionSync({ manifest: compiled.manifest }) })
+  const project = new MasterCSSLanguageService({}, { session: createToolingSessionSync({ manifest: compiled.manifest.manifest() }) })
   try {
     const partial = markup.replace('p-card', 'p-ca')
     const document = createDoc('html', partial)

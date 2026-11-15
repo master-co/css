@@ -15,7 +15,8 @@ import { projectStyleExample } from '@master/internal-site/demo/project-style-ex
 test('the maintenance example compiles and compares snapshots by changed token consumers', async () => {
   // The universal compiler receives the imported preset as resolved context.
   const { source, html } = projectStyleExample('maintenance')
-  const { manifest, css } = await compileManifest(source, { baseManifest: preset as unknown as MasterCSSManifest })
+  const { manifest: reference, css } = await compileManifest(source, { baseManifest: preset as unknown as MasterCSSManifest })
+  const manifest = reference.manifest()
   const tooling = createToolingSessionSync({ manifest })
   try {
     const classes = tooling.extractSource({ files: [{ source: 'maintenance.html', content: html, kind: 'html' }] }).files[0].candidates
@@ -30,7 +31,7 @@ test('the maintenance example compiles and compares snapshots by changed token c
     assert.match(css, /prefers-reduced-motion/)
     assert.match(css, /focus-visible/)
     assert.match(css, /scaleX\(var\(--progress/)
-    const after = (await compileManifest(source.replace('--color-brand: light-dark(#4f46e5, #818cf8)', '--color-brand: light-dark(#dc2626, #fca5a5)'), { baseManifest: preset as unknown as MasterCSSManifest })).manifest
+    const after = (await compileManifest(source.replace('--color-brand: light-dark(#4f46e5, #818cf8)', '--color-brand: light-dark(#dc2626, #fca5a5)'), { baseManifest: preset as unknown as MasterCSSManifest })).manifest.manifest()
     using compiler = await createCompiler()
     const common = { version: 1 as const, sources: [{ path: 'maintenance.html', classes }], stylesheets: [], outputs: [], excluded: [], unresolved: ['Browser states checked separately'] }
     const comparison = compiler.compareProjectSnapshots({ before: { ...common, manifest }, after: { ...common, manifest: after } })

@@ -14,6 +14,7 @@ import {
   createCompilerBindingSessionSync as createBindingSessionSync
 } from '@master/css-binding/compiler/node'
 import { compileCSSManifestFile } from './node-compiler'
+import { manifestOf } from '@master/css-binding/compiler/node'
 
 export {
   type MasterCSSCompileManifestOptions,
@@ -97,11 +98,12 @@ export function compileManifestFileSync(
   if ('delivery' in options) {
     const result = compileDeliveredFile(file, {
       ...options,
+      baseManifest: manifestOf(options.baseManifest),
       projectDir: options.root,
       preserveNativeCSS: options.preserveNativeCSS ?? true
     })
     return Object.freeze({
-      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest.manifest(), directives: result.directives }, options.onDiagnostic, options.validation),
+      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic, options.validation),
       diagnostics: validateCompiledCSS(result.stylesheets.map(asset => stylesheetValidationSource(asset.css, asset.id, undefined, asset.outputMappings)), options),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))),
@@ -109,7 +111,7 @@ export function compileManifestFileSync(
     })
   }
   return toMasterCSSCompileManifestResultInternal(
-    compileCSSManifestFile(file, options),
+    compileCSSManifestFile(file, { ...options, baseManifest: manifestOf(options.baseManifest) }),
     options.onDiagnostic,
     options.validation
   )

@@ -33,8 +33,8 @@ for (const directive of ['import', 'reference']) test(`${directive} retains shar
 })
 
 test('scanner rechecks shared-prefix classes and resources after token changes', async () => {
-  const manifest = compileManifestSync(definitions, { baseManifest }).manifest
-  const ambiguous = compileManifestSync(definitions + '@theme{--font-family-sm:serif}', { baseManifest }).manifest
+  const manifest = compileManifestSync(definitions, { baseManifest }).manifest.manifest()
+  const ambiguous = compileManifestSync(definitions + '@theme{--font-family-sm:serif}', { baseManifest }).manifest.manifest()
   const scanner = new MasterCSSScanner({ manifest })
   const source = '<div class="font-sm font-sans"></div>'
   try {

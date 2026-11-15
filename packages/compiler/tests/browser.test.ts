@@ -10,12 +10,12 @@ test.concurrent('universal compileManifest lowers directives with a base manifes
   const result = await compileManifest("\n    @mixin --btn {\n        @apply --all {display:flex;}\n        color: red;\n      } @utility btn {\n        @apply --all {display:flex;}\n        color: red;\n      }\n  ", {
     baseManifest: defaultManifest
   })
-  const css = createTestCSS(result.manifest)
+  const css = createTestCSS(result.manifest.manifest())
 
   css.ensureClassRules('btn')
 
   expect(result.diagnostics).toEqual([])
-  expect(result.manifest.mixins?.some((utility) => utility.name === '--btn')).toBe(true)
+  expect(result.manifest.manifest().mixins?.some((utility) => utility.name === '--btn')).toBe(true)
   expect(css.text).toContain('.btn')
   expect(css.text).toContain('display:flex')
   expect(css.text).toContain('color:red')

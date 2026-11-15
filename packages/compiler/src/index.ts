@@ -4,6 +4,7 @@ import type {
   MasterCSSWasmBindingLoadOptions
 } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSManifestReference } from '@master/css-binding/compiler'
 import { createCompilerBindingSession } from './session'
 import {
   MasterCSSCompiler,
@@ -59,11 +60,16 @@ export interface MasterCSSCompileResult {
 }
 
 export interface MasterCSSCompileManifestOptions extends MasterCSSCompileOptions {
-  readonly baseManifest: MasterCSSManifest
+  /** A manifest, or the reference another compilation returned. */
+  readonly baseManifest: MasterCSSManifest | MasterCSSManifestReference
 }
 
 export interface MasterCSSCompileManifestResult extends MasterCSSCompileResult {
-  readonly manifest: MasterCSSManifest
+  /**
+   * The compiled manifest, held by the compiler binding. Pass it to render
+   * sessions as is; `manifest.manifest()` reads it as a deeply frozen object.
+   */
+  readonly manifest: MasterCSSManifestReference
   readonly directives: MasterCSSCompileResult
 }
 
@@ -73,7 +79,7 @@ export interface MasterCSSCompileManifestResult extends MasterCSSCompileResult {
  * Supply resourceURLs to relocate parsed url()/image-set() resources before definition merging.
  * Without that map, delivery URLs must retain the original resource bases.
  */
-export type MasterCSSCompileStylesheetsRequest = import('@master/css-binding/compiler').MasterCSSCompileStylesheetGraphRequest
+export type MasterCSSCompileStylesheetsRequest = import('@master/css-binding/compiler').MasterCSSReferencedStylesheetGraphRequest
 
 export interface MasterCSSCompileStylesheetsResult extends MasterCSSCompileManifestResult {
   readonly entry: string
@@ -142,4 +148,5 @@ export async function compileManifest(
   }
 }
 
+export { MasterCSSManifestReference } from '@master/css-binding/compiler'
 export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from '@master/css-binding/compiler'

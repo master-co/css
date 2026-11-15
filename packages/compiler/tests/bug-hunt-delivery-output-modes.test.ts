@@ -7,6 +7,7 @@ import { contentsManifest as defaultManifestJSON } from './helpers/contents-mani
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { createStylesheetCollection } from '../src/stylesheet/index-public'
+import { withManifest } from './helpers/manifest-equality'
 
 const baseManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
@@ -64,15 +65,15 @@ test('BH-0004 native/Wasm select native output without losing manifest definitio
   using native = await createCompiler({ binding: 'native' })
   using wasm = await createCompiler({ binding: 'wasm' })
   const result = native.compileStylesheets(request)
-  expect(wasm.compileStylesheets(request)).toEqual(result)
+  expect(withManifest(wasm.compileStylesheets(request))).toEqual(withManifest(result))
   expect(result.css).toContain('layer(base)')
   expect(result.css).not.toContain('remote.test/entry.css')
   expect(result.stylesheets[1].css).toContain('remote.test/child.css')
   expect(result.css).not.toContain('.entry')
-  expect(result.manifest).toEqual(native.compileStylesheets({ ...request, nativeStylesheets: undefined }).manifest)
+  expect(result.manifest.manifest()).toEqual(native.compileStylesheets({ ...request, nativeStylesheets: undefined }).manifest.manifest())
   const withoutRaw = { ...request, nativeStylesheets: ['entry', 'child'], options: { preserveNativeCSS: false } }
   const composed = native.compileStylesheets(withoutRaw)
-  expect(wasm.compileStylesheets(withoutRaw)).toEqual(composed)
+  expect(withManifest(wasm.compileStylesheets(withoutRaw))).toEqual(withManifest(composed))
   expect(composed.css).toContain('.entry')
   expect(composed.stylesheets.every(asset => !asset.css.includes('remote.test'))).toBe(true)
   for (const compiler of [native, wasm]) {

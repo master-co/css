@@ -85,6 +85,18 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
     options?: MasterCSSLowerDirectivesOptions,
     sourceText?: string
   ): MasterCSSLowerDirectivesResult
+  /**
+   * `lowerCSSDirectives` whose manifests stay in the binding: the options may pass
+   * references in place of manifests, and the result returns references.
+   */
+  lowerCSSDirectivesWithReferences(
+    request: MasterCSSLowerDirectivesRequest,
+    options?: import('./manifest-references').MasterCSSManifestSources,
+    sourceText?: string
+  ): Omit<MasterCSSLowerDirectivesResult, 'manifest' | 'resolutionManifest'> & {
+    manifest: import('./manifest-references').MasterCSSManifestReference
+    resolutionManifest: import('./manifest-references').MasterCSSManifestReference
+  }
   normalizeManifest(manifest: MasterCSSManifest): MasterCSSManifest
   normalizeDefaultManifest(manifest: MasterCSSManifest): MasterCSSManifest
   compileDefaultPresetManifest(

@@ -38,7 +38,7 @@ const compiled = compileManifestSync(`
 
 [data-theme="ocean"], :host([data-theme="ocean"]) { --color-probe: blue; }
 `, { baseManifest: defaultManifestJSON as unknown as MasterCSSManifest })
-const { manifest } = compiled
+const manifest = compiled.manifest.manifest()
 const classes = ['bg-probe', '(padding:11px)@apply(--dark)', '(color:red)@apply(--ocean)', '(padding:9px)@media(width>=800px)@media(hover:hover)']
 const html = '<!doctype html><html class="bg-probe (padding:11px)@apply(--dark)"><head><style>@layer theme,base,defaults,components,utilities;</style>' + `<style>${compiled.nativeCSS}</style></head><body>`
   + '<div id="outside" class="bg-probe (padding:11px)@apply(--dark)">Outside</div>'

@@ -184,12 +184,23 @@ pub fn lower_css_directives(request: JsValue, options: JsValue) -> Result<JsValu
     let request = serde_wasm_bindgen::from_value::<LowerCssDirectivesRequest>(request)
         .map_err(serialization_error)?;
     let options = if options.is_null() || options.is_undefined() {
+        serde_json::Value::Null
+    } else {
+        serde_wasm_bindgen::from_value::<serde_json::Value>(options).map_err(serialization_error)?
+    };
+    // `manifestRefs` returns both manifests as references to stored ones.
+    let manifest_refs = options["manifestRefs"].as_bool() == Some(true);
+    let options = if options.is_null() {
         LowerCssDirectivesOptions::default()
     } else {
-        serde_wasm_bindgen::from_value(options).map_err(serialization_error)?
+        serde_json::from_value(options).map_err(serialization_error)?
     };
-    let result = mastercss_compiler::lower_css_directives_request(&request, &options)
-        .map_err(compiler_error)?;
+    let result = if manifest_refs {
+        mastercss_compiler::lower_css_directives_request_with_refs(&request, &options)
+    } else {
+        mastercss_compiler::lower_css_directives_request(&request, &options)
+    }
+    .map_err(compiler_error)?;
     render_value(&result)
 }
 

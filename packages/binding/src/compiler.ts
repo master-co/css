@@ -9,7 +9,7 @@ export type { MasterCSSNativeModuleOptions } from './engine-contract'
 
 export type MasterCSSNativeCompilerBinding = Omit<
   MasterCSSCompilerBindingSession,
-  'binding' | 'dispose' | 'compileCSSStylesheetGraphWithReferences' | typeof Symbol.dispose
+  'binding' | 'dispose' | 'compileCSSStylesheetGraphWithReferences' | 'lowerCSSDirectivesWithReferences' | typeof Symbol.dispose
 > & Readonly<{
   /** The manifests this native binding stores for graph requests to reference. */
   manifestStore: MasterCSSManifestStore

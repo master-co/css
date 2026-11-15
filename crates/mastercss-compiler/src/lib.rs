@@ -13,7 +13,7 @@ pub use project_comparison::{
 
 pub use lower::{
     LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,
-    lower_css_directives, lower_css_directives_request,
+    lower_css_directives, lower_css_directives_request, lower_css_directives_request_with_refs,
 };
 pub use manifest::{
     CompileDefaultPresetRequest, CompileDefaultPresetResult, CompileManifestOptions,

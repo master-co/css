@@ -6,7 +6,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileProgram, getRuntimeLoaderURL } from './init'
 
 const manifest = defaultManifestJSON as unknown as MasterCSSManifest
-const ambiguous = compileManifestSync('@theme { --font-family-sm: monospace; }', { baseManifest: manifest }).manifest
+const ambiguous = compileManifestSync('@theme { --font-family-sm: monospace; }', { baseManifest: manifest }).manifest.manifest()
 const html = `<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;html{font-size:16px}</style></head><body>
 <p id="type" class="font-sans font-sm font-bold">Typography</p>
 <div id="motion" class="(animation-name:fade) animation-fast animation-smooth transition-fast transition-smooth">Timing</div>

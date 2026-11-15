@@ -1,12 +1,14 @@
+use super::memo::Lowering;
 use super::merge::create_merged_style_definitions;
 use super::render::render_style_definitions;
-use super::resolution::engine_for_manifest;
 use super::{
     CompilerError, CssDirectiveManifestInput, CssDirectiveStyleDefinition, EngineSession,
     LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,
 };
-use crate::manifest::{compile_manifest, parse_manifest, reference_context};
+use crate::manifest::{compile_manifest, reference_context};
+use crate::manifest_store::reference_value;
 use mastercss_schema::MasterCssManifest;
+use std::borrow::Cow;
 
 /// The delivered and resolution manifests a compilation lowers to, before any CSS
 /// renders, with its warnings.
@@ -16,25 +18,7 @@ pub(crate) struct LoweredManifests {
     pub warnings: Vec<String>,
 }
 
-pub(crate) fn lower_manifests(
-    input: &CssDirectiveManifestInput,
-    initial_warnings: &[String],
-    options: &LowerCssDirectivesOptions,
-) -> Result<LoweredManifests, CompilerError> {
-    let base = options
-        .base_manifest
-        .as_ref()
-        .map(parse_manifest)
-        .transpose()?;
-    let resolution = options
-        .resolution_manifest
-        .as_ref()
-        .map(parse_manifest)
-        .transpose()?;
-    lower_parsed_manifests(input, initial_warnings, base.as_ref(), resolution)
-}
-
-/// [`lower_manifests`] onto manifests already parsed and validated.
+/// Lowers onto manifests already parsed and validated.
 pub(crate) fn lower_parsed_manifests(
     input: &CssDirectiveManifestInput,
     initial_warnings: &[String],
@@ -102,12 +86,31 @@ pub fn lower_css_directives(
         None,
         Vec::new(),
         options,
+        false,
     )
 }
 
 pub fn lower_css_directives_request(
     request: &LowerCssDirectivesRequest,
     options: &LowerCssDirectivesOptions,
+) -> Result<LowerCssDirectivesResult, CompilerError> {
+    lower_request(request, options, false)
+}
+
+/// [`lower_css_directives_request`] whose manifests may be `{"$ref": key}` references
+/// to stored manifests, returning both lowered manifests as references: hosts
+/// pass them on to render sessions without serializing them.
+pub fn lower_css_directives_request_with_refs(
+    request: &LowerCssDirectivesRequest,
+    options: &LowerCssDirectivesOptions,
+) -> Result<LowerCssDirectivesResult, CompilerError> {
+    lower_request(request, options, true)
+}
+
+fn lower_request(
+    request: &LowerCssDirectivesRequest,
+    options: &LowerCssDirectivesOptions,
+    manifest_refs: bool,
 ) -> Result<LowerCssDirectivesResult, CompilerError> {
     let mut definition_sources = request.definition_sources.clone();
     crate::definition_sources::resolve(&mut definition_sources);
@@ -118,6 +121,7 @@ pub fn lower_css_directives_request(
         request.native_output.as_ref(),
         definition_sources,
         options,
+        manifest_refs,
     )
 }
 
@@ -130,35 +134,53 @@ fn lower(
     native_output: Option<&crate::NativeCssOutput>,
     definition_sources: Vec<mastercss_schema::CssDefinitionSource>,
     options: &LowerCssDirectivesOptions,
+    manifest_refs: bool,
 ) -> Result<LowerCssDirectivesResult, CompilerError> {
-    let LoweredManifests {
-        mut manifest,
-        mut resolution_manifest,
-        warnings,
-    } = lower_manifests(input, initial_warnings, options)?;
-    let engine = engine_for_manifest(&resolution_manifest)?;
-    let (generated_css, generated_mappings) = render_definitions(style_definitions, &engine)?;
-    crate::keyframes::include_native_variables(&mut manifest, &generated_css);
+    let lowering = Lowering::lower(
+        input,
+        initial_warnings,
+        options.base_manifest.as_ref(),
+        options.resolution_manifest.as_ref(),
+    )?;
+    let engine = lowering.engine();
+    let lowered = lowering.lowered();
+    // Borrowed until native animation variables extend them.
+    let mut manifest = Cow::Borrowed(&lowered.manifest);
+    let mut resolution_manifest = Cow::Borrowed(&lowered.resolution_manifest);
+    let (generated_css, generated_mappings) = render_definitions(style_definitions, engine)?;
+    if crate::keyframes::has_native_variables(&generated_css) {
+        crate::keyframes::include_native_variables(manifest.to_mut(), &generated_css);
+    }
     let (css, output_mappings) = match native_output {
         Some(output) => {
             let (css, mappings) =
-                super::output::assemble_native_output(output, &engine, &resolution_manifest)?;
-            crate::keyframes::include_native_variables(&mut manifest, &css);
-            crate::keyframes::include_native_variables(&mut resolution_manifest, &css);
+                super::output::assemble_native_output(output, engine, &resolution_manifest)?;
+            if crate::keyframes::has_native_variables(&css) {
+                crate::keyframes::include_native_variables(manifest.to_mut(), &css);
+                crate::keyframes::include_native_variables(resolution_manifest.to_mut(), &css);
+            }
             (Some(css), mappings)
         }
         None => (None, Vec::new()),
     };
     let notices = match &css {
         Some(css) => {
-            crate::keyframes::native_notices(css, "stylesheet.css", &engine, &output_mappings)
+            crate::keyframes::native_notices(css, "stylesheet.css", engine, &output_mappings)
         }
         None => crate::keyframes::native_notices(
             &generated_css,
             "stylesheet.css",
-            &engine,
+            engine,
             &generated_mappings,
         ),
+    };
+    let (manifest, resolution_manifest) = if manifest_refs {
+        (
+            reference_value(&lowering.store(&manifest, false)),
+            reference_value(&lowering.store(&resolution_manifest, true)),
+        )
+    } else {
+        (manifest.to_value(), resolution_manifest.to_value())
     };
     Ok(LowerCssDirectivesResult {
         notices,
@@ -166,9 +188,9 @@ fn lower(
         css,
         output_mappings,
         input: input.clone(),
-        manifest: manifest.to_value(),
-        resolution_manifest: resolution_manifest.to_value(),
-        warnings,
+        manifest,
+        resolution_manifest,
+        warnings: lowered.warnings.clone(),
         generated_css,
         generated_mappings,
     })

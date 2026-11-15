@@ -66,9 +66,11 @@ mod output;
 mod render;
 mod resolution;
 
-pub(crate) use api::{LoweredManifests, lower_parsed_manifests, render_definitions};
-pub use api::{lower_css_directives, lower_css_directives_request};
-pub(crate) use memo::{LoweredContext, lower_stored_manifests};
+pub(crate) use api::render_definitions;
+pub use api::{
+    lower_css_directives, lower_css_directives_request, lower_css_directives_request_with_refs,
+};
+pub(crate) use memo::Lowering;
 pub(crate) use resolution::engine_for_manifest;
 
 #[cfg(test)]

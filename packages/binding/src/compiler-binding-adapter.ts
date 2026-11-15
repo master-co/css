@@ -1,8 +1,9 @@
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSDiagnosticDomain } from '@master/css-schema'
 import type { MasterCSSCompilerBindingSession } from './compiler-binding-contract'
+import type { MasterCSSLowerDirectivesOptions } from './protocol'
 import { callBinding, type BindingSourceText } from './normalize-error'
-import { compileGraphWithManifestStore, compileReferencedGraph, type MasterCSSManifestStore } from './manifest-references'
+import { compileGraphWithManifestStore, compileReferencedGraph, compileWithManifestReferences, type MasterCSSManifestStore } from './manifest-references'
 
 interface CompilerOperations {
   findManifestEntries?: MasterCSSCompilerBindingSession['findManifestEntries']
@@ -93,6 +94,9 @@ export function bindCompilerBindingSession(
       invoke('compiler', () => operations.compileManifestInput(input, options)),
     lowerCSSDirectives: (request, options, sourceText) =>
       invoke('compiler', () => operations.lowerCSSDirectives(request, options), sourceText),
+    lowerCSSDirectivesWithReferences: (request, options = {}, sourceText) =>
+      invoke('compiler', () => compileWithManifestReferences(operations.manifestStore, options, (manifests, manifestRefs) =>
+        operations.lowerCSSDirectives(request, { ...manifests, ...(manifestRefs ? { manifestRefs: true } : {}) } as MasterCSSLowerDirectivesOptions)), sourceText),
     normalizeManifest: (manifest) =>
       invoke('compiler', () => operations.normalizeManifest(manifest)),
     normalizeDefaultManifest: (manifest) =>

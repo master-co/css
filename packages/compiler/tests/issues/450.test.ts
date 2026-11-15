@@ -27,7 +27,7 @@ const minimal: MasterCSSManifest = {
 
 test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered declarations and resource lifetimes', async (binding) => {
   using compiler = await createCompiler({ binding })
-  const { manifest, css: nativeCSS } = compiler.compileManifest(`
+  const { manifest: reference, css: nativeCSS } = compiler.compileManifest(`
     @theme {
       --color-root: red;
       --color-brand: var(--color-root);
@@ -37,6 +37,7 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
     @mixin --audit-paint { color: var(--color-brand); display: block; display: flex; } @utility audit-paint { color: var(--color-brand); display: block; display: flex; }
     @mixin --audit-motion { animation: audit-fade 1s; } @utility audit-motion { animation: audit-fade 1s; }
   `, { baseManifest: minimal, preserveNativeCSS: true })
+  const manifest = reference.manifest()
   const wire = serializeMasterCSSManifest(manifest)
   const reloaded: MasterCSSManifest = JSON.parse(wire)
   expect(serializeMasterCSSManifest(reloaded)).toBe(wire)

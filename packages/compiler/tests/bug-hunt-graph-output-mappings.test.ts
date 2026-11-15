@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
 import { createCompiler } from '../src/index'
 import type { MasterCSSCompileStylesheetsRequest } from '../src/index'
+import { withManifest } from './helpers/manifest-equality'
 
 const entry = '@import "./child.css" layer;@mixin --paint {padding:2rem} @utility paint {padding:2rem}/* 😀 */\n.after{margin:1px}'
 const child = ".image{background:url(\"./dot.svg\")}/* 😀 */\n@layer{.card{@apply --all {padding:2rem;}}.card{padding:3rem}}"
@@ -35,7 +36,7 @@ test('graph output mappings retain original anchors across import, resource and 
   using native = await createCompiler({ binding: 'native' })
   using wasm = await createCompiler({ binding: 'wasm' })
   const result = native.compileStylesheets(request)
-  expect(wasm.compileStylesheets(JSON.parse(JSON.stringify(request)))).toEqual(result)
+  expect(withManifest(wasm.compileStylesheets(JSON.parse(JSON.stringify(request))))).toEqual(withManifest(result))
   for (const [id, source, needles] of [['/entry.css', entry, ['.after']], ['/child.css', child, ['.card', 'padding:2rem']]] as const) {
     const sheet = result.stylesheets.find(sheet => sheet.id === id)!
     for (const needle of needles) {

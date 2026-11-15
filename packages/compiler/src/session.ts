@@ -15,11 +15,17 @@ export interface BindingCompilerSession {
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
   lowerCSSDirectives: MasterCSSCompilerBindingSession['lowerCSSDirectives']
+  lowerCSSDirectivesWithReferences: MasterCSSCompilerBindingSession['lowerCSSDirectivesWithReferences']
   prepareCSSStylesheetBundle: MasterCSSCompilerBindingSession['prepareCSSStylesheetBundle']
   renderCSSStylesheetBundle: MasterCSSCompilerBindingSession['renderCSSStylesheetBundle']
   compileCSSStylesheetGraph(
     request: Parameters<MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']>[0]
   ): Omit<ReturnType<MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']>, 'directives'> & {
+    directives: CompileCSSResult
+  }
+  compileCSSStylesheetGraphWithReferences(
+    request: Parameters<MasterCSSCompilerBindingSession['compileCSSStylesheetGraphWithReferences']>[0]
+  ): Omit<ReturnType<MasterCSSCompilerBindingSession['compileCSSStylesheetGraphWithReferences']>, 'directives'> & {
     directives: CompileCSSResult
   }
   dispose(): void
@@ -56,10 +62,16 @@ function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingC
       sourceText?: string
     ) =>
       session.lowerCSSDirectives(request, options, sourceText),
+    lowerCSSDirectivesWithReferences: (request, options, sourceText) =>
+      session.lowerCSSDirectivesWithReferences(request, options, sourceText),
     prepareCSSStylesheetBundle: (request) => session.prepareCSSStylesheetBundle(request),
     renderCSSStylesheetBundle: (request) => session.renderCSSStylesheetBundle(request),
     compileCSSStylesheetGraph(request) {
       const result = session.compileCSSStylesheetGraph(request)
+      return { ...result, directives: reviveCompileResult(result.directives as CompileCSSResult) }
+    },
+    compileCSSStylesheetGraphWithReferences(request) {
+      const result = session.compileCSSStylesheetGraphWithReferences(request)
       return { ...result, directives: reviveCompileResult(result.directives as CompileCSSResult) }
     },
     dispose: () => session.dispose()

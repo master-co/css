@@ -13,7 +13,7 @@ const source = `@theme { --text-hero: 30px; --text-unused: 100px; }
 @mixin --text(--name <string>) { font-size:var(ident("--text-" var(--name))); }
 @utility nested(--count <integer>) { @apply --grid(var(--count)); }
 @utility unused { @apply --text("unused"); }`
-const manifest = compileManifestSync(source, { baseManifest }).manifest
+const manifest = compileManifestSync(source, { baseManifest }).manifest.manifest()
 const classes = ['nested(3)', 'text-hero', '(font-size:24px)']
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
@@ -49,7 +49,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
       await page.locator('#text').evaluate(el => { el.className = '' })
       await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => { globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(); resolve() }))))
       await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().cssText)).not.toContain('--text-hero')
-      const updated = compileManifestSync(source.replace('30px', '36px'), { baseManifest }).manifest
+      const updated = compileManifestSync(source.replace('30px', '36px'), { baseManifest }).manifest.manifest()
       await page.evaluate(program => { globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(program); document.querySelector('#text')!.className = 'text-hero' }, compileProgram(updated))
       await expect(page.locator('#text')).toHaveCSS('font-size', '36px')
     }

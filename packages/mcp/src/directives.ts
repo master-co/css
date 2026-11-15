@@ -41,7 +41,7 @@ function summarizeCompileResult(result: MasterCSSCompileManifestResult) {
     .filter((diagnostic) => diagnostic.severity === 'warning')
     .map((diagnostic) => diagnostic.message)
   return {
-    manifest: summarizeManifest(result.manifest),
+    manifest: summarizeManifest(result.manifest.manifest()),
     directives: {
       manifestInput: result.directiveSummary.manifestInput,
       classNames: result.classNames,
@@ -110,7 +110,7 @@ export async function inspectDirectives(context: MasterCSSMCPContext, options: I
       },
       directiveEntries,
       ...inspection,
-      manifest: { ...inspection.manifest, fingerprint: manifestFingerprint(compiled.result.manifest), languageVersion: compiled.result.manifest.languageVersion },
+      manifest: { ...inspection.manifest, fingerprint: manifestFingerprint(compiled.result.manifest.manifest()), languageVersion: compiled.result.manifest.manifest().languageVersion },
       diagnostics: inspection.diagnostics,
       summary: {
         status: inspection.warnings.length ? 'warning' : 'ok',

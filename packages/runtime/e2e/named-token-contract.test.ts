@@ -6,7 +6,7 @@ import defaultManifest from '@master/css-preset/default-manifest.json' with { ty
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
 
-const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid; outline-style:solid; } @utility solid-edges { border-style:solid; outline-style:solid; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
+const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid; outline-style:solid; } @utility solid-edges { border-style:solid; outline-style:solid; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest.manifest()
 const classLists = [
   "p-md (padding:8px)",
   "(padding:8px) p-md",

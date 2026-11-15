@@ -16,7 +16,7 @@ const compiled = compileManifestSync(`
 @mixin --amp { &[data-label="&"] { @contents; } } @utility amp { &[data-label="&"] { @contents; } }
 .native { --pipe:a|b; --money:$100; }
 `, { baseManifest: preset as unknown as MasterCSSManifest })
-const manifest = compiled.manifest
+const manifest = compiled.manifest.manifest()
 const classes = ['p-md@media(width>=1px)', "(padding:8px)@media(min-width:1px)", '(color:red)@apply(--amp)', 'bg-probe', '(margin:3px)@apply(--ocean)']
 const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;</style></head><body>'
   + `<div id="probe" class="native ${classes.slice(0, 3).join(' ')}" data-label="&">Probe</div>`

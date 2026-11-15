@@ -26,7 +26,7 @@ function loadFixturePlan(fixtureDirectory: string) {
   if (!existsSync(planSource)) return defaultManifest
   return compileManifestFileSync(planSource, {
     baseManifest: defaultManifest
-  }).manifest
+  }).manifest.manifest()
 }
 
 describe.concurrent('server fixture CSS parity', () => {

@@ -14,7 +14,8 @@ export interface MasterCSSNativeDeclaration {
 }
 
 export interface MasterCSSRenderSessionOptions {
-  readonly manifest: MasterCSSManifest
+  /** A manifest, or the reference a compilation returned, whose stored program it executes. */
+  readonly manifest: MasterCSSManifest | import('@master/css-binding/compiler').MasterCSSManifestReference
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 

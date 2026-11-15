@@ -7,7 +7,7 @@ import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 
 test('editor inspection shares the CLI and AI workflow conclusions and keeps CSS in diagnostic hovers', () => {
-  const manifest = compileManifestSync(workflows.source, { baseManifest: preset as unknown as MasterCSSManifest }).manifest
+  const manifest = compileManifestSync(workflows.source, { baseManifest: preset as unknown as MasterCSSManifest }).manifest.manifest()
   const service = new CSSLanguageService({ manifest })
   try {
     for (const expected of workflows.cases) {

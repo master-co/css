@@ -3,6 +3,7 @@ import { createCompiler } from '@master/css-compiler'
 import { createEngine } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { withManifest } from '../helpers/manifest-equality'
 
 const baseManifest = preset as unknown as MasterCSSManifest
 const source = `
@@ -71,13 +72,13 @@ test('447: compiler and engine binding combinations agree on the language contra
   expect(nativeCompiler.binding).toBe('native')
   expect(wasmCompiler.binding).toBe('wasm')
   const compiled = nativeCompiler.compileManifest(source, { baseManifest })
-  expect(wasmCompiler.compileManifest(source, { baseManifest })).toEqual(compiled)
-  using reference = await createEngine({ manifest: compiled.manifest, binding: 'native' })
+  expect(withManifest(wasmCompiler.compileManifest(source, { baseManifest }))).toEqual(withManifest(compiled))
+  using reference = await createEngine({ manifest: compiled.manifest.manifest(), binding: 'native' })
   const classNames = valid.map(([className]) => className)
   reference.ensureClassRules(classNames)
 
   for (const compiler of [nativeCompiler, wasmCompiler]) {
-    const { manifest } = compiler.compileManifest(source, { baseManifest })
+    const manifest = compiler.compileManifest(source, { baseManifest }).manifest.manifest()
     for (const binding of ['native', 'wasm'] as const) {
       using engine = await createEngine({ manifest, binding })
       expect(engine.binding).toBe(binding)

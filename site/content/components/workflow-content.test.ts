@@ -54,7 +54,7 @@ function guideText(directory: URL): string {
 
 /** Colors the language service renders for a class under a project manifest. */
 async function swatches(source: string, className: string) {
-  const { manifest } = compileManifestSync(source, { baseManifest: preset })
+  const manifest = compileManifestSync(source, { baseManifest: preset }).manifest.manifest()
   const service = new MasterCSSLanguageService({ manifest: manifest as MasterCSSManifest }, { session: createToolingSessionSync({ manifest: manifest as MasterCSSManifest }) })
   const text = `<div class="${className}"></div>`
   const document = {

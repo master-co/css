@@ -6,6 +6,7 @@ import {
   type MasterCSSDiagnostic
 } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { MasterCSSManifestReference, shareManifest } from '@master/css-binding/compiler'
 import type {
   MasterCSSCompileManifestOptions,
   MasterCSSCompileManifestResult,
@@ -129,7 +130,7 @@ interface InternalManifestCompileResult {
   readonly classNames: readonly string[]
   readonly nativeClassNames: readonly string[]
   readonly warnings: readonly string[]
-  readonly manifest: MasterCSSManifest
+  readonly manifest: MasterCSSManifest | MasterCSSManifestReference
   readonly directives: CompileCSSResult
   readonly outputMappings?: CompileCSSResult['outputMappings']
   readonly sourceTexts?: Record<string, string>
@@ -150,7 +151,7 @@ export function toMasterCSSCompileManifestResultInternal(
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
     diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...noticeDiagnostics(result.notices, onDiagnostic), ...validateCompiledCSS([{ css: result.css, mappings: result.outputMappings, sources: result.sourceTexts }], { onDiagnostic, validation })]),
     directiveSummary: directiveSummary(result.directives),
-    manifest: Object.freeze(result.manifest),
+    manifest: result.manifest instanceof MasterCSSManifestReference ? result.manifest : new MasterCSSManifestReference(undefined, undefined, shareManifest(result.manifest)),
     directives: toMasterCSSCompileResultInternal(result.directives)
   })
 }
@@ -208,7 +209,9 @@ export class MasterCSSCompiler implements Disposable {
         message: 'Universal manifest compilation cannot resolve @reference directives.'
       })
     }
-    const lowered = this.#session.lowerCSSDirectives({
+    // The manifests stay in the binding: the base is not shipped for every
+    // compilation, and render sessions execute the lowered one's stored program.
+    const lowered = this.#session.lowerCSSDirectivesWithReferences({
       manifestInput: rawDirectives.manifestInput,
       definitionSources: rawDirectives.definitionSources || [],
       nativeOutput: rawDirectives.nativeOutput,
@@ -216,29 +219,20 @@ export class MasterCSSCompiler implements Disposable {
       warnings: rawDirectives.warnings
     }, {
       baseManifest: options.baseManifest
-    }, source) as {
-      manifest: MasterCSSManifest
-      notices?: CompileCSSResult['notices']
-      warnings: string[]
-      generatedCSS: string
-      outputMappings?: CompileCSSResult['outputMappings']
-      css?: string
-    }
+    }, source)
     const generatedCSS = lowered.generatedCSS || ''
     const css = lowered.css ?? [rawDirectives.nativeCSS, generatedCSS].filter(Boolean).join('\n')
-    const diagnostics = Object.freeze([...diagnosticsFor(lowered.warnings, options.onDiagnostic), ...noticeDiagnostics(lowered.notices, options.onDiagnostic), ...validateCompiledCSS([{ css, mappings: lowered.outputMappings ?? rawDirectives.nativeMappings, ...origin }], options)])
-    return Object.freeze({
+    return withDiagnostics(() => ({
       css,
       nativeCSS: rawDirectives.nativeCSS,
       generatedCSS,
       classNames: Object.freeze([...rawDirectives.classNames]),
       nativeClassNames: Object.freeze([...rawDirectives.nativeClassNames]),
-      diagnostics,
       directiveSummary: directiveSummary(rawDirectives),
-      dependencies: Object.freeze([]),
-      manifest: Object.freeze(lowered.manifest),
+      dependencies: Object.freeze([]) as readonly string[],
+      manifest: lowered.manifest,
       directives
-    })
+    }), () => Object.freeze([...diagnosticsFor(lowered.warnings, options.onDiagnostic), ...noticeDiagnostics(lowered.notices, options.onDiagnostic), ...validateCompiledCSS([{ css, mappings: lowered.outputMappings ?? rawDirectives.nativeMappings, ...origin }], options)]), options)
   }
 
   dispose() {
@@ -281,14 +275,14 @@ export class MasterCSSCompiler implements Disposable {
 
   compileStylesheets(request: MasterCSSCompileStylesheetsRequest, options: MasterCSSCompileOptions = {}): MasterCSSCompileStylesheetsResult {
     this.assertActive()
-    const result = this.#session.compileCSSStylesheetGraph(request)
+    const result = this.#session.compileCSSStylesheetGraphWithReferences(request)
     const directives = toMasterCSSCompileResultInternal(result.directives)
     return Object.freeze({
       ...directives,
       diagnostics: Object.freeze([...directives.diagnostics, ...validateCompiledCSS(result.stylesheets.map(asset => ({ css: asset.css, source: asset.id, mappings: asset.outputMappings, sources: request.graph.files })), options)]),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(stylesheet => Object.freeze({ ...stylesheet }))),
-      manifest: Object.freeze(result.manifest),
+      manifest: result.manifest,
       directives
     })
   }

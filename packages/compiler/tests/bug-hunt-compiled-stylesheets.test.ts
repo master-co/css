@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
 import { createCompiler, type MasterCSSCompileStylesheetsRequest } from '../src/index'
+import { withManifest } from './helpers/manifest-equality'
 
 const cases = JSON.parse(readFileSync(new URL('../../../crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.json', import.meta.url), 'utf8')) as {
   id: string
@@ -38,7 +39,7 @@ for (const item of cases) {
     using native = await createCompiler({ binding: 'native' })
     using wasm = await createCompiler({ binding: 'wasm' })
     const actual = native.compileStylesheets(request)
-    expect(wasm.compileStylesheets(request)).toEqual(actual)
+    expect(withManifest(wasm.compileStylesheets(request))).toEqual(withManifest(actual))
     expect(actual.stylesheets).toHaveLength(2)
     expect(actual.css).toBe(actual.stylesheets[0].css)
     expect(actual.dependencies).toEqual(['entry', 'local'])
@@ -168,7 +169,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   "version": 6 as const,
   "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
-    expect(result.manifest).toEqual(empty.manifest)
+    expect(result.manifest.manifest()).toEqual(empty.manifest.manifest())
   }
 })
 
@@ -207,7 +208,7 @@ test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery',
   }
   using native = await createCompiler({ binding: 'native' })
   using wasm = await createCompiler({ binding: 'wasm' })
-  expect(wasm.compileStylesheets(request)).toEqual(native.compileStylesheets(request))
+  expect(withManifest(wasm.compileStylesheets(request))).toEqual(withManifest(native.compileStylesheets(request)))
   expect(JSON.stringify(native.compileStylesheets(request).manifest)).toContain('./asset.svg?q=1#part')
   expect(native.compileStylesheets(request).stylesheets[1].css).toContain('.unscanned')
   for (const compiler of [native, wasm]) {

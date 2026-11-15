@@ -11,7 +11,7 @@ const declarations = (css: string) => [...css.matchAll(/(?:display|width|text-al
 
 test.each(['native', 'wasm'] as const)('448: %s preserves duplicate fallbacks with native declarations in every utility pattern', async (binding) => {
   using compiler = await createCompiler({ binding })
-  const { manifest, css } = compiler.compileManifest(`
+  const { manifest: reference, css } = compiler.compileManifest(`
     @theme { --spacing-audit: 2rem; --audit-space-audit: var(--spacing-audit);  }
     @mixin --audit-frame(--value) { display: block; display: made-up-value; width: var(--value); display: flex; } @utility audit-frame(--value) { display: block; display: made-up-value; width: var(--value); display: flex; }
     @mixin --audit-space(--name <string>) { display: block; display: made-up-value; width: var(ident("--audit-space-" var(--name))); display: flex; } @utility audit-space(--name <string>) { display: block; display: made-up-value; width: var(ident("--audit-space-" var(--name))); display: flex; }@utility audit-space-(--audit-space <string>) { display: block; display: made-up-value; width: var(ident("--audit-space-" var(--audit-space))); display: flex; }
@@ -20,7 +20,7 @@ test.each(['native', 'wasm'] as const)('448: %s preserves duplicate fallbacks wi
     @mixin --audit-base { display: block; display: made-up-value; width: 2rem; display: flex; } @utility audit-base { display: block; display: made-up-value; width: 2rem; display: flex; }
     .card { display: block; display: made-up-value; width: 2rem; display: flex; }
   `, { baseManifest, preserveNativeCSS: true })
-  using engine = await createEngine({ manifest, binding })
+  using engine = await createEngine({ manifest: reference.manifest(), binding })
   const expected = (value: string) => ['display:block', 'display:made-up-value', value, 'display:flex']
   for (const [className, value] of [
     ['audit-frame(2rem)', 'width:2rem'],

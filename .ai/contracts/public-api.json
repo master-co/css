@@ -103,6 +103,7 @@
           "MasterCSSLowerDirectivesResult",
           "MasterCSSManifestReference",
           "MasterCSSManifestSource",
+          "MasterCSSManifestSources",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSPrepareStylesheetBundleRequest",
           "MasterCSSProjectAssetChange",
@@ -244,7 +245,7 @@
           "registerCSSGrammar"
         ]
       },
-      "surface": "0dcb3bc5d09bb5fd"
+      "surface": "7d5c3063bd14bb51"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -398,6 +399,7 @@
           "MasterCSSCompiler",
           "MasterCSSCompilerInspection",
           "MasterCSSCompilerOptions",
+          "MasterCSSManifestReference",
           "MasterCSSPrepareStylesheetBundleRequest",
           "MasterCSSProjectAssetChange",
           "MasterCSSProjectComparison",
@@ -531,7 +533,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "c35727cc3d5499c6"
+      "surface": "5de92704643a1f93"
     },
     "@master/create-css": {
       "directory": "create",

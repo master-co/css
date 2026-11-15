@@ -364,14 +364,24 @@ pub fn lower_css_directives_json(
             .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
     let options = options_json
         .as_deref()
-        .map(serde_json::from_str::<mastercss_compiler::LowerCssDirectivesOptions>)
+        .map(serde_json::from_str::<serde_json::Value>)
+        .transpose()
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    // `manifestRefs` returns both manifests as references to stored ones.
+    let manifest_refs = options
+        .as_ref()
+        .is_some_and(|options| options["manifestRefs"].as_bool() == Some(true));
+    let options = options
+        .map(serde_json::from_value::<mastercss_compiler::LowerCssDirectivesOptions>)
         .transpose()
         .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?
         .unwrap_or_default();
-    to_json(
-        &mastercss_compiler::lower_css_directives_request(&request, &options)
-            .map_err(compiler_to_napi_error)?,
-    )
+    let result = if manifest_refs {
+        mastercss_compiler::lower_css_directives_request_with_refs(&request, &options)
+    } else {
+        mastercss_compiler::lower_css_directives_request(&request, &options)
+    };
+    to_json(&result.map_err(compiler_to_napi_error)?)
 }
 
 #[napi]

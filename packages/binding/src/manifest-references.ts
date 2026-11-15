@@ -86,6 +86,11 @@ export class MasterCSSManifestReference {
   /** @internal The binding's handle of this manifest, if any. */
   get handle() { return this.#handle }
 
+  /** Serializes as the manifest it stands for, so results stay JSON documents. */
+  toJSON(): MasterCSSManifest {
+    return this.manifest()
+  }
+
   manifest(): MasterCSSManifest {
     if (!this.#manifest) {
       const json = this.#handle?.json()
@@ -173,13 +178,14 @@ class ManifestReferences {
   }
 
   /**
-   * Compiles `request` with referenced manifests. A reference the store dropped
-   * meanwhile falls back to compiling with the manifests themselves.
+   * Runs `compile` with referenced manifests, which returns references to the
+   * manifests it produced. A reference the store dropped meanwhile falls back to
+   * compiling with the manifests themselves.
    */
-  compileGraph(
-    request: MasterCSSReferencedStylesheetGraphRequest,
-    compile: (request: MasterCSSCompileStylesheetGraphRequest) => MasterCSSCompiledStylesheetGraph
-  ): MasterCSSReferencedStylesheetGraph {
+  run<T extends { manifest: unknown, resolutionManifest: unknown }>(
+    manifests: MasterCSSManifestSources,
+    compile: (manifests: MasterCSSInlineOrReferencedManifests, manifestRefs: boolean) => T
+  ): WithManifestReferences<T> {
     const used: string[] = []
     const reference = (source: MasterCSSManifestSource | undefined) => {
       if (!source) return undefined
@@ -189,15 +195,13 @@ class ManifestReferences {
     }
     try {
       const result = compile({
-        ...request,
-        baseManifest: reference(request.baseManifest),
-        resolutionManifest: reference(request.resolutionManifest),
-        manifestRefs: true
-      } as unknown as MasterCSSCompileStylesheetGraphRequest)
+        baseManifest: reference(manifests.baseManifest),
+        resolutionManifest: reference(manifests.resolutionManifest)
+      }, true)
       return {
         ...result,
-        manifest: this.resolve((result.manifest as unknown as { $ref: string }).$ref),
-        resolutionManifest: this.resolve((result.resolutionManifest as unknown as { $ref: string }).$ref)
+        manifest: this.resolve((result.manifest as { $ref: string }).$ref),
+        resolutionManifest: this.resolve((result.resolutionManifest as { $ref: string }).$ref)
       }
     } catch (error) {
       const stale = error instanceof StaleManifestReference
@@ -205,25 +209,62 @@ class ManifestReferences {
       if (!stale) throw error
       for (const key of used) this.#forget(key)
       if (error instanceof StaleManifestReference) this.#forget(error.message)
-      const result = compile(inlineRequest(request))
+      const result = compile(inlineManifests(manifests), false)
       return {
         ...result,
-        manifest: this.reference(shareManifest(result.manifest)),
-        resolutionManifest: this.reference(shareManifest(result.resolutionManifest))
+        manifest: this.reference(shareManifest(result.manifest as MasterCSSManifest)),
+        resolutionManifest: this.reference(shareManifest(result.resolutionManifest as MasterCSSManifest))
       }
     }
   }
 }
 
-const references = new WeakMap<MasterCSSManifestStore, ManifestReferences>()
+/** The manifests a compilation runs against. */
+export interface MasterCSSManifestSources {
+  readonly baseManifest?: MasterCSSManifestSource
+  readonly resolutionManifest?: MasterCSSManifestSource
+}
 
-function inlineRequest(request: MasterCSSReferencedStylesheetGraphRequest): MasterCSSCompileStylesheetGraphRequest {
+interface MasterCSSInlineOrReferencedManifests {
+  readonly baseManifest?: MasterCSSManifest | { $ref: string }
+  readonly resolutionManifest?: MasterCSSManifest | { $ref: string }
+}
+
+type WithManifestReferences<T> = Omit<T, 'manifest' | 'resolutionManifest'> & {
+  manifest: MasterCSSManifestReference
+  resolutionManifest: MasterCSSManifestReference
+}
+
+function inlineManifests(manifests: MasterCSSManifestSources) {
   return {
-    ...request,
-    baseManifest: request.baseManifest && manifestOf(request.baseManifest),
-    resolutionManifest: request.resolutionManifest && manifestOf(request.resolutionManifest)
+    baseManifest: manifests.baseManifest && manifestOf(manifests.baseManifest),
+    resolutionManifest: manifests.resolutionManifest && manifestOf(manifests.resolutionManifest)
   }
 }
+
+/**
+ * Runs a compilation whose manifests stay in the binding's store, or, without a
+ * store, wraps the manifests a plain compilation returns.
+ */
+export function compileWithManifestReferences<T extends { manifest: unknown, resolutionManifest: unknown }>(
+  store: MasterCSSManifestStore | undefined,
+  manifests: MasterCSSManifestSources,
+  compile: (manifests: MasterCSSInlineOrReferencedManifests, manifestRefs: boolean) => T
+): WithManifestReferences<T> {
+  if (!store) {
+    const result = compile(inlineManifests(manifests), false)
+    return {
+      ...result,
+      manifest: new MasterCSSManifestReference(undefined, undefined, shareManifest(result.manifest as MasterCSSManifest)),
+      resolutionManifest: new MasterCSSManifestReference(undefined, undefined, shareManifest(result.resolutionManifest as MasterCSSManifest))
+    }
+  }
+  let stored = references.get(store)
+  if (!stored) references.set(store, stored = new ManifestReferences(store))
+  return stored.run(manifests, compile)
+}
+
+const references = new WeakMap<MasterCSSManifestStore, ManifestReferences>()
 
 /**
  * Compiles a graph whose manifests stay in the binding's store, or, without a
@@ -234,17 +275,9 @@ export function compileReferencedGraph(
   request: MasterCSSReferencedStylesheetGraphRequest,
   compile: (request: MasterCSSCompileStylesheetGraphRequest) => MasterCSSCompiledStylesheetGraph
 ): MasterCSSReferencedStylesheetGraph {
-  if (!store) {
-    const result = compile(inlineRequest(request))
-    return {
-      ...result,
-      manifest: new MasterCSSManifestReference(undefined, undefined, shareManifest(result.manifest)),
-      resolutionManifest: new MasterCSSManifestReference(undefined, undefined, shareManifest(result.resolutionManifest))
-    }
-  }
-  let stored = references.get(store)
-  if (!stored) references.set(store, stored = new ManifestReferences(store))
-  return stored.compileGraph(request, compile)
+  return compileWithManifestReferences(store, request, (manifests, manifestRefs) => compile({
+    ...request, ...manifests, ...(manifestRefs ? { manifestRefs: true } : {})
+  } as unknown as MasterCSSCompileStylesheetGraphRequest))
 }
 
 /** Compiles a graph like {@link compileReferencedGraph}, returning the manifests themselves. */

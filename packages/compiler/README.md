@@ -456,6 +456,16 @@ all assets at their assigned `href` values. Each stylesheet has a serialized
 contains generated globals once, after its retained import rules. Sass dependencies
 and original diagnostic locations remain attached to their source files.
 
+### Manifest references
+
+`compileManifest()`, `compileManifestSync()`, `compileStylesheets()` and
+`compileManifestFileSync()` return `manifest` as a `MasterCSSManifestReference`:
+the compiler binding keeps the compiled manifest instead of copying it into
+JavaScript. Pass it as is to `createRenderSessionSync()`, which then executes the
+stored program, or as the `baseManifest` of another compilation. Call
+`manifest.manifest()` for a deeply frozen manifest object; `JSON.stringify()`
+serializes the manifest.
+
 ### Ordered native composition
 
 Direct `compileManifest()`, stylesheet compilation and local transforms return

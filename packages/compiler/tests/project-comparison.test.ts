@@ -48,8 +48,8 @@ test('captures resolved files and compares token edits without changing markup',
 
 test('native and Wasm compiler sessions agree on prepared project comparison', async () => {
   const source = '@theme{--color-brand:red}@mixin --button{color:var(--color-brand)} @utility button {color:var(--color-brand)}'
-  const beforeManifest = (await compileManifest(source, { baseManifest: manifest })).manifest
-  const afterManifest = (await compileManifest(source.replace('--color-brand:red', '--color-brand:blue'), { baseManifest: manifest })).manifest
+  const beforeManifest = (await compileManifest(source, { baseManifest: manifest })).manifest.manifest()
+  const afterManifest = (await compileManifest(source.replace('--color-brand:red', '--color-brand:blue'), { baseManifest: manifest })).manifest.manifest()
   const common = { version: 1 as const, sources: [{ path: 'index.html', classes: ['button'] }], stylesheets: [], outputs: [], excluded: ['vendor/**'], unresolved: ['cms'] }
   const request = { before: { ...common, manifest: beforeManifest }, after: { ...common, manifest: afterManifest } }
   using native = await createCompiler({ binding: 'native' })

@@ -4,6 +4,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { createCompiler } from '../src'
 import { createCompilerSync } from '../src/node'
+import { withManifest } from './helpers/manifest-equality'
 
 interface CompilerParityCase {
   id: string
@@ -67,16 +68,16 @@ test('native and Wasm compiler sessions execute the v2 language compiler corpus'
 
       const nativeResult = native.compileManifest(parityCase.source, options)
       const wasmResult = wasm.compileManifest(parityCase.source, options)
-      expect(wasmResult, `${parityCase.id}: Wasm result`).toEqual(nativeResult)
+      expect(withManifest(wasmResult), `${parityCase.id}: Wasm result`).toEqual(withManifest(nativeResult))
       if (parityCase.expectedGeneratedCss !== undefined) {
         expect(nativeResult.generatedCSS, parityCase.id).toBe(parityCase.expectedGeneratedCss)
       }
       if (parityCase.expectedManifest) {
-        expect(nativeResult.manifest, parityCase.id).toEqual(parityCase.expectedManifest)
+        expect(nativeResult.manifest.manifest(), parityCase.id).toEqual(parityCase.expectedManifest)
       }
       for (const expectedUtility of parityCase.expectedMixins ?? []) {
         expect(
-          nativeResult.manifest.mixins?.find(({ name }) => name === expectedUtility.name),
+          nativeResult.manifest.manifest().mixins?.find(({ name }) => name === expectedUtility.name),
           `${parityCase.id}: utility ${expectedUtility.name}`
         ).toEqual(expectedUtility)
       }

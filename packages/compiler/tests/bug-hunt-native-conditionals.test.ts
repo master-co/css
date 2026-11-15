@@ -2,6 +2,7 @@ import { expect, test } from 'vitest'
 import { SourceMap } from 'node:module'
 import { createCompiler } from '../src/index'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
+import { withManifest } from './helpers/manifest-equality'
 
 const baseManifest = {
   mixins: [
@@ -33,13 +34,13 @@ test('BH-0057 native and Wasm graphs preserve conditional structure and sibling 
     const source = `@mixin --paint {padding:2rem} @utility paint {padding:2rem}${wrapper}{.card{@apply --all{padding:2rem;}}.card{padding:3rem}}`
     const request = { graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest }
     const output = native.compileStylesheets(request)
-    expect(wasm.compileStylesheets(request)).toEqual(output)
+    expect(withManifest(wasm.compileStylesheets(request))).toEqual(withManifest(output))
     const css = output.stylesheets[0].css.replace(/\s+/g, '')
     expect(css.indexOf('padding:2rem')).toBeLessThan(css.indexOf('padding:3rem'))
     expect(css.match(/@(media|supports|container|layer|starting-style)/g)).toHaveLength(2)
     const nestedRequest = { ...request, graph: { ...request.graph, files: { '/entry.css': `@mixin --paint {padding:2rem} @utility paint {padding:2rem}.card{${wrapper}{@apply --all{padding:2rem;}}}` } } }
     const nested = native.compileStylesheets(nestedRequest)
-    expect(wasm.compileStylesheets(nestedRequest)).toEqual(nested)
+    expect(withManifest(wasm.compileStylesheets(nestedRequest))).toEqual(withManifest(nested))
     expect(nested.stylesheets[0].css).toContain('padding:2rem')
   }
 })

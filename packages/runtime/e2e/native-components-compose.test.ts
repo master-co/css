@@ -12,18 +12,18 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
       <span id="fallback" class="fallback">Utility</span><span id="native" class="native">Native</span>
       <div id="composed" class="composed"></div><div id="same" class="same-list"></div><div id="reversed" class="reversed-list"></div>
       <div id="order" class="z-first a-last"></div><div id="override" class="override (height:48px)"></div><div id="later"></div></body></html>`
-    const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
+    const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest.manifest() })
     expect(rendered.rules.find(rule => rule.className === 'fallback')!.text).toContain('display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px')
     if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {
-      using server = createServerRenderer({ manifest: compiled.manifest })
+      using server = createServerRenderer({ manifest: compiled.manifest.manifest() })
       await page.setContent(server.renderHTML(html, { hydrationManifest: 'inject' }).html)
     }
     if (mode === 'runtime' || mode === 'progressive') await page.evaluate(async ({ loader, manifest }) => {
       const { startCSSRuntime } = await import(loader)
       await startCSSRuntime({ manifest })
-    }, { loader: await getRuntimeLoaderURL(), manifest: compiled.manifest })
+    }, { loader: await getRuntimeLoaderURL(), manifest: compiled.manifest.manifest() })
     for (const id of ['native', 'fallback']) {
       await expect(page.locator(`#${id}`)).toHaveCSS('display', 'block')
       await expect(page.locator(`#${id}`)).toHaveCSS('padding-left', '30px')
