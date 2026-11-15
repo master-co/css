@@ -71,7 +71,6 @@ pub use api::{
     lower_css_directives, lower_css_directives_request, lower_css_directives_request_with_refs,
 };
 pub(crate) use memo::Lowering;
-pub(crate) use resolution::engine_for_manifest;
 
 #[cfg(test)]
 mod tests;

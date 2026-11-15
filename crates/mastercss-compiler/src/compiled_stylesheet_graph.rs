@@ -634,12 +634,17 @@ pub fn compile_css_stylesheet_graph(
         .filter(|sheet| crate::keyframes::may_declare_animations(&sheet.css))
         .collect::<Vec<_>>();
     if !animated.is_empty() {
-        // Native variables may have extended the resolution manifest.
+        // Native variables may have extended the resolution manifest. They are
+        // all it changed, so the lowered program takes them instead of compiling
+        // the extended manifest again.
         let extended;
         let engine = match &resolution_manifest {
             Cow::Borrowed(_) => engine,
             Cow::Owned(manifest) => {
-                extended = crate::lower::engine_for_manifest(manifest)?;
+                extended = mastercss_engine::EngineSession::from_manifest_program(
+                    &engine.manifest_program().with_animation_variables(manifest),
+                    mastercss_schema::EmittedGlobals::default(),
+                );
                 &extended
             }
         };
