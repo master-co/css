@@ -166,7 +166,18 @@ pub fn leading_declaration_name(source: &str) -> Option<(usize, Cow<'_, str>)> {
 
 /// Component tokens with decoded CSS names, byte ranges and matched block ends.
 /// This is lexical structure, not validation of property or at-rule grammars.
+///
+/// A compilation reads the same stylesheet, and the CSS it produces, from many
+/// independent passes; the tokens of recently read texts are kept and returned
+/// for an identical text instead of tokenizing it again.
 pub fn tokenize_css_syntax(source: &str) -> Vec<CssSyntaxToken<'_>> {
+    if source.len() < super::css_syntax_cache::MIN_CACHED_LEN {
+        return tokenize_css_syntax_uncached(source);
+    }
+    super::css_syntax_cache::tokens(source, tokenize_css_syntax_uncached)
+}
+
+fn tokenize_css_syntax_uncached(source: &str) -> Vec<CssSyntaxToken<'_>> {
     let mut tokens: Vec<CssSyntaxToken<'_>> = Vec::new();
     let mut opens: Vec<(char, usize)> = Vec::new();
     let mut cursor = 0;
