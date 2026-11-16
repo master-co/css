@@ -78,7 +78,7 @@ function prepareLocalBuildStylesheets(compiler: MasterCSSCompiler, source: strin
   const replacements = [
     { slot: slotCSSRule, css: extracted.css, stylesheets: extracted.stylesheets, resources: extracted.resources },
     ...[...locals].sort((a, b) => a.slot < b.slot ? -1 : a.slot > b.slot ? 1 : 0)
-      .map(({ slot, result }) => ({ slot, css: result.code, stylesheets: result.stylesheets, resources: result.resources }))
+      .map(({ slot, result, globals }) => ({ slot, css: [result.code, globals].filter(Boolean).join('\n\n'), stylesheets: result.stylesheets, resources: result.resources }))
   ]
   let replaced = false
   for (const [replacementIndex, replacement] of replacements.entries()) {

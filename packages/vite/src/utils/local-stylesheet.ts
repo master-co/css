@@ -6,6 +6,8 @@ import { toRootRelativeModuleId } from './path'
 export interface LocalStylesheet {
   slot: string
   result: MasterCSSStylesheetTransformResult
+  /** Globals this stylesheet left to a style entry that its build did not deliver. */
+  globals?: string
 }
 const states = new WeakMap<MasterCSSVitePluginContext, Map<string, LocalStylesheet>>()
 export function localStylesheets(context: MasterCSSVitePluginContext) {

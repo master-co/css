@@ -36,6 +36,10 @@ export interface MasterCSSVitePluginContext {
   emittedGlobals?: MasterCSSEmittedGlobals
   onEmittedGlobalsChange?: () => void
   refreshEmittedGlobals?: () => Promise<void>
+  /** Local stylesheets changed which globals the style entries emit for them. */
+  onSharedGlobalsChange?: () => void
+  /** The first style entry of a development server was delivered. */
+  onStyleEntryDelivered?: () => void
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
   defaultProgramAssetReferenceId?: string

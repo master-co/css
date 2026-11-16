@@ -9,7 +9,8 @@ import getExtractedCSS, { getExtractedCSSResult } from '../utils/extracted-css'
 import { getScanner } from '../utils/scanner-context'
 import { removeGraphOnlyStylesheetEntries } from '../utils/build-import-resolver'
 import { prepareBuildStylesheet } from '../utils/build-stylesheet-delivery'
-import { clearLocalStylesheets, localStylesheets } from '../utils/local-stylesheet'
+import { clearLocalStylesheets, localStylesheets, type LocalStylesheet } from '../utils/local-stylesheet'
+import { renderLocalGlobals } from '../utils/shared-globals'
 import { createCSSFinalizer, type CSSFinalizer } from '../utils/finalize-css'
 
 function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
@@ -58,10 +59,11 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
     return result
   }
   const prepared = new Map<string, ReturnType<typeof prepareBuildStylesheet>>()
+  let locals: LocalStylesheet[] | undefined
   const prepare = (source: string, filename: string) => {
     if (!compiler || !extracted) return
     if (!prepared.has(source)) {
-      const graph = prepareBuildStylesheet(compiler, source, getScanner(context).slotCSSRule, extracted, [...localStylesheets(context).values()])
+      const graph = prepareBuildStylesheet(compiler, source, getScanner(context).slotCSSRule, extracted, locals ??= [...localStylesheets(context)].map(([id, local]) => ({ ...local, globals: renderLocalGlobals(context, id) })))
       prepared.set(source, graph && {
         ...graph,
         source: finalize(graph.source, filename),
@@ -90,6 +92,7 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
       finalizer = config?.command === 'build' ? createCSSFinalizer(config) : undefined
       prepared.clear()
       finalized.clear()
+      locals = undefined
     },
     outputOptions(options) {
       const assetFileNames = options.assetFileNames

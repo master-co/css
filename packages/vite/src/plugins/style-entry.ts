@@ -31,10 +31,13 @@ export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOp
       if (id !== RESOLVED_VIRTUAL_CSS_ID) return
 
       context.virtualCSSImporters ??= new Set()
+      const first = !context.virtualCSSImporters.size
       context.virtualCSSImporters.add(RESOLVED_VIRTUAL_CSS_ID)
 
       if (context.config?.command === 'serve') {
-        return await getExtractedCSS(context)
+        const css = await getExtractedCSS(context)
+        if (first) context.onStyleEntryDelivered?.()
+        return css
       }
 
       context.virtualCSSPlaceholderEmitted = true
@@ -91,7 +94,9 @@ export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOp
 
         if (context.config?.command === 'serve') {
           context.virtualCSSImporters ??= new Set()
+          const first = !context.virtualCSSImporters.size
           context.virtualCSSImporters.add(id)
+          if (first) context.onStyleEntryDelivered?.()
         } else if (!inline) {
           context.virtualCSSPlaceholderEmitted = true
         }
