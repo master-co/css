@@ -49,7 +49,7 @@
         "@master/css-preset": "workspace:^",
         "@master/css-schema": "workspace:^",
         "@master/css-tooling": "workspace:^",
-        "@master/internal-site": "0.2.13",
+        "@master/internal-site": "0.2.16",
         "@master/ui": "0.0.5",
         "@shikijs/langs": "^4.4.3",
         "@shikijs/themes": "^4.4.3",
