@@ -439,7 +439,7 @@ export async function transformLocalStylesheet(
     preserveUnchangedNativeCSS = false,
     ...compileOptions
   } = options
-  if (generatedGlobals !== 'inline' && generatedGlobals !== 'separate') throw new TypeError('generatedGlobals must be inline or separate.')
+  if (generatedGlobals !== 'inline' && generatedGlobals !== 'separate' && generatedGlobals !== 'shared') throw new TypeError('generatedGlobals must be inline, separate or shared.')
   if (options.delivery) {
     const dependencies = new Set<string>()
     const compiled = await compileDeliveredSource(cleanStyleRequest(id), await preprocessStylesheet(source, id, options), {
@@ -455,9 +455,15 @@ export async function transformLocalStylesheet(
       includeGeneratedCSS: false,
       emittedGlobals
     })
-    const code = [compiled.directives.css, generatedGlobals === 'inline' && rendered.generatedCSS].filter(Boolean).join('\n\n')
+    const nativeCSS = compiled.stylesheets.map(asset => asset.css)
+    // Own or referenced definitions make these globals this graph's alone. Text
+    // equality proves the base manifest supplies the very same definitions.
+    const sharedGlobals = generatedGlobals === 'shared' && Boolean(rendered.generatedCSS)
+      && renderCompiledManifestCSS({ manifest: compileOptions.baseManifest, nativeCSS, includeGeneratedCSS: false, emittedGlobals }).generatedCSS === rendered.generatedCSS
+    const code = [compiled.directives.css, generatedGlobals !== 'separate' && !sharedGlobals && rendered.generatedCSS].filter(Boolean).join('\n\n')
     return {
       code, transformed: true, dependencies: compiled.directives.dependencies,
+      ...(sharedGlobals ? { sharedGlobals } : {}),
       ...(generatedGlobals === 'separate' && rendered.generatedCSS ? { globalStylesheet: { css: rendered.generatedCSS } } : {}),
       stylesheets: compiled.stylesheets.filter(asset => asset.id !== compiled.entry).map(({ id, href, css }) => ({ id, href, css })),
       resources: compiled.resources,

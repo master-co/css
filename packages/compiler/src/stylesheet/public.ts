@@ -1,4 +1,5 @@
 import { stylesheetValidationSource } from './output-map'
+import { renderCompiledManifestCSS } from './render'
 import { StylesheetCompositionCache } from './composition-cache'
 import { validateCompiledCSS, assertValidationOptions, withDiagnostics } from '../value-validation'
 import { mapStylesheetError, type StylesheetSourceContext } from './source-context'
@@ -72,6 +73,11 @@ export interface MasterCSSStylesheetTransformResult {
   /** Retained child stylesheets; delivery hosts must publish every returned asset. */
   readonly stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
   readonly resources?: readonly StylesheetResourceAsset[]
+  /**
+   * `baseManifest` alone renders the globals this graph needs, and `code` omits
+   * them: the host emits them once with `renderStylesheetGlobals`.
+   */
+  readonly sharedGlobals?: boolean
   readonly code: string
   readonly dependencies: readonly string[]
   readonly transformed: boolean
@@ -81,8 +87,12 @@ export interface MasterCSSStylesheetTransformResult {
 export interface MasterCSSStylesheetTransformOptions extends MasterCSSStylesheetCompileOptions {
   /** Leave native CSS to its host when it needs no Master CSS resource expansion. */
   readonly preserveUnchangedNativeCSS?: boolean
-  /** Defaults to inline; separate returns globals outside code for scoped hosts. */
-  readonly generatedGlobals?: 'inline' | 'separate'
+  /**
+   * Defaults to inline; separate returns globals outside code for scoped hosts.
+   * With delivery, shared omits the globals `baseManifest` alone renders
+   * identically and reports `sharedGlobals`; any other graph stays inline.
+   */
+  readonly generatedGlobals?: 'inline' | 'separate' | 'shared'
   /** Also resolve resource usage in native CSS using the supplied context. */
   readonly transformNativeStylesheets?: boolean
   readonly emittedGlobals?: MasterCSSEmittedGlobals
@@ -412,6 +422,7 @@ export async function transformStylesheet(
   return withDiagnostics(() => ({
     code: result.code,
     ...(result.globalStylesheet ? { globalStylesheet: Object.freeze({ ...result.globalStylesheet }) } : {}),
+    ...(result.sharedGlobals ? { sharedGlobals: true } : {}),
     ...(result.result?.sourceMap ? { sourceMap: result.result.sourceMap } : {}),
     dependencies: Object.freeze([...result.dependencies]),
     transformed: result.transformed,
@@ -427,6 +438,20 @@ export async function transformStylesheet(
       }
       : {})
   }), () => validateCompiledCSS([stylesheetValidationSource(result.code, id, result.result?.sourceMap), ...(result.globalStylesheet ? [stylesheetValidationSource(result.globalStylesheet.css, id, result.globalStylesheet.sourceMap)] : []), ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options), options)
+}
+
+/**
+ * Render the theme variables and keyframes that delivered native CSS references,
+ * once for every stylesheet that shares `manifest`.
+ */
+export function renderStylesheetGlobals(options: Readonly<{
+  manifest: MasterCSSManifest
+  css: readonly string[]
+  /** Globals already present outside this render; emit only additional resources. */
+  emittedGlobals?: MasterCSSEmittedGlobals
+}>): Readonly<{ css: string, emittedGlobals: Required<MasterCSSEmittedGlobals> }> {
+  const rendered = renderCompiledManifestCSS({ manifest: options.manifest, nativeCSS: [...options.css], includeGeneratedCSS: false, emittedGlobals: options.emittedGlobals })
+  return Object.freeze({ css: rendered.generatedCSS, emittedGlobals: freezeEmittedGlobals(rendered.emittedGlobals) })
 }
 
 let bindStylesheetCollection: () => MasterCSSStylesheetCollection

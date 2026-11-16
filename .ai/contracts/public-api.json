@@ -496,6 +496,7 @@
           "createStylesheetCollection",
           "describeLinkedStylesheet",
           "prepareStylesheet",
+          "renderStylesheetGlobals",
           "resolveStylesheet",
           "transformStylesheet"
         ],
@@ -533,7 +534,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "5de92704643a1f93"
+      "surface": "a2f491100a406fcc"
     },
     "@master/create-css": {
       "directory": "create",

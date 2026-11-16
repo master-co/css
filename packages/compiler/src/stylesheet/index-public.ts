@@ -7,6 +7,7 @@ export {
   createStylesheetCollection,
   resolveStylesheet,
   prepareStylesheet,
+  renderStylesheetGlobals,
   type MasterCSSPreparedStylesheet,
   type MasterCSSStylesheetPreparationOptions,
   transformStylesheet,

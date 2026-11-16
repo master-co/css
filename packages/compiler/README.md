@@ -150,7 +150,12 @@ asset contract. This option has no effect without `delivery`. `code` is the entr
 `stylesheets` contains retained children and `resources` identifies resource files
 to publish. The host must publish the complete returned asset set at the supplied
 URLs. `resolveImport` can supply host aliases, and `emittedGlobals` suppresses
-variables and animations already provided by global stylesheets. Reference-only
+variables and animations already provided by global stylesheets. With
+`generatedGlobals: 'shared'`, a graph whose theme variables and keyframes
+`baseManifest` alone renders identically omits them from `code` and reports
+`sharedGlobals: true`; the host passes the delivered CSS of every such graph to
+`renderStylesheetGlobals({ manifest, css })` and emits the result once. A graph
+with its own or referenced definitions keeps its globals inline. Reference-only
 native rules stay excluded. Omitting `delivery` keeps the existing single-source
 transform contract. Vite consumes this asset result for local variant entries in
 development and production, including inline requests. Further host input and

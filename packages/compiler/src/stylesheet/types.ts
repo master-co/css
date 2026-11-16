@@ -64,6 +64,8 @@ export interface TransformLocalStylesheetResult {
   globalStylesheet?: { readonly css: string, readonly sourceMap?: string }
   stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap?: string }[]
   resources?: readonly StylesheetResourceAsset[]
+  /** The base manifest alone renders this graph's globals, which `code` omits. */
+  sharedGlobals?: boolean
   code: string
   dependencies: string[]
   transformed: boolean
@@ -72,8 +74,11 @@ export interface TransformLocalStylesheetResult {
 
 export interface TransformLocalStylesheetOptions extends CompileStylesheetOptions {
   preserveUnchangedNativeCSS?: boolean
-  /** Keep generated root/mode resources outside a host's locally scoped CSS. */
-  generatedGlobals?: 'inline' | 'separate'
+  /**
+   * Keep generated root/mode resources outside a host's locally scoped CSS, or
+   * leave those the base manifest renders identically to one shared output.
+   */
+  generatedGlobals?: 'inline' | 'separate' | 'shared'
   transformNativeStylesheets?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
 }
