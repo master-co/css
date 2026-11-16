@@ -9,7 +9,7 @@ import {
   writeFileSync
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { basename, dirname, join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const inspectNativePackageArgument = '--inspect-native-package'
@@ -78,32 +78,36 @@ function exerciseEngineSession(binding) {
 function inspectNativePackage(directory) {
   const packageJSON = JSON.parse(readFileSync(resolve(directory, 'package.json'), 'utf8'))
   if (packageJSON.bin !== undefined) {
-    throw new Error('Native target package must keep the mcss executable loader-private.')
+    throw new Error('Native target package must not declare a package binary.')
   }
-  const executableRelativePath = packageJSON.os?.includes('win32') ? 'mcss.exe' : 'mcss'
-  const executableName = basename(executableRelativePath)
-  if (!packageJSON.files?.includes('mastercss.node') || !packageJSON.files.includes(executableName)) {
-    throw new Error('Native target package omits a required artifact.')
+  if (JSON.stringify(packageJSON.files) !== '["mastercss.node"]') {
+    throw new Error('Native target package must publish only mastercss.node.')
   }
 
   const binding = createRequire(import.meta.url)(resolve(directory, 'mastercss.node'))
   exerciseEngineSession(binding)
   const bindingInfo = JSON.parse(binding.bindingInfoJson())
-  const selfTest = JSON.parse(execFileSync(resolve(directory, executableRelativePath), ['--self-test'], {
-    encoding: 'utf8'
-  }))
+  if (process.platform === 'win32') assertWindowsVersionInfo(resolve(directory, 'mastercss.node'))
 
-  if (bindingInfo.bindingAbiVersion !== selfTest.binary.bindingAbiVersion) {
-    throw new Error('Native addon and CLI ABI versions do not match.')
-  }
-  if (bindingInfo.packageVersion !== selfTest.binary.packageVersion) {
-    throw new Error('Native addon and CLI package versions do not match.')
-  }
-  if (bindingInfo.target !== selfTest.binary.target) {
-    throw new Error('Native addon and CLI targets do not match.')
-  }
+  return { packageJSON, bindingInfo }
+}
 
-  return { packageJSON, bindingInfo, selfTest }
+/**
+ * Antivirus heuristics flag unsigned PE files that carry no version resource, so the
+ * Windows addon must expose the product metadata its build script embeds.
+ */
+function assertWindowsVersionInfo(file) {
+  const info = JSON.parse(execFileSync('powershell.exe', [
+    '-NoProfile',
+    '-NonInteractive',
+    '-Command',
+    '[System.Diagnostics.FileVersionInfo]::GetVersionInfo($env:MASTER_CSS_PE_FILE)'
+      + ' | Select-Object CompanyName, ProductName, OriginalFilename | ConvertTo-Json -Compress'
+  ], { encoding: 'utf8', env: { ...process.env, MASTER_CSS_PE_FILE: file } }))
+  if (info.CompanyName !== 'Aoyue Design LLC' || info.ProductName !== 'Master CSS'
+    || info.OriginalFilename !== 'mastercss.node') {
+    throw new Error(`mastercss.node lacks the embedded Windows version resource: ${JSON.stringify(info)}`)
+  }
 }
 
 function inspectNativePackageInChild(directory) {
@@ -177,7 +181,6 @@ try {
   process.stdout.write(JSON.stringify({
     package: source.packageJSON.name,
     binding: source.bindingInfo,
-    selfTest: source.selfTest,
     tarball: {
       filename: packResult.filename,
       size: packResult.size,
@@ -185,8 +188,7 @@ try {
     },
     installed: {
       version: installed.packageJSON.version,
-      binding: installed.bindingInfo,
-      selfTest: installed.selfTest
+      binding: installed.bindingInfo
     }
   }) + '\n')
 } finally {

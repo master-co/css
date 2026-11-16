@@ -16,7 +16,7 @@ const readJSON = async file => JSON.parse(await readFile(file, 'utf8'))
 export function cleanEnvironment(environment, cache) {
   const result = { ...environment }
   for (const key of Object.keys(result)) {
-    if (/^(?:MASTER_CSS_NATIVE_BINDING_PATH|MASTER_CSS_NATIVE_CLI_PATH|NODE_PATH|NODE_OPTIONS|NPM_CONFIG_.*)$/i.test(key)) delete result[key]
+    if (/^(?:MASTER_CSS_NATIVE_BINDING_PATH|NODE_PATH|NODE_OPTIONS|NPM_CONFIG_.*)$/i.test(key)) delete result[key]
   }
   return { ...result, NPM_CONFIG_CACHE: cache, NPM_CONFIG_USERCONFIG: join(cache, 'empty.npmrc'), NPM_CONFIG_GLOBALCONFIG: join(cache, 'empty-global.npmrc') }
 }
@@ -79,7 +79,6 @@ async function runNPM(args, cwd, env) {
 // Run in a fresh process outside the checkout, importing only installed files.
 const consumerSource = String.raw`
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
 import { readFileSync, realpathSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -110,22 +109,13 @@ assert.equal(loaded.info.surface, 'native')
 const packageJSON = JSON.parse(readFileSync(join(targetRoot, 'package.json'), 'utf8'))
 assert.equal(packageJSON.version, expected.version)
 assert.equal(packageJSON.bin, undefined)
-const executable = process.platform === 'win32' ? 'mcss.exe' : 'mcss'
-assert.ok(packageJSON.files.includes(executable))
-const cli = join(targetRoot, executable)
-const selfTest = JSON.parse(execFileSync(cli, ['--self-test'], { encoding: 'utf8' }))
-assert.equal(loaded.info.target, selfTest.binary.target)
-assert.equal(loaded.info.packageVersion, selfTest.binary.packageVersion)
-assert.equal(loaded.info.bindingAbiVersion, selfTest.binary.bindingAbiVersion)
-assert.equal(selfTest.binary.surface, 'cli')
-assert.equal(selfTest.css, '@layer utilities{.block{display:block}}')
+assert.deepEqual(packageJSON.files, ['mastercss.node'])
 const engine = await createEngine({ manifest, binding: 'native' })
 try {
   assert.deepEqual(engine.inspect('bg-red-60').rules.map(rule => rule.text), ['.bg-red-60{background-color:var(--color-red-60)}'])
 } finally { engine.dispose() }
-console.log(JSON.stringify({ targetPackage: target, detected, nativeTarget: loaded.info.target, addon: loaded.source, cli,
-  binding: loaded.info, selfTest, publicEngine: 'native bg-red-60 output passed',
-  cliCoverage: 'Executable declared by the matching installed target package; unpublished CLI resolver is not invoked' }))
+console.log(JSON.stringify({ targetPackage: target, detected, nativeTarget: loaded.info.target, addon: loaded.source,
+  binding: loaded.info, publicEngine: 'native bg-red-60 output passed' }))
 `
 
 export async function consumeClosure({ closure, target, proof }) {

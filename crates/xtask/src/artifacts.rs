@@ -85,8 +85,6 @@ pub(crate) fn build_native(release: bool) -> Result<(), String> {
         "build",
         "--package",
         "mastercss-binding-native",
-        "--package",
-        "mastercss-cli",
         "--profile",
         profile,
     ]);
@@ -110,16 +108,7 @@ pub(crate) fn build_native(release: bool) -> Result<(), String> {
         .map_err(|error| format!("Cannot create {}: {error}", output_dir.display()))?;
     let output = output_dir.join("mastercss.node");
     copy_fresh(&source, &output)?;
-    let executable_name = if cfg!(target_os = "windows") {
-        "mcss.exe"
-    } else {
-        "mcss"
-    };
-    let executable_source = root.join(format!("target/{profile}/{executable_name}"));
-    let executable_output = output_dir.join(executable_name);
-    copy_fresh(&executable_source, &executable_output)?;
     println!("Built {}", output.display());
-    println!("Built {}", executable_output.display());
     Ok(())
 }
 
@@ -130,18 +119,9 @@ pub(crate) fn stage_native_target(package: &str, release: bool) -> Result<(), St
     build_native(release)?;
     let root = workspace_root();
     let artifact_dir = root.join("packages/binding/artifacts");
-    let package_dir = root.join("packages").join(package);
-    let executable_name = if package.contains("win32") {
-        "mcss.exe"
-    } else {
-        "mcss"
-    };
-    for file in ["mastercss.node", executable_name] {
-        let source = artifact_dir.join(file);
-        let output = package_dir.join(file);
-        copy_fresh(&source, &output)?;
-        println!("Staged {}", output.display());
-    }
+    let output = root.join("packages").join(package).join("mastercss.node");
+    copy_fresh(&artifact_dir.join("mastercss.node"), &output)?;
+    println!("Staged {}", output.display());
     Ok(())
 }
 
@@ -193,22 +173,6 @@ pub(crate) fn native_artifact_directory(
     .ok_or_else(|| format!("Missing native artifact package: {package}"))
 }
 
-#[cfg(unix)]
-pub(crate) fn make_executable(path: &Path) -> Result<(), String> {
-    use std::os::unix::fs::PermissionsExt;
-    let mut permissions = fs::metadata(path)
-        .map_err(|error| format!("Cannot inspect {}: {error}", path.display()))?
-        .permissions();
-    permissions.set_mode(0o755);
-    fs::set_permissions(path, permissions)
-        .map_err(|error| format!("Cannot mark {} executable: {error}", path.display()))
-}
-
-#[cfg(not(unix))]
-pub(crate) fn make_executable(_path: &Path) -> Result<(), String> {
-    Ok(())
-}
-
 pub(crate) fn assemble_native_release(
     artifacts_root: &Path,
     output: &Path,
@@ -252,52 +216,27 @@ pub(crate) fn assemble_native_release_at(
         }
         if package_json.extra.contains_key("bin") {
             return Err(format!(
-                "Native package {expected_name} must keep the mcss executable loader-private."
+                "Native package {expected_name} must not declare a package binary."
             ));
         }
-        let executable_name = if package.contains("win32") {
-            "mcss.exe"
-        } else {
-            "mcss"
-        };
-        if !package_json
-            .files
-            .iter()
-            .any(|file| file == "mastercss.node")
-            || !package_json
-                .files
-                .iter()
-                .any(|file| file == executable_name)
-        {
+        if package_json.files != ["mastercss.node"] {
             return Err(format!(
-                "Native package {expected_name} does not publish both required artifacts."
+                "Native package {expected_name} must publish only mastercss.node."
             ));
         }
         let addon_path = artifact_dir.join("mastercss.node");
-        let executable_path = artifact_dir.join(executable_name);
         packages.push(NativeArtifactPackage {
             package_name: expected_name,
             target: package.trim_start_matches("binding-").to_owned(),
             addon: artifact_checksum(&addon_path, format!("packages/{package}/mastercss.node"))?,
-            executable: artifact_checksum(
-                &executable_path,
-                format!("packages/{package}/{executable_name}"),
-            )?,
         });
 
-        let target = root.join("packages").join(package);
-        let staged_addon = target.join("mastercss.node");
-        let staged_executable = target.join(executable_name);
+        let staged_addon = root.join("packages").join(package).join("mastercss.node");
         if stage {
             copy_fresh(&addon_path, &staged_addon)?;
-            copy_fresh(&executable_path, &staged_executable)?;
-            make_executable(&staged_executable)?;
         }
         if verify_staged {
-            for (source, staged, relative) in [
-                (&addon_path, &staged_addon, "mastercss.node"),
-                (&executable_path, &staged_executable, executable_name),
-            ] {
+            for (source, staged, relative) in [(&addon_path, &staged_addon, "mastercss.node")] {
                 if !staged.is_file() || !files_equal(source, staged)? {
                     return Err(format!(
                         "Staged native artifact differs from release input: packages/{package}/{relative}"

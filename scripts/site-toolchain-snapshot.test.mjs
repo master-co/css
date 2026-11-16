@@ -81,7 +81,7 @@ test('real packed snapshot installs exact manifests and only declared artifacts;
 test('missing native artifacts fail before publication', async () => {
   const root = await mkdtemp(join(tmpdir(), 'master-site-native-'))
   try {
-    await assert.rejects(stageSnapshot([{ directory: root, manifest: { name: 'native', files: ['mastercss.node', 'mcss'], exports: { '.': './mastercss.node' } } }], join(root, 'stage'), snapshotVersion(revision, '1'), revision), /Missing built export/)
+    await assert.rejects(stageSnapshot([{ directory: root, manifest: { name: 'native', files: ['mastercss.node'], exports: { '.': './mastercss.node' } } }], join(root, 'stage'), snapshotVersion(revision, '1'), revision), /Missing built export/)
   } finally { await rm(root, { recursive: true, force: true }) }
 })
 

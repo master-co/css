@@ -272,9 +272,7 @@ test('real release preparation excludes checkout artifacts from the generic bind
     await mkdir(join(cwd, 'dist'))
     await mkdir(join(cwd, 'artifacts'))
     await writeFile(join(cwd, 'dist/index.js'), 'export {}\n')
-    for (const file of ['mastercss.node', 'mcss', 'mcss.exe']) {
-      await writeFile(join(cwd, 'artifacts', file), 'wrong-platform-development-binary')
-    }
+    await writeFile(join(cwd, 'artifacts/mastercss.node'), 'wrong-platform-development-binary')
     const manifest = { name: sourceManifest.name, version: '0.0.0', files: sourceManifest.files }
     await writeFile(join(cwd, 'package.json'), JSON.stringify(manifest))
     const config = { pkgRoot: '.', workspaceRoots: ['.'] }
@@ -297,19 +295,17 @@ test('real release preparation excludes checkout artifacts from the generic bind
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })
 
-test('platform target archives retain their native addon and executable', async () => {
+test('platform target archives retain their native addon', async () => {
   const cwd = await mkdtemp(join(tmpdir(), 'master-binding-target-release-'))
   const plugin = createWorkspaceRelease({ run: (command, args, options) => {
     assert.equal(command, 'bun', 'this check must never publish')
     return execa(command, args, options)
   } })
   try {
-    await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@master/css-binding-linux-x64-gnu', files: ['mastercss.node', 'mcss'] }))
+    await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: '@master/css-binding-linux-x64-gnu', files: ['mastercss.node'] }))
     await writeFile(join(cwd, 'mastercss.node'), 'target-addon')
-    await writeFile(join(cwd, 'mcss'), 'target-executable')
     await plugin.prepare({ pkgRoot: '.', workspaceRoots: ['.'] }, { cwd, env: process.env, nextRelease: { version: '3.2.1', gitHead: revision } })
     const files = (await execa('tar', ['-tzf', join(cwd, 'release-artifacts/packages/master-css-binding-linux-x64-gnu-3.2.1.tgz')])).stdout
     assert.ok(files.includes('package/mastercss.node'))
-    assert.ok(files.includes('package/mcss'))
   } finally { await plugin.fail(); await rm(cwd, { recursive: true, force: true }) }
 })

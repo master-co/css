@@ -13,7 +13,7 @@ import { extractVSIX } from './extract-vsix.mjs'
 export function verificationEnvironment(original) {
   // Explicit undefined also removes inherited values in test-electron's env merge.
   return Object.fromEntries(Object.entries(original).map(([key, value]) => [key,
-    /^(?:NODE_PATH|NODE_OPTIONS|ELECTRON_RUN_AS_NODE|MASTER_CSS_NATIVE_(?:BINDING|CLI)_PATH|VSCE_PAT|OVSX_PAT)$/i.test(key) ? undefined : value]))
+    /^(?:NODE_PATH|NODE_OPTIONS|ELECTRON_RUN_AS_NODE|MASTER_CSS_NATIVE_BINDING_PATH|VSCE_PAT|OVSX_PAT)$/i.test(key) ? undefined : value]))
 }
 
 export async function verifyVSIX({ vsix, target, publisher, proof, testElectronModule, executable, vscodeVersion = '1.123.0' }) {
@@ -44,12 +44,6 @@ export async function verifyVSIX({ vsix, target, publisher, proof, testElectronM
     const abi = target.startsWith('darwin-') ? 'apple-darwin' : target.startsWith('win32-') ? 'pc-windows-msvc'
       : target.startsWith('alpine-') ? 'unknown-linux-musl' : 'unknown-linux-gnu'
     assert.equal(binding.target, `${architecture}-${abi}`)
-    const cli = join(nativeRoot, target.startsWith('win32-') ? 'mcss.exe' : 'mcss')
-    const selfTest = JSON.parse(execFileSync(cli, ['--self-test'], { cwd: root, env, encoding: 'utf8', timeout: 30_000 }))
-    assert.equal(selfTest.binary.target, binding.target)
-    assert.equal(selfTest.binary.bindingAbiVersion, binding.bindingAbiVersion)
-    assert.equal(selfTest.binary.packageVersion, binding.packageVersion)
-    assert.equal(selfTest.css, '@layer utilities{.block{display:block}}')
     const lsp = await verifyLanguageServer(join(root, 'dist/server.min.js'), temporary, env)
     const extensionHost = testElectronModule ? await verifyExtensionHost({ vsix, manifest, temporary, env,
       testElectronModule, executable, vscodeVersion }) : null

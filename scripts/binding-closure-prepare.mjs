@@ -47,9 +47,7 @@ export async function prepareClosure({ root, output, version = '0.0.0-closure.0'
     }
     const bindingRoot = join(stage, 'packages/master-css-binding')
     await mkdir(join(bindingRoot, 'artifacts'), { recursive: true })
-    for (const name of ['mastercss.node', 'mcss', 'mcss.exe']) {
-      await writeFile(join(bindingRoot, 'artifacts', name), `POISON build-host artifact: ${name}\n`)
-    }
+    await writeFile(join(bindingRoot, 'artifacts', 'mastercss.node'), 'POISON build-host artifact: mastercss.node\n')
     const context = { cwd: stage, env: process.env, nextRelease: { version, gitHead: revision } }
     const packages = []
     for (const entry of entries) {

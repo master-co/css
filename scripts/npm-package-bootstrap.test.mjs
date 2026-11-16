@@ -246,14 +246,13 @@ import json,sys,zipfile
 file,defect=sys.argv[1:]
 with zipfile.ZipFile(file,'w') as z:
  z.writestr('package.json',json.dumps({'name':'@master/css-binding-'+('wrong' if defect=='target' else 'linux-x64-gnu')}))
- z.writestr('mcss','binary')
  entry=zipfile.ZipInfo('mastercss.node')
  if defect=='symlink':entry.external_attr=0o120777<<16
  z.writestr(entry,'addon')
  if defect in ('traversal','extra'):z.writestr('../escape' if defect=='traversal' else 'unexpected','bad')
 `, zip, defect])
       const operation = () => execa('python3', ['-c', extractNativePython, zip, dest, 'linux-x64-gnu'])
-      if (defect === 'none') { await operation(); assert.equal((await readdir(dest)).length, 3) }
+      if (defect === 'none') { await operation(); assert.equal((await readdir(dest)).length, 2) }
       else { await assert.rejects(operation()); await assert.rejects(stat(dest), { code: 'ENOENT' }) }
     }
   } finally { await rm(root, { recursive: true, force: true }) }
@@ -271,7 +270,6 @@ for target in json.loads(sys.argv[2]):
  with zipfile.ZipFile(root/(target+'.zip'),'w') as z:
   z.writestr('package.json',json.dumps({'name':'@master/css-binding-'+target}))
   z.writestr('mastercss.node','addon')
-  z.writestr('mcss.exe' if target.startswith('win32-') else 'mcss','executable')
 `, downloads, JSON.stringify(targets)])
       for (const artifact of f.plan.evidence.nativeArtifacts) {
         const target = artifact.name.slice('mastercss-binding-'.length), bytes = await readFile(join(downloads, target + '.zip'))

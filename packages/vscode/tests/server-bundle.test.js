@@ -189,9 +189,7 @@ function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
 function expectCurrentNativeArtifacts(stagingDir, target) {
   const packageName = getRuntimePackagesForTarget(target)[0]
   const packagePath = join(stagingDir, 'dist', 'node_modules', ...packageName.split('/'))
-  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
   expect(statSync(join(packagePath, 'mastercss.node')).isFile()).toBe(true)
-  expect(statSync(join(packagePath, executableName)).isFile()).toBe(true)
 }
 
 test('build emits the server bundle', () => {

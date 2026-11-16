@@ -1,17 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { resolve } from 'node:path'
+import { assertMasterCSSBindingInfo } from '../src'
 import {
-  assertMasterCSSBindingInfo,
-  MASTER_CSS_BINDING_ABI_VERSION,
-  MASTER_CSS_HYDRATION_MANIFEST_VERSION
-} from '../src'
-import {
-  assertNativeCLIInfo,
-  getNativeCLIExecutableName,
-  NativeBindingError,
   nativeAddonsDisabled,
   loadNativeBinding,
-  resolveNativeCLIPath,
   resolveNativeTarget
 } from '../src/native-loader'
 import { createNativeEngineSession } from '../src/engine-browser'
@@ -48,22 +39,6 @@ describe('native target resolution', () => {
     }))
   })
 
-  it('uses platform-specific native executable names', () => {
-    expect(getNativeCLIExecutableName('darwin')).toBe('mcss')
-    expect(getNativeCLIExecutableName('linux')).toBe('mcss')
-    expect(getNativeCLIExecutableName('win32')).toBe('mcss.exe')
-  })
-
-  it('validates native executable ABI metadata', () => {
-    const executable = resolve(__dirname, '../artifacts/mcss')
-    expect(assertNativeCLIInfo(executable)).toMatchObject({
-      bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
-      packageVersion: '0.0.0',
-      manifestVersion: 6,
-      hydrationManifestVersion: MASTER_CSS_HYDRATION_MANIFEST_VERSION
-    })
-  })
-
   it('reuses the loaded native binding for the same resolved artifact', () => {
     const first = loadNativeBinding({ required: true })
     const second = loadNativeBinding({ required: true })
@@ -80,11 +55,6 @@ describe('native target resolution', () => {
       surface: 'native',
       features: ['engine']
     })).toThrow('contract mismatch')
-  })
-
-  it('rejects a configured missing executable without falling back', () => {
-    expect(() => resolveNativeCLIPath({ executablePath: '/missing/master-css/mcss' }))
-      .toThrowError(expect.objectContaining<Partial<NativeBindingError>>({ code: 'NATIVE_LOAD_FAILED' }))
   })
 
   it('rejects unsupported lint request versions with a structured error', () => {

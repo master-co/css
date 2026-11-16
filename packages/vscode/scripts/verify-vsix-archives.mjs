@@ -48,8 +48,8 @@ export async function verifyArchives({ marketplaceDir, openVSXDir, proof }) {
         const sources = [
           ['dist/extension.min.js', join(packageDir, 'dist/extension.min.js')],
           ['dist/server.min.js', join(packageDir, 'dist/server.min.js')],
-          ...['mastercss.node', target.startsWith('win32-') ? 'mcss.exe' : 'mcss'].map(name =>
-            [`dist/node_modules/@master/${nativePackage}/${name}`, join(packageDir, '..', nativePackage.replace(/^css-/, ''), name)])
+          [`dist/node_modules/@master/${nativePackage}/mastercss.node`,
+            join(packageDir, '..', nativePackage.replace(/^css-/, ''), 'mastercss.node')]
         ]
         for (const [relative, sourceFile] of sources) {
           const expected = sha256(await readFile(sourceFile))

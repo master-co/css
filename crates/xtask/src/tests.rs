@@ -49,13 +49,7 @@ fn assembles_all_native_packages_and_writes_stable_checksums() {
         let directory = root.join(format!("mastercss-{package}"));
         fs::create_dir_all(&directory).unwrap();
         fs::create_dir_all(root.join("packages").join(package)).unwrap();
-        let executable = if package.contains("win32") {
-            "mcss.exe"
-        } else {
-            "mcss"
-        };
         fs::write(directory.join("mastercss.node"), format!("addon:{package}")).unwrap();
-        fs::write(directory.join(executable), format!("cli:{package}")).unwrap();
         fs::write(
             directory.join("package.json"),
             fs::read(
@@ -102,6 +96,19 @@ fn assembles_all_native_packages_and_writes_stable_checksums() {
     let package_path = root.join("mastercss-binding-darwin-arm64/package.json");
     let mut package: serde_json::Value =
         serde_json::from_str(&fs::read_to_string(&package_path).unwrap()).unwrap();
+    for files in [
+        serde_json::json!(["mastercss.node", "mcss"]),
+        serde_json::json!(["mcss"]),
+        serde_json::json!([]),
+    ] {
+        let mut extra = package.clone();
+        extra["files"] = files;
+        fs::write(&package_path, extra.to_string()).unwrap();
+        assert_eq!(
+            assemble_native_release_at(&root, &root, &output, false, false, false).unwrap_err(),
+            "Native package @master/css-binding-darwin-arm64 must publish only mastercss.node."
+        );
+    }
     for bin in [
         serde_json::json!({ "mcss": "./mcss" }),
         serde_json::json!("./mcss"),
@@ -112,7 +119,7 @@ fn assembles_all_native_packages_and_writes_stable_checksums() {
         fs::write(&package_path, package.to_string()).unwrap();
         assert_eq!(
             assemble_native_release_at(&root, &root, &output, false, false, false).unwrap_err(),
-            "Native package @master/css-binding-darwin-arm64 must keep the mcss executable loader-private."
+            "Native package @master/css-binding-darwin-arm64 must not declare a package binary."
         );
     }
     fs::remove_dir_all(root).unwrap();

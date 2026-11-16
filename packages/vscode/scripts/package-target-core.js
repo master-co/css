@@ -172,16 +172,13 @@ async function copyPath(source, destination) {
 async function copyDevelopmentNativeArtifacts(destinationDir, packageName, target) {
   if (target !== getCurrentTarget() || packageName !== getTargetBindingPackage(target)) return
   const nativePackageDir = resolvePackageDir('@master/css-binding', packageRequire)
-  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
-  for (const file of ['mastercss.node', executableName]) {
-    const destination = join(destinationDir, file)
-    if (existsSync(destination)) continue
-    const source = join(nativePackageDir, 'artifacts', file)
-    if (!existsSync(source)) {
-      throw new Error(`Missing local native artifact ${source}. Run cargo xtask build-native.`)
-    }
-    await cp(source, destination, { force: true })
+  const destination = join(destinationDir, 'mastercss.node')
+  if (existsSync(destination)) return
+  const source = join(nativePackageDir, 'artifacts', 'mastercss.node')
+  if (!existsSync(source)) {
+    throw new Error(`Missing local native artifact ${source}. Run cargo xtask build-native.`)
   }
+  await cp(source, destination, { force: true })
 }
 
 async function copyRuntimePackage(stagingDir, packageName, target) {

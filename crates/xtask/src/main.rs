@@ -136,7 +136,6 @@ struct NativeArtifactPackage {
     package_name: String,
     target: String,
     addon: ArtifactChecksum,
-    executable: ArtifactChecksum,
 }
 
 #[derive(Serialize)]

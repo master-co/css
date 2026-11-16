@@ -35,7 +35,7 @@ export function validatePackedArchive(archive, expectedName, version, gitHead) {
   if (gitHead !== undefined) assert.equal(manifest.gitHead, gitHead, `Incorrect packed Git HEAD for ${expectedName}@${version}`)
   if (expectedName !== '@master/css-binding') return
   for (const { name } of packedEntries(archive)) {
-    if (/^package\/artifacts(?:\/|$)|\.node$|(?:^|\/)mcss(?:\.exe)?$/.test(name)) {
+    if (/^package\/artifacts(?:\/|$)|\.node$/.test(name)) {
       throw new Error(`Generic @master/css-binding tarball contains native artifact ${name}; native binaries belong in target packages`)
     }
   }

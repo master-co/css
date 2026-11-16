@@ -12,6 +12,6 @@
   "exports": { ".": "./mastercss.node" },
   "os": ["darwin"],
   "cpu": ["arm64"],
-  "files": ["mastercss.node", "mcss"],
+  "files": ["mastercss.node"],
   "publishConfig": { "access": "public", "provenance": true }
 }

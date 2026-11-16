@@ -12,6 +12,6 @@
   "exports": { ".": "./mastercss.node" },
   "os": ["win32"],
   "cpu": ["x64"],
-  "files": ["mastercss.node", "mcss.exe"],
+  "files": ["mastercss.node"],
   "publishConfig": { "access": "public", "provenance": true }
 }

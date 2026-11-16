@@ -40,7 +40,7 @@ own loading, filesystem, browser, editor, and platform adaptation.
 | `mastercss-binding-wasm-engine` | Engine Wasm ABI with manifest compilation, render sessions and inspection, for Node without a native binding and other non-browser hosts. Browsers run `packages/engine-js` instead; the differential runs against this Wasm | `packages/binding-wasm-engine`, `packages/engine-js`, `packages/css` |
 | `mastercss-binding-wasm-compiler` | Compiler Wasm ABI | `packages/binding-wasm-compiler`, `packages/compiler` |
 | `mastercss-binding-wasm-tooling` | Tooling Wasm ABI | `packages/binding-wasm-tooling`, `packages/tooling` |
-| `mastercss-cli` | Native CLI transport over project/scanner/engine | `packages/cli` |
+| `mastercss-cli` | Unpublished native CLI over project/scanner/engine; no npm package ships it | its own `tests/` |
 | `xtask` | Artifact builds, codegen, parity, and release staging | generated target plus `parity/**` evidence |
 
 For engine/compiler domain modules, use the corresponding crate-local `AI.md`; the tables above identify the owner without duplicating its module map.

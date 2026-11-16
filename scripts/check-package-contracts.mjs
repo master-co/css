@@ -174,7 +174,6 @@ function validateBindingTargetPackage(manifest) {
   const match = /^@master\/css-binding-(darwin|linux|win32)-(arm64|x64)(?:-(gnu|musl|msvc))?$/.exec(manifest.name)
   assert.ok(match, `${manifest.name} has an invalid native target package name.`)
   const [, platform, architecture, abi] = match
-  const executable = platform === 'win32' ? 'mcss.exe' : 'mcss'
 
   assert.deepEqual(
     manifest.exports,
@@ -184,12 +183,12 @@ function validateBindingTargetPackage(manifest) {
   assert.equal(
     manifest.bin,
     undefined,
-    `${manifest.name} must keep ${executable} loader-private instead of publishing a package binary.`
+    `${manifest.name} must not publish a package binary.`
   )
   assert.deepEqual(
     manifest.files,
-    ['mastercss.node', executable],
-    `${manifest.name} must publish exactly its native addon and loader-private executable.`
+    ['mastercss.node'],
+    `${manifest.name} must publish exactly its native addon.`
   )
   assert.deepEqual(manifest.os, [platform], `${manifest.name} has an invalid os contract.`)
   assert.deepEqual(manifest.cpu, [architecture], `${manifest.name} has an invalid cpu contract.`)

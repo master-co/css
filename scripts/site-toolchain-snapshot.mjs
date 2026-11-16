@@ -97,7 +97,7 @@ export async function stageSnapshot(entries, stage, version, revision) {
         throw new Error(`Missing built export ${manifest.name}: ${target}`)
       }
     }
-    for (const file of manifest.files.filter(file => /^(?:mastercss\.node|mcss(?:\.exe)?)$/.test(file))) {
+    for (const file of manifest.files.filter(file => file === 'mastercss.node')) {
       if (!existsSync(join(destination, file))) throw new Error(`Missing native artifact ${manifest.name}: ${file}`)
     }
     await writeFile(join(destination, 'package.json'), JSON.stringify(snapshotManifest(manifest, names, version, revision), null, 2) + '\n')

@@ -33,7 +33,7 @@ test('Windows extraction bypasses Git Bash tar and preserves drive-qualified pat
 test('verification clears host resolution overrides and publishing credentials even when a launcher merges its environment', () => {
   const original = { PATH: '/bin', NODE_PATH: '/checkout/node_modules', NODE_OPTIONS: '--import /checkout/shim.mjs',
     ELECTRON_RUN_AS_NODE: '1', MASTER_CSS_NATIVE_BINDING_PATH: '/checkout/mastercss.node',
-    MASTER_CSS_NATIVE_CLI_PATH: '/checkout/mcss', VSCE_PAT: 'private-test-token', OVSX_PAT: 'private-test-token' }
+    VSCE_PAT: 'private-test-token', OVSX_PAT: 'private-test-token' }
   const child = { ...original, ...verificationEnvironment(original) }
   expect(child.PATH).toBe('/bin')
   for (const key of Object.keys(original).filter(key => key !== 'PATH')) expect(child[key]).toBeUndefined()

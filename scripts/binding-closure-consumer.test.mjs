@@ -10,7 +10,7 @@ import { packedManifest, validatePackedArchive } from './release-workspace.mjs'
 
 test('consumer removes native and npm environment overrides', () => {
   const env = cleanEnvironment({ PATH: '/bin', MASTER_CSS_NATIVE_BINDING_PATH: '/checkout/addon',
-    MASTER_CSS_NATIVE_CLI_PATH: '/checkout/cli', NODE_PATH: '/checkout/node_modules',
+    NODE_PATH: '/checkout/node_modules',
     NODE_OPTIONS: '--require /checkout/shim.js', npm_config_registry: 'https://wrong.example',
     NPM_CONFIG_CACHE: '/warm-cache', NPM_CONFIG_PREFIX: '/checkout' }, '/fresh-cache')
   assert.deepEqual(env, { PATH: '/bin', NPM_CONFIG_CACHE: '/fresh-cache',

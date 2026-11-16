@@ -168,7 +168,7 @@ export async function planBootstrap(request, { github = githubReader(), fetchMet
 export const extractNativePython = String.raw`
 import json,os,pathlib,stat,sys,zipfile
 source,destination,target=sys.argv[1:]
-allowed={'package.json','mastercss.node','mcss.exe' if target.startswith('win32-') else 'mcss'}
+allowed={'package.json','mastercss.node'}
 with zipfile.ZipFile(source) as z:
     names=set()
     total=0

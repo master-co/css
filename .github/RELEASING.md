@@ -15,7 +15,7 @@ substitute workspace links or an older audit tarball for the candidate.
 
 The current cohort has 34 public workspace packages. Discover it from manifests;
 do not maintain a second hand-written package list. The eight-target verification
-workflow proves the assembled local candidate closure and native executables. It
+workflow proves the assembled local candidate closure and native addons. It
 does not prove that those packages exist on npm, that registry-only resolution
 works, or that every other public package has been packed successfully.
 

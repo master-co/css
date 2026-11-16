@@ -13,6 +13,6 @@
   "os": ["linux"],
   "cpu": ["x64"],
   "libc": ["glibc"],
-  "files": ["mastercss.node", "mcss"],
+  "files": ["mastercss.node"],
   "publishConfig": { "access": "public", "provenance": true }
 }

@@ -2,7 +2,6 @@ import { existsSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, parse, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { spawnSync } from 'node:child_process'
 import {
   MASTER_CSS_BINDING_ABI_VERSION,
   MASTER_CSS_HYDRATION_MANIFEST_VERSION,
@@ -231,10 +230,6 @@ export function nativeAddonsDisabled(execArgv: readonly string[] = process.execA
   return execArgv.includes('--no-addons')
 }
 
-export function getNativeCLIExecutableName(platform: NodeJS.Platform = process.platform) {
-  return platform === 'win32' ? 'mcss.exe' : 'mcss'
-}
-
 function runtimeResolutionBases() {
   const bases = [import.meta.url]
   if (process.argv[1]) bases.push(pathToFileURL(resolve(process.argv[1])).href)
@@ -299,81 +294,6 @@ function loadNativeAddon(source: string): NativeBinding {
   const nativeModule = { exports: {} } as NodeModule
   process.dlopen(nativeModule, source)
   return nativeModule.exports as NativeBinding
-}
-
-export function resolveNativeCLIPath(options: { required?: boolean, executablePath?: string } = {}) {
-  if (nativeAddonsDisabled()) {
-    if (!options.required) return
-    throw new NativeBindingError('NATIVE_UNAVAILABLE', 'Native executables are disabled by --no-addons.')
-  }
-
-  const executableName = getNativeCLIExecutableName()
-  const configuredPath = options.executablePath || process.env.MASTER_CSS_NATIVE_CLI_PATH
-  if (configuredPath) {
-    if (!existsSync(configuredPath)) {
-      throw new NativeBindingError(
-        'NATIVE_LOAD_FAILED',
-        `Cannot load the configured Master CSS native executable: ${configuredPath}`
-      )
-    }
-    return configuredPath
-  }
-  const packagePath = resolvePackageArtifact(executableName)
-  if (packagePath) return packagePath
-
-  const target = resolveNativeTarget()
-  const executablePath = (target && resolveTargetArtifact(target.packageName, executableName))
-    || resolveWorkspaceArtifact(executableName)
-  if (executablePath) return executablePath
-  if (!target) {
-    if (!options.required) return
-    throw new NativeBindingError(
-      'NATIVE_UNAVAILABLE',
-      `Master CSS has no native executable for ${process.platform}-${process.arch}.`
-    )
-  }
-  throw new NativeBindingError(
-    'NATIVE_LOAD_FAILED',
-    `Cannot resolve the expected Master CSS native executable: ${target.packageName}`,
-    { cause: new Error(`Missing ${executableName}`) }
-  )
-}
-
-export function assertNativeCLIInfo(executablePath: string): NativeBindingInfo {
-  const result = spawnSync(executablePath, ['--binding-info'], {
-    encoding: 'utf8',
-    windowsHide: true
-  })
-  if (result.error || result.status !== 0) {
-    throw new NativeBindingError(
-      'NATIVE_LOAD_FAILED',
-      `Cannot execute the expected Master CSS native executable: ${executablePath}`,
-      { cause: result.error }
-    )
-  }
-  let info: NativeBindingInfo
-  try {
-    info = JSON.parse(result.stdout) as NativeBindingInfo
-  } catch (cause) {
-    throw new NativeBindingError(
-      'NATIVE_LOAD_FAILED',
-      `Master CSS native executable returned invalid metadata: ${executablePath}`,
-      { cause }
-    )
-  }
-  try {
-    return assertMasterCSSBindingInfo(info, {
-      surface: 'cli',
-      features: ['cli', 'engine', 'project', 'scanner', 'source'],
-      packageVersion: MASTER_CSS_PACKAGE_VERSION
-    })
-  } catch (cause) {
-    throw new NativeBindingError(
-      'NATIVE_LOAD_FAILED',
-      `Master CSS native executable ABI mismatch: ${executablePath}`,
-      { cause }
-    )
-  }
 }
 
 function assertBindingInfo(binding: NativeBinding, source: string): NativeBindingInfo {

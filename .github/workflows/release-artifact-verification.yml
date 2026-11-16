@@ -206,7 +206,6 @@ jobs:
             assert.equal(proof.detected.packageName, targetPackage)
             assert.equal(proof.poisonArtifactsExcluded, true)
             assert.equal(proof.binding.target, proof.nativeTarget)
-            assert.equal(proof.selfTest.binary.target, proof.nativeTarget)
             assert.ok(proof.installed.includes(targetPackage))
             assert.equal(proof.publicEngine, 'native bg-red-60 output passed')
             version ??= proof.version

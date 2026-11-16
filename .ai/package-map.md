@@ -16,7 +16,7 @@
 | `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v6 |
 | `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation; browser engine sessions run the bundled JavaScript engine |
 | `@master/css-engine-js` (private) | bundled into `@master/css-binding` | The browser engine: executes compiled runtime programs, byte-identical to the Rust engine by its differential gate |
-| `@master/css-binding-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is loader-internal and is not a package binary |
+| `@master/css-binding-<target>` | `.` | Platform-specific native addon (`mastercss.node`) only; no executable or package binary |
 | `@master/css-binding-wasm-engine` | `.`, `./wasm` | Engine Wasm artifact loader for Node and non-browser hosts |
 | `@master/css-binding-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
 | `@master/css-binding-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
@@ -38,7 +38,7 @@ than loading every crate:
 | `mastercss-source`, `mastercss-scanner`, `mastercss-validator`, `mastercss-css-grammar`, `mastercss-lint`, `mastercss-language` | Developer-tooling semantics |
 | `mastercss-render`, `mastercss-diagnostics` | Server render and diagnostic IR |
 | `mastercss-binding-native`, `mastercss-binding-wasm-*` | ABI adaptation and artifact delivery only |
-| `mastercss-cli`, `xtask` | Native CLI transport and repository build/codegen/parity orchestration |
+| `mastercss-cli`, `xtask` | Unpublished native CLI and repository build/codegen/parity orchestration |
 
 ## Runtime, Tooling Consumers, And Adapters
 
@@ -56,7 +56,7 @@ than loading every crate:
 | `@master/css-astro` | `.`, `./middleware` | Astro integration |
 | `@master/css-nuxt` | `.` | Nuxt module |
 | `@master/css-svelte` | `./vite`, `./hooks.server` | Svelte and SvelteKit integration |
-| `@master/css-cli` | `master-css` binary only | CLI frontend and native executable dispatch |
+| `@master/css-cli` | `master-css` binary only | CLI frontend over the native or Wasm binding |
 | `@master/create-css` | `.`, `create-css` binary | Project setup and dependency transforms |
 | `@master/css-mcp` | `.` | Model Context Protocol server factories |
 | `@master/css-svelte-addon` | `.` | Svelte CLI add-on |
