@@ -1,6 +1,6 @@
 import { withStylesheetDependencies } from '../utils/failed-stylesheet-dependencies'
 import { withSassDiagnostics } from '../utils/sass-diagnostics'
-import type { Plugin, ViteDevServer } from 'vite'
+import type { Plugin } from 'vite'
 import {
   discoverManifestEntries,
   loadProjectManifest
@@ -25,8 +25,7 @@ import { getDevStylesheetDelivery, publishDevGlobalStylesheet, publishDevStylesh
 import { getBuildStylesheetDelivery } from '../utils/build-stylesheet-delivery'
 import { inlineDelivery, isInlineStylesheet, registerLocalInlineStylesheet } from '../utils/inline-stylesheet'
 import { clearLocalStylesheets, registerLocalStylesheet } from '../utils/local-stylesheet'
-import { clearSharedGlobals, registerSharedGlobals, setStyleEntryMissing, sharesGlobalsWithStyleEntry } from '../utils/shared-globals'
-import { refreshGeneratedModule } from '../utils/dev-module-refresh'
+import { clearSharedGlobals, mayShareGlobals, registerSharedGlobals } from '../utils/shared-globals'
 import { clearDuplicatedImports, reportDuplicatedImports } from '../utils/duplicated-imports'
 
 function declaresManifestEntry(file: string) {
@@ -37,9 +36,6 @@ function declaresManifestEntry(file: string) {
   }
 }
 
-/** How long a development server may stay idle before a style entry is considered absent. */
-const STYLE_ENTRY_GRACE = 1000
-
 interface StylesheetDependencyHost { addWatchFile?: (id: string) => void }
 
 export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
@@ -49,8 +45,6 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
   let manifestGeneration = 0
   let loadingManifest: { generation: number, dependencies: Set<string>, hosts: Set<StylesheetDependencyHost>, promise: Promise<Awaited<ReturnType<typeof loadProjectManifest>>> } | undefined
   const localStyleModules = new Set<string>()
-  let expectStyleEntry: (() => void) | undefined
-  let lastLocalStyle = 0
 
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
@@ -112,26 +106,6 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
   return {
     name: 'master-css:local-styles',
     enforce: 'pre',
-    configureServer(server: ViteDevServer) {
-      const refresh = () => {
-        for (const id of localStyleModules) void refreshGeneratedModule(server, id).catch(error => server.config.logger.error(String(error)))
-      }
-      // Local stylesheets expect a style entry to emit their project globals.
-      // One that is still loading keeps its environment busy; once every
-      // environment has settled without any, they take their globals back.
-      let settling: Promise<void> | undefined
-      expectStyleEntry = () => {
-        if (context.virtualCSSImporters?.size) return
-        settling ??= (async () => {
-          do {
-            await new Promise(resolve => setTimeout(resolve, STYLE_ENTRY_GRACE))
-            await Promise.all(Object.values(server.environments).map(environment => environment.waitForRequestsIdle()))
-          } while (context.config === server.config && !context.virtualCSSImporters?.size && Date.now() - lastLocalStyle < STYLE_ENTRY_GRACE)
-          if (context.config === server.config && !context.virtualCSSImporters?.size && setStyleEntryMissing(context, true)) refresh()
-        })().catch(error => server.config.logger.error(String(error))).finally(() => { settling = undefined })
-      }
-      context.onStyleEntryDelivered = () => { if (setStyleEntryMissing(context, false)) refresh() }
-    },
     async buildStart() {
       clearBuildStylesheetSources(context)
       clearDuplicatedImports(context)
@@ -179,10 +153,9 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), onDependency,
         }
         const inline = context.config?.command === 'build' && isInlineStylesheet(id)
-        // Project globals belong to the style entries, which emit them once for
-        // every local stylesheet. A build settles that while rendering; a server
-        // expects an entry and transforms these again if none is delivered.
-        const shareable = !scopedVueStyle && !inline && projectManifestEntries.length > 0
+        // A build's style entries emit the project globals of the local stylesheets
+        // they cover once; rendering settles which ones, and the rest take theirs back.
+        const shareable = !scopedVueStyle && !inline && projectManifestEntries.length > 0 && mayShareGlobals(context)
         const delivery = inline ? inlineDelivery(context) : getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
         const deliveryOptions = delivery ? { delivery: {
           ...delivery, baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), resolveImport: getBuildImportResolver(context, dependencyHost),
@@ -194,11 +167,8 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           preserveUnchangedNativeCSS: resolution.kind === 'plain' && !nativeModuleGraph,
           ...deliveryOptions
         })
-        const sharesGlobals = shareable && sharesGlobalsWithStyleEntry(context)
-        const result = await transform(sharesGlobals)
-        const sharedCSS = result.transformed && result.sharedGlobals ? [result.code, ...(result.stylesheets ?? []).map(asset => asset.css)] : undefined
-        if (registerSharedGlobals(context, id, manifestResult.manifest, sharedCSS)) context.onSharedGlobalsChange?.()
-        if (sharedCSS) { lastLocalStyle = Date.now(); expectStyleEntry?.() }
+        const result = await transform(shareable)
+        if (shareable) registerSharedGlobals(context, id, manifestResult.manifest, result.transformed && result.sharedGlobals ? [result.code, ...(result.stylesheets ?? []).map(asset => asset.css)] : undefined)
         if (!result.transformed) return sourceMeta ? { meta: sourceMeta } : undefined
         localStyleModules.add(id)
         if (!inline) reportDuplicatedImports(context, id, result.stylesheets, message => this.warn ? this.warn(message) : context.config?.logger.warn(message))

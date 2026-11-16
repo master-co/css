@@ -5,7 +5,6 @@ import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { getScanner, ensureScanner, releaseScannerEnvironment } from '../utils/scanner-context'
 import { refreshGeneratedModule } from '../utils/dev-module-refresh'
 import { createCoalescedTask } from '../utils/coalesced-task'
-import { sharedGlobalsStale } from '../utils/shared-globals'
 
 /** HMR when the config and source files changed */
 export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
@@ -88,13 +87,6 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
     },
     configureServer(server) {
       servers.set(server.config, server)
-      // A local stylesheet began or stopped using a project global: only then do
-      // the entries change, so an ordinary local edit never reloads them.
-      const refresh = createCoalescedTask(async () => {
-        if (servers.get(server.config) !== server || !sharedGlobalsStale(context)) return
-        await updateStylesheetImporters({ server })
-      }, error => console.error('[master-css.vite] shared globals update failed:', error))
-      context.onSharedGlobalsChange = () => { void refresh() }
     }
   }
 }

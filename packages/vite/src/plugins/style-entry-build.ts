@@ -10,7 +10,7 @@ import { getScanner } from '../utils/scanner-context'
 import { removeGraphOnlyStylesheetEntries } from '../utils/build-import-resolver'
 import { prepareBuildStylesheet } from '../utils/build-stylesheet-delivery'
 import { clearLocalStylesheets, localStylesheets, type LocalStylesheet } from '../utils/local-stylesheet'
-import { renderLocalGlobals } from '../utils/shared-globals'
+import { renderLocalGlobals, resolveSharedGlobalsCoverage } from '../utils/shared-globals'
 import { createCSSFinalizer, type CSSFinalizer } from '../utils/finalize-css'
 
 function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
@@ -84,6 +84,8 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
       // Module transforms and usage collection finish before output rendering.
       if (this.getModuleInfo) removeGraphOnlyStylesheetEntries(context, id => this.getModuleInfo(id))
       if (context.stylesheets?.size === 0 && !context.virtualCSSImporters?.size) context.virtualCSSPlaceholderEmitted = false
+      // The complete graph shows which local stylesheets always load beside a style entry.
+      if (this.getModuleInfo) resolveSharedGlobalsCoverage(context, id => this.getModuleInfo(id))
       extracted = await getExtractedCSSResult(context)
       renderedCSS = extracted.css
       compiler?.dispose()

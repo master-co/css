@@ -15,6 +15,7 @@ import { isInlineStylesheet, registerInlineStylesheet } from '../utils/inline-st
 import { getBuildImportResolver } from '../utils/build-import-resolver'
 
 import { getSassSourceFile, isRawStyleRequest } from '../utils/build-sass-source'
+import { registerStyleEntryModule } from '../utils/shared-globals'
 
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 
@@ -31,16 +32,14 @@ export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOp
       if (id !== RESOLVED_VIRTUAL_CSS_ID) return
 
       context.virtualCSSImporters ??= new Set()
-      const first = !context.virtualCSSImporters.size
       context.virtualCSSImporters.add(RESOLVED_VIRTUAL_CSS_ID)
 
       if (context.config?.command === 'serve') {
-        const css = await getExtractedCSS(context)
-        if (first) context.onStyleEntryDelivered?.()
-        return css
+        return await getExtractedCSS(context)
       }
 
       context.virtualCSSPlaceholderEmitted = true
+      registerStyleEntryModule(context, id)
       return getScanner(context).slotCSSRule
     },
     async transform(code, id) {
@@ -94,11 +93,10 @@ export default function StyleEntryPlugin(_options: ResolvedMasterCSSVitePluginOp
 
         if (context.config?.command === 'serve') {
           context.virtualCSSImporters ??= new Set()
-          const first = !context.virtualCSSImporters.size
           context.virtualCSSImporters.add(id)
-          if (first) context.onStyleEntryDelivered?.()
         } else if (!inline) {
           context.virtualCSSPlaceholderEmitted = true
+          registerStyleEntryModule(context, id)
         }
 
         return {

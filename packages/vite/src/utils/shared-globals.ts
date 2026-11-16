@@ -5,85 +5,89 @@ import type { MasterCSSVitePluginContext } from '../core'
 
 interface SharedGlobalsState {
   manifest?: MasterCSSManifest
-  /** Delivered CSS of each local stylesheet whose globals the style entries emit. */
+  /** Delivered CSS of each local stylesheet whose globals the project manifest alone renders. */
   sources: Map<string, readonly string[]>
-  /** A development server settled without delivering a style entry: local stylesheets keep their globals. */
-  entryMissing?: boolean
-  revision: number
-  rendered?: { revision: number, base: string, css: string, emittedGlobals: Required<MasterCSSEmittedGlobals> }
-  delivered?: { base: Required<MasterCSSEmittedGlobals>, css: string }
+  /** Modules that delivered a style entry in this build. */
+  entries: Set<string>
+  /** Local stylesheets that every page loading them also loads a style entry for. */
+  covered?: Set<string>
+  rendered?: { covered: Set<string>, base: string, css: string, emittedGlobals: Required<MasterCSSEmittedGlobals> }
 }
 const states = new WeakMap<MasterCSSVitePluginContext, SharedGlobalsState>()
 function sharedGlobalsState(context: MasterCSSVitePluginContext) {
   let state = states.get(context)
-  if (!state) { state = { sources: new Map(), revision: 0 }; states.set(context, state) }
+  if (!state) { state = { sources: new Map(), entries: new Set() }; states.set(context, state) }
   return state
 }
 export function clearSharedGlobals(context: MasterCSSVitePluginContext) { states.delete(context) }
 
 /**
- * A style entry emits the globals of every local stylesheet once. A build knows
- * while rendering whether it delivered one. A development server expects one as
- * soon as the project declares an entry, because local stylesheets are often
- * transformed first, and falls back once it settles without any.
+ * Only a build can prove that a style entry reaches every page a local
+ * stylesheet is on. A development server learns its pages as they are visited,
+ * so its local stylesheets always keep their globals.
  */
-export function sharesGlobalsWithStyleEntry(context: MasterCSSVitePluginContext) {
-  return context.config?.command === 'build' || (context.config?.command === 'serve' && !states.get(context)?.entryMissing)
-}
-function deliversStyleEntry(context: MasterCSSVitePluginContext) {
-  return context.config?.command === 'build' ? context.virtualCSSPlaceholderEmitted === true : sharesGlobalsWithStyleEntry(context)
-}
+export function mayShareGlobals(context: MasterCSSVitePluginContext) { return context.config?.command === 'build' }
 
-/** Record whether a development server delivers a style entry; reports a change. */
-export function setStyleEntryMissing(context: MasterCSSVitePluginContext, missing: boolean) {
-  const state = sharedGlobalsState(context)
-  if (Boolean(state.entryMissing) === missing) return false
-  state.entryMissing = missing
-  return true
-}
+export function registerStyleEntryModule(context: MasterCSSVitePluginContext, id: string) { sharedGlobalsState(context).entries.add(id) }
 
-/** Record whether `id` leaves its globals to the style entries; reports a change in what they must emit. */
+/** Record the delivered CSS of a local stylesheet that left its globals out, or that it carries them. */
 export function registerSharedGlobals(context: MasterCSSVitePluginContext, id: string, manifest: MasterCSSManifest, css: readonly string[] | undefined) {
   const state = sharedGlobalsState(context)
-  const previous = state.sources.get(id)
-  if (state.manifest === manifest && (css ? previous?.length === css.length && css.every((source, index) => source === previous[index]) : !previous)) return false
   state.manifest = manifest
   if (css) state.sources.set(id, css)
   else state.sources.delete(id)
-  state.revision++
-  return true
+}
+
+interface ModuleGraphNode { readonly importers: readonly string[], readonly dynamicImporters: readonly string[] }
+
+/**
+ * Settle, once the module graph is complete, which local stylesheets a style
+ * entry covers. Loading a module loads everything it imports statically, so a
+ * module with a style entry in its static imports always brings that entry's
+ * stylesheet along. A local stylesheet is covered when every chain of static or
+ * dynamic importers above it passes through such a module; one chain that
+ * reaches a module nothing imports without meeting one leaves it uncovered.
+ */
+export function resolveSharedGlobalsCoverage(context: MasterCSSVitePluginContext, getModule: (id: string) => ModuleGraphNode | null | undefined) {
+  const state = states.get(context)
+  if (!state) return
+  const covered = state.covered = new Set<string>()
+  if (!state.entries.size || !state.sources.size) return
+  const withEntry = new Set(state.entries)
+  for (const id of withEntry) for (const importer of getModule(id)?.importers ?? []) withEntry.add(importer)
+  for (const id of state.sources.keys()) {
+    const seen = new Set([id]), pending = [id]
+    let complete = !withEntry.has(id) && Boolean(getModule(id))
+    while (pending.length && complete) {
+      const module = getModule(pending.pop()!)
+      const importers = [...module?.importers ?? [], ...module?.dynamicImporters ?? []]
+      // Nothing imports this module: a page can start here without any entry.
+      if (!importers.length) complete = false
+      for (const importer of importers) if (!withEntry.has(importer) && !seen.has(importer)) { seen.add(importer); pending.push(importer) }
+    }
+    if (complete) covered.add(id)
+  }
 }
 
 function render(state: SharedGlobalsState, sources: readonly string[], emittedGlobals?: MasterCSSEmittedGlobals) {
   return renderStylesheetGlobals({ manifest: state.manifest!, css: [...new Set(sources)], emittedGlobals })
 }
 
-/** The globals local stylesheets left to the style entries, beyond those `emittedGlobals` already carry. */
+/** The globals covered local stylesheets left to the style entries, beyond those `emittedGlobals` already carry. */
 export function renderSharedGlobals(context: MasterCSSVitePluginContext, emittedGlobals: Required<MasterCSSEmittedGlobals>) {
   const state = states.get(context)
-  if (!state?.manifest || !state.sources.size || !deliversStyleEntry(context)) return
+  if (!state?.manifest || !state.covered?.size) return
   const base = JSON.stringify(emittedGlobals)
-  if (state.rendered?.revision !== state.revision || state.rendered.base !== base) {
-    state.rendered = { revision: state.revision, base, ...render(state, [...state.sources.values()].flat(), emittedGlobals) }
+  if (state.rendered?.covered !== state.covered || state.rendered.base !== base) {
+    state.rendered = { covered: state.covered, base, ...render(state, [...state.covered].flatMap(id => state.sources.get(id) ?? []), emittedGlobals) }
   }
   return state.rendered
 }
 
-/** Remember what the style entries now carry, to refresh them only when it changes. */
-export function markSharedGlobalsDelivered(context: MasterCSSVitePluginContext, base: Required<MasterCSSEmittedGlobals>, css: string) {
-  sharedGlobalsState(context).delivered = { base, css }
-}
-
-export function sharedGlobalsStale(context: MasterCSSVitePluginContext) {
-  const state = states.get(context)
-  if (!state?.delivered) return false
-  return (renderSharedGlobals(context, state.delivered.base)?.css ?? '') !== state.delivered.css
-}
-
-/** Without a delivered style entry in this build, a local stylesheet carries its own globals. */
+/** A local stylesheet that no style entry covers carries its own globals. */
 export function renderLocalGlobals(context: MasterCSSVitePluginContext, id: string) {
   const state = states.get(context)
   const sources = state?.sources.get(id)
-  if (!state?.manifest || !sources || deliversStyleEntry(context)) return
+  if (!state?.manifest || !sources || state.covered?.has(id)) return
   return render(state, sources).css || undefined
 }
