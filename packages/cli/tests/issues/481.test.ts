@@ -165,3 +165,36 @@ test('an invalid pipeline rebuilds even when this dependency was previously comp
   await rebuild(file)
   expect(attempts).toBe(2)
 })
+
+test('a successful full rebuild checkpoints dependencies so late unchanged notifications stay quiet', async () => {
+  const file = resource()
+  let attempts = 0
+  const rebuild = createDependencyRebuild(async () => {
+    if (++attempts === 1) throw new Error('publication failed')
+  }, () => true)
+  await expect(rebuild(file)).rejects.toThrow('publication failed')
+  // A source edit then rebuilds everything, reading this unchanged dependency.
+  const sample = rebuild.sample([file])
+  attempts++
+  rebuild.complete(sample)
+  await rebuild(file)
+  expect(attempts).toBe(2)
+})
+
+test('a dependency edited during a full rebuild still rebuilds after its checkpoint', async () => {
+  const file = resource()
+  let attempts = 0
+  const rebuild = createDependencyRebuild(async () => { attempts++ }, () => true)
+  const sample = rebuild.sample([file])
+  writeFileSync(file, 'blue')
+  rebuild.complete(sample)
+  await rebuild(file)
+  expect(attempts).toBe(1)
+})
+
+test('missing dependencies are not sampled', () => {
+  const file = resource()
+  const rebuild = createDependencyRebuild(async () => {}, () => true)
+  unlinkSync(file)
+  expect(rebuild.sample([file]).size).toBe(0)
+})

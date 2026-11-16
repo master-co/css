@@ -21,7 +21,7 @@ function fileRevision(file: string) {
 /** Called inside the watch queue, so each comparison follows the previous rebuild. */
 export function createDependencyRebuild(rebuild: () => Promise<void>, ready: () => boolean) {
   const completed = new Map<string, string>()
-  return async (file: string) => {
+  const rebuildDependency = async (file: string) => {
     const absolute = resolve(file)
     const revision = fileRevision(absolute)
     if (ready() && revision !== undefined && completed.get(absolute) === revision) return
@@ -32,4 +32,27 @@ export function createDependencyRebuild(rebuild: () => Promise<void>, ready: () 
     await rebuild()
     if (revision !== undefined) completed.set(absolute, revision)
   }
+  return Object.assign(rebuildDependency, {
+    /**
+     * Samples dependency versions before a full rebuild that reads them all, which
+     * may start from a source edit or a retry rather than a dependency event.
+     */
+    sample(files: Iterable<string>) {
+      const revisions = new Map<string, string>()
+      for (const file of files) {
+        const absolute = resolve(file)
+        const revision = fileRevision(absolute)
+        if (revision !== undefined) revisions.set(absolute, revision)
+      }
+      return revisions
+    },
+    /**
+     * Records the sampled versions once that rebuild succeeds, so late or duplicate
+     * notifications for unchanged dependencies do not rebuild again. Files edited
+     * during the rebuild no longer match their sample and still rebuild.
+     */
+    complete(revisions: ReadonlyMap<string, string>) {
+      for (const [file, revision] of revisions) completed.set(file, revision)
+    }
+  })
 }

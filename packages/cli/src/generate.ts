@@ -318,6 +318,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       pipelineReady = false
       attemptedDependencies.clear()
       missingDependencies.clear()
+      const dependencyRevisions = rebuildDependency.sample(watchedDependencies)
       const sources = scanPaths()
       const stamps = sourceStamps(scanner.cwd, sources)
       for (const [source, stamp] of stamps) readStamps.set(source, stamp)
@@ -328,6 +329,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
         await syncDependencies([...scanner.resetDependencies, ...scanner.sourcePolicyDependencies, ...attemptedDependencies])
         pipelineReady = true
         missingDependencies.clear()
+        rebuildDependency.complete(dependencyRevisions)
         process.stderr.write(initial ? '\nStart watching source changes\n' : '\nRestart watching source changes\n')
         if (!initial) scanner.emit('resetDependencyChange')
       } finally {
