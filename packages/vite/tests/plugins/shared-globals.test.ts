@@ -90,3 +90,55 @@ test('development leaves every local stylesheet its globals', async () => {
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+test('a declared global style entry carries the globals of siblings a build cannot connect to it', async () => {
+  const root = fixture('shared-globals-declared-', 'const entry = () => import("./entry-styles.js"), section = () => import("./section.js");entry();section();')
+  try {
+    // A router loads the entry and each section lazily: nothing in the graph ties them together.
+    writeFileSync(join(root, 'entry-styles.js'), 'import "./app.css";')
+    writeFileSync(join(root, 'section.js'), 'import "./a.css";')
+    const output = async (globalStyleEntry: boolean) => {
+      const result = await build({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', globalStyleEntry }), build: { write: false, cssMinify: false } })
+      if (Array.isArray(result) || 'on' in result) throw new Error('Expected one build output')
+      return result.output.filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css')).map(asset => asset.type === 'asset' ? String(asset.source) : '')
+    }
+    const proven = await output(false)
+    expect(proven.find(css => /\.a\s*\{/.test(css))).toContain('--color-project:red')
+    const declared = await output(true)
+    expect(declared.find(css => /\.a\s*\{/.test(css))).not.toContain('--color-project:red')
+    expect(count(declared.join('\n'), '--color-project:red')).toBe(1)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
+test('a development server with a declared global style entry emits local globals there and refreshes it only for new ones', async () => {
+  const root = fixture('shared-globals-dev-declared-', 'import "./a.css";import "./app.css";import "./b.css";')
+  let server: Awaited<ReturnType<typeof createServer>> | undefined
+  try {
+    server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', globalStyleEntry: true }), server: { host: '127.0.0.1', port: 0, ws: false } })
+    await server.listen()
+    const css = async (file: string) => (await server!.transformRequest(`/${file}?direct`))?.code ?? ''
+    // Local stylesheets are often transformed before the entry that emits their globals.
+    expect(await css('a.css')).not.toContain('--color-project:red')
+    expect(await css('app.css')).toContain('--color-project:red')
+    expect(await css('app.css')).not.toContain('--color-unused')
+    expect(await css('b.css')).not.toContain('--color-project:red')
+    expect(count(await css('app.css'), '--color-project:red')).toBe(1)
+    expect(await css('own.css')).toContain('--color-own:green')
+    expect(await css('own.css')).toContain('--color-project:red')
+    // A local edit that needs no new global leaves the entry as it is.
+    const entry = (await server.environments.client.moduleGraph.getModuleByUrl('/app.css?direct'))
+    const transformed = entry?.transformResult
+    expect(transformed).toBeTruthy()
+    writeFileSync(join(root, 'b.css'), '@import "./shared.css";.b{background:var(--color-project);padding:1rem}')
+    await expect.poll(() => css('b.css')).toContain('padding')
+    await new Promise(resolve => setTimeout(resolve, 200))
+    expect(entry?.transformResult).toBe(transformed)
+    writeFileSync(join(root, 'b.css'), '@import "./shared.css";.b{background:var(--color-unused)}')
+    await expect.poll(() => css('b.css')).toContain('--color-unused')
+    expect(await css('b.css')).not.toContain('--color-unused:blue')
+    await expect.poll(() => css('app.css')).toContain('--color-unused:blue')
+  } finally {
+    await server?.close()
+    rmSync(root, { recursive: true, force: true })
+  }
+})

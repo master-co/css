@@ -354,5 +354,6 @@ Pass the `options` object to `masterCSS(options)`.
 | `scanner` | `MasterCSSScannerConfiguration` | `{}` | Class usage scanning configuration. |
 | `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | Mode-dependent | Enabled for runtime and progressive modes; disabled for static and `prerender` modes. |
 | `pruneNativeCSS` | `boolean` | `false` | Opt into pruning native CSS in project-owned sources. |
+| `globalStyleEntry` | `boolean` | `false` | Declare that every page loading a local stylesheet also loads a style entry. The entries then emit the project theme variables and keyframes of all local stylesheets once, in development and in builds. When unset, a build still shares them wherever its module graph proves the entry is there, and development keeps them in each stylesheet. |
 
 See the [Vite installation guide](https://css.master.co/guide/installation/vite) for a full project setup.

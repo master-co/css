@@ -153,8 +153,9 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), onDependency,
         }
         const inline = context.config?.command === 'build' && isInlineStylesheet(id)
-        // A build's style entries emit the project globals of the local stylesheets
-        // they cover once; rendering settles which ones, and the rest take theirs back.
+        // Style entries emit the project globals of the local stylesheets they cover
+        // once. A build settles which ones while rendering and the rest take theirs
+        // back; a server shares only with a declared global style entry.
         const shareable = !scopedVueStyle && !inline && projectManifestEntries.length > 0 && mayShareGlobals(context)
         const delivery = inline ? inlineDelivery(context) : getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
         const deliveryOptions = delivery ? { delivery: {
@@ -168,7 +169,7 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           ...deliveryOptions
         })
         const result = await transform(shareable)
-        if (shareable) registerSharedGlobals(context, id, manifestResult.manifest, result.transformed && result.sharedGlobals ? [result.code, ...(result.stylesheets ?? []).map(asset => asset.css)] : undefined)
+        if (shareable && registerSharedGlobals(context, id, manifestResult.manifest, result.transformed && result.sharedGlobals ? [result.code, ...(result.stylesheets ?? []).map(asset => asset.css)] : undefined)) context.onSharedGlobalsChange?.()
         if (!result.transformed) return sourceMeta ? { meta: sourceMeta } : undefined
         localStyleModules.add(id)
         if (!inline) reportDuplicatedImports(context, id, result.stylesheets, message => this.warn ? this.warn(message) : context.config?.logger.warn(message))

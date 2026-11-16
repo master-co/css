@@ -126,6 +126,7 @@ function getViteOptions(options: ResolvedMasterCSSAstroIntegrationOptions): Mast
     mode: options.mode,
     scanner: options.scanner,
     pruneNativeCSS: options.pruneNativeCSS,
+    globalStyleEntry: options.globalStyleEntry,
     runtime: options.runtime
   }
 }
