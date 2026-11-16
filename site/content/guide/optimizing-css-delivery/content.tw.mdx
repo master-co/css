@@ -247,6 +247,40 @@ document.querySelector('#refresh').addEventListener('click', () => {
 
 原生選擇器載入後，仍保有一般文件作用範圍。路由歸屬控制傳遞，不控制選擇器是否符合，也不決定框架在導覽後是否保留 CSS。共用值放在 token、共用角色放在原生類別、重複宣告放在 mixin，獨立區域選擇則使用 utility。[重用樣式](/guide/reusing-styles)說明這些設計決策。
 
+### 以模組匯入共用樣式表 \{#import-shared-stylesheets-as-modules\}
+
+CSS `@import` 會把目標內容納入：每個指名某個檔案的樣式表，都會得到自己的一份。當由不同模組載入的兩個樣式表都 `@import` 同一個元件樣式表時，同時載入兩者的頁面會把它的規則傳遞兩次，而且後面那份可能覆蓋寫在兩者之間的規則。Vite 整合在開發與建置時都會對此提出警告，並指出該樣式表與匯入它的檔案。
+
+請改從 JavaScript 匯入共用樣式表。無論有多少元件載入，模組都只傳遞一次：
+
+```js name=src/reports.js
+import './components/button.css'
+import './reports.css'
+```
+
+建置可能把共用模組的樣式表連結在進入點之前，也不保證保留模組匯入的順序。請在文件本身宣告串接層順序，並且不要讓覆蓋的規則依賴於排在被覆蓋的規則之後：
+
+```html name=index.html
+<style>@layer theme, base, defaults, components, utilities;</style>
+```
+
+### 只輸出一次共用的主題變數 \{#emit-shared-theme-variables-once\}
+
+每個區域樣式表都帶有其規則用到的主題變數與關鍵影格，因此在沒有載入其他內容的頁面上也能運作。載入許多區域樣式表的頁面會重複這些宣告。建置會在能證明安全時消除重複：當通往某個區域樣式表的每一條匯入鏈都經過匯入了進入點的模組時，就由進入點輸出一次。
+
+如果路由器延遲載入進入點與各個頁面，建置便無從證明。若應用程式的每個頁面都會載入進入點，請明確宣告：
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [masterCSS({ globalStyleEntry: true })],
+})
+```
+
+此後在開發與建置時，進入點都會把所有區域樣式表的主題變數與關鍵影格 輸出一次。載入了區域樣式表卻沒有載入進入點的頁面會失去它們，因此只有在不存在這種頁面時才宣告。自行定義或參照 token 的樣式表仍會保留自己的那一份。
+
 ## 只修剪已知的使用集合 \{#native-pruning\}
 
 原生 CSS 預設保留。先移除不必要的匯入，再考慮能掌握類別與狀態的檔案。確立這些邊界時，請保持專案全域 `pruneNativeCSS` 關閉，並以 `@prune native;` 逐一啟用來源。

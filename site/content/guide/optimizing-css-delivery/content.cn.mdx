@@ -247,6 +247,40 @@ document.querySelector('#refresh').addEventListener('click', () => {
 
 原生选择器加载后仍保有常规文档作用域。路由归属控制交付，不控制选择器是否匹配，也不决定框架在导航后是否保留 CSS。共享值放在令牌中、共享角色放在原生类中、重复声明放在混入中，独立局部选择则使用工具类。[复用样式](/guide/reusing-styles)介绍这些设计决策。
 
+### 以模块导入共享样式表 \{#import-shared-stylesheets-as-modules\}
+
+CSS `@import` 会把目标内容纳入：每个指名某个文件的样式表，都会得到自己的一份。当由不同模块加载的两个样式表都 `@import` 同一个组件样式表时，同时加载两者的页面会把它的规则交付两次，而且后面那份可能覆盖写在两者之间的规则。Vite 集成在开发与构建时都会对此发出警告，并指出该样式表与导入它的文件。
+
+请改从 JavaScript 导入共享样式表。无论有多少组件加载，模块都只交付一次：
+
+```js name=src/reports.js
+import './components/button.css'
+import './reports.css'
+```
+
+构建可能把共享模块的样式表链接在入口之前，也不保证保留模块导入的顺序。请在文档本身声明层叠层顺序，并且不要让覆盖依赖于排在被覆盖规则之后：
+
+```html name=index.html
+<style>@layer theme, base, defaults, components, utilities;</style>
+```
+
+### 只输出一次共享的主题变量 \{#emit-shared-theme-variables-once\}
+
+每个局部样式表都带有其规则用到的主题变量与关键帧，因此在没有加载其他内容的页面上也能工作。加载许多局部样式表的页面会重复这些声明。构建会在能证明安全时消除重复：当通往某个局部样式表的每一条导入链都经过导入了入口的模块时，就由入口输出一次。
+
+如果路由器延迟加载入口与各个页面，构建便无从证明。若应用的每个页面都会加载入口，请明确声明：
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [masterCSS({ globalStyleEntry: true })],
+})
+```
+
+之后，无论开发还是构建，入口都会把所有局部样式表的主题变量与关键帧 输出一次。加载了局部样式表却没有加载入口的页面会失去它们，因此只有在不存在这种页面时才声明。自行定义或引用令牌的样式表仍会保留自己的那一份。
+
 ## 只裁剪已知的使用集合 \{#native-pruning\}
 
 原生 CSS 默认保留。先移除不必要的导入，再考虑能够掌握类名与状态的文件。确定这些边界时，请保持项目全局 `pruneNativeCSS` 关闭，并用 `@prune native;` 逐一启用源文件。

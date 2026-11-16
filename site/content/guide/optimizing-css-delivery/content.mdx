@@ -169,6 +169,40 @@ A local stylesheet can use project tokens and mixins without importing the full 
 
 Native selectors keep their ordinary document scope after loading. Route ownership controls delivery, not selector matching or whether the framework retains CSS after navigation. Keep shared values in tokens, shared roles in native classes, repeated declarations in mixins, and independent local choices in utilities. [Reusing styles](/guide/reusing-styles) covers those design decisions.
 
+### Import a shared stylesheet as a module \{#import-shared-stylesheets-as-modules\}
+
+A CSS `@import` includes its target: every stylesheet that names a file receives its own copy. When two stylesheets that different modules load both `@import` the same component stylesheet, a page that loads both delivers its rules twice, and the later copy can override rules written between the two. The Vite integration warns about this in development and in builds, naming the stylesheet and its importers.
+
+Import the shared stylesheet from JavaScript instead. A module is delivered once, however many components load it:
+
+```js name=src/reports.js
+import './components/button.css'
+import './reports.css'
+```
+
+A build can link a shared module's stylesheet ahead of the entry, and it does not promise to keep the order of module imports. Declare the layer order in the document itself, and do not let an override depend on arriving after the rule it overrides:
+
+```html name=index.html
+<style>@layer theme, base, defaults, components, utilities;</style>
+```
+
+### Emit shared theme variables once \{#emit-shared-theme-variables-once\}
+
+Each local stylesheet carries the theme variables and keyframes its rules use, so it works on a page that loads nothing else. A page that loads many local stylesheets repeats those declarations. A build removes the repetition where it can prove that is safe: when every chain of imports that reaches a local stylesheet passes through a module that imports the entry, the entry emits them once.
+
+A router that loads the entry and each page lazily gives the build nothing to prove. If every page of the application loads the entry, declare it:
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [masterCSS({ globalStyleEntry: true })],
+})
+```
+
+The entry then emits the theme variables and keyframes of every local stylesheet once, in development and in builds. A page that loads a local stylesheet without the entry loses them, so declare it only when no such page exists. A stylesheet that defines or references tokens of its own keeps them.
+
 ## Prune only a known usage set \{#native-pruning\}
 
 Native CSS is preserved by default. First remove unnecessary imports. Then consider files whose classes and states you can account for. Keep project-wide `pruneNativeCSS` off while establishing these boundaries, and opt individual sources in with `@prune native;`.

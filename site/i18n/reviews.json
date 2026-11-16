@@ -651,20 +651,20 @@
     },
     "guide/optimizing-css-delivery/content.mdx": {
       "tw": {
-        "sourceHash": "0a58589fddd2c6cb73a5c62c1d3c263a4b68e4271fbac9e3b653a3c4b0805ca9",
-        "translationHash": "579a1c89afb0aab82d3d848b862fb656a09686ec7be4a0209032e8169e173e26"
+        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "translationHash": "5b7920ebbc380556c74e79c292f4bfbf9b740369cf006153b982dce09cb8394f"
       },
       "ja": {
-        "sourceHash": "0a58589fddd2c6cb73a5c62c1d3c263a4b68e4271fbac9e3b653a3c4b0805ca9",
-        "translationHash": "4a96819ccd475a88eb61070be137732bda0cb06796f91720c468d77c56cb4107"
+        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "translationHash": "fbb80102d3369cd8e4d8f355b34344f96835522871c0226a386fc594383595ce"
       },
       "ko": {
-        "sourceHash": "0a58589fddd2c6cb73a5c62c1d3c263a4b68e4271fbac9e3b653a3c4b0805ca9",
-        "translationHash": "4ce3572af2184b80cc2c4c6e98a2d65b41ca4f78d69ca4739525b4a6af45c84a"
+        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "translationHash": "5e5aea6400323cd9078b939462194647ee9d877e09db1c0a72c5c1c3accb40b4"
       },
       "cn": {
-        "sourceHash": "0a58589fddd2c6cb73a5c62c1d3c263a4b68e4271fbac9e3b653a3c4b0805ca9",
-        "translationHash": "842c6cf4e6e4d511ef406d2a81e4fb9a44edff3db34722d76b0312ee5867eea0"
+        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "translationHash": "5ab45383bd0e11ca5ccedb5eafa908b062ff4a7aee0b32f650fdcd09f9093588"
       }
     },
     "guide/rendering-modes/content.mdx": {
