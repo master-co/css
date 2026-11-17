@@ -1,5 +1,5 @@
 /* Native page styles stay separate from the utility rules demonstrated by the inspector. */
-@layer components {
+@layer components.site {
   :host { display: block; height: 100%; color-scheme: inherit; container: delivery-preview / inline-size; }
   *, *::before, *::after { box-sizing: border-box; }
   .preview {

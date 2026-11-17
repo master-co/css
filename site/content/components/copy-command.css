@@ -1,6 +1,6 @@
 /* Same height and corner as an action beside it; the copy button nests inside with a concentric corner. */
 /* The command fills the field and reads from the left, so the copy button sits at the far edge. */
-@layer components {
+@layer components.site {
   .home-command {
     display: inline-flex;
     align-items: center;

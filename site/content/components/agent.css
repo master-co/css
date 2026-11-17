@@ -1,4 +1,4 @@
-@layer components {
+@layer components.site {
   /*
    * The agent session is a tool window standing on the page, in front of the figure tucked under its
    * lower edge: a transcript, the file the agent edits, the server's output docked under it, and a
@@ -1646,7 +1646,7 @@
 }
 
 
-@layer components {
+@layer components.site {
 
   .home-spin {
     animation: home-spin 0.9s linear infinite;
@@ -1660,7 +1660,7 @@
 
   }
 }
-@layer components {
+@layer components.site {
   @media (forced-colors: active) {
     .home-agent-step[aria-current] {
       outline: 1px solid Highlight;

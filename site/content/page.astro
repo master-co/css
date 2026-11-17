@@ -54,7 +54,7 @@ const website = Astro.props.params.locale === 'en' && {
 <HomeFooter navGroups={footerNavGroups} wordmark="master css" client:idle={{ timeout: 500 }} />
 
 <style is:global>
-  @layer components {
+  @layer components.site {
     .home-header .ui-version {
       display: none;
     }

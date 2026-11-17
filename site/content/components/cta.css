@@ -1,4 +1,4 @@
-@layer components {
+@layer components.site {
   .home-cta-section {
     padding-block: 0;
   }

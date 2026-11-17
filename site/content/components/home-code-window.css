@@ -1,5 +1,5 @@
 
-@layer components {
+@layer components.site {
   .home-code-window {
     position: relative;
     display: flex;
@@ -23,6 +23,6 @@
   }
 }
 
-@layer components { @media (forced-colors: active) { .home-code-window { outline: 1px solid CanvasText; } } }
+@layer components.site { @media (forced-colors: active) { .home-code-window { outline: 1px solid CanvasText; } } }
 
-@layer components { .home-code-window-body { flex: auto; min-height: 0; } .home-code-window-body :focus-visible { outline-offset: -2px; } }
+@layer components.site { .home-code-window-body { flex: auto; min-height: 0; } .home-code-window-body :focus-visible { outline-offset: -2px; } }

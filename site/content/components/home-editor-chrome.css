@@ -1,5 +1,5 @@
 /* File-window bars, lights and status. */
-@layer components {
+@layer components.site {
   /* Chrome: a quiet bar whose divider steps up around the open tab, so the tab reads as the file itself. */
   .home-editor-bar {
     display: flex;

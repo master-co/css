@@ -16,7 +16,7 @@
   initial-value: 0px;
 }
 
-@layer components {
+@layer components.site {
   /* No shell: the features and window share the page ground, with one left rail. */
   .home-editor-stage {
     /* Class strings at rest: the string color, pulled toward the quiet text. */

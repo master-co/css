@@ -1,5 +1,5 @@
 /* Installation's directory uses the same open rows and quiet rules as the documentation indexes. */
-@layer components {
+@layer components.site {
   .installation-guides { container: installation-guides / inline-size; margin-block: var(--ui-space-xl); }
   .installation-guides-group { display: grid; gap: var(--ui-space-sm); padding-block: var(--ui-space-lg); border-top: 1px solid var(--ui-line-hair); }
   .installation-guides-group:last-child { border-bottom: 1px solid var(--ui-line-hair); }

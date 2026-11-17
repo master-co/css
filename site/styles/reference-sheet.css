@@ -1,6 +1,6 @@
 /* Structured Reference sheets. Tables keep the shared .ui-table frame and bleed;
    these rules add only column geometry and the quiet code treatment of each column. */
-@layer components {
+@layer components.site {
   .ref-table table { table-layout: fixed; }
   .ref-table tbody :is(th, td) { vertical-align: baseline; }
   .ref-table tbody th a { text-decoration: none; }

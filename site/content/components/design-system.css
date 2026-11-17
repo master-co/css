@@ -5,7 +5,7 @@
   initial-value: 0;
 }
 
-@layer components {
+@layer components.site {
   /* Each card spans a header track and a figure track, so every figure in a row starts at the same height. */
   .home-ds-row > .home-bento-card {
     display: grid;
@@ -945,7 +945,7 @@
   }
 }
 
-@layer components {
+@layer components.site {
 
   .home-dot-grid {
     background-image: radial-gradient(var(--home-rule) 1px, transparent 1px);
@@ -955,7 +955,7 @@
 }
 
 
-@layer components {
+@layer components.site {
   @media (forced-colors: active) {
     .home-theme-divider {
       forced-color-adjust: none;
@@ -969,7 +969,7 @@
 }
 
 /* The storefront preview owns its label sizes, including their token dependencies. */
-@layer components {
+@layer components.site {
   .home-theme-shop-name { font-size: var(--font-size-sm); }
   .home-theme-caption { font-size: var(--font-size-2xs); }
 }

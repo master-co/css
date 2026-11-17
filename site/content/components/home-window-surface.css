@@ -1,5 +1,5 @@
 /* Shared outer material; no editor, lint or agent behavior. */
-@layer components {
+@layer components.site {
   .home-window-surface {
     position: relative;
     overflow: var(--home-window-overflow, clip);
@@ -14,4 +14,4 @@
 
 }
 
-@layer components { @media (forced-colors: active) { .home-window-surface { outline: 1px solid CanvasText; } } }
+@layer components.site { @media (forced-colors: active) { .home-window-surface { outline: 1px solid CanvasText; } } }

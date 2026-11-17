@@ -1,4 +1,4 @@
-@layer components {
+@layer components.site {
   .integration-cover {
     overflow: hidden;
     border-radius: var(--ui-radius-xl);

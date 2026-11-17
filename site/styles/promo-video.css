@@ -1,5 +1,5 @@
 /* The film: a 16:9 poster on the media corner that becomes the player in place; the hero opens it in a dialog. */
-@layer components {
+@layer components.site {
   .promo-video {
     position: relative;
     aspect-ratio: 16 / 9;

@@ -1,4 +1,4 @@
-@layer components {
+@layer components.site {
   /* One optical bench beneath the session. Canvas paints its glass, floor, dial and call path;
      SVG marks and ordinary setup links stay in the document, including without canvas. */
   .home-mcp {

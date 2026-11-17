@@ -4,7 +4,7 @@
   initial-value: 0px;
 }
 
-@layer components {
+@layer components.site {
   .home-delivery {
     --delivery-static-on: 0;
     --delivery-prerender-on: 0;

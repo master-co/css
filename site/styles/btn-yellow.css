@@ -1,4 +1,4 @@
-@layer components {
+@layer components.site {
   .yellow {
     outline: 0.0625rem var(--color-yellow-line) solid;
     background-color: var(--color-yellow);

@@ -1,5 +1,5 @@
 /* Native content is the fallback. Canvas takes over materials after its first complete frame. */
-@layer components {
+@layer components.site {
   .home-wf-grid > .home-bento-card {
     display: grid;
     grid-row: span 2;

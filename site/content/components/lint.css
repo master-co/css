@@ -5,7 +5,7 @@
   initial-value: 1;
 }
 
-@layer components {
+@layer components.site {
   /*
    * Lint bench. The rules read as a typographic list on the shell; beside them one editor stands for ESLint,
    * with the CLI and the MCP server under it. One check plays at a time: a beam reads the classes, the problem
@@ -1409,6 +1409,6 @@
   }
 }
 
-@layer components {
+@layer components.site {
   .home-lint-tab { --home-editor-tab-fill: var(--home-well); }
 }

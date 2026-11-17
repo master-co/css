@@ -1,4 +1,4 @@
-@layer components {
+@layer components.site {
   /* An open chart on the page ground. Brand colors belong to the data, with a shared zero edge. */
   .home-bench {
     position: relative;
@@ -379,7 +379,7 @@
 }
 
 
-@layer components {
+@layer components.site {
   @media (forced-colors: active) {
 
     .home-bench-bar {
