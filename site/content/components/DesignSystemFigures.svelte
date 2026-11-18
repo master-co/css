@@ -1,5 +1,5 @@
 <script lang="ts">
-  import '@master/internal-site/home/bento.css'
+  import './bento.css'
   import type { Snippet } from 'svelte'
   import type { PaletteCanvas } from './palette-canvas'
 

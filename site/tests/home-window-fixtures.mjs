@@ -8,7 +8,7 @@ const cases={
  window:`import Window from '../../../components/HomeEditorWindow.svelte'\n---\n<Window>Content</Window>`,
  tab:`import Tab from '../../../components/HomeEditorTab.svelte'\n---\n<Tab>file.html</Tab>`,
  code:`import Code from '../../../components/HomeCodeWindow.astro'\n---\n<Code lang="html" code="<p>Hello</p>" />`,
- bento:`import Grid from '@master/internal-site/home/HomeBentoGrid.astro'\n---\n<Grid>Content</Grid>`,
+ bento:`import Grid from '../../../components/HomeBentoGrid.astro'\n---\n<Grid>Content</Grid>`,
  segmented:`import Control from '../../../components/HomeSegmentedControl.svelte'\n---\n<Control options={[{label:'A',value:'a'}]} value="a" onValueChange={() => {}} />`
 }
 if(mode==='write'){

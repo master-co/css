@@ -325,9 +325,12 @@ Rows of real classes from `ctaClassRows` (`glyphFieldLines`), which the tests li
 ## Homepage style ownership
 
 Shared materials and layout remain in `@master/internal-site/home/design.css` and
-`home.css`. Feature rules are explicit dependencies: bento owners import
-`home/bento.css`, segmented-control owners import `home/segmented-control.css`.
-A consumer of `home.css` alone does not receive either feature. The section owns
+`home.css`: the tokens, the drafting language, the lamp and the footer that every
+Master homepage shares. The layout components that give this homepage its own look
+belong to this site, beside the sections that use them: bento owners import
+`./bento.css` (or `HomeBentoGrid.astro` and `HomeBentoFrame.astro`), segmented-control
+owners import `./segmented-control.css`. A consumer of `home.css` alone does not
+receive either feature. The section owns
 any feature class it passes to a child as a prop.
 
 Product file windows share `HomeEditorWindow`, `HomeEditorBar`, `HomeEditorTab`

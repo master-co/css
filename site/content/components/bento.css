@@ -1,0 +1,167 @@
+/* * Cards stand directly on the page ground: no shell around them, so every edge is the card's own 1px
+   * contour. A card may hold its figure in a well, 12px in, and nothing deeper. */
+/* The title and description stay together, with a separate illustration to their right. */
+/* * A narrow card cannot spare a 7rem column beside its copy: the title shares a row with a smaller
+   * illustration and the description takes the full measure below, so neither wraps a word or two per line. */
+/* * The well's contour is drawn above the figure, so a pane that fills the well never hides it and
+   * a pane's own edge never doubles it: every well reads as one 1px line. */
+@layer components.site {
+  .home-bento-frame {
+    position: relative;
+  }
+
+  .home-bento-grid {
+    display: grid;
+    gap: var(--home-gap);
+
+    @media (--md) {
+      gap: 1rem;
+    }
+  }
+
+  .home-bento-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    transition: box-shadow var(--home-base) var(--home-ease);
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--home-rule), var(--home-elevation-1);
+    }
+  }
+  .home-bento-card-header {
+    /* Contain the header only: size containment on the subgrid card collapses auto-height code panes. */
+    container: home-card / inline-size;
+    padding: 1.75rem 1.5rem 2rem;
+
+    @media (--sm) {
+      padding: 2.25rem 2.25rem 2.5rem;
+    }
+
+    @media (--lg) {
+      padding: 2.5rem 2.75rem 2.75rem;
+    }
+  }
+
+  .home-bento-card-caption {
+    display: grid;
+    grid-template-columns: minmax(0, 44ch) 7rem;
+    /* In a wide card the copy keeps its measure and the illustration rides the card's right edge. */
+    justify-content: space-between;
+    align-items: start;
+    align-content: start;
+    column-gap: 1.5rem;
+  }
+
+  .home-bento-card-copy { min-width: 0; }
+
+  .home-bento-card-caption > .home-illustration {
+    --home-illustration-size: 7rem;
+  }
+  @container home-card (width < 28rem) {
+    .home-bento-card-caption {
+      grid-template-columns: minmax(0, 1fr) 4rem;
+      align-items: center;
+      gap: 0.75rem 1rem;
+    }
+    .home-bento-card-copy { display: contents; }
+    .home-bento-card-title { grid-column: 1; grid-row: 1; }
+    .home-bento-card-body { grid-column: 1 / -1; grid-row: 2; max-width: none; margin-top: 0; }
+    .home-bento-card-hint { grid-column: 1 / -1; grid-row: 3; margin-top: 0; }
+    .home-bento-card-caption > .home-illustration {
+      --home-illustration-size: 4rem;
+      grid-column: 2;
+      grid-row: 1;
+      margin-block: 0;
+    }
+  }
+
+  @container home-card (width < 16rem) {
+    .home-bento-card-caption { grid-template-columns: minmax(0, 1fr) 3rem; column-gap: 0.75rem; }
+    .home-bento-card-caption > .home-illustration { --home-illustration-size: 3rem; }
+  }
+
+  @container home-card (width < 12rem) {
+    .home-bento-card-caption { grid-template-columns: minmax(0, 1fr); }
+    .home-bento-card-caption > .home-illustration { display: none; }
+  }
+
+  @container home-card (width >= 28rem) {
+    .home-bento-card-caption { column-gap: 3rem; }
+  }
+
+  .home-bento-card-title {
+    min-width: 0;
+    margin: 0;
+    font-size: var(--home-card-title);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+    color: var(--home-text);
+    text-wrap: balance;
+  }
+
+  .home-bento-card-body {
+    min-width: 0;
+    max-width: 44ch;
+    margin: 0.75rem 0 0;
+    font-size: var(--home-body);
+    line-height: 1.6;
+    color: var(--home-text-quiet);
+    text-wrap: pretty;
+  }
+
+  .home-bento-card-hint {
+    margin: 0.75rem 0 0;
+    font-size: var(--home-caption);
+    line-height: 1.5;
+    color: var(--home-text-faint);
+  }
+
+  .home-heading-link {
+    color: inherit;
+    text-decoration: none;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+
+    &:hover { text-decoration-line: underline; }
+
+    &:focus-visible {
+      border-radius: var(--radius-sm);
+      outline: 2px solid var(--home-ink);
+      outline-offset: 4px;
+    }
+  }
+  .home-bento-visual {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    margin: auto var(--home-gap) var(--home-gap);
+    border-radius: var(--home-radius-well);
+    background-color: var(--home-well);
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      border-radius: inherit;
+      box-shadow: var(--home-groove);
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  .home-bento-visual-top {
+    margin-top: 0;
+  }
+}
+
+@layer components.site { @media (forced-colors: active) { .home-bento-card { outline: 1px solid CanvasText; } } }
+
+@layer components.site {
+  .home-page:lang(zh) .home-bento-card-body { text-wrap: balance; }
+}
