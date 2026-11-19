@@ -75,13 +75,23 @@ test('a build keeps the globals of a local stylesheet on a page that loads no st
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 
-test('an imported build input can also be loaded independently', async () => {
+test.each(['input', 'emitted'])('an imported %s entry can also be loaded independently', async (kind) => {
   const root = fixture('shared-globals-input-', 'import "./app.css";import "./standalone.js";')
   try {
     writeFileSync(join(root, 'standalone.js'), 'import "./a.css";')
+    const standalone = join(root, 'standalone.js')
     const result = await build({
-      root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static' }),
-      build: { write: false, cssMinify: false, rollupOptions: { input: [join(root, 'index.html'), join(root, 'standalone.js')] } }
+      root, configFile: false, logLevel: 'silent',
+      plugins: [
+        ...masterCSS({ mode: 'static' }),
+        { name: 'emit-independent', buildStart() {
+          if (kind === 'emitted') this.emitFile({ type: 'chunk', id: standalone, preserveSignature: false })
+        } }
+      ],
+      build: {
+        write: false, cssMinify: false,
+        rollupOptions: { input: kind === 'input' ? [join(root, 'index.html'), standalone] : join(root, 'index.html') }
+      }
     })
     if (Array.isArray(result) || 'on' in result) throw new Error('Expected one build output')
     const styles = result.output.filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css'))

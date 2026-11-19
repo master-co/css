@@ -11,7 +11,7 @@ const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.
 const builtPlugin = join(packageDir, 'dist/vite.js')
 const viteCLI = join(dirname(createRequire(import.meta.url).resolve('vite/package.json')), 'bin/vite.js')
 
-function fixture(globalStyleEntry?: boolean, withRootEntry = true) {
+function fixture(globalStyleEntry?: boolean, rootEntry: 'style' | 'url' | 'page' = 'style') {
   const parent = join(packageDir, 'tmp')
   mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'style-entry-'))
@@ -49,9 +49,10 @@ export default {
   put('src/standalone.js', "import './standalone.css'")
   put('src/standalone.css', '.kit-standalone { border-color: var(--color-project); }')
   put('pages/+layout.svelte', `<script>
-  ${withRootEntry ? "import './globals.css'" : ''}
+  ${rootEntry === 'style' ? "import './globals.css'" : rootEntry === 'url' ? "import stylesheet from './globals.css?url'" : ''}
   let { children } = $props()
 </script>
+  ${rootEntry === 'url' ? '<div data-css-href={stylesheet}></div>' : ''}
 {@render children()}
 `)
   put('pages/globals.css', `
@@ -62,7 +63,7 @@ export default {
 @keyframes project-pulse { to { opacity: 0.8; } }
 `)
   put('pages/+page.svelte', `<script>
-  ${withRootEntry ? '' : "import './globals.css'"}
+  ${rootEntry === 'page' ? "import './globals.css'" : ''}
   import '../src/standalone.css'
   import './home.css'
 </script>
@@ -141,10 +142,11 @@ it('shares a proven root entry across SvelteKit pages and keeps independent cons
   }
 }, 120_000)
 
-it.each([
-  { setting: false, rootEntry: true, carriesToken: true },
-  { setting: undefined, rootEntry: false, carriesToken: true },
-  { setting: true, rootEntry: true, carriesToken: false }
+it.each<{ setting?: boolean, rootEntry: Parameters<typeof fixture>[1], carriesToken: boolean }>([
+  { setting: false, rootEntry: 'style', carriesToken: true },
+  { setting: undefined, rootEntry: 'page', carriesToken: true },
+  { setting: undefined, rootEntry: 'url', carriesToken: true },
+  { setting: true, rootEntry: 'style', carriesToken: false }
 ])('leaves local CSS complete unless the user or graph covers it ($setting, root entry $rootEntry)', ({ setting, rootEntry, carriesToken }) => {
   const root = fixture(setting, rootEntry)
   try {

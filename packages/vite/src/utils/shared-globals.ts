@@ -72,16 +72,24 @@ export function resolveSharedGlobalsCoverage(
     for (const id of state.sources.keys()) covered.add(id)
     return
   }
-  const withEntry = new Set(state.entries)
+  // Vite transforms a CSS URL into a file without applying it to the page.
+  const cssURL = /[?&]transform-only(?:[=&]|$)/
+  const entries = [...state.entries].filter(id => {
+    if (cssURL.test(id)) return false
+    const module = getModule(id)
+    return module?.isEntry || module?.importers.length || module?.dynamicImporters.length
+  })
+  const withEntry = new Set(entries)
   for (const id of withEntry) for (const importer of getModule(id)?.importers ?? []) withEntry.add(importer)
   const config = context.config
   // A single entry also proves which stylesheet the framework serves beside a route.
-  if (config && state.entries.size === 1) {
+  if (config && entries.length === 1) {
     const provider = config.plugins.find(plugin => plugin.name === STYLE_ENTRY_COVERAGE_PLUGIN)
     const api = provider?.api as StyleEntryCoverageAPI | undefined
     for (const root of api?.coveredRoots?.({ config, environment, input, getModule, withEntry }) ?? []) withEntry.add(root)
   }
   for (const id of state.sources.keys()) {
+    if (cssURL.test(id)) continue
     const seen = new Set([id]), pending = [id]
     let complete = !withEntry.has(id) && Boolean(getModule(id))
     while (pending.length && complete) {
