@@ -1,4 +1,5 @@
 import { renderStylesheetGlobals } from '@master/css-compiler/stylesheet'
+import { STYLE_ENTRY_COVERAGE_PLUGIN, type StyleEntryCoverageAPI, type StyleEntryGraphModule } from '@master/css-internal/style-module'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSVitePluginContext } from '../core'
@@ -48,8 +49,6 @@ export function registerSharedGlobals(context: MasterCSSVitePluginContext, id: s
   return true
 }
 
-interface ModuleGraphNode { readonly importers: readonly string[], readonly dynamicImporters: readonly string[] }
-
 /**
  * Settle, once the module graph is complete, which local stylesheets a style
  * entry covers. Loading a module loads everything it imports statically, so a
@@ -58,7 +57,12 @@ interface ModuleGraphNode { readonly importers: readonly string[], readonly dyna
  * dynamic importers above it passes through such a module; one chain that
  * reaches a module nothing imports without meeting one leaves it uncovered.
  */
-export function resolveSharedGlobalsCoverage(context: MasterCSSVitePluginContext, getModule: (id: string) => ModuleGraphNode | null | undefined) {
+export function resolveSharedGlobalsCoverage(
+  context: MasterCSSVitePluginContext,
+  getModule: (id: string) => StyleEntryGraphModule | null,
+  environment: string,
+  input: unknown
+) {
   const state = states.get(context)
   if (!state) return
   const covered = state.covered = new Set<string>()
@@ -70,14 +74,21 @@ export function resolveSharedGlobalsCoverage(context: MasterCSSVitePluginContext
   }
   const withEntry = new Set(state.entries)
   for (const id of withEntry) for (const importer of getModule(id)?.importers ?? []) withEntry.add(importer)
+  const config = context.config
+  // A single entry also proves which stylesheet the framework serves beside a route.
+  if (config && state.entries.size === 1) {
+    const provider = config.plugins.find(plugin => plugin.name === STYLE_ENTRY_COVERAGE_PLUGIN)
+    const api = provider?.api as StyleEntryCoverageAPI | undefined
+    for (const root of api?.coveredRoots?.({ config, environment, input, getModule, withEntry }) ?? []) withEntry.add(root)
+  }
   for (const id of state.sources.keys()) {
     const seen = new Set([id]), pending = [id]
     let complete = !withEntry.has(id) && Boolean(getModule(id))
     while (pending.length && complete) {
       const module = getModule(pending.pop()!)
       const importers = [...module?.importers ?? [], ...module?.dynamicImporters ?? []]
-      // Nothing imports this module: a page can start here without any entry.
-      if (!importers.length) complete = false
+      // A build input is independently reachable even when other modules import it.
+      if (module?.isEntry || !importers.length) complete = false
       for (const importer of importers) if (!withEntry.has(importer) && !seen.has(importer)) { seen.add(importer); pending.push(importer) }
     }
     if (complete) covered.add(id)

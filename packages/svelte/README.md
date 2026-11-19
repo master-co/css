@@ -78,6 +78,20 @@ export default defineConfig({
 })
 ```
 
+### Shared stylesheet entry
+
+Import the stylesheet that contains `@import '@master/css';` from the root
+`+layout.svelte`. In SvelteKit split production builds, the integration uses the
+configured route directory and the build graph to confirm that the root layout
+delivers the entry. It then emits shareable project tokens and keyframes in the
+entry for route stylesheets that always load beside it. Independent Vite inputs
+and styles with their own definitions keep the globals they need.
+
+Pass `globalStyleEntry: false` to skip SvelteKit's coverage inference and keep
+Vite's general import-graph check. Use `globalStyleEntry: true` only if every
+consumer of a local stylesheet loads the entry. That declaration also enables
+sharing in development, where the server sees modules as routes load.
+
 ### Rendering modes
 
 | `mode` | Master CSS setup |

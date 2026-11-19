@@ -80,12 +80,12 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
     name: 'master-css:style-entry:build',
     enforce: 'post',
     apply: 'build',
-    async renderStart() {
+    async renderStart(_output, inputs) {
       // Module transforms and usage collection finish before output rendering.
       if (this.getModuleInfo) removeGraphOnlyStylesheetEntries(context, id => this.getModuleInfo(id))
       if (context.stylesheets?.size === 0 && !context.virtualCSSImporters?.size) context.virtualCSSPlaceholderEmitted = false
       // The complete graph shows which local stylesheets always load beside a style entry.
-      if (this.getModuleInfo) resolveSharedGlobalsCoverage(context, id => this.getModuleInfo(id))
+      if (this.getModuleInfo) resolveSharedGlobalsCoverage(context, id => this.getModuleInfo(id), this.environment?.name ?? '', inputs?.input)
       extracted = await getExtractedCSSResult(context)
       renderedCSS = extracted.css
       compiler?.dispose()

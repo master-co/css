@@ -2,6 +2,7 @@ import {
   createMasterCSSVitePlugin as createBaseMasterCSSVitePlugin,
   type MasterCSSVitePluginOptions
 } from '@master/css-vite'
+import { svelteKitStyleEntryCoverage } from './style-entry-coverage'
 
 type BasePlugin = ReturnType<typeof createBaseMasterCSSVitePlugin>[number]
 
@@ -39,6 +40,7 @@ export function createMasterCSSVitePlugin(
 ): BasePlugin[] {
   return [
     SvelteKitServerExternalPlugin(),
+    ...(options.enabled !== false && options.globalStyleEntry === undefined ? [svelteKitStyleEntryCoverage()] : []),
     ...createBaseMasterCSSVitePlugin({
       mode: 'static',
       ...options

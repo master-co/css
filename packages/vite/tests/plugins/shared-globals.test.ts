@@ -75,6 +75,21 @@ test('a build keeps the globals of a local stylesheet on a page that loads no st
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 
+test('an imported build input can also be loaded independently', async () => {
+  const root = fixture('shared-globals-input-', 'import "./app.css";import "./standalone.js";')
+  try {
+    writeFileSync(join(root, 'standalone.js'), 'import "./a.css";')
+    const result = await build({
+      root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static' }),
+      build: { write: false, cssMinify: false, rollupOptions: { input: [join(root, 'index.html'), join(root, 'standalone.js')] } }
+    })
+    if (Array.isArray(result) || 'on' in result) throw new Error('Expected one build output')
+    const styles = result.output.filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css'))
+      .map(asset => asset.type === 'asset' ? String(asset.source) : '')
+    expect(styles.find(css => /\.a\s*\{/.test(css))).toContain('--color-project:red')
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
 test('development leaves every local stylesheet its globals', async () => {
   const root = fixture('shared-globals-dev-', 'import "./app.css";import "./a.css";')
   let server: Awaited<ReturnType<typeof createServer>> | undefined
