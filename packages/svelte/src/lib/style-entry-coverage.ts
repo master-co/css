@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
 import { STYLE_ENTRY_COVERAGE_PLUGIN, type StyleEntryCoverageAPI } from '@master/css-internal/style-module'
+import type { createMasterCSSVitePlugin } from '@master/css-vite'
 
 interface KitOptions {
   files?: { routes?: string }
@@ -68,6 +69,6 @@ const coverage: StyleEntryCoverageAPI = {
   }
 }
 
-export function svelteKitStyleEntryCoverage() {
-  return { name: STYLE_ENTRY_COVERAGE_PLUGIN, apply: 'build' as const, api: coverage }
+export function svelteKitStyleEntryCoverage(): ReturnType<typeof createMasterCSSVitePlugin>[number] {
+  return { name: STYLE_ENTRY_COVERAGE_PLUGIN, apply: 'build', api: coverage }
 }

@@ -1,5 +1,5 @@
 import { renderStylesheetGlobals } from '@master/css-compiler/stylesheet'
-import { STYLE_ENTRY_COVERAGE_PLUGIN, type StyleEntryCoverageAPI, type StyleEntryGraphModule } from '@master/css-internal/style-module'
+import { STYLE_ENTRY_COVERAGE_PLUGIN, type StyleEntryCoverageAPI } from '@master/css-internal/style-module'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSVitePluginContext } from '../core'
@@ -16,6 +16,12 @@ interface SharedGlobalsState {
   rendered?: { covered?: Set<string>, revision: number, base: string, css: string, emittedGlobals: Required<MasterCSSEmittedGlobals> }
   /** What a development server's style entries last carried, to refresh them only when it changes. */
   delivered?: { base: Required<MasterCSSEmittedGlobals>, css: string }
+}
+
+interface GraphModule {
+  readonly isEntry: boolean
+  readonly importers: readonly string[]
+  readonly dynamicImporters: readonly string[]
 }
 const states = new WeakMap<MasterCSSVitePluginContext, SharedGlobalsState>()
 function sharedGlobalsState(context: MasterCSSVitePluginContext) {
@@ -59,7 +65,7 @@ export function registerSharedGlobals(context: MasterCSSVitePluginContext, id: s
  */
 export function resolveSharedGlobalsCoverage(
   context: MasterCSSVitePluginContext,
-  getModule: (id: string) => StyleEntryGraphModule | null,
+  getModule: (id: string) => GraphModule | null,
   environment: string,
   input: unknown
 ) {
