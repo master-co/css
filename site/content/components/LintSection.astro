@@ -1,6 +1,6 @@
 ---
 import './lint.css'
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import IconArrowRight from '@master/icons-astro/native/16/soft/arrow-right'
 import Link from '@master/internal-site/components/Link.svelte'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import HomeBentoFrame from './HomeBentoFrame.astro'
@@ -32,7 +32,7 @@ const { t } = siteOf(Astro)
       body={t('ESLint in your editor, the CLI in your scripts and the MCP server for agents check classes with the same rules and fixes.')}>
       <Link class="home-section-link" href="/guide/code-linting">
         {t('See every lint rule')}
-        <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+        <IconArrowRight aria-hidden="true" size={16} />
       </Link>
     </HomeSectionHeader>
     <HomeBentoFrame class="home-lint-frame home-marks home-reveal-item">

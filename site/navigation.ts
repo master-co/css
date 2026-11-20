@@ -1,11 +1,11 @@
 import type { AppNavItem } from '~/site/app-config'
-import IconBrandGithub from '@tabler/icons-svelte-runes/icons/brand-github'
-import IconBrandX from '@tabler/icons-svelte-runes/icons/brand-x'
-import IconBug from '@tabler/icons-svelte-runes/icons/bug'
-import IconCompass from '@tabler/icons-svelte-runes/icons/compass'
-import IconFileText from '@tabler/icons-svelte-runes/icons/file-text'
-import IconMessages from '@tabler/icons-svelte-runes/icons/messages'
-import IconWriting from '@tabler/icons-svelte-runes/icons/writing'
+import IconBrandGithub from '@master/icons-svelte/native/20/soft/brand-github-outline'
+import IconBrandX from '@master/icons-svelte/native/20/soft/brand-x'
+import IconBug from '@master/icons-svelte/native/20/soft/bug'
+import IconCompass from '@master/icons-svelte/native/20/soft/compass'
+import IconFileText from '@master/icons-svelte/native/20/soft/file-text'
+import IconMessages from '@master/icons-svelte/native/20/soft/messages'
+import IconWriting from '@master/icons-svelte/native/20/soft/pencil'
 
 export interface FooterNavGroup {
   name: string

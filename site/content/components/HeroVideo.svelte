@@ -1,7 +1,7 @@
 <script lang="ts">
   import '~/site/styles/promo-video.css'
-  import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
-  import IconX from '@tabler/icons-svelte-runes/icons/x'
+  import IconPlayerPlayFilled from '@master/icons-svelte/native/16/soft/play'
+  import IconX from '@master/icons-svelte/native/20/soft/x'
   import { getSite } from '@master/internal-site/site'
   import { isPlainClick, isPromoEndedMessage, promoEmbedUrl, promoPlayerOrigin, promoVideo } from '~/site/utils/promo-video'
 
@@ -51,13 +51,13 @@
 <svelte:window onmessage={receive} />
 
 <a class="home-hero-video" href={promoVideo.watchUrl} onclick={show}>
-  <span aria-hidden="true" class="home-hero-video-disc"><IconPlayerPlayFilled size={14} /></span>
+  <span aria-hidden="true" class="home-hero-video-disc"><IconPlayerPlayFilled size={14} fill="currentColor" /></span>
   {t('Watch the film')}
 </a>
 
 <dialog aria-label={promoVideo.title} bind:this={dialog} class="promo-dialog" onclick={dismiss} onclose={() => { open = false }}>
   <button aria-label={t('Close video')} class="promo-dialog-close" onclick={close} type="button">
-    <IconX aria-hidden="true" size={18} stroke={1.75} />
+    <IconX aria-hidden="true" size={18} />
   </button>
   <div class="promo-video">
     {#if open}

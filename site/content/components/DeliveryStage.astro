@@ -1,9 +1,9 @@
 ---
-import IconBraces from '@tabler/icons-svelte-runes/icons/braces'
-import IconBrowser from '@tabler/icons-svelte-runes/icons/browser'
-import IconCheck from '@tabler/icons-svelte-runes/icons/check'
-import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code'
-import IconLink from '@tabler/icons-svelte-runes/icons/link'
+import IconBraces from '@master/icons-astro/native/16/soft/braces'
+import IconBrowser from '@master/icons-astro/native/16/soft/app-window'
+import IconCheck from '@master/icons-astro/native/16/soft/check'
+import IconFileCode from '@master/icons-astro/native/16/soft/file-code'
+import IconLink from '@master/icons-astro/native/16/soft/link'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import HomeEditorBar from './HomeEditorBar.svelte'
 import HomeEditorLights from './HomeEditorLights.svelte'
@@ -102,7 +102,7 @@ function processor(mode: DeliveryMode) {
   <div class="home-delivery-board">
     <div class="home-delivery-code-column">
       <section class="home-delivery-pane home-delivery-template" data-station="template" aria-label={t('Template')}>
-        <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorLights /><HomeEditorTab><IconFileCode aria-hidden="true" size={14} stroke={1.75} />index.html</HomeEditorTab><span class="home-delivery-pane-status home-editor-status">{t('Template')}</span></HomeEditorBar>
+        <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorLights /><HomeEditorTab><IconFileCode aria-hidden="true" size={14} />index.html</HomeEditorTab><span class="home-delivery-pane-status home-editor-status">{t('Template')}</span></HomeEditorBar>
         <div class="home-delivery-code-stack">
           {templates.map(({ mode, lines }) => (
             <div class="home-delivery-variant" data-mode={mode}>
@@ -125,7 +125,7 @@ function processor(mode: DeliveryMode) {
         </div>
       </section>
       <section class="home-delivery-css home-delivery-pane" data-station="css" aria-label="CSS">
-        <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorTab><IconBraces aria-hidden="true" size={14} stroke={1.75} /><button class="home-delivery-file-reference" data-inspect-css="" disabled title={t('Inspect stylesheet reference')} type="button"><span class="home-delivery-filenames">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}>{mode === 'static' ? 'app.css' : 'style#master-css'}</span>)}</span></button></HomeEditorTab><span class="home-delivery-pane-status home-editor-status"><span class="home-delivery-css-origin">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}>{mode === 'runtime' ? 'CSSOM' : 'CSS'}</span>)}</span></span></HomeEditorBar>
+        <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorTab><IconBraces aria-hidden="true" size={14} /><button class="home-delivery-file-reference" data-inspect-css="" disabled title={t('Inspect stylesheet reference')} type="button"><span class="home-delivery-filenames">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}>{mode === 'static' ? 'app.css' : 'style#master-css'}</span>)}</span></button></HomeEditorTab><span class="home-delivery-pane-status home-editor-status"><span class="home-delivery-css-origin">{modes.map(mode => <span class="home-delivery-variant" data-mode={mode}>{mode === 'runtime' ? 'CSSOM' : 'CSS'}</span>)}</span></span></HomeEditorBar>
         <div class="home-delivery-code-stack">
           {stylesheets.map(({ mode, lines }) => (
             <div class="home-delivery-variant" data-mode={mode}>
@@ -145,7 +145,7 @@ function processor(mode: DeliveryMode) {
             </div>
           ))}
         </div>
-        <div class="home-delivery-css-footer home-delivery-pane-footer"><button aria-label={t('Inspect stylesheet reference')} class="home-delivery-inspect" data-inspect-css="" disabled title={t('Inspect stylesheet reference')} type="button"><IconLink aria-hidden="true" size={13} stroke={1.75} /></button></div>
+        <div class="home-delivery-css-footer home-delivery-pane-footer"><button aria-label={t('Inspect stylesheet reference')} class="home-delivery-inspect" data-inspect-css="" disabled title={t('Inspect stylesheet reference')} type="button"><IconLink aria-hidden="true" size={13} /></button></div>
       </section>
     </div>
     <div aria-hidden="true" class="home-delivery-process" data-station="process"><span class="home-delivery-flow-label" data-flow-label="input">HTML</span>{modes.map(mode => {
@@ -153,10 +153,10 @@ function processor(mode: DeliveryMode) {
       return <div class="home-delivery-variant" data-mode={mode}><div class="home-delivery-engine-group" style={{ '--glow': active }}>{phases.map(phase => <div class="home-delivery-engine" data-ring={phase.id}><span class="home-delivery-engine-core home-lit home-stone"><img alt="" src="/brand/v2/logo/mark/master-mark-small-on-dark.svg" width="34" height={34 * 120 / 216.6} /><i /><i /></span><span class="home-delivery-engine-label">{phase.label}</span></div>)}</div></div>
     })}<span class="home-delivery-flow-label" data-flow-label="output">CSS</span></div>
     <section class="home-delivery-browser home-delivery-pane" data-station="browser" aria-label={t('Preview')}>
-      <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorTab><IconBrowser aria-hidden="true" size={14} stroke={1.75} />{t('Preview')}</HomeEditorTab><span class="home-delivery-pane-status home-editor-status"><span class="home-delivery-live-dot">{t('Live')}</span></span></HomeEditorBar>
+      <HomeEditorBar class="home-delivery-pane-bar"><HomeEditorTab><IconBrowser aria-hidden="true" size={14} />{t('Preview')}</HomeEditorTab><span class="home-delivery-pane-status home-editor-status"><span class="home-delivery-live-dot">{t('Live')}</span></span></HomeEditorBar>
       <DeliveryPreview {...program} />
       <div aria-hidden="true" class="home-delivery-arrivals">{modes.map(mode => <div class="home-delivery-variant" data-mode={mode}>{mode !== 'runtime' && <span data-at={deliveryTiming[mode].sheet} data-carry={mode === 'static' ? 'app.css' : '<style>'} />}</div>)}</div>
-      <div class="home-delivery-pane-footer">{modes.map(mode => <div class="home-delivery-variant" data-mode={mode}><span class="home-delivery-applied" data-cue-at={deliveryTiming[mode].paint} style={{ '--on': on(deliveryTiming[mode].paint) }}><IconCheck aria-hidden="true" size={12} stroke={1.75} />{t('Preview updated')}</span></div>)}</div>
+      <div class="home-delivery-pane-footer">{modes.map(mode => <div class="home-delivery-variant" data-mode={mode}><span class="home-delivery-applied" data-cue-at={deliveryTiming[mode].paint} style={{ '--on': on(deliveryTiming[mode].paint) }}><IconCheck aria-hidden="true" size={12} />{t('Preview updated')}</span></div>)}</div>
     </section>
   </div>
 </HomeEditorWindow>

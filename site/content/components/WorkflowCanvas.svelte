@@ -1,6 +1,6 @@
 <script lang="ts">
-  import IconPlayerPauseFilled from '@tabler/icons-svelte-runes/icons/player-pause-filled'
-  import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
+  import IconPlayerPauseFilled from '@master/icons-svelte/native/16/soft/pause'
+  import IconPlayerPlayFilled from '@master/icons-svelte/native/16/soft/play'
   import { getSite } from '@master/internal-site/site'
   import type { WorkflowFigure } from './workflow-canvas'
 
@@ -38,6 +38,6 @@
 <canvas bind:this={canvas} aria-hidden="true" class="home-wf-canvas"></canvas>
 <!-- The page lamp and the painter write onto this button after hydration. -->
 <button aria-label={t('Pause illustration')} class="home-lit home-wf-play" data-wf-play="" data-pause-label={t('Pause illustration')} data-play-label={t('Play illustration')} type="button">
-  <IconPlayerPauseFilled aria-hidden="true" class="home-wf-pause-icon" size={12} />
-  <IconPlayerPlayFilled aria-hidden="true" class="home-wf-play-icon" size={12} />
+  <IconPlayerPauseFilled aria-hidden="true" class="home-wf-pause-icon" size={12} fill="currentColor" />
+  <IconPlayerPlayFilled aria-hidden="true" class="home-wf-play-icon" size={12} fill="currentColor" />
 </button>

@@ -69,7 +69,7 @@
 </script>
 
 <script lang="ts">
-  import IconX from '@tabler/icons-svelte-runes/icons/x'
+  import IconX from '@master/icons-svelte/native/16/soft/x'
   import Image from '@master/internal-site/components/Image.svelte'
   import { getSite } from '@master/internal-site/site'
 
@@ -230,7 +230,7 @@
         data-home-art-modal-content=""
         onclick={closeArtwork}
         type="button">
-        <IconX aria-hidden="true" size={16} stroke={1.75} />
+        <IconX aria-hidden="true" size={16} />
       </button>
       <figure
         class="home-gallery-view"

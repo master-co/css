@@ -22,15 +22,15 @@
   import HomeEditorTab from './HomeEditorTab.svelte'
   import HomeEditorLights from './HomeEditorLights.svelte'
   import { onMount, tick, untrack, type Snippet } from 'svelte'
-  import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle'
-  import IconBrandHtml5 from '@tabler/icons-svelte-runes/icons/brand-html5'
-  import IconBulb from '@tabler/icons-svelte-runes/icons/bulb'
-  import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check'
-  import IconCircleX from '@tabler/icons-svelte-runes/icons/circle-x'
-  import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle'
-  import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected'
-  import IconRotateClockwise from '@tabler/icons-svelte-runes/icons/rotate-clockwise'
-  import IconTerminal2 from '@tabler/icons-svelte-runes/icons/terminal-2'
+  import IconAlertTriangle from '@master/icons-svelte/native/16/soft/alert-triangle'
+  import IconBrandHtml5 from '@master/icons-svelte/native/16/soft/brand-html5'
+  import IconBulb from '@master/icons-svelte/native/16/soft/lightbulb'
+  import IconCircleCheck from '@master/icons-svelte/native/16/soft/check-circle'
+  import IconCircleX from '@master/icons-svelte/native/16/soft/x-circle'
+  import IconInfoCircle from '@master/icons-svelte/native/16/soft/info-circle'
+  import IconPlugConnected from '@master/icons-svelte/native/16/soft/plug'
+  import IconRotateClockwise from '@master/icons-svelte/native/16/soft/rotate-right'
+  import IconTerminal2 from '@master/icons-svelte/native/16/soft/terminal'
   import { getSite } from '@master/internal-site/site'
   import HomeIllustrationArt from '@master/internal-site/home/HomeIllustrationArt.svelte'
   import type { HomeCompactIconId } from '@master/internal-site/home/home-illustration.ts'
@@ -437,7 +437,7 @@
 
 {#snippet severityGlyph(severity: HomeCodeWindowProblem['severity'])}
   {@const { Icon, tone } = severityIcons[severity]}
-  <Icon class={tone} size={13} stroke={2} />
+  <Icon class={tone} size={13} />
 {/snippet}
 
 <!-- A column ruler over the code: the reported range is drawn on it like a dimension, with a guide down to the line. -->
@@ -497,7 +497,7 @@
       <div class="home-lint-line" data-diff={line.diff} data-problem={problemLine && marked ? '' : undefined}>
         <span aria-hidden="true" class="home-lint-gutter">
           {#key phase === 'action'}
-            <span class="home-lint-glyph">{#if line.diff}<span class="home-lint-diff-sign">{line.diff === 'add' ? '+' : '−'}</span>{:else if problemLine && marked && phase !== 'apply'}{#if phase === 'action'}<IconBulb class="home-lint-bulb" size={13} stroke={1.75} />{:else}{@render severityGlyph(view.severity)}{/if}{/if}</span>
+            <span class="home-lint-glyph">{#if line.diff}<span class="home-lint-diff-sign">{line.diff === 'add' ? '+' : '−'}</span>{:else if problemLine && marked && phase !== 'apply'}{#if phase === 'action'}<IconBulb class="home-lint-bulb" size={13} />{:else}{@render severityGlyph(view.severity)}{/if}{/if}</span>
           {/key}
           <span class="home-lint-number">{number}</span>
         </span>
@@ -543,7 +543,7 @@
   <section class="home-lint-pane home-window-surface" data-state={state}>
     <HomeEditorBar class="home-lint-pane-bar">
       <HomeEditorTab class="home-lint-tab">
-        <Icon aria-hidden="true" class="home-lint-tab-icon" size={14} stroke={1.75} />
+        <Icon aria-hidden="true" class="home-lint-tab-icon" size={14} />
         <span class="home-lint-tab-label">{name}</span>
       </HomeEditorTab>
       <span class="home-lint-pane-package">{note}</span>
@@ -564,7 +564,7 @@
   <div aria-hidden={phase === 'action' ? undefined : 'true'} class="home-lint-menu" data-open={phase === 'action' ? '' : undefined} bind:this={menuElement}>
     <p class="home-annotation home-lint-menu-label">{t('Quick fix')}</p>
     <button class="home-lint-menu-item" onclick={applyFix} tabindex={phase === 'action' ? 0 : -1} type="button">
-      <IconBulb aria-hidden="true" class="home-lint-menu-icon" size={14} stroke={1.75} />
+      <IconBulb aria-hidden="true" class="home-lint-menu-icon" size={14} />
       <span>{#each fixParts as part, partIndex (partIndex)}{#if partIndex}<code>{rule.problem.source}</code>{/if}{part}{/each}</span>
     </button>
   </div>
@@ -619,7 +619,7 @@
       <HomeEditorBar class="home-lint-bar">
         <HomeEditorLights />
         <HomeEditorTab class="home-lint-tab">
-          <IconBrandHtml5 aria-hidden="true" class="home-lint-tab-icon" size={14} stroke={1.75} />
+          <IconBrandHtml5 aria-hidden="true" class="home-lint-tab-icon" size={14} />
           <span class="home-lint-tab-label">{rule.file}</span>
         </HomeEditorTab>
         <span class="home-lint-surface-name">{rule.problem.severity === 'info' ? t('MCP server') : 'ESLint'}</span>
@@ -655,13 +655,13 @@
             {@const current = index === active}
             <div aria-hidden={current ? undefined : 'true'} class="home-lint-problem-cell" data-active={current ? '' : undefined}>
               <p class="home-lint-problem" data-shown={current && reported ? '' : undefined}>
-                <Icon aria-hidden="true" class={['home-lint-problem-icon', itemTone].join(' ')} size={15} stroke={1.75} />
+                <Icon aria-hidden="true" class={['home-lint-problem-icon', itemTone].join(' ')} size={15} />
                 <span class="home-lint-problem-rule">{item.problem.source}</span>
                 <span class="home-lint-loc">{shortLocation(item.problem.location)}</span>
               </p>
               {#if item.fixedCode}
                 <p class="home-lint-problem" data-shown={current && fixed ? '' : undefined}>
-                  <IconCircleCheck aria-hidden="true" class="home-lint-problem-icon home-tone-ok" size={15} stroke={1.75} />
+                  <IconCircleCheck aria-hidden="true" class="home-lint-problem-icon home-tone-ok" size={15} />
                   <span class="home-lint-problem-rule">{item.problem.source}</span>
                   <span>{t('Fixed')}</span>
                 </p>
@@ -671,7 +671,7 @@
         </div>
         {#if done}
           <button class="home-lint-replay" onclick={replay} type="button">
-            <IconRotateClockwise aria-hidden="true" size={14} stroke={1.75} />
+            <IconRotateClockwise aria-hidden="true" size={14} />
             {t('Replay')}
           </button>
         {/if}
