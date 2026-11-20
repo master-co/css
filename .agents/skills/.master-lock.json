@@ -10,7 +10,7 @@
   },
   "schema": 1,
   "package": "@master/internal-skills",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "skills": [
     "master-design",
     "master-site",
@@ -78,7 +78,7 @@
     "master-design/references/typography.md": "f495c69d07bfc32530c328ff3ab4f0e02d54389d5ddbecf2a4c38feac2bc22c2",
     "master-design/SKILL.md": "88601a8455d42441c011272570551305389e11403d143ec5c20c46ad6ba96d5e",
     "master-site/SKILL.md": "ddb5888aece02e6ac34fe1d4762df1a2d2d19945fbaba2722e0f8e0d6b247f6c",
-    "master-writing/references/document-components.md": "9c576a83d64c8e3c32a73d77d48d18a2d29cc64ad050ffbe21033d6b873486c4",
+    "master-writing/references/document-components.md": "9948e6bedf03965288a04cde93966ed872a2db43c6ae518a162eca7604e94047",
     "master-writing/references/style.md": "60f194f3b6c0be1feae0078916c97cdc7036914ca2551d9195a8e3e0608d32a4",
     "master-writing/SKILL.md": "255767b08dd8748bd83309e31e2d095db8f3fcd7f45f0536ec064856285d552d"
   }

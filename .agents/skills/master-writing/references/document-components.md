@@ -15,7 +15,7 @@ and neighboring tooling, parameter and agent pages show the shared presentations
 | Short two-column prose or syntax comparisons | `DocumentComparison` around the Markdown table |
 | Short syntax tokens paired with native CSS | `DocumentCodeTable` |
 | Verified source/result pairs or labeled diagnostics | `DocumentCodeExample` |
-| Short related-link groups | `DocumentChoices`; large catalogs use the site's index |
+| Short related-link groups | A Markdown list of links; large catalogs use the site's index |
 | Short static ordered processes | `DocumentFlow` |
 
 Ordinary Markdown already maps code fences, tables, inline code and callout
