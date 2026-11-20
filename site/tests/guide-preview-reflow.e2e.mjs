@@ -34,7 +34,8 @@ for (const engine of engines) for (const slug of routes) {
         const frame = await (await fixed.elementHandle()).contentFrame()
         await frame.evaluate(() => document.documentElement.style.fontSize = '32px')
         await frame.evaluate(() => document.fonts.ready)
-        const height = (await fixed.boundingBox()).height
+        // Measured in the page: Playwright's Firefox bounding box loses precision at a fractional offset (639.99997).
+        const height = await fixed.evaluate(element => element.getBoundingClientRect().height)
         assert.equal(height, 640, 'the configured capture viewport stays fixed at enlarged text')
         for (const fallback of ['reduced', 'unavailable']) {
           await page.emulateMedia({ reducedMotion: fallback === 'reduced' ? 'reduce' : 'no-preference' })
@@ -49,7 +50,7 @@ for (const engine of engines) for (const slug of routes) {
           assert.equal(await frame.locator('[data-article-detail]:not([hidden])').count(), 1)
           await frame.getByRole('button', { name: 'Back to collection' }).click()
           await frame.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Read Designing transitions that preserve context')
-          assert.equal((await fixed.boundingBox()).height, height, 'view changes do not resize the capture viewport')
+          assert.equal(await fixed.evaluate(element => element.getBoundingClientRect().height), height, 'view changes do not resize the capture viewport')
           const metrics = await frame.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth, height: innerHeight, content: document.documentElement.scrollHeight, top: scrollY }))
           assert.ok(metrics.scroll <= metrics.width + 1, JSON.stringify(metrics))
           assert.ok(metrics.content > metrics.height && metrics.top > 0, 'enlarged content remains reachable through internal scrolling')
