@@ -75,73 +75,73 @@
     },
     "guide/cascade-layers/contract.mdx": {
       "tw": {
-        "sourceHash": "169dfa42faf541d29e2c24c1604c5347a0a44021e44453c69b0a2868546e4940",
+        "sourceHash": "cf2096cb393e0518cfc7c36771ce53569d72b594cd47ac79f31152f42a913a99",
         "translationHash": "9c27b1f7b1854d06cb47358950a898631b8b1432d008e1709e23327aeb1e43d5"
       },
       "ja": {
-        "sourceHash": "169dfa42faf541d29e2c24c1604c5347a0a44021e44453c69b0a2868546e4940",
+        "sourceHash": "cf2096cb393e0518cfc7c36771ce53569d72b594cd47ac79f31152f42a913a99",
         "translationHash": "3c6db29f0a60afc954dbcc6906d67f512c71866a8610be7e90dcda475f0a5f2d"
       },
       "ko": {
-        "sourceHash": "169dfa42faf541d29e2c24c1604c5347a0a44021e44453c69b0a2868546e4940",
+        "sourceHash": "cf2096cb393e0518cfc7c36771ce53569d72b594cd47ac79f31152f42a913a99",
         "translationHash": "85c8f5d4f2ab428a1c381b7ff8c2e8abe41695187dec84579fd03b8ef5b96971"
       },
       "cn": {
-        "sourceHash": "169dfa42faf541d29e2c24c1604c5347a0a44021e44453c69b0a2868546e4940",
+        "sourceHash": "cf2096cb393e0518cfc7c36771ce53569d72b594cd47ac79f31152f42a913a99",
         "translationHash": "e36ce60004f003c4941361dbd160198e602fb2694195c2b21ec53ee3b2acb158"
       }
     },
     "guide/class-extraction/contract.mdx": {
       "tw": {
-        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "sourceHash": "794537b660d8e69d5d1974009e2ca6d30362fd6e27cad37478147c89a6f0b725",
         "translationHash": "ded2392ccc1cbe377e778cfd1999e2e2e8d6255d37b0fd7e69b7a83eee14be5a"
       },
       "ja": {
-        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "sourceHash": "794537b660d8e69d5d1974009e2ca6d30362fd6e27cad37478147c89a6f0b725",
         "translationHash": "1911b77807eb6823ea3c0c53a1a6b544e232699bf17a7a028f33dc530b8416d8"
       },
       "ko": {
-        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "sourceHash": "794537b660d8e69d5d1974009e2ca6d30362fd6e27cad37478147c89a6f0b725",
         "translationHash": "0efc08a0e7678522609cdaf677118f534ee3a42302db5e77a8e7ed5531174d0b"
       },
       "cn": {
-        "sourceHash": "9393fb250a26e38c8bca99475edfa774837d0e317573be2272bfcf990d02de8f",
+        "sourceHash": "794537b660d8e69d5d1974009e2ca6d30362fd6e27cad37478147c89a6f0b725",
         "translationHash": "24f014c3d7925760cf3d21b6c7726e8b3cfc711a5fd4d97541bb18ce4f861f05"
       }
     },
     "guide/code-linting/content.mdx": {
       "tw": {
-        "sourceHash": "c30071cce5a01cd58e370c073dabe6cda44b60e431fab0dd945ef2224fee178f",
+        "sourceHash": "21c9bf6d33f6d27d83a5d73c760579fadd5df5057839feeff71c40784f734fc3",
         "translationHash": "99c8cd685efbfa6a9045f4768bad067f8dbcd54d5fe58a428c78f7852ba4e858"
       },
       "ja": {
-        "sourceHash": "c30071cce5a01cd58e370c073dabe6cda44b60e431fab0dd945ef2224fee178f",
+        "sourceHash": "21c9bf6d33f6d27d83a5d73c760579fadd5df5057839feeff71c40784f734fc3",
         "translationHash": "35093c475492f0264416b9da8bcea6c004f2692bc01ea8e3a2b422a550c3e13b"
       },
       "ko": {
-        "sourceHash": "c30071cce5a01cd58e370c073dabe6cda44b60e431fab0dd945ef2224fee178f",
+        "sourceHash": "21c9bf6d33f6d27d83a5d73c760579fadd5df5057839feeff71c40784f734fc3",
         "translationHash": "60da6e3b589d9bcd46a808d46f7a19b278d53c5125e1f903ee15b3e874c640b4"
       },
       "cn": {
-        "sourceHash": "c30071cce5a01cd58e370c073dabe6cda44b60e431fab0dd945ef2224fee178f",
+        "sourceHash": "21c9bf6d33f6d27d83a5d73c760579fadd5df5057839feeff71c40784f734fc3",
         "translationHash": "f7b9527ddd57550c305bf98f73e801939a0758c5946ece37e90db2fbd0092cf2"
       }
     },
     "guide/colors/content.mdx": {
       "tw": {
-        "sourceHash": "fed679d0e2a5097e69b1bad35415c8bf793f1a2315de9dd0e6d09f07f91a34c3",
+        "sourceHash": "01cbdb853e227d6c6552d9c3640fb7ff3096d2ab481b9d37c0f5ec96de6f2d45",
         "translationHash": "19242b5d98036a0a5ea4068323d320a2a97aa647ffdb309609c302f088f67e99"
       },
       "ja": {
-        "sourceHash": "fed679d0e2a5097e69b1bad35415c8bf793f1a2315de9dd0e6d09f07f91a34c3",
+        "sourceHash": "01cbdb853e227d6c6552d9c3640fb7ff3096d2ab481b9d37c0f5ec96de6f2d45",
         "translationHash": "3811588e93898abeebd2534d465b3297879532dc7325ccff67dd6f6ce75782a5"
       },
       "ko": {
-        "sourceHash": "fed679d0e2a5097e69b1bad35415c8bf793f1a2315de9dd0e6d09f07f91a34c3",
+        "sourceHash": "01cbdb853e227d6c6552d9c3640fb7ff3096d2ab481b9d37c0f5ec96de6f2d45",
         "translationHash": "a6966e7d73e9e57a25238027726c402e6c9e56f3591a7435bc671cc66e9a3ef2"
       },
       "cn": {
-        "sourceHash": "fed679d0e2a5097e69b1bad35415c8bf793f1a2315de9dd0e6d09f07f91a34c3",
+        "sourceHash": "01cbdb853e227d6c6552d9c3640fb7ff3096d2ab481b9d37c0f5ec96de6f2d45",
         "translationHash": "1eb69dfb1f6c1dd80380f8ed2481f1091e4fe214527f2d1af4b20a9ce8160a71"
       }
     },
@@ -165,19 +165,19 @@
     },
     "guide/conditional-queries/contract.mdx": {
       "tw": {
-        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "sourceHash": "8f5aa5bdca30ecaf9f18825abd58b9d13c251c545f269b3efe6dd9ab6f1f6fd0",
         "translationHash": "8de04844197115892b112dd1c9fadb88909d022a97f30cbff0c61fbcd3edbc56"
       },
       "ja": {
-        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "sourceHash": "8f5aa5bdca30ecaf9f18825abd58b9d13c251c545f269b3efe6dd9ab6f1f6fd0",
         "translationHash": "1a2c0722fb2eead12fc3a33e4ea85386b10c3c91d60b393e1145be93b7e06a9e"
       },
       "ko": {
-        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "sourceHash": "8f5aa5bdca30ecaf9f18825abd58b9d13c251c545f269b3efe6dd9ab6f1f6fd0",
         "translationHash": "18cdf14bf9a2ca963a12b9b097c9c0f8640a53b6cc8a02392eafbd65335baf03"
       },
       "cn": {
-        "sourceHash": "be0907bd9a1961f2101a716e07ebd20288a17589c659a81c3b3a95273dcd7fd9",
+        "sourceHash": "8f5aa5bdca30ecaf9f18825abd58b9d13c251c545f269b3efe6dd9ab6f1f6fd0",
         "translationHash": "cf2ea378e0124e5863eee207559455bd70ac9ee3f8f3f151ddcd3c306be3823d"
       }
     },
@@ -201,19 +201,19 @@
     },
     "guide/directives/contract.mdx": {
       "tw": {
-        "sourceHash": "d75a44eeacd3ecf340fa41f7d66e0636e2f2e7369ce67f564f0ceda81860a9d4",
+        "sourceHash": "d9374613078b3fcd059d886d91e4c21026edd51e591ee9b8aabba8e5fa074176",
         "translationHash": "ba4ef5688a66fd0c736a2e801898fe409b60d0ddfca7b18fc5d8556936e791d5"
       },
       "ja": {
-        "sourceHash": "d75a44eeacd3ecf340fa41f7d66e0636e2f2e7369ce67f564f0ceda81860a9d4",
+        "sourceHash": "d9374613078b3fcd059d886d91e4c21026edd51e591ee9b8aabba8e5fa074176",
         "translationHash": "2af7011703d6eb1b4845d5b53a44f90fc1183e007196dabc774b8bea34bc7347"
       },
       "ko": {
-        "sourceHash": "d75a44eeacd3ecf340fa41f7d66e0636e2f2e7369ce67f564f0ceda81860a9d4",
+        "sourceHash": "d9374613078b3fcd059d886d91e4c21026edd51e591ee9b8aabba8e5fa074176",
         "translationHash": "f065be83bafbb6412604c7780f07ee1d9dd1dbf7ce43cfcadec282d3a4fe2484"
       },
       "cn": {
-        "sourceHash": "d75a44eeacd3ecf340fa41f7d66e0636e2f2e7369ce67f564f0ceda81860a9d4",
+        "sourceHash": "d9374613078b3fcd059d886d91e4c21026edd51e591ee9b8aabba8e5fa074176",
         "translationHash": "097fba8f73388b327ab611f1ddf118c537b165bc28eeb4f55053494c18308e7b"
       }
     },
@@ -489,19 +489,19 @@
     },
     "guide/layout-system/content.mdx": {
       "tw": {
-        "sourceHash": "8a18472fa357e95f082175c3ea8c2e568a72746ad257d8efbcf218b1b0320304",
+        "sourceHash": "abe431cefee163d0945e0200627cce434958309cae73d444b91a46a1f196615e",
         "translationHash": "cd735b7b9576ab45a934eec5621fa572360582bf93e3a99c6147ca3489b11a7d"
       },
       "ja": {
-        "sourceHash": "8a18472fa357e95f082175c3ea8c2e568a72746ad257d8efbcf218b1b0320304",
+        "sourceHash": "abe431cefee163d0945e0200627cce434958309cae73d444b91a46a1f196615e",
         "translationHash": "b2672525cc308fa7580689dbad27b07ed6337fa8c54ec9f0fd37a8036cd2d2b7"
       },
       "ko": {
-        "sourceHash": "8a18472fa357e95f082175c3ea8c2e568a72746ad257d8efbcf218b1b0320304",
+        "sourceHash": "abe431cefee163d0945e0200627cce434958309cae73d444b91a46a1f196615e",
         "translationHash": "9ba8e0f9a6c5a0ebbcb12ba6096c27f1fbff2f63e672cb3916040c794f1325e3"
       },
       "cn": {
-        "sourceHash": "8a18472fa357e95f082175c3ea8c2e568a72746ad257d8efbcf218b1b0320304",
+        "sourceHash": "abe431cefee163d0945e0200627cce434958309cae73d444b91a46a1f196615e",
         "translationHash": "e597782eccc6b3ab8e5d1fa55ed5533d95a1963e1ee9e9ca9d7c7c96a33f1b8f"
       }
     },
@@ -633,73 +633,73 @@
     },
     "guide/monorepo/content.mdx": {
       "tw": {
-        "sourceHash": "f705a78d11c409c6ea5e7cb08ea6abb05c0bb253f4f81dd9fae7532dc76d5f08",
+        "sourceHash": "0beb32ab83da59c654f77f9ee2396e3ad9cb0add10dedd5adc235c98b667f22d",
         "translationHash": "f5954fe2999be3ff2d9334cc62e61f6374b52339e00f417c167d5b907e31fd70"
       },
       "ja": {
-        "sourceHash": "f705a78d11c409c6ea5e7cb08ea6abb05c0bb253f4f81dd9fae7532dc76d5f08",
+        "sourceHash": "0beb32ab83da59c654f77f9ee2396e3ad9cb0add10dedd5adc235c98b667f22d",
         "translationHash": "52bb331a06c44ce8cfc68ba6f8d1f04bc6597cc203a736c29dd1660bd0e30bf0"
       },
       "ko": {
-        "sourceHash": "f705a78d11c409c6ea5e7cb08ea6abb05c0bb253f4f81dd9fae7532dc76d5f08",
+        "sourceHash": "0beb32ab83da59c654f77f9ee2396e3ad9cb0add10dedd5adc235c98b667f22d",
         "translationHash": "30e203aab415f6772718e3bb27b0d8e8c98770751ffc15f0a0cd871ac2dbdf09"
       },
       "cn": {
-        "sourceHash": "f705a78d11c409c6ea5e7cb08ea6abb05c0bb253f4f81dd9fae7532dc76d5f08",
+        "sourceHash": "0beb32ab83da59c654f77f9ee2396e3ad9cb0add10dedd5adc235c98b667f22d",
         "translationHash": "878afebdc2c6e999d678705abeb4267a260cb41dc52cb009153efcccd1ae8c1f"
       }
     },
     "guide/optimizing-css-delivery/content.mdx": {
       "tw": {
-        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "sourceHash": "44558ad318fabef855e8b4303746f3a68f40867a363994f4584b64f2bc29e0a2",
         "translationHash": "5b7920ebbc380556c74e79c292f4bfbf9b740369cf006153b982dce09cb8394f"
       },
       "ja": {
-        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "sourceHash": "44558ad318fabef855e8b4303746f3a68f40867a363994f4584b64f2bc29e0a2",
         "translationHash": "fbb80102d3369cd8e4d8f355b34344f96835522871c0226a386fc594383595ce"
       },
       "ko": {
-        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "sourceHash": "44558ad318fabef855e8b4303746f3a68f40867a363994f4584b64f2bc29e0a2",
         "translationHash": "5e5aea6400323cd9078b939462194647ee9d877e09db1c0a72c5c1c3accb40b4"
       },
       "cn": {
-        "sourceHash": "6f65ad45792474c5a939a456834d5e49882f593289fa439469bc4785e6f8f6ac",
+        "sourceHash": "44558ad318fabef855e8b4303746f3a68f40867a363994f4584b64f2bc29e0a2",
         "translationHash": "5ab45383bd0e11ca5ccedb5eafa908b062ff4a7aee0b32f650fdcd09f9093588"
       }
     },
     "guide/rendering-modes/content.mdx": {
       "tw": {
-        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "sourceHash": "d3eb29883fb2de11ae872852e04d5beb95097a4e262fa8b0041ae8c3a65bdcca",
         "translationHash": "9ca6a6299cb54eacee5b4ef71f2bc50b5a6562be9aa9cbb43539f53d8029ef2f"
       },
       "ja": {
-        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "sourceHash": "d3eb29883fb2de11ae872852e04d5beb95097a4e262fa8b0041ae8c3a65bdcca",
         "translationHash": "b7f306d26c6d1857798fbc62dbe0e6396d585636f661df6edb65eb7701c1e03c"
       },
       "ko": {
-        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "sourceHash": "d3eb29883fb2de11ae872852e04d5beb95097a4e262fa8b0041ae8c3a65bdcca",
         "translationHash": "58ef2d7cd6c264df78e44800c7001657e4643a338ecc601d03f204c5079f1d82"
       },
       "cn": {
-        "sourceHash": "d5c06e6126c604a41e07984de35ff5d539536bcba5e6692a16b346a37cb61781",
+        "sourceHash": "d3eb29883fb2de11ae872852e04d5beb95097a4e262fa8b0041ae8c3a65bdcca",
         "translationHash": "ec9d2082267ff8e1190fd4ed3c8075c6fa6093b4bf54cbbbfe893ab0893ba385"
       }
     },
     "guide/responsive-design/content.mdx": {
       "tw": {
-        "sourceHash": "dd068ff476eda3b498f30203fc6d025c9f376dea4af766ba4ef4fa456c7cefd2",
+        "sourceHash": "633bcda48dbdf9ebc949f32ddd9ed6a307084c369280f3826b60160249fc79f1",
         "translationHash": "284ae0aad56f797215b9acac376d962551465851b84d05e9de20f8b127423f53"
       },
       "ja": {
-        "sourceHash": "dd068ff476eda3b498f30203fc6d025c9f376dea4af766ba4ef4fa456c7cefd2",
+        "sourceHash": "633bcda48dbdf9ebc949f32ddd9ed6a307084c369280f3826b60160249fc79f1",
         "translationHash": "8fa61c72d78475f3e341d030e85aceee54efddd6c6d00373e98792606f8c9b35"
       },
       "ko": {
-        "sourceHash": "dd068ff476eda3b498f30203fc6d025c9f376dea4af766ba4ef4fa456c7cefd2",
+        "sourceHash": "633bcda48dbdf9ebc949f32ddd9ed6a307084c369280f3826b60160249fc79f1",
         "translationHash": "fe835092fe6ad7fa9eebfc8d3e64a2554301bbb47f70e4710642841bd34ec076"
       },
       "cn": {
-        "sourceHash": "dd068ff476eda3b498f30203fc6d025c9f376dea4af766ba4ef4fa456c7cefd2",
+        "sourceHash": "633bcda48dbdf9ebc949f32ddd9ed6a307084c369280f3826b60160249fc79f1",
         "translationHash": "40dabe2a192e6cb85150d17cabfd36f2ff78483f7d0719718c77d21a01d116fd"
       }
     },
@@ -741,73 +741,73 @@
     },
     "guide/scanning-and-pruning/content.mdx": {
       "tw": {
-        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "sourceHash": "7b86a9e6d258f57d037df67421609ad566c700f948fc900641f5ad63c48e54a5",
         "translationHash": "0ea6adadec6ec790f5687fe5009ae2d4da054502f24bfdeb9b28a10e627d3f47"
       },
       "ja": {
-        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "sourceHash": "7b86a9e6d258f57d037df67421609ad566c700f948fc900641f5ad63c48e54a5",
         "translationHash": "ead0c271903d8686015e14763abb4aee7591632f402007355cc79d583d6475ec"
       },
       "ko": {
-        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "sourceHash": "7b86a9e6d258f57d037df67421609ad566c700f948fc900641f5ad63c48e54a5",
         "translationHash": "fc76bb315f27f64bbee186628c7a41e8459aa2af7d6b4ce4285602b783035711"
       },
       "cn": {
-        "sourceHash": "58ca0f9d408ad1709e2132c19932b86f352f7b0063330a009c86ebcfb42aefd2",
+        "sourceHash": "7b86a9e6d258f57d037df67421609ad566c700f948fc900641f5ad63c48e54a5",
         "translationHash": "72269bc00fb9973c4fdd0b7cdb7364a55a34c45ff92beb40544035a97accbf14"
       }
     },
     "guide/state-selectors/contract.mdx": {
       "tw": {
-        "sourceHash": "d9773217d9f23f380a09eb37a414c4462061d1b33cb0448bd834f85afb5fc3d5",
+        "sourceHash": "585aad3ea07213017aa42a12aececcda86c797d0ff466c27fd7eda92ce8096b2",
         "translationHash": "1d01101ab3334c55e5490bb747c2e5596c50061ccdc62b5d04e5973c5440a4a0"
       },
       "ja": {
-        "sourceHash": "d9773217d9f23f380a09eb37a414c4462061d1b33cb0448bd834f85afb5fc3d5",
+        "sourceHash": "585aad3ea07213017aa42a12aececcda86c797d0ff466c27fd7eda92ce8096b2",
         "translationHash": "4aa0749c520e09a88676b7466ce69ac6e0628fe0851532c712dda55ee02b1321"
       },
       "ko": {
-        "sourceHash": "d9773217d9f23f380a09eb37a414c4462061d1b33cb0448bd834f85afb5fc3d5",
+        "sourceHash": "585aad3ea07213017aa42a12aececcda86c797d0ff466c27fd7eda92ce8096b2",
         "translationHash": "bcb7545c197533c35313b9ee5ea7eaac7858c3b7e010870160817afb3f50130c"
       },
       "cn": {
-        "sourceHash": "d9773217d9f23f380a09eb37a414c4462061d1b33cb0448bd834f85afb5fc3d5",
+        "sourceHash": "585aad3ea07213017aa42a12aececcda86c797d0ff466c27fd7eda92ce8096b2",
         "translationHash": "06ec3ba1bb66328355722ab1792ce8fcc4a763d0eb16c19fdb702af9a7e7addb"
       }
     },
     "guide/style-declarations/contract.mdx": {
       "tw": {
-        "sourceHash": "66ff4f67843ce5a5467fb8806e86b79673ca3563538bec2d87ac4f507965de20",
+        "sourceHash": "b5f0aae48cef226018908eb1c039e73d1159c10c3d4fd02d81c147f86a5fe0f8",
         "translationHash": "87b2f9b5bf3e18f9f9be65ffecc9b6966d20a9022224f861dd2e9c79c2d0d7c1"
       },
       "ja": {
-        "sourceHash": "66ff4f67843ce5a5467fb8806e86b79673ca3563538bec2d87ac4f507965de20",
+        "sourceHash": "b5f0aae48cef226018908eb1c039e73d1159c10c3d4fd02d81c147f86a5fe0f8",
         "translationHash": "739536dc05b3478f0b79fabd0c75e2a9717b7195fb04c522ed1038d7db5d55c0"
       },
       "ko": {
-        "sourceHash": "66ff4f67843ce5a5467fb8806e86b79673ca3563538bec2d87ac4f507965de20",
+        "sourceHash": "b5f0aae48cef226018908eb1c039e73d1159c10c3d4fd02d81c147f86a5fe0f8",
         "translationHash": "6c65ecab5bf69aef02b355203bde665d28b093ee5519ccafb3bf5f909a9fb15d"
       },
       "cn": {
-        "sourceHash": "66ff4f67843ce5a5467fb8806e86b79673ca3563538bec2d87ac4f507965de20",
+        "sourceHash": "b5f0aae48cef226018908eb1c039e73d1159c10c3d4fd02d81c147f86a5fe0f8",
         "translationHash": "cf6a949a5261191a0581473f833f7b5c74e6b2bf98990977d4d07685f74b371c"
       }
     },
     "guide/syntax-tutorial/content.mdx": {
       "tw": {
-        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "sourceHash": "a93097ce2c4fa22189aad4e4f2e3bfd52278e4f4ecbd9079c02f5d202a909deb",
         "translationHash": "4635cc23cfccfda66a43fcc7cd331bbfc18197a3367b4380668aa09533b68953"
       },
       "ja": {
-        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "sourceHash": "a93097ce2c4fa22189aad4e4f2e3bfd52278e4f4ecbd9079c02f5d202a909deb",
         "translationHash": "7449dc7aa37ff11f79b58bbcde304cf9c70b69e446d655a5527bad8a553c4ced"
       },
       "ko": {
-        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "sourceHash": "a93097ce2c4fa22189aad4e4f2e3bfd52278e4f4ecbd9079c02f5d202a909deb",
         "translationHash": "1f64fe685ec5d99ae8d1c0f47bd2e1d6dbeb429efc4a1faf4e055c7b17c41c52"
       },
       "cn": {
-        "sourceHash": "c9927b1ceb05e744bb8a613382c68ac27050be78eb60b2390fca3ebc2afa7a54",
+        "sourceHash": "a93097ce2c4fa22189aad4e4f2e3bfd52278e4f4ecbd9079c02f5d202a909deb",
         "translationHash": "36413bcc6a7a658dd65a11f97d65f521c2dbb14aff85045ed92d76025a94a3bb"
       }
     },
@@ -831,37 +831,37 @@
     },
     "guide/typography/content.mdx": {
       "tw": {
-        "sourceHash": "9de68a8356e0f84778236391e80cc57820e5c2ced6fee268195a646a72d6d80f",
+        "sourceHash": "d3bdaee42930dee60a7dba3a11437fe66472148624403a300258b691e0c4478c",
         "translationHash": "2f7ed724b359d45bd3f0bf1596f8c38476074328640ccffbc0d550f95cf12f8f"
       },
       "ja": {
-        "sourceHash": "9de68a8356e0f84778236391e80cc57820e5c2ced6fee268195a646a72d6d80f",
+        "sourceHash": "d3bdaee42930dee60a7dba3a11437fe66472148624403a300258b691e0c4478c",
         "translationHash": "71a154c652fb2e6e103b974e55e54bf4f9c2ef2939c312ebe5221e820c558d40"
       },
       "ko": {
-        "sourceHash": "9de68a8356e0f84778236391e80cc57820e5c2ced6fee268195a646a72d6d80f",
+        "sourceHash": "d3bdaee42930dee60a7dba3a11437fe66472148624403a300258b691e0c4478c",
         "translationHash": "05d4c5bfd3786f04b466098e883bae1e614ffa7d8c48155d6ae38ca6abd76382"
       },
       "cn": {
-        "sourceHash": "9de68a8356e0f84778236391e80cc57820e5c2ced6fee268195a646a72d6d80f",
+        "sourceHash": "d3bdaee42930dee60a7dba3a11437fe66472148624403a300258b691e0c4478c",
         "translationHash": "dc49159f3d6949c0d5b3ff56dc8224c25fa976cb48621c232d0856ca64280f45"
       }
     },
     "guide/variable-modes/contract.mdx": {
       "tw": {
-        "sourceHash": "e2f83ccd990cd8e680cebfee5b41c3e7eb56e6a301f988386e87c9a496c47da9",
+        "sourceHash": "75c447191289dcb2a33c9eb9edd648801579ca432c84435fa05e302dabc05b4c",
         "translationHash": "8b7946c3c0f82566a1a9307fea008d13b730a65d03a8032da64a1dc3eeaa9614"
       },
       "ja": {
-        "sourceHash": "e2f83ccd990cd8e680cebfee5b41c3e7eb56e6a301f988386e87c9a496c47da9",
+        "sourceHash": "75c447191289dcb2a33c9eb9edd648801579ca432c84435fa05e302dabc05b4c",
         "translationHash": "8212ce4cf67b8564b2d02d3808fc1b610f56342b2013b97caaf0c4f5ba4b4b47"
       },
       "ko": {
-        "sourceHash": "e2f83ccd990cd8e680cebfee5b41c3e7eb56e6a301f988386e87c9a496c47da9",
+        "sourceHash": "75c447191289dcb2a33c9eb9edd648801579ca432c84435fa05e302dabc05b4c",
         "translationHash": "8909f49e68ec1262a793f2ec9269635a738532e0044aeac179af9c002f3f2156"
       },
       "cn": {
-        "sourceHash": "e2f83ccd990cd8e680cebfee5b41c3e7eb56e6a301f988386e87c9a496c47da9",
+        "sourceHash": "75c447191289dcb2a33c9eb9edd648801579ca432c84435fa05e302dabc05b4c",
         "translationHash": "4bf08f46ce57deb330e4b1de573720436c7f2118c811dbb5a9fb41ec93d7daaa"
       }
     },
