@@ -1,7 +1,7 @@
 <script lang="ts">
   import '~/site/styles/promo-video.css'
   import Image from '@master/internal-site/components/Image.svelte'
-  import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
+  import IconPlayerPlayFilled from '@master/icons-svelte/native/24/soft/play'
   import { getSite } from '@master/internal-site/site'
   import poster from '~/site/assets/images/promo/master-css-2-0.jpg'
   import { isPlainClick, promoEmbedUrl, promoVideo } from '~/site/utils/promo-video'
@@ -33,7 +33,7 @@
   {:else}
     <a class="promo-video-poster" href={promoVideo.watchUrl} onclick={play}>
       <Image alt="" fill sizes="(min-width: 52rem) 45rem, 100vw" src={poster} />
-      <span class="promo-video-play" aria-hidden="true"><IconPlayerPlayFilled size={22} /></span>
+      <span class="promo-video-play" aria-hidden="true"><IconPlayerPlayFilled size={22} fill="currentColor" /></span>
       <span class="sr-only">{t('Watch the film')}: {promoVideo.title}</span>
     </a>
   {/if}

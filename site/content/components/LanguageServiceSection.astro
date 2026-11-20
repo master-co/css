@@ -1,6 +1,6 @@
 ---
 import './editor-tiles.css'
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import IconArrowRight from '@master/icons-astro/native/16/soft/arrow-right'
 import Link from '@master/internal-site/components/Link.svelte'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import EditorFigures from './EditorFigures.svelte'
@@ -36,7 +36,7 @@ const { t } = siteOf(Astro)
     <div class="home-editor-guide">
       <Link class="home-section-link" href="/guide/language-service">
         {t('Explore the language service')}
-        <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+        <IconArrowRight aria-hidden="true" size={16} />
       </Link>
     </div>
   </div>

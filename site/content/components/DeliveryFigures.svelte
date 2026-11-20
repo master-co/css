@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import IconPlayerPauseFilled from '@tabler/icons-svelte-runes/icons/player-pause-filled'
-  import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
-  import IconRotate from '@tabler/icons-svelte-runes/icons/rotate'
+  import IconPlayerPauseFilled from '@master/icons-svelte/native/16/soft/pause'
+  import IconPlayerPlayFilled from '@master/icons-svelte/native/16/soft/play'
+  import IconRotate from '@master/icons-svelte/native/16/soft/refresh'
   import { getSite } from '@master/internal-site/site'
   import { deliveryEnd, deliveryExplanations, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
 
@@ -569,9 +569,9 @@
   <!-- Every state renders on the server: the page runs on prerendered CSS, so a class that first appears in the browser would have no rule. -->
   <!-- The page lamp writes its light onto the play button before or after hydration. -->
   <button aria-label={playLabel} class="home-delivery-play home-lit home-stone home-stone-button home-stone-quiet" data-playback={playback} hidden={!motion} onclick={() => controls?.toggle()} title={playLabel} type="button">
-    <IconPlayerPauseFilled aria-hidden="true" data-icon="playing" size={12} stroke={1.75} />
-    <IconPlayerPlayFilled aria-hidden="true" data-icon="paused" size={12} stroke={1.75} />
-    <IconRotate aria-hidden="true" data-icon="ended" size={13} stroke={1.75} />
+    <IconPlayerPauseFilled aria-hidden="true" data-icon="playing" size={12} fill="currentColor" />
+    <IconPlayerPlayFilled aria-hidden="true" data-icon="paused" size={12} fill="currentColor" />
+    <IconRotate aria-hidden="true" data-icon="ended" size={13} />
   </button>
   <div aria-label={translate('Timeline')} class="home-delivery-timeline" role="group">
     {#each deliveryMoments as item, index (item.id)}

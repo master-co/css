@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import IconColorPicker from '@tabler/icons-svelte-runes/icons/color-picker'
-  import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code'
-  import IconPlayerPauseFilled from '@tabler/icons-svelte-runes/icons/player-pause-filled'
-  import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
-  import IconVariable from '@tabler/icons-svelte-runes/icons/variable'
-  import IconX from '@tabler/icons-svelte-runes/icons/x'
+  import IconColorPicker from '@master/icons-svelte/native/16/soft/pipette'
+  import IconFileCode from '@master/icons-svelte/native/16/soft/file-code'
+  import IconPlayerPauseFilled from '@master/icons-svelte/native/16/soft/pause'
+  import IconPlayerPlayFilled from '@master/icons-svelte/native/16/soft/play'
+  import IconVariable from '@master/icons-svelte/native/16/soft/variable'
+  import IconX from '@master/icons-svelte/native/16/soft/x'
   import { getSite } from '@master/internal-site/site'
   import HomeEditorBar from './HomeEditorBar.svelte'
   import HomeEditorLights from './HomeEditorLights.svelte'
@@ -516,7 +516,7 @@
     <HomeEditorWindow>
       <HomeEditorBar aria-hidden="true">
         <HomeEditorLights />
-        <HomeEditorTab><IconFileCode size={14} stroke={1.75} /><span class="home-editor-file-name">{model.fileName}</span></HomeEditorTab>
+        <HomeEditorTab><IconFileCode size={14} /><span class="home-editor-file-name">{model.fileName}</span></HomeEditorTab>
         <span class="home-editor-status">{t('Ln {line}, Col {column}').replace('{line}', String(caretLine + 1)).replace('{column}', String(frame.caret[1] + 1))}</span>
       </HomeEditorBar>
       <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -606,7 +606,7 @@
             </div>
             {#if hover.tokens.length > 0}
               <div class="home-editor-hover-tokens">
-                <IconVariable aria-hidden="true" size={14} stroke={1.75} />
+                <IconVariable aria-hidden="true" size={14} />
                 <span class="sr-only">{t('Token')}</span>
                 {#each hover.tokens as token (token)}<code>{token}</code>{/each}
               </div>
@@ -620,7 +620,7 @@
               <div class="home-editor-suggest-heading"><span>{t('Completions')}</span><span>{suggestions.length}</span></div>
               {#each suggestions.slice(0, menuRows) as item, index (item.label)}
                 <div class="home-editor-suggest-item" data-focused={index === 0 ? '' : undefined}>
-                  <IconVariable aria-hidden="true" class="home-editor-suggest-icon" size={14} stroke={1.75} />
+                  <IconVariable aria-hidden="true" class="home-editor-suggest-icon" size={14} />
                   <span class="home-editor-suggest-label">{#each [...item.label] as character, position (position)}{#if item.matches.includes(position)}<b>{character}</b>{:else}{character}{/if}{/each}</span>
                 </div>
               {/each}
@@ -628,11 +628,11 @@
                 <span class="home-editor-suggest-scroll" style:--editor-suggest-thumb={menuRows / suggestions.length}></span>
               {/if}
               {#if detail}
-                <div class="home-editor-suggest-inline"><IconVariable aria-hidden="true" size={12} stroke={1.75} /><span>{detailToken?.slice(7, -1)}</span></div>
+                <div class="home-editor-suggest-inline"><IconVariable aria-hidden="true" size={12} /><span>{detailToken?.slice(7, -1)}</span></div>
               {/if}
             </div>
             <div class="home-editor-pane home-editor-suggest-docs" data-open={menuOpen && detail ? '' : undefined}>
-              <p class="home-editor-suggest-docs-token"><IconVariable aria-hidden="true" size={14} stroke={1.75} />{detailToken?.slice(7, -1)}</p>
+              <p class="home-editor-suggest-docs-token"><IconVariable aria-hidden="true" size={14} />{detailToken?.slice(7, -1)}</p>
               <p class="home-editor-suggest-docs-scope">{detailScope}:</p>
               <!-- Break the value only after its commas, never inside a custom property name. -->
               <p class="home-editor-suggest-docs-value">{#each detailValue?.split(/(?<=,) /) ?? [] as part, index (index)}<span>{index ? ' ' : ''}<span class="home-editor-nowrap">{part}</span></span>{/each}</p>
@@ -648,11 +648,11 @@
             <div class="home-editor-picker-header" style:min-height={`${picker.header}px`}>
               <label class="home-editor-picker-new" data-dark={isDark(pickerHex) ? '' : undefined} style:background-color={pickerHex} title={t('Edit literal color')}>
                 <input aria-label={t('Literal color')} onchange={(event) => pick(hexToHsv(event.currentTarget.value))} oninput={(event) => pick(hexToHsv(event.currentTarget.value))} onkeydown={escape} type="color" value={pickerHex} />
-                <IconColorPicker aria-hidden="true" size={14} stroke={1.75} />
+                <IconColorPicker aria-hidden="true" size={14} />
                 <span>{pickerHex}</span>
               </label>
               <button aria-label={t('Reset color')} class="home-editor-picker-original" onclick={() => pick(hexToHsv(geometry.literalHex))} onkeydown={escape} style:background-color={geometry.literalHex} title={t('Reset color')} type="button"></button>
-              <button aria-label={t('Close color picker')} class="home-editor-picker-close" onclick={() => closePicker()} onkeydown={escape} title={t('Close color picker')} type="button"><IconX aria-hidden="true" size={14} stroke={1.75} /></button>
+              <button aria-label={t('Close color picker')} class="home-editor-picker-close" onclick={() => closePicker()} onkeydown={escape} title={t('Close color picker')} type="button"><IconX aria-hidden="true" size={14} /></button>
             </div>
             <div class="home-editor-picker-body" style:padding={`${picker.inset}px`} style:gap={`${picker.gap}px`}>
               <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -687,14 +687,14 @@
         </div>
       </div>
       <div class="home-editor-footer">
-        <span aria-hidden="true" class="home-editor-file-type"><IconFileCode size={14} stroke={1.75} />HTML</span>
+        <span aria-hidden="true" class="home-editor-file-type"><IconFileCode size={14} />HTML</span>
         <span aria-hidden="true" class="home-editor-scene"><span>{String(sceneIndex + 1).padStart(2, '0')} / {String(features.length).padStart(2, '0')}</span>{t(features[sceneIndex].label)}</span>
         {#if !reduceMotion}
           <button class="home-editor-playback" onclick={togglePlayback} type="button">
             {#if touring && !paused}
-              <IconPlayerPauseFilled aria-hidden="true" size={12} />
+              <IconPlayerPauseFilled aria-hidden="true" size={12} fill="currentColor" />
             {:else}
-              <IconPlayerPlayFilled aria-hidden="true" size={12} />
+              <IconPlayerPlayFilled aria-hidden="true" size={12} fill="currentColor" />
             {/if}
             {touring && !paused ? t('Pause demo') : t('Play demo')}
           </button>

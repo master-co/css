@@ -1,7 +1,7 @@
 ---
 import './segmented-control.css'
 import './delivery.css'
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import IconArrowRight from '@master/icons-astro/native/16/soft/arrow-right'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import Link from '@master/internal-site/components/Link.svelte'
 import DeliveryFigures from './DeliveryFigures.svelte'
@@ -28,7 +28,7 @@ const { t } = siteOf(Astro)
       label={t('Rendering')}
       title={t('One syntax. Every delivery path.')}
       body={t('Choose static, prerender, or runtime delivery. Your classes stay the same.')}>
-      <Link class="home-section-link" href="/guide/rendering-modes">{t('Compare rendering modes')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+      <Link class="home-section-link" href="/guide/rendering-modes">{t('Compare rendering modes')}<IconArrowRight aria-hidden="true" size={16} /></Link>
     </HomeSectionHeader>
 
     {/*

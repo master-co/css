@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
-  import IconBackpack from '@tabler/icons-svelte-runes/icons/backpack'
-  import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left'
-  import IconShoe from '@tabler/icons-svelte-runes/icons/shoe'
-  import IconShoppingBag from '@tabler/icons-svelte-runes/icons/shopping-bag'
+  import IconBackpack from '@master/icons-svelte/native/24/soft/backpack'
+  import IconChevronLeft from '@master/icons-svelte/native/20/soft/chevron-left'
+  import IconShoe from '@master/icons-svelte/native/24/soft/shoe'
+  import IconShoppingBag from '@master/icons-svelte/native/20/soft/shopping-bag'
   import { getSite } from '@master/internal-site/site'
   import { mountThemeSplit } from './theme-split'
 
@@ -27,10 +27,10 @@
   <div class={['home-theme-screen', mode]}>
     <div class="flex flex-col gap-md p-lg r-3xl bg-surface-base fg-text-strong">
       <div class="flex items-center justify-between (height:var(--spacing-xl))">
-        <IconChevronLeft size={18} stroke={1.75} />
+        <IconChevronLeft size={18} />
         <span class="font-medium home-theme-shop-name">{t('Shop')}</span>
         <span class="relative grid">
-          <IconShoppingBag size={18} stroke={1.75} />
+          <IconShoppingBag size={18} />
           <span class="absolute (right:-0.125rem) (top:-0.125rem) (height:0.4375rem) (width:0.4375rem) pill bg-surface-inverse"></span>
         </span>
       </div>
@@ -51,8 +51,8 @@
   </div>
 {/snippet}
 
-{#snippet backpack()}<IconBackpack size={26} stroke={1.25} />{/snippet}
-{#snippet shoe()}<IconShoe size={26} stroke={1.25} />{/snippet}
+{#snippet backpack()}<IconBackpack size={26} />{/snippet}
+{#snippet shoe()}<IconShoe size={26} />{/snippet}
 
 <!-- A product as a picture and a line of text, with no card around it. -->
 {#snippet product(icon: Snippet, label: string, price: string)}

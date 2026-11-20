@@ -1,9 +1,9 @@
 <script lang="ts">
 import './copy-command.css'
   import { onDestroy } from 'svelte'
-  import IconCheck from '@tabler/icons-svelte-runes/icons/check'
-  import IconCopy from '@tabler/icons-svelte-runes/icons/copy'
-  import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles'
+  import IconCheck from '@master/icons-svelte/native/16/soft/check'
+  import IconCopy from '@master/icons-svelte/native/16/soft/copy'
+  import IconSparkles from '@master/icons-svelte/native/16/soft/sparkles'
   import { getSite } from '@master/internal-site/site'
 
   /**
@@ -36,7 +36,7 @@ import './copy-command.css'
 
 <div class={['home-command home-glass', className]} data-status={status}>
   {#if label}
-    <IconSparkles aria-hidden="true" class="home-command-icon" size={16} stroke={1.75} />
+    <IconSparkles aria-hidden="true" class="home-command-icon" size={16} />
     <span class={wrap ? 'home-command-label wrap-anywhere min-w(0) whitespace-normal' : 'home-command-label truncate min-w(0)'}>{label}</span>
   {:else}
     <span aria-hidden="true" class="fg-text-muted">$</span>
@@ -48,9 +48,9 @@ import './copy-command.css'
     onclick={copy}
     type="button">
     {#if status === 'copied'}
-      <IconCheck aria-hidden="true" size={16} stroke={2} />
+      <IconCheck aria-hidden="true" size={16} />
     {:else}
-      <IconCopy aria-hidden="true" size={16} stroke={1.75} />
+      <IconCopy aria-hidden="true" size={16} />
     {/if}
   </button>
   <span aria-live="polite" class="sr-only">{status === 'copied' ? t('Copied') : status === 'failed' ? t('Copy failed') : ''}</span>

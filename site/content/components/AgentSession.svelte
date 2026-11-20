@@ -44,7 +44,7 @@
   type Mode = 'chosen' | 'paused' | 'tour'
 
   /** Every inline icon in the window shares one size and stroke, so rows line up and read alike. */
-  const icon = { size: 14, stroke: 1.75 } as const
+  const icon = { size: 14 } as const
 
   /** Claude's mark at the avatar's size. */
   const claudeAvatar = claudeLogo.replace('<svg', '<svg height="16" width="16"')
@@ -100,14 +100,16 @@
   import './home-window-surface.css'
   import './home-code-colors.css'
   import { onMount, type Snippet } from 'svelte'
-  import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle'
-  import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check'
-  import IconFileCode from '@tabler/icons-svelte-runes/icons/file-code'
-  import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2'
-  import IconPlayerPauseFilled from '@tabler/icons-svelte-runes/icons/player-pause-filled'
-  import IconPlayerPlayFilled from '@tabler/icons-svelte-runes/icons/player-play-filled'
-  import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check'
-  import IconTerminal2 from '@tabler/icons-svelte-runes/icons/terminal-2'
+  import IconAlertTriangle from '@master/icons-svelte/native/16/soft/alert-triangle'
+  import IconCircleCheck from '@master/icons-svelte/native/16/soft/check-circle'
+  import IconCircleCheck24 from '@master/icons-svelte/native/24/soft/check-circle'
+  import IconFileCode from '@master/icons-svelte/native/16/soft/file-code'
+  import IconLoader2 from '@master/icons-svelte/native/16/soft/loader'
+  import IconLoader224 from '@master/icons-svelte/native/24/soft/loader'
+  import IconPlayerPauseFilled from '@master/icons-svelte/native/16/soft/pause'
+  import IconPlayerPlayFilled from '@master/icons-svelte/native/16/soft/play'
+  import IconShieldCheck from '@master/icons-svelte/native/16/soft/shield-check'
+  import IconTerminal2 from '@master/icons-svelte/native/16/soft/terminal'
   import Image from '@master/internal-site/components/Image.svelte'
   import aronImage from '@master/internal-site/assets/images/authors/aron.jpg'
   import { getSite } from '@master/internal-site/site'
@@ -516,14 +518,14 @@
               <div>
                 <dt>{t('File on disk')}</dt>
                 <!-- The moment the digests match: a seal in gold that settles to the ok tone. -->
-                <dd><code>sha256 <span class="home-agent-hash home-agent-hash-live">{shortHash(hash)}</span></code><span class={['home-agent-match', beat >= at.written && 'home-agent-match-shown']}><IconShieldCheck aria-hidden="true" size={16} stroke={1.75} /></span></dd>
+                <dd><code>sha256 <span class="home-agent-hash home-agent-hash-live">{shortHash(hash)}</span></code><span class={['home-agent-match', beat >= at.written && 'home-agent-match-shown']}><IconShieldCheck aria-hidden="true" size={16} /></span></dd>
               </div>
               <div class={['home-agent-fact-later', beat >= at.written && 'home-agent-fact-shown']}><dt>{t('Written')}</dt><dd><code>sha256 {shortHash(agentSessionResults.afterHash)}</code></dd></div>
             </dl>
           </div>
           <div aria-hidden={panel !== 'clean'} class="home-agent-clean home-agent-panel-view" data-active={panel === 'clean' ? '' : undefined}>
             <div class="home-agent-verdict" data-checking={beat < at.clean ? '' : undefined}>
-              <span aria-hidden="true" class="home-agent-verdict-mark">{#if beat < at.clean}<IconLoader2 class="home-spin" size={24} stroke={1.5} />{:else}<IconCircleCheck size={24} stroke={1.5} />{/if}</span>
+              <span aria-hidden="true" class="home-agent-verdict-mark">{#if beat < at.clean}<IconLoader224 class="home-spin" size={24} />{:else}<IconCircleCheck24 size={24} />{/if}</span>
               <div><p class="home-agent-verdict-title">{beat < at.clean ? t('Checking') : t('No problems')}</p><code>{file}</code></div>
               <span class="home-agent-verdict-count" aria-hidden="true">{beat < at.clean ? '—' : agentSessionResults.relint.diagnostics}</span>
             </div>
@@ -535,7 +537,7 @@
       <div class="home-agent-steps">
         {#if !reduceMotion}
           <!-- The page lamp writes its light onto this button before or after hydration. -->
-          <button aria-label={mode === 'tour' ? t('Pause the session') : t('Play the session')} class="home-agent-play home-lit home-stone home-stone-button home-stone-quiet" onclick={toggle} type="button">{#if mode === 'tour'}<IconPlayerPauseFilled aria-hidden="true" size={12} />{:else}<IconPlayerPlayFilled aria-hidden="true" size={12} />{/if}</button>
+          <button aria-label={mode === 'tour' ? t('Pause the session') : t('Play the session')} class="home-agent-play home-lit home-stone home-stone-button home-stone-quiet" onclick={toggle} type="button">{#if mode === 'tour'}<IconPlayerPauseFilled aria-hidden="true" size={12} fill="currentColor" />{:else}<IconPlayerPlayFilled aria-hidden="true" size={12} fill="currentColor" />{/if}</button>
         {/if}
         <ol aria-label={t('Session steps')} class="home-agent-step-list">
           {#each agentSessionStages as name, index (name)}

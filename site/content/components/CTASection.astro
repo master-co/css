@@ -1,7 +1,7 @@
 ---
 import './cta.css'
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
-import IconBrandGithub from '@tabler/icons-svelte-runes/icons/brand-github'
+import IconArrowRight from '@master/icons-astro/native/16/soft/arrow-right'
+import IconBrandGithub from '@master/icons-astro/native/16/soft/brand-github-outline'
 import Link from '@master/internal-site/components/Link.svelte'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import CopyCommand from './CopyCommand.svelte'
@@ -20,13 +20,13 @@ const { t } = siteOf(Astro)
         {/* The canvas lamp lights the title and these controls itself, so they carry no `home-lit`. */}
         <Link class="home-action home-cta-start home-stone home-stone-button" href="/guide/introduction">
           {t('Get started')}
-          <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+          <IconArrowRight aria-hidden="true" size={16} />
         </Link>
         <CopyCommand client:idle={{ timeout: 500 }} command={installPrompt(import.meta.env.PUBLIC_VERSION, import.meta.env.PUBLIC_URL)} label={t('Set up with your AI agent')} copyLabel={t('Copy setup prompt')} wrap />
       </div>
       {/* A quiet way to support the project, below and smaller than the two ways to start. */}
       <Link class="home-cta-star home-glass" href="https://github.com/master-co/css">
-        <IconBrandGithub aria-hidden="true" size={16} stroke={1.75} />
+        <IconBrandGithub aria-hidden="true" size={16} />
         {t('Star us on GitHub')}
       </Link>
       <div class="home-cta-field" aria-hidden="true">

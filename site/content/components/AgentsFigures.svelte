@@ -33,7 +33,7 @@
 </script>
 
 <script lang="ts">
-  import IconBrandOpenai from '@tabler/icons-svelte-runes/icons/brand-openai'
+  import IconBrandOpenai from '@master/icons-svelte/native/24/soft/brand-openai'
   import Link from '@master/internal-site/components/Link.svelte'
   import { getSite } from '@master/internal-site/site'
   import type { AgentsCanvas } from './agents-canvas'
@@ -104,7 +104,7 @@
         <li class="home-mcp-client" data-side={index === 0 || index >= 5 ? 'above' : 'below'} style:--home-mcp-angle={`${index * 45 - 22.5}deg`}>
           <Link aria-label={name} class="home-mcp-client-link" href="/guide/ai-coding#connect-the-mcp-server">
             <span class="home-mcp-client-mark" style:--home-brand={color}>
-              {#if logo}{@html logo}{:else}<IconBrandOpenai aria-hidden="true" size={22} stroke={1.5} />{/if}
+              {#if logo}{@html logo}{:else}<IconBrandOpenai aria-hidden="true" size={22} />{/if}
             </span>
             <span class="home-mcp-client-name">{name}</span>
           </Link>

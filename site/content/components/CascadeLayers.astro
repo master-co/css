@@ -2,7 +2,7 @@
 import './bento.css'
 import './home-code-colors.css'
 import { createRenderSessionSync } from '@master/css/node'
-import IconCheck from '@tabler/icons-svelte-runes/icons/check'
+import IconCheck from '@master/icons-astro/native/16/soft/check'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import { uniqueId } from '@master/internal-site/utils/unique-id'
 import preset from '@master/internal-site/css/preset-manifest.ts'
@@ -92,7 +92,7 @@ const face = 'matrix(.78 -.32 .66 .45 48 36)'
     </svg>
   </div>
   <div aria-hidden="true" class="home-layers-result">
-    <span class="home-layers-result-selector"><IconCheck size={14} stroke={1.75} /><code>.{cascadeProbe.utility}</code></span>
+    <span class="home-layers-result-selector"><IconCheck size={14} /><code>.{cascadeProbe.utility}</code></span>
     <code class="home-layers-result-declaration">{rule.text.slice(rule.text.indexOf('{') + 1, -1)}</code>
   </div>
 </div>

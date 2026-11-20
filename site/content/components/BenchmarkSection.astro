@@ -1,6 +1,6 @@
 ---
 import './benchmark.css'
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import IconArrowRight from '@master/icons-astro/native/16/soft/arrow-right'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import Link from '@master/internal-site/components/Link.svelte'
 import brands from '@master/internal-site/data/brands'
@@ -24,7 +24,7 @@ const chartBrands = modes[0].rows.map((row) => Object.values(brands).find((eachB
       label={t('CSS size')}
       title={t('Measured on real documentation pages.')}
       body={t('The CSS each page loads, raw and with Brotli. Master CSS adds only the utilities a page uses; the rest is each site’s own styles.')}>
-      <Link class="home-section-link" href="/benchmarks#page-css-size">{t('View benchmark details')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+      <Link class="home-section-link" href="/benchmarks#page-css-size">{t('View benchmark details')}<IconArrowRight aria-hidden="true" size={16} /></Link>
     </HomeSectionHeader>
     <div class="home-bench home-marks">
       <BenchmarkSizeChart

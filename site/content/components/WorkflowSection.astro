@@ -1,6 +1,6 @@
 ---
 import './workflow.css'
-import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right'
+import IconArrowRight from '@master/icons-astro/native/16/soft/arrow-right'
 import { siteOf } from '@master/internal-site/astro/site-context'
 import Link from '@master/internal-site/components/Link.svelte'
 import HomeBentoCard from './HomeBentoCard.astro'
@@ -50,7 +50,7 @@ const card = (key: WorkflowCardKey, className: string) => ({
       label={t('Workflow')}
       title={t('Works with your framework and build.')}
       body={t('One project manifest drives the CSS of every integration, monorepo app and route, and a snapshot comparison shows what a change touches.')}>
-      <Link class="home-section-link" href="/guide/installation">{t('Install for your framework')}<IconArrowRight aria-hidden="true" size={16} stroke={1.75} /></Link>
+      <Link class="home-section-link" href="/guide/installation">{t('Install for your framework')}<IconArrowRight aria-hidden="true" size={16} /></Link>
     </HomeSectionHeader>
     <HomeBentoFrame>
       <HomeBentoGrid class="grid-cols(1) grid-cols(2)@md grid-cols(12)@lg home-wf-grid">
