@@ -2847,20 +2847,20 @@
     },
     "reference/ui": {
       "tw": {
-        "sourceHash": "72124805efaedb2bfefd3b4ee64e17bff4fc780e1fc66f032561ac04b7b28e9a",
-        "translationHash": "de43724dc7c5630289c46c8bf5694cfcbce7b46aed99e897ed69a1fd9d9aaab3"
+        "sourceHash": "f8b3592886cf4ccb6b4c3394d7c0a9d83211781e8f7cb83a670af9b368e432cc",
+        "translationHash": "9f36c55cba30bbf784f72826f791bca87ff34aad70e8f80d91c8ce69c95df9ac"
       },
       "ja": {
-        "sourceHash": "72124805efaedb2bfefd3b4ee64e17bff4fc780e1fc66f032561ac04b7b28e9a",
-        "translationHash": "dac4dc5dd691aba896869a5a225b69467ad5abd4f8e0594b77b069abd42ca974"
+        "sourceHash": "f8b3592886cf4ccb6b4c3394d7c0a9d83211781e8f7cb83a670af9b368e432cc",
+        "translationHash": "d514748ee75372977567e2c5828dfa3053156fca9ae1873f5a82415bd9f1c0ae"
       },
       "ko": {
-        "sourceHash": "72124805efaedb2bfefd3b4ee64e17bff4fc780e1fc66f032561ac04b7b28e9a",
-        "translationHash": "5cabc8b38b4f32e76c2453f1155135a36adea9d451fcab2023a027a37500f666"
+        "sourceHash": "f8b3592886cf4ccb6b4c3394d7c0a9d83211781e8f7cb83a670af9b368e432cc",
+        "translationHash": "1fbb52e9347544c419c4726646c7aee49f94de517417d458f89771e99bdc417c"
       },
       "cn": {
-        "sourceHash": "72124805efaedb2bfefd3b4ee64e17bff4fc780e1fc66f032561ac04b7b28e9a",
-        "translationHash": "af12c547b469aaf584549dfb0c884e4aa993c3aff9d8f065153b363f0c574a3d"
+        "sourceHash": "f8b3592886cf4ccb6b4c3394d7c0a9d83211781e8f7cb83a670af9b368e432cc",
+        "translationHash": "1beb9927ee911176bb78c032f124f410174bbf788e5069fa21ae0340d7635c54"
       }
     },
     "ui/product": {

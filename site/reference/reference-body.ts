@@ -10,7 +10,6 @@ import type { ReferenceRenderDocument } from './render-document'
 export interface ReferenceBodyContext {
   definitions: Map<string, any>
   headingOf: Map<any, ReferenceRenderDocument['headings'][number]>
-  entrypointOf: Map<any, string>
   plainInlineCode: WeakSet<object>
 }
 
@@ -20,23 +19,17 @@ export function createReferenceBodyContext({ tree, headings }: Pick<ReferenceRen
   const definitions = new Map<string, any>()
   for (const node of tree.children) if (node.type === 'definition') definitions.set(node.identifier, node)
   const headingOf = new Map<any, ReferenceRenderDocument['headings'][number]>()
-  const entrypointOf = new Map<any, string>()
   const plainInlineCode = new WeakSet<object>()
   let headingIndex = 0
-  let entrypoint = ''
   function visit(node: any, plainCode = false) {
     // Headings and ordinary data tables use plain identifiers; prose and parameter descriptions use code chips.
     plainCode ||= node.type === 'heading' || node.type === 'table' && referenceTable(node).kind === 'table'
     if (node.type === 'inlineCode' && plainCode) plainInlineCode.add(node)
-    if (node.type === 'heading') {
-      if (node.depth === 2) entrypoint = node.children.map((child: any) => child.value ?? '').join('').replace(headingAnchor, '')
-      if (node.depth === 2 || node.depth === 3) headingOf.set(node, headings[headingIndex++])
-    }
-    if (node.type === 'table') entrypointOf.set(node, entrypoint)
+    if (node.type === 'heading' && (node.depth === 2 || node.depth === 3)) headingOf.set(node, headings[headingIndex++])
     node.children?.forEach((child: any) => visit(child, plainCode))
   }
   tree.children.forEach(node => visit(node))
-  return { definitions, headingOf, entrypointOf, plainInlineCode }
+  return { definitions, headingOf, plainInlineCode }
 }
 
 /** Heading text without its trailing `{#id}`. */
@@ -52,7 +45,6 @@ export function anchorOf(node: any): string | undefined {
 }
 
 export type ReferenceTable =
-  | { kind: 'api', compact: boolean, entries: { name: string, href: string, description: string }[] }
   | { kind: 'options', options: { name: string, defaultValue: string, description: any[] }[] }
   | { kind: 'parameters', parameters: { name: string, type: string, requirement: string, description: any[] }[] }
   | { kind: 'code', label: string, rows: { syntax: string, css: string }[] }
@@ -65,12 +57,6 @@ export function referenceTable(node: any): ReferenceTable {
   const rows = node.children.slice(1)
   const one = (cell: any, type: string) => cell.children.length === 1 && cell.children[0].type === type
   const columnCount = (count: number) => cells.length === count && rows.length > 0 && rows.every((row: any) => row.children.length === count)
-  const apiIndex = columnCount(2) && rows.every((row: any) => one(row.children[0], 'link')
-    && one(row.children[0].children[0], 'inlineCode') && one(row.children[1], 'text'))
-  if (apiIndex) return {
-    kind: 'api', compact: rows.every((row: any) => /#api-[\da-f]+$/.test(row.children[0].children[0].url)),
-    entries: rows.map((row: any) => ({ name: row.children[0].children[0].children[0].value, href: row.children[0].children[0].url, description: row.children[1].children[0].value })),
-  }
   if (columnCount(3) && rows.every((row: any) => row.children.slice(0, 2).every((cell: any) => one(cell, 'inlineCode')))
     && rows.some((row: any) => row.children[2].children.some((child: any) => child.type !== 'inlineCode'))) {
     return { kind: 'options', options: rows.map((row: any) => ({ name: row.children[0].children[0].value, defaultValue: row.children[1].children[0].value, description: row.children[2].children })) }

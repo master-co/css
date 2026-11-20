@@ -8,7 +8,6 @@ import Link from '@master/internal-site/components/Link.svelte'
 import PreparedCodeView from '@master/internal-site/components/PreparedCodeView.astro'
 import { documentExampleEnd, isStylesheetExample, referenceCodeProps } from './code-block'
 import { anchorOf, createReferenceBodyContext, headingChildren, referenceCodeWrapper, referenceTable, type ReferenceBodyContext } from './reference-body'
-import DocumentAPIIndex from '@master/internal-site/components/DocumentAPIIndex.astro'
 import DocumentDeclarationView from '@master/internal-site/components/DocumentDeclarationView.astro'
 import DocumentIdentifier from '@master/internal-site/components/DocumentIdentifier.astro'
 import DocumentParameters from '@master/internal-site/components/DocumentParameters.astro'
@@ -77,7 +76,6 @@ const heading = type === 'heading' ? context.headingOf.get(node) : undefined
 const Heading = `h${node?.depth}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 const href = type === 'link' ? node.url : type === 'linkReference' ? context.definitions.get(node.identifier)?.url : undefined
 const table = type === 'table' ? referenceTable(node) : undefined
-const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
 ---
 
 {root ? blocks.map(block => 'group' in block
@@ -107,9 +105,6 @@ const entrypoint = type === 'table' ? context.entrypointOf.get(node) : undefined
   : type === 'link' || type === 'linkReference' ? <Link href={href}><Astro.self nodes={node.children} context={context} /></Link>
   : type === 'break' ? <br />
   : type === 'thematicBreak' ? <hr />
-  : table?.kind === 'api' ? (table.compact
-    ? <DocumentDisclosure title={`${l('exports')} · ${table.entries.length}`}><DocumentAPIIndex label={`${entrypoint} · ${l('exports')}`} entries={table.entries} compact /></DocumentDisclosure>
-    : <DocumentAPIIndex label={l('publicEntrypoints')} entries={table.entries} compact={false} />)
   : table?.kind === 'options' ? <DocumentOptions label={l('projectSettings')} options={table.options.map(option => ({
     name: option.name, defaultValue: option.defaultValue,
     description: <Astro.self nodes={option.description} context={context} />

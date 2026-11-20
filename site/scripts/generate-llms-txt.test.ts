@@ -539,7 +539,7 @@ test('package catalog retains import guidance and source destinations in portabl
       }
       const indexed = search.find((page: any) => page.url.replace(/^\/(en|tw)(?=\/)/, '') === doc.url)
       assert.deepEqual(indexed.nodes, extractSearchNodesFromMarkdown(doc.markdown))
-      assert.doesNotMatch(body, /<(?:DocumentAPIIndex|DocumentDeclaration|DocumentDisclosure)|MCSS_EXPRESSION/)
+      assert.doesNotMatch(body, /<(?:DocumentDeclaration|DocumentDisclosure)|MCSS_EXPRESSION/)
       assert.ok(body.includes('| Import path | Purpose |'))
     }
   }
@@ -630,12 +630,6 @@ test('literal document navigation exports text and rejects executable attributes
     assert.equal((await extractReferenceMdx(file)).markdown, '**`DemoSurface`**\n\n**Interface:** `className`, `style`.\n\nNo implicit layout or padding. [Example](#surface).')
     await writeFile(file, '<DocumentOptionEntry name={getName()}>Text</DocumentOptionEntry>')
     await assert.rejects(() => extractReferenceMdx(file), /DocumentOptionEntry requires a literal name/)
-    await writeFile(file, `<DocumentChoices label="Next" entries={[{ title: 'Vite', href: '/guide/installation/vite', description: 'Connect the stylesheet.' }]} />`)
-    assert.equal((await extractReferenceMdx(file)).markdown, '- [Vite](/guide/installation/vite) — Connect the stylesheet.')
-    await writeFile(file, `<DocumentChoices label="Next" entries={(() => { throw new Error('must not execute') })()} />`)
-    await assert.rejects(() => extractReferenceMdx(file), /Unsupported document expression: CallExpression/)
-    await writeFile(file, `<DocumentChoices label="Next" entries={[{ ...links }]} />`)
-    await assert.rejects(() => extractReferenceMdx(file), /Only literal document properties/)
     await writeFile(file, `<DemoIndex label="Catalog" groups={[{ title: 'Basics', links: [{ label: 'Foundations', href: '#foundations' }] }]} />`)
     assert.equal((await extractReferenceMdx(file)).markdown, '**Basics**\n\n- [Foundations](#foundations)')
     await writeFile(file, `<DemoIndex label="Catalog" groups={[{ title: 'Basics', links: [{ label: 'Missing destination' }] }]} />`)

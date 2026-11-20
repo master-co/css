@@ -147,7 +147,7 @@ exports, including the overview. `MigrationGuides` reads the literal
 `utils/migration-guides.ts` catalog through the shared `ui-logos` navigation;
 its extraction adapter emits the same titles and destinations, with descriptions
 for the text-only reading context, without executing JSX.
-Use `DocumentChoices` for short related-link groups, outside demo geometry.
+Write short related-link groups as a Markdown list, outside demo geometry.
 
 `tests/docs-quality.e2e.mjs` enumerates the current build's document routes,
 including localized routes. Run it after building; `MASTER_DOC_BUILD` and
@@ -281,8 +281,7 @@ The document shell's `StepSection`, `Step`, `StepL` and `StepR` keep setup prose
 and native headings in the MDX document. `Step` with `$row` responds to the reading
 container; the `ui-steps` list numbers each step in CSS. The
 Design System review uses these same Guide components. Keep preview geometry outside these steps.
-The strict extractor preserves each native heading and code block. `DocumentChoices` accepts literal string entries for both
-navigation and portable link lists; extraction never executes JSX expressions.
+The strict extractor preserves each native heading and code block. Extraction never executes JSX expressions.
 `DemoIndex` uses the same literal-only extraction for grouped catalog links. Keep
 group titles and destinations in authored MDX so portable output retains the index.
 `DemoCatalog` uses native disclosures for independent specimens; complete lesson
