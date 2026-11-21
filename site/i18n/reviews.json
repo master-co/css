@@ -2865,20 +2865,20 @@
     },
     "ui/product": {
       "tw": {
-        "sourceHash": "7361aa5f95c3db6742f0362b1389e6d8c05e4650e6e8c6bf2264018f469b725a",
-        "translationHash": "ecb37ce1932fe3235e483ae9f808a556067031dd190edf75856073ac59a85071"
+        "sourceHash": "41129694969717900719b77e690a950dab2edf983c89355514f4e7df6ee31386",
+        "translationHash": "c653efceead9b94c400a238b8282a6d1db0634755f7df14733addae77fb7f6a3"
       },
       "ja": {
-        "sourceHash": "7361aa5f95c3db6742f0362b1389e6d8c05e4650e6e8c6bf2264018f469b725a",
-        "translationHash": "07f607b0c3f66aaa7c79d81acc96d1cc92126d83cd43b87e8d521d1f930cc454"
+        "sourceHash": "41129694969717900719b77e690a950dab2edf983c89355514f4e7df6ee31386",
+        "translationHash": "88c48c64d1163a080d08960b81fbf85ad970df8d3d5994b72afd84393cf8e764"
       },
       "ko": {
-        "sourceHash": "7361aa5f95c3db6742f0362b1389e6d8c05e4650e6e8c6bf2264018f469b725a",
-        "translationHash": "af641bda7fb018dced2b6bda30fb6b9802463f1cb3065031293343c49f83c040"
+        "sourceHash": "41129694969717900719b77e690a950dab2edf983c89355514f4e7df6ee31386",
+        "translationHash": "a938eb03d3500908e27dffd5eedd3d891cb50d0a4c9a4a5527668b64ff84cedb"
       },
       "cn": {
-        "sourceHash": "7361aa5f95c3db6742f0362b1389e6d8c05e4650e6e8c6bf2264018f469b725a",
-        "translationHash": "3d349fbaacc0368ff8302ad35d8e9eb55aed3d6908f24e0cb7c877689642fe69"
+        "sourceHash": "41129694969717900719b77e690a950dab2edf983c89355514f4e7df6ee31386",
+        "translationHash": "dc356c5a1dbe8515b9337325678fd4d48e737262b704c83f9a3f650958d09639"
       }
     },
     "ui/shared": {

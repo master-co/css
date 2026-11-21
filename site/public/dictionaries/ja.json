@@ -484,5 +484,7 @@
   "Close video": "動画を閉じる",
   "Interface styling": "インターフェースのスタイリング",
   "then build your next interface.": "次のインターフェースを作りましょう。",
-  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "ルールに基づく CSS-in-class でウェブインターフェースを構築するための CSS 言語とフレームワークです。"
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "ルールに基づく CSS-in-class でウェブインターフェースを構築するための CSS 言語とフレームワークです。",
+  "UI": "UI",
+  "Master UI": "Master UI"
 }

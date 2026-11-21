@@ -73,7 +73,7 @@ for (const width of [320, 390, 768]) for (const section of ['guide', 'reference'
       await menu.waitFor()
       // The preserved mobile shell contains site navigation, community and preferences.
       const nav = menu.locator('.ui-mobile-menu-nav')
-      for (const [name, href] of [['Guide', '/guide'], ['Reference', '/reference'], ['Blog', 'https://master.co/blog']]) {
+      for (const [name, href] of [['Guide', '/guide'], ['Reference', '/reference'], ['UI', 'https://ui.master.co'], ['Blog', 'https://master.co/blog']]) {
         assert.equal(await nav.getByRole('link', { name, exact: true }).getAttribute('href'), href)
       }
       assert.equal(await menu.locator('.ui-sidebar').count(), 0)

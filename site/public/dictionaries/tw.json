@@ -113,7 +113,7 @@
   "More": "更多",
   "Package": "套件",
   "Design Token": "設計標記",
-  "UI": "用戶介面",
+  "UI": "UI",
   "Roadmap": "路線圖",
   "Quick Start": "快速啟動",
   "PREVIOUS": "前一頁",
@@ -920,5 +920,6 @@
   "Close video": "關閉影片",
   "Interface styling": "介面樣式",
   "then build your next interface.": "接著打造你的下一個介面。",
-  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "以規則式 CSS-in-class 建構網頁介面的 CSS 語言與框架。"
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "以規則式 CSS-in-class 建構網頁介面的 CSS 語言與框架。",
+  "Master UI": "Master UI"
 }

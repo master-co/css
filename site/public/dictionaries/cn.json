@@ -484,5 +484,7 @@
   "Close video": "关闭视频",
   "Interface styling": "界面样式",
   "then build your next interface.": "接着构建你的下一个界面。",
-  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "使用基于规则的 CSS-in-class 构建网页界面的 CSS 语言与框架。"
+  "A CSS language and framework for building web interfaces with rule-based CSS-in-class.": "使用基于规则的 CSS-in-class 构建网页界面的 CSS 语言与框架。",
+  "UI": "UI",
+  "Master UI": "Master UI"
 }

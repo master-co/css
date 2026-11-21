@@ -2,6 +2,7 @@ import type { AppNavItem } from '~/site/app-config'
 import IconBrandGithub from '@master/icons-svelte/native/20/soft/brand-github-outline'
 import IconBrandX from '@master/icons-svelte/native/20/soft/brand-x'
 import IconBug from '@master/icons-svelte/native/20/soft/bug'
+import IconComponent from '@master/icons-svelte/native/20/soft/component'
 import IconCompass from '@master/icons-svelte/native/20/soft/compass'
 import IconFileText from '@master/icons-svelte/native/20/soft/file-text'
 import IconMessages from '@master/icons-svelte/native/20/soft/messages'
@@ -19,6 +20,7 @@ const discussionsURL = `${repositoryURL}/discussions`
 export const primaryNavs = [
   { name: 'Guide', href: '/guide', Icon: IconCompass },
   { name: 'Reference', fullName: 'Reference', href: '/reference', Icon: IconFileText },
+  { name: 'UI', href: 'https://ui.master.co', Icon: IconComponent },
   { name: 'Blog', href: 'https://master.co/blog', Icon: IconWriting },
 ] satisfies AppNavItem[]
 
@@ -42,6 +44,7 @@ export const footerNavGroups = [
   {
     name: 'Resources',
     links: [
+      { name: 'Master UI', href: 'https://ui.master.co' },
       { name: 'Blog', href: 'https://master.co/blog' },
       { name: 'Brand', href: 'https://master.co/brand/master-css' },
     ]
