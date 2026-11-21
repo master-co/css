@@ -241,7 +241,7 @@ test(`${browserName}: forced colors retain distinct focus and selected-result bo
       const value = {
         background: style.backgroundColor, color: style.color,
         expectedBackground: expected.backgroundColor, expectedColor: expected.color,
-        details: [...element.querySelectorAll('.listbox-description, mark')].map(child => getComputedStyle(child).color),
+        details: [...element.querySelectorAll('.listbox-path, .listbox-excerpt, mark')].map(child => getComputedStyle(child).color),
       }
       probe.remove()
       return value
