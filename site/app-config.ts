@@ -14,6 +14,11 @@ export default {
     communityNavs: communityNavs.filter(({ name }) => name === 'Discussions' || name === 'GitHub'),
     searchOnHome: true
   },
+  search: {
+    prompt: 'Find a name, alias or CSS property',
+    examples: ['padding', 'padding-inline-start:', 'fg-red:hover@sm'],
+    hint: 'Try a property name, a token name or a different keyword.'
+  },
   versions: [
     { name: 'v1.37.8', href: 'https://v1.css.master.co' }
   ],
