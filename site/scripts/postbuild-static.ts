@@ -1,10 +1,10 @@
 import { generateStaticSocialImages } from '@master/internal-site/build/static-social.ts'
-import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPublicEnv } from '../utils/public-env.js'
 import { organizationRedirects, legacyDesignAssets } from './organization-redirects'
-import { renderSitemap } from './sitemap'
+import { finalizeSeo, markdownCanonicalHeaders } from './static-seo'
 import { stabilizeIslandIds } from './stable-island-ids'
 import { locales } from '@master/internal-site/common/locales.js'
 
@@ -15,7 +15,8 @@ Object.assign(process.env, publicEnv)
 process.chdir(siteDir)
 
 await writeStableIslandIds()
-await finalizeSeo()
+const origin = new URL(publicEnv.PUBLIC_URL).origin
+await finalizeSeo(outDir, origin, await listFiles(outDir))
 await generateStaticSocialImages({ siteDir, outDir, origin: publicEnv.PUBLIC_URL, logo: new URL('../public/images/css-logotype@light.png', import.meta.url), locales })
 await writeHeaders()
 await writeRedirects()
@@ -28,47 +29,6 @@ async function writeStableIslandIds() {
         const stable = stabilizeIslandIds(html)
         if (stable !== html) await writeFile(file, stable, 'utf8')
     }
-}
-
-async function finalizeSeo() {
-    const origin = new URL(publicEnv.PUBLIC_URL).origin
-    const graphLocales = new Map([['en', 'en_US'], ['tw', 'zh_TW'], ['ja', 'ja_JP'], ['ko', 'ko_KR'], ['cn', 'zh_CN']])
-    const groups = new Map<string, Map<string, string>>()
-    for (const file of (await listFiles(outDir)).filter(file => file.endsWith('.html')).sort()) {
-        const html = await readFile(file, 'utf8')
-        const head = /<head\b[^>]*>([\s\S]*?)<\/head>/i.exec(html)
-        if (!head) continue
-        // The shared Astro layout emits these tags with double-quoted attributes.
-        const metadata = head[1].replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '')
-        const robots = /<meta name="robots" content="([^"]*)"/.exec(metadata)?.[1]
-        if (robots && /\bnoindex\b/i.test(robots)) continue
-        const canonical = /<link rel="canonical" href="([^"]+)"/.exec(metadata)?.[1]
-        if (!canonical) continue
-        const url = new URL(canonical.replaceAll('&amp;', '&'))
-        if (url.origin !== origin) continue
-        const { pathname, href } = url
-        const segment = pathname.split('/')[1]
-        const locale = locales.includes(segment as typeof locales[number]) ? segment : 'en'
-        const identity = locale === 'en' ? pathname : pathname.slice(locale.length + 1) || '/'
-        if (!groups.has(identity)) groups.set(identity, new Map())
-        groups.get(identity)!.set(locale, href)
-
-        // The shared shell emits page-specific social text and images.
-        // Complete the Open Graph identity from this site's canonical route.
-        const graph = new Map([
-            ['og:url', href],
-            ['og:type', identity.startsWith('/guide/') ? 'article' : 'website'],
-            ['og:locale', graphLocales.get(locale)],
-        ])
-        const extra = [...graph].map(([property, value]) => value && !metadata.includes(`property="${property}"`)
-            ? `<meta property="${property}" content="${value.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}">` : '').join('')
-        if (extra) {
-            const end = head.index + head[0].length - '</head>'.length
-            await writeFile(file, html.slice(0, end) + extra + html.slice(end), 'utf8')
-        }
-    }
-    await writeFile(path.join(outDir, 'sitemap.xml'), renderSitemap(groups), 'utf8')
-    await writeFile(path.join(outDir, 'robots.txt'), `Sitemap: ${new URL('/sitemap.xml', origin).href}\n`, 'utf8')
 }
 
 async function writeHeaders() {
@@ -87,6 +47,7 @@ async function writeHeaders() {
         '  Cache-Control: public, max-age=31536000, immutable',
         '/fonts/*',
         '  Cache-Control: public, max-age=31536000, immutable',
+        ...markdownCanonicalHeaders(origin),
         // Production aliases and immutable Pages URLs share canonical product content.
         // Keep both provider host shapes out of indexes without affecting custom domains.
         'https://:project.pages.dev/*',

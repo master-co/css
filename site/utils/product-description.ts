@@ -1,0 +1,1 @@
+export const productDescription = 'Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.'

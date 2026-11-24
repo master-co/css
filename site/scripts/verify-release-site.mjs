@@ -93,17 +93,41 @@ for (const [file, { nodes, ids, metadata, title, structuredData }] of documents)
   }
   const canonical = metadata.filter(node => node.tag === 'link' && node.rel === 'canonical')
   const alternateLinks = metadata.filter(node => node.rel === 'alternate' && node.hreflang)
+  const describedBy = metadata.filter(node => node.tag === 'link' && node.rel === 'describedby')
+  const markdown = metadata.filter(node => node.rel === 'alternate' && node.type === 'text/markdown')
+  const breadcrumb = structuredData.map(data => JSON.parse(data)).filter(data => data['@type'] === 'BreadcrumbList')
   const noindex = metadata.some(node => node.name === 'robots' && /\bnoindex\b/i.test(node.content))
   if (/^\/(?:(?:ja|tw|ko|cn)\/)?404$/.test(route) || route.startsWith('/examples/')) {
     assert.ok(noindex, '404 and embedded examples stay out of search indexes')
     assert.equal(canonical.length, 0, 'noindex pages omit the canonical URL')
     assert.equal(alternateLinks.length, 0, 'noindex pages omit hreflang')
+    assert.equal(describedBy.length + markdown.length + breadcrumb.length, 0, 'noindex pages omit discovery links and breadcrumbs')
   } else {
     assert.ok(!noindex, 'public pages are indexable')
     assert.equal(canonical.length, 1, 'one canonical URL')
     assert.equal(canonical[0].href, new URL(route, origin).href, 'canonical matches the build origin and route')
     indexable.set(canonical[0].href, alternateLinks.map(({ hreflang, href }) => [hreflang, href]))
     assert.ok(title?.trim(), 'page has a title')
+    assert.doesNotMatch(title, /Master CSS.* - Master CSS$/i, 'redundant brand suffix')
+    const prefix = route.match(/^\/(?:ja|tw|ko|cn)(?=\/|$)/)?.[0] ?? ''
+    const identity = route.slice(prefix.length) || '/'
+    const hasMarkdown = /^\/(?:guide|reference)(?:\/|$)|^\/benchmarks$/.test(identity)
+    assert.deepEqual(describedBy.map(link => link.href), [origin + prefix + '/llms.txt'], 'local LLM index')
+    assert.deepEqual(markdown.map(link => link.href), hasMarkdown ? [origin + route + '.md'] : [], 'matching Markdown alternate')
+    const nested = /^\/(guide|reference)\//.test(identity)
+    assert.equal(breadcrumb.length, nested ? 1 : 0, 'one breadcrumb trail on nested documents')
+    if (nested) {
+      const parts = identity.slice(1).split('/')
+      const ancestors = [prefix || '/', ...parts.map((_, i) => prefix + '/' + parts.slice(0, i + 1).join('/'))]
+        .filter(route => documents.get(findFile(route))?.metadata.some(tag => tag.rel === 'canonical'))
+      const items = breadcrumb[0].itemListElement
+      assert.deepEqual(items.map(item => item.item), ancestors.map(route => origin + route), 'published localized breadcrumb trail')
+      for (const [index, item] of items.entries()) {
+        assert.equal(item.position, index + 1)
+        assert.equal(item['@type'], 'ListItem')
+        assert.ok(item.name?.trim(), 'localized breadcrumb name')
+      }
+    }
     const meta = key => {
       const tags = metadata.filter(node => node.name === key || node.property === key)
       assert.equal(tags.length, 1, `one ${key} tag`)
@@ -166,6 +190,24 @@ await check('sitemap and portable origins', () => {
     }
   }
   assert.deepEqual(locations.sort(), [...indexable.keys()].sort(), 'sitemap lists each indexable canonical URL once')
+  for (const file of inventory.filter(file => file.endsWith('/reference/index.json'))) {
+    const catalog = JSON.parse(readFileSync(file, 'utf8'))
+    const prefix = catalog.locale === 'en' ? '' : '/' + catalog.locale
+    assert.equal(file, path.join(out, prefix, 'reference/index.json'), 'Reference index locale')
+    for (const entry of catalog.documents) {
+      assert.equal(entry.url, prefix + '/reference/' + entry.id)
+      assert.ok(indexable.has(origin + entry.url), `indexable Reference ${entry.url}`)
+      assert.equal(entry.markdownUrl, entry.url + '.md')
+      assert.ok(findFile(entry.markdownUrl), `missing Markdown ${entry.markdownUrl}`)
+      if (entry.guide) {
+        const target = new URL(entry.guide, origin)
+        assert.ok(target.origin === origin && target.pathname.startsWith(prefix + '/guide/'), `Guide locale for ${entry.url}`)
+        const destination = documents.get(findFile(target.pathname))
+        assert.ok(destination && indexable.has(origin + target.pathname), `unpublished Guide ${entry.guide}`)
+        if (target.hash) assert.ok(destination.ids.includes(decodeURIComponent(target.hash.slice(1))), `missing Guide anchor ${entry.guide}`)
+      }
+    }
+  }
   for (const name of ['llms.txt', 'llms-full.txt']) {
     const text = readFileSync(path.join(out, name), 'utf8')
     assert.ok(text.includes(origin + '/reference/'), `${name}: absolute current reference URLs`)

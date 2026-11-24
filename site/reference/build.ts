@@ -182,7 +182,16 @@ export async function generateReference(siteRoot: string, searchPages?: Record<s
     await mkdir(referenceDir, { recursive: true })
     const indexFile = path.join(referenceDir, 'index.json')
     expectedFiles.add(indexFile)
-    const index = { ...catalog, documents: catalog.documents.map(({ markdown, rows, examples, headings, extractionNotes, sheet, ...doc }) => ({ ...doc, url: referencePath(doc.url, locale), markdownUrl: referencePath(`${doc.url}.md`, locale), contentDigest: digest(markdown) })) }
+    const index = {
+      ...catalog,
+      documents: catalog.documents.map(({ markdown, rows, examples, headings, extractionNotes, sheet, ...doc }) => ({
+        ...doc,
+        url: referencePath(doc.url, locale),
+        markdownUrl: referencePath(`${doc.url}.md`, locale),
+        guide: doc.guide && referencePath(doc.guide, locale),
+        contentDigest: digest(markdown)
+      }))
+    }
     await writeIfChanged(indexFile, JSON.stringify(index, null, 2))
     for (const kind of [...new Set(catalog.documents.map(doc => doc.kind))]) {
       const file = path.join(referenceDir, `${kind}.txt`)

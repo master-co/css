@@ -1,7 +1,7 @@
 import define from '@master/internal-site/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in Lit',
+  title: { absolute: 'Set up Master CSS in Lit' },
   description: 'Style Lit shadow roots with static CSS or a browser runtime that follows the component lifecycle.',
   category: 'Integrations',
   openGraph: { images: '/images/integrations/lit-og.png' },

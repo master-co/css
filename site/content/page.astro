@@ -6,6 +6,7 @@ import '@master/internal-site/home/home.css'
 import DocHeader from '@master/internal-site/components/DocHeader.svelte'
 import { createPageMetadata } from '@master/internal-site/factories/create-page'
 import dictionaries from '~/site/dictionaries'
+import { productDescription } from '~/site/utils/product-description'
 import AgentsSection from './components/AgentsSection.astro'
 import BenchmarkSection from './components/BenchmarkSection.astro'
 import CTASection from './components/CTASection.astro'
@@ -21,7 +22,7 @@ import WorkflowSection from './components/WorkflowSection.astro'
 
 export const metadata = {
   title: { absolute: 'Master CSS - A markup-driven CSS orchestration language for developers and AI agents' },
-  description: 'Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.',
+  description: productDescription,
   openGraph: { title: 'Master CSS' },
   cover: { src: '/brand/v2/social/png/master-css-og.png', alt: 'Master CSS', width: 1200, height: 630 }
 }

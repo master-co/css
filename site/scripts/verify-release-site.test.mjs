@@ -5,6 +5,7 @@ import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { test } from 'node:test'
 
+const base = 'https://css.master.co'
 const publicHead = route => {
   const url = 'https://css.master.co' + route
   const metadata = {
@@ -22,7 +23,9 @@ const publicHead = route => {
     'twitter:card': 'summary_large_image',
     'twitter:image': 'https://css.master.co/card.png'
   }
-  return `<title>Master CSS</title><link rel="canonical" href="${url}">` + Object.entries(metadata).map(([key, value]) =>
+  const prefix = route.match(/^\/(?:tw|cn|ko|ja)(?=\/|$)/)?.[0] ?? ''
+  const alternate = route.includes('/reference/') || route.endsWith('/reference') ? `<link rel="alternate" type="text/markdown" href="${url}.md">` : ''
+  return `<title>Master CSS</title><link rel="canonical" href="${url}"><link rel="describedby" href="${base}${prefix}/llms.txt">${alternate}` + Object.entries(metadata).map(([key, value]) =>
     `<meta ${key.startsWith('og:') ? 'property' : 'name'}="${key}" content="${value}">`).join('')
 }
 
@@ -35,7 +38,19 @@ const verify = (redirects, link = '/old#section', extraDocuments = {}) => {
     }
     for (const [name, html] of Object.entries(documents)) {
       mkdirSync(path.dirname(path.join(directory, name)), { recursive: true })
-      writeFileSync(path.join(directory, name), html)
+      const route = '/' + name.slice(0, -5)
+      const prefix = route.match(/^\/(?:tw|cn|ko|ja)(?=\/|$)/)?.[0] ?? ''
+      let headExtra = ''
+      if (route.includes('/reference/') || route.endsWith('/reference')) {
+        writeFileSync(path.join(directory, route + '.md'), '# Reference\n')
+        writeFileSync(path.join(directory, prefix, 'llms.txt'), base + '/reference/')
+        if (route.includes('/reference/')) {
+          const ancestors = [...(prefix ? [] : ['/']), prefix + '/reference', route]
+          const trail = { '@type': 'BreadcrumbList', itemListElement: ancestors.map((item, i) => ({ '@type': 'ListItem', position: i + 1, name: 'Reference', item: base + item })) }
+          headExtra = `<script type="application/ld+json">${JSON.stringify(trail)}</script>`
+        }
+      }
+      writeFileSync(path.join(directory, name), html.replace('</head>', headExtra + '</head>'))
     }
     writeFileSync(path.join(directory, '_redirects'), redirects)
     const entries = Object.keys(documents).filter(name => !name.endsWith('/404.html') && name !== '404.html' && !name.startsWith('examples/'))

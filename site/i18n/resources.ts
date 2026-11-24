@@ -7,6 +7,7 @@ import sharedTranslations from '@master/internal-site/common/translations.js'
 import { referenceCopyResources } from '../reference/copy.ts'
 import { componentTexts, translationKeys } from '../scripts/component-text.ts'
 import units from '../units.ts'
+import { productDescription } from '../utils/product-description.ts'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const properties = new Set(['title', 'description', 'body', 'caption', 'detail', 'label', 'hint', 'placeholder'])
@@ -24,6 +25,7 @@ async function sourceFiles(directory: string): Promise<string[]> {
 
 export async function productUIKeys() {
   const keys = new Set<string>(Object.values(units).flatMap(unit => 'categories' in unit ? [...unit.categories] : []))
+  keys.add(productDescription)
   for (const key of ['Utility', 'Rule', 'Tokens', 'Directive', 'Tool', 'Package']) keys.add(key)
   const catalogSources = ['navigation.ts', 'utils/guide-overview.ts', 'utils/installation-guides.ts', 'utils/migration-guides.ts'].map(file => path.join(siteRoot, file))
   const files = [...await sourceFiles(path.join(siteRoot, 'content')), ...await sourceFiles(path.join(siteRoot, 'components')), path.join(siteRoot, 'app-config.ts'), path.join(siteRoot, 'scripts/generate-llms-txt.ts'), ...catalogSources]
@@ -31,10 +33,6 @@ export async function productUIKeys() {
     if (filename.includes('/content/reference/') || filename.includes('/content/examples/')) continue
     const source = await readFile(filename, 'utf8')
     for (const key of translationKeys(source)) keys.add(key)
-    if (filename.endsWith('/generate-llms-txt.ts')) {
-      const description = source.match(/const PROJECT_DESC\s*=\s*\n?\s*'([^']+)'/)?.[1]
-      if (description) keys.add(description)
-    }
     // These modules supply dynamic t(tile.title), t(mode.body), etc. Executable
     // article specimens and their sample text are intentionally not UI catalogs.
     if (filename.includes('/content/components/') && filename.endsWith('-content.ts')) {

@@ -37,13 +37,14 @@ test('all five editions agree across Markdown, llms, search and structured Refer
     const full = await read(`public${prefix}/llms-full.txt`)
     const index = await read(`public${prefix}/llms.txt`)
     const search = JSON.parse(await read(`public/search/${locale}.json`))
+    const exported = JSON.parse(await read(`public${prefix}/reference/index.json`))
     const urls = pages.map(page => page.url.slice(prefix.length)).sort()
     if (locale === 'en') sourceURLs = urls
     else assert.deepEqual(urls, sourceURLs, `${locale}: same published article identities`)
     for (const page of pages) {
       const markdown = await read(`public${page.url}.md`)
       assert.ok(markdown.includes(page.body.trim()), `${page.url}: exact article body in Markdown`)
-      assert.ok(full.includes(page.body.trim()), `${page.url}: exact article body in llms-full`)
+      assert.ok(full.includes(markdown.trimEnd()), `${page.url}: complete Markdown in llms-full`)
       assert.ok(index.includes(page.title), `${page.url}: translated discovery title`)
       const entry = search.find((item: { url: string }) => item.url === page.url)
       assert.ok(entry, `${page.url}: searchable`)
@@ -55,7 +56,15 @@ test('all five editions agree across Markdown, llms, search and structured Refer
     const ids = catalog.documents.map(doc => doc.id).sort()
     if (locale === 'en') sourceReferenceIDs = ids
     else assert.deepEqual(ids, sourceReferenceIDs, `${locale}: same Reference identities`)
+    const markdownURLs = [...pages.map(page => page.url + '.md'), prefix + '/reference.md',
+      ...catalog.documents.map(doc => referencePath(doc.url, locale) + '.md')]
+    assert.deepEqual([...index.matchAll(/^- .*?\]\((https?:\/\/[^)]+)\)/gm)].map(match => new URL(match[1]).pathname).sort(), markdownURLs.sort())
+    assert.ok(full.includes((await read(`public${prefix}/reference.md`)).trimEnd()))
     for (const doc of catalog.documents) {
+      const entryJSON = exported.documents.find((entry: { id: string }) => entry.id === doc.id)
+      assert.equal(entryJSON.url, referencePath(doc.url, locale))
+      assert.equal(entryJSON.markdownUrl, entryJSON.url + '.md')
+      assert.equal(entryJSON.guide, doc.guide && referencePath(doc.guide, locale))
       const markdown = await read(`public${prefix}/reference/${doc.id}.md`)
       const body = renderDocumentMarkdown(doc, catalog, locale)
       assert.equal(markdown, body, `${locale}/${doc.id}: localized Reference payload`)

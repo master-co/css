@@ -287,27 +287,27 @@ test('renderLlmsIndex emits H1 + summary + per-section H2 with links', () => {
   assert.match(out, /\n> .+\n/)
   assert.match(out, /\n## Guide\n/)
   assert.match(out, /\n## Reference\n/)
-  assert.match(out, /- \[Guide\]\(https:\/\/example\.test\/guide\): Start using Master CSS\./)
-  assert.match(out, /- \[Colors\]\(https:\/\/example\.test\/guide\/colors\): Create color tokens\./)
-  assert.match(out, /- \[Reference\]\(https:\/\/example\.test\/reference\): API reference\./)
+  assert.match(out, /- \[Guide\]\(https:\/\/example\.test\/guide\.md\): Start using Master CSS\./)
+  assert.match(out, /- \[Colors\]\(https:\/\/example\.test\/guide\/colors\.md\): Create color tokens\./)
+  assert.match(out, /- \[Reference\]\(https:\/\/example\.test\/reference\.md\): API reference\./)
 })
 
-test('renderLlmsIndex sorts sections alphabetically and pages by url', () => {
-  const out = renderLlmsIndex(fixture, 'https://example.test')
-  const guideIdx = out.indexOf('## Guide')
-  const refIdx = out.indexOf('## Reference')
-  assert.ok(guideIdx > 0 && refIdx > guideIdx)
-  const colorsIdx = out.indexOf('Colors')
-  const guideTopIdx = out.indexOf('](https://example.test/guide)')
-  assert.ok(guideTopIdx > 0 && guideTopIdx < colorsIdx)
+test('llms starts with common tasks and keeps each published Markdown link once', () => {
+  const routes = ['ai-coding', 'installation', 'introduction', 'syntax-tutorial']
+  const pages = [...fixture, ...routes.map(slug => ({ ...fixture[0], url: `/guide/${slug}` })), { ...fixture[0], section: 'benchmarks', url: '/benchmarks' }]
+  const out = renderLlmsIndex(pages.map(page => ({ ...page, url: '/tw' + page.url })), 'https://example.test', text => text, 'tw')
+  assert.deepEqual([...out.matchAll(/^## (.+)$/gm)].map(match => match[1]), ['Getting started', 'Guide', 'Reference', 'Benchmarks'])
+  const links = [...out.matchAll(/^- .*?\(([^)]+)\)/gm)].map(match => new URL(match[1]).pathname)
+  assert.deepEqual(links.slice(0, 4), ['introduction', 'installation', 'syntax-tutorial', 'ai-coding'].map(slug => `/tw/guide/${slug}.md`))
+  assert.equal(new Set(links).size, pages.length)
+  assert.ok(out.includes('/tw/reference/index.json)') && out.includes('/tw/llms-full.txt)'))
 })
 
-test('renderLlmsFull concatenates each page body with a Source line', () => {
-  const out = renderLlmsFull(fixture, 'https://example.test')
-  assert.match(out, /Source: https:\/\/example\.test\/guide\b/)
-  assert.match(out, /Summary: Start using Master CSS\./)
-  assert.match(out, /Color system overview\./)
-  assert.match(out, /API reference\./)
+test('llms-full preserves each standalone Markdown document after its source URL', () => {
+  const page = { url: '/reference/packages', body: '# Packages\n\nSummary.\n\n```css\n.test {}\n```\n' }
+  const out = renderLlmsFull([page], 'https://example.test')
+  assert.ok(out.endsWith(`Source: https://example.test/reference/packages\n\n${page.body}`))
+  assert.equal(out.match(/^# Packages$/gm)?.length, 1)
 })
 
 test('llms includes the complete tutorial and excludes retired Guide bodies', async () => {
@@ -504,7 +504,7 @@ test('tool catalogs export source links and basic usage in the source edition', 
     for (const doc of docs) {
       const exported = await readFile(path.join(root, `public/${locale === 'en' ? '' : 'tw/'}reference/${doc.id}.md`), 'utf8')
       const body = renderDocumentMarkdown(doc, catalog)
-      const llms = renderLlmsFull([{ file: doc.source, section: 'reference', url: doc.url, title: doc.title, body }], 'https://example.test')
+      const llms = renderLlmsFull([{ url: doc.url, body }], 'https://example.test')
       for (const fence of doc.markdown.matchAll(/```[\s\S]*?```/g)) {
         assert.ok(llms.includes(fence[0]), `${locale}: ${doc.id} llms fence`)
         assert.ok(exported.includes(fence[0]), `${locale}: ${doc.id} markdown fence`)
@@ -528,7 +528,7 @@ test('package catalog retains import guidance and source destinations in portabl
     for (const doc of docs) {
       const exported = await readFile(path.join(root, `public/${locale === 'en' ? '' : 'tw/'}reference/${doc.id}.md`), 'utf8')
       const body = renderDocumentMarkdown(doc, catalog)
-      const llms = renderLlmsFull([{ file: doc.source, section: 'reference', url: doc.url, title: doc.title, body }], 'https://example.test')
+      const llms = renderLlmsFull([{ url: doc.url, body }], 'https://example.test')
       for (const fence of doc.markdown.matchAll(/```[\s\S]*?```/g)) {
         assert.ok(exported.includes(fence[0]), `${locale}: ${doc.id} markdown declaration`)
         assert.ok(llms.includes(fence[0]), `${locale}: ${doc.id} llms declaration`)
@@ -559,7 +559,7 @@ test('directive references export every native CSS example and setting to the so
     for (const doc of docs) {
       const exported = await readFile(path.join(root, `public/${locale === 'en' ? '' : 'tw/'}reference/${doc.id}.md`), 'utf8')
       const body = renderDocumentMarkdown(doc, catalog)
-      const llms = renderLlmsFull([{ file: doc.source, section: 'reference', url: doc.url, title: doc.title, body }], 'https://example.test')
+      const llms = renderLlmsFull([{ url: doc.url, body }], 'https://example.test')
       for (const fence of doc.markdown.matchAll(/```[\s\S]*?```/g)) {
         assert.ok(exported.includes(fence[0]), `${locale}: ${doc.id} markdown fence`)
         assert.ok(llms.includes(fence[0]), `${locale}: ${doc.id} llms fence`)
