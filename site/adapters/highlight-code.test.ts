@@ -252,7 +252,7 @@ function visitElements(children: RootContent[], callback: (element: Element) => 
 }
 
 // A plain token carries its color role as a compact class (@master/internal-site, utils/compact-highlight.ts).
-const compactColors = new Map(Object.entries(compactTokenClasses).map(([role, name]) => [name, `color:var(--ui-code-${role})`]))
+const compactColors = new Map<string, string>(Object.entries(compactTokenClasses).map(([role, name]) => [name, `color:var(--ui-code-${role})`]))
 
 function colorOf(element: Element): string | undefined {
   const style = element.properties?.style
