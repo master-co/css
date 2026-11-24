@@ -51,7 +51,7 @@
         "@master/css-tooling": "workspace:^",
         "@master/icons-astro": "1.0.3",
         "@master/icons-svelte": "1.0.3",
-        "@master/internal-site": "0.3.2",
+        "@master/internal-site": "0.3.3",
         "@master/ui": "2.1.0",
         "@shikijs/langs": "^4.4.3",
         "@shikijs/themes": "^4.4.3",

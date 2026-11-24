@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import type { Element, Root, RootContent } from 'hast'
 import highlightCode from './highlight'
 import highlightedCodeText from '@master/internal-site/utils/highlighted-code-text'
+import { compactTokenClasses } from '@master/internal-site/utils/compact-highlight.ts'
 
 test('highlightCode renders Master CSS semantic spans only for CSS directive class lists', async () => {
   const hast = await highlightCode([
@@ -38,7 +39,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
     visitElements(hast.children, (element) => {
       if (element.tagName === 'span' && getTextContent(element) === text
         && (!semantic || hasClassName(element, 'mcss-semantic-keyword-query'))) {
-        style = element.properties?.style as string | undefined
+        style = colorOf(element)
       }
     })
     assert.ok(style, text)
@@ -248,6 +249,16 @@ function visitElements(children: RootContent[], callback: (element: Element) => 
     callback(child)
     visitElements(child.children as RootContent[], callback)
   }
+}
+
+// A plain token carries its color role as a compact class (@master/internal-site, utils/compact-highlight.ts).
+const compactColors = new Map(Object.entries(compactTokenClasses).map(([role, name]) => [name, `color:var(--ui-code-${role})`]))
+
+function colorOf(element: Element): string | undefined {
+  const style = element.properties?.style
+  if (typeof style === 'string') return style
+  const className = element.properties?.className
+  return Array.isArray(className) ? compactColors.get(String(className[0])) : undefined
 }
 
 function hasClassName(element: Element, className: string): boolean {
