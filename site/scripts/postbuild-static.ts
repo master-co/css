@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPublicEnv } from '../utils/public-env.js'
 import { organizationRedirects, legacyDesignAssets } from './organization-redirects'
+import { legacyDocsRedirects } from './legacy-docs-redirects'
 import { finalizeSeo, markdownCanonicalHeaders } from './static-seo'
 import { stabilizeIslandIds } from './stable-island-ids'
 import { locales } from '@master/internal-site/common/locales.js'
@@ -61,6 +62,7 @@ async function writeHeaders() {
 async function writeRedirects() {
     await writeFile(path.join(outDir, '_redirects'), [
         ...organizationRedirects(),
+        ...legacyDocsRedirects(),
         '/en/* /:splat 301',
         '/en / 301',
         // Pages cannot proxy another origin; redirect so CDN files are never served from this origin.
