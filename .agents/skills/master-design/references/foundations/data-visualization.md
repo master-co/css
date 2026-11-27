@@ -22,9 +22,15 @@ Area and volume are harder to compare precisely than aligned positions. Avoid de
 
 ## Show limits in the data
 
-Distinguish zero, missing, withheld and not applicable. Show intervals or other appropriate uncertainty indicators when the data requires them, and explain what they mean. A precise decimal does not make an estimate precise.
+Distinguish zero, missing, withheld and not applicable. A value below a detection or reporting limit is none of these: keep the comparator, the limit and the unit together, such as < 0.5 mg/L, and do not plot it as zero or drop it from a total without saying so. Show intervals or other appropriate uncertainty indicators when the data requires them, and explain what they mean. A precise decimal does not make an estimate precise.
 
-Keep aggregation and denominator visible: 20 completed out of 25 is different from 20 out of 200. Label the period and source. When filters change the population, update the title, count and summary together.
+Keep aggregation and denominator visible: 20 completed out of 25 is different from 20 out of 200. Label the period and source. When the data stops at a cutoff that differs from when the view was generated or refreshed, show both; a page refreshed this morning may describe yesterday. When filters change the population, update the title, count and summary together.
+
+## Say what a change means
+
+A change between two percentages has two readings. Moving from 40% to 45% is 5 percentage points and also a 12.5% relative increase; name which one a delta reports, and give both when readers may compare them. Name the comparison as well: against the previous period, the same period last year or a target.
+
+Direction and desirability are separate facts. A falling error rate is an improvement; a rising cost may not be. State the direction and, when it matters, whether the change is good, rather than letting an arrow or a red/green color carry the judgment. Keep the color for desirability consistent across a view, and pair it with words.
 
 ## Make values available
 
@@ -32,7 +38,7 @@ Use direct labels, line patterns or symbols alongside color. Provide a concise t
 
 ## Verify
 
-Recompute displayed totals from the same records as the chart. Test all-zero data, missing points, negative values, long labels and a narrow viewport. Check that changing a filter updates every dependent representation. Read the chart without color and without tooltips; the main conclusion should remain available. Apply the [WCAG use-of-color guidance](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html) without treating it as proof of statistical correctness.
+Recompute displayed totals from the same records as the chart. Test all-zero data, missing points, negative values, a value below its detection limit, a decrease that is an improvement, long labels and a narrow viewport. Check that changing a filter updates every dependent representation. Read the chart without color and without tooltips; the main conclusion should remain available. Apply the [WCAG use-of-color guidance](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html) without treating it as proof of statistical correctness.
 
 ## Keep encoding tied to meaning
 

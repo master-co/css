@@ -14,6 +14,7 @@ A short label is useful only when it remains specific. Repeated Edit actions nee
 | --- | --- | --- |
 | Before input | Requirement, unit or unusual constraint | Upload a PDF, up to 10 MB |
 | Before consequence | Affected object and scope | Archive 3 selected projects |
+| Before payment | What is due now, what recurs, how often and from when | $0 today, then $12 per month from 1 March |
 | During waiting | What is happening and available control | Uploading report.pdf; Cancel |
 | After failure | What remains and a useful next action | Your draft is kept. Reconnect and try saving again |
 | After completion | What completed and what follows | Invitation sent to Maya; View members |
@@ -36,6 +37,6 @@ Read controls without surrounding decoration, then walk the complete task. Check
 
 ## Support recognition and predictable choices
 
-Keep required formats and prerequisites visible while entering information. Show relevant prior choices instead of requiring recall; use familiar terms and explain necessary specialist vocabulary beside the decision. A returning person should recognize what remains and what already succeeded.
+Keep required formats and prerequisites visible while entering information. Show relevant prior choices instead of requiring recall; use familiar terms and explain necessary specialist vocabulary beside the decision. Write out an abbreviation the audience may not know at its first use, then use the short form consistently. A returning person should recognize what remains and what already succeeded.
 
 Focus alone must not unexpectedly change context. Changing an input must not unexpectedly navigate, submit or open a new window unless the person was advised beforehand. Updating an adjacent preview is different from relocating the task. Avoid hiding consequential options behind unexplained shorthand. Test a changed form branch and a return after interruption. These practices also draw on the supplemental [COGA guidance](https://www.w3.org/TR/coga-usable/), not additional WCAG AA criteria.

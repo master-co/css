@@ -4,7 +4,7 @@ Use WCAG 2.2 Level AA as the baseline for web work, alongside native HTML and th
 
 ## Semantics and names
 
-Start with the native element whose purpose matches the task. A link has a destination; a button triggers an action; an input retains its native value and form behavior. Give every control a meaningful accessible name. Visible labels should agree with that name, including repeated row actions with enough context to identify their target.
+Start with the native element whose purpose matches the task. A link has a destination; a button triggers an action; an input retains its native value and form behavior. Give every control a meaningful accessible name. Visible labels should agree with that name, including repeated row actions with enough context to identify their target. Links that go to different destinations need distinguishable purposes from their text or programmatic context (2.4.4); several Read more links are ambiguous in a list of links. Links with the same name should lead to the same destination.
 
 Associate help and validation text with fields. Use headings and landmarks to express the reading structure. Keep decorative icons out of the accessibility tree; give informative images useful alternatives. Do not add a role without implementing its required keyboard and state behavior.
 

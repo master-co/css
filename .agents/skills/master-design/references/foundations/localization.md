@@ -8,6 +8,8 @@ Use real strings in representative scripts, including long labels and mixed-scri
 
 Choose fonts that support the intended regional glyphs, and set the correct document language. A fallback font may change line height and visible weight. See [typography](typography.md) and [typographic craft](../typography.md).
 
+Mark each passage in another language with its own language so it is pronounced and rendered correctly. In a language switcher, show each language in its own name, such as Deutsch or 日本語, so a person who cannot read the current interface can still find theirs, and mark each option with that language. When an original name appears beside its translation, mark each with its own language.
+
 ## Respect direction
 
 Use logical start/end relationships for margins, padding and alignment. In a right-to-left interface, navigation progression may reverse while a chart's time axis or a playback symbol follows its own convention. Mirror meaning deliberately instead of flipping every asset.
@@ -32,6 +34,6 @@ Avoid treating Enter during an unfinished IME composition as submission or accep
 
 ## Verify
 
-Complete a form and search in a mixed-script locale, repeat in RTL, and inspect a long translated label at narrow width. Check punctuation, cursor behavior, selection, sorting, dates, copied values and focus order. Use the [W3C internationalization guidance](https://www.w3.org/International/techniques/authoring-html) for platform details; language-specific typography remains contextual.
+Complete a form and search in a mixed-script locale, switch languages starting from one you cannot read, repeat in RTL, and inspect a long translated label at narrow width. Check punctuation, cursor behavior, selection, sorting, dates, copied values and focus order. Use the [W3C internationalization guidance](https://www.w3.org/International/techniques/authoring-html) for platform details; language-specific typography remains contextual.
 
 For temporal entry, distinguish [dates, instants, durations and ranges](../patterns/date-time.md); formatting alone does not decide which control or time zone is appropriate.

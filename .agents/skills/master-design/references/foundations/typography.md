@@ -16,7 +16,7 @@ Use tabular numerals where values must align, not throughout all prose. Keep lit
 
 ## Scale and wrap
 
-Allow text to resize and controls to grow. Test 200% text, long unbreakable identifiers and narrow layouts. Use wrapping that respects language and punctuation; global break-all and negative tracking can hide layout problems while damaging reading.
+Allow text to resize and controls to grow. Test 200% text, long unbreakable identifiers and narrow layouts. Use wrapping that respects language and punctuation; global break-all and negative tracking can hide layout problems while damaging reading. Balance short blocks read as one shape, keep pretty wrapping for running text and keep text that changes while it is seen stable; see [wrapping](../typography.md#wrapping).
 
 ## Separate reading from scanning
 

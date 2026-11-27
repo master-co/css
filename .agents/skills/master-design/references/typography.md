@@ -4,7 +4,23 @@ Preserve the project's typefaces and hierarchy. Wait for the actual font. A comp
 
 ## Wrapping
 
-Use balanced wrapping where a short heading benefits from more even lines. Pretty wrapping can improve an isolated last line in prose. Compare fixed content and measure. Algorithms vary by engine and script; do not promise identical breaks or globally balance paragraphs. Test real strings, narrow widths and longer translations.
+Choose a wrap by how a block is read and how long it can grow, not by its element.
+
+| Block | Wrap | Why |
+| --- | --- | --- |
+| Seen as one shape: a heading, a title, a label, a caption, and the sentence or two that completes a title, such as a card's or an option's description, a notice's message or the lead under a heading | `balance` | Lines of similar length read as one unit with the title |
+| Read line after line, or of unbounded length: paragraphs, list items, messages, comments, field help, an error that quotes input | `pretty` | Full lines carry the reading; only the end needs repair |
+| Changing while it is seen: text being typed, a reply that streams in, a live value | `stable` | A word already read stays on its line |
+
+A short block wraps only because its column ran out. Filled lines then read as a full line and a spilled fragment, and a row of sibling cards shows a different fragment in each. Pretty wrapping does not reliably fix this: Chromium moves a word down only when the last line would be a single word, so a two-word fragment such as "a seat." survives. Balanced lines keep the block compact whatever its words.
+
+Do not balance text that can grow long. Engines balance only a few lines (Chromium six, Firefox ten) and silently fall back beyond them, so a slot whose length you cannot bound would balance its short cases and leave its long ones without repair. Balancing a paragraph also shortens every line of the reading measure. Use pretty wrapping there; Safari applies it to the whole paragraph's rag, Chromium to the last few lines.
+
+Balance and pretty re-break earlier lines whenever words are added. In a measured stream of 38 words in a 300px column, an earlier break moved at 6 steps with pretty and 17 with balance, and never with ordinary wrapping. `text-wrap` is inherited, and engines apply it to textareas and editable regions, so set `stable` on the editable or streaming element itself rather than relying on its container. Keep code, identifiers and single-line labels to their own rules.
+
+Center balanced text. A centered block whose first line is full leaves a short centered line under it. Balancing never narrows the box, though: in a box sized by its own words, such as a tooltip, a bubble or a button, balanced lines leave the room they gave up inside the paint at the line end, where it reads as uneven padding. Center the lines in such a box, or keep pretty wrapping. A box sized by the layout, such as a card in a grid, has no such edge.
+
+Compare fixed content at the real font and measure. Algorithms vary by engine and script, and both values are enhancements over ordinary wrapping; do not promise identical breaks. Test real strings, narrow widths and longer translations.
 
 `overflow-wrap: anywhere` and `break-word` both break an unbreakable word that would overflow, but `anywhere` also treats every character as a break opportunity in min-content sizing. A label in a column sized to its content, such as an auto grid track or a flexible stub, can then wrap one letter at a time. Use `break-word` for short labels that may sit in such a column, and keep `anywhere` for long identifiers in fixed-width prose.
 
