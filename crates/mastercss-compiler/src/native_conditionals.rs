@@ -98,7 +98,23 @@ impl NativeConditionalLowerer<'_> {
                 (&mut layer.rules.0, condition)
             }
             CssRule::StartingStyle(style) => (&mut style.rules.0, "@starting-style".into()),
-            _ => return Ok(Some(rule)),
+            CssRule::Scope(scope) => {
+                let condition = crate::native_style::scope_condition(scope, None, self.filename)?;
+                (&mut scope.rules.0, condition)
+            }
+            CssRule::Nesting(_) => {
+                let CssRule::Nesting(nesting) = rule else {
+                    unreachable!()
+                };
+                return self.lower(CssRule::Style(nesting.style), path);
+            }
+            _ => {
+                return Err(CompilerError::Directive {
+                    message: "@apply is only lowered inside style rules and @media, @supports, @container, @layer, @scope or @starting-style blocks".into(),
+                    filename: self.filename.into(),
+                    range: None,
+                });
+            }
         };
         let mut nested_path = path.to_vec();
         nested_path.push(condition);

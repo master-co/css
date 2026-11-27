@@ -19,6 +19,16 @@ pub(crate) struct SourceIndex<'a> {
     checkpoints: Vec<(usize, u32)>,
 }
 
+/// Whether `character` at `byte` ends a line as the CSS parser counts them: a
+/// line feed, a form feed, or a carriage return not followed by a line feed.
+pub(crate) fn is_css_line_break(text: &str, byte: usize, character: char) -> bool {
+    match character {
+        '\n' | '\x0c' => true,
+        '\r' => text.as_bytes().get(byte + 1) != Some(&b'\n'),
+        _ => false,
+    }
+}
+
 impl<'a> SourceIndex<'a> {
     pub(crate) fn new(text: &'a str) -> Self {
         let mut line_starts = vec![0];
@@ -31,7 +41,7 @@ impl<'a> SourceIndex<'a> {
                 next_checkpoint = byte + CHECKPOINT_BYTES;
             }
             units += character.len_utf16() as u32;
-            if character == '\n' {
+            if is_css_line_break(text, byte, character) {
                 line_starts.push(byte + 1);
             }
         }

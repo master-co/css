@@ -34,7 +34,7 @@ pub(crate) fn lower_theme_rule(
                 message,
             )
         };
-        let target = match mode.as_str() {
+        let target = match mode.to_ascii_lowercase().as_str() {
             "inline" => &mut inline,
             "static" => &mut is_static,
             _ => {

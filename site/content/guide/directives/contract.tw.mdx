@@ -335,6 +335,8 @@ Master 編譯實驗性 [CSS Mixins 規範](https://drafts.csswg.org/css-mixins-1
 
 `@apply` 在原生規則、utility 或另一個 mixin 內接受一個 mixin 呼叫，不接受 utility 名稱或 class 清單。展開發生在原本的宣告位置，並保留重複宣告、重要性、選擇器、條件與 URL 所有權。
 
+套用 mixin 的原生規則會依 CSS 巢狀的解讀方式攤平。其選擇器清單仍維持為清單，因此每個分支保有自己的選擇器權重，也可以指定 `::before` 這類偽元素。巢狀選擇器中的每個 `&` 會依序替換為每個分支，只有在直接寫出分支會改變符合的元素時，才保留在 `:is()` 中。規則可以位於 `@media`、`@supports`、`@container`、`@layer`、`@scope` 與 `@starting-style` 區塊內，也可以包含這些區塊；`@font-face`、`@page` 等描述子區塊不能包含 `@apply`。
+
 參數可用於套用的元素上，包含 `&:hover` 與條件包裝。跨元素使用參數、重新賦值、選擇器或條件插值、遞迴定義、多載、`@private` 與不支援的型別，都會回報編譯錯誤。此靜態子集未實作依賴瀏覽器的參數求值、私有屬性或通用函式。
 
 <ReferenceIllustration id="mixin-splice" />

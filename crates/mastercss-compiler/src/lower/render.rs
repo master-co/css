@@ -20,6 +20,9 @@ pub(super) fn render_style_definitions(
     let mut css = String::new();
     let mut offset = 0u32;
     let mut mappings = Vec::new();
+    // Wrappers stay open across definitions while they share an anonymous
+    // layer: each authored anonymous block must print as one layer.
+    let mut open = Vec::<String>::new();
     for definition in definitions {
         let conditions = definition
             .conditions
@@ -27,10 +30,30 @@ pub(super) fn render_style_definitions(
             .map(|condition| condition.trim())
             .filter(|condition| !condition.is_empty())
             .collect::<Vec<_>>();
-        for condition in &conditions {
-            css.push_str(condition);
+        let common = open
+            .iter()
+            .zip(&conditions)
+            .take_while(|(open, next)| open == next)
+            .count();
+        let shared = open[..common]
+            .iter()
+            .rposition(|condition| is_anonymous_layer(condition))
+            .map_or(0, |index| index + 1);
+        for _ in shared..open.len() {
+            css.push('}');
+            offset += 1;
+        }
+        open.truncate(shared);
+        for condition in &conditions[shared..] {
+            let printed = if is_anonymous_layer(condition) {
+                "@layer"
+            } else {
+                condition
+            };
+            css.push_str(printed);
             css.push('{');
-            offset += condition.encode_utf16().count() as u32 + 1;
+            offset += printed.encode_utf16().count() as u32 + 1;
+            open.push((*condition).to_owned());
         }
         let selector_end = offset + definition.selector.encode_utf16().count() as u32;
         anchor(
@@ -57,10 +80,15 @@ pub(super) fn render_style_definitions(
         }
         css.push('}');
         offset += 1;
-        for _ in conditions {
-            css.push('}');
-            offset += 1;
-        }
+    }
+    for _ in open {
+        css.push('}');
     }
     (css, mappings)
+}
+
+fn is_anonymous_layer(condition: &str) -> bool {
+    condition
+        .strip_prefix("@layer")
+        .is_some_and(|rest| rest.starts_with(crate::native_style::ANONYMOUS_LAYER_PREFIX))
 }

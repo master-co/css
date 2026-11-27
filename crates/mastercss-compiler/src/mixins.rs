@@ -102,6 +102,26 @@ pub(crate) fn application(source: &str) -> Result<(String, Vec<MixinValue>), Str
     Ok((name, args))
 }
 
+/// Whether a prelude would need a parameter substituted: `ident()`, or `var()`
+/// of a parameter. A native `var()`, such as `@supports (color: var(--x))`,
+/// stays as authored.
+fn substitutes_parameter(prelude: &str, parameters: &[MixinParameter]) -> bool {
+    let tokens = tokenize_css_syntax(prelude);
+    tokens
+        .iter()
+        .enumerate()
+        .any(|(index, token)| match &token.kind {
+            Kind::Function(name) if name.eq_ignore_ascii_case("ident") => true,
+            Kind::Function(name) if name.eq_ignore_ascii_case("var") => {
+                tokens.get(index + 1).is_some_and(|next| {
+                    matches!(&next.kind, Kind::Ident(argument)
+                    if parameters.iter().any(|parameter| parameter.name == argument.as_ref()))
+                })
+            }
+            _ => false,
+        })
+}
+
 pub(crate) fn definition(prelude: &str, source: &str) -> Result<MixinDefinition, String> {
     let (name, params) = header(prelude)?;
     if !mastercss_lexer::valid_utility_name(name.trim_start_matches("--")) {
@@ -194,13 +214,21 @@ pub(crate) fn definition(prelude: &str, source: &str) -> Result<MixinDefinition,
                     return Err(format!("Mixin parameter {property} cannot be reassigned"));
                 }
                 let start = tokens[statement.tokens.start + 1].bytes.end;
+                // A custom property keeps its authored escapes: `--gap-1\.5`
+                // written out decoded is not an identifier.
+                let property = if property.starts_with("--") {
+                    source[first.bytes.clone()].to_owned()
+                } else {
+                    property.to_string()
+                };
                 output.push(MixinNode::Declaration {
-                    property: property.to_string(),
+                    property,
                     value: value(source[start..end].trim())?,
                     source: None,
                 });
             } else if let Kind::AtKeyword(name) = &first.kind {
-                match name.as_ref() {
+                // At-rule names are ASCII case-insensitive.
+                match name.to_ascii_lowercase().as_str() {
                     "apply" => {
                         let (name, arguments) = application(source[first.bytes.end..end].trim())?;
                         output.push(MixinNode::Apply {
@@ -225,9 +253,24 @@ pub(crate) fn definition(prelude: &str, source: &str) -> Result<MixinDefinition,
                     "media" | "supports" | "container" | "starting-style"
                         if statement.has_block =>
                     {
-                        if tokenize_css_syntax(prelude).iter().any(|token| matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("var") || name.eq_ignore_ascii_case("ident"))) { return Err("Mixin parameters cannot be substituted into condition preludes".into()); }
+                        if substitutes_parameter(prelude, parameters) {
+                            return Err(
+                                "Mixin parameters cannot be substituted into condition preludes"
+                                    .into(),
+                            );
+                        }
+                        // The condition names its at-rule in lowercase and one
+                        // space before its query (`@media(--wide)` included), as
+                        // the engine and custom media expansion read it.
+                        let keyword = first.bytes.end - first.bytes.start;
+                        let query = prelude.get(keyword..).unwrap_or_default().trim();
+                        let name = name.to_ascii_lowercase();
                         output.push(MixinNode::Condition {
-                            condition: prelude.into(),
+                            condition: if query.is_empty() {
+                                format!("@{name}")
+                            } else {
+                                format!("@{name} {query}")
+                            },
                             body: nodes(source, tokens, statements, index, parameters)?,
                         });
                     }
@@ -238,7 +281,9 @@ pub(crate) fn definition(prelude: &str, source: &str) -> Result<MixinDefinition,
                     }
                 }
             } else if statement.has_block {
-                if tokenize_css_syntax(prelude).iter().any(|token| matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("var") || name.eq_ignore_ascii_case("ident"))) { return Err("Mixin parameters cannot be substituted into selectors".into()); }
+                if substitutes_parameter(prelude, parameters) {
+                    return Err("Mixin parameters cannot be substituted into selectors".into());
+                }
                 output.push(MixinNode::Rule {
                     selector: prelude.into(),
                     body: nodes(source, tokens, statements, index, parameters)?,

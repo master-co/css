@@ -335,6 +335,8 @@ Master 编译实验性 [CSS Mixins 规范](https://drafts.csswg.org/css-mixins-1
 
 `@apply` 在原生规则、工具类或另一个混入内接受一个混入调用，不接受工具类名称或类列表。展开位于原有声明位置，并保留重复声明、重要性、选择器、条件与 URL 所有权。
 
+应用混入的原生规则按 CSS 嵌套的解读方式展平。其选择器列表仍为列表，因此每个分支保留自身的选择器优先级，也可以指定 `::before` 等伪元素。嵌套选择器中的每个 `&` 依次替换为每个分支，仅在直接写出分支会改变匹配的元素时才保留在 `:is()` 中。规则可以位于 `@media`、`@supports`、`@container`、`@layer`、`@scope` 与 `@starting-style` 块内，也可以包含这些块；`@font-face`、`@page` 等描述符块不能包含 `@apply`。
+
 参数可用于应用元素上，包括 `&:hover` 与条件包装。跨元素使用参数、重新赋值、选择器或条件插值、递归定义、重载、`@private` 及不支持的类型均报告编译错误。该静态子集未实现依赖浏览器的参数求值、私有属性或通用函数。
 
 <ReferenceIllustration id="mixin-splice" />

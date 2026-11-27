@@ -103,35 +103,16 @@ pub fn remove_css_reference_statements(source: &str) -> (String, Vec<CssReferenc
     (output, references)
 }
 
+/// The quoted strings of a directive prelude, decoded as CSS strings (`"\\61 .html"`
+/// is `a.html`). A string inside a comment is not one.
 pub(crate) fn parse_quoted_strings(source: &str) -> Vec<String> {
-    let mut values = Vec::new();
-    let mut index = 0;
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        if !matches!(character, '\'' | '"') {
-            index += character.len_utf8();
-            continue;
-        }
-        let quote = character;
-        index += quote.len_utf8();
-        let mut value = String::new();
-        while index < source.len() {
-            let character = source[index..].chars().next().unwrap_or_default();
-            index += character.len_utf8();
-            if character == '\\' {
-                if let Some(escaped) = source[index..].chars().next() {
-                    value.push(escaped);
-                    index += escaped.len_utf8();
-                }
-            } else if character == quote {
-                values.push(value);
-                break;
-            } else {
-                value.push(character);
-            }
-        }
-    }
-    values
+    crate::tokenize_css_syntax(source)
+        .into_iter()
+        .filter_map(|token| match token.kind {
+            crate::CssSyntaxKind::String(value) => Some(value.into_owned()),
+            _ => None,
+        })
+        .collect()
 }
 
 pub(crate) fn parse_unquoted_words(source: &str) -> Vec<String> {
@@ -209,7 +190,11 @@ pub fn find_standalone_css_directive_statements(
             name: name.to_owned(),
             statement: statement.to_owned(),
             args: parse_quoted_strings(prelude),
-            modifiers: parse_unquoted_words(prelude),
+            // Keywords such as `not`, `native` and `keyframes` are ASCII case-insensitive.
+            modifiers: parse_unquoted_words(prelude)
+                .into_iter()
+                .map(|word| word.to_ascii_lowercase())
+                .collect(),
         });
         Some(statement_end.end)
     });
@@ -243,4 +228,22 @@ pub fn has_master_css_manifest_entrypoint(source: &str) -> bool {
     find_css_import_statements(source).iter().any(|statement| {
         parse_css_import_source(&statement.statement).as_deref() == Some("@master/css")
     })
+}
+
+#[cfg(test)]
+mod quoted_string_tests {
+    use super::parse_quoted_strings;
+
+    #[test]
+    fn quoted_strings_skip_comments_and_decode_escapes() {
+        assert_eq!(
+            parse_quoted_strings(r#" "./src" /* "./legacy" */"#),
+            ["./src"]
+        );
+        assert_eq!(
+            parse_quoted_strings(r#" "\61 .html" 'it\'s'"#),
+            ["a.html", "it's"]
+        );
+        assert_eq!(parse_quoted_strings(r#" "a", "b""#), ["a", "b"]);
+    }
 }

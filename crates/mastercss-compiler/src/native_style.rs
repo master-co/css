@@ -5,6 +5,9 @@ use super::{
 };
 use crate::source_index::SourceIndex;
 
+/// Opens the comment that names one anonymous `@layer` block in a condition path.
+pub(crate) const ANONYMOUS_LAYER_PREFIX: &str = "/*master-css-anonymous-layer:";
+
 #[derive(Debug, Clone)]
 pub(crate) struct NativeStyleContext {
     pub(crate) selectors: Vec<String>,
@@ -21,8 +24,41 @@ pub(crate) fn native_rule_list_has_directives(rules: &[CssRule<'_, ThemeAtRule>]
         CssRule::Container(rule) => native_rule_list_has_directives(&rule.rules.0),
         CssRule::LayerBlock(rule) => native_rule_list_has_directives(&rule.rules.0),
         CssRule::StartingStyle(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::Scope(rule) => native_rule_list_has_directives(&rule.rules.0),
+        CssRule::Nesting(rule) => native_rule_list_has_directives(&rule.style.rules.0),
+        CssRule::MozDocument(rule) => native_rule_list_has_directives(&rule.rules.0),
         _ => false,
     })
+}
+
+/// The `@scope` prelude a lowered rule is wrapped in. Nested in a style rule,
+/// its start is relative to the parent selectors, which are the root when it
+/// names none.
+pub(crate) fn scope_condition(
+    scope: &lightningcss::rules::scope::ScopeRule<'_, ThemeAtRule>,
+    parent: Option<&[String]>,
+    filename: &str,
+) -> Result<String, CompilerError> {
+    let start = match (&scope.scope_start, parent) {
+        (Some(start), Some(parent)) => Some(combine_managed_selectors(
+            parent,
+            &printed_selectors(&start.0, filename)?,
+        )),
+        (Some(start), None) => Some(printed_selectors(&start.0, filename)?),
+        (None, parent) => parent.map(<[String]>::to_vec),
+    };
+    let mut condition = String::from("@scope");
+    if let Some(start) = start {
+        condition.push_str(" (");
+        condition.push_str(&start.join(","));
+        condition.push(')');
+    }
+    if let Some(end) = &scope.scope_end {
+        condition.push_str(" to (");
+        condition.push_str(&printed_selectors(&end.0, filename)?.join(","));
+        condition.push(')');
+    }
+    Ok(condition)
 }
 
 pub(crate) fn push_native_style_declarations(
@@ -278,9 +314,14 @@ pub(crate) fn lower_native_rule_list(
                 )?;
             }
             CssRule::LayerBlock(layer) => {
+                // Each anonymous block is its own layer: the comment tells the
+                // blocks apart, so they are neither merged nor split.
                 let value = match &layer.name {
                     Some(name) => format!("@layer {}", minified_css(name, filename)?),
-                    None => "@layer".into(),
+                    None => format!(
+                        "@layer{ANONYMOUS_LAYER_PREFIX}{}:{}*/",
+                        layer.loc.line, layer.loc.column
+                    ),
                 };
                 let mut path = condition_path.to_vec();
                 path.push(value);
@@ -295,6 +336,40 @@ pub(crate) fn lower_native_rule_list(
                     style_order,
                 )?;
             }
+            // Scoped rules are relative to the scoping root, which declarations
+            // directly inside the block style as `:where(:scope)`.
+            CssRule::Scope(scope) => {
+                let mut path = condition_path.to_vec();
+                path.push(scope_condition(
+                    &scope,
+                    context.as_ref().map(|parent| parent.selectors.as_slice()),
+                    filename,
+                )?);
+                let scoped = context.as_ref().map(|parent| NativeStyleContext {
+                    selectors: vec![":where(:scope)".into()],
+                    selector_source: parent.selector_source.clone(),
+                });
+                lower_native_rule_list(
+                    source,
+                    filename,
+                    rewritten,
+                    scope.rules.0,
+                    scoped,
+                    &path,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::Nesting(nesting) => lower_native_rule_list(
+                source,
+                filename,
+                rewritten,
+                vec![CssRule::Style(nesting.style)],
+                context.clone(),
+                condition_path,
+                style_definitions,
+                style_order,
+            )?,
             CssRule::StartingStyle(starting_style) => {
                 let mut path = condition_path.to_vec();
                 path.push("@starting-style".into());

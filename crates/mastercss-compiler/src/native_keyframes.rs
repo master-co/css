@@ -16,6 +16,9 @@ pub(crate) struct KeyframeCollector<'a> {
     pub native: bool,
     pub definitions: Vec<KeyframeDefinition>,
     pub source_index: SourceIndex<'a>,
+    /// The index of the text the parser read, whose consumed directives are
+    /// blanked byte for byte: its locations count UTF-16 units of that text.
+    pub parsed_index: SourceIndex<'a>,
     pub source_identity: String,
 }
 
@@ -184,9 +187,12 @@ impl KeyframeCollector<'_> {
         loc: lightningcss::rules::Location,
     ) -> Result<(usize, usize, usize), CompilerError> {
         let start = self
-            .source_index
+            .parsed_index
             .byte_offset_for_location(loc.line, loc.column)
-            .unwrap_or_default();
+            .ok_or_else(|| CompilerError::Print {
+                message: "Native keyframes location is outside its stylesheet".into(),
+                filename: self.filename.into(),
+            })?;
         let open = crate::pattern::css_statement_delimiter(self.source, start, self.source.len())
             .map(|(open, _)| open);
         let end = open.and_then(|open| crate::css_block_end(self.source, open, self.source.len()));

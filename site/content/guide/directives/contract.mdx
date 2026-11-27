@@ -345,6 +345,8 @@ Master compiles a static subset of the experimental [CSS Mixins specification](h
 
 `@apply` accepts one mixin call inside a native rule, utility, or another mixin. It does not accept utility names or class lists. Expansion occurs at the authored declaration position, preserving duplicates, importance, selectors, conditions and URL ownership.
 
+A native rule that applies a mixin is flattened as CSS nesting reads it. Its selector list stays a list, so each branch keeps its own specificity and may name a pseudo-element such as `::before`. Each `&` in a nested selector takes every branch in turn and stays in `:is()` only where writing a branch out would change what it matches. The rule may sit in `@media`, `@supports`, `@container`, `@layer`, `@scope` and `@starting-style` blocks or hold them; descriptor blocks such as `@font-face` and `@page` cannot hold `@apply`.
+
 Parameters can be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported types report compilation errors. The static subset does not implement browser-dependent parameter evaluation, private properties or general-purpose functions.
 
 <ReferenceIllustration id="mixin-splice" />

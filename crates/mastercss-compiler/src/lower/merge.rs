@@ -82,9 +82,14 @@ pub(super) fn create_merged_style_definitions(
                     .expand_mixin_with_contents(name, &arguments, contents.as_deref())
                     .map_err(fail)?;
                 for rule in rules {
+                    // A mixin's own declarations land in the applying rule as
+                    // authored; its nested rules flatten like native nesting.
                     let selector =
-                        mastercss_lexer::replace_nesting_selector(&rule.selector, selector)
-                            .unwrap_or_else(|| rule.selector.clone());
+                        if mastercss_lexer::nesting_selector_ranges(&rule.selector).is_empty() {
+                            rule.selector.clone()
+                        } else {
+                            crate::native_selectors::nest_applied_selector(selector, &rule.selector)
+                        };
                     append_style(
                         &mut output,
                         MergedStyleDefinition {

@@ -201,20 +201,20 @@
     },
     "guide/directives/contract.mdx": {
       "tw": {
-        "sourceHash": "0f200bac14656153933ebfe982af2819c14b54c59b79a019fad300f76afdfc72",
-        "translationHash": "ba4ef5688a66fd0c736a2e801898fe409b60d0ddfca7b18fc5d8556936e791d5"
+        "sourceHash": "e007faaaf91b7993165999c7ee0418f2c3f1577eece5b9e81ea7e8c90ef4c5f3",
+        "translationHash": "ef9d1052c35febe57a5f707cf02a1062b7fccbcaa85c27efc4257387884c6001"
       },
       "ja": {
-        "sourceHash": "0f200bac14656153933ebfe982af2819c14b54c59b79a019fad300f76afdfc72",
-        "translationHash": "2af7011703d6eb1b4845d5b53a44f90fc1183e007196dabc774b8bea34bc7347"
+        "sourceHash": "e007faaaf91b7993165999c7ee0418f2c3f1577eece5b9e81ea7e8c90ef4c5f3",
+        "translationHash": "c659930870b5c6a0c5d4ae3473471626a0eef484234a1b40d52bca4b1d37c418"
       },
       "ko": {
-        "sourceHash": "0f200bac14656153933ebfe982af2819c14b54c59b79a019fad300f76afdfc72",
-        "translationHash": "f065be83bafbb6412604c7780f07ee1d9dd1dbf7ce43cfcadec282d3a4fe2484"
+        "sourceHash": "e007faaaf91b7993165999c7ee0418f2c3f1577eece5b9e81ea7e8c90ef4c5f3",
+        "translationHash": "dd08594a69e1e8685d3ee94926490563c9ffbd573afb8adb409188af80ad3b84"
       },
       "cn": {
-        "sourceHash": "0f200bac14656153933ebfe982af2819c14b54c59b79a019fad300f76afdfc72",
-        "translationHash": "097fba8f73388b327ab611f1ddf118c537b165bc28eeb4f55053494c18308e7b"
+        "sourceHash": "e007faaaf91b7993165999c7ee0418f2c3f1577eece5b9e81ea7e8c90ef4c5f3",
+        "translationHash": "980125dcb2c57a2a32cb3acca9f03c3a68d98c4e514ffb11459d00e85b089169"
       }
     },
     "guide/global-styles/content.mdx": {

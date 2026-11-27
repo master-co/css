@@ -122,6 +122,7 @@ pub(crate) fn retain_style_slots<'i>(
                 CssRule::Container(rule) => &mut rule.rules.0,
                 CssRule::LayerBlock(rule) => &mut rule.rules.0,
                 CssRule::StartingStyle(rule) => &mut rule.rules.0,
+                CssRule::Scope(rule) => &mut rule.rules.0,
                 _ => return None,
             };
             *children = retain_style_slots(std::mem::take(children), names);
@@ -150,6 +151,7 @@ pub(crate) fn strip_style_slots<'i>(
                 CssRule::Container(value) => &mut value.rules.0,
                 CssRule::LayerBlock(value) => &mut value.rules.0,
                 CssRule::StartingStyle(value) => &mut value.rules.0,
+                CssRule::Scope(value) => &mut value.rules.0,
                 _ => return Some(rule),
             };
             let (retained, removed) = strip_style_slots(std::mem::take(children), names);

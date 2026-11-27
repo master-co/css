@@ -2,8 +2,8 @@ use super::{CssDirectiveRange, CssQuotedStringRange, SourceRange, byte_to_utf16_
 
 pub fn is_keyframe_safelist(source: &str) -> bool {
     let tokens = super::tokenize_css_syntax(source);
-    matches!(tokens.first().map(|token| &token.kind), Some(super::CssSyntaxKind::AtKeyword(name)) if name == "safelist")
-        && matches!(tokens.get(1).map(|token| &token.kind), Some(super::CssSyntaxKind::Ident(name)) if name == "keyframes")
+    matches!(tokens.first().map(|token| &token.kind), Some(super::CssSyntaxKind::AtKeyword(name)) if name.eq_ignore_ascii_case("safelist"))
+        && matches!(tokens.get(1).map(|token| &token.kind), Some(super::CssSyntaxKind::Ident(name)) if name.eq_ignore_ascii_case("keyframes"))
 }
 
 /// The at-rules Master CSS reads in a stylesheet, lowercase.
@@ -146,14 +146,14 @@ pub fn keyframe_safelist_diagnostics(source: &str) -> Vec<mastercss_schema::Diag
     let mut diagnostics = Vec::new();
     for statement in collect_css_syntax_statements(&tokens) {
         let slice = &tokens[statement.tokens.clone()];
-        if !matches!(slice.first().map(|token| &token.kind), Some(Kind::AtKeyword(name)) if name == "safelist")
+        if !matches!(slice.first().map(|token| &token.kind), Some(Kind::AtKeyword(name)) if name.eq_ignore_ascii_case("safelist"))
             || !matches!(slice.get(1).map(|token| &token.kind), Some(Kind::Ident(_)))
         {
             continue;
         }
         let valid = statement.parent.is_none()
             && !statement.has_block
-            && matches!(&slice[1].kind, Kind::Ident(name) if name == "keyframes")
+            && matches!(&slice[1].kind, Kind::Ident(name) if name.eq_ignore_ascii_case("keyframes"))
             && slice.len() > 2
             && slice[2..]
                 .iter()

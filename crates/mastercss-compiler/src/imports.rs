@@ -576,11 +576,7 @@ pub fn compile_native_css(
             ..ParserOptions::default()
         },
     )
-    .map_err(|error| CompilerError::Parse {
-        message: error.to_string(),
-        filename: options.from.clone(),
-        range: None,
-    })?;
+    .map_err(|error| crate::syntax::css_parse_error(&source, &options.from, error))?;
     if options.preserve_native_source {
         drop(stylesheet);
         return Ok(CompileNativeCssResult {

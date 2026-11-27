@@ -117,11 +117,7 @@ fn compile_css_directives_impl(
         },
         &mut parser,
     )
-    .map_err(|error| CompilerError::Parse {
-        message: error.to_string(),
-        filename: options.from.clone(),
-        range: None,
-    })?;
+    .map_err(|error| crate::syntax::css_parse_error(rewritten_source, &options.from, error))?;
 
     if let Some((start_byte, name)) = parser.nested_directive {
         return Err(directive_error(
@@ -157,6 +153,7 @@ fn compile_css_directives_impl(
     };
     let mut keyframes = crate::native_keyframes::KeyframeCollector {
         source_index: crate::source_index::SourceIndex::new(source),
+        parsed_index: crate::source_index::SourceIndex::new(rewritten_source),
         source_identity: crate::native_keyframes::source_identity(
             options.resource_owner.as_deref().unwrap_or(&options.from),
             source,

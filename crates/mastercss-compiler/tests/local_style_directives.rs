@@ -7,13 +7,15 @@ fn local_style_directives_follow_compiled_definitions() {
     assert!(local(".a { @apply --x; }"));
     assert!(local(".a { @supports (display: grid) { @APPLY --x; } }"));
     assert!(local(".a { @\\61 pply --x; }"));
+    // Scoped style rules and their nested blocks lower like any other.
+    assert!(local("@scope (.a) { .b { @apply --x; } }"));
+    assert!(local(".a { @scope (.b) { @apply --x; } }"));
     // References and custom media.
     assert!(local("@reference './tokens.css';"));
     assert!(local(".a { @media (--wide) { color: red } }"));
     // Definitions alone, and applications outside style rules, define no local style.
     assert!(!local("@theme { --color-brand: red; }"));
     assert!(!local("@mixin --m { @apply --x; }"));
-    assert!(!local("@scope (.a) { .b { @apply --x; } }"));
     assert!(!local(".a { color: red; }"));
 }
 

@@ -45,6 +45,42 @@ pub(crate) fn ranged_directive_diagnostic(
     }
 }
 
+/// A Lightning CSS parse error of `source`, ranged at its location, its message
+/// counting lines from 1 as editors do (the parser counts them from 0).
+pub(crate) fn css_parse_error<T: std::fmt::Display>(
+    source: &str,
+    filename: &str,
+    error: lightningcss::error::Error<T>,
+) -> CompilerError {
+    let Some(location) = error.loc else {
+        return CompilerError::Parse {
+            message: error.kind.to_string(),
+            filename: filename.to_owned(),
+            range: None,
+        };
+    };
+    let range = crate::source_index::SourceIndex::new(source)
+        .byte_offset_for_location(location.line, location.column)
+        .and_then(|start| {
+            let end = next_char_end(source, start);
+            Some(SourceRange {
+                start: byte_to_utf16_offset(source, start)?,
+                end: byte_to_utf16_offset(source, end)?,
+            })
+        });
+    CompilerError::Parse {
+        message: format!(
+            "{} at {}:{}:{}",
+            error.kind,
+            location.filename,
+            location.line + 1,
+            location.column
+        ),
+        filename: filename.to_owned(),
+        range,
+    }
+}
+
 pub(crate) fn next_char_end(value: &str, index: usize) -> usize {
     index
         + value[index..]
