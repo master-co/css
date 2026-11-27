@@ -19,3 +19,16 @@ test('audit control: updated documents replace class and color ranges', async ()
   expect(service.getClassPositions(document)).toEqual([])
   expect(service.inspectSyntax(document, { line: 0, character: 0 })).toBeUndefined()
 })
+
+test('exclude globs match the decoded path of a file document', () => {
+  using service = new MasterCSSLanguageService({ exclude: ['**/my app/dist/**', '**/vendor/**', 'c:/legacy/**'] }, {
+    session: createToolingSessionSync({ manifest: defaultManifestJSON as unknown as MasterCSSManifest })
+  })
+  const accepted = (uri: string) => service.isDocumentAccepted(TextDocument.create(uri, 'html', 1, ''))
+  expect(accepted('file:///Users/me/my%20app/dist/a.html')).toBe(false)
+  expect(accepted('file:///Users/me/.vitepress/vendor/a.html')).toBe(false)
+  expect(accepted('file:///c%3A/legacy/a.html')).toBe(false)
+  expect(accepted('file:///Users/me/node_modules/x/a.html')).toBe(false)
+  expect(accepted('file:///Users/me/my%20app/src/a.html')).toBe(true)
+  expect(accepted('untitled:Untitled-1')).toBe(true)
+})

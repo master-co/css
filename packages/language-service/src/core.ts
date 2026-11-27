@@ -129,6 +129,27 @@ export class MasterCSSLanguageService implements Disposable {
   }
 
   isDocumentAccepted(document: TextDocument): boolean {
-    return !this.settings.exclude?.some((pattern) => minimatch(document.uri, pattern))
+    const candidates = excludeCandidates(document.uri)
+    return !this.settings.exclude?.some((pattern) =>
+      candidates.some((candidate) => minimatch(candidate, pattern, { dot: true })))
   }
+}
+
+/**
+ * What an `exclude` glob is matched against: a `file:` document's decoded path (`my app`, not
+ * `my%20app`; `c:/x`, not `/c%3A/x`), and its URI, so dot directories and encoded
+ * characters do not defeat a user's pattern.
+ */
+function excludeCandidates(uri: string) {
+  const url = URL.parse(uri)
+  if (url?.protocol !== 'file:') return [uri]
+  let path: string
+  try {
+    path = decodeURIComponent(url.pathname)
+  } catch {
+    return [uri]
+  }
+  // A Windows drive path: `/c:/Users/a.ts`.
+  if (/^\/[A-Za-z]:\//.test(path)) path = path.slice(1)
+  return [path, uri]
 }
