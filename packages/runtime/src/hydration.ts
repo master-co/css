@@ -6,9 +6,10 @@ import {
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import { MasterCSSError } from '@master/css-schema'
 
+/** A document of any kind (`HTMLDocument`, `XMLDocument` for XHTML, or another realm's), not a shadow root. */
 export function isDocumentRoot(root: Document | ShadowRoot): root is Document {
-  const rootConstructorName = root?.constructor.name
-  return rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document'
+  // Node.DOCUMENT_NODE; a shadow root is a document fragment (11).
+  return root?.nodeType === 9
 }
 
 /**
