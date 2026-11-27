@@ -3,7 +3,7 @@
 // compute them. `&` stands for the class selector.
 import { nativeContent, splitTopLevel } from './class-syntax'
 import { DELIM, DIMENSION, FUNCTION, IDENT, NUMBER, PERCENTAGE, STRING, tokenize } from './css-syntax'
-import { isAsciiCase, isAsciiWhitespace, trim, trimStart } from './text'
+import { asciiLowercase, isAsciiCase, isAsciiWhitespace, trim } from './text'
 
 /** Top-level selector list branches, each trimmed. */
 export function splitSelectorList(source: string) {
@@ -23,91 +23,36 @@ export function splitSelectorList(source: string) {
   return branches
 }
 
-/** The most selectors one nested selector distributes into before its parent branches stay in `:is()`. */
-const DISTRIBUTED_SELECTOR_LIMIT = 64
 const LEGACY_PSEUDO_ELEMENTS = ['before', 'after', 'first-line', 'first-letter']
 
-/** The nesting `&` tokens outside attribute selectors, each with whether a function or parentheses hold it. */
+/** Nesting `&` tokens outside attribute selectors as `[start, end, inside a function or parentheses]`. */
 function nestingSelectorRanges(source: string) {
   const tokens = tokenize(source)
-  const ranges: [start: number, end: number, nested: boolean][] = []
+  const ranges: [number, number, boolean][] = []
   const open: number[] = []
   for (let index = 0; index < tokens.length; index++) {
-    while (open.length && open[open.length - 1] <= index) open.pop()
-    const token = tokens[index]
-    if (token.kind === DELIM && token.value === '[' && token.close >= 0) index = token.close
-    else if (token.kind === DELIM && token.value === '&') ranges.push([token.start, token.end, open.length > 0])
-    else if (token.close >= 0) open.push(token.close)
+    while (open[open.length - 1] <= index) open.pop()
+    const { kind, value, start, end, close } = tokens[index]
+    if (kind === DELIM && value === '[' && close >= 0) index = close
+    else if (kind === DELIM && value === '&') ranges.push([start, end, open.length > 0])
+    else if (close >= 0) open.push(close)
   }
   return ranges
 }
 
-/** Whether a selector is one compound: no combinator or descendant space outside functions and attributes. */
-function isCompoundSelector(selector: string) {
-  const tokens = tokenize(trim(selector))
-  let previousEnd: number | undefined
-  for (let index = 0; index < tokens.length; index++) {
-    const token = tokens[index]
-    if ((previousEnd !== undefined && token.start > previousEnd) || (token.kind === DELIM && '>+~'.includes(token.value))) return false
-    const last = token.close >= 0 ? token.close : index
-    previousEnd = tokens[last]?.end ?? token.end
-    index = last
-  }
-  return true
-}
-
-/** Whether a selector begins with a type or universal selector, which must lead its compound. */
-function startsWithTypeSelector(selector: string) {
-  const first = tokenize(trim(selector))[0]
-  return first !== undefined && (first.kind === IDENT || (first.kind === DELIM && (first.value === '*' || first.value === '|')))
-}
-
-/**
- * Each top-level `&` takes every parent branch in turn, the first varying slowest, as the lexer's
- * `distribute_nesting_selector`: written out where that means `:is(branch)`, kept in `:is()` otherwise,
- * and a type selector after `&` moved before it.
- */
-function distributeNestingSelector(source: string, parents: string[]) {
+/** Each top-level `&` replaced by every branch in turn, the first varying slowest, as `substitute_nesting_branches`. */
+function substituteNestingBranches(source: string, parents: string[]) {
   const ranges = nestingSelectorRanges(source)
-  if (!ranges.length || ranges.some(([, , nested]) => nested)) return undefined
-  const combinations = parents.length ** ranges.length
-  if (combinations < 1 || combinations > DISTRIBUTED_SELECTOR_LIMIT) return undefined
-  const tokens = tokenize(source)
-  const leading = source.length - trimStart(source).length
-  const places = ranges.map(([start, end]) => {
-    const index = tokens.findIndex((token) => token.start === start && token.end === end)
-    const previous = index > 0 ? tokens[index - 1] : undefined
-    const before = previous !== undefined && previous.end === start && !(previous.kind === DELIM && '>+~,'.includes(previous.value))
-    const next = index >= 0 ? tokens[index + 1] : undefined
-    const after = next !== undefined && next.start === end && (next.kind === IDENT || (next.kind === DELIM && next.value === '*'))
-      ? next
-      : undefined
-    return { first: start === leading, before, after }
-  })
-  const branches = parents.map((parent) => ({ parent, compound: isCompoundSelector(parent), typed: startsWithTypeSelector(parent) }))
-  const selectors: string[] = []
-  for (let combination = 0; combination < combinations; combination++) {
-    let selector = ''
-    let cursor = 0
-    let index = combination
-    let divisor = combinations
-    ranges.forEach(([start, end], position) => {
-      divisor /= parents.length
-      const { parent, compound, typed } = branches[Math.floor(index / divisor)]
-      index %= divisor
-      const { first, before, after } = places[position]
-      selector += source.slice(cursor, start)
-      cursor = end
-      if (after) {
-        selector += source.slice(after.start, after.end)
-        cursor = after.end
-      }
-      const written = (compound && !(typed && (before || after !== undefined))) || (!compound && first && after === undefined)
-      selector += written ? parent : `:is(${parent})`
-    })
-    selectors.push(selector + source.slice(cursor))
+  const count = parents.length ** ranges.length
+  if (!ranges.length || ranges.some((range) => range[2]) || !(count >= 1 && count <= 64)) return
+  let selectors = ['']
+  let cursor = 0
+  for (const [start, end] of ranges) {
+    const text = source.slice(cursor, start)
+    selectors = selectors.flatMap((prefix) => parents.map((parent) => prefix + text + parent))
+    cursor = end
   }
-  return selectors
+  return selectors.map((selector) => selector + source.slice(cursor))
 }
 
 /** Whether a selector names a pseudo-element: `::name`, or one of the four CSS 2 spells with one colon. */
@@ -115,14 +60,12 @@ function hasPseudoElement(selector: string) {
   const tokens = tokenize(selector)
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index]
-    if (token.kind === DELIM && token.value === '[' && token.close >= 0) {
-      index = token.close
-    } else if (token.kind === DELIM && token.value === ':') {
-      const next = tokens[index + 1]
-      if (next?.start !== token.end) continue
-      if (next.kind === DELIM && next.value === ':') return true
-      if (next.kind === IDENT && LEGACY_PSEUDO_ELEMENTS.some((name) => isAsciiCase(next.value, name))) return true
-    }
+    const next = tokens[index + 1]
+    if (token.kind !== DELIM) continue
+    if (token.value === '[' && token.close >= 0) index = token.close
+    else if (token.value === ':' && next?.start === token.end && (next.kind === DELIM
+      ? next.value === ':'
+      : next.kind === IDENT && LEGACY_PSEUDO_ELEMENTS.includes(asciiLowercase(next.value)))) return true
   }
   return false
 }
@@ -134,8 +77,8 @@ function hasPseudoElement(selector: string) {
 export function replaceNestingSelector(source: string, parent: string) {
   const branches = splitSelectorList(parent)
   if (branches.length > 1 && branches.some(hasPseudoElement)) {
-    const distributed = splitSelectorList(source).map((branch) => distributeNestingSelector(branch, branches))
-    if (distributed.every((branch) => branch !== undefined)) return distributed.flat().join(',')
+    const distributed = splitSelectorList(source).map((branch) => substituteNestingBranches(branch, branches))
+    if (distributed.every(Boolean)) return distributed.flat().join(',')
   }
   const replacement = branches.length > 1 ? `:is(${parent})` : parent
   let result = ''
@@ -156,8 +99,8 @@ export function replaceNestingSelector(source: string, parent: string) {
 /** A nested selector list placed in its parent, as CSS nesting reads it: a branch without `&` is relative to it. */
 export function nestSelector(source: string, parent: string) {
   const branches = splitSelectorList(source)
-  if (branches.every((branch) => nestingSelectorRanges(branch).length)) return replaceNestingSelector(source, parent) ?? source
-  const relative = branches.map((branch) => nestingSelectorRanges(branch).length ? branch : `& ${branch}`).join(',')
+  const nested = (branch: string) => nestingSelectorRanges(branch).length
+  const relative = branches.every(nested) ? source : branches.map((branch) => nested(branch) ? branch : `& ${branch}`).join(',')
   return replaceNestingSelector(relative, parent) ?? relative
 }
 

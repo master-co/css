@@ -3,7 +3,9 @@
 ///
 /// A parent list goes in `:is()`, unless one of its branches names a
 /// pseudo-element, which `:is()` cannot hold: then each top-level `&` takes
-/// every branch in turn (see [`distribute_nesting_selector`]).
+/// every branch in turn, written out as the branch's text. Engine templates
+/// are compound selectors there; the compiler flattens arbitrary nesting with
+/// [`distribute_nesting_selector`].
 pub fn replace_nesting_selector(source: &str, parent: &str) -> Option<String> {
     use crate::CssSyntaxKind;
     let mut result = String::with_capacity(source.len());
@@ -13,7 +15,7 @@ pub fn replace_nesting_selector(source: &str, parent: &str) -> Option<String> {
     if branches.len() > 1 && branches.iter().any(|branch| has_pseudo_element(branch)) {
         let distributed = split_selector_list(source)
             .into_iter()
-            .map(|branch| distribute_nesting_selector(branch, &branches))
+            .map(|branch| substitute_nesting_branches(branch, &branches))
             .collect::<Option<Vec<_>>>();
         if let Some(distributed) = distributed {
             return Some(distributed.concat().join(","));
@@ -186,6 +188,41 @@ pub fn distribute_nesting_selector(source: &str, parents: &[&str]) -> Option<Vec
         selectors.push(selector);
     }
     Some(selectors)
+}
+
+/// `source` with each top-level `&` replaced by every branch in turn as text,
+/// the first `&` varying slowest. None as [`distribute_nesting_selector`] is.
+fn substitute_nesting_branches(source: &str, parents: &[&str]) -> Option<Vec<String>> {
+    let ranges = nesting_selector_ranges(source);
+    let count = u32::try_from(ranges.len())
+        .ok()
+        .and_then(|count| parents.len().checked_pow(count))?;
+    if ranges.is_empty()
+        || ranges.iter().any(|(_, nested)| *nested)
+        || !(1..=DISTRIBUTED_SELECTOR_LIMIT).contains(&count)
+    {
+        return None;
+    }
+    let mut selectors = vec![String::new()];
+    let mut cursor = 0;
+    for (range, _) in &ranges {
+        let text = &source[cursor..range.start];
+        selectors = selectors
+            .iter()
+            .flat_map(|prefix| {
+                parents
+                    .iter()
+                    .map(move |parent| crate::concat_text!(prefix, text, parent))
+            })
+            .collect();
+        cursor = range.end;
+    }
+    Some(
+        selectors
+            .into_iter()
+            .map(|selector| selector + &source[cursor..])
+            .collect(),
+    )
 }
 
 /// Whether a selector is one compound: no combinator or descendant space outside

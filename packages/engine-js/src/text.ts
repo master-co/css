@@ -20,12 +20,6 @@ export function trimEnd(value: string) {
   return value.slice(0, end)
 }
 
-export function trimStart(value: string) {
-  let start = 0
-  while (start < value.length && isWhitespace(value.charCodeAt(start))) start++
-  return value.slice(start)
-}
-
 export function trim(value: string) {
   let start = 0
   while (start < value.length && isWhitespace(value.charCodeAt(start))) start++
