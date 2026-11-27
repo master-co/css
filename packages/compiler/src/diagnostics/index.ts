@@ -95,6 +95,8 @@ function resolveSourcePaths(cwd: string, sourcePatterns: readonly string[], igno
     cwd,
     ignore: normalizeGlobPatterns(ignore),
     onlyFiles: true,
+    // Dot directories such as `.vitepress` hold sources, as the source policy reads them.
+    dot: true,
     // Linked directories can loop back into the project or walk the whole filesystem.
     followSymbolicLinks: false
   }).filter(Boolean)

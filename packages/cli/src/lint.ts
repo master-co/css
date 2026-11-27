@@ -66,7 +66,11 @@ function resolveSourcePaths(cwd: string, sourcePatterns: string[], ignore: strin
   return fg.sync(normalizeGlobPatterns(sourcePatterns), {
     cwd,
     ignore: normalizeGlobPatterns(ignore),
-    onlyFiles: true
+    onlyFiles: true,
+    // As the source policy and the build integrations do: dot directories such as
+    // `.vitepress` hold sources, and links can loop back into the project.
+    dot: true,
+    followSymbolicLinks: false
   }).filter(Boolean)
 }
 

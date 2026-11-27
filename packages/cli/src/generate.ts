@@ -92,7 +92,11 @@ function resolveSourcePaths(
 ) {
   const sources = fg.sync(normalizeGlobPatterns(sourcePatterns), {
     cwd: scanner.cwd,
-    ignore: normalizeGlobPatterns(ignore)
+    ignore: normalizeGlobPatterns(ignore),
+    // As the source policy and the build integrations do: dot directories such as
+    // `.vitepress` hold sources, and links can loop back into the project.
+    dot: true,
+    followSymbolicLinks: false
   })
     .filter(source => source && scanner.isSourceAllowed(source, { explicit }))
   return [...new Set(sources.map(source => filesystemSourceIdentity(scanner.cwd, source)))]
