@@ -176,9 +176,12 @@ function RuntimeVirtualModulesPlugin(publicProgramHref: string, projectDir: stri
         return toBrowserProgramFacadeModule(JSON.stringify(publicProgramHref))
       }
     },
-    handleHotUpdate({ file, server }) {
+    handleHotUpdate({ file, modules = [], server }) {
       if (command !== 'serve' || !includesFile(cssManifestDependencies, file)) return
-      return [
+      // A manifest dependency may also be a stylesheet the app imports: adding the
+      // runtime inputs must not consume its own update.
+      return [...new Set([
+        ...modules,
         ...invalidateModule(
           server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_PROGRAM_ID),
           server
@@ -187,7 +190,7 @@ function RuntimeVirtualModulesPlugin(publicProgramHref: string, projectDir: stri
           server.moduleGraph.getModuleById(resolvedEmittedGlobalsId),
           server
         )
-      ]
+      ])]
     }
   }
 }
