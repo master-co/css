@@ -74,3 +74,38 @@ for (const kind of ['document', 'shadow'] as const) {
     expect(result).toEqual({ added: { '(display:block)': 2 }, changed: { '(display:block)': 1, '(display:none)': 1 }, display: 'none', moved: { '(display:block)': 1, '(display:none)': 1 }, removed: {} })
   })
 }
+
+test('starts on an XHTML document as a document root, not a shadow root', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (program) => {
+    const frame = document.createElement('iframe')
+    const xhtml = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body><div class="(display:none)"></div></body></html>'
+    frame.src = URL.createObjectURL(new Blob([xhtml], { type: 'application/xhtml+xml' }))
+    // Some engines fire `load` for the initial blank document first.
+    await new Promise<void>((resolve) => {
+      frame.addEventListener('load', function loaded() {
+        if (frame.contentDocument?.contentType !== 'application/xhtml+xml') return
+        frame.removeEventListener('load', loaded)
+        resolve()
+      })
+      document.body.appendChild(frame)
+    })
+    const root = frame.contentDocument!
+    const runtime = await globalThis.MasterCSSRuntime.start({ root, program })
+    try {
+      runtime.observe()
+      return {
+        contentType: root.contentType,
+        usage: runtime.snapshot().usageCounts,
+        display: frame.contentWindow!.getComputedStyle(root.querySelector('div')!).display
+      }
+    } finally {
+      runtime.dispose()
+      frame.remove()
+    }
+  }, compileProgram())
+  // Chromium and WebKit name it `XMLDocument`, which a constructor-name check missed.
+  expect(result.contentType).toBe('application/xhtml+xml')
+  expect(result.usage).toEqual({ '(display:none)': 1 })
+  expect(result.display).toBe('none')
+})
