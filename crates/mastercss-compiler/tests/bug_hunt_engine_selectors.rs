@@ -162,7 +162,9 @@ fn keyframe_mappings_measure_the_snapshot_they_describe() {
     let mut session = engine(
         "@keyframes fade { to { opacity: 0 } } @utility fade { animation: fade 1s } @keyframes spin { to { rotate: 1turn } } @utility spin { animation: spin 1s }",
     );
-    session.ensure_class_rules(["fade", "spin", "block"]).unwrap();
+    session
+        .ensure_class_rules(["fade", "spin", "block"])
+        .unwrap();
     // A subset emits fewer keyframes than the session holds.
     let none = session.snapshot_for_classes(["block"]).unwrap();
     assert!(session.keyframe_output_mappings(&none).is_empty());
