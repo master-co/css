@@ -101,7 +101,12 @@ pub fn extract_class_candidates(content: &str) -> Vec<String> {
 pub fn literal_class_candidates(content: &str) -> Vec<String> {
     let mut candidates = Vec::new();
     let mut seen = HashSet::new();
-    for block in content.split_whitespace() {
+    // Classes separate at ASCII whitespace only, as class lists do: a no-break
+    // space belongs to a value such as `(content:'a\u{a0}b')`.
+    for block in content
+        .split(|character: char| character.is_ascii_whitespace())
+        .filter(|block| !block.is_empty())
+    {
         for candidate in split_by_quotation(block) {
             push_candidate(&mut candidates, &mut seen, &candidate);
         }
@@ -533,26 +538,65 @@ fn push_candidate(candidates: &mut Vec<String>, seen: &mut HashSet<String>, sour
 }
 
 fn pre_exclude(content: &str) -> String {
-    let without_blocks = remove_delimited(content, "/*", "*/");
-    let without_html_comments = remove_delimited(&without_blocks, "<!--", "-->");
+    // An unclosed `/*`, as in `accept="image/*"`, is text; an unclosed `<!--`
+    // comments out the rest, as in HTML.
+    let without_blocks = remove_delimited(content, "/*", "*/", true);
+    let without_html_comments = remove_delimited(&without_blocks, "<!--", "-->", false);
     let without_styles = remove_style_elements(&without_html_comments);
     let without_placeholders = remove_template_placeholders(&without_styles);
     without_placeholders
         .lines()
         .map(|line| {
             let trimmed = line.trim_start();
+            let module_call = trimmed.contains("require(") || trimmed.contains("import(");
             if trimmed.starts_with("import ")
                 || trimmed.starts_with("export ") && trimmed.contains(" from ")
-                || trimmed.contains("require(")
-                || trimmed.contains("import(")
+                || module_call && !trimmed.contains('<')
             {
                 String::new()
+            } else if module_call {
+                // In markup only the specifier of a dynamic import or require is not
+                // class text; the rest of the line, such as its attributes, is.
+                remove_module_specifiers(strip_line_comment(line))
             } else {
                 strip_line_comment(line).to_owned()
             }
         })
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+/// Blanks the quoted specifier of each `import(` and `require(` call.
+fn remove_module_specifiers(line: &str) -> String {
+    let mut output = String::with_capacity(line.len());
+    let mut rest = line;
+    loop {
+        let call = ["import(", "require("]
+            .iter()
+            .filter_map(|call| rest.find(call).map(|at| (at, at + call.len())))
+            .min();
+        let Some((start, open)) = call else { break };
+        let argument = rest[open..].trim_start();
+        let quote = argument
+            .chars()
+            .next()
+            .filter(|quote| matches!(quote, '\'' | '"' | '`'));
+        let end = quote.and_then(|quote| {
+            argument[1..]
+                .find(quote)
+                .map(|close| rest.len() - argument.len() + 1 + close + 1)
+        });
+        let Some(end) = end else {
+            output.push_str(&rest[..open]);
+            rest = &rest[open..];
+            continue;
+        };
+        output.push_str(&rest[..start]);
+        output.push(' ');
+        rest = &rest[end..];
+    }
+    output.push_str(rest);
+    output
 }
 
 /// Replace the `${` and `}` delimiters of each template-literal placeholder with spaces,
@@ -590,13 +634,16 @@ fn remove_template_placeholders(source: &str) -> String {
     output
 }
 
-fn remove_delimited(source: &str, open: &str, close: &str) -> String {
+fn remove_delimited(source: &str, open: &str, close: &str, unclosed_is_text: bool) -> String {
     let mut output = String::with_capacity(source.len());
     let mut rest = source;
     while let Some(start) = rest.find(open) {
         output.push_str(&rest[..start]);
         let after_open = &rest[start + open.len()..];
         let Some(end) = after_open.find(close) else {
+            if unclosed_is_text {
+                output.push_str(&rest[start..]);
+            }
             return output;
         };
         rest = &after_open[end + close.len()..];
@@ -611,6 +658,15 @@ fn remove_style_elements(source: &str) -> String {
     let mut index = 0;
     while let Some(relative_start) = lowercase[index..].find("<style") {
         let start = index + relative_start;
+        // `<StyleProvider>` and `<styled-box>` are other elements.
+        let after = start + "<style".len();
+        if !lowercase[after..].starts_with(|character: char| {
+            character.is_ascii_whitespace() || matches!(character, '>' | '/')
+        }) {
+            output.push_str(&source[index..after]);
+            index = after;
+            continue;
+        }
         output.push_str(&source[index..start]);
         let Some(relative_end) = lowercase[start..].find("</style>") else {
             return output;
@@ -646,6 +702,11 @@ fn strip_line_comment(line: &str) -> &str {
             && characters
                 .get(position + 1)
                 .is_some_and(|(_, next)| *next == '/')
+            // `https://` in template text is a URL, not a comment.
+            && position
+                .checked_sub(1)
+                .and_then(|previous| characters.get(previous))
+                .is_none_or(|(_, previous)| *previous != ':')
         {
             return &line[..index];
         }
@@ -785,7 +846,9 @@ fn trim_candidate(source: &str) -> String {
         let before = candidate.len();
         if let Some(equal) = candidate.find('=') {
             let prefix = &candidate[..equal];
-            if !prefix.contains([':', '@', '~', '(']) && !prefix.ends_with('@') {
+            // An `=` inside an attribute selector, as in `block[aria-expanded=true]`,
+            // belongs to the class.
+            if !prefix.contains([':', '@', '~', '(', '[']) && !prefix.ends_with('@') {
                 candidate = &candidate[equal + 1..];
             }
         }
