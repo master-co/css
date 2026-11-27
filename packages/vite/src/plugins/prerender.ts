@@ -158,12 +158,19 @@ export default function PrerenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       devServer = server
       server.httpServer?.once('close', () => renderer?.dispose())
       server.middlewares.use((request, response, next) => {
-        const requestURL = request.url ? new URL(request.url, 'http://localhost') : undefined
+        // A malformed request path is not a hydration manifest; it goes to the next handler.
+        const requestURL = request.url ? URL.parse(request.url, 'http://localhost') : null
         if (!requestURL?.pathname.startsWith(MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE)) {
           next()
           return
         }
-        const fileName = decodeURIComponent(requestURL.pathname.slice(MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE.length))
+        let fileName: string
+        try {
+          fileName = decodeURIComponent(requestURL.pathname.slice(MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE.length))
+        } catch {
+          next()
+          return
+        }
         const source = hydrationManifestAssets.get(fileName)
         if (source === undefined) {
           next()

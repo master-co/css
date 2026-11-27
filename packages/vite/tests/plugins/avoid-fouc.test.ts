@@ -19,3 +19,11 @@ it.each(cases)(
     expect(result).toMatchSnapshot()
   }
 )
+it.each([
+  ['<html class="dark hidden md:block"><body></body></html>', '<html class="dark hidden md:block" hidden><body></body></html>'],
+  ["<html data-state='hidden'><body></body></html>", "<html data-state='hidden' hidden><body></body></html>"],
+  ['<html lang="en" HIDDEN><body></body></html>', '<html lang="en" HIDDEN><body></body></html>'],
+  ['<html hidden="until-found"><body></body></html>', '<html hidden="until-found"><body></body></html>']
+])('AvoidFOUCPlugin reads the hidden attribute, not a word in another value: %s', async (input, output) => {
+  expect(await runTransformIndexHtml(plugin, input)).toBe(output)
+})

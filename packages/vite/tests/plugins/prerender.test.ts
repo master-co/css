@@ -87,6 +87,11 @@ describe('PrerenderPlugin', () => {
     expect(hydrationManifest.version).toBe(5)
     expect(hydrationManifest.classNames).toEqual(['card', "(padding:0.125rem)"])
     expect(hydrationManifest.rules).toBeUndefined()
+
+    // A malformed escape is another handler's request, not a server error.
+    const malformedNext = vi.fn()
+    expect(() => middleware?.({ url: '/_master-css/hydration/%E0%A4%A.json' }, { setHeader() { }, end() { } }, malformedNext)).not.toThrow()
+    expect(malformedNext).toHaveBeenCalledOnce()
   })
 
   it.each([

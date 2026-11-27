@@ -135,9 +135,11 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
     resolveFileUrl({ referenceId, relativePath, format }) {
       if (serverManifestReferences.has(referenceId)) return toServerManifestFileURL(relativePath, format)
     },
-    async handleHotUpdate({ file, server }) {
+    async handleHotUpdate({ file, modules: affected = [], server }) {
       let handled = false
-      const modules: ModuleNode[] = []
+      // The file may also be an ordinary stylesheet or source module: adding its
+      // manifest queries must not consume their own updates.
+      const modules: ModuleNode[] = [...affected]
       const queryManifestPaths = new Set([file])
       for (const [manifestPath, dependencies] of cssManifestDependencies) {
         if (includesFile(dependencies, file)) queryManifestPaths.add(manifestPath)
@@ -150,7 +152,7 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
           modules.push(...invalidateManifestModule(queryModule, server))
         }
       }
-      if (handled) return modules
+      if (handled) return [...new Set(modules)]
     }
   }
 }

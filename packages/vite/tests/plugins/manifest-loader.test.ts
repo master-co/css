@@ -242,4 +242,28 @@ describe('ManifestLoaderPlugin', () => {
     expect(send).not.toHaveBeenCalled()
     expect(result).toEqual([module])
   })
+
+  it('keeps the stylesheet module of an edited manifest file in its HMR update', async () => {
+    const context = await createContext()
+    const plugin = ManifestLoaderPlugin(context)
+    const manifestPath = path.join(FIXTURE_DIR, 'theme.css')
+    const resolvedId = toResolvedMasterCSSManifestId(manifestPath)
+    const queryModule = { importers: new Set([{}]) }
+    const stylesheetModule = { id: manifestPath, importers: new Set() }
+
+    await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    const result = await (plugin.handleHotUpdate as any)({
+      file: manifestPath,
+      modules: [stylesheetModule],
+      server: {
+        moduleGraph: {
+          getModuleById: vi.fn((id) => id === resolvedId ? queryModule : undefined),
+          invalidateModule: vi.fn()
+        },
+        ws: { send: vi.fn() }
+      }
+    })
+
+    expect(result).toEqual([stylesheetModule, queryModule])
+  })
 })

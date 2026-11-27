@@ -5,7 +5,11 @@ import { HTML_ENTRIES } from '../common'
 import { ResolvedMasterCSSVitePluginOptions } from '../options'
 
 const HTML_OPEN_TAG_RE = /<html(\s[^>]*)?>/ig
-const HIDDEN_ATTR_RE = /(?:^|\s)hidden(?:[\s=]|$)/i
+// One attribute, with its value: a `hidden` inside another attribute's value is not the attribute.
+const HTML_ATTRIBUTE_RE = /([^\s"'>/=]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+))?/g
+
+const hasHiddenAttribute = (attrs: string) =>
+  Array.from(attrs.matchAll(HTML_ATTRIBUTE_RE)).some(([, name]) => name.toLowerCase() === 'hidden')
 
 const isInsideComment = (html: string, index: number) => {
   return html.lastIndexOf('<!--', index) > html.lastIndexOf('-->', index)
@@ -16,7 +20,7 @@ const replace = (html: string) => {
   for (const match of html.matchAll(HTML_OPEN_TAG_RE)) {
     if (match.index === undefined || isInsideComment(html, match.index)) continue
     const attrs = match[1] || ''
-    if (HIDDEN_ATTR_RE.test(attrs)) return html
+    if (hasHiddenAttribute(attrs)) return html
     if (process.env.DEBUG) {
       console.log(`[@master/css-vite] Avoid FOUC by adding hidden attribute to <html>`)
     }
