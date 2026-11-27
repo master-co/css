@@ -200,8 +200,21 @@ pub(crate) fn emit_declarations(
     }
 }
 
+/// Whether a value already ends in an importance annotation: `!important` in any
+/// case, with whitespace allowed after the `!` (`red ! IMPORTANT`).
+fn has_importance(value: &str) -> bool {
+    let value = value.trim_end_matches(|character: char| character.is_ascii_whitespace());
+    let Some(start) = value.len().checked_sub("important".len()) else {
+        return false;
+    };
+    value.as_bytes()[start..].eq_ignore_ascii_case(b"important")
+        && value[..start]
+            .trim_end_matches(|character: char| character.is_ascii_whitespace())
+            .ends_with('!')
+}
+
 pub(crate) fn format_declaration(property: &str, value: &str, important: bool) -> String {
-    if important && !value.ends_with("!important") {
+    if important && !has_importance(value) {
         concat_text!(property, ":", value, "!important")
     } else {
         concat_text!(property, ":", value)

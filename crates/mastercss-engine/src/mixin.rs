@@ -518,8 +518,7 @@ impl Expansion<'_> {
                     selector: child,
                     body,
                 } => {
-                    let next = mastercss_lexer::replace_nesting_selector(child, selector)
-                        .unwrap_or_else(|| concat_text!(selector, " ", child));
+                    let next = mastercss_lexer::nest_selector(child, selector);
                     self.nodes(
                         body,
                         environment,

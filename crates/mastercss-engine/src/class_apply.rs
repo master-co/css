@@ -85,6 +85,12 @@ impl EngineSession {
             })
             .unwrap_or_default();
         let base = head.strip_suffix(&state).unwrap_or(head);
+        // A `!` right after the head (`block!@apply(…)`) marks the class
+        // important, as on any class; it is not part of the selector.
+        let (state, important) = match state.strip_prefix('!') {
+            Some(selector) => (selector.to_owned(), true),
+            None => (state.clone(), important),
+        };
         let diagnostics = super::named::diagnostics(base, &self.compiled);
         if let Some(diagnostic) = diagnostics.first() {
             return Err(diagnostic.message.clone());

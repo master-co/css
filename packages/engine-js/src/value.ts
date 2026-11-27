@@ -7,6 +7,16 @@ import type { Program, Variable } from './program-model'
 import { isAsciiCase, isAsciiDigit, isAsciiWhitespace, trimEnd } from './text'
 
 const MATH_FUNCTIONS = ['calc', 'min', 'max', 'clamp']
+/** Functions that stand for a value in math, so a minus glued to their name after an operand subtracts. */
+const OPERAND_FUNCTIONS = ['var', 'env', 'attr', 'calc', 'min', 'max', 'clamp', 'round', 'mod', 'rem', 'abs', 'sign']
+const isOperandFunction = (name: string) => OPERAND_FUNCTIONS.some((function_) => isAsciiCase(name, function_))
+
+/** A math payload, also vendor-prefixed (`-webkit-calc`) and with a compact subtraction's minus glued on. */
+function isMathFunction(name: string) {
+  const prefix = ['-webkit-', '-moz-', '-'].find((candidate) => isAsciiCase(name.slice(0, candidate.length), candidate))
+  const base = prefix === undefined ? name : name.slice(prefix.length)
+  return MATH_FUNCTIONS.some((math) => isAsciiCase(base, math))
+}
 /** `MAX_CLASS_NESTING` in crates/mastercss-lexer, which bounds math recursion in Rust. */
 const MAX_MATH_DEPTH = 64
 const isNumeric = (token: Token | undefined) => token !== undefined && (token.kind === NUMBER || token.kind === DIMENSION || token.kind === PERCENTAGE)
@@ -30,7 +40,7 @@ export function normalizeCssMathFunctions(source: string): string {
     const start = token.end
     const end = tokens[close].start
     let inner = normalizeCssMathFunctions(source.slice(start, end))
-    if (MATH_FUNCTIONS.some((name) => isAsciiCase(token.value, name))) inner = normalizeMathExpression(inner, 0)
+    if (isMathFunction(token.value)) inner = normalizeMathExpression(inner, 0)
     output += source.slice(copied, start) + inner
     copied = end
   }
@@ -59,6 +69,9 @@ function normalizeMathExpression(source: string, depth: number): string {
         const start = token.end
         const end = tokens[token.close].start
         edits.push([start, end, normalizeMathExpression(source.slice(start, end), depth + 1)])
+      } else if (token.kind === FUNCTION && operand && token.value[0] === '-' && token.value[1] !== '-'
+        && isOperandFunction(token.value.slice(1))) {
+        edits.push([token.start, token.start + 1, ' - '])
       }
       operand = true
       index = token.close + 1
@@ -66,7 +79,12 @@ function normalizeMathExpression(source: string, depth: number): string {
     }
     if (isNumeric(token)) {
       if (operand && (raw[0] === '+' || raw[0] === '-')) edits.push([token.start, token.start + 1, ` ${raw[0]} `])
-      if (token.kind === DIMENSION && !raw.includes('\\')) {
+      const beforeParenthesis = tokens[index + 1]?.start === token.end && tokens[index + 1].kind === DELIM && tokens[index + 1].value === '('
+      const minus = token.kind === DIMENSION ? raw.indexOf('-', token.value.length) : -1
+      if (token.kind === DIMENSION && beforeParenthesis && !raw.includes('\\') && minus >= 0 && isOperandFunction(raw.slice(minus + 1))) {
+        // `1px-var(` lexes as the dimension `1px-var` before a parenthesis.
+        edits.push([token.start + minus, token.end, ` - ${raw.slice(minus + 1)}`])
+      } else if (token.kind === DIMENSION && !raw.includes('\\')) {
         // `1px-2px` is one native dimension; only a minus before a numeric operand subtracts.
         for (let minus = raw.indexOf('-', token.value.length); minus >= 0; minus = raw.indexOf('-', minus + 1)) {
           const next = raw.charCodeAt(minus + 1)

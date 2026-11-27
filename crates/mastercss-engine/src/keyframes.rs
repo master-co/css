@@ -16,8 +16,13 @@ impl EngineSession {
         &self,
         snapshot: &EngineSnapshotIr,
     ) -> Vec<mastercss_schema::CssOutputMapping> {
-        let mut offset =
-            snapshot.text.encode_utf16().count() - self.keyframes_text().encode_utf16().count();
+        // The keyframes close the snapshot's text. Measure the ones this snapshot
+        // emits: a class subset emits fewer than the session holds.
+        let mut offset = snapshot.text.encode_utf16().count().saturating_sub(
+            keyframes_text_of(&snapshot.resources.keyframes)
+                .encode_utf16()
+                .count(),
+        );
         let mut mappings = Vec::new();
         let mut path: &[mastercss_schema::KeyframeContainer] = &[];
         for frame in &snapshot.resources.keyframes {
@@ -242,21 +247,27 @@ impl EngineSession {
 
     /// The emitted keyframes, each wrapped in the containers it was declared in.
     pub(crate) fn keyframes_text(&self) -> String {
-        let mut text = String::new();
-        let mut path = Vec::new();
-        for frame in self.keyframe_snapshot() {
-            let common = shared_containers(&path, &frame.containers);
-            text.extend(std::iter::repeat_n('}', path.len() - common));
-            for container in &frame.containers[common..] {
-                text.push_str(&container.prelude);
-                text.push('{');
-            }
-            text.push_str(&frame.text);
-            path = frame.containers;
-        }
-        text.extend(std::iter::repeat_n('}', path.len()));
-        text
+        keyframes_text_of(&self.keyframe_snapshot())
     }
+}
+
+/// The text of keyframe resources in order, sharing the containers consecutive
+/// frames have in common.
+fn keyframes_text_of(frames: &[EngineKeyframeResourceIr]) -> String {
+    let mut text = String::new();
+    let mut path: &[mastercss_schema::KeyframeContainer] = &[];
+    for frame in frames {
+        let common = shared_containers(path, &frame.containers);
+        text.extend(std::iter::repeat_n('}', path.len() - common));
+        for container in &frame.containers[common..] {
+            text.push_str(&container.prelude);
+            text.push('{');
+        }
+        text.push_str(&frame.text);
+        path = &frame.containers;
+    }
+    text.extend(std::iter::repeat_n('}', path.len()));
+    text
 }
 
 /// The length of the container path two consecutive frames share.

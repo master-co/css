@@ -5,7 +5,7 @@ import { splitTopLevel } from './class-syntax'
 import { DELIM, FUNCTION, IDENT, NUMBER, STRING, tokenize } from './css-syntax'
 import type { MixinDefinition, MixinNode, MixinValuePart, Program, RecipeDefinition } from './program-model'
 import { cssEscape } from './program'
-import { replaceNestingSelector } from './selector'
+import { nestSelector } from './selector'
 import { asciiLowercase, isWhitespace, trim } from './text'
 import { NATIVE_CSS_PROPERTY_SET } from './native-properties'
 import { decimalIsFinite, parseDecimal } from './value'
@@ -282,7 +282,7 @@ class Expansion {
           break
         }
         case 'rule': {
-          const next = replaceNestingSelector(node.selector, selector) ?? `${selector} ${node.selector}`
+          const next = nestSelector(node.selector, selector)
           this.nodes(node.body, environment, next, conditions, safeSubject && sameSubject(node.selector), forbidden, contents)
           break
         }

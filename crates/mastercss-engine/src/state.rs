@@ -225,6 +225,23 @@ pub(crate) fn selector_token_to_template(
     Some(suffix_to_template(&selector))
 }
 
+/// Where the `of <selector>` of an An+B argument begins: the encoded `_` or the
+/// whitespace before `of`. `odd_of_.a` lexes as one identifier, so the keyword
+/// is found in the text.
+fn nth_selector_start(argument: &str) -> Option<usize> {
+    let separator = |byte: &u8| matches!(byte, b'_' | b' ' | b'\t' | b'\n' | b'\r' | b'\x0c');
+    let bytes = argument.as_bytes();
+    (1..bytes.len())
+        .find(|&index| {
+            separator(&bytes[index - 1])
+                && bytes
+                    .get(index..index + 2)
+                    .is_some_and(|keyword| keyword.eq_ignore_ascii_case(b"of"))
+                && bytes.get(index + 2).is_some_and(separator)
+        })
+        .map(|index| index - 1)
+}
+
 pub(crate) fn replace_selector_underscores(source: &str) -> String {
     use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
     let tokens = tokenize_css_syntax(source);
@@ -260,8 +277,8 @@ pub(crate) fn replace_selector_underscores(source: &str) -> String {
                     .iter()
                     .any(|candidate| name.eq_ignore_ascii_case(candidate))
                 {
-                    tokens[index + 1..close].iter().find(|token| matches!(&token.kind, Kind::Ident(name) if name.eq_ignore_ascii_case("of")))
-                        .map_or(tokens[close].bytes.start, |token| token.bytes.start)
+                    nth_selector_start(&source[token.bytes.end..tokens[close].bytes.start])
+                        .map_or(tokens[close].bytes.start, |offset| token.bytes.end + offset)
                 } else {
                     tokens[close].bytes.start
                 };

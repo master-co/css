@@ -87,11 +87,13 @@ const textValue = (value: string) => [{ type: 'text' as const, value }]
 
 function expandApplication(className: string, head: string, suffixes: string[], program: Program) {
   if (hasDiagnostics(className, program)) return
-  const important = className.endsWith('!')
   const native = !!parseNativeDeclaration(head)
   const [first] = matchingUtilities(head, program)
-  const state = first ? first[1].stateToken : nativeDeclaration(head)?.[1].stateToken ?? ''
-  const base = head.endsWith(state) ? head.slice(0, head.length - state.length) : head
+  const stateToken = first ? first[1].stateToken : nativeDeclaration(head)?.[1].stateToken ?? ''
+  const base = head.endsWith(stateToken) ? head.slice(0, head.length - stateToken.length) : head
+  // A `!` right after the head (`block!@apply(…)`) marks the class important; it is not part of the selector.
+  const important = className.endsWith('!') || stateToken.startsWith('!')
+  const state = stateToken.startsWith('!') ? stateToken.slice(1) : stateToken
   if (hasDiagnostics(base, program)) return
   const originals = compositionRules(base, program)
   if (!originals.length) return

@@ -17,8 +17,11 @@ import type { ConditionFeature, GeneratedRule, RulePriority } from './types'
 import { matchingUtilities, type UtilityMatch } from './utility'
 import { collectCssVariableReferences, normalizeCssMathFunctions, substituteInlineTokens } from './value'
 
+/** An importance annotation in any case, with whitespace after the `!`, as `has_importance` reads it. */
+const IMPORTANCE = /![\t\n\f\r ]*important[\t\n\f\r ]*$/i
+
 export function formatDeclaration(property: string, value: string, important: boolean) {
-  return important && !value.endsWith('!important') ? `${property}:${value}!important` : `${property}:${value}`
+  return important && !IMPORTANCE.test(value) ? `${property}:${value}!important` : `${property}:${value}`
 }
 
 /**

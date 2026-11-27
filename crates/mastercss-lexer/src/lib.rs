@@ -28,9 +28,10 @@ pub use query::{
     native_query_structure, parse_native_query, query_requires_css,
 };
 pub use selector::{
-    replace_class_selector, replace_nesting_selector, replace_rule_class_selector,
-    selector_class_names, split_selector_list, valid_mode_name, valid_mode_selector,
-    valid_selector_structure,
+    DISTRIBUTED_SELECTOR_LIMIT, distribute_nesting_selector, has_pseudo_element, nest_selector,
+    nesting_selector_ranges, replace_class_selector, replace_nesting_selector,
+    replace_rule_class_selector, selector_class_names, split_selector_list, valid_mode_name,
+    valid_mode_selector, valid_selector_structure,
 };
 pub use spaces::single_underscore as is_space_underscore;
 

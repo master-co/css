@@ -70,6 +70,32 @@ pub(crate) fn normalize_unmanaged_value(value: &str) -> String {
     output
 }
 
+/// Functions whose payload is a math expression, also vendor-prefixed (`-webkit-calc`)
+/// and with a compact subtraction's minus glued to the name (`100%-calc(`).
+fn is_math_function(name: &str) -> bool {
+    let name = ["-webkit-", "-moz-", "-"]
+        .iter()
+        .find_map(|prefix| {
+            name.get(..prefix.len())
+                .filter(|head| head.eq_ignore_ascii_case(prefix))
+                .map(|_| &name[prefix.len()..])
+        })
+        .unwrap_or(name);
+    ["calc", "min", "max", "clamp"]
+        .iter()
+        .any(|math| name.eq_ignore_ascii_case(math))
+}
+
+/// Functions that stand for a value in a math expression, so a minus glued to their
+/// name after an operand (`100%-var(--x)`, `1px-calc(…)`) is a compact subtraction.
+fn is_operand_function(name: &str) -> bool {
+    [
+        "var", "env", "attr", "calc", "min", "max", "clamp", "round", "mod", "rem", "abs", "sign",
+    ]
+    .iter()
+    .any(|function| name.eq_ignore_ascii_case(function))
+}
+
 /// Normalize actual math component values, leaving strings, comments and URLs opaque.
 pub(crate) fn normalize_css_math_functions(source: &str) -> String {
     let tokens = tokenize_css_syntax(source);
@@ -87,10 +113,7 @@ pub(crate) fn normalize_css_math_functions(source: &str) -> String {
             let start = token.bytes.end;
             let end = tokens[close].bytes.start;
             let inner = normalize_css_math_functions(&source[start..end]);
-            let inner = if ["calc", "min", "max", "clamp"]
-                .iter()
-                .any(|n| name.eq_ignore_ascii_case(n))
-            {
+            let inner = if is_math_function(name) {
                 normalize_math_expression(&inner, 0)
             } else {
                 inner
@@ -133,6 +156,13 @@ fn normalize_math_expression(source: &str, depth: usize) -> String {
                     range.clone(),
                     normalize_math_expression(&source[range], depth + 1),
                 ));
+            } else if let Kind::Function(name) = &token.kind
+                && operand
+                && name
+                    .strip_prefix('-')
+                    .is_some_and(|name| !name.starts_with('-') && is_operand_function(name))
+            {
+                edits.push((token.bytes.start..token.bytes.start + 1, " - ".into()));
             }
             operand = true;
             index = close + 1;
@@ -146,7 +176,21 @@ fn normalize_math_expression(source: &str, depth: usize) -> String {
                         concat_text!(" ", &raw[..1], " "),
                     ));
                 }
-                if matches!(token.kind, Kind::Dimension(_, _)) && !raw.contains('\\') {
+                let before_parenthesis = tokens.get(index + 1).is_some_and(|next| {
+                    next.bytes.start == token.bytes.end && next.kind == Kind::Delim('(')
+                });
+                if let Kind::Dimension(number, _) = &token.kind
+                    && before_parenthesis
+                    && !raw.contains('\\')
+                    && let Some(at) = raw[number.len()..].find('-').map(|at| number.len() + at)
+                    && is_operand_function(&raw[at + 1..])
+                {
+                    // `1px-var(` lexes as the dimension `1px-var` before a parenthesis.
+                    edits.push((
+                        token.bytes.start + at..token.bytes.end,
+                        concat_text!(" - ", &raw[at + 1..]),
+                    ));
+                } else if matches!(token.kind, Kind::Dimension(_, _)) && !raw.contains('\\') {
                     // `1px-2px` lexes as one dimension in native CSS. Only a
                     // minus followed by a numeric operand is Master subtraction.
                     if let Some(at) =

@@ -1,40 +1,37 @@
-/// CSSOM-compatible identifier escaping, implemented over UTF-16 code units to match
-/// `CSS.escape` and the existing JavaScript fallback exactly.
+/// CSSOM-compatible identifier escaping that matches `CSS.escape`: positions count
+/// UTF-16 code units, and a character outside the Basic Multilingual Plane is
+/// kept whole.
 pub fn css_escape(value: &str) -> String {
-    let units: Vec<u16> = value.encode_utf16().collect();
-    if units.len() == 1 && units[0] == 0x002d {
+    if value == "-" {
         return "\\-".into();
     }
-
-    let first = units.first().copied().unwrap_or_default();
-    let mut result = String::new();
-    for (index, unit) in units.iter().copied().enumerate() {
+    let first = value.chars().next().unwrap_or_default();
+    let mut result = String::with_capacity(value.len());
+    let mut index = 0;
+    for character in value.chars() {
+        let unit = character as u32;
+        let digit = character.is_ascii_digit();
         if unit == 0 {
             result.push('\u{fffd}');
-            continue;
-        }
-        if (0x0001..=0x001f).contains(&unit)
+        } else if (0x0001..=0x001f).contains(&unit)
             || unit == 0x007f
-            || (index == 0 && is_ascii_digit_unit(unit))
-            || (index == 1 && is_ascii_digit_unit(unit) && first == 0x002d)
+            || (index == 0 && digit)
+            || (index == 1 && digit && first == '-')
         {
             result.push('\\');
-            push_hex(&mut result, unit);
+            push_hex(&mut result, unit as u16);
             result.push(' ');
-            continue;
-        }
-        if unit >= 0x0080
-            || unit == 0x002d
-            || unit == 0x005f
-            || is_ascii_digit_unit(unit)
-            || is_ascii_uppercase_unit(unit)
-            || is_ascii_lowercase_unit(unit)
+        } else if unit >= 0x0080
+            || character == '-'
+            || character == '_'
+            || character.is_ascii_alphanumeric()
         {
-            result.push_str(&String::from_utf16_lossy(&[unit]));
-            continue;
+            result.push(character);
+        } else {
+            result.push('\\');
+            result.push(character);
         }
-        result.push('\\');
-        result.push_str(&String::from_utf16_lossy(&[unit]));
+        index += character.len_utf16();
     }
     result
 }
@@ -65,14 +62,20 @@ fn push_hex(result: &mut String, unit: u16) {
     }
 }
 
-pub(crate) fn is_ascii_digit_unit(value: u16) -> bool {
-    (0x0030..=0x0039).contains(&value)
-}
+#[cfg(test)]
+mod tests {
+    use super::css_escape;
 
-pub(crate) fn is_ascii_uppercase_unit(value: u16) -> bool {
-    (0x0041..=0x005a).contains(&value)
-}
-
-pub(crate) fn is_ascii_lowercase_unit(value: u16) -> bool {
-    (0x0061..=0x007a).contains(&value)
+    #[test]
+    fn characters_outside_the_basic_plane_stay_whole() {
+        assert_eq!(css_escape("(content:'🙂')"), r"\(content\:\'🙂\'\)");
+        assert_eq!(css_escape("icon-😀"), "icon-😀");
+        assert_ne!(css_escape("icon-😀"), css_escape("icon-😁"));
+        // Positions still count UTF-16 code units, as `CSS.escape` does.
+        assert_eq!(css_escape("1a"), r"\31 a");
+        assert_eq!(css_escape("-1"), r"-\31 ");
+        assert_eq!(css_escape("😀1"), "😀1");
+        assert_eq!(css_escape("-"), r"\-");
+        assert_eq!(css_escape("a\u{0}b"), "a\u{fffd}b");
+    }
 }
