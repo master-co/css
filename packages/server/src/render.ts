@@ -164,13 +164,17 @@ export function renderHTMLWithSnapshot(
     : snapshot?.hydrationManifest as MasterCSSHydrationManifest | undefined
   const external = typeof hydrationOption === 'object' ? hydrationOption : undefined
 
+  // Injected and external manifests own the document's hydration scripts: a
+  // re-rendered page with nothing to hydrate must not keep a stale one.
+  const ownsHydrationScripts = hydrationOption === 'inject' || external !== undefined
   if (!snapshot?.cssText) {
-    if ((hydrationOption === 'inject' || external) && styleElement) {
+    if (ownsHydrationScripts && styleElement) {
       removeNode(nodes, styleElement)
       styleElement = null
     }
-    if (external) removeHydrationScripts(nodes)
-    const nextHTML = external || styleElement !== context.styleElement
+    const staleScripts = ownsHydrationScripts && findHydrationScripts(nodes).length > 0
+    if (staleScripts) removeHydrationScripts(nodes)
+    const nextHTML = external || staleScripts || styleElement !== context.styleElement
       ? serialize(nodes, { decodeEntities: false, encodeEntities: false })
       : html
     return result(nextHTML, classNames, snapshot, hydrationManifest)
@@ -200,6 +204,7 @@ export function renderHTMLWithSnapshot(
     )
   } else {
     delete styleElement.attribs[MASTER_CSS_HYDRATION_MANIFEST_ATTR]
+    if (ownsHydrationScripts) removeHydrationScripts(nodes)
   }
 
   return result(

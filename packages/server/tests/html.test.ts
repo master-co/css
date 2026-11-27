@@ -161,3 +161,13 @@ it('does not expose parser nodes or live renderer resources', () => {
     'invalidClassNames'
   ])
 })
+
+it('removes a stale inline hydration manifest when nothing is left to hydrate', () => {
+  const stale = `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script>`
+  for (const body of ['<body><p>plain</p></body>', '<body><div class="not-a-class"></div></body>']) {
+    const result = render(`<html><head><style id="master-css">.old{}</style>${stale}</head>${body}</html>`, 'inject')
+    expect(countHydrationManifestScripts(result.html), result.html).toBe(0)
+  }
+  // The default `return` mode leaves the document's own scripts alone.
+  expect(countHydrationManifestScripts(render(`<html><head>${stale}</head><body></body></html>`).html)).toBe(1)
+})

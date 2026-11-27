@@ -93,3 +93,28 @@ test('BH-0011: an unparsable stylesheet href does not fail the render', () => {
   })
   expect(result.cssText).toContain('display:block')
 })
+
+test.each([
+  ['<link rel="Stylesheet" href="/a.css">', true],
+  ['<link rel="preload stylesheet" href="/a.css">', true],
+  ['<link rel="stylesheet" href="/a.css?v=1&amp;x=2">', true],
+  ['<link rel="alternate stylesheet" href="/a.css">', false],
+  ['<link rel="stylesheet" media="print" href="/a.css">', false],
+  ['<link rel="stylesheet" media="all" href="/a.css">', true]
+])('native stylesheets follow HTML link semantics: %s', (link, delivered) => {
+  const href = link.includes('?') ? 'https://example.com/a.css?v=1&x=2' : 'https://example.com/a.css'
+  const result = renderHTML(`<html><head>${link}</head><body><div class="bg-white"></div></body></html>`, {
+    manifest,
+    stylesheets: [{ href, css: '@layer theme{:root,:host{--color-white:#fff}}' }],
+    documentURL: 'https://example.com/'
+  })
+  expect(result.cssText.includes('--color-white:'), result.cssText).toBe(!delivered)
+})
+
+test.each([
+  ['<style type="TEXT/CSS">', true],
+  ['<style media="print">', false]
+])('native style elements follow HTML type and media semantics: %s', (open, delivered) => {
+  const result = renderHTML(`<html><head>${open}@layer theme{:root,:host{--color-white:#fff}}</style></head><body><div class="bg-white"></div></body></html>`, { manifest })
+  expect(result.cssText.includes('--color-white:'), result.cssText).toBe(!delivered)
+})

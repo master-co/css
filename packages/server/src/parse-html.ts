@@ -2,6 +2,7 @@ import { DomHandler, Parser } from 'htmlparser2'
 import type { ChildNode, Element } from 'domhandler'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import decodeHTML from './decode-html'
+import { appliesToAllMedia } from './native-stylesheets'
 
 /**
  * Containers whose content browsers parse differently from htmlparser2: foreign
@@ -56,7 +57,9 @@ export default function parseHTML(html: string): {
       if (element.attribs.id === MASTER_CSS_RUNTIME_STYLE_ID) {
         if (!styleElement && isPlaceholderContext(element)) styleElement = element
       }
-      else if (!element.attribs.type || element.attribs.type === 'text/css') nativeStyleElements.push(element)
+      // `type` is an ASCII case-insensitive MIME type; a media-limited style delivers nothing everywhere.
+      else if ((!element.attribs.type || decodeHTML(element.attribs.type).trim().toLowerCase() === 'text/css')
+        && appliesToAllMedia(element.attribs.media)) nativeStyleElements.push(element)
     }
 
     if (element.attribs.class) {

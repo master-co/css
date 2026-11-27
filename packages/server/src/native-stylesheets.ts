@@ -1,4 +1,5 @@
 import type parseHTML from './parse-html'
+import decodeHTML from './decode-html'
 
 /** A final stylesheet a rendered page may link. */
 export interface MasterCSSServerStylesheet {
@@ -9,6 +10,24 @@ export interface MasterCSSServerStylesheet {
 }
 
 const fallbackOrigin = 'https://master-css-render.invalid'
+
+const tokens = (value: string) => value.toLowerCase().split(/[\t\n\f\r ]+/).filter(Boolean)
+
+/**
+ * Whether an element's styles apply to every medium: a `media` of `all` or none. Globals of a
+ * print-only or width-limited sheet are not delivered to the others, so they are generated again.
+ */
+export function appliesToAllMedia(media: string | undefined) {
+  if (media === undefined) return true
+  const query = decodeHTML(media).trim().toLowerCase()
+  return query === '' || query === 'all'
+}
+
+/** A `rel` naming `stylesheet` (ASCII case-insensitive, among other tokens), not an alternate one. */
+function isPersistentStylesheet(rel: string | undefined) {
+  const values = rel === undefined ? [] : tokens(decodeHTML(rel))
+  return values.includes('stylesheet') && !values.includes('alternate')
+}
 
 /**
  * The CSS a page delivers natively, in document order: its inline styles, then each
@@ -32,10 +51,10 @@ export function collectNativeStylesheets(
   }
   const visit = (nodes: typeof document.nodes) => {
     for (const node of nodes) {
-      if ('attribs' in node && node.name === 'link' && node.attribs.rel === 'stylesheet' && node.attribs.href
-        && node.attribs.disabled === undefined) {
+      if ('attribs' in node && node.name === 'link' && isPersistentStylesheet(node.attribs.rel) && node.attribs.href
+        && node.attribs.disabled === undefined && appliesToAllMedia(node.attribs.media)) {
         // An unparsable href links nothing, and must not fail the whole render.
-        const href = URL.parse(node.attribs.href, documentURL)?.href
+        const href = URL.parse(decodeHTML(node.attribs.href).trim(), documentURL)?.href
         if (href) collect(href)
       }
       if ('childNodes' in node) visit(node.childNodes)
